@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from json_connection import JsonServer
+import json_connection
 
 
 LISTEN_PORT = 8888
@@ -8,14 +8,30 @@ LISTEN_PORT = 8888
 
 def server_fn( connection, cln_addr ):
     print 'accepted connection from %s:%d' % cln_addr
-    request = connection.receive()
-    print 'request: %r' % request
-    response = dict(result='ok')
-    connection.send(response)
+    try:
+        row_count = 0
+        rpc_count = 0
+        while True:
+            request = connection.receive()
+            print 'request: %r' % request
+            method = request['method']
+            if method == 'load':
+                row_count = 10
+                response = dict(initial_rows=[['cell#%d.%d/init' % (i, j) for j in range(5)] for i in range(row_count)])
+            elif method == 'get_rows':
+                rpc_count += 1
+                response = dict(rows=[['cell#%d.%d/rpc-%s' % (row_count + i, j, rpc_count) for j in range(5)] for i in range(10)])
+                row_count += 10
+            else:
+                response = None
+            connection.send(response)
+    except json_connection.Error as x:
+        print x
+            
 
 
 def main():
-    server = JsonServer(LISTEN_PORT, server_fn)
+    server = json_connection.Server(LISTEN_PORT, server_fn)
     server.run()
 
 
