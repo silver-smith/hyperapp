@@ -118,12 +118,12 @@ def server_fn( connection, cln_addr ):
             if method == 'load':
                 response = dict(
                     columns=[dict(id=column.id, title=column.title) for column in dir.columns],
-                    rows=[elt.row for elt in dir.get_elements()])
-            elif method == 'get_rows':
+                    elements=[dict(row=elt.row, commands=elt.commands) for elt in dir.get_elements()])
+            elif method == 'get_elements':
                 key = request['key']
                 count = request['count']
                 response=dict(
-                    rows=[elt.row for elt in dir.get_elements(count, key)])
+                    elements=[dict(row=elt.row, commands=elt.commands) for elt in dir.get_elements(count, key)])
             else:
                 response = None
             connection.send(response)

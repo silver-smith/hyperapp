@@ -14,49 +14,57 @@ class Column(object):
         self.title = title
 
 
-class RowList(object):
 
-    def __init__( self, connection, key_column_idx, initial_rows ):
+class Element(object):
+
+    def __init__( self, row, commands ):
+        self.row = row
+        self.commands = commands
+
+
+class ElementList(object):
+
+    def __init__( self, connection, key_column_idx, initial_elements ):
         self.conn = connection
-        self.rows = initial_rows
+        self.elements = initial_elements
         self.key_column_idx = key_column_idx
 
-    def row_count( self ):
-        return len(self.rows)
+    def element_count( self ):
+        return len(self.elements)
 
-    def ensure_row_count( self, row_count ):
-        if row_count < self.row_count(): return
-        self.load_rows(row_count - self.row_count())
+    def ensure_element_count( self, element_count ):
+        if element_count < self.element_count(): return
+        self.load_elements(element_count - self.element_count())
 
-    def load_rows( self, load_count ):
-        last_key = self.rows[-1][self.key_column_idx]
-        self.conn.send(dict(method='get_rows',
+    def load_elements( self, load_count ):
+        last_key = self.elements[-1].row[self.key_column_idx]
+        self.conn.send(dict(method='get_elements',
                             key=last_key,
                             count=load_count))
         response = self.conn.receive()
-        self.rows.extend(response['rows'])
+        self.elements += [Element(elt['row'], elt['commands']) for elt in response['elements']]
 
 
 class Model(QtCore.QAbstractTableModel):
 
-    def __init__( self, row_list, visible_columns ):
+    def __init__( self, element_list, visible_columns ):
         QtCore.QAbstractTableModel.__init__(self)
-        self.row_list = row_list
+        self.element_list = element_list
         self.visible_columns = visible_columns
 
-    def row_count( self ):
-        return self.row_list.row_count()
+    def element_count( self ):
+        return self.element_list.element_count()
 
-    def rows_added( self, added_count ):
-        print 'ensure_row_count, self.row_count() =', self.row_count(), ', count = ', added_count
-        row_count = self.row_list.row_count()
-        self.rowsInserted.emit(QtCore.QModelIndex(), row_count - added_count, row_count - 1)
+    def elements_added( self, added_count ):
+        print 'ensure_element_count, self.element_count() =', self.element_count(), ', count = ', added_count
+        element_count = self.element_list.element_count()
+        self.rowsInserted.emit(QtCore.QModelIndex(), element_count - added_count, element_count - 1)
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
-            row = self.row_list.rows[index.row()]
+            element = self.element_list.elements[index.row()]
             column = self.visible_columns[index.column()]
-            return row[column.idx]
+            return element.row[column.idx]
         return None
 
     def headerData( self, section, orient, role ):
@@ -66,13 +74,13 @@ class Model(QtCore.QAbstractTableModel):
         return hdata
 
     def rowCount( self, parent ):
-        if parent == QtCore.QModelIndex() and self.row_list:
-            return self.row_list.row_count()
+        if parent == QtCore.QModelIndex() and self.element_list:
+            return self.element_list.element_count()
         else:
             return 0
 
     def columnCount( self, parent ):
-        if parent == QtCore.QModelIndex() and self.row_list:
+        if parent == QtCore.QModelIndex() and self.element_list:
             return len(self.visible_columns)
         else:
             return 0
@@ -87,8 +95,8 @@ class View(QtGui.QTableView):
         QtGui.QTableView.__init__(self)
         self.connection = connection
         self.columns = None
-        self.row_list = None
-        self._model = Model(row_list=None, visible_columns=None)
+        self.element_list = None
+        self._model = Model(element_list=None, visible_columns=None)
         self.setModel(self._model)
         self.verticalHeader().hide()
         opts = self.viewOptions()
@@ -99,13 +107,13 @@ class View(QtGui.QTableView):
         self.set_object(response)
 
     def set_object( self, response ):
-        rows = response['rows']
+        elements = [Element(elt['row'], elt['commands']) for elt in response['elements']]
         columns = [Column(idx, d['id'], d['title']) for idx, d in enumerate(response['columns'])]
         visible_columns = filter(lambda column: column.title is not None, columns)
         self.model().beginResetModel()
         self.columns = columns
-        self.row_list = RowList(self.connection, self._find_key_column(), rows)
-        self._model.row_list = self.row_list
+        self.element_list = ElementList(self.connection, self._find_key_column(), elements)
+        self._model.element_list = self.element_list
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
         self.resizeColumnsToContents()
@@ -125,7 +133,7 @@ class View(QtGui.QTableView):
           'viewport.height =', self.verticalHeader().logicalIndexAt(self.viewport().height())
         row_height = self.verticalHeader().defaultSectionSize()
         visible_row_count = self.viewport().height() / row_height
-        self.ensure_rows(first_visible_row + visible_row_count + 1)
+        self.ensure_elements(first_visible_row + visible_row_count + 1)
 
     def resizeEvent( self, evt ):
         result = QtGui.QTableView.resizeEvent(self, evt)
@@ -133,14 +141,14 @@ class View(QtGui.QTableView):
         visible_row_count = self.viewport().height() / row_height
         first_visible_row = self.verticalHeader().visualIndexAt(0)
         print 'resizeEvent, first_visible_row =', first_visible_row, ', visible_row_count =', visible_row_count
-        self.ensure_rows(max(first_visible_row, 0) + visible_row_count + 1)
+        self.ensure_elements(max(first_visible_row, 0) + visible_row_count + 1)
         return result
 
-    def ensure_rows( self, row_count ):
-        old_row_count = self.row_list.row_count()
-        if row_count <= old_row_count: return
-        self.row_list.load_rows(row_count - old_row_count)
-        self._model.rows_added(self.row_list.row_count() - old_row_count)
+    def ensure_elements( self, element_count ):
+        old_element_count = self.element_list.element_count()
+        if element_count <= old_element_count: return
+        self.element_list.load_elements(element_count - old_element_count)
+        self._model.elements_added(self.element_list.element_count() - old_element_count)
 
 
 def main():
