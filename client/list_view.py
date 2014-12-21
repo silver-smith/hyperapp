@@ -6,6 +6,13 @@ sys.path.append('..')
 import json_connection
 
 
+class Column(object):
+
+    def __init__( self, id, title ):
+        self.id = id
+        self.title = title
+
+
 class RowList(object):
 
     def __init__( self, connection, initial_rows ):
@@ -27,9 +34,10 @@ class RowList(object):
 
 class Model(QtCore.QAbstractTableModel):
 
-    def __init__( self, row_list ):
+    def __init__( self, row_list, columns ):
         QtCore.QAbstractTableModel.__init__(self)
         self.row_list = row_list
+        self.columns = columns
 
     def row_count( self ):
         return self.row_list.row_count()
@@ -46,7 +54,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def headerData( self, section, orient, role ):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return 'header#%d' % section
+            return self.columns[section].title
         hdata = QtCore.QAbstractTableModel.headerData(self, section, orient, role)
         return hdata
 
@@ -68,10 +76,11 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(QtGui.QTableView):
 
-    def __init__( self, connection, initial_rows ):
+    def __init__( self, connection, columns, initial_rows ):
         QtGui.QTableView.__init__(self)
+        self.columns = columns
         self.row_list = RowList(connection, initial_rows)
-        self._model = Model(self.row_list)
+        self._model = Model(self.row_list, self.columns)
         self.setModel(self._model)
         self.verticalHeader().hide()
         opts = self.viewOptions()
@@ -114,7 +123,8 @@ def main():
     connection.send(request)
     response = connection.receive()
     initial_rows = response['initial_rows']
-    view = View(connection, initial_rows)
+    columns = [Column(d['id'], d['title']) for d in response['columns']]
+    view = View(connection, columns, initial_rows)
     view.resize(800, 300)
     view.show()
     app.exec_()
