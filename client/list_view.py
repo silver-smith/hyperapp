@@ -8,16 +8,18 @@ import json_connection
 
 class Column(object):
 
-    def __init__( self, id, title ):
+    def __init__( self, idx, id, title ):
+        self.idx = idx
         self.id = id
         self.title = title
 
 
 class RowList(object):
 
-    def __init__( self, connection, initial_rows ):
+    def __init__( self, connection, key_column_idx, initial_rows ):
         self.conn = connection
         self.rows = initial_rows
+        self.key_column_idx = key_column_idx
 
     def row_count( self ):
         return len(self.rows)
@@ -27,17 +29,20 @@ class RowList(object):
         self.load_rows(row_count - self.row_count())
 
     def load_rows( self, load_count ):
-        self.conn.send(dict(method='get_rows', args=[load_count]))
+        last_key = self.rows[-1][self.key_column_idx]
+        self.conn.send(dict(method='get_rows',
+                            key=last_key,
+                            count=load_count))
         response = self.conn.receive()
         self.rows.extend(response['rows'])
 
 
 class Model(QtCore.QAbstractTableModel):
 
-    def __init__( self, row_list, columns ):
+    def __init__( self, row_list, visible_columns ):
         QtCore.QAbstractTableModel.__init__(self)
         self.row_list = row_list
-        self.columns = columns
+        self.visible_columns = visible_columns
 
     def row_count( self ):
         return self.row_list.row_count()
@@ -49,12 +54,14 @@ class Model(QtCore.QAbstractTableModel):
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
-            return self.row_list.rows[index.row()][index.column()]
+            row = self.row_list.rows[index.row()]
+            column = self.visible_columns[index.column()]
+            return row[column.idx]
         return None
 
     def headerData( self, section, orient, role ):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return self.columns[section].title
+            return self.visible_columns[section].title
         hdata = QtCore.QAbstractTableModel.headerData(self, section, orient, role)
         return hdata
 
@@ -79,8 +86,9 @@ class View(QtGui.QTableView):
     def __init__( self, connection, columns, initial_rows ):
         QtGui.QTableView.__init__(self)
         self.columns = columns
-        self.row_list = RowList(connection, initial_rows)
-        self._model = Model(self.row_list, self.columns)
+        self.visible_columns = filter(lambda column: column.title is not None, self.columns)
+        self.row_list = RowList(connection, self._find_key_column(), initial_rows)
+        self._model = Model(self.row_list, self.visible_columns)
         self.setModel(self._model)
         self.verticalHeader().hide()
         opts = self.viewOptions()
@@ -88,6 +96,12 @@ class View(QtGui.QTableView):
         self.horizontalHeader().setStretchLastSection(True)
         self.setShowGrid(False)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
+
+    def _find_key_column( self ):
+        for idx, col in enumerate(self.columns):
+            if col.id == 'key':
+                return col.idx
+        assert False, 'No "key" column'
 
     def vscrollValueChanged( self, value ):
         print 'vscrollValueChanged'
@@ -122,8 +136,8 @@ def main():
     request = dict(method='load')
     connection.send(request)
     response = connection.receive()
-    initial_rows = response['initial_rows']
-    columns = [Column(d['id'], d['title']) for d in response['columns']]
+    initial_rows = response['rows']
+    columns = [Column(idx, d['id'], d['title']) for idx, d in enumerate(response['columns'])]
     view = View(connection, columns, initial_rows)
     view.resize(800, 300)
     view.show()
