@@ -123,6 +123,7 @@ class View(QtGui.QTableView):
         self.horizontalHeader().setStretchLastSection(True)
         self.setShowGrid(False)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
+        self.activated.connect(self._on_activated)
         self.set_object(response)
 
     def set_object( self, response ):
@@ -131,7 +132,8 @@ class View(QtGui.QTableView):
         visible_columns = filter(lambda column: column.title is not None, columns)
         self.model().beginResetModel()
         self.columns = columns
-        self.element_list = ElementList(self.connection, self._find_key_column(), elements)
+        self.key_column_idx = self._find_key_column()
+        self.element_list = ElementList(self.connection, self.key_column_idx, elements)
         self._model.element_list = self.element_list
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
@@ -168,6 +170,19 @@ class View(QtGui.QTableView):
         if element_count <= old_element_count: return
         self.element_list.load_elements(element_count - old_element_count)
         self._model.elements_added(self.element_list.element_count() - old_element_count)
+
+    def _on_activated( self, index ):
+        elt = self.element_list.elements[index.row()]
+        for cmd in elt.commands:
+            if cmd.id == 'open':
+                self.open_element(elt)
+                return
+
+    def open_element( self, elt ):
+        self.connection.send(dict(
+            method='command',
+            command_id='open',
+            element_key=elt.row[self.key_column_idx]))
 
 
 def main():
