@@ -106,7 +106,7 @@ def fsname2uni( v ):
 
 
 def server_fn( connection, cln_addr ):
-    dir = Dir('/tmp')
+    dir = Dir('/usr/portage/distfiles')
     print 'accepted connection from %s:%d' % cln_addr
     try:
         row_count = 0

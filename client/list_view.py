@@ -66,13 +66,13 @@ class Model(QtCore.QAbstractTableModel):
         return hdata
 
     def rowCount( self, parent ):
-        if parent == QtCore.QModelIndex():
+        if parent == QtCore.QModelIndex() and self.row_list:
             return self.row_list.row_count()
         else:
             return 0
 
     def columnCount( self, parent ):
-        if parent == QtCore.QModelIndex():
+        if parent == QtCore.QModelIndex() and self.row_list:
             return len(self.visible_columns)
         else:
             return 0
@@ -83,12 +83,12 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(QtGui.QTableView):
 
-    def __init__( self, connection, columns, initial_rows ):
+    def __init__( self, connection, response ):
         QtGui.QTableView.__init__(self)
-        self.columns = columns
-        self.visible_columns = filter(lambda column: column.title is not None, self.columns)
-        self.row_list = RowList(connection, self._find_key_column(), initial_rows)
-        self._model = Model(self.row_list, self.visible_columns)
+        self.connection = connection
+        self.columns = None
+        self.row_list = None
+        self._model = Model(row_list=None, visible_columns=None)
         self.setModel(self._model)
         self.verticalHeader().hide()
         opts = self.viewOptions()
@@ -96,6 +96,19 @@ class View(QtGui.QTableView):
         self.horizontalHeader().setStretchLastSection(True)
         self.setShowGrid(False)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
+        self.set_object(response)
+
+    def set_object( self, response ):
+        rows = response['rows']
+        columns = [Column(idx, d['id'], d['title']) for idx, d in enumerate(response['columns'])]
+        visible_columns = filter(lambda column: column.title is not None, columns)
+        self.model().beginResetModel()
+        self.columns = columns
+        self.row_list = RowList(self.connection, self._find_key_column(), rows)
+        self._model.row_list = self.row_list
+        self._model.visible_columns = visible_columns
+        self.model().endResetModel()
+        self.resizeColumnsToContents()
 
     def _find_key_column( self ):
         for idx, col in enumerate(self.columns):
@@ -136,9 +149,7 @@ def main():
     request = dict(method='load')
     connection.send(request)
     response = connection.receive()
-    initial_rows = response['rows']
-    columns = [Column(idx, d['id'], d['title']) for idx, d in enumerate(response['columns'])]
-    view = View(connection, columns, initial_rows)
+    view = View(connection, response)
     view.resize(800, 300)
     view.show()
     app.exec_()
