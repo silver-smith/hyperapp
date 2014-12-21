@@ -73,7 +73,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def columnCount( self, parent ):
         if parent == QtCore.QModelIndex():
-            return 5
+            return len(self.visible_columns)
         else:
             return 0
 
