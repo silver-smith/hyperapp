@@ -13,6 +13,21 @@ class Column(object):
         self.id = id
         self.title = title
 
+    @classmethod
+    def from_json( cls, idx, data ):
+        return cls(idx, data['id'], data['title'])
+
+
+class Command(object):
+
+    def __init__( self, id, text, desc ):
+        self.id = id
+        self.text = text
+        self.desc = desc
+
+    @classmethod
+    def from_json(cls, data ):
+        return cls(data['id'], data['text'], data['desc'])
 
 
 class Element(object):
@@ -20,6 +35,10 @@ class Element(object):
     def __init__( self, row, commands ):
         self.row = row
         self.commands = commands
+
+    @classmethod
+    def from_json( cls, data ):
+        return cls(data['row'], [Command.from_json(cmd) for cmd in data['commands']])
 
 
 class ElementList(object):
@@ -42,7 +61,7 @@ class ElementList(object):
                             key=last_key,
                             count=load_count))
         response = self.conn.receive()
-        self.elements += [Element(elt['row'], elt['commands']) for elt in response['elements']]
+        self.elements += [Element.from_json(elt) for elt in response['elements']]
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -107,8 +126,8 @@ class View(QtGui.QTableView):
         self.set_object(response)
 
     def set_object( self, response ):
-        elements = [Element(elt['row'], elt['commands']) for elt in response['elements']]
-        columns = [Column(idx, d['id'], d['title']) for idx, d in enumerate(response['columns'])]
+        elements = [Element.from_json(elt) for elt in response['elements']]
+        columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         visible_columns = filter(lambda column: column.title is not None, columns)
         self.model().beginResetModel()
         self.columns = columns
