@@ -18,6 +18,12 @@ class Column(object):
         self.id = id
         self.title = title
 
+    def as_json( self ):
+        return dict(
+            id=self.id,
+            title=self.title,
+            )
+
 
 class Element(object):
 
@@ -25,6 +31,27 @@ class Element(object):
         self.key = key
         self.row = row  # value list
         self.commands = commands
+
+    def as_json( self ):
+        return dict(
+            row=self.row,
+            commands=[cmd.as_json() for cmd in self.commands],
+            )
+
+
+class Command(object):
+
+    def __init__( self, id, text, desc ):
+        self.id = id
+        self.text = text
+        self.desc = desc
+
+    def as_json( self ):
+        return dict(
+            id=self.id,
+            text=self.text,
+            desc=self.desc,
+            )
 
 
 class Dir(object):
@@ -88,7 +115,13 @@ class Dir(object):
  
     def make_elt( self, finfo ):
         row = [finfo[column.id] for column in self.columns]
-        return Element(finfo['key'], row, commands=[])
+        return Element(finfo['key'], row, commands=self.elt_commands(finfo))
+
+    def elt_commands( self, finfo ):
+        if finfo['ftype'] == 'dir':
+            return [Command('open', 'Open', 'Open directory')]
+        else:
+            return []
 
         
 
@@ -117,13 +150,13 @@ def server_fn( connection, cln_addr ):
             method = request['method']
             if method == 'load':
                 response = dict(
-                    columns=[dict(id=column.id, title=column.title) for column in dir.columns],
-                    elements=[dict(row=elt.row, commands=elt.commands) for elt in dir.get_elements()])
+                    columns=[column.as_json() for column in dir.columns],
+                    elements=[elt.as_json() for elt in dir.get_elements()])
             elif method == 'get_elements':
                 key = request['key']
                 count = request['count']
                 response=dict(
-                    elements=[dict(row=elt.row, commands=elt.commands) for elt in dir.get_elements(count, key)])
+                    elements=[elt.as_json() for elt in dir.get_elements(count, key)])
             else:
                 response = None
             connection.send(response)
