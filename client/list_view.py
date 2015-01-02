@@ -71,6 +71,7 @@ class ListObj(object):
             element_key=element_key))
         response = self.connection.receive()
         path = response['path']
+        return ListObj(self.connection, response)
 
     def _find_key_column( self, columns ):
         for idx, col in enumerate(columns):
@@ -185,7 +186,9 @@ class View(QtGui.QTableView):
                 return
 
     def open_element( self, elt ):
-        self.list_obj.element_command('open', elt.row[self.key_column_idx])
+        list_obj = self.list_obj.element_command('open', elt.row[self.key_column_idx])
+        if list_obj:
+            self.set_object(list_obj)
 
 
 def main():
