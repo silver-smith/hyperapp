@@ -13,14 +13,15 @@ class Column(object):
 
 class Command(object):
 
-    def __init__( self, id, text, desc ):
+    def __init__( self, id, text, desc, shortcut ):
         self.id = id
         self.text = text
         self.desc = desc
+        self.shortcut = shortcut
 
     @classmethod
     def from_json(cls, data ):
-        return cls(data['id'], data['text'], data['desc'])
+        return cls(data['id'], data['text'], data['desc'], data['shortcut'])
 
 
 class Element(object):
@@ -39,6 +40,7 @@ class ListObj(object):
     def __init__( self, connection, response ):
         self.connection = connection
         self.path = response['path']
+        self.dir_commands = [Command.from_json(cmd) for cmd in response['dir_commands']]
         self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         self.elements = [Element.from_json(elt) for elt in response['elements']]
         self.key_column_idx = self._find_key_column(self.columns)
@@ -72,8 +74,8 @@ class ListObj(object):
         path = response['path']
         return ListObj(self.connection, response)
 
-    def dir_commands( self ):
-        return []
+    def get_dir_commands( self ):
+        return self.dir_commands
 
     def _find_key_column( self, columns ):
         for idx, col in enumerate(columns):

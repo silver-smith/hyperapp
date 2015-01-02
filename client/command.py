@@ -261,5 +261,5 @@ def cmd_elements_to_args( cmd, selected_elts ):
             return ()  # 'self' is enough
 
 def get_dir_commands( dir ):
-#    return dir.dir_commands() + Module.get_dir_commands(dir)
-    return dir.dir_commands()
+#    return dir.get_dir_commands() + Module.get_dir_commands(dir)
+    return dir.get_dir_commands()

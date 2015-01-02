@@ -67,10 +67,11 @@ class MenuBar(object):
 
     # add explicit 'dir' argument for commands which are module methods
     def _dir_cmd_args( self, cmd, dir ):
-        if cmd.require_explicit_elt_arg():
-            return (dir,)
-        else:
-            return ()
+        ## if cmd.require_explicit_elt_arg():
+        ##     return (dir,)
+        ## else:
+        ##     return ()
+        return (dir,)
 
     def _update_window_menu( self, window ):
         self.window_menu.clear()

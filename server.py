@@ -41,16 +41,18 @@ class Element(object):
 
 class Command(object):
 
-    def __init__( self, id, text, desc ):
+    def __init__( self, id, text, desc, shortcut=None ):
         self.id = id
         self.text = text
         self.desc = desc
+        self.shortcut = shortcut
 
     def as_json( self ):
         return dict(
             id=self.id,
             text=self.text,
             desc=self.desc,
+            shortcut=self.shortcut,
             )
 
 
@@ -130,6 +132,14 @@ class Dir(object):
         fspath = os.path.join(self.fspath, elt_fname)
         return Dir(fspath)
 
+    def get_parent_dir( self ):
+        dir = os.path.dirname(self.fspath)
+        if dir == self.fspath:
+            return None  # already root
+        return dir
+
+    def dir_commands( self ):
+        return [Command('parent', 'Open parent', 'Open parent directory', 'Ctrl+Backspace')]
 
 
 if sys.platform == 'win32':
@@ -159,6 +169,7 @@ class Server(object):
     def resp_object( self, dir ):
         return dict(
             path=dir.path,
+            dir_commands=[cmd.as_json() for cmd in dir.dir_commands()],
             columns=[column.as_json() for column in dir.columns],
             elements=self.resp_elements(dir))
 
