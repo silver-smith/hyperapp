@@ -85,8 +85,8 @@ class View(Composite):
         print '   history forward', self._back_history, self._forward_history
         if not self._forward_history:
             return False
-        if not isinstance(self._child.current_dir(), HistoryList):
-            self._back_history.append(self._child.handle())
+        ## if not isinstance(self._child.current_dir(), HistoryList):
+        self._back_history.append(self._child.handle())
         self._open(self._forward_history.pop())
 
     ## @command('Ctrl+H', 'History')

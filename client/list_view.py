@@ -9,6 +9,8 @@ from list_obj import ListObj
 import view
 
 
+ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
+
 
 class Handle(view.Handle):
 
@@ -85,9 +87,11 @@ class View(view.View, QtGui.QTableView):
         self.setModel(self._model)
         self.verticalHeader().hide()
         opts = self.viewOptions()
-        self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + 4)
+        self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + ROW_HEIGHT_PADDING)
         self.horizontalHeader().setStretchLastSection(True)
         self.setShowGrid(False)
+        self.setSelectionBehavior(self.SelectRows)
+        self.setSelectionMode(self.SingleSelection)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
         self._select_first = select_first
