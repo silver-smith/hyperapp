@@ -49,10 +49,10 @@ class View(Composite):
     def set_child( self, handle ):
         #print 'history open', self._back_history, self._forward_history, handle
         self._forward_history = []
-        if not isinstance(self._child.current_dir(), HistoryList):
-            self._back_history.append(self._child.handle())
-            if len(self._back_history) > MAX_HISTORY_SIZE:
-                self._back_history = self._back_history[-MAX_HISTORY_SIZE:]
+        ## if not isinstance(self._child.current_dir(), HistoryList):
+        self._back_history.append(self._child.handle())
+        if len(self._back_history) > MAX_HISTORY_SIZE:
+            self._back_history = self._back_history[-MAX_HISTORY_SIZE:]
         self._open(handle)
 
     def current_child( self ):
@@ -76,8 +76,8 @@ class View(Composite):
     def _go_back( self ):
         if not self._back_history:
             return False
-        if not isinstance(self._child.current_dir(), HistoryList):
-            self._forward_history.append(self._child.handle())
+        ## if not isinstance(self._child.current_dir(), HistoryList):
+        self._forward_history.append(self._child.handle())
         self._open(self._back_history.pop())
 
     @command('Alt+Right', 'Go forward')

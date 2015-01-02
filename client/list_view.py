@@ -119,6 +119,7 @@ class View(view.View, QtGui.QTableView):
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
         self.resizeColumnsToContents()
+        self.view_changed()
 
     def vscrollValueChanged( self, value ):
         print 'vscrollValueChanged'
@@ -156,7 +157,7 @@ class View(view.View, QtGui.QTableView):
     def open_element( self, elt ):
         list_obj = self.list_obj.element_command('open', elt.row[self.key_column_idx])
         if list_obj:
-            self.set_object(list_obj)
+            self.open(Handle(list_obj))
 
 
 def main():
