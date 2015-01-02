@@ -65,6 +65,7 @@ class Dir(object):
 
     def __init__( self, fspath ):
         self.fspath = fspath
+        self.path = '/fs/' + fspath.lstrip('/')
         for idx, column in enumerate(self.columns):
             if column.id == 'key':
                 self.key_column_idx = idx
@@ -123,7 +124,12 @@ class Dir(object):
         else:
             return []
 
-        
+    def element_command( self, command_id, element_key ):
+        assert command_id == 'open', repr(command_id)
+        elt_fname = element_key
+        fspath = os.path.join(self.fspath, elt_fname)
+        return Dir(fspath)
+
 
 
 if sys.platform == 'win32':
@@ -139,7 +145,7 @@ def fsname2uni( v ):
 
 
 def server_fn( connection, cln_addr ):
-    dir = Dir('/usr/portage/distfiles')
+    dir = Dir(os.path.expanduser('~/'))
     print 'accepted connection from %s:%d' % cln_addr
     try:
         row_count = 0
@@ -157,6 +163,14 @@ def server_fn( connection, cln_addr ):
                 count = request['count']
                 response=dict(
                     elements=[elt.as_json() for elt in dir.get_elements(count, key)])
+            elif method == 'element_command':
+                command_id = request['command_id']
+                element_key = request['element_key']
+                dir = dir.element_command(command_id, element_key)
+                response = dict(
+                    path=dir.path,
+                    columns=[column.as_json() for column in dir.columns],
+                    elements=[elt.as_json() for elt in dir.get_elements()])
             else:
                 response = None
             connection.send(response)
