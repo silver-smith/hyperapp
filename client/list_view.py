@@ -41,12 +41,13 @@ class Element(object):
         return cls(data['row'], [Command.from_json(cmd) for cmd in data['commands']])
 
 
-class ElementList(object):
+class ListObj(object):
 
-    def __init__( self, connection, key_column_idx, initial_elements ):
-        self.conn = connection
-        self.elements = initial_elements
-        self.key_column_idx = key_column_idx
+    def __init__( self, connection, response ):
+        self.connection = connection
+        self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
+        self.elements = [Element.from_json(elt) for elt in response['elements']]
+        self.key_column_idx = self._find_key_column(self.columns)
 
     def element_count( self ):
         return len(self.elements)
@@ -57,31 +58,45 @@ class ElementList(object):
 
     def load_elements( self, load_count ):
         last_key = self.elements[-1].row[self.key_column_idx]
-        self.conn.send(dict(method='get_elements',
+        self.connection.send(dict(method='get_elements',
                             key=last_key,
                             count=load_count))
-        response = self.conn.receive()
+        response = self.connection.receive()
         self.elements += [Element.from_json(elt) for elt in response['elements']]
+
+    def element_command( self, command_id, element_key ):
+        self.connection.send(dict(
+            method='element_command',
+            command_id=command_id,
+            element_key=element_key))
+        response = self.connection.receive()
+        path = response['path']
+
+    def _find_key_column( self, columns ):
+        for idx, col in enumerate(columns):
+            if col.id == 'key':
+                return col.idx
+        assert False, 'No "key" column'
 
 
 class Model(QtCore.QAbstractTableModel):
 
-    def __init__( self, element_list, visible_columns ):
+    def __init__( self, list_obj, visible_columns ):
         QtCore.QAbstractTableModel.__init__(self)
-        self.element_list = element_list
+        self.list_obj = list_obj
         self.visible_columns = visible_columns
 
     def element_count( self ):
-        return self.element_list.element_count()
+        return self.list_obj.element_count()
 
     def elements_added( self, added_count ):
         print 'ensure_element_count, self.element_count() =', self.element_count(), ', count = ', added_count
-        element_count = self.element_list.element_count()
+        element_count = self.list_obj.element_count()
         self.rowsInserted.emit(QtCore.QModelIndex(), element_count - added_count, element_count - 1)
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
-            element = self.element_list.elements[index.row()]
+            element = self.list_obj.elements[index.row()]
             column = self.visible_columns[index.column()]
             return element.row[column.idx]
         return None
@@ -93,13 +108,13 @@ class Model(QtCore.QAbstractTableModel):
         return hdata
 
     def rowCount( self, parent ):
-        if parent == QtCore.QModelIndex() and self.element_list:
-            return self.element_list.element_count()
+        if parent == QtCore.QModelIndex() and self.list_obj:
+            return self.list_obj.element_count()
         else:
             return 0
 
     def columnCount( self, parent ):
-        if parent == QtCore.QModelIndex() and self.element_list:
+        if parent == QtCore.QModelIndex() and self.list_obj:
             return len(self.visible_columns)
         else:
             return 0
@@ -110,12 +125,11 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(QtGui.QTableView):
 
-    def __init__( self, connection, response ):
+    def __init__( self, list_obj ):
         QtGui.QTableView.__init__(self)
-        self.connection = connection
         self.columns = None
-        self.element_list = None
-        self._model = Model(element_list=None, visible_columns=None)
+        self.list_obj = None
+        self._model = Model(list_obj=None, visible_columns=None)
         self.setModel(self._model)
         self.verticalHeader().hide()
         opts = self.viewOptions()
@@ -124,26 +138,18 @@ class View(QtGui.QTableView):
         self.setShowGrid(False)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
-        self.set_object(response)
+        self.set_object(list_obj)
 
-    def set_object( self, response ):
-        elements = [Element.from_json(elt) for elt in response['elements']]
-        columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
-        visible_columns = filter(lambda column: column.title is not None, columns)
+    def set_object( self, list_obj ):
         self.model().beginResetModel()
-        self.columns = columns
-        self.key_column_idx = self._find_key_column()
-        self.element_list = ElementList(self.connection, self.key_column_idx, elements)
-        self._model.element_list = self.element_list
+        self.list_obj = list_obj
+        self.columns = list_obj.columns
+        visible_columns = filter(lambda column: column.title is not None, self.columns)
+        self.key_column_idx = list_obj.key_column_idx
+        self._model.list_obj = self.list_obj
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
         self.resizeColumnsToContents()
-
-    def _find_key_column( self ):
-        for idx, col in enumerate(self.columns):
-            if col.id == 'key':
-                return col.idx
-        assert False, 'No "key" column'
 
     def vscrollValueChanged( self, value ):
         print 'vscrollValueChanged'
@@ -166,23 +172,20 @@ class View(QtGui.QTableView):
         return result
 
     def ensure_elements( self, element_count ):
-        old_element_count = self.element_list.element_count()
+        old_element_count = self.list_obj.element_count()
         if element_count <= old_element_count: return
-        self.element_list.load_elements(element_count - old_element_count)
-        self._model.elements_added(self.element_list.element_count() - old_element_count)
+        self.list_obj.load_elements(element_count - old_element_count)
+        self._model.elements_added(self.list_obj.element_count() - old_element_count)
 
     def _on_activated( self, index ):
-        elt = self.element_list.elements[index.row()]
+        elt = self.list_obj.elements[index.row()]
         for cmd in elt.commands:
             if cmd.id == 'open':
                 self.open_element(elt)
                 return
 
     def open_element( self, elt ):
-        self.connection.send(dict(
-            method='command',
-            command_id='open',
-            element_key=elt.row[self.key_column_idx]))
+        self.list_obj.element_command('open', elt.row[self.key_column_idx])
 
 
 def main():
@@ -191,7 +194,8 @@ def main():
     request = dict(method='load')
     connection.send(request)
     response = connection.receive()
-    view = View(connection, response)
+    list_obj = ListObj(connection, response)
+    view = View(list_obj)
     view.resize(800, 300)
     view.show()
     app.exec_()
