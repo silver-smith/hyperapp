@@ -4,7 +4,7 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 import json_connection
-from util import uni2str
+from util import uni2str, key_match, key_match_any
 from list_obj import ListObj
 import view
 
@@ -124,6 +124,12 @@ class View(view.View, QtGui.QTableView):
         self.model().endResetModel()
         self.resizeColumnsToContents()
         self.view_changed()
+
+    def keyPressEvent( self, evt ):
+        if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
+            evt.ignore()  # let splitter or tab view handle it
+            return
+        QtGui.QTableView.keyPressEvent(self, evt)
 
     def vscrollValueChanged( self, value ):
         print 'vscrollValueChanged'
