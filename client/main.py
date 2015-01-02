@@ -82,7 +82,7 @@ def main():
     app = Application()
 
     connection = json_connection.ClientConnection(('localhost', 8888))
-    request = dict(method='load')
+    request = dict(method='init')
     connection.send(request)
     response = connection.receive()
     obj = ListObj(connection, response)

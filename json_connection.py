@@ -1,6 +1,7 @@
 import json
 import struct
 import socket
+import pprint
 
 
 RECV_SIZE = 4096
@@ -29,7 +30,8 @@ class Connection(object):
         return struct.unpack(self.size_struct_format, data)[0]
 
     def send( self, value ):
-        print 'send: %r' % value
+        print 'send:'
+        pprint.pprint(value)
         json_data = json.dumps(value)
         data = self.encode_size(len(json_data)) + json_data
         ofs = 0
@@ -55,8 +57,10 @@ class Connection(object):
             if len(data) < ssize: continue
             data_size = self.decode_size(data[:ssize])
             data = data[ssize:]
-        print 'received: %r' % data
-        return json.loads(data)
+        json_data = json.loads(data)
+        print 'received:'
+        pprint.pprint(json_data)
+        return json_data
                     
         
 class Server(object):

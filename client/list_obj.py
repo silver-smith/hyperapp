@@ -38,6 +38,7 @@ class ListObj(object):
 
     def __init__( self, connection, response ):
         self.connection = connection
+        self.path = response['path']
         self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         self.elements = [Element.from_json(elt) for elt in response['elements']]
         self.key_column_idx = self._find_key_column(self.columns)
@@ -55,14 +56,16 @@ class ListObj(object):
     def load_elements( self, load_count ):
         last_key = self.elements[-1].row[self.key_column_idx]
         self.connection.send(dict(method='get_elements',
-                            key=last_key,
-                            count=load_count))
+                                  path=self.path,
+                                  key=last_key,
+                                  count=load_count))
         response = self.connection.receive()
         self.elements += [Element.from_json(elt) for elt in response['elements']]
 
     def element_command( self, command_id, element_key ):
         self.connection.send(dict(
             method='element_command',
+            path=self.path,
             command_id=command_id,
             element_key=element_key))
         response = self.connection.receive()

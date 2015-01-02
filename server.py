@@ -144,45 +144,61 @@ def fsname2uni( v ):
        return unicode(v, fs_encoding)
 
 
-def server_fn( connection, cln_addr ):
-    dir = Dir(os.path.expanduser('~/'))
-    print 'accepted connection from %s:%d' % cln_addr
-    try:
-        row_count = 0
-        rpc_count = 0
-        while True:
-            request = connection.receive()
-            print 'request: %r' % request
-            method = request['method']
-            if method == 'load':
-                response = dict(
-                    columns=[column.as_json() for column in dir.columns],
-                    elements=[elt.as_json() for elt in dir.get_elements()])
-            elif method == 'get_elements':
-                key = request['key']
-                count = request['count']
-                response=dict(
-                    elements=[elt.as_json() for elt in dir.get_elements(count, key)])
-            elif method == 'element_command':
-                command_id = request['command_id']
-                element_key = request['element_key']
-                dir = dir.element_command(command_id, element_key)
-                response = dict(
-                    path=dir.path,
-                    columns=[column.as_json() for column in dir.columns],
-                    elements=[elt.as_json() for elt in dir.get_elements()])
-            else:
-                response = None
-            connection.send(response)
-    except json_connection.Error as x:
-        print x
-    except:
-        traceback.print_exc()
+class Server(object):
+
+    init_dir = Dir(os.path.expanduser('~/'))
+
+    def resolve( self, path ):
+        assert path.startswith('/fs/')
+        fspath = path[3:]
+        return Dir(fspath)
+
+    def resp_elements( self, dir, count=None, key=None ):
+        return [elt.as_json() for elt in dir.get_elements(count, key)]
+
+    def resp_object( self, dir ):
+        return dict(
+            path=dir.path,
+            columns=[column.as_json() for column in dir.columns],
+            elements=self.resp_elements(dir))
+
+    def process_request( self, request ):
+        method = request['method']
+        if method == 'init':
+            return self.resp_object(self.init_dir)
+        path = request['path']
+        dir = self.resolve(path)
+        if method == 'get_elements':
+            key = request['key']
+            count = request['count']
+            return dict(elements=self.resp_elements(dir, count, key))
+        elif method == 'element_command':
+            command_id = request['command_id']
+            element_key = request['element_key']
+            new_dir = dir.element_command(command_id, element_key)
+            return self.resp_object(new_dir)
+        else:
+            assert Fale, repr(method)
+
+    def run( self, connection, cln_addr ):
+        print 'accepted connection from %s:%d' % cln_addr
+        try:
+            row_count = 0
+            rpc_count = 0
+            while True:
+                request = connection.receive()
+                print 'request: %r' % request
+                response = self.process_request(request)
+                connection.send(response)
+        except json_connection.Error as x:
+            print x
+        except:
+            traceback.print_exc()
             
 
 
 def main():
-    server = json_connection.Server(LISTEN_PORT, server_fn)
+    server = json_connection.Server(LISTEN_PORT, Server().run)
     server.run()
 
 
