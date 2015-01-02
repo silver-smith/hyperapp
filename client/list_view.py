@@ -4,80 +4,30 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 import json_connection
+from util import uni2str
+from list_obj import ListObj
+import view
 
 
-class Column(object):
 
-    def __init__( self, idx, id, title ):
-        self.idx = idx
-        self.id = id
-        self.title = title
+class Handle(view.Handle):
 
-    @classmethod
-    def from_json( cls, idx, data ):
-        return cls(idx, data['id'], data['title'])
+    def __init__( self, obj, key=None, selected_keys=None, select_first=True ):
+        view.Handle.__init__(self)
+        self.obj = obj
+        self.key = key
+        self.selected_keys = selected_keys  # for multi-select mode only
+        self.select_first = select_first  # bool
 
+    def title( self ):
+        return self.obj.title()
 
-class Command(object):
+    def construct( self, parent ):
+        print 'list_view construct', parent, self.obj.title(), self.obj
+        return View(parent, self.obj, self.key, self.selected_keys, self.select_first)
 
-    def __init__( self, id, text, desc ):
-        self.id = id
-        self.text = text
-        self.desc = desc
-
-    @classmethod
-    def from_json(cls, data ):
-        return cls(data['id'], data['text'], data['desc'])
-
-
-class Element(object):
-
-    def __init__( self, row, commands ):
-        self.row = row
-        self.commands = commands
-
-    @classmethod
-    def from_json( cls, data ):
-        return cls(data['row'], [Command.from_json(cmd) for cmd in data['commands']])
-
-
-class ListObj(object):
-
-    def __init__( self, connection, response ):
-        self.connection = connection
-        self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
-        self.elements = [Element.from_json(elt) for elt in response['elements']]
-        self.key_column_idx = self._find_key_column(self.columns)
-
-    def element_count( self ):
-        return len(self.elements)
-
-    def ensure_element_count( self, element_count ):
-        if element_count < self.element_count(): return
-        self.load_elements(element_count - self.element_count())
-
-    def load_elements( self, load_count ):
-        last_key = self.elements[-1].row[self.key_column_idx]
-        self.connection.send(dict(method='get_elements',
-                            key=last_key,
-                            count=load_count))
-        response = self.connection.receive()
-        self.elements += [Element.from_json(elt) for elt in response['elements']]
-
-    def element_command( self, command_id, element_key ):
-        self.connection.send(dict(
-            method='element_command',
-            command_id=command_id,
-            element_key=element_key))
-        response = self.connection.receive()
-        path = response['path']
-        return ListObj(self.connection, response)
-
-    def _find_key_column( self, columns ):
-        for idx, col in enumerate(columns):
-            if col.id == 'key':
-                return col.idx
-        assert False, 'No "key" column'
+    def __repr__( self ):
+        return 'list_view.Handle(%s, %s)' % (uni2str(self.obj.title()), uni2str(self.key))
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -124,10 +74,11 @@ class Model(QtCore.QAbstractTableModel):
         print '~Model'
 
 
-class View(QtGui.QTableView):
+class View(view.View, QtGui.QTableView):
 
-    def __init__( self, list_obj ):
+    def __init__( self, parent, obj, key, selected_keys, select_first ):
         QtGui.QTableView.__init__(self)
+        view.View.__init__(self, parent)
         self.columns = None
         self.list_obj = None
         self._model = Model(list_obj=None, visible_columns=None)
@@ -139,7 +90,24 @@ class View(QtGui.QTableView):
         self.setShowGrid(False)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
-        self.set_object(list_obj)
+        self._select_first = select_first
+        self.set_object(obj)
+
+    def handle( self ):
+        return Handle(self.current_dir(), self.current_key(), self.selected_keys(), self._select_first)
+
+    def title( self ):
+        if self.list_obj:
+            return self.list_obj.title()
+
+    def current_dir( self ):
+        return self.list_obj
+
+    def current_key( self ):
+        return None
+
+    def selected_keys( self ):
+        return None
 
     def set_object( self, list_obj ):
         self.model().beginResetModel()
@@ -198,9 +166,9 @@ def main():
     connection.send(request)
     response = connection.receive()
     list_obj = ListObj(connection, response)
-    view = View(list_obj)
+    view = View(None, list_obj, None, None, True)
     view.resize(800, 300)
     view.show()
     app.exec_()
 
-main()
+#main()
