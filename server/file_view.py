@@ -7,8 +7,8 @@ from object import Object, Element, Column
 class File(Object):
 
     columns = [
-        Column('key'),
-        Column('line'),
+        Column('key', 'idx'),
+        Column('line', 'line'),
         ]
 
     def __init__( self, fspath ):

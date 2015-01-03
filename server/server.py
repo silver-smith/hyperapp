@@ -18,6 +18,7 @@ LISTEN_PORT = 8888
 class Server(object):
 
     init_dir = Dir(os.path.expanduser('~/'))
+    ## init_dir = file_view.File('/etc/DIR_COLORS')
 
     def resolve( self, path ):
         if path.startswith('/fs/'):
