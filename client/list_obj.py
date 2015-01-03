@@ -21,6 +21,7 @@ class Command(object):
         self.desc = desc
         self.shortcut = shortcut
         self.enabled = True
+        self.multi_select = False
         self.args = None
 
     @classmethod
@@ -31,6 +32,9 @@ class Command(object):
         return self.text
 
     def is_bound2inst( self ):
+        return True
+
+    def require_explicit_elt_arg( self ):
         return True
 
     def make_action( self, w, view_weakref, shortcut, *args, **kw ):
@@ -80,8 +84,14 @@ class ListObj(object):
         if element_count < self.element_count(): return
         self.load_elements(element_count - self.element_count())
 
+    def element_idx2key( self, idx ):
+        return self.elements[idx].row[self.key_column_idx]
+
+    def element2key( self, elt ):
+        return elt.row[self.key_column_idx]
+
     def load_elements( self, load_count ):
-        last_key = self.elements[-1].row[self.key_column_idx]
+        last_key = self.element_idx2key(-1)
         self.connection.send(dict(method='get_elements',
                                   path=self.path,
                                   key=last_key,

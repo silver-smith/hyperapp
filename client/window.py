@@ -79,7 +79,7 @@ class Window(Composite, QtGui.QMainWindow):
     def selected_elements_changed( self, elts ):
         call_after(self._menu_bar.selected_elements_changed, elts)
         self._cmd_pane.selected_elements_changed(elts)
-        self._filter_pane.selected_elements_changed(elts)
+        #self._filter_pane.selected_elements_changed(elts)
 
     def object_selected( self, obj ):
         return False

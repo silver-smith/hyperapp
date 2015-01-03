@@ -240,11 +240,11 @@ class ModuleBase(CommandOwner):
 
 
 def collect_objs_commands( objs ):
-    assert objs and is_list_inst(objs, Object), repr(objs)  # empty list disallowed
-    commands = objs[0].commands()
+    #assert objs and is_list_inst(objs, Object), repr(objs)  # empty list disallowed
+    commands = objs[0].commands
     cmd_set = set(commands)
     for obj in objs[1:]:
-        cmd_set &= set(obj.commands())
+        cmd_set &= set(obj.commands)
     commands = [cmd for cmd in commands if cmd in cmd_set]  # preserve ordering
     if len(objs) > 1:
         commands = [cmd for cmd in commands if cmd.multi_select]

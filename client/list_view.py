@@ -5,6 +5,7 @@ sys.path.append('..')
 
 import json_connection
 from util import uni2str, key_match, key_match_any
+from command import collect_objs_commands, cmd_elements_to_args
 from list_obj import ListObj
 import view
 
@@ -95,6 +96,8 @@ class View(view.View, QtGui.QTableView):
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
         self._select_first = select_first
+        self._elt_actions = []    # QtGui.QAction list - actions for selected elements
+        self._selected_elts = []  # elements for which _elt_actions are
         self.set_object(obj)
 
     def handle( self ):
@@ -108,7 +111,12 @@ class View(view.View, QtGui.QTableView):
         return self.list_obj
 
     def current_key( self ):
-        return None
+        idx = self.currentIndex()
+        return self.list_obj.element_idx2key(idx.row())
+
+    def current_elt( self ):
+        idx = self.currentIndex()
+        return self.list_obj.elements[idx.row()]
 
     def selected_keys( self ):
         return None
@@ -164,6 +172,39 @@ class View(view.View, QtGui.QTableView):
                 self.open_element(elt)
                 return
 
+    def currentChanged( self, idx, prev_idx ):
+        QtGui.QTableView.currentChanged(self, idx, prev_idx)
+        self._selected_elements_changed()
+
+    def _selected_elements_changed( self ):
+        self._update_selected_actions()
+        if self.isVisible():  # we may being destructed now
+            self.selected_elements_changed([self.current_elt()])
+
+    def _update_selected_actions( self ):
+        # remove previous actions
+        action_widget = self
+        for action in self._elt_actions:
+            action_widget.removeAction(action)
+        self._selected_elts = []
+        self._elt_actions = []
+        # pick selection and commands
+        elt = self.current_elt()
+        if not elt: return
+        commands = elt.commands
+        # create actions
+        for cmd in commands:
+            ## print '--- binding elt action', repr(cmd.name), repr(cmd.shortcut), repr(cmd.desc), obj.title()
+            args = cmd_elements_to_args(cmd, [elt])
+            #shortcut = key_binding.get_shortcut(cmd)
+            shortcut = cmd.shortcut
+            action = cmd.make_action(action_widget, self._parent, shortcut, *args)
+            action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
+            self._elt_actions.append(action)
+        # store explicit reference to elements or they will be deleted and subsequent bound
+        # method call will fail due to inst missing
+        self._selected_elts = [elt]
+
     def open_element( self, elt ):
         list_obj = self.list_obj.run_element_command('open', elt.row[self.key_column_idx])
         if list_obj:
@@ -171,6 +212,16 @@ class View(view.View, QtGui.QTableView):
 
     def run( self, cmd, *args ):
         obj = cmd.run(*args)
+        if obj:
+            self.open(Handle(obj))
+
+    def run_dir_command( self, command_id ):
+        obj = self.list_obj.run_dir_command(command_id)
+        if obj:
+            self.open(Handle(obj))
+
+    def run_element_command( self, command_id, element_key ):
+        obj = self.list_obj.run_element_command(command_id, element_key)
         if obj:
             self.open(Handle(obj))
 
