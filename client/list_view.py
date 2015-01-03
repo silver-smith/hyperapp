@@ -165,9 +165,14 @@ class View(view.View, QtGui.QTableView):
                 return
 
     def open_element( self, elt ):
-        list_obj = self.list_obj.element_command('open', elt.row[self.key_column_idx])
+        list_obj = self.list_obj.run_element_command('open', elt.row[self.key_column_idx])
         if list_obj:
             self.open(Handle(list_obj))
+
+    def run( self, cmd, *args ):
+        obj = cmd.run(*args)
+        if obj:
+            self.open(Handle(obj))
 
 
 def main():

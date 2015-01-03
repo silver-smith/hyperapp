@@ -1,3 +1,5 @@
+from util import make_action
+
 
 class Column(object):
 
@@ -18,10 +20,33 @@ class Command(object):
         self.text = text
         self.desc = desc
         self.shortcut = shortcut
+        self.enabled = True
+        self.args = None
 
     @classmethod
     def from_json(cls, data ):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'])
+
+    def title( self ):
+        return self.text
+
+    def is_bound2inst( self ):
+        return True
+
+    def make_action( self, w, view_weakref, shortcut, *args, **kw ):
+        def run():
+            print '* list_obj.command/make_action/run', repr(self.id), repr(self.desc), view_weakref, args, kw
+            view = view_weakref()
+            if view:
+                view.run(self, view, *args, **kw)
+        action = make_action(w, self.text, shortcut, run)
+        action.setEnabled(self.enabled)
+        w.addAction(action)
+        return action
+
+    def run( self, view, obj, *args, **kw ):
+        print 'list_obj.Command.run', view, obj, args, kw
+        return obj.run_dir_command(self.id)
 
 
 class Element(object):
@@ -64,14 +89,23 @@ class ListObj(object):
         response = self.connection.receive()
         self.elements += [Element.from_json(elt) for elt in response['elements']]
 
-    def element_command( self, command_id, element_key ):
+    def run_element_command( self, command_id, element_key ):
         self.connection.send(dict(
             method='element_command',
             path=self.path,
             command_id=command_id,
-            element_key=element_key))
+            element_key=element_key,
+            ))
         response = self.connection.receive()
-        path = response['path']
+        return ListObj(self.connection, response)
+
+    def run_dir_command( self, command_id ):
+        self.connection.send(dict(
+            method='dir_command',
+            path=self.path,
+            command_id=command_id,
+            ))
+        response = self.connection.receive()
         return ListObj(self.connection, response)
 
     def get_dir_commands( self ):

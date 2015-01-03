@@ -68,7 +68,7 @@ class View(QtGui.QDockWidget):
         return btn
 
     def _on_btn_pressed( self, cmd, *args ):
-        print '* cmd_pane/command/run', repr(cmd.name), repr(cmd.desc), self.window, args
+        print '* cmd_pane/command/run', cmd.title(), repr(cmd.desc), self.window, args
         self.window().run(cmd, *args)
 
     def __del__( self ):

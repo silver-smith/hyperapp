@@ -37,7 +37,7 @@ class Connection(object):
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
-            print '  sent (%d) %s' % (sent_size, data[ofs:ofs + sent_size])
+            #print '  sent (%d) %s' % (sent_size, data[ofs:ofs + sent_size])
             if sent_size == 0:
                 raise Error('Socket is closed')
             ofs += sent_size

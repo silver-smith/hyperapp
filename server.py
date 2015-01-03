@@ -66,7 +66,7 @@ class Dir(object):
         ]
 
     def __init__( self, fspath ):
-        self.fspath = fspath
+        self.fspath = os.path.abspath(fspath)
         self.path = '/fs/' + fspath.lstrip('/')
         for idx, column in enumerate(self.columns):
             if column.id == 'key':
@@ -126,11 +126,17 @@ class Dir(object):
         else:
             return []
 
-    def element_command( self, command_id, element_key ):
+    def run_element_command( self, command_id, element_key ):
         assert command_id == 'open', repr(command_id)
         elt_fname = element_key
         fspath = os.path.join(self.fspath, elt_fname)
         return Dir(fspath)
+
+    def run_dir_command( self, command_id ):
+        assert command_id == 'parent', repr(command_id)
+        fspath = self.get_parent_dir()
+        if fspath is not None:
+            return Dir(fspath)
 
     def get_parent_dir( self ):
         dir = os.path.dirname(self.fspath)
@@ -186,10 +192,14 @@ class Server(object):
         elif method == 'element_command':
             command_id = request['command_id']
             element_key = request['element_key']
-            new_dir = dir.element_command(command_id, element_key)
+            new_dir = dir.run_element_command(command_id, element_key)
+            return self.resp_object(new_dir)
+        elif method == 'dir_command':
+            command_id = request['command_id']
+            new_dir = dir.run_dir_command(command_id)
             return self.resp_object(new_dir)
         else:
-            assert Fale, repr(method)
+            assert False, repr(method)
 
     def run( self, connection, cln_addr ):
         print 'accepted connection from %s:%d' % cln_addr

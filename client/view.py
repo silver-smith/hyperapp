@@ -5,6 +5,7 @@ from PySide import QtCore, QtGui
 from qt_keys import print_key_event
 from util import DEBUG_FOCUS, make_action, focused_index
 from command import command, ObjKind, command_owner_meta_class, CommandOwner
+import list_obj
 
 
 class Handle(object):
@@ -137,7 +138,7 @@ class View(CommandOwner):
         return self._parent().pick_arg(kind)
 
     def run( self, cmd, *args ):
-        assert isinstance(cmd, command) and cmd.is_bound2inst(), repr(cmd)
+        assert isinstance(cmd, (command, list_obj.Command)) and cmd.is_bound2inst(), repr(cmd)
         handle = self._run_handle(cmd, args)
         if handle:
             self.open(handle)
