@@ -6,6 +6,8 @@ import os.path
 import traceback
 import json_connection
 from fs import Dir
+import file_view
+
 
 LISTEN_PORT = 8888
 
@@ -15,9 +17,12 @@ class Server(object):
     init_dir = Dir(os.path.expanduser('~/'))
 
     def resolve( self, path ):
-        assert path.startswith('/fs/')
-        fspath = path[3:]
-        return Dir(fspath)
+        if path.startswith('/fs/'):
+            fspath = path[3:]
+            return Dir(fspath)
+        if path.startswith('/file/'):
+            fspath = path[5:]
+            return file_view.File(fspath)
 
     def resp_elements( self, dir, count=None, key=None ):
         return [elt.as_json() for elt in dir.get_elements(count, key)]

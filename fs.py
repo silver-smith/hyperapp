@@ -18,12 +18,6 @@ class Dir(Object):
         fspath = os.path.abspath(fspath)
         Object.__init__(self, '/fs/' + fspath.lstrip('/'))
         self.fspath = fspath
-        for idx, column in enumerate(self.columns):
-            if column.id == 'key':
-                self.key_column_idx = idx
-                break
-        else:
-            assert False, 'Unknown column id: %r' % slef.key_column_id
 
     def get_all_elements( self ):
         dirs  = []
@@ -62,17 +56,16 @@ class Dir(Object):
         if finfo['ftype'] == 'dir':
             return [Command('open', 'Open', 'Open directory')]
         else:
-            return [Command('open_file', 'Open', 'Open file')]
+            return [Command('open', 'Open', 'Open file')]
 
     def run_element_command( self, command_id, element_key ):
         if command_id == 'open':
             elt_fname = element_key
             fspath = os.path.join(self.fspath, elt_fname)
-            return Dir(fspath)
-        if command_id == 'open_file':
-            elt_fname = element_key
-            fspath = os.path.join(self.fspath, elt_fname)
-            return File(fspath)
+            if os.path.isdir(fspath):
+                return Dir(fspath)
+            else:
+                return file_view.File(fspath)
         assert False, repr(command_id)  # Unexpected command_id
 
     def run_dir_command( self, command_id ):

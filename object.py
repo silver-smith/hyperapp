@@ -50,6 +50,12 @@ class Object(object):
 
     def __init__( self, path ):
         self.path = path
+        for idx, column in enumerate(self.columns):
+            if column.id == 'key':
+                self.key_column_idx = idx
+                break
+        else:
+            assert False, 'Unknown column id: %r' % self.key_column_id
 
     def get_elements( self, count=None, from_key=None ):
         elements = self.get_all_elements()
