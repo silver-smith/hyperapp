@@ -4,6 +4,9 @@ import sys
 import os
 import os.path
 import traceback
+
+sys.path.append('..')
+
 import json_connection
 from fs import Dir
 import file_view
