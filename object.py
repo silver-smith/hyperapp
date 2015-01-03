@@ -1,7 +1,10 @@
 
+MIN_ROWS_RETURNED = 10
+
+
 class Column(object):
 
-    def __init__( self, id, title ):
+    def __init__( self, id, title=None ):
         self.id = id
         self.title = title
 
@@ -14,10 +17,10 @@ class Column(object):
 
 class Element(object):
 
-    def __init__( self, key, row, commands ):
+    def __init__( self, key, row, commands=None ):
         self.key = key
         self.row = row  # value list
-        self.commands = commands
+        self.commands = commands or []
 
     def as_json( self ):
         return dict(

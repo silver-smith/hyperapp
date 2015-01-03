@@ -2,9 +2,7 @@ import sys
 import os.path
 import stat
 from object import Object, Command, Element, Column
-
-
-MIN_ROWS_RETURNED = 10
+import file_view
 
 
 class Dir(Object):
@@ -26,18 +24,6 @@ class Dir(Object):
                 break
         else:
             assert False, 'Unknown column id: %r' % slef.key_column_id
-
-    def get_elements( self, count=None, from_key=None ):
-        elements = self.get_all_elements()
-        from_idx = 0
-        if from_key is not None:
-            for idx, elt in enumerate(elements):
-                if elt.row[self.key_column_idx] == from_key:
-                    from_idx = idx + 1
-                    break
-            else:
-                print 'Warning: unknown "from_key" is requested: %r' % from_key
-        return elements[from_idx:from_idx + max(count or 0, MIN_ROWS_RETURNED)]
 
     def get_all_elements( self ):
         dirs  = []
@@ -76,13 +62,18 @@ class Dir(Object):
         if finfo['ftype'] == 'dir':
             return [Command('open', 'Open', 'Open directory')]
         else:
-            return []
+            return [Command('open_file', 'Open', 'Open file')]
 
     def run_element_command( self, command_id, element_key ):
-        assert command_id == 'open', repr(command_id)
-        elt_fname = element_key
-        fspath = os.path.join(self.fspath, elt_fname)
-        return Dir(fspath)
+        if command_id == 'open':
+            elt_fname = element_key
+            fspath = os.path.join(self.fspath, elt_fname)
+            return Dir(fspath)
+        if command_id == 'open_file':
+            elt_fname = element_key
+            fspath = os.path.join(self.fspath, elt_fname)
+            return File(fspath)
+        assert False, repr(command_id)  # Unexpected command_id
 
     def run_dir_command( self, command_id ):
         assert command_id == 'parent', repr(command_id)
