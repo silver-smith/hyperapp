@@ -1,5 +1,5 @@
 import weakref
-from PySide import QtCore, QtGui
+from util import make_action
 
 
 class BoundViewCommand(object):
@@ -21,13 +21,7 @@ class BoundViewCommand(object):
             self.class_method(inst)
 
     def make_action( self, widget ):
-        action = QtGui.QAction(self.text, widget)
-        if isinstance(self.shortcut, list):
-            action.setShortcuts(self.shortcut)
-        else:
-            action.setShortcut(self.shortcut)
-        action.triggered.connect(self.run)
-        return action
+        return make_action(widget, self.text, self.shortcut, self.run)
 
 
 class UnboundViewCommand(object):

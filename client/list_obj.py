@@ -1,4 +1,6 @@
+from PySide import QtCore, QtGui
 from util import make_action
+import view_registry
 
 
 class Column(object):
@@ -37,20 +39,18 @@ class Command(object):
     def require_explicit_elt_arg( self ):
         return True
 
-    def make_action( self, w, view_weakref, shortcut, *args, **kw ):
-        def run():
-            print '* list_obj.command/make_action/run', repr(self.id), repr(self.desc), view_weakref, args, kw
-            view = view_weakref()
-            if view:
-                view.run(self, view, *args, **kw)
-        action = make_action(w, self.text, shortcut, run)
-        action.setEnabled(self.enabled)
-        w.addAction(action)
-        return action
+    def run_dir_command( self, obj, view ):
+        print 'list_obj.Command.run', obj, view
+        obj = obj.run_dir_command(self.id)
+        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
+        view.open(handle_ctr(obj))
 
-    def run( self, view, obj, *args, **kw ):
-        print 'list_obj.Command.run', view, obj, args, kw
+    def run_element_command( self, obj, view, element_key ):
+        print 'list_obj.Command.run', obj, view
         return obj.run_dir_command(self.id)
+
+    def make_dir_action( self, widget, obj, view ):
+        return make_action(widget, self.text, self.shortcut, self.run_dir_command, obj, view)
 
 
 class Element(object):

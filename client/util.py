@@ -161,12 +161,12 @@ def key_match_any( evt, keys ):
             return True
     return False
 
-def make_action( widget, title, shortcut, fn, *args, **kw ):
+def make_action( widget, text, shortcut, fn, *args, **kw ):
     ## print '--- make_action', widget, title, shortcut, fn, args, kw
     def run():
-        print '--- make_action/run', widget, title, shortcut, fn, args, kw
+        print '--- make_action/run', widget, text, shortcut, fn, args, kw
         return fn(*args, **kw)
-    action = QtGui.QAction(title, widget)
+    action = QtGui.QAction(text, widget)
     if isinstance(shortcut, list):
         action.setShortcuts(shortcut)
     else:

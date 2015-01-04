@@ -36,13 +36,12 @@ class View(QtGui.QDockWidget):
         if dir is None: return
         view = self.window().current_view()
         idx = 0
-        ## for cmd in get_dir_commands(dir):
-        ##     if not cmd.enabled: continue
-        ##     btn = self._make_btn(cmd)
-        ##     btn.pressed.connect(lambda cmd=cmd, dir=dir: self._run_dir_command(cmd, view))
-        ##     self.layout.insertWidget(idx, btn)  # must be inserted before spacing
-        ##     self.dir_buttons.append(btn)
-        ##     idx += 1
+        for cmd in dir.get_dir_commands():
+                button = self._make_button(cmd)
+                button.pressed.connect(lambda cmd=cmd: cmd.run_dir_command(dir, view))
+                self.layout.insertWidget(idx, button)  # must be inserted before spacing
+                self.dir_buttons.append(button)
+                idx += 1
 
     def _update_elts( self, view, elts ):
         for btn in self.elts_buttons:
@@ -50,22 +49,22 @@ class View(QtGui.QDockWidget):
         self.elts_buttons = []
         if not elts: return
         dir = self.current_dir
-        for cmd in collect_objs_commands(elts):
-            if not cmd.enabled: continue
-            btn = self._make_btn(cmd)
-            args = cmd_elements_to_args(cmd, elts)
-            btn.pressed.connect(lambda cmd=cmd, args=args: self._run_element_command(cmd, view, dir, *args))
-            self.layout.addWidget(btn)
-            self.elts_buttons.append(btn)
+        ## for cmd in collect_objs_commands(elts):
+        ##     if not cmd.enabled: continue
+        ##     btn = self._make_btn(cmd)
+        ##     args = cmd_elements_to_args(cmd, elts)
+        ##     btn.pressed.connect(lambda cmd=cmd, args=args: self._run_element_command(cmd, view, dir, *args))
+        ##     self.layout.addWidget(btn)
+        ##     self.elts_buttons.append(btn)
 
-    def _make_btn( self, cmd ):
+    def _make_button( self, cmd ):
         if cmd.shortcut:
-            title = u'%s (%s)' % (cmd.title(), cmd.shortcut)
+            text = u'%s (%s)' % (cmd.text, cmd.shortcut)
         else:
-            title = cmd.title()
-        btn = QtGui.QPushButton(title, focusPolicy=QtCore.Qt.NoFocus)
-        btn.setToolTip(cmd.desc)
-        return btn
+            text = cmd.text
+        button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
+        button.setToolTip(cmd.desc)
+        return button
 
     def _run_dir_command( self, cmd, view ):
         print '* cmd_pane/_run_dir_command', cmd.id, view

@@ -6,6 +6,7 @@ sys.path.append('..')
 import json_connection
 from util import uni2str, key_match, key_match_any
 from list_obj import ListObj
+import view_registry
 import view
 
 
@@ -192,14 +193,14 @@ class View(view.View, QtGui.QTableView):
         if not elt: return
         commands = elt.commands
         # create actions
-        for cmd in commands:
+        ## for cmd in commands:
             ## print '--- binding elt action', repr(cmd.name), repr(cmd.shortcut), repr(cmd.desc), obj.title()
-            args = cmd_elements_to_args(cmd, [elt])
+            ## args = cmd_elements_to_args(cmd, [elt])
             #shortcut = key_binding.get_shortcut(cmd)
-            shortcut = cmd.shortcut
-            action = cmd.make_action(action_widget, self._parent, shortcut, *args)
-            action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-            self._elt_actions.append(action)
+            ## shortcut = cmd.shortcut
+            ## action = cmd.make_action(action_widget, self._parent, shortcut, *args)
+            ## action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
+            ## self._elt_actions.append(action)
         # store explicit reference to elements or they will be deleted and subsequent bound
         # method call will fail due to inst missing
         self._selected_elts = [elt]
@@ -225,16 +226,4 @@ class View(view.View, QtGui.QTableView):
             self.open(Handle(obj))
 
 
-def main():
-    app = QtGui.QApplication(sys.argv)
-    connection = json_connection.ClientConnection(('localhost', 8888))
-    request = dict(method='load')
-    connection.send(request)
-    response = connection.receive()
-    list_obj = ListObj(connection, response)
-    view = View(None, list_obj, None, None, True)
-    view.resize(800, 300)
-    view.show()
-    app.exec_()
-
-#main()
+view_registry.register_view('list', Handle)
