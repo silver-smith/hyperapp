@@ -70,7 +70,7 @@ class ListObj(object):
         self.key_column_idx = self._find_key_column(self.columns)
 
     def title( self ):
-        return 'list obj'
+        return self.path
 
     def element_count( self ):
         return len(self.elements)
@@ -80,7 +80,6 @@ class ListObj(object):
         self.load_elements(element_count - self.element_count())
 
     def element_idx2key( self, idx ):
-        print idx, len(self.elements)
         return self.elements[idx].row[self.key_column_idx]
 
     def element2key( self, elt ):
