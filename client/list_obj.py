@@ -22,22 +22,10 @@ class Command(object):
         self.text = text
         self.desc = desc
         self.shortcut = shortcut
-        self.enabled = True
-        self.multi_select = False
-        self.args = None
 
     @classmethod
     def from_json(cls, data ):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'])
-
-    def title( self ):
-        return self.text
-
-    def is_bound2inst( self ):
-        return True
-
-    def require_explicit_elt_arg( self ):
-        return True
 
     def run_dir_command( self, view, obj ):
         print 'list_obj.Command.run_dir_command', obj, view
