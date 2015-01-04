@@ -126,7 +126,6 @@ class View(view.View, QtGui.QTableView):
         self.list_obj = list_obj
         self.columns = list_obj.columns
         visible_columns = filter(lambda column: column.title is not None, self.columns)
-        self.key_column_idx = list_obj.key_column_idx
         self._model.list_obj = self.list_obj
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
@@ -191,39 +190,22 @@ class View(view.View, QtGui.QTableView):
         # pick selection and commands
         elt = self.current_elt()
         if not elt: return
+        element_key = self.list_obj.element2key(elt)
         commands = elt.commands
         # create actions
-        ## for cmd in commands:
-            ## print '--- binding elt action', repr(cmd.name), repr(cmd.shortcut), repr(cmd.desc), obj.title()
-            ## args = cmd_elements_to_args(cmd, [elt])
-            #shortcut = key_binding.get_shortcut(cmd)
-            ## shortcut = cmd.shortcut
-            ## action = cmd.make_action(action_widget, self._parent, shortcut, *args)
-            ## action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-            ## self._elt_actions.append(action)
+        for cmd in commands:
+            action = cmd.make_element_action(action_widget, self.list_obj, self, element_key)
+            action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
+            self._elt_actions.append(action)
         # store explicit reference to elements or they will be deleted and subsequent bound
         # method call will fail due to inst missing
         self._selected_elts = [elt]
 
     def open_element( self, elt ):
-        list_obj = self.list_obj.run_element_command('open', elt.row[self.key_column_idx])
+        element_key = self.list_obj.element2key(elt)
+        list_obj = self.list_obj.run_element_command('open', element_key)
         if list_obj:
             self.open(Handle(list_obj))
-
-    def run( self, cmd, *args ):
-        obj = cmd.run(*args)
-        if obj:
-            self.open(Handle(obj))
-
-    def run_dir_command( self, command_id ):
-        obj = self.list_obj.run_dir_command(command_id)
-        if obj:
-            self.open(Handle(obj))
-
-    def run_element_command( self, command_id, element_key ):
-        obj = self.list_obj.run_element_command(command_id, element_key)
-        if obj:
-            self.open(Handle(obj))
 
 
 view_registry.register_view('list', Handle)

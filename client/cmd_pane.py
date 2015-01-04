@@ -37,11 +37,11 @@ class View(QtGui.QDockWidget):
         view = self.window().current_view()
         idx = 0
         for cmd in dir.get_dir_commands():
-                button = self._make_button(cmd)
-                button.pressed.connect(lambda cmd=cmd: cmd.run_dir_command(dir, view))
-                self.layout.insertWidget(idx, button)  # must be inserted before spacing
-                self.dir_buttons.append(button)
-                idx += 1
+            button = self._make_button(cmd)
+            button.pressed.connect(lambda cmd=cmd: cmd.run_dir_command(dir, view))
+            self.layout.insertWidget(idx, button)  # must be inserted before spacing
+            self.dir_buttons.append(button)
+            idx += 1
 
     def _update_elts( self, view, elts ):
         for btn in self.elts_buttons:
@@ -49,13 +49,14 @@ class View(QtGui.QDockWidget):
         self.elts_buttons = []
         if not elts: return
         dir = self.current_dir
-        ## for cmd in collect_objs_commands(elts):
-        ##     if not cmd.enabled: continue
-        ##     btn = self._make_btn(cmd)
-        ##     args = cmd_elements_to_args(cmd, elts)
-        ##     btn.pressed.connect(lambda cmd=cmd, args=args: self._run_element_command(cmd, view, dir, *args))
-        ##     self.layout.addWidget(btn)
-        ##     self.elts_buttons.append(btn)
+        assert len(elts) == 1  # no multi-select support yet
+        elt = elts[0]
+        element_key = dir.element2key(elt)
+        for cmd in elt.commands:
+            button = self._make_button(cmd)
+            button.pressed.connect(lambda cmd=cmd: cmd.run_element_command(dir, view, element_key))
+            self.layout.addWidget(button)
+            self.elts_buttons.append(button)
 
     def _make_button( self, cmd ):
         if cmd.shortcut:
@@ -65,16 +66,6 @@ class View(QtGui.QDockWidget):
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(cmd.desc)
         return button
-
-    def _run_dir_command( self, cmd, view ):
-        print '* cmd_pane/_run_dir_command', cmd.id, view
-        view.run_dir_command(cmd.id)
-
-    # multi-select not yet supported
-    def _run_element_command( self, cmd, view, dir, elt ):
-        print '* cmd_pane/_run_element_command', cmd.id, view, dir, elt
-        element_key = dir.element2key(elt)
-        view.run_element_command(cmd.id, element_key)
 
     def __del__( self ):
         print '~cmd_pane'

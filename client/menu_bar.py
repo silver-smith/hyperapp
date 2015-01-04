@@ -36,15 +36,6 @@ class MenuBar(object):
     def _current_view( self ):
         return self.window().current_view()
 
-    def _make_cmd_action( self, cmd, *args ):
-        ## shortcut = key_binding.get_shortcut(cmd)
-        shortcut = cmd.shortcut
-        return cmd.make_action(self.window(), weakref.ref(self._current_view()), shortcut, *args)
-
-    def _add_actions( self, menu, elements ):
-        for cmd, args in elements:
-            menu.addAction(self._make_cmd_action(cmd, *args))
-
     def _open_dir_commands( self ):
         if self.current_dir is None: return
         self._current_view().open(cmd_view.Handle(None, [self.current_dir], take_dir_commands=True))
