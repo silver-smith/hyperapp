@@ -39,25 +39,25 @@ class Command(object):
     def require_explicit_elt_arg( self ):
         return True
 
-    def run_dir_command( self, obj, view ):
+    def run_dir_command( self, view, obj ):
         print 'list_obj.Command.run_dir_command', obj, view
         new_obj = obj.run_dir_command(self.id)
         if not new_obj: return
         handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
         view.open(handle_ctr(new_obj))
 
-    def run_element_command( self, obj, view, element_key ):
+    def run_element_command( self, view, obj, element_key ):
         print 'list_obj.Command.run_element_command', obj, view
         new_obj = obj.run_element_command(self.id, element_key)
         if not new_obj: return
         handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
         view.open(handle_ctr(new_obj))
 
-    def make_dir_action( self, widget, obj, view ):
-        return make_action(widget, self.text, self.shortcut, self.run_dir_command, obj, view)
+    def make_dir_action( self, widget, view, obj ):
+        return make_action(widget, self.text, self.shortcut, self.run_dir_command, view, obj)
 
-    def make_element_action( self, widget, obj, view, element_key ):
-        return make_action(widget, self.text, self.shortcut, self.run_element_command, obj, view, element_key)
+    def make_element_action( self, widget, view, obj, element_key ):
+        return make_action(widget, self.text, self.shortcut, self.run_element_command, view, obj, element_key)
 
 
 class Element(object):

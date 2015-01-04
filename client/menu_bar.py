@@ -52,7 +52,7 @@ class MenuBar(object):
         if dir is not None:
             commands = dir.get_dir_commands()
             for cmd in commands:
-                self.dir_menu.addAction(cmd.make_dir_action(self.window(), dir, view))
+                self.dir_menu.addAction(cmd.make_dir_action(self.window(), view, dir))
             self.dir_menu.setEnabled(commands != [])
         else:
             self.dir_menu.setEnabled(False)

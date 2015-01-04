@@ -166,9 +166,10 @@ class View(view.View, QtGui.QTableView):
 
     def _on_activated( self, index ):
         elt = self.list_obj.elements[index.row()]
+        element_key = self.list_obj.element2key(elt)
         for cmd in elt.commands:
             if cmd.id == 'open':
-                self.open_element(elt)
+                cmd.run_element_command(self, self.list_obj, element_key)
                 return
 
     def currentChanged( self, idx, prev_idx ):
@@ -200,12 +201,6 @@ class View(view.View, QtGui.QTableView):
         # store explicit reference to elements or they will be deleted and subsequent bound
         # method call will fail due to inst missing
         self._selected_elts = [elt]
-
-    def open_element( self, elt ):
-        element_key = self.list_obj.element2key(elt)
-        list_obj = self.list_obj.run_element_command('open', element_key)
-        if list_obj:
-            self.open(Handle(list_obj))
 
 
 view_registry.register_view('list', Handle)
