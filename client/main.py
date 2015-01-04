@@ -58,8 +58,7 @@ class Application(QtGui.QApplication, view.View):
         return kind.get_handle(args)
 
     def global_commands( self ):
-        return []
-    ##     return Module.get_global_commands() + [self.quit]
+        return [] + self._commands
 
     def window_created( self, view ):
         self._windows.append(view)

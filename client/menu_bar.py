@@ -29,7 +29,8 @@ class MenuBar(object):
 
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
-        self._add_actions(menu, [(cmd, ()) for cmd in self.window().global_commands()])
+        for cmd in self.window().global_commands():
+            menu.addAction(cmd.make_action(self.window()))
         return menu
 
     def _current_view( self ):
