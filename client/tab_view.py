@@ -1,6 +1,6 @@
 from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after, key_match
-from command import command_owner_meta_class, command
+from view_command import command
 import view
 import splitter
 
@@ -22,8 +22,6 @@ class Handle(view.Handle):
 
 
 class View(QtGui.QTabWidget, view.View):
-
-    __metaclass__ = command_owner_meta_class
 
     def __init__( self, parent, children, current_idx ):
         QtGui.QTabWidget.__init__(self)
@@ -74,7 +72,7 @@ class View(QtGui.QTabWidget, view.View):
         if DEBUG_FOCUS: print '*** tab_view.setVisible', self, visible, '(current tab#%d)' % self.currentIndex()
         QtGui.QTabWidget.setVisible(self, visible)
 
-    @command('Ctrl+T', 'Duplicate tab')
+    @command('Duplicate tab', 'Duplicate current tab', 'Ctrl+T')
     def duplicate_tab( self ):
         idx = self.currentIndex()
         view = self._children[idx]
@@ -82,7 +80,7 @@ class View(QtGui.QTabWidget, view.View):
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
-    @command('Ctrl+F4', 'Close tab')
+    @command('Close tab', 'Close current tab', 'Ctrl+F4')
     def close_tab( self ):
         if len(self._children) == 1: return  # never close last tab
         idx = self.currentIndex()
@@ -91,15 +89,15 @@ class View(QtGui.QTabWidget, view.View):
             idx -= 1
         view.View.view_changed(self)  # notify parents
 
-    @command('Alt+S', '&Split horizontally')
+    @command('&Split horizontally', 'Split horizontally', 'Alt+S')
     def split_horizontally( self ):
         self._map_current(splitter.split(splitter.horizontal))
 
-    @command('Shift+Alt+S', 'Split &vertically')
+    @command('Split &vertically', 'Split vertically', 'Shift+Alt+S')
     def split_vertically( self ):
         self._map_current(splitter.split(splitter.vertical))
 
-    @command('Alt+U', '&Unsplit')
+    @command('&Unsplit', 'Unsplit', 'Alt+U')
     def unsplit( self ):
         self._map_current(splitter.unsplit)
 

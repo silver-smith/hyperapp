@@ -5,7 +5,6 @@ sys.path.append('..')
 
 import json_connection
 from util import uni2str, key_match, key_match_any
-from command import collect_objs_commands, cmd_elements_to_args
 from list_obj import ListObj
 import view
 

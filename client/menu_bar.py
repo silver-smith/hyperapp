@@ -1,7 +1,6 @@
 import weakref
 from PySide import QtCore, QtGui
 from util import make_action
-from command import command, get_dir_commands
 #import key_binding
 #import cmd_view
 
@@ -58,29 +57,23 @@ class MenuBar(object):
         self.help_menu.setEnabled(dir is not None)
         self.dir_menu.clear()
         if dir is not None:
-            elements = [(cmd, self._dir_cmd_args(cmd, dir)) for cmd in get_dir_commands(dir)]
-            self._add_actions(self.dir_menu, elements)
-            self.dir_menu.setEnabled(elements != [])
+            for cmd in dir.get_dir_commands():
+                pass
+            ## elements = [(cmd, self._dir_cmd_args(cmd, dir)) for cmd in get_dir_commands(dir)]
+            ## self._add_actions(self.dir_menu, elements)
+            ## self.dir_menu.setEnabled(elements != [])
         else:
             self.dir_menu.setEnabled(False)
         self._update_window_menu(window)
-
-    # add explicit 'dir' argument for commands which are module methods
-    def _dir_cmd_args( self, cmd, dir ):
-        ## if cmd.require_explicit_elt_arg():
-        ##     return (dir,)
-        ## else:
-        ##     return ()
-        return (dir,)
 
     def _update_window_menu( self, window ):
         self.window_menu.clear()
         last_view = None
         for cmd in window.commands():
-            if last_view is not None and cmd.inst() is not last_view:
+            if last_view is not None and cmd.get_inst() is not last_view:
                 self.window_menu.addSeparator()
-            self.window_menu.addAction(self._make_cmd_action(cmd))
-            last_view = cmd.inst()
+            self.window_menu.addAction(cmd.make_action(self.window()))
+            last_view = cmd.get_inst()
 
     def selected_elements_changed( self, elts ):
         self.selected_elts = elts

@@ -2,7 +2,6 @@
 
 import weakref
 from PySide import QtCore, QtGui
-from command import get_dir_commands, collect_objs_commands, cmd_elements_to_args
 
 
 class View(QtGui.QDockWidget):
@@ -37,13 +36,13 @@ class View(QtGui.QDockWidget):
         if dir is None: return
         view = self.window().current_view()
         idx = 0
-        for cmd in get_dir_commands(dir):
-            if not cmd.enabled: continue
-            btn = self._make_btn(cmd)
-            btn.pressed.connect(lambda cmd=cmd, dir=dir: self._run_dir_command(cmd, view))
-            self.layout.insertWidget(idx, btn)  # must be inserted before spacing
-            self.dir_buttons.append(btn)
-            idx += 1
+        ## for cmd in get_dir_commands(dir):
+        ##     if not cmd.enabled: continue
+        ##     btn = self._make_btn(cmd)
+        ##     btn.pressed.connect(lambda cmd=cmd, dir=dir: self._run_dir_command(cmd, view))
+        ##     self.layout.insertWidget(idx, btn)  # must be inserted before spacing
+        ##     self.dir_buttons.append(btn)
+        ##     idx += 1
 
     def _update_elts( self, view, elts ):
         for btn in self.elts_buttons:

@@ -1,6 +1,5 @@
 from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after, focused_index, key_match
-from command import command_owner_meta_class
 import view
 
 
@@ -55,8 +54,6 @@ class Handle(view.Handle):
 
 
 class View(QtGui.QSplitter, view.View):
-
-    __metaclass__ = command_owner_meta_class
 
     def __init__( self, parent, x, y, orient, focused, sizes ):
         QtGui.QSplitter.__init__(self, orient2qt(orient))

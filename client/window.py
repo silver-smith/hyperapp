@@ -1,7 +1,7 @@
 import weakref
 from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after
-from command import command, command_owner_meta_class
+from view_command import command
 import view
 from composite import Composite
 from menu_bar import MenuBar
@@ -30,8 +30,6 @@ class Handle(view.Handle):
 
 
 class Window(Composite, QtGui.QMainWindow):
-
-    __metaclass__ = command_owner_meta_class
 
     def __init__( self, app, child_handle, size=None, pos=None ):
         QtGui.QMainWindow.__init__(self)
@@ -98,7 +96,7 @@ class Window(Composite, QtGui.QMainWindow):
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
-    @command('Alt+W', 'Duplicate window')
+    @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):
         self.handle().move(DUP_OFFSET).construct(self._parent())
 

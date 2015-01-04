@@ -3,7 +3,7 @@
 from PySide import QtCore, QtGui
 from util import key_match, key_match_any
 from attribute import Attr, StrAttrType
-from command import command, command_owner_meta_class
+from view_command import command
 import view
 from composite import Composite
 import list_view
@@ -29,8 +29,6 @@ class Handle(view.Handle):
 
 
 class View(Composite):
-
-    __metaclass__ = command_owner_meta_class
 
     def __init__( self, parent, child_handle, backward_history=None, forward_history=None ):
         Composite.__init__(self, parent)
@@ -68,7 +66,7 @@ class View(Composite):
         self._child = handle.construct(self)
         self._parent().view_changed(self)
 
-    @command(['Escape', 'Alt+Left'], 'Go back')
+    @command('Go back', 'Go backward to previous page', ['Escape', 'Alt+Left'])
     def go_back( self ):
         print '   history back', self._back_history, self._forward_history
         self._go_back()
@@ -80,7 +78,7 @@ class View(Composite):
         self._forward_history.append(self._child.handle())
         self._open(self._back_history.pop())
 
-    @command('Alt+Right', 'Go forward')
+    @command('Go forward', 'Go forward to next page', 'Alt+Right')
     def go_forward( self ):
         print '   history forward', self._back_history, self._forward_history
         if not self._forward_history:
@@ -89,7 +87,7 @@ class View(Composite):
         self._back_history.append(self._child.handle())
         self._open(self._forward_history.pop())
 
-    ## @command('Ctrl+H', 'History')
+    ## @command('History', 'Open history', 'Ctrl+H')
     ## def open_history( self ):
     ##     idx = len(self._back_history)
     ##     current_handle = self._child.handle()

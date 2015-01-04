@@ -13,7 +13,7 @@ from list_obj import ListObj
 
 from qt_keys import key_evt2str
 from util import DEBUG_FOCUS, DEBUG_EVENTS
-from command import command_owner_meta_class, command
+from view_command import command
 import view
 import window
 import tab_view
@@ -33,8 +33,6 @@ class Handle(view.Handle):
 
 
 class Application(QtGui.QApplication, view.View):
-
-    __metaclass__ = command_owner_meta_class
 
     def __init__( self, window_handles=None ):
         QtGui.QApplication.__init__(self, sys.argv)
@@ -71,7 +69,7 @@ class Application(QtGui.QApplication, view.View):
     ##     if not self._windows:
     ##         module.save_state(Handle([view.handle()]))
 
-    @command('Alt+Q', 'Quit application')
+    @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
         ## module.set_shutdown_flag()
         ## module.save_state(self.handle())
