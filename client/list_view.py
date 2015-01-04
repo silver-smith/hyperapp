@@ -112,7 +112,8 @@ class View(view.View, QtGui.QTableView):
 
     def current_key( self ):
         idx = self.currentIndex()
-        return self.list_obj.element_idx2key(idx.row())
+        if idx.row() != -1:
+            return self.list_obj.element_idx2key(idx.row())
 
     def current_elt( self ):
         idx = self.currentIndex()

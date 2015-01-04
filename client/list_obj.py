@@ -92,13 +92,17 @@ class ListObj(object):
         self.load_elements(element_count - self.element_count())
 
     def element_idx2key( self, idx ):
+        print idx, len(self.elements)
         return self.elements[idx].row[self.key_column_idx]
 
     def element2key( self, elt ):
         return elt.row[self.key_column_idx]
 
     def load_elements( self, load_count ):
-        last_key = self.element_idx2key(-1)
+        if self.elements:
+            last_key = self.element_idx2key(-1)
+        else:
+            last_key = None
         self.connection.send(dict(method='get_elements',
                                   path=self.path,
                                   key=last_key,
