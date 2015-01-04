@@ -2,7 +2,6 @@
 
 from PySide import QtCore, QtGui
 from util import key_match, key_match_any
-from attribute import Attr, StrAttrType
 from view_command import command
 import view
 from composite import Composite

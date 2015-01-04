@@ -5,7 +5,6 @@ from util import make_action
 class BoundViewCommand(object):
 
     def __init__( self, text, desc, shortcut, class_method, inst_wref ):
-        print '*** BoundViewCommand', text, desc, shortcut, class_method, inst_wref
         self.text = text
         self.desc = desc
         self.shortcut = shortcut
@@ -27,7 +26,6 @@ class BoundViewCommand(object):
 class UnboundViewCommand(object):
 
     def __init__( self, text, desc, shortcut, class_method ):
-        print '*** UnboundViewCommand', class_method, text, desc, shortcut
         self.text = text
         self.desc = desc
         self.shortcut = shortcut
