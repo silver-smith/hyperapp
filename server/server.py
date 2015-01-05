@@ -82,8 +82,6 @@ class Server(object):
     def run( self, connection, cln_addr ):
         print 'accepted connection from %s:%d' % cln_addr
         try:
-            row_count = 0
-            rpc_count = 0
             while True:
                 request = connection.receive()
                 print 'request: %r' % request
