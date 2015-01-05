@@ -58,7 +58,7 @@ class ModuleCommand(Command):
             method='run_module_command',
             module_name=self.module_name,
             command_id=self.id)
-        response = app.connection.execute_request(request)
+        response = app.server.execute_request(request)
         # todo
 
     def make_action( self, widget, window, app ):

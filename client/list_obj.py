@@ -27,8 +27,8 @@ class Element(object):
 
 class ListObj(object):
 
-    def __init__( self, connection, response ):
-        self.connection = connection
+    def __init__( self, server, response ):
+        self.server = server
         self.path = response['path']
         self.dir_commands = [DirCommand.from_json(cmd) for cmd in response['dir_commands']]
         self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
@@ -60,7 +60,7 @@ class ListObj(object):
                                   path=self.path,
                                   key=last_key,
                                   count=load_count)
-        response = self.connection.execute_request(request)
+        response = self.server.execute_request(request)
         self.elements += [Element.from_json(elt) for elt in response['elements']]
 
     def run_element_command( self, command_id, element_key ):
@@ -70,8 +70,8 @@ class ListObj(object):
             command_id=command_id,
             element_key=element_key,
             )
-        response = self.connection.execute_request(request)
-        return ListObj(self.connection, response)
+        response = self.server.execute_request(request)
+        return ListObj(self.server, response)
 
     def run_dir_command( self, command_id ):
         request = dict(
@@ -79,8 +79,8 @@ class ListObj(object):
             path=self.path,
             command_id=command_id,
             )
-        response = self.connection.execute_request(request)
-        return ListObj(self.connection, response)
+        response = self.server.execute_request(request)
+        return ListObj(self.server, response)
 
     def get_dir_commands( self ):
         return self.dir_commands

@@ -61,10 +61,6 @@ class Connection(object):
         print 'received:'
         pprint.pprint(json_data)
         return json_data
-
-    def execute_request( self, request ):
-        self.send(request)
-        return self.receive()
                     
         
 class Server(object):

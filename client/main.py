@@ -8,7 +8,7 @@ from PySide import QtCore, QtGui
 
 sys.path.append('..')
 
-import json_connection
+from server import Server
 from list_obj import ListObj
 
 from qt_keys import key_evt2str
@@ -34,10 +34,10 @@ class Handle(view.Handle):
 
 class Application(QtGui.QApplication, view.View):
 
-    def __init__( self, connection, server_commands, window_handles=None ):
+    def __init__( self, server, server_commands, window_handles=None ):
         QtGui.QApplication.__init__(self, sys.argv)
         view.View.__init__(self)
-        self.connection = connection
+        self.server = server
         self.server_commands = server_commands
         self._windows = []
         for handle in window_handles or []:
@@ -74,18 +74,18 @@ class Application(QtGui.QApplication, view.View):
 
 
 def main():
-    connection = json_connection.ClientConnection(('localhost', 8888))
+    server = Server(('localhost', 8888))
 
     init_request = dict(method='init')
-    init_response = connection.execute_request(init_request)
+    init_response = server.execute_request(init_request)
 
     commands_request = dict(method='get_commands')
-    commands_response = connection.execute_request(commands_request)
+    commands_response = server.execute_request(commands_request)
     server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response['commands']]
 
-    app = Application(connection, server_commands)
+    app = Application(server, server_commands)
 
-    obj = ListObj(connection, init_response)
+    obj = ListObj(server, init_response)
 
     #obj = fsopen('/tmp')
     #obj = process.Process('/usr', 'find')
