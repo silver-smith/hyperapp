@@ -96,6 +96,11 @@ class FileModule(Module):
     def get_commands( self ):
         return [ModuleCommand('home', 'Home', 'Open home directory', 'Alt+F', self.name)]
 
+    def run_command( self, command_id ):
+        if command_id == 'home':
+            return Dir(os.path.expanduser('~'))
+        assert False, repr(command_id)  # Unsupported command
+
 
 if sys.platform == 'win32':
     fs_encoding = sys.getfilesystemencoding()

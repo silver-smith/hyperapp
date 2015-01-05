@@ -56,6 +56,7 @@ class ModuleCommand(Command):
     def run( self, window, app ):
         request = dict(
             method='run_module_command',
+            module_name=self.module_name,
             command_id=self.id)
         response = app.connection.execute_request(request)
         # todo

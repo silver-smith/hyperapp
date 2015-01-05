@@ -41,3 +41,7 @@ class Module(object):
             commands += module.get_commands()
         return commands
     
+    @classmethod
+    def run_module_command( cls, module_name, command_id ):
+        module = cls.module_by_name[module_name]
+        return module.run_command(command_id)
