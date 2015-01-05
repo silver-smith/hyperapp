@@ -8,6 +8,8 @@ import traceback
 sys.path.append('..')
 
 import json_connection
+import module
+import ponyorm_module
 from fs import Dir
 import file_view
 
@@ -17,8 +19,10 @@ LISTEN_PORT = 8888
 
 class Server(object):
 
-    init_dir = Dir(os.path.expanduser('~/'))
-    ## init_dir = file_view.File('/etc/DIR_COLORS')
+    def __init__( self ):
+        module.Module.run_phase2_init()
+        self.init_dir = Dir(os.path.expanduser('~/'))
+        ## self.init_dir = file_view.File('/etc/DIR_COLORS')
 
     def resolve( self, path ):
         if path.startswith('/fs/'):
@@ -78,8 +82,9 @@ class Server(object):
 
 
 def main():
-    server = json_connection.Server(LISTEN_PORT, Server().run)
-    server.run()
+    server = Server()
+    json_server = json_connection.Server(LISTEN_PORT, server.run)
+    json_server.run()
 
 
 main()
