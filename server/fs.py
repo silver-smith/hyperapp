@@ -2,7 +2,11 @@ import sys
 import os.path
 import stat
 from object import Object, Command, Element, Column
+from module import Module, ModuleCommand
 import file_view
+
+
+MODULE_NAME = 'file'
 
 
 class Dir(Object):
@@ -84,6 +88,15 @@ class Dir(Object):
         return [Command('parent', 'Open parent', 'Open parent directory', 'Ctrl+Backspace')]
 
 
+class FileModule(Module):
+
+    def __init__( self ):
+        Module.__init__(self, MODULE_NAME)
+
+    def get_commands( self ):
+        return [ModuleCommand('home', 'Home', 'Open home directory', 'Alt+F', self.name)]
+
+
 if sys.platform == 'win32':
     fs_encoding = sys.getfilesystemencoding()
 else:
@@ -94,3 +107,6 @@ def fsname2uni( v ):
         return v
     else:
        return unicode(v, fs_encoding)
+
+
+module = FileModule()

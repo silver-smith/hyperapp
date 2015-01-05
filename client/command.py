@@ -41,3 +41,24 @@ class ElementCommand(Command):
 
     def make_action( self, widget, view, obj, element_key ):
         return make_action(widget, self.text, self.shortcut, self.run, view, obj, element_key)
+
+
+class ModuleCommand(Command):
+
+    def __init__( self, id, text, desc, shortcut, module_name ):
+        Command.__init__(self, id, text, desc, shortcut)
+        self.module_name = module_name
+
+    @classmethod
+    def from_json( cls, data ):
+        return cls(data['id'], data['text'], data['desc'], data['shortcut'], data['module_name'])
+
+    def run( self, window, app ):
+        request = dict(
+            method='run_module_command',
+            command_id=self.id)
+        response = app.connection.execute_request(request)
+        # todo
+
+    def make_action( self, widget, window, app ):
+        return make_action(widget, self.text, self.shortcut, self.run, window, app)

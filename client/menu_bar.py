@@ -7,7 +7,8 @@ from util import make_action
 
 class MenuBar(object):
 
-    def __init__( self, window ):
+    def __init__( self, app, window ):
+        self.app = app
         self.window = window  # weakref.ref
         self.current_dir = None
         self.selected_elts = []
@@ -29,8 +30,10 @@ class MenuBar(object):
 
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
+        window = self.window()
         for cmd in self.window().get_global_commands():
-            menu.addAction(cmd.make_action(self.window()))
+            # cmd is BoundViewCommand or ModuleCommand
+            menu.addAction(cmd.make_action(window, window, self.app))
         return menu
 
     def _current_view( self ):

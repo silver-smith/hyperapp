@@ -8,7 +8,7 @@ import traceback
 sys.path.append('..')
 
 import json_connection
-import module
+from module import Module
 import ponyorm_module
 from fs import Dir
 import file_view
@@ -20,7 +20,7 @@ LISTEN_PORT = 8888
 class Server(object):
 
     def __init__( self ):
-        module.Module.run_phase2_init()
+        Module.run_phase2_init()
         self.init_dir = Dir(os.path.expanduser('~/'))
         ## self.init_dir = file_view.File('/etc/DIR_COLORS')
 
@@ -46,6 +46,8 @@ class Server(object):
         method = request['method']
         if method == 'init':
             return self.resp_object(self.init_dir)
+        if method == 'get_commands':
+            return self.process_get_commands(request)
         path = request['path']
         dir = self.resolve(path)
         if method == 'get_elements':
@@ -63,6 +65,10 @@ class Server(object):
             return self.resp_object(new_dir)
         else:
             assert False, repr(method)
+
+    def process_get_commands( self, request ):
+        commands = [cmd.as_json() for cmd in Module.get_all_modules_commands()]
+        return dict(commands=commands)
 
     def run( self, connection, cln_addr ):
         print 'accepted connection from %s:%d' % cln_addr

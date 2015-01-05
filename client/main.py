@@ -12,6 +12,7 @@ import json_connection
 from list_obj import ListObj
 
 from qt_keys import key_evt2str
+from command import ModuleCommand
 from view_command import command
 import view
 import window
@@ -33,9 +34,11 @@ class Handle(view.Handle):
 
 class Application(QtGui.QApplication, view.View):
 
-    def __init__( self, window_handles=None ):
+    def __init__( self, connection, server_commands, window_handles=None ):
         QtGui.QApplication.__init__(self, sys.argv)
         view.View.__init__(self)
+        self.connection = connection
+        self.server_commands = server_commands
         self._windows = []
         for handle in window_handles or []:
             self.open(handle)
@@ -53,7 +56,7 @@ class Application(QtGui.QApplication, view.View):
         return kind.get_handle(args)
 
     def get_global_commands( self ):
-        return [] + self._commands
+        return self.server_commands + self._commands
 
     def window_created( self, view ):
         self._windows.append(view)
@@ -71,11 +74,17 @@ class Application(QtGui.QApplication, view.View):
 
 
 def main():
-    app = Application()
-
     connection = json_connection.ClientConnection(('localhost', 8888))
-    request = dict(method='init')
-    init_response = connection.execute_request(request)
+
+    init_request = dict(method='init')
+    init_response = connection.execute_request(init_request)
+
+    commands_request = dict(method='get_commands')
+    commands_response = connection.execute_request(commands_request)
+    server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response['commands']]
+
+    app = Application(connection, server_commands)
+
     obj = ListObj(connection, init_response)
 
     #obj = fsopen('/tmp')

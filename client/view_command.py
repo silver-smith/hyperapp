@@ -19,7 +19,7 @@ class BoundViewCommand(object):
         if inst:  # inst not yet deleted?
             self.class_method(inst)
 
-    def make_action( self, widget ):
+    def make_action( self, widget, window=None, app=None ):
         return make_action(widget, self.text, self.shortcut, self.run)
 
 
@@ -35,6 +35,7 @@ class UnboundViewCommand(object):
         return BoundViewCommand(self.text, self.desc, self.shortcut, self.class_method, weakref.ref(inst))
 
 
+# decorator for view methods
 class command(object):
 
     def __init__( self, text, desc, shortcut ):

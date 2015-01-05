@@ -4,13 +4,14 @@ from module import Module
 
 
 SQLITE_DB_PATH = os.path.expanduser('~/.hyperapp-server-db.sqlite')
+MODULE_NAME = 'ponyorm'
 
 
-# base class for module using ponyorm
+# base class for modules using ponyorm
 class PonyOrmModule(Module):
 
-    def __init__( self ):
-        Module.__init__(self)
+    def __init__( self, name ):
+        Module.__init__(self, name)
         self.db = module.db
 
     def make_entity( self, name, **fields ):
@@ -23,7 +24,7 @@ class PonyOrmModule(Module):
 class ThisModule(Module):
 
     def __init__( self ):
-        Module.__init__(self)
+        Module.__init__(self, MODULE_NAME)
         #sql_debug(True)
         self.db = Database('sqlite', SQLITE_DB_PATH, create_db=True)
 
