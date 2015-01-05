@@ -170,7 +170,7 @@ class View(view.View, QtGui.QTableView):
         element_key = self.list_obj.element2key(elt)
         for cmd in elt.commands:
             if cmd.id == 'open':
-                cmd.run_element_command(self, self.list_obj, element_key)
+                cmd.run(self, self.list_obj, element_key)
                 return
 
     def currentChanged( self, idx, prev_idx ):

@@ -14,15 +14,18 @@ class Command(object):
     def from_json( cls, data ):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'])
 
+    def open_obj( self, view, obj ):
+        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
+        view.open(handle_ctr(obj))
+
 
 class DirCommand(Command):
 
     def run( self, view, obj ):
         print 'list_obj.Command.run_dir_command', obj, view
         new_obj = obj.run_dir_command(self.id)
-        if not new_obj: return
-        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
-        view.open(handle_ctr(new_obj))
+        if new_obj:
+            self.open_obj(view, new_obj)
 
     def make_action( self, widget, view, obj ):
         return make_action(widget, self.text, self.shortcut, self.run, view, obj)
@@ -33,9 +36,8 @@ class ElementCommand(Command):
     def run( self, view, obj, element_key ):
         print 'list_obj.Command.run_element_command', obj, view
         new_obj = obj.run_element_command(self.id, element_key)
-        if not new_obj: return
-        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
-        view.open(handle_ctr(new_obj))
+        if new_obj:
+            self.open_obj(view, new_obj)
 
     def make_action( self, widget, view, obj, element_key ):
         return make_action(widget, self.text, self.shortcut, self.run, view, obj, element_key)
