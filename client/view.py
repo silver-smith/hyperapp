@@ -48,11 +48,11 @@ class View(object):
         else:
             return self
 
-    def commands( self ):
+    def get_commands( self ):
         commands = self._commands[:]
         view = self.current_child()
         if view:
-            commands += view.commands()
+            commands += view.get_commands()
         return commands
 
     def get_shortcut_ctx_widget( self, view ):

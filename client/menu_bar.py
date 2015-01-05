@@ -61,7 +61,7 @@ class MenuBar(object):
     def _update_window_menu( self, window ):
         self.window_menu.clear()
         last_view = None
-        for cmd in window.commands():
+        for cmd in window.get_commands():
             if last_view is not None and cmd.get_inst() is not last_view:
                 self.window_menu.addSeparator()
             self.window_menu.addAction(cmd.make_action(self.window()))
