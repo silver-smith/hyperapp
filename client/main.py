@@ -75,8 +75,7 @@ def main():
 
     connection = json_connection.ClientConnection(('localhost', 8888))
     request = dict(method='init')
-    connection.send(request)
-    init_response = connection.receive()
+    init_response = connection.execute_request(request)
     obj = ListObj(connection, init_response)
 
     #obj = fsopen('/tmp')

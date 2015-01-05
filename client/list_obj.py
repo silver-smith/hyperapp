@@ -56,30 +56,30 @@ class ListObj(object):
             last_key = self.element_idx2key(-1)
         else:
             last_key = None
-        self.connection.send(dict(method='get_elements',
+        request = dict(method='get_elements',
                                   path=self.path,
                                   key=last_key,
-                                  count=load_count))
-        response = self.connection.receive()
+                                  count=load_count)
+        response = self.connection.execute_request(request)
         self.elements += [Element.from_json(elt) for elt in response['elements']]
 
     def run_element_command( self, command_id, element_key ):
-        self.connection.send(dict(
+        request = dict(
             method='element_command',
             path=self.path,
             command_id=command_id,
             element_key=element_key,
-            ))
-        response = self.connection.receive()
+            )
+        response = self.connection.execute_request(request)
         return ListObj(self.connection, response)
 
     def run_dir_command( self, command_id ):
-        self.connection.send(dict(
+        request = dict(
             method='dir_command',
             path=self.path,
             command_id=command_id,
-            ))
-        response = self.connection.receive()
+            )
+        response = self.connection.execute_request(request)
         return ListObj(self.connection, response)
 
     def get_dir_commands( self ):
