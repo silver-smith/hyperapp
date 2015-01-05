@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 from command import DirCommand, ElementCommand
+import iface_registry
 
 
 class Column(object):
@@ -56,31 +57,13 @@ class ListObj(object):
             last_key = self.element_idx2key(-1)
         else:
             last_key = None
-        request = dict(method='get_elements',
-                                  path=self.path,
-                                  key=last_key,
-                                  count=load_count)
+        request = dict(
+            method='get_elements',
+            path=self.path,
+            key=last_key,
+            count=load_count)
         response = self.server.execute_request(request)
         self.elements += [Element.from_json(elt) for elt in response['elements']]
-
-    def run_element_command( self, command_id, element_key ):
-        request = dict(
-            method='run_element_command',
-            path=self.path,
-            command_id=command_id,
-            element_key=element_key,
-            )
-        response = self.server.execute_request(request)
-        return ListObj(self.server, response)
-
-    def run_dir_command( self, command_id ):
-        request = dict(
-            method='run_dir_command',
-            path=self.path,
-            command_id=command_id,
-            )
-        response = self.server.execute_request(request)
-        return ListObj(self.server, response)
 
     def get_dir_commands( self ):
         return self.dir_commands
@@ -90,3 +73,6 @@ class ListObj(object):
             if col.id == 'key':
                 return col.idx
         assert False, 'No "key" column'
+
+
+iface_registry.register_iface('list', ListObj)

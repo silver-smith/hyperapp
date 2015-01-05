@@ -37,6 +37,7 @@ class Server(object):
 
     def resp_object( self, dir ):
         return dict(
+            iface_id=dir.iface_id,
             path=dir.path,
             dir_commands=[cmd.as_json() for cmd in dir.dir_commands()],
             columns=[column.as_json() for column in dir.columns],

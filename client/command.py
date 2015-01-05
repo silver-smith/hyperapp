@@ -23,7 +23,12 @@ class DirCommand(Command):
 
     def run( self, view, obj ):
         print 'list_obj.Command.run_dir_command', obj, view
-        new_obj = obj.run_dir_command(self.id)
+        request = dict(
+            method='run_dir_command',
+            path=obj.path,
+            command_id=self.id,
+            )
+        new_obj = obj.server.get_object(request)
         if new_obj:
             self.open_obj(view, new_obj)
 
@@ -35,7 +40,13 @@ class ElementCommand(Command):
 
     def run( self, view, obj, element_key ):
         print 'list_obj.Command.run_element_command', obj, view
-        new_obj = obj.run_element_command(self.id, element_key)
+        request = dict(
+            method='run_element_command',
+            path=obj.path,
+            command_id=self.id,
+            element_key=element_key,
+            )
+        new_obj = obj.server.get_object(request)
         if new_obj:
             self.open_obj(view, new_obj)
 
