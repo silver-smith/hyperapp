@@ -29,7 +29,7 @@ class MenuBar(object):
 
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
-        for cmd in self.window().global_commands():
+        for cmd in self.window().get_global_commands():
             menu.addAction(cmd.make_action(self.window()))
         return menu
 
@@ -52,7 +52,7 @@ class MenuBar(object):
         if dir is not None:
             commands = dir.get_dir_commands()
             for cmd in commands:
-                self.dir_menu.addAction(cmd.make_dir_action(self.window(), view, dir))
+                self.dir_menu.addAction(cmd.make_action(self.window(), view, dir))
             self.dir_menu.setEnabled(commands != [])
         else:
             self.dir_menu.setEnabled(False)

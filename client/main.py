@@ -12,7 +12,6 @@ import json_connection
 from list_obj import ListObj
 
 from qt_keys import key_evt2str
-from util import DEBUG_FOCUS, DEBUG_EVENTS
 from view_command import command
 import view
 import window
@@ -37,10 +36,6 @@ class Application(QtGui.QApplication, view.View):
     def __init__( self, window_handles=None ):
         QtGui.QApplication.__init__(self, sys.argv)
         view.View.__init__(self)
-        if DEBUG_FOCUS:
-            self.focusChanged.connect(self._on_focus_changed)
-        if DEBUG_EVENTS:
-            self.installEventFilter(self)
         self._windows = []
         for handle in window_handles or []:
             self.open(handle)
@@ -57,7 +52,7 @@ class Application(QtGui.QApplication, view.View):
     def get_arg_editor( self, kind, args ):
         return kind.get_handle(args)
 
-    def global_commands( self ):
+    def get_global_commands( self ):
         return [] + self._commands
 
     def window_created( self, view ):
@@ -81,8 +76,8 @@ def main():
     connection = json_connection.ClientConnection(('localhost', 8888))
     request = dict(method='init')
     connection.send(request)
-    response = connection.receive()
-    obj = ListObj(connection, response)
+    init_response = connection.receive()
+    obj = ListObj(connection, init_response)
 
     #obj = fsopen('/tmp')
     #obj = process.Process('/usr', 'find')

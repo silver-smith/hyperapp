@@ -1,6 +1,5 @@
 from PySide import QtCore, QtGui
-from util import make_action
-import view_registry
+from command import DirCommand, ElementCommand
 
 
 class Column(object):
@@ -15,39 +14,6 @@ class Column(object):
         return cls(idx, data['id'], data['title'])
 
 
-class Command(object):
-
-    def __init__( self, id, text, desc, shortcut ):
-        self.id = id
-        self.text = text
-        self.desc = desc
-        self.shortcut = shortcut
-
-    @classmethod
-    def from_json(cls, data ):
-        return cls(data['id'], data['text'], data['desc'], data['shortcut'])
-
-    def run_dir_command( self, view, obj ):
-        print 'list_obj.Command.run_dir_command', obj, view
-        new_obj = obj.run_dir_command(self.id)
-        if not new_obj: return
-        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
-        view.open(handle_ctr(new_obj))
-
-    def run_element_command( self, view, obj, element_key ):
-        print 'list_obj.Command.run_element_command', obj, view
-        new_obj = obj.run_element_command(self.id, element_key)
-        if not new_obj: return
-        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
-        view.open(handle_ctr(new_obj))
-
-    def make_dir_action( self, widget, view, obj ):
-        return make_action(widget, self.text, self.shortcut, self.run_dir_command, view, obj)
-
-    def make_element_action( self, widget, view, obj, element_key ):
-        return make_action(widget, self.text, self.shortcut, self.run_element_command, view, obj, element_key)
-
-
 class Element(object):
 
     def __init__( self, row, commands ):
@@ -56,7 +22,7 @@ class Element(object):
 
     @classmethod
     def from_json( cls, data ):
-        return cls(data['row'], [Command.from_json(cmd) for cmd in data['commands']])
+        return cls(data['row'], [ElementCommand.from_json(cmd) for cmd in data['commands']])
 
 
 class ListObj(object):
@@ -64,7 +30,7 @@ class ListObj(object):
     def __init__( self, connection, response ):
         self.connection = connection
         self.path = response['path']
-        self.dir_commands = [Command.from_json(cmd) for cmd in response['dir_commands']]
+        self.dir_commands = [DirCommand.from_json(cmd) for cmd in response['dir_commands']]
         self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         self.elements = [Element.from_json(elt) for elt in response['elements']]
         self.key_column_idx = self._find_key_column(self.columns)

@@ -38,7 +38,7 @@ class View(QtGui.QDockWidget):
         idx = 0
         for cmd in dir.get_dir_commands():
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run_dir_command(view, dir))
+            button.pressed.connect(lambda cmd=cmd: cmd.run(view, dir))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
             self.dir_buttons.append(button)
             idx += 1
@@ -54,7 +54,7 @@ class View(QtGui.QDockWidget):
         element_key = dir.element2key(elt)
         for cmd in elt.commands:
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run_element_command(view, dir, element_key))
+            button.pressed.connect(lambda cmd=cmd: cmd.run(view, dir, element_key))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 

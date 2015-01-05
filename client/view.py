@@ -96,8 +96,8 @@ class View(object):
     def replace_view( self, mapper ):
         return mapper(self.handle())
 
-    def global_commands( self ):
-        return self._parent().global_commands()
+    def get_global_commands( self ):
+        return self._parent().get_global_commands()
 
     def view_changed( self, view=None ):
         self._parent().view_changed(self)

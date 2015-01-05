@@ -1,0 +1,41 @@
+from util import make_action
+import view_registry
+
+
+class Command(object):
+
+    def __init__( self, id, text, desc, shortcut ):
+        self.id = id
+        self.text = text
+        self.desc = desc
+        self.shortcut = shortcut
+
+    @classmethod
+    def from_json( cls, data ):
+        return cls(data['id'], data['text'], data['desc'], data['shortcut'])
+
+
+class DirCommand(Command):
+
+    def run( self, view, obj ):
+        print 'list_obj.Command.run_dir_command', obj, view
+        new_obj = obj.run_dir_command(self.id)
+        if not new_obj: return
+        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
+        view.open(handle_ctr(new_obj))
+
+    def make_action( self, widget, view, obj ):
+        return make_action(widget, self.text, self.shortcut, self.run, view, obj)
+
+
+class ElementCommand(Command):
+
+    def run( self, view, obj, element_key ):
+        print 'list_obj.Command.run_element_command', obj, view
+        new_obj = obj.run_element_command(self.id, element_key)
+        if not new_obj: return
+        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
+        view.open(handle_ctr(new_obj))
+
+    def make_action( self, widget, view, obj, element_key ):
+        return make_action(widget, self.text, self.shortcut, self.run, view, obj, element_key)

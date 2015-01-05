@@ -196,7 +196,7 @@ class View(view.View, QtGui.QTableView):
         commands = elt.commands
         # create actions
         for cmd in commands:
-            action = cmd.make_element_action(action_widget, self.list_obj, self, element_key)
+            action = cmd.make_action(action_widget, self.list_obj, self, element_key)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             self._elt_actions.append(action)
         # store explicit reference to elements or they will be deleted and subsequent bound
