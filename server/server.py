@@ -54,12 +54,12 @@ class Server(object):
             key = request['key']
             count = request['count']
             return dict(elements=self.resp_elements(dir, count, key))
-        elif method == 'element_command':
+        elif method == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
             new_dir = dir.run_element_command(command_id, element_key)
             return self.resp_object(new_dir)
-        elif method == 'dir_command':
+        elif method == 'run_dir_command':
             command_id = request['command_id']
             new_dir = dir.run_dir_command(command_id)
             return self.resp_object(new_dir)

@@ -65,7 +65,7 @@ class ListObj(object):
 
     def run_element_command( self, command_id, element_key ):
         request = dict(
-            method='element_command',
+            method='run_element_command',
             path=self.path,
             command_id=command_id,
             element_key=element_key,
@@ -75,7 +75,7 @@ class ListObj(object):
 
     def run_dir_command( self, command_id ):
         request = dict(
-            method='dir_command',
+            method='run_dir_command',
             path=self.path,
             command_id=command_id,
             )
