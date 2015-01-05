@@ -70,7 +70,9 @@ class ModuleCommand(Command):
             module_name=self.module_name,
             command_id=self.id)
         response = app.server.execute_request(request)
-        # todo
+        obj = app.server.get_object(request)
+        if obj:
+            self.open_obj(window, obj)
 
     def make_action( self, widget, window, app ):
         return make_action(widget, self.text, self.shortcut, self.run, window, app)

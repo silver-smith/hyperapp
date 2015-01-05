@@ -96,7 +96,7 @@ class FileModule(Module):
         Module.__init__(self, MODULE_NAME)
 
     def get_commands( self ):
-        return [ModuleCommand('home', 'Home', 'Open home directory', 'Alt+F', self.name)]
+        return [ModuleCommand('home', 'Home', 'Open home directory', 'Ctrl+F', self.name)]
 
     def run_command( self, command_id ):
         if command_id == 'home':
