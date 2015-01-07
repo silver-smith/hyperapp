@@ -12,18 +12,19 @@ class Server(object):
         self.connection.send(request)
         return self.connection.receive()
 
-    def get_object( self, request ):
-        response = self.execute_request(request)
+    def resp2object( self, response ):
         iface_id = response['iface_id']
         obj_ctr = iface_registry.resolve_iface(iface_id)
         return obj_ctr(self, response)
 
+    def get_object( self, request ):
+        response = self.execute_request(request)
+        return self.resp2object(response)
+
     def get_view( self, request ):
         response = self.execute_request(request)
-        iface_id = response['iface_id']
-        obj_ctr = iface_registry.resolve_iface(iface_id)
-        obj = obj_ctr(self, response)
+        object = self.resp2object(response)
         view_id = response['view_id']
         handle_ctr = view_registry.resolve_view(view_id)
-        return handle_ctr(obj)
+        return handle_ctr(object)
 
