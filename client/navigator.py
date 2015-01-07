@@ -19,8 +19,8 @@ class Handle(view.Handle):
         self.backward_history = backward_history or []
         self.forward_history = forward_history or []
 
-    def title( self ):
-        return self.child.title()
+    def get_title( self ):
+        return self.child.get_title()
 
     def construct( self, parent ):
         print 'navigator construct', parent, self.child

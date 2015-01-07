@@ -21,15 +21,15 @@ class Handle(view.Handle):
         self.selected_keys = selected_keys  # for multi-select mode only
         self.select_first = select_first  # bool
 
-    def title( self ):
-        return self.obj.title()
+    def get_title( self ):
+        return self.obj.get_title()
 
     def construct( self, parent ):
-        print 'list_view construct', parent, self.obj.title(), self.obj
+        print 'list_view construct', parent, self.obj.get_title(), self.obj
         return View(parent, self.obj, self.key, self.selected_keys, self.select_first)
 
     def __repr__( self ):
-        return 'list_view.Handle(%s, %s)' % (uni2str(self.obj.title()), uni2str(self.key))
+        return 'list_view.Handle(%s, %s)' % (uni2str(self.obj.get_title()), uni2str(self.key))
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -102,9 +102,9 @@ class View(view.View, QtGui.QTableView):
     def handle( self ):
         return Handle(self.get_object(), self.current_key(), self.selected_keys(), self._select_first)
 
-    def title( self ):
+    def get_title( self ):
         if self.list_obj:
-            return self.list_obj.title()
+            return self.list_obj.get_title()
 
     def get_object( self ):
         return self.list_obj

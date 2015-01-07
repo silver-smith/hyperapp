@@ -10,7 +10,7 @@ import list_obj
 
 class Handle(object):
 
-    def title( self ):
+    def get_title( self ):
         raise NotImplementedError(self.__class__)
 
     def construct( self, parent ):
@@ -58,10 +58,10 @@ class View(object):
     def get_shortcut_ctx_widget( self, view ):
         return view.get_widget()
 
-    def title( self ):
+    def get_title( self ):
         view = self.current_child()
         if view:
-            return view.title()
+            return view.get_title()
         else:
             return 'Untitled'
 

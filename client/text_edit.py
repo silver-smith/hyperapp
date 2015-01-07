@@ -11,15 +11,15 @@ class Handle(view.Handle):
         self.object = object
         self.text = text
 
-    def title( self ):
-        return self.object.title()
+    def get_title( self ):
+        return self.object.get_title()
 
     def construct( self, parent ):
-        print 'text_edit construct', parent, self.object.title(), repr(self.text)
+        print 'text_edit construct', parent, self.object.get_title(), repr(self.text)
         return View(parent, self.object, self.text)
 
     def __repr__( self ):
-        return 'text_edit.Handle(%s, %s)' % (uni2str(self.object.title()), uni2str(self.text))
+        return 'text_edit.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
 
 
 class View(view.View, QtGui.QTextEdit):
@@ -32,8 +32,8 @@ class View(view.View, QtGui.QTextEdit):
     def handle( self ):
         return Handle(self.object, self.toPlainText())
 
-    def title( self ):
-        return self.object.title()
+    def get_title( self ):
+        return self.object.get_title()
 
     def get_object( self ):
         return self.object

@@ -9,7 +9,7 @@ class ObjectIface(object):
         self.path = response['path']
         self.commands = [ObjectCommand.from_json(cmd) for cmd in response['commands']]
 
-    def title( self ):
+    def get_title( self ):
         return self.path
 
     def get_commands( self ):

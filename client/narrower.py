@@ -15,8 +15,8 @@ class Handle(view.Handle):
         assert isinstance(list_handle, list_view.Handle), repr(list_handle)
         self.list_handle = list_handle
 
-    def title( self ):
-        return self.list_handle.title()
+    def get_title( self ):
+        return self.list_handle.get_title()
 
     def construct( self, parent ):
         print 'narrower construct', parent, self.list_handle
@@ -34,8 +34,8 @@ class FilteredDir(Dir):
         self._base = base
         self._prefix = prefix
 
-    def title( self ):
-        return 'filtered(%r, %s)' % (self._prefix, self._base.title())
+    def get_title( self ):
+        return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
 
     def key( self ):
         return self._base.key()
@@ -68,8 +68,8 @@ class View(LineListPanel):
     def handle( self ):
         return Handle(list_view.Handle(self._base_obj, self._list_view.current_key(), self._list_view.selected_keys()))
 
-    def title( self ):
-        return self._base_obj.title()
+    def get_title( self ):
+        return self._base_obj.get_title()
 
     def get_object( self ):
         return self._base_obj
@@ -109,4 +109,4 @@ class View(LineListPanel):
         self._line_edit.setText(common)
 
     def __del__( self ):
-        print '~narrower', self._base_obj.title(), self
+        print '~narrower', self._base_obj.get_title(), self

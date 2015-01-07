@@ -91,7 +91,7 @@ class Window(Composite, QtGui.QMainWindow):
                 self._child_widget.deleteLater()
             self.setCentralWidget(w)
             self._child_widget = w
-        self.setWindowTitle(view.title())
+        self.setWindowTitle(view.get_title())
         self._menu_bar.view_changed(self)
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)

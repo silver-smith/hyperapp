@@ -31,7 +31,7 @@ class View(QtGui.QTabWidget, view.View):
         self._children = []  # view list
         for handle in children:
             v = handle.construct(self)
-            self.addTab(v.get_widget(), v.title())
+            self.addTab(v.get_widget(), v.get_title())
             self._children.append(v)
         self.setCurrentIndex(current_idx)
         self.currentChanged.connect(self._on_current_changed)
@@ -54,10 +54,10 @@ class View(QtGui.QTabWidget, view.View):
             if DEBUG_FOCUS: print '*** tab_view.view_changed: replacing tab', self, idx, child
             self.removeTab(idx)
             w.deleteLater()
-            self.insertTab(idx, child.get_widget(), child.title())
+            self.insertTab(idx, child.get_widget(), child.get_title())
             self.setCurrentIndex(idx)
             child.ensure_has_focus()
-        self.setTabText(idx, child.title())
+        self.setTabText(idx, child.get_title())
         view.View.view_changed(self)  # notify parents
 
     def open( self, handle ):
@@ -119,6 +119,6 @@ class View(QtGui.QTabWidget, view.View):
         w.deleteLater()
 
     def _insert_tab( self, idx, child ):
-        self.insertTab(idx, child.get_widget(), child.title())
+        self.insertTab(idx, child.get_widget(), child.get_title())
         self._children.insert(idx, child)
         self.setCurrentIndex(idx)
