@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from command import DirCommand, ElementCommand
+from command import ObjectCommand, ElementCommand
 import iface_registry
 
 
@@ -31,7 +31,7 @@ class ListObj(object):
     def __init__( self, server, response ):
         self.server = server
         self.path = response['path']
-        self.dir_commands = [DirCommand.from_json(cmd) for cmd in response['dir_commands']]
+        self.obj_commands = [ObjectCommand.from_json(cmd) for cmd in response['commands']]
         self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         self.elements = [Element.from_json(elt) for elt in response['elements']]
         self.key_column_idx = self._find_key_column(self.columns)
@@ -65,8 +65,8 @@ class ListObj(object):
         response = self.server.execute_request(request)
         self.elements += [Element.from_json(elt) for elt in response['elements']]
 
-    def get_dir_commands( self ):
-        return self.dir_commands
+    def get_obj_commands( self ):
+        return self.obj_commands
 
     def _find_key_column( self, columns ):
         for idx, col in enumerate(columns):

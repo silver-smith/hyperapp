@@ -8,13 +8,13 @@ class Iface(object):
         return dict(
             iface_id=self.id,
             path=object.path,
-            dir_commands=[cmd.as_json() for cmd in object.get_commands()],
+            commands=[cmd.as_json() for cmd in object.get_commands()],
             )
 
     def process_request( self, object, method, request ):
-        if method == 'run_dir_command':
+        if method == 'run_command':
             command_id = request['command_id']
-            new_object = object.run_dir_command(command_id)
+            new_object = object.run_command(command_id)
             return self.get(new_object)
         else:
             assert False, repr(method)  # Unknown method

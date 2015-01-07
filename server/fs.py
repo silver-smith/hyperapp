@@ -74,7 +74,7 @@ class Dir(ListObject):
                 return file_view.File(fspath)
         assert False, repr(command_id)  # Unexpected command_id
 
-    def run_dir_command( self, command_id ):
+    def run_command( self, command_id ):
         assert command_id == 'parent', repr(command_id)
         fspath = self.get_parent_dir()
         if fspath is not None:

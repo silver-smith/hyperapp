@@ -19,12 +19,12 @@ class Command(object):
         view.open(handle_ctr(obj))
 
 
-class DirCommand(Command):
+class ObjectCommand(Command):
 
     def run( self, view, obj ):
-        print 'list_obj.Command.run_dir_command', obj, view
+        print 'list_obj.Command.run_command', obj, view
         request = dict(
-            method='run_dir_command',
+            method='run_command',
             path=obj.path,
             command_id=self.id,
             )
