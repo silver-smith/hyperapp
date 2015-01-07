@@ -14,10 +14,6 @@ class Command(object):
     def from_json( cls, data ):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'])
 
-    def open_obj( self, view, obj ):
-        handle_ctr = view_registry.resolve_view('list')  # hardcoded for now
-        view.open(handle_ctr(obj))
-
 
 class ObjectCommand(Command):
 
@@ -28,9 +24,9 @@ class ObjectCommand(Command):
             path=obj.path,
             command_id=self.id,
             )
-        new_obj = obj.server.get_object(request)
-        if new_obj:
-            self.open_obj(view, new_obj)
+        handle = obj.server.get_view(request)
+        if handle:
+            view.open(handle)
 
     def make_action( self, widget, view, obj ):
         return make_action(widget, self.text, self.shortcut, self.run, view, obj)
@@ -46,9 +42,9 @@ class ElementCommand(Command):
             command_id=self.id,
             element_key=element_key,
             )
-        new_obj = obj.server.get_object(request)
-        if new_obj:
-            self.open_obj(view, new_obj)
+        handle = obj.server.get_view(request)
+        if handle:
+            view.open(handle)
 
     def make_action( self, widget, view, obj, element_key ):
         return make_action(widget, self.text, self.shortcut, self.run, view, obj, element_key)
@@ -69,10 +65,9 @@ class ModuleCommand(Command):
             method='run_module_command',
             module_name=self.module_name,
             command_id=self.id)
-        response = app.server.execute_request(request)
-        obj = app.server.get_object(request)
-        if obj:
-            self.open_obj(window, obj)
+        handle = app.server.get_view(request)
+        if handle:
+            window.open(handle)
 
     def make_action( self, widget, window, app ):
         return make_action(widget, self.text, self.shortcut, self.run, window, app)

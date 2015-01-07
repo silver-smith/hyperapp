@@ -8,7 +8,8 @@ class Iface(object):
         if object is None: return None
         return dict(
             iface_id=self.id,
-            path=object.path,
+            view_id=object.view_id,
+            path=object.get_path(),
             commands=[cmd.as_json() for cmd in object.get_commands()],
             )
 
@@ -19,6 +20,11 @@ class Iface(object):
             return self.get(new_object)
         else:
             assert False, repr(method)  # Unknown method
+
+
+class ObjectIface(Iface):
+
+    id = 'object'
 
 
 class ListIface(Iface):

@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 from command import ObjectCommand, ElementCommand
+from iface import ObjectIface
 import iface_registry
 
 
@@ -26,18 +27,13 @@ class Element(object):
         return cls(data['row'], [ElementCommand.from_json(cmd) for cmd in data['commands']])
 
 
-class ListObj(object):
+class ListObj(ObjectIface):
 
     def __init__( self, server, response ):
-        self.server = server
-        self.path = response['path']
-        self.obj_commands = [ObjectCommand.from_json(cmd) for cmd in response['commands']]
+        ObjectIface.__init__(self, server, response)
         self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         self.elements = [Element.from_json(elt) for elt in response['elements']]
         self.key_column_idx = self._find_key_column(self.columns)
-
-    def title( self ):
-        return self.path
 
     def element_count( self ):
         return len(self.elements)
@@ -64,9 +60,6 @@ class ListObj(object):
             count=load_count)
         response = self.server.execute_request(request)
         self.elements += [Element.from_json(elt) for elt in response['elements']]
-
-    def get_obj_commands( self ):
-        return self.obj_commands
 
     def _find_key_column( self, columns ):
         for idx, col in enumerate(columns):

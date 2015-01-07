@@ -12,6 +12,7 @@ from module import Module
 import ponyorm_module
 from fs import Dir
 import file_view
+import article
 
 
 LISTEN_PORT = 8888

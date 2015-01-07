@@ -6,6 +6,8 @@ from object import ListObject, Element, Column
 
 class File(ListObject):
 
+    view_id = 'list'
+
     columns = [
         Column('key', 'idx'),
         Column('line', 'line'),

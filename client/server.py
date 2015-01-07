@@ -1,5 +1,6 @@
 import json_connection
 import iface_registry
+import view_registry
 
 
 class Server(object):
@@ -16,3 +17,13 @@ class Server(object):
         iface_id = response['iface_id']
         obj_ctr = iface_registry.resolve_iface(iface_id)
         return obj_ctr(self, response)
+
+    def get_view( self, request ):
+        response = self.execute_request(request)
+        iface_id = response['iface_id']
+        obj_ctr = iface_registry.resolve_iface(iface_id)
+        obj = obj_ctr(self, response)
+        view_id = response['view_id']
+        handle_ctr = view_registry.resolve_view(view_id)
+        return handle_ctr(obj)
+

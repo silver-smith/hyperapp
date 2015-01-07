@@ -53,6 +53,12 @@ class Object(object):
     def __init__( self, path ):
         self.path = path
 
+    def get_path( self ):
+        return self.path
+
+    def get_commands( self ):
+        return []
+
 
 class ListObject(Object):
 
