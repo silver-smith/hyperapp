@@ -48,7 +48,7 @@ class MenuBar(object):
         self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
 
     def view_changed( self, window ):
-        self.current_dir = dir = window.current_dir()
+        self.current_dir = dir = window.get_object()
         self.help_menu.setEnabled(dir is not None)
         self.dir_menu.clear()
         view = window.current_view()

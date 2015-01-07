@@ -11,7 +11,6 @@ class Handle(view.Handle):
         self.object = object
         self.text = text
 
-
     def title( self ):
         return self.object.title()
 
@@ -36,7 +35,7 @@ class View(view.View, QtGui.QTextEdit):
     def title( self ):
         return self.object.title()
 
-    def current_dir( self ):
+    def get_object( self ):
         return self.object
 
 

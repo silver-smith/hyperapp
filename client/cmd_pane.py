@@ -21,7 +21,7 @@ class View(QtGui.QDockWidget):
         self.elts_buttons = []
 
     def view_changed( self, window ):
-        dir = window.current_dir()
+        dir = window.get_object()
         self._update_dir(dir)
         self.current_dir = dir
         self._update_elts(window.current_view(), window.selected_elts())

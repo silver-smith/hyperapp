@@ -65,10 +65,10 @@ class View(object):
         else:
             return 'Untitled'
 
-    def current_dir( self ):
+    def get_object( self ):
         view = self.current_child()
         if view:
-            return view.current_dir()
+            return view.get_object()
         else:
             return None
 

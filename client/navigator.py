@@ -46,7 +46,7 @@ class View(Composite):
     def set_child( self, handle ):
         #print 'history open', self._back_history, self._forward_history, handle
         self._forward_history = []
-        ## if not isinstance(self._child.current_dir(), HistoryList):
+        ## if not isinstance(self._child.get_object(), HistoryList):
         self._back_history.append(self._child.handle())
         if len(self._back_history) > MAX_HISTORY_SIZE:
             self._back_history = self._back_history[-MAX_HISTORY_SIZE:]
@@ -73,7 +73,7 @@ class View(Composite):
     def _go_back( self ):
         if not self._back_history:
             return False
-        ## if not isinstance(self._child.current_dir(), HistoryList):
+        ## if not isinstance(self._child.get_object(), HistoryList):
         self._forward_history.append(self._child.handle())
         self._open(self._back_history.pop())
 
@@ -82,7 +82,7 @@ class View(Composite):
         print '   history forward', self._back_history, self._forward_history
         if not self._forward_history:
             return False
-        ## if not isinstance(self._child.current_dir(), HistoryList):
+        ## if not isinstance(self._child.get_object(), HistoryList):
         self._back_history.append(self._child.handle())
         self._open(self._forward_history.pop())
 

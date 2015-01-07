@@ -62,7 +62,7 @@ class View(LineListPanel):
 
     def __init__( self, parent, list_handle ):
         LineListPanel.__init__(self, parent, line_edit.Handle(''), list_handle)
-        self._base_obj = self._list_view.current_dir()
+        self._base_obj = self._list_view.get_object()
         self._line_edit.textEdited.connect(self._on_text_edited)
 
     def handle( self ):
@@ -71,7 +71,7 @@ class View(LineListPanel):
     def title( self ):
         return self._base_obj.title()
 
-    def current_dir( self ):
+    def get_object( self ):
         return self._base_obj
 
     def _on_text_edited( self, text ):
@@ -99,7 +99,7 @@ class View(LineListPanel):
         return LineListPanel.eventFilter(self, obj, evt)
 
     def _fill_common_prefix( self ):
-        dir = self._list_view.current_dir()
+        dir = self._list_view.get_object()
         elements = dir.elements()
         if not elements: return
         common = elements[0].name

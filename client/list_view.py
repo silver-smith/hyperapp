@@ -100,13 +100,13 @@ class View(view.View, QtGui.QTableView):
         self.set_object(obj)
 
     def handle( self ):
-        return Handle(self.current_dir(), self.current_key(), self.selected_keys(), self._select_first)
+        return Handle(self.get_object(), self.current_key(), self.selected_keys(), self._select_first)
 
     def title( self ):
         if self.list_obj:
             return self.list_obj.title()
 
-    def current_dir( self ):
+    def get_object( self ):
         return self.list_obj
 
     def current_key( self ):

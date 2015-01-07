@@ -118,7 +118,7 @@ class View(QtGui.QSplitter, view.View):
     def pick_arg( self, kind ):
         if self._focused is None: return
         another_view = self._get_view(1 - self._focused)
-        obj = another_view.current_dir()
+        obj = another_view.get_object()
         if obj and kind.matches(obj):
             return obj
         else:
