@@ -39,29 +39,18 @@ class Server(object):
 
     def process_request( self, request ):
         method = request['method']
+        # server-global commands
         if method == 'init':
             return self.get_object(self.init_dir)
         if method == 'get_commands':
             return self.process_get_commands(request)
         if method == 'run_module_command':
             return self.process_run_module_command(request)
+        # object commands
         path = request['path']
-        dir = self.resolve(path)
-        if method == 'get_elements':
-            key = request['key']
-            count = request['count']
-            return dict(elements=dir.iface.get_elements(dir, count, key))
-        elif method == 'run_element_command':
-            command_id = request['command_id']
-            element_key = request['element_key']
-            new_dir = dir.run_element_command(command_id, element_key)
-            return self.get_object(new_dir)
-        elif method == 'run_dir_command':
-            command_id = request['command_id']
-            new_dir = dir.run_dir_command(command_id)
-            return self.get_object(new_dir)
-        else:
-            assert False, repr(method)
+        object = self.resolve(path)
+        iface = object.iface
+        return iface.process_request(object, method, request)
 
     def process_get_commands( self, request ):
         commands = [cmd.as_json() for cmd in Module.get_all_modules_commands()]
