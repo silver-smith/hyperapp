@@ -1,7 +1,7 @@
 import sys
 import os.path
 import stat
-from object import Object, Command, Element, Column
+from object import ListObject, Command, Element, Column
 from module import Module, ModuleCommand
 import file_view
 
@@ -9,7 +9,7 @@ import file_view
 MODULE_NAME = 'file'
 
 
-class Dir(Object):
+class Dir(ListObject):
 
     iface_id = 'list'
 
@@ -22,7 +22,7 @@ class Dir(Object):
 
     def __init__( self, fspath ):
         fspath = os.path.abspath(fspath)
-        Object.__init__(self, '/fs/' + fspath.lstrip('/'))
+        ListObject.__init__(self, '/fs/' + fspath.lstrip('/'))
         self.fspath = fspath
 
     def get_all_elements( self ):
@@ -86,7 +86,7 @@ class Dir(Object):
             return None  # already root
         return dir
 
-    def dir_commands( self ):
+    def get_commands( self ):
         return [Command('parent', 'Open parent', 'Open parent directory', 'Ctrl+Backspace')]
 
 

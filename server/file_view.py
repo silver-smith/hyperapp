@@ -1,10 +1,10 @@
 # view file, splitted to lines; watch for it's size and follow it's end
 
 import os.path
-from object import Object, Element, Column
+from object import ListObject, Element, Column
 
 
-class File(Object):
+class File(ListObject):
 
     iface_id = 'list'
 
@@ -15,10 +15,10 @@ class File(Object):
 
     def __init__( self, fspath ):
         fspath = os.path.abspath(fspath)
-        Object.__init__(self, '/file/' + fspath.lstrip('/'))
+        ListObject.__init__(self, '/file/' + fspath.lstrip('/'))
         self.fspath = fspath
 
-    def dir_commands( self ):
+    def get_commands( self ):
         return []
 
     def get_all_elements( self ):

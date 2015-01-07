@@ -1,3 +1,5 @@
+from iface import ListIface
+
 
 MIN_ROWS_RETURNED = 10
 
@@ -50,12 +52,24 @@ class Object(object):
 
     def __init__( self, path ):
         self.path = path
-        for idx, column in enumerate(self.columns):
+
+
+class ListObject(Object):
+
+    iface = ListIface()
+
+    def __init__( self, path ):
+        Object.__init__(self, path)
+        self.key_column_idx = self._pick_key_column_idx(self.get_columns())
+
+    def _pick_key_column_idx( self, columns ):
+        for idx, column in enumerate(self.get_columns()):
             if column.id == 'key':
-                self.key_column_idx = idx
-                break
-        else:
-            assert False, 'Unknown column id: %r' % self.key_column_id
+                return idx
+        assert False, 'Missing "key" column id'
+
+    def get_columns( self ):
+        return self.columns
 
     def get_elements( self, count=None, from_key=None ):
         elements = self.get_all_elements()
@@ -68,3 +82,6 @@ class Object(object):
             else:
                 print 'Warning: unknown "from_key" is requested: %r' % from_key
         return elements[from_idx:from_idx + max(count or 0, MIN_ROWS_RETURNED)]
+
+    def get_all_elements( self ):
+        raise NotImplementedError(self.__class__)

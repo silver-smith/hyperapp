@@ -32,21 +32,15 @@ class Server(object):
             fspath = path[5:]
             return file_view.File(fspath)
 
-    def resp_elements( self, dir, count=None, key=None ):
-        return [elt.as_json() for elt in dir.get_elements(count, key)]
-
-    def resp_object( self, dir ):
-        return dict(
-            iface_id=dir.iface_id,
-            path=dir.path,
-            dir_commands=[cmd.as_json() for cmd in dir.dir_commands()],
-            columns=[column.as_json() for column in dir.columns],
-            elements=self.resp_elements(dir))
+    def get_object( self, object ):
+        if object is None: return None
+        iface = object.iface
+        return iface.get(object)
 
     def process_request( self, request ):
         method = request['method']
         if method == 'init':
-            return self.resp_object(self.init_dir)
+            return self.get_object(self.init_dir)
         if method == 'get_commands':
             return self.process_get_commands(request)
         if method == 'run_module_command':
@@ -56,16 +50,16 @@ class Server(object):
         if method == 'get_elements':
             key = request['key']
             count = request['count']
-            return dict(elements=self.resp_elements(dir, count, key))
+            return dict(elements=dir.iface.get_elements(dir, count, key))
         elif method == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
             new_dir = dir.run_element_command(command_id, element_key)
-            return self.resp_object(new_dir)
+            return self.get_object(new_dir)
         elif method == 'run_dir_command':
             command_id = request['command_id']
             new_dir = dir.run_dir_command(command_id)
-            return self.resp_object(new_dir)
+            return self.get_object(new_dir)
         else:
             assert False, repr(method)
 
@@ -77,7 +71,7 @@ class Server(object):
         module_name = request['module_name']
         command_id = request['command_id']
         obj = Module.run_module_command(module_name, command_id)
-        return self.resp_object(obj)
+        return self.get_object(obj)
 
     def run( self, connection, cln_addr ):
         print 'accepted connection from %s:%d' % cln_addr
