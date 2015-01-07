@@ -5,6 +5,7 @@ class Iface(object):
     id = None
 
     def get( self, object ):
+        if object is None: return None
         return dict(
             iface_id=self.id,
             path=object.path,

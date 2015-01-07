@@ -11,8 +11,6 @@ MODULE_NAME = 'file'
 
 class Dir(ListObject):
 
-    iface_id = 'list'
-
     columns = [
         Column('key', 'File Name'),
         Column('ftype', 'File type'),
