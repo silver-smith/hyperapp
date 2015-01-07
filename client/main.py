@@ -20,6 +20,7 @@ import tab_view
 import navigator
 import list_view
 #import narrower
+import text_edit
 
 
 class Handle(view.Handle):

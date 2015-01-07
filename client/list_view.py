@@ -3,7 +3,6 @@ from PySide import QtCore, QtGui
 
 sys.path.append('..')
 
-import json_connection
 from util import uni2str, key_match, key_match_any
 from list_obj import ListObj
 import view_registry
