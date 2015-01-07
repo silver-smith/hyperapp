@@ -59,6 +59,9 @@ class Object(object):
     def get_commands( self ):
         return []
 
+    def run_command( self, command_id ):
+        assert False, repr(command_id)  # Unknown command
+
 
 class ListObject(Object):
 

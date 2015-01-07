@@ -1,5 +1,7 @@
+from pony.orm import db_session, Required
 from object import Object, Command
-from module import Module, ModuleCommand
+from module import ModuleCommand
+from ponyorm_module import PonyOrmModule
 from iface import ObjectIface
 
 
@@ -15,11 +17,25 @@ class Article(Object):
         Object.__init__(self, '/article/new')
         self.id = article_id
 
+    def get_commands( self ):
+        return [Command('save', 'Save', 'Save article', 'Ctrl+S')]
 
-class ArticleModule(Module):
+    def run_command( self, command_id ):
+        if command_id == 'save':
+            return self.run_command_save()
+        else:
+            return Object.run_command(self, command_id)
+
+    def run_command_save( self ):
+        pass
+
+
+class ArticleModule(PonyOrmModule):
 
     def __init__( self ):
-        Module.__init__(self, MODULE_NAME)
+        PonyOrmModule.__init__(self, MODULE_NAME)
+        self.Article = self.make_entity('Article',
+                                        text=Required(unicode))
 
     def get_commands( self ):
         return [ModuleCommand('create', 'Create article', 'Create new article', 'Alt+A', self.name)]
