@@ -20,14 +20,17 @@ class Article(Object):
     def get_commands( self ):
         return [Command('save', 'Save', 'Save article', 'Ctrl+S')]
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, request ):
         if command_id == 'save':
-            return self.run_command_save()
+            return self.run_command_save(request)
         else:
             return Object.run_command(self, command_id)
 
-    def run_command_save( self ):
-        pass
+    def run_command_save( self, request ):
+        text = request['text']
+        with db_session:
+            rec = module.Article(text=text)
+        print 'created Article, id =', rec.id
 
 
 class ArticleModule(PonyOrmModule):
