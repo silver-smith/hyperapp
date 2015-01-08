@@ -81,6 +81,7 @@ class View(view.View, QtGui.QTableView):
     def __init__( self, parent, obj, key, selected_keys, select_first ):
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
+        self._select_first = select_first
         self.columns = None
         self.list_obj = None
         self._model = Model(list_obj=None, visible_columns=None)
@@ -118,6 +119,12 @@ class View(view.View, QtGui.QTableView):
         idx = self.currentIndex()
         return self.list_obj.elements[idx.row()]
 
+    def set_current_row( self, row ):
+        if row is not None:
+            idx = self._model.createIndex(row, 0)
+            self.setCurrentIndex(idx)
+            self.scrollTo(idx)
+
     def selected_keys( self ):
         return None
 
@@ -130,6 +137,8 @@ class View(view.View, QtGui.QTableView):
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
         self.resizeColumnsToContents()
+        if self._select_first and self.list_obj.element_count() > 0:
+            self.set_current_row(0)
         self.view_changed()
 
     def keyPressEvent( self, evt ):
