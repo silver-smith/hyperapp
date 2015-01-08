@@ -13,6 +13,7 @@ import ponyorm_module
 from fs import Dir
 import file_view
 import article
+import blog
 
 
 LISTEN_PORT = 8888
@@ -21,7 +22,7 @@ LISTEN_PORT = 8888
 class Server(object):
 
     def __init__( self ):
-        Module.run_phase2_init()
+        Module.init_phases()
         self.init_dir = Dir(os.path.expanduser('~/'))
         ## self.init_dir = file_view.File('/etc/DIR_COLORS')
 

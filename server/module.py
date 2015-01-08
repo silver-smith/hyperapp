@@ -20,16 +20,21 @@ class Module(object):
 
     def __init__( self, name ):
         self.name = name
-        self.module_registry.append(self)
+        self.module_registry.append(self)  # preserves import order
         self.module_by_name[name] = self
 
     def init_phase2( self ):
         pass
 
+    def init_phase3( self ):
+        pass
+
     @classmethod
-    def run_phase2_init( cls ):
+    def init_phases( cls ):
         for module in cls.module_registry:
             module.init_phase2()
+        for module in cls.module_registry:
+            module.init_phase3()
 
     def get_commands( self ):
         return []

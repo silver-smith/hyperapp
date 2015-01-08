@@ -32,7 +32,7 @@ class Article(Object):
             if self.article_id is not None:
                 rec = module.Article[self.article_id]
                 rec.text = text
-                print 'updated Article, id =', self.article_id, rec.id
+                print 'updated Article, id =', rec.id
             else:
                 rec = module.Article(text=text)
                 print 'created Article, id =', rec.id
@@ -43,8 +43,10 @@ class ArticleModule(PonyOrmModule):
 
     def __init__( self ):
         PonyOrmModule.__init__(self, MODULE_NAME)
-        self.Article = self.make_entity('Article',
-                                        text=Required(unicode))
+        self.article_fields = dict(text=Required(unicode))
+
+    def init_phase2( self ):
+        self.Article = self.make_entity('Article', **self.article_fields)
 
     def get_commands( self ):
         return [ModuleCommand('create', 'Create article', 'Create new article', 'Alt+A', self.name)]
@@ -53,6 +55,9 @@ class ArticleModule(PonyOrmModule):
         if command_id == 'create':
             return Article()
         assert False, repr(command_id)  # Unsupported command
+
+    def add_article_fields( self, **fields ):
+        self.article_fields.update(fields)
 
 
 module = ArticleModule()

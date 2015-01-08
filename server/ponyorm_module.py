@@ -28,7 +28,7 @@ class ThisModule(Module):
         #sql_debug(True)
         self.db = Database('sqlite', SQLITE_DB_PATH, create_db=True)
 
-    def init_phase2( self ):
+    def init_phase3( self ):
         self.db.generate_mapping(create_tables=True)
 
 
