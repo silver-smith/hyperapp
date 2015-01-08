@@ -20,10 +20,10 @@ class BlogEntry(article.Article):
         with db_session:
             if entry_id is not None:
                 entry_rec = module.BlogEntry[entry_id]
-                article_id = entry_rec.article.id
+                article_rec = entry_rec.article
             else:
-                article_id = None
-            article_rec = self.save_article(article_id, text)
+                article_rec = None
+            article_rec = self.save_article(article_rec, text)
             if entry_id is None:
                 entry_rec = module.BlogEntry(
                     article=article_rec,

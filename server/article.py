@@ -32,22 +32,22 @@ class Article(Object):
 
     def do_save( self, text ):
         ident = self.path.rsplit('/', 1)[-1]
-        if ident == 'new':
-            article_id = None
-        else:
-            article_id = int(ident)
         with db_session:
-            article_rec = self.save_article(article_id, text)
+            if ident == 'new':
+                article_rec = None
+            else:
+                article_id = int(ident)
+                article_rec = module.Article[article_id]
+            article_rec = self.save_article(article_rec, text)
         print 'Article is saved, article_id =', article_rec.id
         return '/article/%d' % article_rec.id
 
-    def save_article( self, article_id, text ):
-        if article_id is not None:
-            rec = module.Article[article_id]
-            rec.text = text
+    def save_article( self, article_rec, text ):
+        if article_rec is not None:
+            article_rec.text = text
         else:
-            rec = module.Article(text=text)
-        return rec
+            article_rec = module.Article(text=text)
+        return article_rec
 
 
 class ArticleModule(PonyOrmModule):
