@@ -15,5 +15,13 @@ class ObjectIface(object):
     def get_commands( self ):
         return self.commands
 
+    def run_command( self, command_id ):
+        request = dict(
+            method='run_command',
+            path=self.path,
+            command_id=command_id,
+            )
+        return self.server.get_view(request)
+
 
 iface_registry.register_iface('object', ObjectIface)

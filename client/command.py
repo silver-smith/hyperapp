@@ -22,12 +22,7 @@ class ObjectCommand(Command):
 
     def run( self, view, obj ):
         print 'ObjectCommand.run', self.id, obj, view
-        request = dict(
-            method='run_command',
-            path=obj.path,
-            command_id=self.id,
-            )
-        handle = obj.server.get_view(request)
+        handle = obj.run_command(self.id)
         if handle:
             view.open(handle)
 
