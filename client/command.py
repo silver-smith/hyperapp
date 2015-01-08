@@ -18,7 +18,7 @@ class Command(object):
 class ObjectCommand(Command):
 
     def run( self, view, obj ):
-        print 'list_obj.Command.run_command', obj, view
+        print 'ObjectCommand.run', self.id, obj, view
         request = dict(
             method='run_command',
             path=obj.path,
@@ -35,7 +35,7 @@ class ObjectCommand(Command):
 class ElementCommand(Command):
 
     def run( self, view, obj, element_key ):
-        print 'list_obj.Command.run_element_command', obj, view
+        print 'ElementCommand.run', self.id, obj, view, element_key
         request = dict(
             method='run_element_command',
             path=obj.path,
@@ -61,6 +61,7 @@ class ModuleCommand(Command):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'], data['module_name'])
 
     def run( self, window, app ):
+        print 'ModuleCommand.run', self.id, self.module_name, window, app
         request = dict(
             method='run_module_command',
             module_name=self.module_name,
