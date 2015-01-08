@@ -1,4 +1,3 @@
-from iface import ListIface
 
 
 MIN_ROWS_RETURNED = 10
@@ -64,8 +63,6 @@ class Object(object):
 
 
 class ListObject(Object):
-
-    iface = ListIface()
 
     def __init__( self, path ):
         Object.__init__(self, path)

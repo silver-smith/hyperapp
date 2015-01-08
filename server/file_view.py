@@ -2,10 +2,12 @@
 
 import os.path
 from object import ListObject, Element, Column
+from iface import ListIface
 
 
 class File(ListObject):
 
+    iface = ListIface()
     view_id = 'list'
 
     columns = [

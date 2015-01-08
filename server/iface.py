@@ -1,3 +1,4 @@
+from object import Object
 
 
 class Iface(object):
@@ -16,8 +17,10 @@ class Iface(object):
     def process_request( self, object, method, request ):
         if method == 'run_command':
             command_id = request['command_id']
-            new_object = object.run_command(command_id, request)
-            return self.get(new_object)
+            response = object.run_command(command_id, request)
+            if isinstance(response, Object):
+                response = self.get(new_object)
+            return response
         else:
             assert False, repr(method)  # Unknown method
 

@@ -15,7 +15,7 @@ class Article(Object):
 
     def __init__( self, article_id=None ):
         Object.__init__(self, '/article/new')
-        self.id = article_id
+        self.article_id = article_id
 
     def get_commands( self ):
         return [Command('save', 'Save', 'Save article', 'Ctrl+S')]
@@ -29,8 +29,14 @@ class Article(Object):
     def run_command_save( self, request ):
         text = request['text']
         with db_session:
-            rec = module.Article(text=text)
-        print 'created Article, id =', rec.id
+            if self.article_id is not None:
+                rec = module.Article[self.article_id]
+                rec.text = text
+                print 'updated Article, id =', self.article_id, rec.id
+            else:
+                rec = module.Article(text=text)
+                print 'created Article, id =', rec.id
+        return dict(article_id=rec.id)
 
 
 class ArticleModule(PonyOrmModule):

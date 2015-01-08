@@ -42,6 +42,8 @@ class Window(Composite, QtGui.QMainWindow):
             self.resize(DEFAULT_SIZE)
         if pos:
             self.move(pos)
+        else:
+            self.move(800, 100)
         self._menu_bar = MenuBar(app, weakref.ref(self))
         self._cmd_pane = cmd_pane.View(self)
         #self._filter_pane = filter_pane.View(self)
