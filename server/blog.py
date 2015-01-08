@@ -12,7 +12,7 @@ MODULE_NAME = 'blog'
 class BlogEntry(article.Article):
 
     def do_save( self, text ):
-        entry_id = str2id(self.path.rsplit('/', 1)[-1])
+        entry_id = str2id(self.path.split('/')[-1])
         with db_session:
             if entry_id is not None:
                 entry_rec = module.BlogEntry[entry_id]

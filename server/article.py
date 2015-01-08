@@ -32,7 +32,7 @@ class Article(Object):
         return dict(new_path=new_path)
 
     def do_save( self, text ):
-        article_id = str2id(self.path.rsplit('/', 1)[-1])
+        article_id = str2id(self.path.split('/')[-1])
         with db_session:
             if article_id is not None:
                 article_rec = module.Article[article_id]
