@@ -13,6 +13,7 @@ class Server(object):
         return self.connection.receive()
 
     def resp2object( self, response ):
+        if response is None: return None
         iface_id = response['iface_id']
         obj_ctr = iface_registry.resolve_iface(iface_id)
         return obj_ctr(self, response)
@@ -24,6 +25,7 @@ class Server(object):
     def get_view( self, request ):
         response = self.execute_request(request)
         object = self.resp2object(response)
+        if object is None: return None
         view_id = response['view_id']
         handle_ctr = view_registry.resolve_view(view_id)
         return handle_ctr(object)

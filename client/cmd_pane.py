@@ -49,6 +49,7 @@ class View(QtGui.QDockWidget):
         self.elts_buttons = []
         if not elts: return
         dir = self.current_dir
+        if dir is None: return
         assert len(elts) == 1  # no multi-select support yet
         elt = elts[0]
         element_key = dir.element2key(elt)
