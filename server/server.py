@@ -35,6 +35,8 @@ class Server(object):
             return file_view.File(fspath)
         if path.startswith('/article/'):
             return article.Article(path)
+        if path.startswith('/blog_entry/'):
+            return blog.BlogEntry(path)
 
     def get_object( self, object ):
         if object is None: return None
