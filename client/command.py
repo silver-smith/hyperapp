@@ -14,6 +14,9 @@ class Command(object):
     def from_json( cls, data ):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'])
 
+    def _make_action( self, widget, *args ):
+        return make_action(widget, self.text, self.shortcut, self.run, *args)
+
 
 class ObjectCommand(Command):
 
@@ -29,7 +32,7 @@ class ObjectCommand(Command):
             view.open(handle)
 
     def make_action( self, widget, view, obj ):
-        return make_action(widget, self.text, self.shortcut, self.run, view, obj)
+        return self._make_action(widget, view, obj)
 
 
 class ElementCommand(Command):
@@ -47,7 +50,7 @@ class ElementCommand(Command):
             view.open(handle)
 
     def make_action( self, widget, view, obj, element_key ):
-        return make_action(widget, self.text, self.shortcut, self.run, view, obj, element_key)
+        return self._make_action(widget, view, obj, element_key)
 
 
 class ModuleCommand(Command):
@@ -71,4 +74,4 @@ class ModuleCommand(Command):
             window.open(handle)
 
     def make_action( self, widget, window, app ):
-        return make_action(widget, self.text, self.shortcut, self.run, window, app)
+        return self._make_action(widget, window, app)
