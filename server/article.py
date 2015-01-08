@@ -2,7 +2,7 @@ from pony.orm import db_session, Required
 from object import Object, Command
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
-from iface import ObjectIface
+from iface import TextObjectIface
 
 
 MODULE_NAME = 'article'
@@ -10,7 +10,7 @@ MODULE_NAME = 'article'
 
 class Article(Object):
 
-    iface = ObjectIface()
+    iface = TextObjectIface()
     view_id = 'text'
 
     def __init__( self, article_id=None ):

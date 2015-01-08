@@ -27,6 +27,11 @@ class ObjectIface(Iface):
     id = 'object'
 
 
+class TextObjectIface(Iface):
+
+    id = 'text'
+
+
 class ListIface(Iface):
 
     id = 'list'
