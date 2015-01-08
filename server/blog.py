@@ -1,3 +1,4 @@
+from datetime import datetime
 from pony.orm import db_session, Required, Set
 from ponyorm_module import PonyOrmModule
 import article
@@ -16,7 +17,8 @@ class BlogModule(PonyOrmModule):
     def init_phase2( self ):
         self.Article = self.article_module.Article
         self.Blog = self.make_entity('Blog',
-                                     article=Required(self.Article))
+                                     article=Required(self.Article),
+                                     created_at=Required(datetime))
 
     def get_commands( self ):
         return [ModuleCommand('create', 'Create article', 'Create new blog entry', 'Alt+B', self.name)]
