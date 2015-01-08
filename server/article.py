@@ -36,11 +36,11 @@ class Article(Object):
             article_id = None
         else:
             article_id = int(ident)
-        article_rec = self.save_article(article_id, text)
+        with db_session:
+            article_rec = self.save_article(article_id, text)
         print 'Article is saved, article_id =', article_rec.id
         return '/article/%d' % article_rec.id
 
-    @db_session
     def save_article( self, article_id, text ):
         if article_id is not None:
             rec = module.Article[article_id]
