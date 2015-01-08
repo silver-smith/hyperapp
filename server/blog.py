@@ -1,7 +1,7 @@
 from datetime import datetime
 from pony.orm import db_session, Required, Set
 from ponyorm_module import PonyOrmModule
-from util import utcnow
+from util import utcnow, str2id
 from module import ModuleCommand
 import article
 
@@ -12,11 +12,7 @@ MODULE_NAME = 'blog'
 class BlogEntry(article.Article):
 
     def do_save( self, text ):
-        ident = self.path.rsplit('/', 1)[-1]
-        if ident == 'new':
-            entry_id = None
-        else:
-            entry_id = int(ident)
+        entry_id = str2id(self.path.rsplit('/', 1)[-1])
         with db_session:
             if entry_id is not None:
                 entry_rec = module.BlogEntry[entry_id]

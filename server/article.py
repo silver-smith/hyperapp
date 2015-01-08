@@ -1,4 +1,5 @@
 from pony.orm import db_session, Required
+from util import str2id
 from object import Object, Command
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
@@ -31,13 +32,12 @@ class Article(Object):
         return dict(new_path=new_path)
 
     def do_save( self, text ):
-        ident = self.path.rsplit('/', 1)[-1]
+        article_id = str2id(self.path.rsplit('/', 1)[-1])
         with db_session:
-            if ident == 'new':
-                article_rec = None
-            else:
-                article_id = int(ident)
+            if article_id is not None:
                 article_rec = module.Article[article_id]
+            else:
+                article_rec = None
             article_rec = self.save_article(article_rec, text)
         print 'Article is saved, article_id =', article_rec.id
         return '/article/%d' % article_rec.id
