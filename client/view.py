@@ -126,13 +126,6 @@ class View(object):
     def hide_current( self ):
         self._parent().hide_current()
 
-    def get_arg_editor( self, obj_kind, args ):
-        assert isinstance(obj_kind, ObjKind), repr(obj_kind)
-        return self._parent().get_arg_editor(obj_kind, args)
-
-    def make_action( self, title, shortcut, fn, *args, **kw ):
-        make_action(self.get_widget(), title, shortcut, fn, *args, **kw)
-
     def print_key_event( self, evt, prefix ):
         print_key_event(evt, '%s %s %s' % (prefix, self._cls2name(self), hex(id(self))))
 
@@ -141,19 +134,3 @@ class View(object):
 
     def pick_arg( self, kind ):
         return self._parent().pick_arg(kind)
-
-    def run( self, cmd, *args ):
-        assert isinstance(cmd, (command, list_obj.Command)) and cmd.is_bound2inst(), repr(cmd)
-        handle = self._run_handle(cmd, args)
-        if handle:
-            self.open(handle)
-
-    def _run_handle( self, cmd, args ):
-        if not cmd.args:
-            return cmd.run(*args)
-        arg0 = self.pick_arg(cmd.args[0].kind)
-        if arg0 is not None:
-            args = args + (arg0,)
-            if len(cmd.args) == 1:
-                return cmd.run(*args)
-        return self.CmdPanelHandleCls(cmd, list(args))

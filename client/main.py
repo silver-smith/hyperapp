@@ -53,9 +53,6 @@ class Application(QtGui.QApplication, view.View):
     def pick_arg( self, kind ):
         return None
 
-    def get_arg_editor( self, kind, args ):
-        return kind.get_handle(args)
-
     def get_global_commands( self ):
         return self.server_commands + self._commands
 
