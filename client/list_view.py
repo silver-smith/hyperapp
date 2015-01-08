@@ -117,7 +117,11 @@ class View(view.View, QtGui.QTableView):
 
     def current_elt( self ):
         idx = self.currentIndex()
-        return self.list_obj.elements[idx.row()]
+        if idx.row() != -1:
+            return self.list_obj.elements[idx.row()]
+
+    def selected_elts( self ):
+        return filter(None, [self.current_elt()])
 
     def set_current_row( self, row ):
         if row is not None:
@@ -167,6 +171,15 @@ class View(view.View, QtGui.QTableView):
         self.ensure_elements(max(first_visible_row, 0) + visible_row_count + 1)
         return result
 
+    def currentChanged( self, idx, prev_idx ):
+        QtGui.QTableView.currentChanged(self, idx, prev_idx)
+        self._selected_elements_changed()
+
+    def setVisible( self, visible ):
+        QtGui.QTableView.setVisible(self, visible)
+        if visible:
+            self.selected_elements_changed(self.selected_elts())
+
     def ensure_elements( self, element_count ):
         old_element_count = self.list_obj.element_count()
         if element_count <= old_element_count: return
@@ -180,10 +193,6 @@ class View(view.View, QtGui.QTableView):
             if cmd.id == 'open':
                 cmd.run(self, self.list_obj, element_key)
                 return
-
-    def currentChanged( self, idx, prev_idx ):
-        QtGui.QTableView.currentChanged(self, idx, prev_idx)
-        self._selected_elements_changed()
 
     def _selected_elements_changed( self ):
         self._update_selected_actions()
