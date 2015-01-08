@@ -13,9 +13,8 @@ class Article(Object):
     iface = TextObjectIface()
     view_id = 'text'
 
-    def __init__( self, article_id=None ):
-        Object.__init__(self, '/article/new')
-        self.article_id = article_id
+    def __init__( self, path ):
+        Object.__init__(self, path)
 
     def get_commands( self ):
         return [Command('save', 'Save', 'Save article', 'Ctrl+S')]
@@ -28,15 +27,27 @@ class Article(Object):
 
     def run_command_save( self, request ):
         text = request['text']
-        with db_session:
-            if self.article_id is not None:
-                rec = module.Article[self.article_id]
-                rec.text = text
-                print 'updated Article, id =', rec.id
-            else:
-                rec = module.Article(text=text)
-                print 'created Article, id =', rec.id
-        return dict(article_id=rec.id)
+        new_path = self.do_save(text)
+        return dict(new_path=new_path)
+
+    def do_save( self, text ):
+        ident = self.path.rsplit('/', 1)[-1]
+        if ident == 'new':
+            article_id = None
+        else:
+            article_id = int(ident)
+        article_rec = self.save_article(article_id, text)
+        print 'Article is saved, article_id =', article_rec.id
+        return '/article/%d' % article_rec.id
+
+    @db_session
+    def save_article( self, article_id, text ):
+        if article_id is not None:
+            rec = module.Article[article_id]
+            rec.text = text
+        else:
+            rec = module.Article(text=text)
+        return rec
 
 
 class ArticleModule(PonyOrmModule):
@@ -53,7 +64,7 @@ class ArticleModule(PonyOrmModule):
 
     def run_command( self, command_id ):
         if command_id == 'create':
-            return Article()
+            return Article('/article/new')
         assert False, repr(command_id)  # Unsupported command
 
     def add_article_fields( self, **fields ):

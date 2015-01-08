@@ -34,8 +34,7 @@ class Server(object):
             fspath = path[5:]
             return file_view.File(fspath)
         if path.startswith('/article/'):
-            ident = path.rsplit('/')[-1]
-            return article.Article(article_id=int(ident) if ident != 'new' else None)
+            return article.Article(path)
 
     def get_object( self, object ):
         if object is None: return None

@@ -1,10 +1,16 @@
 from datetime import datetime
 from pony.orm import db_session, Required, Set
 from ponyorm_module import PonyOrmModule
+from module import ModuleCommand
 import article
 
 
 MODULE_NAME = 'blog'
+
+
+class BlogEntry(article.Article):
+
+    pass
 
 
 class BlogModule(PonyOrmModule):
@@ -21,11 +27,11 @@ class BlogModule(PonyOrmModule):
                                      created_at=Required(datetime))
 
     def get_commands( self ):
-        return [ModuleCommand('create', 'Create article', 'Create new blog entry', 'Alt+B', self.name)]
+        return [ModuleCommand('create', 'Create entry', 'Create new blog entry', 'Alt+B', self.name)]
 
     def run_command( self, command_id ):
         if command_id == 'create':
-            return Article()
+            return BlogEntry()
         assert False, repr(command_id)  # Unsupported command
 
 
