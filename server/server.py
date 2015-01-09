@@ -4,6 +4,7 @@ import sys
 import os
 import os.path
 import traceback
+import re
 
 sys.path.append('..')
 
@@ -35,6 +36,8 @@ class Server(object):
             return file_view.File(fspath)
         if path.startswith('/article/'):
             return article.Article(path)
+        if re.match(r'/blog_entry/\d+/refs', path):
+            return article.ArticleRefs(path)
         if path.startswith('/blog_entry/'):
             return blog.BlogEntry(path)
         if path.startswith('/blog/'):
