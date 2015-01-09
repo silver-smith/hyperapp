@@ -8,10 +8,8 @@ class Iface(object):
     def get( self, object ):
         if object is None: return None
         return dict(
+            object.get_json(),
             iface_id=self.id,
-            view_id=object.view_id,
-            path=object.get_path(),
-            commands=[cmd.as_json() for cmd in object.get_commands()],
             )
 
     def process_request( self, object, method, request ):

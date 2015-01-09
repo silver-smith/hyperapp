@@ -63,6 +63,13 @@ class Object(object):
     def run_command( self, command_id, request ):
         assert False, repr(command_id)  # Unknown command
 
+    def get_json( self ):
+        return dict(
+            view_id=self.view_id,
+            path=self.get_path(),
+            commands=[cmd.as_json() for cmd in self.get_commands()],
+            )
+
 
 class ListObject(Object):
 
