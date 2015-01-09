@@ -25,7 +25,7 @@ class Handle(view.Handle):
         return self.obj.get_title()
 
     def construct( self, parent ):
-        print 'list_view construct', parent, self.obj.get_title(), self.obj
+        print 'list_view construct', parent, self.obj.get_title(), self.obj, repr(self.key)
         return View(parent, self.obj, self.key, self.selected_keys, self.select_first)
 
     def __repr__( self ):
@@ -95,10 +95,10 @@ class View(view.View, QtGui.QTableView):
         self.setSelectionMode(self.SingleSelection)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
-        self._select_first = select_first
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._selected_elts = []  # elements for which _elt_actions are
         self.set_object(obj)
+        self.set_current_key(key, select_first)
 
     def handle( self ):
         return Handle(self.get_object(), self.current_key(), self.selected_keys(), self._select_first)
@@ -129,6 +129,18 @@ class View(view.View, QtGui.QTableView):
             self.setCurrentIndex(idx)
             self.scrollTo(idx)
 
+    def set_current_key( self, key, select_first=False ):
+        if select_first:
+            row = 0
+        else:
+            row = None
+        for idx, element in enumerate(self.list_obj.elements):
+            if self.list_obj.element2key(element) == key:
+                row = idx
+                break
+        if row is not None and row < self.list_obj.element_count():
+            self.set_current_row(row)
+
     def selected_keys( self ):
         return None
 
@@ -141,9 +153,6 @@ class View(view.View, QtGui.QTableView):
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
         self.resizeColumnsToContents()
-        if self._select_first and self.list_obj.element_count() > 0:
-            self.set_current_row(0)
-        self.view_changed()
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
