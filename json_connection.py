@@ -1,3 +1,4 @@
+import datetime
 import json
 import struct
 import socket
@@ -8,6 +9,36 @@ RECV_SIZE = 4096
 
 
 class Error(Exception): pass
+
+
+class JSONEncoder(json.JSONEncoder):
+
+    def default( self, obj ):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        else:
+            return json.JSONEncoder.default(self, obj)
+
+
+class JSONDecoder(json.JSONDecoder):
+
+    def decode( self, s ):
+        try:
+            return datetime.datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%f')
+        except ValueError:
+            return json.JSONDecoder.decode(self, s)
+
+def decoder( obj ):
+    if isinstance(obj, basestring):
+        try:
+            return datetime.datetime.strptime(obj, '%Y-%m-%dT%H:%M:%S.%f')
+        except ValueError:
+            return obj
+    if isinstance(obj, list):
+        return map(decoder, obj)
+    if isinstance(obj, dict):
+        return dict((decoder(key), decoder(value)) for key, value in obj.items())
+    return obj
 
 
 class Connection(object):
@@ -32,12 +63,12 @@ class Connection(object):
     def send( self, value ):
         print 'send:'
         pprint.pprint(value)
-        json_data = json.dumps(value)
+        json_data = json.dumps(value, cls=JSONEncoder)
         data = self.encode_size(len(json_data)) + json_data
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
-            #print '  sent (%d) %s' % (sent_size, data[ofs:ofs + sent_size])
+            print '  sent (%d) %s' % (sent_size, data[ofs:ofs + sent_size])
             if sent_size == 0:
                 raise Error('Socket is closed')
             ofs += sent_size
@@ -57,7 +88,7 @@ class Connection(object):
             if len(data) < ssize: continue
             data_size = self.decode_size(data[:ssize])
             data = data[ssize:]
-        json_data = json.loads(data)
+        json_data = json.loads(data, object_hook=decoder)
         print 'received:'
         pprint.pprint(json_data)
         return json_data
