@@ -19,10 +19,15 @@ class Article(Object):
 
     @db_session
     def get_json( self ):
-        rec = module.Article[self.get_article_id()]
+        article_id = self.get_article_id()
+        if article_id is not None:
+            rec = module.Article[article_id]
+            text = rec.text
+        else:
+            text = None
         return dict(
             Object.get_json(self),
-            text=rec.text)
+            text=text)
 
     def get_commands( self ):
         return [Command('save', 'Save', 'Save article', 'Ctrl+S')]

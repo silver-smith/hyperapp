@@ -16,6 +16,8 @@ class BlogEntry(article.Article):
     @db_session
     def get_article_id( self ):
         entry_id = str2id(self.path.split('/')[-1])
+        if entry_id == None:
+            return None
         entry_rec = module.BlogEntry[entry_id]
         return entry_rec.article.id
 
@@ -48,6 +50,17 @@ class Blog(ListObject):
 
     def __init__( self, path ):
         ListObject.__init__(self, path)
+
+    def get_commands( self ):
+        return [Command('add', 'Add entry', 'Create new blog entry', 'Ins')]
+
+    def run_command( self, command_id, request ):
+        if command_id == 'add':
+            return self.run_command_add(request)
+        return ListObject.run_command(self, command_id, request)
+
+    def run_command_add( self, request ):
+        return BlogEntry('/blog_entry/new')
 
     @db_session
     def get_all_elements( self ):
