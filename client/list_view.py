@@ -96,7 +96,6 @@ class View(view.View, QtGui.QTableView):
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
-        self._selected_elts = []  # elements for which _elt_actions are
         self.set_object(obj)
         self.set_current_key(key, select_first)
 
@@ -213,7 +212,6 @@ class View(view.View, QtGui.QTableView):
         action_widget = self
         for action in self._elt_actions:
             action_widget.removeAction(action)
-        self._selected_elts = []
         self._elt_actions = []
         # pick selection and commands
         elt = self.current_elt()
@@ -226,9 +224,6 @@ class View(view.View, QtGui.QTableView):
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
-        # store explicit reference to elements or they will be deleted and subsequent bound
-        # method call will fail due to inst missing
-        self._selected_elts = [elt]
 
 
 view_registry.register_view('list', Handle)
