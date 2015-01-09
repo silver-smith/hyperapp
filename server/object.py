@@ -5,14 +5,16 @@ MIN_ROWS_RETURNED = 10
 
 class Column(object):
 
-    def __init__( self, id, title=None ):
+    def __init__( self, id, title=None, type='str' ):
         self.id = id
         self.title = title
+        self.type = type
 
     def as_json( self ):
         return dict(
             id=self.id,
             title=self.title,
+            type=self.type
             )
 
 

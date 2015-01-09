@@ -51,7 +51,7 @@ class Model(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             element = self.list_obj.elements[index.row()]
             column = self.visible_columns[index.column()]
-            return element.row[column.idx]
+            return column.type.to_string(element.row[column.idx])
         return None
 
     def headerData( self, section, orient, role ):

@@ -1,19 +1,46 @@
 from PySide import QtCore, QtGui
+from util import dt2local_str
 from command import ObjectCommand, ElementCommand
 from iface import ObjectIface
 import iface_registry
 
 
+class ColumnType(object):
+
+    def to_string( self, value ):
+        raise NotImplementedError(self.__class__)
+
+
+class StrColumnType(ColumnType):
+
+    def to_string( self, value ):
+        return value
+
+
+class DateTimeColumnType(ColumnType):
+
+    def to_string( self, value ):
+        return dt2local_str(value)
+
+
 class Column(object):
 
-    def __init__( self, idx, id, title ):
+    def __init__( self, idx, id, title, type ):
         self.idx = idx
         self.id = id
         self.title = title
+        self.type = type
 
     @classmethod
     def from_json( cls, idx, data ):
-        return cls(idx, data['id'], data['title'])
+        ts = data['type']
+        if ts == 'str':
+            t = StrColumnType()
+        elif ts == 'datetime':
+            t = DateTimeColumnType()
+        else:
+            assert False, repr(t)  # Unknown column type
+        return cls(idx, data['id'], data['title'], t)
 
 
 class Element(object):
