@@ -1,8 +1,10 @@
 from datetime import datetime
-from pony.orm import db_session, Required, Set
+from pony.orm import db_session, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
+from object import ListObject, Element, Column
 from module import ModuleCommand
+from iface import ListIface
 import article
 
 
@@ -28,6 +30,27 @@ class BlogEntry(article.Article):
         return '/blog_entry/%d' % entry_rec.id
 
 
+class Blog(ListObject):
+
+    iface = ListIface()
+    view_id = 'list'
+
+    columns = [
+        Column('key', 'Article id'),
+        Column('created_at', 'Creation date', type='datetime'),
+        ]
+
+    def __init__( self, path ):
+        ListObject.__init__(self, path)
+
+    @db_session
+    def get_all_elements( self ):
+        return map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at)))
+
+    def rec2element( self, rec ):
+        return Element(rec.id, [rec.id, rec.created_at])
+
+
 class BlogModule(PonyOrmModule):
 
     def __init__( self ):
@@ -42,11 +65,16 @@ class BlogModule(PonyOrmModule):
                                           created_at=Required(datetime))
 
     def get_commands( self ):
-        return [ModuleCommand('create', 'Create entry', 'Create new blog entry', 'Alt+B', self.name)]
+        return [
+            ModuleCommand('create', 'Create entry', 'Create new blog entry', None, self.name),
+            ModuleCommand('open_blog', 'Blog', 'Open blog', 'Alt+B', self.name),
+            ]
 
     def run_command( self, command_id ):
         if command_id == 'create':
             return BlogEntry('/blog_entry/new')
+        if command_id == 'open_blog':
+            return Blog('/blog/')
         assert False, repr(command_id)  # Unsupported command
 
 
