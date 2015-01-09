@@ -24,7 +24,7 @@ class Article(Object):
         if command_id == 'save':
             return self.run_command_save(request)
         else:
-            return Object.run_command(self, command_id)
+            return Object.run_command(self, command_id, request)
 
     def run_command_save( self, request ):
         text = request['text']

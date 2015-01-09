@@ -76,7 +76,7 @@ class Dir(ListObject):
                 return file_view.File(fspath)
         return ListObject.run_element_command(self, command_id, element_key)
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, request ):
         assert command_id == 'parent', repr(command_id)
         fspath = self.get_parent_dir()
         if fspath is not None:
