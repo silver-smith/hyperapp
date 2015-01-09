@@ -6,7 +6,7 @@ class TextObject(ObjectIface):
 
     def __init__( self, server, response ):
         ObjectIface.__init__(self, server, response)
-        self.text = ''
+        self.text = response['text']
 
     def text_changed( self, new_text ):
         self.text = new_text

@@ -13,6 +13,12 @@ MODULE_NAME = 'blog'
 
 class BlogEntry(article.Article):
 
+    @db_session
+    def get_article_id( self ):
+        entry_id = str2id(self.path.split('/')[-1])
+        entry_rec = module.BlogEntry[entry_id]
+        return entry_rec.article.id
+
     def do_save( self, text ):
         entry_id = str2id(self.path.split('/')[-1])
         with db_session:

@@ -28,6 +28,7 @@ class View(view.View, QtGui.QTextEdit):
         QtGui.QTextEdit.__init__(self, text)
         view.View.__init__(self, parent)
         self.object = object
+        self.setText(object.text)
         self.textChanged.connect(self._on_text_changed)
 
     def handle( self ):
