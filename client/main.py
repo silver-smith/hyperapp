@@ -22,6 +22,7 @@ import list_view
 #import narrower
 import text_object
 import text_edit
+import article_ref
 
 
 class Handle(view.Handle):
