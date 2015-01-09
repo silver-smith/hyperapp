@@ -37,7 +37,7 @@ class Server(object):
         if path.startswith('/article/'):
             return article.Article(path)
         if re.match(r'/blog_entry/\d+/refs', path):
-            return article.ArticleRefs(path)
+            return article.ArticleRefList(path)
         if path.startswith('/blog_entry/'):
             return blog.BlogEntry(path)
         if path.startswith('/blog/'):

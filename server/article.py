@@ -3,7 +3,7 @@ from util import str2id
 from object import Object, ListObject, Command, Element, Column
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
-from iface import TextObjectIface, ListIface
+from iface import ObjectIface, TextObjectIface, ListIface
 
 
 MODULE_NAME = 'article'
@@ -49,7 +49,7 @@ class Article(Object):
         return dict(new_path=new_path)
 
     def run_command_refs( self, request ):
-        return ArticleRefs('%s/refs' % self.path)
+        return ArticleRefList('%s/refs' % self.path)
 
     def get_article_id( self ):
         return str2id(self.path.split('/')[-1])
@@ -72,8 +72,8 @@ class Article(Object):
             article_rec = module.Article(text=text)
         return article_rec
 
-    
-class ArticleRefs(ListObject):
+
+class ArticleRefList(ListObject):
 
     iface = ListIface()
     view_id = 'list'
@@ -82,6 +82,14 @@ class ArticleRefs(ListObject):
         Column('key', 'Ref id'),
         Column('path', 'Path'),
         ]
+
+    def get_commands( self ):
+        return [Command('add', 'Add ref', 'Create new reference', 'Ins')]
+
+    def run_command( self, command_id, request ):
+        if command_id == 'add':
+            return ArticleRef(self.path + '/new')
+        assert False, repr(command_id)  # Unsupported command
 
     def get_article_id( self ):
         return str2id(self.path.split('/')[-2])
@@ -92,6 +100,12 @@ class ArticleRefs(ListObject):
 
     def rec2element( self, rec ):
         return Element(rec.id, [rec.id, rec.path])
+
+
+class ArticleRef(Object):
+
+    iface = ObjectIface()
+    view_id = 'article_ref'
 
 
 class ArticleModule(PonyOrmModule):
