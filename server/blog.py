@@ -67,14 +67,23 @@ class Blog(ListObject):
         return map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at)))
 
     def rec2element( self, rec ):
-        commands = [Command('open', 'Open', 'Open blog entry')]
+        commands = [Command('open', 'Open', 'Open blog entry'),
+                    Command('delete', 'Delete', 'Delete blog entry', 'Del'),
+                    ]
         return Element(rec.id, [rec.id, rec.created_at], commands)
 
     def run_element_command( self, command_id, element_key ):
         if command_id == 'open':
             entry_id = element_key
             return BlogEntry('/blog_entry/%s' % entry_id)
+        if command_id == 'delete':
+            return self.run_element_command_delete(element_key)
         return ListObject.run_element_command(self, command_id, element_key)
+
+    @db_session
+    def run_element_command_delete( self, entry_id ):
+        module.BlogEntry[entry_id].delete()
+        return self  # reload
 
 
 class BlogModule(PonyOrmModule):
