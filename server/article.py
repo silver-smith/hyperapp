@@ -17,6 +17,13 @@ class Article(Object):
     def __init__( self, path ):
         Object.__init__(self, path)
 
+    @db_session
+    def get_json( self ):
+        rec = module.Article[self.get_article_id()]
+        return dict(
+            Object.get_json(self),
+            text=rec.text)
+
     def get_commands( self ):
         return [Command('save', 'Save', 'Save article', 'Ctrl+S')]
 
@@ -31,8 +38,11 @@ class Article(Object):
         new_path = self.do_save(text)
         return dict(new_path=new_path)
 
+    def get_article_id( self ):
+        return str2id(self.path.split('/')[-1])
+
     def do_save( self, text ):
-        article_id = str2id(self.path.split('/')[-1])
+        article_id = self.get_article_id()
         with db_session:
             if article_id is not None:
                 article_rec = module.Article[article_id]
