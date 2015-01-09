@@ -74,7 +74,7 @@ class Dir(ListObject):
                 return Dir(fspath)
             else:
                 return file_view.File(fspath)
-        assert False, repr(command_id)  # Unexpected command_id
+        return ListObject.run_element_command(self, command_id, element_key)
 
     def run_command( self, command_id ):
         assert command_id == 'parent', repr(command_id)

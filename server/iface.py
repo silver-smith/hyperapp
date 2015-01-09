@@ -19,7 +19,8 @@ class Iface(object):
             command_id = request['command_id']
             response = object.run_command(command_id, request)
             if isinstance(response, Object):
-                response = self.get(new_object)
+                new_object = response
+                response = new_object.iface.get(new_object)
             return response
         else:
             assert False, repr(method)  # Unknown method
@@ -58,6 +59,6 @@ class ListIface(Iface):
             command_id = request['command_id']
             element_key = request['element_key']
             new_object = object.run_element_command(command_id, element_key)
-            return self.get(new_object)
+            return new_object.iface.get(new_object)
         else:
             return Iface.process_request(self, object, method, request)

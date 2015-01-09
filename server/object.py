@@ -93,3 +93,6 @@ class ListObject(Object):
 
     def get_all_elements( self ):
         raise NotImplementedError(self.__class__)
+
+    def run_element_command( self, command_id, element_key ):
+        assert False, repr(command_id)  # Unexpected command_id

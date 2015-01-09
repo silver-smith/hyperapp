@@ -76,7 +76,11 @@ class Server(object):
             while True:
                 request = connection.receive()
                 print 'request: %r' % request
-                response = self.process_request(request)
+                try:
+                    response = self.process_request(request)
+                except:
+                    traceback.print_exc()
+                    response = dict(error='Internal server error')
                 connection.send(response)
         except json_connection.Error as x:
             print x

@@ -2,7 +2,7 @@ from datetime import datetime
 from pony.orm import db_session, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
-from object import ListObject, Element, Column
+from object import ListObject, Command, Element, Column
 from module import ModuleCommand
 from iface import ListIface
 import article
@@ -48,7 +48,14 @@ class Blog(ListObject):
         return map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at)))
 
     def rec2element( self, rec ):
-        return Element(rec.id, [rec.id, rec.created_at])
+        commands = [Command('open', 'Open', 'Open blog entry')]
+        return Element(rec.id, [rec.id, rec.created_at], commands)
+
+    def run_element_command( self, command_id, element_key ):
+        if command_id == 'open':
+            entry_id = element_key
+            return BlogEntry('/blog_entry/%s' % entry_id)
+        return ListObject.run_element_command(self, command_id, element_key)
 
 
 class BlogModule(PonyOrmModule):
