@@ -119,14 +119,9 @@ class ArticleRefList(ListObject):
         return self  # reload
 
 
-class ArticleRefIface(Iface):
-
-    id = 'article_ref'
-
-
 class ArticleRef(Object):
 
-    iface = ArticleRefIface()
+    iface = Iface('article_ref')
     view_id = 'article_ref'
 
     @db_session

@@ -3,7 +3,8 @@ from object import Object
 
 class Iface(object):
 
-    id = None
+    def __init__( self, id ):
+        self.id = id
 
     def get( self, object ):
         if object is None: return None
@@ -28,17 +29,20 @@ class Iface(object):
 
 class ObjectIface(Iface):
 
-    id = 'object'
+    def __init__( self ):
+        Iface.__init__(self, 'object')
 
 
 class TextObjectIface(Iface):
 
-    id = 'text'
+    def __init__( self ):
+        Iface.__init__(self, 'text')
 
 
 class ListIface(Iface):
 
-    id = 'list'
+    def __init__( self ):
+        Iface.__init__(self, 'list')
 
     def get( self, object ):
         if object is None: return None
