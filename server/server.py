@@ -36,8 +36,10 @@ class Server(object):
             return file_view.File(fspath)
         if path.startswith('/article/'):
             return article.Article(path)
-        if re.match(r'/blog_entry/\d+/refs', path):
+        if re.match(r'/blog_entry/\d+/refs$', path):
             return article.ArticleRefList(path)
+        if re.match(r'/blog_entry/\d+/refs/[^/]+$', path):
+            return article.ArticleRef(path)
         if path.startswith('/blog_entry/'):
             return blog.BlogEntry(path)
         if path.startswith('/blog/'):
@@ -58,6 +60,8 @@ class Server(object):
         # object commands
         path = request['path']
         object = self.resolve(path)
+        print 'Object:', object
+        assert object, repr(path)  # 404: Path not found
         iface = object.iface
         return iface.process_request(object, method, request)
 

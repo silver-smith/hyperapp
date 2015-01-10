@@ -115,18 +115,44 @@ class ArticleRef(Object):
 
     @db_session
     def get_json( self ):
-        article_id = str2id(self.path.split('/')[-3])
-        ref_id = str2id(self.path.split('/')[-1])
+        article_id, ref_id = self._pick_ids()
         if ref_id is None:
-            path = None
+            ref_path = None
         else:
             rec = module.ArticleRef[ref_id]
-            path = rec.path
+            ref_path = rec.path
         return dict(
             Object.get_json(self),
             article_id=article_id,
-            path=path)
+            ref_path=ref_path)
 
+    def get_commands( self ):
+        return [Command('save', 'Save', 'Save edited path', 'Ctrl+S')]
+
+    def run_command( self, command_id, request ):
+        if command_id == 'save':
+            return self.run_command_save(request)
+        assert False, repr(command_id)  # Unsupported command
+
+    def run_command_save( self, request ):
+        article_id, ref_id = self._pick_ids()
+        ref_path = request['ref_path']
+        with db_session:
+            if ref_id is None:
+                rec = module.ArticleRef(article=module.Article[article_id],
+                                        path=ref_path)
+            else:
+                rec = module.ArticleRef[ref_id]
+                rec.path = ref_path
+        print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
+        new_path = '/'.join(self.path.split('/')[:-1] + [str(rec.id)])
+        return dict(new_path=new_path)
+
+    def _pick_ids( self ):
+        article_id = str2id(self.path.split('/')[-3])
+        ref_id = str2id(self.path.split('/')[-1])
+        return (article_id, ref_id)
+    
 
 class ArticleModule(PonyOrmModule):
 
