@@ -10,7 +10,6 @@ class ArticleRef(ObjectIface):
 
     def __init__( self, server, response ):
         ObjectIface.__init__(self, server, response)
-        self.article_id = response['article_id']
         self.ref_path = response['ref_path']
 
     def path_changed( self, ref_path ):
@@ -51,7 +50,7 @@ class View(view.View, QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
-        self.article_id_label = QtGui.QLabel('Article#%d' % self.object.article_id)
+        self.article_id_label = QtGui.QLabel('Article#%s' % self.object.path['article_id'])
         self.path_line_edit = QtGui.QLineEdit(self.object.ref_path)
         self.path_line_edit.textChanged.connect(self._on_path_text_changed)
         layout = QtGui.QVBoxLayout()

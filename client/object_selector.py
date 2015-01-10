@@ -10,9 +10,13 @@ class ObjectSelector(ObjectIface):
     def __init__( self, server, response ):
         ObjectIface.__init__(self, server, response)
         self.target_path = response['target_path']
+        self.target = None
 
     def get_title( self ):
         return '%s -> %s' % (self.path, self.target_path)
+
+    def get_target( self ):
+        pass        
 
 
 class Handle(view.Handle):
