@@ -48,7 +48,14 @@ class Dir(ListObject):
         return map(self.make_elt, sorted(dirs, key=key) + sorted(files, key=key))
 
     def get_file_info( self, fname, fspath ):
-        s = os.stat(fspath)
+        try:
+            s = os.stat(fspath)
+        except OSError:
+            return dict(
+                key=fname,
+                ftype='file',
+                ftime=0,
+                fsize=0)
         return dict(
             key=fname,
             ftype='dir' if os.path.isdir(fspath) else 'file',
