@@ -60,14 +60,14 @@ class ListObj(ObjectIface):
         ObjectIface.__init__(self, server, response)
         self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         self.elements = [Element.from_json(elt) for elt in response['elements']]
+        self.all_elements_fetched = not response['has_more']
         self.key_column_idx = self._find_key_column(self.columns)
 
     def element_count( self ):
         return len(self.elements)
 
-    def ensure_element_count( self, element_count ):
-        if element_count < self.element_count(): return
-        self.load_elements(element_count - self.element_count())
+    def are_all_elements_fetched( self ):
+        return self.all_elements_fetched
 
     def element_idx2key( self, idx ):
         return self.elements[idx].row[self.key_column_idx]
@@ -87,6 +87,7 @@ class ListObj(ObjectIface):
             count=load_count)
         response = self.server.execute_request(request)
         self.elements += [Element.from_json(elt) for elt in response['elements']]
+        self.all_elements_fetched = not response['has_more']
 
     def _find_key_column( self, columns ):
         for idx, col in enumerate(columns):

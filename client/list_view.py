@@ -43,7 +43,6 @@ class Model(QtCore.QAbstractTableModel):
         return self.list_obj.element_count()
 
     def elements_added( self, added_count ):
-        print 'ensure_element_count, self.element_count() =', self.element_count(), ', count = ', added_count
         element_count = self.list_obj.element_count()
         self.rowsInserted.emit(QtCore.QModelIndex(), element_count - added_count, element_count - 1)
 
@@ -189,6 +188,7 @@ class View(view.View, QtGui.QTableView):
             self.selected_elements_changed(self.selected_elts())
 
     def ensure_elements( self, element_count ):
+        if self.list_obj.are_all_elements_fetched(): return
         old_element_count = self.list_obj.element_count()
         if element_count <= old_element_count: return
         self.list_obj.load_elements(element_count - old_element_count)

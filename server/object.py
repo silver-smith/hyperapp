@@ -96,7 +96,9 @@ class ListObject(Object):
                     break
             else:
                 print 'Warning: unknown "from_key" is requested: %r' % from_key
-        return elements[from_idx:from_idx + max(count or 0, MIN_ROWS_RETURNED)]
+        to_idx = from_idx + max(count or 0, MIN_ROWS_RETURNED)
+        has_more = to_idx <= len(elements)
+        return (elements[from_idx:to_idx], has_more)
 
     def get_all_elements( self ):
         raise NotImplementedError(self.__class__)

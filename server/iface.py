@@ -42,19 +42,24 @@ class ListIface(Iface):
 
     def get( self, object ):
         if object is None: return None
+        elements, has_more = self.get_elements(object)
         return dict(
             Iface.get(self, object),
             columns=[column.as_json() for column in object.columns],
-            elements=self.get_elements(object))
+            elements=elements,
+            has_more=has_more)
 
     def get_elements( self, object, count=None, key=None ):
-        return [elt.as_json() for elt in object.get_elements(count, key)]
+        elements, has_more = object.get_elements(count, key)
+        return ([elt.as_json() for elt in elements], has_more)
 
     def process_request( self, object, method, request ):
         if method == 'get_elements':
             key = request['key']
             count = request['count']
-            return dict(elements=self.get_elements(object, count, key))
+            elements, has_more = self.get_elements(object, count, key)
+            return dict(elements=elements,
+                        has_more=has_more)
         elif method == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
