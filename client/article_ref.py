@@ -30,25 +30,24 @@ class ArticleRef(ObjectIface):
 
 class Handle(view.Handle):
 
-    def __init__( self, object, ref_path=None ):
+    def __init__( self, object ):
         view.Handle.__init__(self)
         self.object = object
-        self.ref_path = ref_path
 
     def get_title( self ):
         return self.object.get_title()
 
     def construct( self, parent ):
-        print 'article_ref construct', parent, self.object.get_title(), repr(self.ref_path)
-        return View(parent, self.object, self.ref_path)
+        print 'article_ref construct', parent, self.object.get_title()
+        return View(parent, self.object)
 
     def __repr__( self ):
-        return 'text_edit.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.ref_path))
+        return 'text_edit.Handle(%s)' % uni2str(self.object.get_title())
 
 
 class View(view.View, QtGui.QWidget):
 
-    def __init__( self, parent, object, ref_path ):
+    def __init__( self, parent, object ):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
@@ -61,7 +60,7 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(layout)
 
     def handle( self ):
-        return Handle(self.object, '')
+        return Handle(self.object)
 
     def get_title( self ):
         return self.object.get_title()
