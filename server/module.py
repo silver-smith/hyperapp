@@ -36,6 +36,14 @@ class Module(object):
         for module in cls.module_registry:
             module.init_phase3()
 
+    @classmethod
+    def get_object( cls, path ):
+        module = path['module']
+        return cls.module_by_name[module].resolve(path)
+
+    def resolve( self, path ):
+        assert False, repr(path)  # 404 Not found
+
     def get_commands( self ):
         return []
 
@@ -50,3 +58,6 @@ class Module(object):
     def run_module_command( cls, module_name, command_id ):
         module = cls.module_by_name[module_name]
         return module.run_command(command_id)
+
+    def make_path( self, **kw ):
+        return dict(module=self.name, **kw)

@@ -11,7 +11,7 @@ sys.path.append('..')
 import json_connection
 from module import Module
 import ponyorm_module
-from fs import Dir
+import fs
 import file_view
 import article
 import blog
@@ -24,16 +24,9 @@ class Server(object):
 
     def __init__( self ):
         Module.init_phases()
-        self.init_dir = Dir(os.path.expanduser('~/'))
-        ## self.init_dir = file_view.File('/etc/DIR_COLORS')
 
     def resolve( self, path ):
-        if path.startswith('/fs/'):
-            fspath = path[3:]
-            return Dir(fspath)
-        if path.startswith('/file/'):
-            fspath = path[5:]
-            return file_view.File(fspath)
+        return Module.get_object(path)
         if path.startswith('/article/'):
             return article.Article(path)
         if re.match(r'/blog_entry/\d+/refs$', path):

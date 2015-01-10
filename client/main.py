@@ -74,14 +74,15 @@ class Application(QtGui.QApplication, view.View):
 
 def main():
     if len(sys.argv) > 1:
-        path = sys.argv[1]
+        path = dict(pair.split('=') for pair in sys.argv[1].split(','))  # module=file,fspath=/usr/portabe
     else:
-        path = '/fs/' + os.path.expanduser('~').lstrip('/')
+        path=dict(
+            module='file',
+            fspath=os.path.expanduser('~'))
 
     server = Server(('localhost', 8888))
 
-    get_request = dict(method='get',
-                       path=path)
+    get_request = dict(method='get', path=path)
     handle = server.get_view(get_request)
 
     commands_request = dict(method='get_commands')

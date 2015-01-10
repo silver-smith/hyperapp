@@ -15,10 +15,9 @@ class File(ListObject):
         Column('line', 'line'),
         ]
 
-    def __init__( self, fspath ):
-        fspath = os.path.abspath(fspath)
-        ListObject.__init__(self, '/file/' + fspath.lstrip('/'))
-        self.fspath = fspath
+    def __init__( self, path ):
+        ListObject.__init__(self, path)
+        self.fspath = os.path.abspath(path['fspath'])
 
     def get_commands( self ):
         return []

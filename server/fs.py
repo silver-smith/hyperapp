@@ -22,10 +22,9 @@ class Dir(ListObject):
         Column('fsize', 'File size'),
         ]
 
-    def __init__( self, fspath ):
-        fspath = os.path.abspath(fspath)
-        ListObject.__init__(self, '/fs/' + fspath.lstrip('/'))
-        self.fspath = fspath
+    def __init__( self, path ):
+        ListObject.__init__(self, path)
+        self.fspath = os.path.abspath(path['fspath'])
 
     def get_all_elements( self ):
         dirs  = []
@@ -75,19 +74,16 @@ class Dir(ListObject):
 
     def run_element_command( self, command_id, element_key ):
         if command_id == 'open':
-            elt_fname = element_key
-            fspath = os.path.join(self.fspath, elt_fname)
-            if os.path.isdir(fspath):
-                return Dir(fspath)
-            else:
-                return file_view.File(fspath)
+            fname = element_key
+            fspath = os.path.join(self.fspath, fname)
+            return module.open_fspath(fspath)
         return ListObject.run_element_command(self, command_id, element_key)
 
     def run_command( self, command_id, request ):
         assert command_id == 'parent', repr(command_id)
         fspath = self.get_parent_dir()
         if fspath is not None:
-            return Dir(fspath)
+            return module.open_fspath(fspath)
 
     def get_parent_dir( self ):
         dir = os.path.dirname(self.fspath)
@@ -104,13 +100,23 @@ class FileModule(Module):
     def __init__( self ):
         Module.__init__(self, MODULE_NAME)
 
+    def resolve( self, path ):
+        return Dir(path)
+
     def get_commands( self ):
         return [ModuleCommand('home', 'Home', 'Open home directory', 'Ctrl+F', self.name)]
 
     def run_command( self, command_id ):
         if command_id == 'home':
-            return Dir(os.path.expanduser('~'))
+            return self.open_fspath(os.path.expanduser('~'))
         assert False, repr(command_id)  # Unsupported command
+
+    def open_fspath( self, fspath ):
+        path = self.make_path(fspath=fspath)
+        if os.path.isdir(fspath):
+            return Dir(path)
+        else:
+            return file_view.File(path)
 
 
 if sys.platform == 'win32':
