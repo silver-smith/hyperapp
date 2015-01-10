@@ -101,6 +101,7 @@ class ArticleRefList(ListObject):
     def rec2element( self, rec ):
         commands = [
             Command('open', 'Open', 'Open article reference'),
+            Command('select', 'Select', 'Open reference selector', 'Space'),
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
         return Element(rec.id, [rec.id, rec.path], commands)
@@ -109,6 +110,9 @@ class ArticleRefList(ListObject):
         if command_id == 'open':
             ref_id = element_key
             return ArticleRef('%s/%s' % (self.path, ref_id))
+        if command_id == 'select':
+            ref_id = element_key
+            return RefSelector('%s/%s/select' % (self.path, ref_id))
         if command_id == 'delete':
             return self.run_element_command_delete(element_key)
         return ListObject.run_element_command(self, command_id, element_key)
@@ -162,6 +166,29 @@ class ArticleRef(Object):
     def _pick_ids( self ):
         article_id = str2id(self.path.split('/')[-3])
         ref_id = str2id(self.path.split('/')[-1])
+        return (article_id, ref_id)
+
+
+class RefSelector(Object):
+
+    iface = Iface('object_selector')
+    view_id = 'object_selector'
+
+    @db_session
+    def get_json( self ):
+        article_id, ref_id = self._pick_ids()
+        if ref_id is None:
+            target_path = None
+        else:
+            rec = module.ArticleRef[ref_id]
+            target_path = rec.path
+        return dict(
+            Object.get_json(self),
+            target_path=target_path)
+
+    def _pick_ids( self ):
+        article_id = str2id(self.path.split('/')[-4])
+        ref_id = str2id(self.path.split('/')[-2])
         return (article_id, ref_id)
     
 

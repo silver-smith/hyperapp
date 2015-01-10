@@ -40,6 +40,8 @@ class Server(object):
             return article.ArticleRefList(path)
         if re.match(r'/blog_entry/\d+/refs/[^/]+$', path):
             return article.ArticleRef(path)
+        if re.match(r'/blog_entry/\d+/refs/[^/]+/select$', path):
+            return article.RefSelector(path)
         if path.startswith('/blog_entry/'):
             return blog.BlogEntry(path)
         if path.startswith('/blog/'):
