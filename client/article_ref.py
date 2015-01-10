@@ -53,7 +53,7 @@ class View(view.View, QtGui.QWidget):
         view.View.__init__(self, parent)
         self.object = object
         self.article_id_label = QtGui.QLabel('Article#%d' % self.object.article_id)
-        self.path_line_edit = QtGui.QLineEdit()
+        self.path_line_edit = QtGui.QLineEdit(self.object.ref_path)
         self.path_line_edit.textChanged.connect(self._on_path_text_changed)
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self.article_id_label)

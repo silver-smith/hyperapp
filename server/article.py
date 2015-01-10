@@ -99,8 +99,16 @@ class ArticleRefList(ListObject):
         return map(self.rec2element, module.Article[self.get_article_id()].refs)
 
     def rec2element( self, rec ):
-        return Element(rec.id, [rec.id, rec.path])
+        commands = [
+            Command('open', 'Open', 'Open article reference'),
+            ]
+        return Element(rec.id, [rec.id, rec.path], commands)
 
+    def run_element_command( self, command_id, element_key ):
+        if command_id == 'open':
+            ref_id = element_key
+            return ArticleRef('%s/%s' % (self.path, ref_id))
+        return ListObject.run_element_command(self, command_id, element_key)
 
 
 class ArticleRefIface(Iface):
