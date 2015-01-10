@@ -122,8 +122,7 @@ class ArticleRefList(ListObject):
         if command_id == 'open':
             return ArticleRef.make(self.article_id, ref_id=element_key)
         if command_id == 'select':
-            ref_id = element_key
-            return RefSelector('%s/%s/select' % (self.path, ref_id))
+            return RefSelector.make(self.article_id, ref_id=element_key)
         if command_id == 'delete':
             return self.run_element_command_delete(element_key)
         return ListObject.run_element_command(self, command_id, element_key)
@@ -192,22 +191,32 @@ class RefSelector(Object):
     iface = Iface('object_selector')
     view_id = 'object_selector'
 
+    def __init__( self, path, article_id, ref_id ):
+        Object.__init__(self, path)
+        self.article_id = article_id
+        self.ref_id = ref_id
+
+    @classmethod
+    def make( cls, article_id, ref_id ):
+        path = module.make_path(object='article_ref_selector', article_id=article_id, ref_id=ref_id)
+        return cls(path, article_id, ref_id)
+
+    @classmethod
+    def from_path( cls, path ):
+        article_id = path['article_id']
+        ref_id = path['ref_id']
+        return cls(path, article_id, ref_id)
+
     @db_session
     def get_json( self ):
-        article_id, ref_id = self._pick_ids()
-        if ref_id is None:
+        if self.ref_id is None:
             target_path = None
         else:
-            rec = module.ArticleRef[ref_id]
+            rec = module.ArticleRef[self.ref_id]
             target_path = rec.path
         return dict(
             Object.get_json(self),
             target_path=target_path)
-
-    def _pick_ids( self ):
-        article_id = str2id(self.path.split('/')[-4])
-        ref_id = str2id(self.path.split('/')[-2])
-        return (article_id, ref_id)
     
 
 class ArticleModule(PonyOrmModule):
@@ -232,6 +241,8 @@ class ArticleModule(PonyOrmModule):
             return ArticleRefList.from_path(path)
         if objname == 'article_ref':
             return ArticleRef.from_path(path)
+        if objname == 'article_ref_selector':
+            return RefSelector.from_path(path)
         return PonyOrmModule.resolve(self, path)
 
     def get_commands( self ):
