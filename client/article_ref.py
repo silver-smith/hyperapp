@@ -42,7 +42,7 @@ class Handle(view.Handle):
         return View(parent, self.object)
 
     def __repr__( self ):
-        return 'text_edit.Handle(%s)' % uni2str(self.object.get_title())
+        return 'article_ref.Handle(%s)' % uni2str(self.object.get_title())
 
 
 class View(view.View, QtGui.QWidget):
