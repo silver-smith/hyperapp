@@ -101,6 +101,7 @@ class ArticleRefList(ListObject):
     def rec2element( self, rec ):
         commands = [
             Command('open', 'Open', 'Open article reference'),
+            Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
         return Element(rec.id, [rec.id, rec.path], commands)
 
@@ -108,7 +109,14 @@ class ArticleRefList(ListObject):
         if command_id == 'open':
             ref_id = element_key
             return ArticleRef('%s/%s' % (self.path, ref_id))
+        if command_id == 'delete':
+            return self.run_element_command_delete(element_key)
         return ListObject.run_element_command(self, command_id, element_key)
+
+    @db_session
+    def run_element_command_delete( self, entry_id ):
+        module.ArticleRef[entry_id].delete()
+        return self  # reload
 
 
 class ArticleRefIface(Iface):
