@@ -13,13 +13,8 @@ MODULE_NAME = 'blog'
 
 class BlogEntry(article.Article):
 
-    @classmethod
-    def make( cls, entry_id ):
-        return cls(module.make_path(object='entry', entry_id=entry_id))
-
     @db_session
-    def __init__( self, path ):
-        entry_id = path['entry_id']
+    def __init__( self, path, entry_id ):
         if entry_id is None:
             article_id = None
         else:
@@ -27,6 +22,15 @@ class BlogEntry(article.Article):
             article_id = entry_rec.article.id
         article.Article.__init__(self, path, article_id)
         self.entry_id = entry_id
+
+    @classmethod
+    def make( cls, entry_id ):
+        return cls(module.make_path(object='entry', entry_id=entry_id), entry_id)
+
+    @classmethod
+    def from_path( cls, path ):
+        entry_id = path['entry_id']
+        return cls(path, entry_id)
 
     def do_save( self, text ):
         with db_session:
@@ -112,7 +116,7 @@ class BlogModule(PonyOrmModule):
         if objname == 'blog':
             return Blog(path)
         if objname == 'entry':
-            return BlogEntry(path)
+            return BlogEntry.from_path(path)
         return Module.resolve(self, path)
 
     def get_commands( self ):
@@ -123,7 +127,7 @@ class BlogModule(PonyOrmModule):
 
     def run_command( self, command_id ):
         if command_id == 'create':
-            return BlogEntry('/blog_entry/new')
+            return BlogEntry.make(entry_id=None)
         if command_id == 'open_blog':
             return Blog(self.make_path(object='blog'))
         assert False, repr(command_id)  # Unsupported command
