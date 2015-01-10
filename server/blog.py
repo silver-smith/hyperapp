@@ -13,29 +13,35 @@ MODULE_NAME = 'blog'
 
 class BlogEntry(article.Article):
 
+    @classmethod
+    def make( cls, entry_id ):
+        return cls(module.make_path(object='entry', entry_id=entry_id))
+
     @db_session
-    def get_article_id( self ):
-        entry_id = str2id(self.path.split('/')[-1])
-        if entry_id == None:
-            return None
-        entry_rec = module.BlogEntry[entry_id]
-        return entry_rec.article.id
+    def __init__( self, path ):
+        entry_id = path['entry_id']
+        if entry_id is None:
+            article_id = None
+        else:
+            entry_rec = module.BlogEntry[entry_id]
+            article_id = entry_rec.article.id
+        article.Article.__init__(self, path, article_id)
+        self.entry_id = entry_id
 
     def do_save( self, text ):
-        entry_id = str2id(self.path.split('/')[-1])
         with db_session:
-            if entry_id is not None:
-                entry_rec = module.BlogEntry[entry_id]
+            if self.entry_id is not None:
+                entry_rec = module.BlogEntry[self.entry_id]
                 article_rec = entry_rec.article
             else:
                 article_rec = None
             article_rec = self.save_article(article_rec, text)
-            if entry_id is None:
+            if self.entry_id is None:
                 entry_rec = module.BlogEntry(
                     article=article_rec,
                     created_at=utcnow())
         print 'Blog entry is saved, entry id =', entry_rec.id, ' article_id =', article_rec.id
-        return '/blog_entry/%d' % entry_rec.id
+        return dict(self.path, entry_id=entry_rec.id)
 
 
 class Blog(ListObject):
@@ -60,7 +66,7 @@ class Blog(ListObject):
         return ListObject.run_command(self, command_id, request)
 
     def run_command_add( self, request ):
-        return BlogEntry('/blog_entry/new')
+        return BlogEntry.make(entry_id=None)
 
     @db_session
     def get_all_elements( self ):
@@ -75,14 +81,16 @@ class Blog(ListObject):
     def run_element_command( self, command_id, element_key ):
         if command_id == 'open':
             entry_id = element_key
-            return BlogEntry('/blog_entry/%s' % entry_id)
+            return BlogEntry.make(entry_id=element_key)
         if command_id == 'delete':
             return self.run_element_command_delete(element_key)
         return ListObject.run_element_command(self, command_id, element_key)
 
     @db_session
     def run_element_command_delete( self, entry_id ):
-        module.BlogEntry[entry_id].delete()
+        rec = module.BlogEntry[entry_id]
+        rec.article.delete()
+        rec.delete()
         return self  # reload
 
 
@@ -99,6 +107,14 @@ class BlogModule(PonyOrmModule):
                                           article=Required(self.Article),
                                           created_at=Required(datetime))
 
+    def resolve( self, path ):
+        objname = path['object']
+        if objname == 'blog':
+            return Blog(path)
+        if objname == 'entry':
+            return BlogEntry(path)
+        return Module.resolve(self, path)
+
     def get_commands( self ):
         return [
             ModuleCommand('create', 'Create entry', 'Create new blog entry', None, self.name),
@@ -109,7 +125,7 @@ class BlogModule(PonyOrmModule):
         if command_id == 'create':
             return BlogEntry('/blog_entry/new')
         if command_id == 'open_blog':
-            return Blog('/blog/')
+            return Blog(self.make_path(object='blog'))
         assert False, repr(command_id)  # Unsupported command
 
 

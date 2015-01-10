@@ -14,14 +14,19 @@ class Article(Object):
     iface = TextObjectIface()
     view_id = 'text'
 
-    def __init__( self, path ):
+    def __init__( self, path, article_id ):
         Object.__init__(self, path)
+        self.article_id = article_id
+
+    @classmethod
+    def from_path( cls, path ):
+        article_id = path['article_id']
+        return cls(path, article_id=article_id)
 
     @db_session
     def get_json( self ):
-        article_id = self.get_article_id()
-        if article_id is not None:
-            rec = module.Article[article_id]
+        if self.article_id is not None:
+            rec = module.Article[self.article_id]
             text = rec.text
         else:
             text = None
@@ -51,19 +56,15 @@ class Article(Object):
     def run_command_refs( self, request ):
         return ArticleRefList('%s/refs' % self.path)
 
-    def get_article_id( self ):
-        return str2id(self.path.split('/')[-1])
-
     def do_save( self, text ):
-        article_id = self.get_article_id()
         with db_session:
-            if article_id is not None:
-                article_rec = module.Article[article_id]
+            if self.article_id is not None:
+                article_rec = module.Article[self.article_id]
             else:
                 article_rec = None
             article_rec = self.save_article(article_rec, text)
         print 'Article is saved, article_id =', article_rec.id
-        return '/article/%d' % article_rec.id
+        return dict(self.path, article_id=article_rec.id)
 
     def save_article( self, article_rec, text ):
         if article_rec is not None:
@@ -206,12 +207,18 @@ class ArticleModule(PonyOrmModule):
                                            path=Optional(str),
                                            )
 
+    def resolve( self, path ):
+        objname = path['object']
+        if objname == 'article':
+            return Article.from_path(path)
+        return Module.resolve(self, path)
+
     def get_commands( self ):
         return [ModuleCommand('create', 'Create article', 'Create new article', 'Alt+A', self.name)]
 
     def run_command( self, command_id ):
         if command_id == 'create':
-            return Article('/article/new')
+            return Article.from_path(self.make_path(object='article', article_id=None))
         assert False, repr(command_id)  # Unsupported command
 
     def add_article_fields( self, **fields ):
