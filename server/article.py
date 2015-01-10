@@ -113,6 +113,20 @@ class ArticleRef(Object):
     iface = ArticleRefIface()
     view_id = 'article_ref'
 
+    @db_session
+    def get_json( self ):
+        article_id = str2id(self.path.split('/')[-3])
+        ref_id = str2id(self.path.split('/')[-1])
+        if ref_id is None:
+            path = None
+        else:
+            rec = module.ArticleRef[ref_id]
+            path = rec.path
+        return dict(
+            Object.get_json(self),
+            article_id=article_id,
+            path=path)
+
 
 class ArticleModule(PonyOrmModule):
 
