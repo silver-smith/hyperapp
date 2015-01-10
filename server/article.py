@@ -3,7 +3,7 @@ from util import str2id
 from object import Object, ListObject, Command, Element, Column
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
-from iface import ObjectIface, TextObjectIface, ListIface
+from iface import Iface, TextObjectIface, ListIface
 
 
 MODULE_NAME = 'article'
@@ -102,9 +102,15 @@ class ArticleRefList(ListObject):
         return Element(rec.id, [rec.id, rec.path])
 
 
+
+class ArticleRefIface(Iface):
+
+    id = 'article_ref'
+
+
 class ArticleRef(Object):
 
-    iface = ObjectIface()
+    iface = ArticleRefIface()
     view_id = 'article_ref'
 
 

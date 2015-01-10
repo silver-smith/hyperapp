@@ -13,6 +13,8 @@ class Iface(object):
             )
 
     def process_request( self, object, method, request ):
+        if method == 'get':
+            return object.iface.get(object)
         if method == 'run_command':
             command_id = request['command_id']
             response = object.run_command(command_id, request)

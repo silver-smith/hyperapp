@@ -9,8 +9,6 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 from server import Server
-from list_obj import ListObj
-
 from qt_keys import key_evt2str
 from command import ModuleCommand
 from view_command import command
@@ -74,18 +72,22 @@ class Application(QtGui.QApplication, view.View):
 
 
 def main():
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    else:
+        path = '/fs/' + os.path.expanduser('~').lstrip('/')
+
     server = Server(('localhost', 8888))
 
-    init_request = dict(method='init')
-    init_response = server.execute_request(init_request)
+    get_request = dict(method='get',
+                       path=path)
+    handle = server.get_view(get_request)
 
     commands_request = dict(method='get_commands')
     commands_response = server.execute_request(commands_request)
     server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response['commands']]
 
     app = Application(server, server_commands)
-
-    obj = ListObj(server, init_response)
 
     #obj = fsopen('/tmp')
     #obj = process.Process('/usr', 'find')
@@ -98,7 +100,7 @@ def main():
     handle = window.Handle(
         tab_view.Handle([
             navigator.Handle(
-                list_view.Handle(obj))]))
+                handle)]))
     win = handle.construct(app)
     app.exec_()
 

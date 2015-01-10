@@ -51,8 +51,6 @@ class Server(object):
     def process_request( self, request ):
         method = request['method']
         # server-global commands
-        if method == 'init':
-            return self.get_object(self.init_dir)
         if method == 'get_commands':
             return self.process_get_commands(request)
         if method == 'run_module_command':
