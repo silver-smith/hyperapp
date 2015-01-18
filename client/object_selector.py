@@ -20,17 +20,23 @@ class ObjectSelector(ProxyObject):
         self.target_object = target_handle.get_object()
         self.target_handle = target_handle
 
+    ## def get_title( self ):
+    ##     return '%s -> %s' % (self.path, self.target.path)
+
     def get_commands( self ):
         return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')] \
           + self.target_object.get_commands()
 
     def run_command( self, command_id ):
         if command_id == 'choose':
-            return
+            return self.run_command_choose()
         return self.target_object.run_command(command_id)
 
-    ## def get_title( self ):
-    ##     return '%s -> %s' % (self.path, self.target.path)
+    def run_command_choose( self ):
+        if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
+        request = dict(self.make_command_request(command_id='choose'),
+                       target_path=self.target_object.path)
+        return self.server.get_handle(request)
 
     def get_target( self ):
         return self.target

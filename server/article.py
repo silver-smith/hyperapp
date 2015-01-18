@@ -219,7 +219,25 @@ class RefSelector(Object):
         return dict(
             Object.get_json(self),
             target=target.iface.get(target) if target else None)
-    
+
+    def run_command( self, command_id, request ):
+        if command_id == 'choose':
+            return self.run_command_choose(request)
+        return Object.run_command(self, command_id, request)
+
+    def run_command_choose( self, request ):
+        target_path = request['target_path']
+        target_path_str = json.dumps(target_path)
+        with db_session:
+            if self.ref_id is None:
+                rec = module.ArticleRef(article=module.Article[self.article_id],
+                                        path=target_path_str)
+            else:
+                rec = module.ArticleRef[self.ref_id]
+                rec.path = target_path_str
+        print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
+        return ArticleRefList.make(article_id=self.article_id)
+
 
 class ArticleModule(PonyOrmModule):
 
