@@ -11,8 +11,8 @@ class Handle(view.Handle):
         self.object = object
         self.text = text
 
-    def get_title( self ):
-        return self.object.get_title()
+    def get_object( self ):
+        return self.object
 
     def construct( self, parent ):
         print 'text_edit construct', parent, self.object.get_title(), repr(self.text)

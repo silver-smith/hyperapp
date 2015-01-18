@@ -4,33 +4,33 @@ from PySide import QtCore, QtGui
 from util import key_match, key_match_any
 from view_command import command
 import view
-from composite import Composite
+import composite
 import list_view
 
 
 MAX_HISTORY_SIZE = 100
 
 
-class Handle(view.Handle):
+class Handle(composite.Handle):
 
     def __init__( self, child_handle, backward_history=None, forward_history=None ):
-        view.Handle.__init__(self)
+        composite.Handle.__init__(self)
         self.child = child_handle
         self.backward_history = backward_history or []
         self.forward_history = forward_history or []
 
-    def get_title( self ):
-        return self.child.get_title()
+    def get_child_handle( self ):
+        return self.child
 
     def construct( self, parent ):
         print 'navigator construct', parent, self.child
         return View(parent, self.child, self.backward_history[:], self.forward_history[:])
 
 
-class View(Composite):
+class View(composite.Composite):
 
     def __init__( self, parent, child_handle, backward_history=None, forward_history=None ):
-        Composite.__init__(self, parent)
+        composite.Composite.__init__(self, parent)
         self._back_history = backward_history or []
         self._forward_history = forward_history or []
         self._child = None  # get_widget may be called from next line

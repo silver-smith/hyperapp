@@ -21,8 +21,8 @@ class Handle(view.Handle):
         self.selected_keys = selected_keys  # for multi-select mode only
         self.select_first = select_first  # bool
 
-    def get_title( self ):
-        return self.obj.get_title()
+    def get_object( self ):
+        return self.obj
 
     def construct( self, parent ):
         print 'list_view construct', parent, self.obj.get_title(), self.obj, repr(self.key)

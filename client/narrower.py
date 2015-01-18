@@ -2,21 +2,21 @@ from PySide import QtCore, QtGui
 from util import key_match, key_match_any
 from object import Dir
 import view
-from composite import Composite
+import composite
 from line_list_panel import LineListPanel
 import line_edit
 import list_view
 
 
-class Handle(view.Handle):
+class Handle(composite.Handle):
 
     def __init__( self, list_handle ):
-        view.Handle.__init__(self)
+        composite.Handle.__init__(self)
         assert isinstance(list_handle, list_view.Handle), repr(list_handle)
         self.list_handle = list_handle
 
-    def get_title( self ):
-        return self.list_handle.get_title()
+    def get_child_handle( self ):
+        return self.list_handle
 
     def construct( self, parent ):
         print 'narrower construct', parent, self.list_handle

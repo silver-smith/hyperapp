@@ -3,7 +3,7 @@ from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after
 from view_command import command
 import view
-from composite import Composite
+import composite
 from menu_bar import MenuBar
 import cmd_pane
 #import filter_pane
@@ -13,13 +13,16 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-class Handle(view.Handle):
+class Handle(composite.Handle):
 
     def __init__( self, child_handle, size=None, pos=None ):
-        view.Handle.__init__(self)
+        composite.Handle.__init__(self)
         self.child_handle = child_handle
         self.size = size
         self.pos = pos
+
+    def get_child_handle( self ):
+        return self.child_handle
 
     def construct( self, app ):
         print 'window construct', app, self.child_handle
@@ -29,11 +32,11 @@ class Handle(view.Handle):
         return Handle(self.child_handle, self.size, self.pos + point)
 
 
-class Window(Composite, QtGui.QMainWindow):
+class Window(composite.Composite, QtGui.QMainWindow):
 
     def __init__( self, app, child_handle, size=None, pos=None ):
         QtGui.QMainWindow.__init__(self)
-        Composite.__init__(self, app)
+        composite.Composite.__init__(self, app)
         self._view = None
         self._child_widget = None
         if size:

@@ -33,8 +33,8 @@ class Handle(view.Handle):
         view.Handle.__init__(self)
         self.object = object
 
-    def get_title( self ):
-        return self.object.get_title()
+    def get_object( self ):
+        return self.object
 
     def construct( self, parent ):
         print 'article_ref construct', parent, self.object.get_title()

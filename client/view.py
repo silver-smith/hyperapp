@@ -10,13 +10,13 @@ import list_obj
 
 class Handle(object):
 
-    def get_title( self ):
+    def get_object( self ):
         raise NotImplementedError(self.__class__)
+
+    def get_title( self ):
+        return self.get_object().get_title()
 
     def construct( self, parent ):
-        raise NotImplementedError(self.__class__)
-
-    def map_current( self, mapper ):
         raise NotImplementedError(self.__class__)
 
 

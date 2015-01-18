@@ -2,15 +2,19 @@ from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after, key_match
 from view_command import command
 import view
+import composite
 import splitter
 
 
-class Handle(view.Handle):
+class Handle(composite.Handle):
 
     def __init__( self, children, current_idx=0 ):
-        view.Handle.__init__(self)
+        composite.Handle.__init__(self)
         self.children = children  # handle list
         self.current_idx = current_idx  # child index, 0..
+
+    def get_current_child( self ):
+        return self.children[self.current_idx]
 
     def construct( self, parent ):
         print 'tab_view construct', parent, len(self.children), self.current_idx

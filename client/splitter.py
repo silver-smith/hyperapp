@@ -1,6 +1,7 @@
 from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after, focused_index, key_match
 import view
+import composite
 
 
 # orientation constants
@@ -23,10 +24,10 @@ def qt2orient( orient ):
     assert False, repr(orient)  # Unexpected qt orientation
 
 
-class Handle(view.Handle):
+class Handle(composite.Handle):
 
     def __init__( self, x, y, orient, focused=0, sizes=None ):
-        view.Handle.__init__(self)
+        composite.Handle.__init__(self)
         assert focused in [0, 1]
         self.x = x  # handle of first child
         self.y = y  # handle of second child
@@ -38,6 +39,12 @@ class Handle(view.Handle):
         print 'splitter construct', parent, self.orient, 'focused =', self.focused
         return View(parent, self.x, self.y, self.orient, self.focused, self.sizes)
 
+    def get_child_handle( self ):
+        if self.focused == 0:
+            return self.x
+        else:
+            return self.y
+
     def map_current( self, mapper ):
         if self.focused == 0:
             return Handle(mapper(self.x), self.y, self.orient, self.focused, self.sizes)
@@ -45,12 +52,6 @@ class Handle(view.Handle):
             return Handle(self.x, mapper(self.y), self.orient, self.focused, self.sizes)
         else:
             assert False, repr(self.focused)  # 0 or 1 is expected
-
-    def get_current( self ):
-        if self.focused == 0:
-            return self.x
-        else:
-            return self.y
 
 
 class View(QtGui.QSplitter, view.View):
@@ -175,7 +176,7 @@ def split( orient ):
 
 def unsplit( handle ):
     if isinstance(handle, Handle):
-        h = handle.get_current()
+        h = handle.get_child_handle()
         if isinstance(h, Handle):
             return handle.map_current(unsplit)
         else:
