@@ -111,7 +111,7 @@ class View(view.View, QtGui.QTableView):
     def current_key( self ):
         idx = self.currentIndex()
         if idx.row() != -1:
-            return self.list_obj.element_idx2key(idx.row())
+            return self.list_obj.get_elements()[idx.row()].key
 
     def current_elt( self ):
         idx = self.currentIndex()
@@ -133,7 +133,7 @@ class View(view.View, QtGui.QTableView):
         else:
             row = None
         for idx, element in enumerate(self.list_obj.get_elements()):
-            if self.list_obj.element2key(element) == key:
+            if element.key == key:
                 row = idx
                 break
         if row is not None and row < self.list_obj.element_count():
@@ -196,10 +196,9 @@ class View(view.View, QtGui.QTableView):
 
     def _on_activated( self, index ):
         elt = self.list_obj.get_elements()[index.row()]
-        element_key = self.list_obj.element2key(elt)
         for cmd in elt.commands:
             if cmd.id == 'open':
-                cmd.run(self, self.list_obj, element_key)
+                cmd.run(self, self.list_obj, elt.key)
                 return
 
     def _selected_elements_changed( self ):
@@ -216,7 +215,7 @@ class View(view.View, QtGui.QTableView):
         # pick selection and commands
         elt = self.current_elt()
         if not elt: return
-        element_key = self.list_obj.element2key(elt)
+        element_key = elt.key
         commands = elt.commands
         # create actions
         for cmd in commands:

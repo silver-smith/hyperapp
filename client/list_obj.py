@@ -45,13 +45,16 @@ class Column(object):
 
 class Element(object):
 
-    def __init__( self, row, commands ):
+    def __init__( self, key, row, commands ):
+        self.key = key
         self.row = row
         self.commands = commands
 
     @classmethod
-    def from_json( cls, data ):
-        return cls(data['row'], [ElementCommand.from_json(cmd) for cmd in data['commands']])
+    def from_json( cls, key_column_idx, data ):
+        row = data['row']
+        key = row[key_column_idx]
+        return cls(key, row, [ElementCommand.from_json(cmd) for cmd in data['commands']])
 
 
 class ListObj(ProxyObject):
@@ -60,16 +63,17 @@ class ListObj(ProxyObject):
     def from_response( cls, server, response ):
         path, commands = ProxyObject.parse_response(response)
         columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
-        elements = [Element.from_json(elt) for elt in response['elements']]
+        key_column_idx = cls._find_key_column(columns)
+        elements = [Element.from_json(key_column_idx, elt) for elt in response['elements']]
         all_elements_fetched = not response['has_more']
-        return cls(server, path, commands, columns, elements, all_elements_fetched)
+        return cls(server, path, commands, columns, elements, all_elements_fetched, key_column_idx)
 
-    def __init__( self, server, path, commands, columns, elements, all_elements_fetched ):
+    def __init__( self, server, path, commands, columns, elements, all_elements_fetched, key_column_idx ):
         ProxyObject.__init__(self, server, path, commands)
         self.columns = columns
         self.elements = elements
         self.all_elements_fetched = all_elements_fetched
-        self.key_column_idx = self._find_key_column(self.columns)
+        self.key_column_idx = key_column_idx
 
     def get_columns( self ):
         return self.columns
@@ -83,15 +87,9 @@ class ListObj(ProxyObject):
     def are_all_elements_fetched( self ):
         return self.all_elements_fetched
 
-    def element_idx2key( self, idx ):
-        return self.elements[idx].row[self.key_column_idx]
-
-    def element2key( self, elt ):
-        return elt.row[self.key_column_idx]
-
     def load_elements( self, load_count ):
         if self.elements:
-            last_key = self.element_idx2key(-1)
+            last_key = self.elements[-1].key
         else:
             last_key = None
         request = dict(
@@ -100,10 +98,11 @@ class ListObj(ProxyObject):
             key=last_key,
             count=load_count)
         response = self.server.execute_request(request)
-        self.elements += [Element.from_json(elt) for elt in response['elements']]
+        self.elements += [Element.from_json(self.key_column_idx, elt) for elt in response['elements']]
         self.all_elements_fetched = not response['has_more']
 
-    def _find_key_column( self, columns ):
+    @staticmethod
+    def _find_key_column( columns ):
         for idx, col in enumerate(columns):
             if col.id == 'key':
                 return col.idx

@@ -52,10 +52,9 @@ class View(QtGui.QDockWidget):
         if dir is None: return
         assert len(elts) == 1  # no multi-select support yet
         elt = elts[0]
-        element_key = dir.element2key(elt)
         for cmd in elt.commands:
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run(view, dir, element_key))
+            button.pressed.connect(lambda cmd=cmd: cmd.run(view, dir, elt.key))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 
