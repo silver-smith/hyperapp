@@ -48,7 +48,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
-            element = self.list_obj.elements[index.row()]
+            element = self.list_obj.get_elements()[index.row()]
             column = self.visible_columns[index.column()]
             return column.type.to_string(element.row[column.idx])
         return None
@@ -116,7 +116,7 @@ class View(view.View, QtGui.QTableView):
     def current_elt( self ):
         idx = self.currentIndex()
         if idx.row() != -1:
-            return self.list_obj.elements[idx.row()]
+            return self.list_obj.get_elements()[idx.row()]
 
     def selected_elts( self ):
         return filter(None, [self.current_elt()])
@@ -132,7 +132,7 @@ class View(view.View, QtGui.QTableView):
             row = 0
         else:
             row = None
-        for idx, element in enumerate(self.list_obj.elements):
+        for idx, element in enumerate(self.list_obj.get_elements()):
             if self.list_obj.element2key(element) == key:
                 row = idx
                 break
@@ -145,7 +145,7 @@ class View(view.View, QtGui.QTableView):
     def set_object( self, list_obj ):
         self.model().beginResetModel()
         self.list_obj = list_obj
-        self.columns = list_obj.columns
+        self.columns = list_obj.get_columns()
         visible_columns = filter(lambda column: column.title is not None, self.columns)
         self._model.list_obj = self.list_obj
         self._model.visible_columns = visible_columns
@@ -195,7 +195,7 @@ class View(view.View, QtGui.QTableView):
         self._model.elements_added(self.list_obj.element_count() - old_element_count)
 
     def _on_activated( self, index ):
-        elt = self.list_obj.elements[index.row()]
+        elt = self.list_obj.get_elements()[index.row()]
         element_key = self.list_obj.element2key(elt)
         for cmd in elt.commands:
             if cmd.id == 'open':

@@ -63,8 +63,14 @@ class ListObj(ObjectIface):
         self.all_elements_fetched = not response['has_more']
         self.key_column_idx = self._find_key_column(self.columns)
 
+    def get_columns( self ):
+        return self.columns
+
     def element_count( self ):
         return len(self.elements)
+
+    def get_elements( self ):
+        return self.elements
 
     def are_all_elements_fetched( self ):
         return self.all_elements_fetched
