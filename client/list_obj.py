@@ -56,11 +56,19 @@ class Element(object):
 
 class ListObj(ObjectIface):
 
-    def __init__( self, server, response ):
-        ObjectIface.__init__(self, server, response)
-        self.columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
-        self.elements = [Element.from_json(elt) for elt in response['elements']]
-        self.all_elements_fetched = not response['has_more']
+    @classmethod
+    def from_response( cls, server, response ):
+        path, commands = ObjectIface.parse_response(response)
+        columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
+        elements = [Element.from_json(elt) for elt in response['elements']]
+        all_elements_fetched = not response['has_more']
+        return cls(server, path, commands, columns, elements, all_elements_fetched)
+
+    def __init__( self, server, path, commands, columns, elements, all_elements_fetched ):
+        ObjectIface.__init__(self, server, path, commands)
+        self.columns = columns
+        self.elements = elements
+        self.all_elements_fetched = all_elements_fetched
         self.key_column_idx = self._find_key_column(self.columns)
 
     def get_columns( self ):
@@ -102,4 +110,4 @@ class ListObj(ObjectIface):
         assert False, 'No "key" column'
 
 
-iface_registry.register_iface('list', ListObj)
+iface_registry.register_iface('list', ListObj.from_response)

@@ -8,9 +8,15 @@ import view_registry
 
 class ArticleRef(ObjectIface):
 
-    def __init__( self, server, response ):
-        ObjectIface.__init__(self, server, response)
-        self.ref_path = response['ref_path']
+    @classmethod
+    def from_response( cls, server, response ):
+        path, commands = ObjectIface.parse_response(response)
+        ref_path = response['ref_path']
+        return cls(server, path, commands, ref_path)
+
+    def __init__( self, server, path, commands, ref_path ):
+        ObjectIface.__init__(self, server, path, commands)
+        self.ref_path = ref_path
 
     def path_changed( self, ref_path ):
         self.ref_path = ref_path
@@ -77,5 +83,5 @@ class View(view.View, QtGui.QWidget):
         print '~article_ref.View'
 
 
-iface_registry.register_iface('article_ref', ArticleRef)
+iface_registry.register_iface('article_ref', ArticleRef.from_response)
 view_registry.register_view('article_ref', Handle)

@@ -8,10 +8,16 @@ import view_registry
 
 class ObjectSelector(ObjectIface):
 
-    def __init__( self, server, response ):
-        ObjectIface.__init__(self, server, response)
-        self.target = server.resp2object(response['target'])
-        self.target_view_id = response['target']['view_id']
+    @classmethod
+    def from_response( cls, server, response ):
+        path, commands = ObjectIface.parse_response(response)
+        handle = server.resp2handle(response['target'])
+        return cls(server, path, commands, handle)
+
+    def __init__( self, server, path, commands, target_handle ):
+        ObjectIface.__init__(self, server, path, commands)
+        self.target_object = target_handle.get_object()
+        self.target_handle = target_handle
 
     ## def get_title( self ):
     ##     return '%s -> %s' % (self.path, self.target.path)
@@ -23,8 +29,7 @@ class ObjectSelector(ObjectIface):
         self.target = object
 
     def get_target_handle( self ):
-        handle_ctr = view_registry.resolve_view(self.target_view_id)
-        return handle_ctr(self.target)
+        return self.target_handle
 
 
 class Handle(view.Handle):
@@ -33,11 +38,11 @@ class Handle(view.Handle):
         view.Handle.__init__(self)
         self.object = object
 
-    def get_title( self ):
-        return self.object.get_title()
+    def get_object( self ):
+        return self.object
 
     def construct( self, parent ):
-        print 'object selector construct', parent, self.object.get_title(), self.object.target.get_title()
+        print 'object selector construct', parent, self.object.get_title(), self.object.target_object.get_title()
         return View(parent, self.object)
 
     def __repr__( self ):
@@ -80,5 +85,5 @@ class View(view.View, QtGui.QWidget):
         print '~object_selector.View'
 
 
-iface_registry.register_iface('object_selector', ObjectSelector)
+iface_registry.register_iface('object_selector', ObjectSelector.from_response)
 view_registry.register_view('object_selector', Handle)

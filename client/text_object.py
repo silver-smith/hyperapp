@@ -4,9 +4,15 @@ import iface_registry
 
 class TextObject(ObjectIface):
 
-    def __init__( self, server, response ):
-        ObjectIface.__init__(self, server, response)
-        self.text = response['text']
+    @classmethod
+    def from_response( cls, server, response ):
+        path, commands = ObjectIface.parse_response(response)
+        text = response['text']
+        return cls(server, path, commands, text)
+
+    def __init__( self, server, path, commands, text ):
+        ObjectIface.__init__(self, server, path, commands)
+        self.text = text
 
     def text_changed( self, new_text ):
         self.text = new_text
@@ -23,4 +29,4 @@ class TextObject(ObjectIface):
         self.path = response['new_path']
 
 
-iface_registry.register_iface('text', TextObject)
+iface_registry.register_iface('text', TextObject.from_response)
