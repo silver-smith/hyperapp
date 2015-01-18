@@ -76,9 +76,6 @@ class View(view.View, QtGui.QWidget):
         self.groupBox.layout().addWidget(self.target_view)
         self.view_changed()
 
-    def get_widget_to_focus( self ):
-        return self.target_view.get_widget_to_focus()
-
     def __del__( self ):
         print '~object_selector.View'
 
