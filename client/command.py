@@ -66,7 +66,7 @@ class ModuleCommand(Command):
             command_id=self.id)
         handle = app.server.get_view(request)
         if handle:
-            window.open(handle)
+            window.current_view().open(handle)
 
     def make_action( self, widget, window, app ):
         return self._make_action(widget, window, app)

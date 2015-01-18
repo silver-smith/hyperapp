@@ -17,7 +17,10 @@ class ObjectSelector(ObjectIface):
     ##     return '%s -> %s' % (self.path, self.target.path)
 
     def get_target( self ):
-        pass
+        return self.target
+
+    def set_target( self, object ):
+        self.target = object
 
     def get_target_handle( self ):
         handle_ctr = view_registry.resolve_view(self.target_view_id)
@@ -62,8 +65,16 @@ class View(view.View, QtGui.QWidget):
     def get_title( self ):
         return self.object.get_title()
 
-    def get_object( self ):
-        return self.object
+    def current_child( self ):
+        return self.target_view
+
+    def open( self, handle ):
+        print 'object_selector open', handle
+        self.target_view.get_widget().deleteLater()  # just removing it from layout won't destroy it
+        self.target_view = handle.construct(self)
+        self.object.set_target(self.target_view.get_object())
+        self.groupBox.layout().addWidget(self.target_view)
+        self.view_changed()
 
     def get_widget_to_focus( self ):
         return self.target_view.get_widget_to_focus()
