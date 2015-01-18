@@ -5,6 +5,7 @@ import os
 import os.path
 import traceback
 import re
+import pprint
 
 sys.path.append('..')
 
@@ -63,12 +64,15 @@ class Server(object):
         try:
             while True:
                 request = connection.receive()
-                print 'request: %r' % request
+                print 'request:'
+                pprint.pprint(request)
                 try:
                     response = self.process_request(request)
                 except:
                     traceback.print_exc()
                     response = dict(error='Internal server error')
+                print 'response:'
+                pprint.pprint(response)
                 connection.send(response)
         except json_connection.Error as x:
             print x
