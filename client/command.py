@@ -40,7 +40,7 @@ class ElementCommand(Command):
             command_id=self.id,
             element_key=element_key,
             )
-        handle = obj.server.get_view(request)
+        handle = obj.server.get_handle(request)
         if handle:
             view.open(handle)
 
@@ -64,7 +64,7 @@ class ModuleCommand(Command):
             method='run_module_command',
             module_name=self.module_name,
             command_id=self.id)
-        handle = app.server.get_view(request)
+        handle = app.server.get_handle(request)
         if handle:
             window.current_view().open(handle)
 

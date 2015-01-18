@@ -24,7 +24,7 @@ class ObjectIface(object):
 
     def run_command( self, command_id ):
         request = self.make_command_request(command_id)
-        return self.server.get_view(request)
+        return self.server.get_handle(request)
 
 
 iface_registry.register_iface('object', ObjectIface)

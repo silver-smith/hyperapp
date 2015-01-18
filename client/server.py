@@ -18,14 +18,17 @@ class Server(object):
         obj_ctr = iface_registry.resolve_iface(iface_id)
         return obj_ctr(self, response)
 
-    def get_object( self, request ):
-        response = self.execute_request(request)
-        return self.resp2object(response)
-
-    def get_view( self, request ):
-        response = self.execute_request(request)
+    def resp2handle( self, response ):
         object = self.resp2object(response)
         if object is None: return None
         view_id = response['view_id']
         handle_ctr = view_registry.resolve_view(view_id)
         return handle_ctr(object)
+
+    def get_object( self, request ):
+        response = self.execute_request(request)
+        return self.resp2object(response)
+
+    def get_handle( self, request ):
+        response = self.execute_request(request)
+        return self.resp2handle(response)
