@@ -1,2 +1,8 @@
 pony==0.5.3
 python-dateutil==2.1
+
+# installing pyside using pip has following package requirements:
+# apt-get install build-essential git cmake libqt4-dev libphonon-dev python2.7-dev libxml2-dev libxslt1-dev qtmobility-dev
+# see: http://pyside.readthedocs.org/en/latest/building/linux.html
+# also, maybe: apt-get install qmake
+PySide==1.2.2
