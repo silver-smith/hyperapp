@@ -24,6 +24,11 @@ class ObjectSelector(ProxyObject):
         return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')] \
           + self.target_object.get_commands()
 
+    def run_command( self, command_id ):
+        if command_id == 'choose':
+            return
+        return self.target_object.run_command(command_id)
+
     ## def get_title( self ):
     ##     return '%s -> %s' % (self.path, self.target.path)
 
