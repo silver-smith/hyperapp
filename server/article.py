@@ -1,3 +1,4 @@
+import json
 from pony.orm import db_session, Required, Optional, Set
 from util import str2id
 from object import Object, ListObject, Command, Element, Column
@@ -210,13 +211,14 @@ class RefSelector(Object):
     @db_session
     def get_json( self ):
         if self.ref_id is None:
-            target_path = None
+            target = None
         else:
             rec = module.ArticleRef[self.ref_id]
-            target_path = rec.path
+            target_path = json.loads(rec.path)
+            target = module.get_object(target_path)
         return dict(
             Object.get_json(self),
-            target_path=target_path)
+            target=target.iface.get(target) if target else None)
     
 
 class ArticleModule(PonyOrmModule):

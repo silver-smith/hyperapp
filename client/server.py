@@ -29,4 +29,3 @@ class Server(object):
         view_id = response['view_id']
         handle_ctr = view_registry.resolve_view(view_id)
         return handle_ctr(object)
-
