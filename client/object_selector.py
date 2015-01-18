@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 from util import uni2str
+from command import ObjectCommand
 from proxy_object import ProxyObject
 import iface_registry
 import view
@@ -18,6 +19,10 @@ class ObjectSelector(ProxyObject):
         ProxyObject.__init__(self, server, path, commands)
         self.target_object = target_handle.get_object()
         self.target_handle = target_handle
+
+    def get_commands( self ):
+        return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')] \
+          + self.target_object.get_commands()
 
     ## def get_title( self ):
     ##     return '%s -> %s' % (self.path, self.target.path)
@@ -71,8 +76,8 @@ class View(view.View, QtGui.QWidget):
     def handle( self ):
         return Handle(self.object)
 
-    def get_title( self ):
-        return self.object.get_title()
+    def get_object( self ):
+        return self.object
 
     def current_child( self ):
         return self.target_view

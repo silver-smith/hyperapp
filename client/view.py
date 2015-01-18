@@ -62,8 +62,10 @@ class View(object):
         view = self.current_child()
         if view:
             return view.get_title()
-        else:
-            return 'Untitled'
+        object = self.get_object()
+        if object:
+            return object.get_title()
+        return 'Untitled'
 
     def get_object( self ):
         view = self.current_child()
