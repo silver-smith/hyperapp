@@ -31,10 +31,14 @@ class ObjectSelector(ObjectIface):
     def get_target_handle( self ):
         return self.target_handle
 
+    def with_another_handle( self, handle ):
+        return ObjectSelector(self.server, self.path, self.commands, handle)
+
 
 class Handle(view.Handle):
 
     def __init__( self, object ):
+        assert isinstance(object, ObjectSelector), repr(object)
         view.Handle.__init__(self)
         self.object = object
 
@@ -75,11 +79,9 @@ class View(view.View, QtGui.QWidget):
 
     def open( self, handle ):
         print 'object_selector open', handle
-        self.target_view.get_widget().deleteLater()  # just removing it from layout won't destroy it
-        self.target_view = handle.construct(self)
-        self.object.set_target(self.target_view.get_object())
-        self.groupBox.layout().addWidget(self.target_view)
-        self.view_changed()
+        new_object = self.object.with_another_handle(handle)
+        new_handle = Handle(new_object)
+        view.View.open(self, new_handle)
 
     def __del__( self ):
         print '~object_selector.View'
