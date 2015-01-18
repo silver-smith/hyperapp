@@ -1,21 +1,21 @@
 from PySide import QtCore, QtGui
 from util import uni2str
-from iface import ObjectIface
+from proxy_object import ProxyObject
 import iface_registry
 import view
 import view_registry
 
 
-class ArticleRef(ObjectIface):
+class ArticleRef(ProxyObject):
 
     @classmethod
     def from_response( cls, server, response ):
-        path, commands = ObjectIface.parse_response(response)
+        path, commands = ProxyObject.parse_response(response)
         ref_path = response['ref_path']
         return cls(server, path, commands, ref_path)
 
     def __init__( self, server, path, commands, ref_path ):
-        ObjectIface.__init__(self, server, path, commands)
+        ProxyObject.__init__(self, server, path, commands)
         self.ref_path = ref_path
 
     def path_changed( self, ref_path ):
@@ -24,7 +24,7 @@ class ArticleRef(ObjectIface):
     def run_command( self, command_id ):
         if command_id == 'save':
             return self.run_command_save()
-        return ObjectIface.run_command(self, command_id)
+        return ProxyObject.run_command(self, command_id)
 
     def run_command_save( self ):
         request = dict(self.make_command_request(command_id='save'),

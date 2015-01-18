@@ -1,7 +1,7 @@
 from PySide import QtCore, QtGui
 from util import dt2local_str
 from command import ObjectCommand, ElementCommand
-from iface import ObjectIface
+from proxy_object import ProxyObject
 import iface_registry
 
 
@@ -54,18 +54,18 @@ class Element(object):
         return cls(data['row'], [ElementCommand.from_json(cmd) for cmd in data['commands']])
 
 
-class ListObj(ObjectIface):
+class ListObj(ProxyObject):
 
     @classmethod
     def from_response( cls, server, response ):
-        path, commands = ObjectIface.parse_response(response)
+        path, commands = ProxyObject.parse_response(response)
         columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
         elements = [Element.from_json(elt) for elt in response['elements']]
         all_elements_fetched = not response['has_more']
         return cls(server, path, commands, columns, elements, all_elements_fetched)
 
     def __init__( self, server, path, commands, columns, elements, all_elements_fetched ):
-        ObjectIface.__init__(self, server, path, commands)
+        ProxyObject.__init__(self, server, path, commands)
         self.columns = columns
         self.elements = elements
         self.all_elements_fetched = all_elements_fetched

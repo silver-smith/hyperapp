@@ -1,21 +1,21 @@
 from PySide import QtCore, QtGui
 from util import uni2str
-from iface import ObjectIface
+from proxy_object import ProxyObject
 import iface_registry
 import view
 import view_registry
 
 
-class ObjectSelector(ObjectIface):
+class ObjectSelector(ProxyObject):
 
     @classmethod
     def from_response( cls, server, response ):
-        path, commands = ObjectIface.parse_response(response)
+        path, commands = ProxyObject.parse_response(response)
         handle = server.resp2handle(response['target'])
         return cls(server, path, commands, handle)
 
     def __init__( self, server, path, commands, target_handle ):
-        ObjectIface.__init__(self, server, path, commands)
+        ProxyObject.__init__(self, server, path, commands)
         self.target_object = target_handle.get_object()
         self.target_handle = target_handle
 

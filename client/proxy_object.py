@@ -2,7 +2,7 @@ from command import ObjectCommand
 import iface_registry
 
 
-class ObjectIface(object):
+class ProxyObject(object):
 
     def __init__( self, server, path, commands ):
         self.server = server
@@ -33,4 +33,4 @@ class ObjectIface(object):
         return self.server.get_handle(request)
 
 
-## iface_registry.register_iface('object', ObjectIface)
+## iface_registry.register_iface('object', ProxyObject)
