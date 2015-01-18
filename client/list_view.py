@@ -72,7 +72,7 @@ class Model(QtCore.QAbstractTableModel):
             return 0
 
     def __del__( self ):
-        print '~Model'
+        print '~list_view.Model'
 
 
 class View(view.View, QtGui.QTableView):
@@ -174,7 +174,7 @@ class View(view.View, QtGui.QTableView):
         row_height = self.verticalHeader().defaultSectionSize()
         visible_row_count = self.viewport().height() / row_height
         first_visible_row = self.verticalHeader().visualIndexAt(0)
-        print 'resizeEvent, first_visible_row =', first_visible_row, ', visible_row_count =', visible_row_count
+        ## print 'resizeEvent, first_visible_row =', first_visible_row, ', visible_row_count =', visible_row_count
         self.ensure_elements(max(first_visible_row, 0) + visible_row_count + 1)
         return result
 
@@ -224,6 +224,9 @@ class View(view.View, QtGui.QTableView):
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
+
+    def __del__( self ):
+        print '~list_view.View'
 
 
 view_registry.register_view('list', Handle)

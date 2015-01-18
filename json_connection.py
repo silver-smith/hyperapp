@@ -61,8 +61,8 @@ class Connection(object):
         return struct.unpack(self.size_struct_format, data)[0]
 
     def send( self, value ):
-        print 'send:'
-        pprint.pprint(value)
+        ## print 'send:'
+        ## pprint.pprint(value)
         json_data = json.dumps(value, cls=JSONEncoder)
         data = self.encode_size(len(json_data)) + json_data
         ofs = 0
@@ -77,7 +77,7 @@ class Connection(object):
         data_size = None
         data = ''
         while data_size is None or len(data) < data_size:
-            print '  receiving...'
+            ## print '  receiving...'
             chunk = self.socket.recv(RECV_SIZE)
             print '  received (%d): %s' % (len(chunk), chunk)
             if chunk == '':
@@ -89,8 +89,8 @@ class Connection(object):
             data_size = self.decode_size(data[:ssize])
             data = data[ssize:]
         json_data = json.loads(data, object_hook=decoder)
-        print 'received:'
-        pprint.pprint(json_data)
+        ## print 'received:'
+        ## pprint.pprint(json_data)
         return json_data
                     
         

@@ -73,6 +73,9 @@ class View(view.View, QtGui.QWidget):
     def _on_path_text_changed( self, text ):
         self.object.path_changed(text)
 
+    def __del__( self ):
+        print '~article_ref.View'
+
 
 iface_registry.register_iface('article_ref', ArticleRef)
 view_registry.register_view('article_ref', Handle)

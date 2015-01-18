@@ -68,6 +68,9 @@ class View(view.View, QtGui.QWidget):
     def get_widget_to_focus( self ):
         return self.target_view.get_widget_to_focus()
 
+    def __del__( self ):
+        print '~object_selector.View'
+
 
 iface_registry.register_iface('object_selector', ObjectSelector)
 view_registry.register_view('object_selector', Handle)

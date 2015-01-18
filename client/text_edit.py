@@ -43,5 +43,8 @@ class View(view.View, QtGui.QTextEdit):
     def _on_text_changed( self ):
         self.object.text_changed(self.toPlainText())
 
+    def __del__( self ):
+        print '~text_edit.View'
+
 
 view_registry.register_view('text', Handle)
