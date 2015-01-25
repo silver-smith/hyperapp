@@ -28,5 +28,11 @@ class TextObject(ProxyObject):
         response = self.server.execute_request(request)
         self.path = response['new_path']
 
+    def open_ref( self, ref_id ):
+        request = dict(self.make_command_request(command_id='open_ref'),
+                       ref_id=ref_id)
+        return self.server.get_handle(request)
+        
+
 
 iface_registry.register_iface('text', TextObject.from_response)

@@ -52,6 +52,8 @@ class Article(Object):
             return self.run_command_save(request)
         elif command_id == 'refs':
             return self.run_command_refs(request)
+        elif command_id == 'open_ref':
+            return self.run_command_open_ref(request)
         else:
             return Object.run_command(self, command_id, request)
 
@@ -62,6 +64,14 @@ class Article(Object):
 
     def run_command_refs( self, request ):
         return ArticleRefList.make(self.article_id)
+
+    @db_session
+    def run_command_open_ref( self, request ):
+        ref_id = request['ref_id']
+        rec = module.ArticleRef[ref_id]
+        target_path = json.loads(rec.path)
+        target = module.get_object(target_path)
+        return target.iface.get(target)
 
     def do_save( self, text ):
         with db_session:

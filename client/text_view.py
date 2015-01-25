@@ -47,6 +47,9 @@ class View(view.View, QtGui.QTextBrowser):
 
     def on_anchor_clicked( self, url ):
         print 'on_anchor_clicked', repr(url.path())
+        handle = self.object.open_ref(url.path())
+        if handle:
+            self.open(handle)
 
     def __del__( self ):
         print '~text_edit.View'
