@@ -28,6 +28,7 @@ class View(view.View, QtGui.QTextBrowser):
     def __init__( self, parent, object, text ):
         QtGui.QTextBrowser.__init__(self)
         view.View.__init__(self, parent)
+        self.setOpenLinks(False)
         self.object = object
         self.setHtml(self.text2html(object.text))
         self.anchorClicked.connect(self.on_anchor_clicked)
@@ -42,7 +43,7 @@ class View(view.View, QtGui.QTextBrowser):
         return self.object
 
     def text2html( self, text ):
-        return 'viewfor: ' + text
+        return re.sub(r'\[([^\]]+)\]', r'<a href="\1">\1</a>', text)
 
     def on_anchor_clicked( self, url ):
         print 'on_anchor_clicked', repr(url.path())
