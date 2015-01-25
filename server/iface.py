@@ -41,8 +41,8 @@ class TextObjectIface(Iface):
 
 class ListIface(Iface):
 
-    def __init__( self ):
-        Iface.__init__(self, 'list')
+    def __init__( self, id='list' ):
+        Iface.__init__(self, id)
 
     def get( self, object ):
         if object is None: return None

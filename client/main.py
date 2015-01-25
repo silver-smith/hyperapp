@@ -22,6 +22,7 @@ import text_object
 import text_edit
 import object_selector
 import article_ref
+import ref_list
 
 
 class Handle(view.Handle):

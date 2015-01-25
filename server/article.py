@@ -77,7 +77,7 @@ class Article(Object):
 
 class ArticleRefList(ListObject):
 
-    iface = ListIface()
+    iface = ListIface('ref_list')
     view_id = 'list'
 
     columns = [
@@ -104,8 +104,15 @@ class ArticleRefList(ListObject):
 
     def run_command( self, command_id, request ):
         if command_id == 'add':
-            return ArticleRef.make(self.article_id, ref_id=None)
+            return self.run_command_add(request)
         assert False, repr(command_id)  # Unsupported command
+
+    def run_command_add( self, request ):
+        target_path = request['target_path']
+        with db_session:
+            rec = module.ArticleRef(article=module.Article[self.article_id],
+                                    path=json.dumps(target_path))
+        return RefSelector.make(self.article_id, ref_id=rec.id)
 
     @db_session
     def get_all_elements( self ):
