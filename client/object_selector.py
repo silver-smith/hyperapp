@@ -36,7 +36,7 @@ class ObjectSelector(ProxyObject):
         if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
         request = dict(self.make_command_request(command_id='choose'),
                        target_path=self.target_object.path)
-        return self.server.get_handle(request)
+        return UnwrapHandle(self.server.get_handle(request))
 
     def get_target( self ):
         return self.target
@@ -62,11 +62,29 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'object selector construct', parent, self.object.get_title(), self.object.target_object.get_title()
+        print 'object_selector construct', parent, self.object.get_title(), self.object.target_object.get_title()
         return View(parent, self.object)
 
     def __repr__( self ):
         return 'object_selector.Handle(%s)' % uni2str(self.object.get_title())
+
+
+class UnwrapHandle(view.Handle):
+
+    def __init__( self, base_handle ):
+        assert isinstance(base_handle, view.Handle), repr(base_handle)
+        view.Handle.__init__(self)
+        self.base_handle = base_handle
+
+    def get_object( self ):
+        return self.base_handle.get_object()
+
+    def construct( self, parent ):
+        print 'object_selector.UnwrapHandle construct', parent, self.base_handle
+        return self.base_handle.construct(parent)
+
+    def __repr__( self ):
+        return 'object_selector.UnwrapHandle(%r)' % self.base_handle
 
 
 class View(view.View, QtGui.QWidget):
@@ -95,9 +113,10 @@ class View(view.View, QtGui.QWidget):
 
     def open( self, handle ):
         print 'object_selector open', handle
-        new_object = self.object.with_another_handle(handle)
-        new_handle = Handle(new_object)
-        view.View.open(self, new_handle)
+        if not isinstance(handle, UnwrapHandle):
+            new_object = self.object.with_another_handle(handle)
+            handle = Handle(new_object)
+        view.View.open(self, handle)
 
     def __del__( self ):
         print '~object_selector.View'
