@@ -120,16 +120,13 @@ class ArticleRefList(ListObject):
 
     def rec2element( self, rec ):
         commands = [
-            Command('open', 'Open', 'Open article reference'),
-            Command('select', 'Select', 'Open reference selector', 'Space'),
+            Command('open', 'Open', 'Open reference selector'),
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
         return Element(rec.id, [rec.id, rec.path], commands)
 
     def run_element_command( self, command_id, element_key ):
         if command_id == 'open':
-            return ArticleRef.make(self.article_id, ref_id=element_key)
-        if command_id == 'select':
             return RefSelector.make(self.article_id, ref_id=element_key)
         if command_id == 'delete':
             return self.run_element_command_delete(element_key)
@@ -139,59 +136,6 @@ class ArticleRefList(ListObject):
     def run_element_command_delete( self, ref_id ):
         module.ArticleRef[ref_id].delete()
         return self  # reload
-
-
-class ArticleRef(Object):
-
-    iface = Iface('article_ref')
-    view_id = 'article_ref'
-
-    def __init__( self, path, article_id, ref_id ):
-        Object.__init__(self, path)
-        self.article_id = article_id
-        self.ref_id = ref_id
-
-    @classmethod
-    def make( cls, article_id, ref_id ):
-        path = module.make_path(object='article_ref', article_id=article_id, ref_id=ref_id)
-        return cls(path, article_id, ref_id)
-
-    @classmethod
-    def from_path( cls, path ):
-        article_id = path['article_id']
-        ref_id = path['ref_id']
-        return cls(path, article_id, ref_id)
-
-    @db_session
-    def get_json( self ):
-        if self.ref_id is None:
-            ref_path = None
-        else:
-            rec = module.ArticleRef[self.ref_id]
-            ref_path = rec.path
-        return dict(
-            Object.get_json(self),
-            ref_path=ref_path)
-
-    def get_commands( self ):
-        return [Command('save', 'Save', 'Save edited path', 'Ctrl+S')]
-
-    def run_command( self, command_id, request ):
-        if command_id == 'save':
-            return self.run_command_save(request)
-        assert False, repr(command_id)  # Unsupported command
-
-    def run_command_save( self, request ):
-        ref_path = request['ref_path']
-        with db_session:
-            if self.ref_id is None:
-                rec = module.ArticleRef(article=module.Article[self.article_id],
-                                        path=ref_path)
-            else:
-                rec = module.ArticleRef[self.ref_id]
-                rec.path = ref_path
-        print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
-        return dict(self.path, ref_id=rec.id)
 
 
 class RefSelector(Object):
@@ -266,8 +210,6 @@ class ArticleModule(PonyOrmModule):
             return Article.from_path(path)
         if objname == 'article_ref_list':
             return ArticleRefList.from_path(path)
-        if objname == 'article_ref':
-            return ArticleRef.from_path(path)
         if objname == 'article_ref_selector':
             return RefSelector.from_path(path)
         return PonyOrmModule.resolve(self, path)
