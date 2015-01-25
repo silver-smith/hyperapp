@@ -13,11 +13,14 @@ MODULE_NAME = 'article'
 class Article(Object):
 
     iface = TextObjectIface()
-    view_id = 'text'
 
-    def __init__( self, path, article_id ):
+    def __init__( self, path, article_id, mode='edit' ):
         Object.__init__(self, path)
         self.article_id = article_id
+        if mode == 'edit':
+            self.view_id = 'text_edit'
+        else:
+            self.view_id = 'text_view'
 
     @classmethod
     def from_path( cls, path ):
@@ -37,11 +40,14 @@ class Article(Object):
 
     def get_commands( self ):
         return [
+            Command('view', 'View', 'Switch to view mode', 'Ctrl+M'),
             Command('save', 'Save', 'Save article', 'Ctrl+S'),
             Command('refs', 'Refs', 'Open article references', 'Ctrl+R'),
             ]
 
     def run_command( self, command_id, request ):
+        if command_id == 'view':
+            return Article(self.path, self.article_id, mode='view')
         if command_id == 'save':
             return self.run_command_save(request)
         elif command_id == 'refs':

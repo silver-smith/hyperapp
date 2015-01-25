@@ -1,3 +1,4 @@
+import re
 from PySide import QtCore, QtGui
 from util import uni2str
 import view
@@ -15,21 +16,21 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'text_edit construct', parent, self.object.get_title(), repr(self.text)
+        print 'text_view construct', parent, self.object.get_title(), repr(self.text)
         return View(parent, self.object, self.text)
 
     def __repr__( self ):
-        return 'text_edit.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
+        return 'text_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
 
 
-class View(view.View, QtGui.QTextEdit):
+class View(view.View, QtGui.QTextBrowser):
 
     def __init__( self, parent, object, text ):
-        QtGui.QTextEdit.__init__(self, text)
+        QtGui.QTextBrowser.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
-        self.setText(object.text)
-        self.textChanged.connect(self._on_text_changed)
+        self.setHtml(self.text2html(object.text))
+        self.anchorClicked.connect(self.on_anchor_clicked)
 
     def handle( self ):
         return Handle(self.object, self.toPlainText())
@@ -40,11 +41,14 @@ class View(view.View, QtGui.QTextEdit):
     def get_object( self ):
         return self.object
 
-    def _on_text_changed( self ):
-        self.object.text_changed(self.toPlainText())
+    def text2html( self, text ):
+        return 'viewfor: ' + text
+
+    def on_anchor_clicked( self, url ):
+        print 'on_anchor_clicked', repr(url.path())
 
     def __del__( self ):
         print '~text_edit.View'
 
 
-view_registry.register_view('text_edit', Handle)
+view_registry.register_view('text_view', Handle)

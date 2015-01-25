@@ -20,6 +20,7 @@ import list_view
 #import narrower
 import text_object
 import text_edit
+import text_view
 import object_selector
 import ref_list
 
