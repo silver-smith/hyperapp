@@ -108,5 +108,14 @@ class ListObj(ProxyObject):
                 return col.idx
         assert False, 'No "key" column'
 
+    def run_element_command( self, command_id, element_key ):
+        request = dict(
+            method='run_element_command',
+            path=self.path,
+            command_id=command_id,
+            element_key=element_key,
+            )
+        return self.server.get_handle(request)
+
 
 iface_registry.register_iface('list', ListObj.from_response)

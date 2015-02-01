@@ -34,13 +34,7 @@ class ElementCommand(Command):
 
     def run( self, view, obj, element_key ):
         print 'ElementCommand.run', self.id, obj, view, element_key
-        request = dict(
-            method='run_element_command',
-            path=obj.path,
-            command_id=self.id,
-            element_key=element_key,
-            )
-        handle = obj.server.get_handle(request)
+        handle = obj.run_element_command(self.id, element_key)
         if handle:
             view.open(handle)
 
