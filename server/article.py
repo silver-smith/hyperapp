@@ -68,7 +68,7 @@ class Article(Object):
         ref_id = request['ref_id']
         rec = module.ArticleRef[ref_id]
         target_path = json.loads(rec.path)
-        target = module.get_object(target_path)
+        target = module.run_resolve(target_path)
         return target.get()
 
     def do_save( self, text ):
@@ -180,7 +180,7 @@ class RefSelector(Object):
         else:
             rec = module.ArticleRef[self.ref_id]
             target_path = json.loads(rec.path)
-            target = module.get_object(target_path)
+            target = module.run_resolve(target_path)
         return Object.get(self, target=target.get() if target else None, **kw)
 
     def run_command( self, command_id, request ):
@@ -217,22 +217,23 @@ class ArticleModule(PonyOrmModule):
                                            )
 
     def resolve( self, path ):
-        objname = path['object']
+        objname = path.get('object')
         if objname == 'article':
             return Article.from_path(path)
         if objname == 'article_ref_list':
             return ArticleRefList.from_path(path)
         if objname == 'article_ref_selector':
             return RefSelector.from_path(path)
+        assert objname is None, repr(objname)  # Unknown object name
         return PonyOrmModule.resolve(self, path)
 
     def get_commands( self ):
         return [ModuleCommand('create', 'Create article', 'Create new article', 'Alt+A', self.name)]
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, request ):
         if command_id == 'create':
             return Article.from_path(self.make_path(object='article', article_id=None))
-        assert False, repr(command_id)  # Unsupported command
+        return PonyOrmModule.run_command(self, command_id, request)
 
     def add_article_fields( self, **fields ):
         self.article_fields.update(fields)

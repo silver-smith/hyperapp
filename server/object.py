@@ -49,7 +49,51 @@ class Command(object):
             )
 
 
-class Object(object):
+class Response(object):
+
+    def __init__( self, action, **kw ):
+        self.action = action
+        self.data = kw
+
+    def as_json( self ):
+        return dict(
+            action=self.action,
+            **self.data)
+
+
+class ObjectBase(object):
+
+    def response( self, open=None ):
+        if open is not None:
+            assert isinstance(open, Object), repr(open)
+            open_obj = open.get()
+        else:
+            open_obj = None
+        return Response('open', obj=open_obj)
+
+    def adapt_response( self, response ):
+        if isinstance(response, Response):
+            return response
+        if isinstance(response, Object):
+            return Response('open', obj=response.get())
+        if response is None:
+            return None
+        assert False, repr(response)  # self.response must be used for returning responses or an object instance must be returned
+
+    def process_request( self, request ):
+        method = request['method']
+        if method == 'run_command':
+            command_id = request['command_id']
+            response = self.run_command(command_id, request)
+            return self.adapt_response(response)
+        else:
+            assert False, repr(method)  # Unknown method
+
+    def run_command( self, command_id, request ):
+        assert False, repr(command_id)  # Unknown command
+
+
+class Object(ObjectBase):
 
     def __init__( self, path ):
         self.path = path
@@ -60,9 +104,6 @@ class Object(object):
     def get_commands( self ):
         return []
 
-    def run_command( self, command_id, request ):
-        assert False, repr(command_id)  # Unknown command
-
     def get( self, **kw ):
         return dict(
             iface_id=self.iface.id,
@@ -71,19 +112,20 @@ class Object(object):
             commands=[cmd.as_json() for cmd in self.get_commands()],
             **kw)
 
+    def response( self, open=None ):
+        if open is not None:
+            assert isinstance(open, Object), repr(open)
+            open_obj = open.get()
+        else:
+            open_obj = None
+        return Response('open', obj=open_obj)
+
     def process_request( self, request ):
         method = request['method']
         if method == 'get':
-            return self.get()
-        if method == 'run_command':
-            command_id = request['command_id']
-            response = self.run_command(command_id, request)
-            if isinstance(response, Object):
-                new_object = response
-                response = new_object.get()
-            return response
+            return Response('open', obj=self.get())
         else:
-            assert False, repr(method)  # Unknown method
+            return ObjectBase.process_request(self, request)
 
 
 class ListObject(Object):
@@ -116,14 +158,14 @@ class ListObject(Object):
             key = request['key']
             count = request['count']
             elements, has_more = self.get_elements_json(count, key)
-            return dict(elements=elements,
-                        has_more=has_more)
+            return Response('fetched_elements',
+                            elements=elements,
+                            has_more=has_more)
         elif method == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
-            new_object = self.run_element_command(command_id, element_key)
-            if new_object is None: return None
-            return new_object.get()
+            response = self.run_element_command(command_id, element_key)
+            return self.adapt_response(response)
         else:
             return Object.process_request(self, request)
 

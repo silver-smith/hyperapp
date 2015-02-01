@@ -55,8 +55,8 @@ class ModuleCommand(Command):
     def run( self, window, app ):
         print 'ModuleCommand.run', self.id, self.module_name, window, app
         request = dict(
-            method='run_module_command',
-            module_name=self.module_name,
+            method='run_command',
+            path=dict(module=self.module_name),
             command_id=self.id)
         handle = app.server.get_handle(request)
         if handle:

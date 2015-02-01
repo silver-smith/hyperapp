@@ -101,15 +101,18 @@ class FileModule(Module):
         Module.__init__(self, MODULE_NAME)
 
     def resolve( self, path ):
-        return Dir(path)
+        fspath = path.get('fspath')
+        if fspath is not None:
+            return Dir(path)
+        return Module.resolve(self, path)
 
     def get_commands( self ):
         return [ModuleCommand('home', 'Home', 'Open home directory', 'Ctrl+F', self.name)]
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, request ):
         if command_id == 'home':
             return self.open_fspath(os.path.expanduser('~'))
-        assert False, repr(command_id)  # Unsupported command
+        return Module.run_command(self, command_id, request)
 
     def open_fspath( self, fspath ):
         path = self.make_path(fspath=fspath)

@@ -1,4 +1,4 @@
-from object import Command
+from object import Command, ObjectBase
 
 
 class ModuleCommand(Command):
@@ -13,12 +13,13 @@ class ModuleCommand(Command):
 
 
 # base class for modules
-class Module(object):
+class Module(ObjectBase):
 
     module_registry = []
     module_by_name = {}
 
     def __init__( self, name ):
+        ObjectBase.__init__(self)
         self.name = name
         self.module_registry.append(self)  # preserves import order
         self.module_by_name[name] = self
@@ -37,12 +38,12 @@ class Module(object):
             module.init_phase3()
 
     @classmethod
-    def get_object( cls, path ):
+    def run_resolve( cls, path ):
         module = path['module']
         return cls.module_by_name[module].resolve(path)
 
     def resolve( self, path ):
-        assert False, repr(path)  # 404 Not found
+        return self
 
     def get_commands( self ):
         return []
@@ -54,10 +55,5 @@ class Module(object):
             commands += module.get_commands()
         return commands
     
-    @classmethod
-    def run_module_command( cls, module_name, command_id ):
-        module = cls.module_by_name[module_name]
-        return module.run_command(command_id)
-
     def make_path( self, **kw ):
         return dict(module=self.name, **kw)

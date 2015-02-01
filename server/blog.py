@@ -112,12 +112,13 @@ class BlogModule(PonyOrmModule):
                                           created_at=Required(datetime))
 
     def resolve( self, path ):
-        objname = path['object']
+        objname = path.get('object')
         if objname == 'blog':
             return Blog(path)
         if objname == 'entry':
             return BlogEntry.from_path(path)
-        return Module.resolve(self, path)
+        assert objname is None, repr(objname)  # Unknown object name
+        return PonyOrmModule.resolve(self, path)
 
     def get_commands( self ):
         return [
@@ -125,12 +126,12 @@ class BlogModule(PonyOrmModule):
             ModuleCommand('open_blog', 'Blog', 'Open blog', 'Alt+B', self.name),
             ]
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, request ):
         if command_id == 'create':
             return BlogEntry.make(entry_id=None)
         if command_id == 'open_blog':
             return Blog(self.make_path(object='blog'))
-        assert False, repr(command_id)  # Unsupported command
+        return PonyOrmModule.run_command(self, command_id, request)
 
 
 module = BlogModule()

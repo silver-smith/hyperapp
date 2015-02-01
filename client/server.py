@@ -31,4 +31,5 @@ class Server(object):
 
     def get_handle( self, request ):
         response = self.execute_request(request)
-        return self.resp2handle(response)
+        assert response['action'] == 'open'
+        return self.resp2handle(response['obj'])
