@@ -63,12 +63,27 @@ class Object(object):
     def run_command( self, command_id, request ):
         assert False, repr(command_id)  # Unknown command
 
-    def get_json( self ):
+    def get( self, **kw ):
         return dict(
+            iface_id=self.iface.id,
             view_id=self.view_id,
             path=self.get_path(),
             commands=[cmd.as_json() for cmd in self.get_commands()],
-            )
+            **kw)
+
+    def process_request( self, request ):
+        method = request['method']
+        if method == 'get':
+            return self.get()
+        if method == 'run_command':
+            command_id = request['command_id']
+            response = self.run_command(command_id, request)
+            if isinstance(response, Object):
+                new_object = response
+                response = new_object.get()
+            return response
+        else:
+            assert False, repr(method)  # Unknown method
 
 
 class ListObject(Object):
@@ -82,6 +97,35 @@ class ListObject(Object):
             if column.id == 'key':
                 return idx
         assert False, 'Missing "key" column id'
+
+    def get( self, **kw ):
+        elements, has_more = self.get_elements_json()
+        return Object.get(self,
+            columns=[column.as_json() for column in self.get_columns()],
+            elements=elements,
+            has_more=has_more,
+            **kw)
+
+    def get_elements_json( self, count=None, key=None ):
+        elements, has_more = self.get_elements(count, key)
+        return ([elt.as_json() for elt in elements], has_more)
+
+    def process_request( self, request ):
+        method = request['method']
+        if method == 'get_elements':
+            key = request['key']
+            count = request['count']
+            elements, has_more = self.get_elements_json(count, key)
+            return dict(elements=elements,
+                        has_more=has_more)
+        elif method == 'run_element_command':
+            command_id = request['command_id']
+            element_key = request['element_key']
+            new_object = self.run_element_command(command_id, element_key)
+            if new_object is None: return None
+            return new_object.get()
+        else:
+            return Object.process_request(self, request)
 
     def get_columns( self ):
         return self.columns

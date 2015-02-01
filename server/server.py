@@ -29,11 +29,6 @@ class Server(object):
     def resolve( self, path ):
         return Module.get_object(path)
 
-    def get_object( self, object ):
-        if object is None: return None
-        iface = object.iface
-        return iface.get(object)
-
     def process_request( self, request ):
         method = request['method']
         # server-global commands
@@ -47,7 +42,7 @@ class Server(object):
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
         iface = object.iface
-        return iface.process_request(object, method, request)
+        return object.process_request(request)
 
     def process_get_commands( self, request ):
         commands = [cmd.as_json() for cmd in Module.get_all_modules_commands()]
@@ -57,7 +52,8 @@ class Server(object):
         module_name = request['module_name']
         command_id = request['command_id']
         obj = Module.run_module_command(module_name, command_id)
-        return self.get_object(obj)
+        if obj:
+            return obj.get()
 
     def run( self, connection, cln_addr ):
         print 'accepted connection from %s:%d' % cln_addr

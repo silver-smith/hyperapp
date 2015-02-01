@@ -28,15 +28,13 @@ class Article(Object):
         return cls(path, article_id=article_id)
 
     @db_session
-    def get_json( self ):
+    def get( self, **kw ):
         if self.article_id is not None:
             rec = module.Article[self.article_id]
             text = rec.text
         else:
             text = None
-        return dict(
-            Object.get_json(self),
-            text=text)
+        return Object.get(self, text=text, **kw)
 
     def get_commands( self ):
         return [
@@ -71,7 +69,7 @@ class Article(Object):
         rec = module.ArticleRef[ref_id]
         target_path = json.loads(rec.path)
         target = module.get_object(target_path)
-        return target.iface.get(target)
+        return target.get()
 
     def do_save( self, text ):
         with db_session:
@@ -176,16 +174,14 @@ class RefSelector(Object):
         return cls(path, article_id, ref_id)
 
     @db_session
-    def get_json( self ):
+    def get( self, **kw ):
         if self.ref_id is None:
             target = None
         else:
             rec = module.ArticleRef[self.ref_id]
             target_path = json.loads(rec.path)
             target = module.get_object(target_path)
-        return dict(
-            Object.get_json(self),
-            target=target.iface.get(target) if target else None)
+        return Object.get(self, target=target.get() if target else None, **kw)
 
     def run_command( self, command_id, request ):
         if command_id == 'choose':
