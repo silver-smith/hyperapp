@@ -37,8 +37,8 @@ class ObjectSelector(ProxyObject):
         if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
         request = dict(self.make_command_request(command_id='choose'),
                        target_path=self.target_object.path)
-        response = self.server.execute_request(request)
-        return UnwrapHandle(response.object())
+        handle = self.server.request_an_object(request)
+        return UnwrapHandle(handle)
 
     def get_target( self ):
         return self.target

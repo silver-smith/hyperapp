@@ -45,3 +45,7 @@ class Server(object):
     def execute_request( self, request ):
         self.connection.send(request)
         return Response(self, self.connection.receive())
+
+    def request_an_object( self, request ):
+        response = self.execute_request(request)
+        return response.object()

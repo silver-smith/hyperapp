@@ -30,8 +30,7 @@ class ProxyObject(object):
 
     def run_command( self, command_id ):
         request = self.make_command_request(command_id)
-        response = self.server.execute_request(request)
-        return response.object()
+        return self.server.request_an_object(request)
 
 
 ## iface_registry.register_iface('object', ProxyObject)

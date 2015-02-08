@@ -116,8 +116,7 @@ class ListObj(ProxyObject):
             command_id=command_id,
             element_key=element_key,
             )
-        response = self.server.execute_request(request)
-        return response.object()
+        return self.server.request_an_object(request)
 
 
 iface_registry.register_iface('list', ListObj.from_resp)

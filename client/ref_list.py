@@ -13,8 +13,7 @@ class RefList(ListObj):
     def run_command_add( self ):
         request = dict(self.make_command_request(command_id='add'),
                        target_path=self.get_default_ref())
-        response = self.server.execute_request(request)
-        return response.object()
+        return self.server.request_an_object(request)
 
     # todo
     def get_default_ref( self ):

@@ -31,8 +31,7 @@ class TextObject(ProxyObject):
     def open_ref( self, ref_id ):
         request = dict(self.make_command_request(command_id='open_ref'),
                        ref_id=ref_id)
-        response = self.server.execute_request(request)
-        return response.object()
+        return self.server.request_an_object(request)
         
 
 
