@@ -126,7 +126,7 @@ class ArticleRefList(ListObject):
         with db_session:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=json.dumps(target_path))
-        return RefSelector.make(self.article_id, ref_id=rec.id)
+        return request.make_response_open(RefSelector.make(self.article_id, ref_id=rec.id))
 
     @db_session
     def get_all_elements( self ):
@@ -139,17 +139,17 @@ class ArticleRefList(ListObject):
             ]
         return Element(rec.id, [rec.id, rec.path], commands)
 
-    def run_element_command( self, command_id, element_key ):
+    def run_element_command( self, request, command_id, element_key ):
         if command_id == 'open':
-            return RefSelector.make(self.article_id, ref_id=element_key)
+            return request.make_response_open(RefSelector.make(self.article_id, ref_id=element_key))
         if command_id == 'delete':
-            return self.run_element_command_delete(element_key)
-        return ListObject.run_element_command(self, command_id, element_key)
+            return self.run_element_command_delete(request, element_key)
+        return ListObject.run_element_command(self, request, command_id, element_key)
 
     @db_session
-    def run_element_command_delete( self, ref_id ):
+    def run_element_command_delete( self, request, ref_id ):
         module.ArticleRef[ref_id].delete()
-        return self  # reload
+        return request.make_response_open(self)  # reload
 
 
 class RefSelector(Object):

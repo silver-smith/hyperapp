@@ -82,20 +82,20 @@ class Blog(ListObject):
                     ]
         return Element(rec.id, [rec.id, rec.created_at], commands)
 
-    def run_element_command( self, command_id, element_key ):
+    def run_element_command( self, request, command_id, element_key ):
         if command_id == 'open':
             entry_id = element_key
-            return BlogEntry.make(entry_id=element_key)
+            return request.make_response_open(BlogEntry.make(entry_id=element_key))
         if command_id == 'delete':
-            return self.run_element_command_delete(element_key)
-        return ListObject.run_element_command(self, command_id, element_key)
+            return self.run_element_command_delete(request, element_key)
+        return ListObject.run_element_command(self, request, command_id, element_key)
 
     @db_session
-    def run_element_command_delete( self, entry_id ):
+    def run_element_command_delete( self, request, entry_id ):
         rec = module.BlogEntry[entry_id]
         rec.article.delete()
         rec.delete()
-        return self  # reload
+        request.make_response_open(self)  # reload
 
 
 class BlogModule(PonyOrmModule):

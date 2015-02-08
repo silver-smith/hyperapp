@@ -204,8 +204,7 @@ class ListObject(Object):
         elif method == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
-            resp = self.run_element_command(request, command_id, element_key)
-            return self.make_response(request, resp)
+            return self.run_element_command(request, command_id, element_key)
         else:
             return Object.process_request(self, request)
 
