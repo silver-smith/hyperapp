@@ -84,11 +84,11 @@ def main():
     server = Server(('localhost', 8888))
 
     get_request = dict(method='get', path=path)
-    handle = server.get_result_handle(get_request)
+    handle = server.execute_request(get_request).object()
 
     commands_request = dict(method='get_commands')
     commands_response = server.execute_request(commands_request)
-    server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response['commands']]
+    server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
 
     app = Application(server, server_commands)
 

@@ -60,12 +60,12 @@ class Element(object):
 class ListObj(ProxyObject):
 
     @classmethod
-    def from_response( cls, server, response ):
-        path, commands = ProxyObject.parse_response(response)
-        columns = [Column.from_json(idx, column) for idx, column in enumerate(response['columns'])]
+    def from_resp( cls, server, resp ):
+        path, commands = ProxyObject.parse_resp(resp)
+        columns = [Column.from_json(idx, column) for idx, column in enumerate(resp['columns'])]
         key_column_idx = cls._find_key_column(columns)
-        elements = [Element.from_json(key_column_idx, elt) for elt in response['elements']]
-        all_elements_fetched = not response['has_more']
+        elements = [Element.from_json(key_column_idx, elt) for elt in resp['elements']]
+        all_elements_fetched = not resp['has_more']
         return cls(server, path, commands, columns, elements, all_elements_fetched, key_column_idx)
 
     def __init__( self, server, path, commands, columns, elements, all_elements_fetched, key_column_idx ):
@@ -98,7 +98,7 @@ class ListObj(ProxyObject):
             key=last_key,
             count=load_count)
         response = self.server.execute_request(request)
-        result_elts = response['result']['fetched_elements']
+        result_elts = response.result.fetched_elements
         self.elements += [Element.from_json(self.key_column_idx, elt) for elt in result_elts['elements']]
         self.all_elements_fetched = not result_elts['has_more']
 
@@ -116,7 +116,8 @@ class ListObj(ProxyObject):
             command_id=command_id,
             element_key=element_key,
             )
-        return self.server.get_handle(request)
+        response = self.server.execute_request(request)
+        return response.object()
 
 
-iface_registry.register_iface('list', ListObj.from_response)
+iface_registry.register_iface('list', ListObj.from_resp)

@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 from util import uni2str
+from server import resolve_object
 from command import ObjectCommand
 from proxy_object import ProxyObject
 import iface_registry
@@ -10,9 +11,9 @@ import view_registry
 class ObjectSelector(ProxyObject):
 
     @classmethod
-    def from_response( cls, server, response ):
-        path, commands = ProxyObject.parse_response(response)
-        handle = server.resp2handle(response['target'])
+    def from_resp( cls, server, resp ):
+        path, commands = ProxyObject.parse_resp(resp)
+        handle = resolve_object(server, resp['target'])
         return cls(server, path, commands, handle)
 
     def __init__( self, server, path, commands, target_handle ):
@@ -36,7 +37,8 @@ class ObjectSelector(ProxyObject):
         if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
         request = dict(self.make_command_request(command_id='choose'),
                        target_path=self.target_object.path)
-        return UnwrapHandle(self.server.get_handle(request))
+        response = self.server.execute_request(request)
+        return UnwrapHandle(response.object())
 
     def get_target( self ):
         return self.target
@@ -122,5 +124,5 @@ class View(view.View, QtGui.QWidget):
         print '~object_selector.View'
 
 
-iface_registry.register_iface('object_selector', ObjectSelector.from_response)
+iface_registry.register_iface('object_selector', ObjectSelector.from_resp)
 view_registry.register_view('object_selector', Handle)

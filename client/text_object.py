@@ -5,9 +5,9 @@ import iface_registry
 class TextObject(ProxyObject):
 
     @classmethod
-    def from_response( cls, server, response ):
-        path, commands = ProxyObject.parse_response(response)
-        text = response['text']
+    def from_resp( cls, server, resp ):
+        path, commands = ProxyObject.parse_resp(resp)
+        text = resp['text']
         return cls(server, path, commands, text)
 
     def __init__( self, server, path, commands, text ):
@@ -26,13 +26,14 @@ class TextObject(ProxyObject):
         request = dict(self.make_command_request(command_id='save'),
                        text=self.text)
         response = self.server.execute_request(request)
-        self.path = response['new_path']
+        self.path = response.result.new_path
 
     def open_ref( self, ref_id ):
         request = dict(self.make_command_request(command_id='open_ref'),
                        ref_id=ref_id)
-        return self.server.get_handle(request)
+        response = self.server.execute_request(request)
+        return response.object()
         
 
 
-iface_registry.register_iface('text', TextObject.from_response)
+iface_registry.register_iface('text', TextObject.from_resp)

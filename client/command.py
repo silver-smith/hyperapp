@@ -58,7 +58,8 @@ class ModuleCommand(Command):
             method='run_command',
             path=dict(module=self.module_name),
             command_id=self.id)
-        handle = app.server.get_handle(request)
+        response = app.server.execute_request(request)
+        handle = response.object()
         if handle:
             window.current_view().open(handle)
 

@@ -45,7 +45,7 @@ class Article(Object):
 
     def run_command( self, request, command_id ):
         if command_id == 'view':
-            return request.make_response_open(Article(self.path, self.article_id, mode='view'))
+            return request.make_response_object(Article(self.path, self.article_id, mode='view'))
         if command_id == 'save':
             return self.run_command_save(request)
         elif command_id == 'refs':
@@ -61,7 +61,7 @@ class Article(Object):
         return request.make_response_result(new_path=new_path)
 
     def run_command_refs( self, request ):
-        return request.make_response_open(ArticleRefList.make(self.article_id))
+        return request.make_response_object(ArticleRefList.make(self.article_id))
 
     @db_session
     def run_command_open_ref( self, request ):
@@ -69,7 +69,7 @@ class Article(Object):
         rec = module.ArticleRef[ref_id]
         target_path = json.loads(rec.path)
         target = module.run_resolve(target_path)
-        return request.make_response_open(target)
+        return request.make_response_object(target)
 
     def do_save( self, text ):
         with db_session:
@@ -126,7 +126,7 @@ class ArticleRefList(ListObject):
         with db_session:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=json.dumps(target_path))
-        return request.make_response_open(RefSelector.make(self.article_id, ref_id=rec.id))
+        return request.make_response_object(RefSelector.make(self.article_id, ref_id=rec.id))
 
     @db_session
     def get_all_elements( self ):
@@ -141,7 +141,7 @@ class ArticleRefList(ListObject):
 
     def run_element_command( self, request, command_id, element_key ):
         if command_id == 'open':
-            return request.make_response_open(RefSelector.make(self.article_id, ref_id=element_key))
+            return request.make_response_object(RefSelector.make(self.article_id, ref_id=element_key))
         if command_id == 'delete':
             return self.run_element_command_delete(request, element_key)
         return ListObject.run_element_command(self, request, command_id, element_key)
@@ -149,7 +149,7 @@ class ArticleRefList(ListObject):
     @db_session
     def run_element_command_delete( self, request, ref_id ):
         module.ArticleRef[ref_id].delete()
-        return request.make_response_open(self)  # reload
+        return request.make_response_object(self)  # reload
 
 
 class RefSelector(Object):
@@ -199,7 +199,7 @@ class RefSelector(Object):
                 rec = module.ArticleRef[self.ref_id]
                 rec.path = target_path_str
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
-        return request.make_response_open(ArticleRefList.make(article_id=self.article_id))
+        return request.make_response_object(ArticleRefList.make(article_id=self.article_id))
 
 
 class ArticleModule(PonyOrmModule):
@@ -232,7 +232,7 @@ class ArticleModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_open(Article.from_path(self.make_path(object='article', article_id=None)))
+            return request.make_response_object(Article.from_path(self.make_path(object='article', article_id=None)))
         return PonyOrmModule.run_command(self, request, command_id)
 
     def add_article_fields( self, **fields ):

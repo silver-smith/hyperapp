@@ -3,6 +3,40 @@ import iface_registry
 import view_registry
 
 
+def resolve_object( server, resp ):
+    iface_id = resp['iface_id']
+    obj_ctr = iface_registry.resolve_iface(iface_id)
+    object = obj_ctr(server, resp)
+    view_id = resp['view_id']
+    handle_ctr = view_registry.resolve_view(view_id)
+    return handle_ctr(object)
+
+
+class DictObject(object):
+
+    def __init__( self, d ):
+        self._d = d
+
+    def __getattr__( self, attr ):
+        return self._d[attr]
+
+
+class Response(object):
+
+    def __init__( self, server, resp_dict ):
+        self.server = server
+        self.resp_dict = resp_dict
+
+    @property
+    def result( self ):
+        if 'result' in self.resp_dict:
+            return DictObject(self.resp_dict['result'])
+
+    def object( self ):
+        if 'object' in self.resp_dict:
+            return resolve_object(self.server, self.resp_dict['object'])
+
+
 class Server(object):
 
     def __init__( self, addr ):
@@ -10,30 +44,4 @@ class Server(object):
         
     def execute_request( self, request ):
         self.connection.send(request)
-        return self.connection.receive()
-
-    def resp2object( self, response ):
-        if response is None: return None
-        iface_id = response['iface_id']
-        obj_ctr = iface_registry.resolve_iface(iface_id)
-        return obj_ctr(self, response)
-
-    def resp2handle( self, response ):
-        object = self.resp2object(response)
-        if object is None: return None
-        view_id = response['view_id']
-        handle_ctr = view_registry.resolve_view(view_id)
-        return handle_ctr(object)
-
-    def get_object( self, request ):
-        response = self.execute_request(request)
-        return self.resp2object(response)
-
-    def get_handle( self, request ):
-        response = self.execute_request(request)
-        if response.has_key('open'):
-            return self.resp2handle(response['open'])
-
-    def get_result_handle( self, request ):
-        response = self.execute_request(request)
-        return self.resp2handle(response['result']['object'])
+        return Response(self, self.connection.receive())

@@ -76,14 +76,14 @@ class Dir(ListObject):
         if command_id == 'open':
             fname = element_key
             fspath = os.path.join(self.fspath, fname)
-            return request.make_response_open(module.open_fspath(fspath))
+            return request.make_response_object(module.open_fspath(fspath))
         return ListObject.run_element_command(self, request, command_id, element_key)
 
     def run_command( self, request, command_id ):
         assert command_id == 'parent', repr(command_id)
         fspath = self.get_parent_dir()
         if fspath is not None:
-            return request.make_response_open(module.open_fspath(fspath))
+            return request.make_response_object(module.open_fspath(fspath))
 
     def get_parent_dir( self ):
         dir = os.path.dirname(self.fspath)
@@ -111,7 +111,7 @@ class FileModule(Module):
 
     def run_command( self, request, command_id ):
         if command_id == 'home':
-            return request.make_response_open(self.open_fspath(os.path.expanduser('~')))
+            return request.make_response_object(self.open_fspath(os.path.expanduser('~')))
         return Module.run_command(self, request, command_id)
 
     def open_fspath( self, fspath ):

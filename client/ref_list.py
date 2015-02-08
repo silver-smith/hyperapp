@@ -13,7 +13,8 @@ class RefList(ListObj):
     def run_command_add( self ):
         request = dict(self.make_command_request(command_id='add'),
                        target_path=self.get_default_ref())
-        return self.server.get_handle(request)
+        response = self.server.execute_request(request)
+        return response.object()
 
     # todo
     def get_default_ref( self ):
@@ -22,4 +23,4 @@ class RefList(ListObj):
             fspath=os.path.expanduser('~'))
 
 
-iface_registry.register_iface('ref_list', RefList.from_response)
+iface_registry.register_iface('ref_list', RefList.from_resp)

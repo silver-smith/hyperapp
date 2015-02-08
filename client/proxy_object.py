@@ -10,9 +10,9 @@ class ProxyObject(object):
         self.commands = commands
 
     @staticmethod
-    def parse_response( response ):
-        path = response['path']
-        commands = [ObjectCommand.from_json(cmd) for cmd in response['commands']]
+    def parse_resp( resp ):
+        path = resp['path']
+        commands = [ObjectCommand.from_json(cmd) for cmd in resp['commands']]
         return (path, commands)
 
     def get_title( self ):
@@ -30,7 +30,8 @@ class ProxyObject(object):
 
     def run_command( self, command_id ):
         request = self.make_command_request(command_id)
-        return self.server.get_handle(request)
+        response = self.server.execute_request(request)
+        return response.object()
 
 
 ## iface_registry.register_iface('object', ProxyObject)

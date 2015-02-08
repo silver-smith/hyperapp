@@ -71,13 +71,13 @@ class DictObject(object):
 class Response(object):
 
     def __init__( self ):
-        self.open = None
+        self.object = None
         self.result = DictObject()
 
     def as_json( self ):
         d = {}
-        if self.open:
-            d['open'] = self.open
+        if self.object:
+            d['object'] = self.object
         if self.result:
             d['result'] = self.result.as_json()
         return d
@@ -98,9 +98,9 @@ class Request(object):
     def make_response( self ):
         return Response()
 
-    def make_response_open( self, obj ):
+    def make_response_object( self, obj ):
         response = self.make_response()
-        response.open = obj.get()
+        response.object = obj.get()
         return response
 
     def make_response_result( self, **kw ):
@@ -111,14 +111,6 @@ class Request(object):
 
 
 class ObjectBase(object):
-
-    def response( self, open=None ):
-        if open is not None:
-            assert isinstance(open, Object), repr(open)
-            open_obj = open.get()
-        else:
-            open_obj = None
-        return Response('open', obj=open_obj)
 
     def process_request( self, request ):
         method = request['method']
@@ -151,18 +143,10 @@ class Object(ObjectBase):
             commands=[cmd.as_json() for cmd in self.get_commands()],
             **kw)
 
-    def response( self, open=None ):
-        if open is not None:
-            assert isinstance(open, Object), repr(open)
-            open_obj = open.get()
-        else:
-            open_obj = None
-        return Response('open', obj=open_obj)
-
     def process_request( self, request ):
         method = request['method']
         if method == 'get':
-            return request.make_response_result(object=self.get())
+            return request.make_response_object(self)
         else:
             return ObjectBase.process_request(self, request)
 
