@@ -95,7 +95,7 @@ class Blog(ListObject):
         rec = module.BlogEntry[entry_id]
         rec.article.delete()
         rec.delete()
-        request.make_response_object(self)  # reload
+        return request.make_response_object(self)  # reload
 
 
 class BlogModule(PonyOrmModule):
