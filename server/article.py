@@ -43,9 +43,9 @@ class Article(Object):
             Command('refs', 'Refs', 'Open article references', 'Ctrl+R'),
             ]
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         if command_id == 'view':
-            return Article(self.path, self.article_id, mode='view')
+            return request.make_response_open(Article(self.path, self.article_id, mode='view'))
         if command_id == 'save':
             return self.run_command_save(request)
         elif command_id == 'refs':
@@ -53,15 +53,15 @@ class Article(Object):
         elif command_id == 'open_ref':
             return self.run_command_open_ref(request)
         else:
-            return Object.run_command(self, command_id, request)
+            return Object.run_command(self, request, command_id)
 
     def run_command_save( self, request ):
         text = request['text']
         new_path = self.do_save(text)
-        return dict(new_path=new_path)
+        return request.make_response_result(new_path=new_path)
 
     def run_command_refs( self, request ):
-        return ArticleRefList.make(self.article_id)
+        return request.make_response_open(ArticleRefList.make(self.article_id))
 
     @db_session
     def run_command_open_ref( self, request ):
@@ -69,7 +69,7 @@ class Article(Object):
         rec = module.ArticleRef[ref_id]
         target_path = json.loads(rec.path)
         target = module.run_resolve(target_path)
-        return target.get()
+        return request.make_response_open(target)
 
     def do_save( self, text ):
         with db_session:
@@ -116,7 +116,7 @@ class ArticleRefList(ListObject):
     def get_commands( self ):
         return [Command('add', 'Add ref', 'Create new reference', 'Ins')]
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         if command_id == 'add':
             return self.run_command_add(request)
         assert False, repr(command_id)  # Unsupported command
@@ -183,10 +183,10 @@ class RefSelector(Object):
             target = module.run_resolve(target_path)
         return Object.get(self, target=target.get() if target else None, **kw)
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         if command_id == 'choose':
             return self.run_command_choose(request)
-        return Object.run_command(self, command_id, request)
+        return Object.run_command(self, request, command_id)
 
     def run_command_choose( self, request ):
         target_path = request['target_path']
@@ -199,7 +199,7 @@ class RefSelector(Object):
                 rec = module.ArticleRef[self.ref_id]
                 rec.path = target_path_str
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
-        return ArticleRefList.make(article_id=self.article_id)
+        return request.make_response_open(ArticleRefList.make(article_id=self.article_id))
 
 
 class ArticleModule(PonyOrmModule):
@@ -230,10 +230,10 @@ class ArticleModule(PonyOrmModule):
     def get_commands( self ):
         return [ModuleCommand('create', 'Create article', 'Create new article', 'Alt+A', self.name)]
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         if command_id == 'create':
-            return Article.from_path(self.make_path(object='article', article_id=None))
-        return PonyOrmModule.run_command(self, command_id, request)
+            return request.make_response_open(Article.from_path(self.make_path(object='article', article_id=None)))
+        return PonyOrmModule.run_command(self, request, command_id)
 
     def add_article_fields( self, **fields ):
         self.article_fields.update(fields)

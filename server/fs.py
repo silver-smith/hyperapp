@@ -72,18 +72,18 @@ class Dir(ListObject):
         else:
             return [Command('open', 'Open', 'Open file')]
 
-    def run_element_command( self, command_id, element_key ):
+    def run_element_command( self, request, command_id, element_key ):
         if command_id == 'open':
             fname = element_key
             fspath = os.path.join(self.fspath, fname)
-            return module.open_fspath(fspath)
-        return ListObject.run_element_command(self, command_id, element_key)
+            request.make_response_open(module.open_fspath(fspath))
+        return ListObject.run_element_command(self, request, command_id, element_key)
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         assert command_id == 'parent', repr(command_id)
         fspath = self.get_parent_dir()
         if fspath is not None:
-            return module.open_fspath(fspath)
+            return request.make_response_open(module.open_fspath(fspath))
 
     def get_parent_dir( self ):
         dir = os.path.dirname(self.fspath)
@@ -109,10 +109,10 @@ class FileModule(Module):
     def get_commands( self ):
         return [ModuleCommand('home', 'Home', 'Open home directory', 'Ctrl+F', self.name)]
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         if command_id == 'home':
             return self.open_fspath(os.path.expanduser('~'))
-        return Module.run_command(self, command_id, request)
+        return Module.run_command(self, request, command_id)
 
     def open_fspath( self, fspath ):
         path = self.make_path(fspath=fspath)

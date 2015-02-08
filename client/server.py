@@ -31,8 +31,8 @@ class Server(object):
 
     def get_handle( self, request ):
         response = self.execute_request(request)
-        assert response.has_key('open')
-        return self.resp2handle(response['open'])
+        if response.has_key('open'):
+            return self.resp2handle(response['open'])
 
     def get_result_handle( self, request ):
         response = self.execute_request(request)

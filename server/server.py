@@ -41,8 +41,11 @@ class Server(object):
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
         response = object.process_request(request)
-        assert isinstance(response, Response), repr(response)
-        return response.as_json()
+        assert response is None or isinstance(response, Response), repr(response)
+        if response is not None:
+            return response.as_json()
+        else:
+            return {}
 
     def process_get_commands( self, request ):
         commands = [cmd.as_json() for cmd in Module.get_all_modules_commands()]

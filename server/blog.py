@@ -64,13 +64,13 @@ class Blog(ListObject):
     def get_commands( self ):
         return [Command('add', 'Add entry', 'Create new blog entry', 'Ins')]
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         if command_id == 'add':
             return self.run_command_add(request)
-        return ListObject.run_command(self, command_id, request)
+        return ListObject.run_command(self, request, command_id)
 
     def run_command_add( self, request ):
-        return BlogEntry.make(entry_id=None)
+        return request.make_response_open(BlogEntry.make(entry_id=None))
 
     @db_session
     def get_all_elements( self ):
@@ -126,12 +126,12 @@ class BlogModule(PonyOrmModule):
             ModuleCommand('open_blog', 'Blog', 'Open blog', 'Alt+B', self.name),
             ]
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         if command_id == 'create':
-            return BlogEntry.make(entry_id=None)
+            return request.make_response_open(BlogEntry.make(entry_id=None))
         if command_id == 'open_blog':
-            return Blog(self.make_path(object='blog'))
-        return PonyOrmModule.run_command(self, command_id, request)
+            return request.make_response_open(Blog(self.make_path(object='blog')))
+        return PonyOrmModule.run_command(self, request, command_id)
 
 
 module = BlogModule()

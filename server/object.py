@@ -59,6 +59,11 @@ class DictObject(object):
             return object.__setattr__(self, attr, value)
         self._d[attr] = value
 
+    def __setitem__( self, attr, value ):
+        if attr == '_d':
+            return object.__setattr__(self, attr, value)
+        self._d[attr] = value
+
     def as_json( self ):
         return self._d
 
@@ -72,7 +77,7 @@ class Response(object):
     def as_json( self ):
         d = {}
         if self.open:
-            d['open'] = self.open.get()
+            d['open'] = self.open
         if self.result:
             d['result'] = self.result.as_json()
         return d
@@ -93,6 +98,17 @@ class Request(object):
     def make_response( self ):
         return Response()
 
+    def make_response_open( self, obj ):
+        response = self.make_response()
+        response.open = obj.get()
+        return response
+
+    def make_response_result( self, **kw ):
+        response = self.make_response()
+        for name, value in kw.items():
+            response.result[name] = value
+        return response
+
 
 class ObjectBase(object):
 
@@ -104,27 +120,15 @@ class ObjectBase(object):
             open_obj = None
         return Response('open', obj=open_obj)
 
-    def make_response( self, request, resp ):
-        if isinstance(resp, Response):
-            return resp
-        if resp is None:
-            return None
-        response = request.make_response()
-        if isinstance(resp, Object):
-            response.open = resp
-            return response
-        assert False, repr(resp)  # self.response must be used for returning responses or an object instance must be returned
-
     def process_request( self, request ):
         method = request['method']
         if method == 'run_command':
             command_id = request['command_id']
-            resp = self.run_command(command_id, request)
-            return self.make_response(request, resp)
+            return self.run_command(request, command_id)
         else:
             assert False, repr(method)  # Unknown method
 
-    def run_command( self, command_id, request ):
+    def run_command( self, request, command_id ):
         assert False, repr(command_id)  # Unknown command
 
 
@@ -158,9 +162,7 @@ class Object(ObjectBase):
     def process_request( self, request ):
         method = request['method']
         if method == 'get':
-            response = request.make_response()
-            response.result.object = self.get()
-            return response
+            return request.make_response_result(object=self.get())
         else:
             return ObjectBase.process_request(self, request)
 
@@ -195,15 +197,14 @@ class ListObject(Object):
             key = request['key']
             count = request['count']
             elements, has_more = self.get_elements_json(count, key)
-            response = request.make_response()
-            response.result.fetched_elements = dict(
+            return request.make_response_result(fetched_elements = dict(
                 elements=elements,
-                has_more=has_more)
+                has_more=has_more))
             return response
         elif method == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
-            resp = self.run_element_command(command_id, element_key)
+            resp = self.run_element_command(request, command_id, element_key)
             return self.make_response(request, resp)
         else:
             return Object.process_request(self, request)
@@ -228,5 +229,5 @@ class ListObject(Object):
     def get_all_elements( self ):
         raise NotImplementedError(self.__class__)
 
-    def run_element_command( self, command_id, element_key ):
+    def run_element_command( self, request, command_id, element_key ):
         assert False, repr(command_id)  # Unexpected command_id
