@@ -49,16 +49,49 @@ class Command(object):
             )
 
 
-class Response(object):
+class DictObject(object):
 
-    def __init__( self, action, **kw ):
-        self.action = action
-        self.data = kw
+    def __init__( self ):
+        self._d = {}
+
+    def __setattr__( self, attr, value ):
+        if attr == '_d':
+            return object.__setattr__(self, attr, value)
+        self._d[attr] = value
 
     def as_json( self ):
-        return dict(
-            action=self.action,
-            **self.data)
+        return self._d
+
+
+class Response(object):
+
+    def __init__( self ):
+        self.open = None
+        self.result = DictObject()
+
+    def as_json( self ):
+        d = {}
+        if self.open:
+            d['open'] = self.open.get()
+        if self.result:
+            d['result'] = self.result.as_json()
+        return d
+
+
+class Request(object):
+
+    def __init__( self, params ):
+        assert isinstance(params, dict), repr(params)
+        self.params = params
+
+    def __getattr__( self, name ):
+        return self.params[name]
+
+    def __getitem__( self, name ):
+        return self.params[name]
+
+    def make_response( self ):
+        return Response()
 
 
 class ObjectBase(object):
@@ -71,21 +104,23 @@ class ObjectBase(object):
             open_obj = None
         return Response('open', obj=open_obj)
 
-    def adapt_response( self, response ):
-        if isinstance(response, Response):
-            return response
-        if isinstance(response, Object):
-            return Response('open', obj=response.get())
-        if response is None:
+    def make_response( self, request, resp ):
+        if isinstance(resp, Response):
+            return resp
+        if resp is None:
             return None
-        assert False, repr(response)  # self.response must be used for returning responses or an object instance must be returned
+        response = request.make_response()
+        if isinstance(resp, Object):
+            response.open = resp
+            return response
+        assert False, repr(resp)  # self.response must be used for returning responses or an object instance must be returned
 
     def process_request( self, request ):
         method = request['method']
         if method == 'run_command':
             command_id = request['command_id']
-            response = self.run_command(command_id, request)
-            return self.adapt_response(response)
+            resp = self.run_command(command_id, request)
+            return self.make_response(request, resp)
         else:
             assert False, repr(method)  # Unknown method
 
@@ -123,7 +158,9 @@ class Object(ObjectBase):
     def process_request( self, request ):
         method = request['method']
         if method == 'get':
-            return Response('open', obj=self.get())
+            response = request.make_response()
+            response.result.object = self.get()
+            return response
         else:
             return ObjectBase.process_request(self, request)
 
@@ -158,14 +195,16 @@ class ListObject(Object):
             key = request['key']
             count = request['count']
             elements, has_more = self.get_elements_json(count, key)
-            return Response('fetched_elements',
-                            elements=elements,
-                            has_more=has_more)
+            response = request.make_response()
+            response.result.fetched_elements = dict(
+                elements=elements,
+                has_more=has_more)
+            return response
         elif method == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
-            response = self.run_element_command(command_id, element_key)
-            return self.adapt_response(response)
+            resp = self.run_element_command(command_id, element_key)
+            return self.make_response(request, resp)
         else:
             return Object.process_request(self, request)
 

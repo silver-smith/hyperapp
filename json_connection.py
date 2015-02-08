@@ -97,13 +97,15 @@ class Connection(object):
 class Server(object):
 
     def __init__( self, port, server_fn ):
+        self.port = port
         self.server_fn = server_fn
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind(('', port))
+        self.socket.bind(('', self.port))
         self.socket.listen(5)
 
     def run( self ):
+        print 'listening on port %d' % self.port
         while True:
             cln_socket, cln_addr = self.socket.accept()
             self.server_fn(Connection(cln_socket), cln_addr)

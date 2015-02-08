@@ -98,8 +98,9 @@ class ListObj(ProxyObject):
             key=last_key,
             count=load_count)
         response = self.server.execute_request(request)
-        self.elements += [Element.from_json(self.key_column_idx, elt) for elt in response['elements']]
-        self.all_elements_fetched = not response['has_more']
+        result_elts = response['result']['fetched_elements']
+        self.elements += [Element.from_json(self.key_column_idx, elt) for elt in result_elts['elements']]
+        self.all_elements_fetched = not result_elts['has_more']
 
     @staticmethod
     def _find_key_column( columns ):

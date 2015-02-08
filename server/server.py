@@ -10,7 +10,7 @@ import pprint
 sys.path.append('..')
 
 import json_connection
-from object import Response
+from object import Response, Request
 from module import Module
 import ponyorm_module
 import fs
@@ -56,7 +56,7 @@ class Server(object):
                 print 'request:'
                 pprint.pprint(request)
                 try:
-                    response = self.process_request(request)
+                    response = self.process_request(Request(request))
                 except:
                     traceback.print_exc()
                     response = dict(error='Internal server error')
