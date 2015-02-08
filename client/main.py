@@ -84,7 +84,7 @@ def main():
     server = Server(('localhost', 8888))
 
     get_request = dict(method='get', path=path)
-    handle = server.execute_request(get_request).object()
+    handle = server.request_an_object(get_request)
 
     commands_request = dict(method='get_commands')
     commands_response = server.execute_request(commands_request)
