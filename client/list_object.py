@@ -40,24 +40,17 @@ class Element(object):
 
 class ListObject(Object):
 
-    def __init__( self, columns, elements, all_elements_fetched, key_column_idx ):
-        Object.__init__(self)
-        self.columns = columns
-        self.elements = elements
-        self.all_elements_fetched = all_elements_fetched
-        self.key_column_idx = key_column_idx
-
     def get_columns( self ):
-        return self.columns
+        raise NotImplementedError(self.__class__)
 
     def element_count( self ):
-        return len(self.elements)
+        raise NotImplementedError(self.__class__)
 
     def get_fetched_elements( self ):
-        return self.elements
+        raise NotImplementedError(self.__class__)
 
     def are_all_elements_fetched( self ):
-        return self.all_elements_fetched
+        raise NotImplementedError(self.__class__)
 
     def load_elements( self, load_count ):
         raise NotImplementedError(self.__class__)

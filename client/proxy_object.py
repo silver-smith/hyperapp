@@ -67,7 +67,23 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def __init__( self, server, path, commands, columns, elements, all_elements_fetched, key_column_idx ):
         ProxyObject.__init__(self, server, path, commands)
-        ListObject.__init__(self, columns, elements, all_elements_fetched, key_column_idx)
+        ListObject.__init__(self)
+        self.columns = columns
+        self.elements = elements
+        self.all_elements_fetched = all_elements_fetched
+        self.key_column_idx = key_column_idx
+
+    def get_columns( self ):
+        return self.columns
+
+    def element_count( self ):
+        return len(self.elements)
+
+    def get_fetched_elements( self ):
+        return self.elements
+
+    def are_all_elements_fetched( self ):
+        return self.all_elements_fetched
 
     def load_elements( self, load_count ):
         if self.elements:

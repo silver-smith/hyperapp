@@ -1,6 +1,6 @@
 from PySide import QtCore, QtGui
 from util import key_match, key_match_any
-## from object import Dir
+from list_object import ListObject
 import view_registry
 import view
 import composite
@@ -31,36 +31,38 @@ class Handle(composite.Handle):
         return 'narrower.Handle(%r)' % self.list_handle
 
 
-## # todo: subscription
-## class FilteredDir(Dir):
+# todo: subscription
+class FilteredListObj(ListObject):
 
-##     def __init__( self, base, prefix ):
-##         Dir.__init__(self)
-##         self._base = base
-##         self._prefix = prefix
+    def __init__( self, base, prefix ):
+        ListObject.__init__(self)
+        self._base = base
+        self._prefix = prefix
 
-##     def get_title( self ):
-##         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
+    def get_title( self ):
+        return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
 
-##     def key( self ):
-##         return self._base.key()
+    def get_columns( self ):
+        return self._base.get_columns()
 
-##     def commands( self ):
-##         return self._base.commands()
+    def element_count( self ):
+        return len(self.get_fetched_elements())
 
-##     def get_attributes( self ):
-##         return self._base.get_attributes()
+    def get_fetched_elements( self ):
+        elements = []
+        for elt in self._base.get_fetched_elements():
+            if isinstance(elt.key, basestring) and elt.key.lower().startswith(self._prefix.lower()):
+                elements.append(elt)
+        return elements
 
-##     def elements( self, start=None, end=None ):
-##         elements = []
-##         for elt in self._base.elements():
-##             key = elt.key()
-##             if isinstance(key, basestring) and key.lower().startswith(self._prefix.lower()):
-##                 elements.append(elt)
-##         return elements[start:end]
+    def are_all_elements_fetched( self ):
+        return self._base.are_all_elements_fetched()
 
-##     def parent( self ):
-##         return self._base.parent()
+    def load_elements( self, load_count ):
+        return self._base.load_elements(load_count)
+
+    def run_element_command( self, command_id, element_key ):
+        return self._base.run_element_command(command_id, element_key)
 
 
 class View(LineListPanel):
@@ -82,7 +84,7 @@ class View(LineListPanel):
     def _on_text_edited( self, text ):
         #print 'on text edited', text
         if text:
-            self._list_view.set_object(FilteredDir(self._base_obj, text))
+            self._list_view.set_object(FilteredListObj(self._base_obj, text))
         else:
             self._list_view.set_object(self._base_obj)
 
