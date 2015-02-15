@@ -121,6 +121,9 @@ class View(view.View, QtGui.QTableView):
     def selected_elts( self ):
         return filter(None, [self.current_elt()])
 
+    def is_in_multi_selection_mode( self ):
+        return False  # todo
+
     def set_current_row( self, row ):
         if row is not None:
             idx = self._model.createIndex(row, 0)
