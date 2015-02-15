@@ -67,7 +67,7 @@ class MenuBar(object):
         for cmd in window.get_commands():
             if last_view is not None and cmd.get_inst() is not last_view:
                 self.window_menu.addSeparator()
-            self.window_menu.addAction(cmd.make_action(self.window()))
+            self.window_menu.addAction(cmd.make_action(window))
             last_view = cmd.get_inst()
 
     def selected_elements_changed( self, elts ):

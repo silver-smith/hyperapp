@@ -102,6 +102,10 @@ class View(LineListPanel):
         return LineListPanel.is_list_event(self, evt)
 
     def eventFilter( self, obj, evt ):
+        # todo: handle Escape key, override one from navigator
+        ## if self._line_edit.text() and key_match(evt, 'Escape'):
+        ##     self._line_edit.setText('')
+        ##     return True
         if self._line_edit.text() and key_match(evt, 'Space'):
             self._fill_common_prefix()
             return True
