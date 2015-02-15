@@ -83,10 +83,12 @@ class View(LineListPanel):
 
     def _on_text_edited( self, text ):
         #print 'on text edited', text
+        key = self._list_view.current_key()
         if text:
             self._list_view.set_object(FilteredListObj(self._base_obj, text))
         else:
             self._list_view.set_object(self._base_obj)
+        self._list_view.set_current_key(key, select_first=True)
 
     def is_list_event( self, evt ):
         if key_match_any(evt, [
