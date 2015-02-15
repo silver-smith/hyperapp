@@ -14,9 +14,10 @@ class Article(Object):
 
     iface = TextObjectIface()
 
-    def __init__( self, path, article_id, mode='edit' ):
+    def __init__( self, path, article_id, mode='view' ):
         Object.__init__(self, path)
         self.article_id = article_id
+        self.mode = mode
         if mode == 'edit':
             self.view_id = 'text_edit'
         else:
@@ -37,15 +38,24 @@ class Article(Object):
         return Object.get(self, text=text, **kw)
 
     def get_commands( self ):
-        return [
-            Command('view', 'View', 'Switch to view mode', 'Ctrl+M'),
-            Command('save', 'Save', 'Save article', 'Ctrl+S'),
+        if self.mode == 'view':
+            mode_commands = [
+                Command('edit', 'Edit', 'Switch to edit mode', 'E'),
+                ]
+        else:
+            mode_commands = [
+                Command('view', 'View', 'Finish editing, switch to view mode', 'Ctrl+F'),
+                Command('save', 'Save', 'Save article', 'Ctrl+S'),
+                ]
+        return mode_commands + [
             Command('refs', 'Refs', 'Open article references', 'Ctrl+R'),
             ]
 
     def run_command( self, request, command_id ):
         if command_id == 'view':
             return request.make_response_object(Article(self.path, self.article_id, mode='view'))
+        if command_id == 'edit':
+            return request.make_response_object(Article(self.path, self.article_id, mode='edit'))
         if command_id == 'save':
             return self.run_command_save(request)
         elif command_id == 'refs':

@@ -107,7 +107,7 @@ class FileModule(Module):
         return Module.resolve(self, path)
 
     def get_commands( self ):
-        return [ModuleCommand('home', 'Home', 'Open home directory', 'Ctrl+F', self.name)]
+        return [ModuleCommand('home', 'Home', 'Open home directory', 'Alt+H', self.name)]
 
     def run_command( self, request, command_id ):
         if command_id == 'home':
