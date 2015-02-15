@@ -59,7 +59,9 @@ class FilteredListObj(ListObject):
         return self._base.are_all_elements_fetched()
 
     def load_elements( self, load_count ):
-        return self._base.load_elements(load_count)
+        required_count = self.element_count() + load_count
+        while not self.are_all_elements_fetched() and self.element_count() < required_count:
+            self._base.load_elements(required_count - self.element_count())
 
     def run_element_command( self, command_id, element_key ):
         return self._base.run_element_command(command_id, element_key)
