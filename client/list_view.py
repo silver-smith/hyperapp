@@ -4,7 +4,6 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 from util import uni2str, key_match, key_match_any
-from list_obj import ListObj
 import view_registry
 import view
 
@@ -48,7 +47,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
-            element = self.list_obj.get_elements()[index.row()]
+            element = self.list_obj.get_fetched_elements()[index.row()]
             column = self.visible_columns[index.column()]
             return column.type.to_string(element.row[column.idx])
         return None
@@ -111,12 +110,12 @@ class View(view.View, QtGui.QTableView):
     def current_key( self ):
         idx = self.currentIndex()
         if idx.row() != -1:
-            return self.list_obj.get_elements()[idx.row()].key
+            return self.list_obj.get_fetched_elements()[idx.row()].key
 
     def current_elt( self ):
         idx = self.currentIndex()
         if idx.row() != -1:
-            return self.list_obj.get_elements()[idx.row()]
+            return self.list_obj.get_fetched_elements()[idx.row()]
 
     def selected_elts( self ):
         return filter(None, [self.current_elt()])
@@ -135,7 +134,7 @@ class View(view.View, QtGui.QTableView):
             row = 0
         else:
             row = None
-        for idx, element in enumerate(self.list_obj.get_elements()):
+        for idx, element in enumerate(self.list_obj.get_fetched_elements()):
             if element.key == key:
                 row = idx
                 break
@@ -198,7 +197,7 @@ class View(view.View, QtGui.QTableView):
         self._model.elements_added(self.list_obj.element_count() - old_element_count)
 
     def _on_activated( self, index ):
-        elt = self.list_obj.get_elements()[index.row()]
+        elt = self.list_obj.get_fetched_elements()[index.row()]
         for cmd in elt.commands:
             if cmd.id == 'open':
                 cmd.run(self, self.list_obj, elt.key)

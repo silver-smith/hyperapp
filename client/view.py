@@ -5,7 +5,6 @@ from PySide import QtCore, QtGui
 from qt_keys import print_key_event
 from util import DEBUG_FOCUS, make_action, focused_index
 from view_command import BoundViewCommand, UnboundViewCommand
-import list_obj
 
 
 class Handle(object):
