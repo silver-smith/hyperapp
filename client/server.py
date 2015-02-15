@@ -39,9 +39,25 @@ class Response(object):
 
 class Server(object):
 
+    addr2connection = {}
+
     def __init__( self, addr ):
-        self.connection = json_connection.ClientConnection(('localhost', 8888))
-        
+        self.addr = addr
+        self._open_connection()
+
+    def __getstate__( self ):
+        return dict(addr=self.addr)
+
+    def __setstate__( self, state ):
+        self.addr = state['addr']
+        self._open_connection()
+
+    def _open_connection( self ):
+        self.connection = self.addr2connection.get(self.addr)
+        if not self.connection:
+            self.connection = json_connection.ClientConnection(self.addr)
+            self.addr2connection[self.addr] = self.connection
+
     def execute_request( self, request ):
         self.connection.send(request)
         return Response(self, self.connection.receive())

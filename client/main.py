@@ -25,14 +25,7 @@ import object_selector
 import ref_list
 
 
-class Handle(view.Handle):
-
-    def __init__( self, window_handles ):
-        view.Handle.__init__(self)
-        self.window_handles = window_handles
-
-    def construct( self ):
-        return Application(self.window_handles)
+STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 
 class Application(QtGui.QApplication, view.View):
@@ -46,11 +39,12 @@ class Application(QtGui.QApplication, view.View):
         for handle in window_handles or []:
             self.open(handle)
 
-    def handle( self ):
-        return Handle([view.handle() for view in self._windows])
+    def get_windows_handles( self ):
+        return [view.handle() for view in self._windows]
 
-    def open( self, handle ):
-        handle.construct(self)  # todo: remove window_created; use return value; refactor window duplication
+    def open_windows( self, windows_handles ):
+        for handle in windows_handles or []:
+            handle.construct(self)
 
     def pick_arg( self, kind ):
         return None
@@ -63,14 +57,24 @@ class Application(QtGui.QApplication, view.View):
 
     def window_closed( self, view ):
         self._windows.remove(view)
-    ##     if not self._windows:
-    ##         module.save_state(Handle([view.handle()]))
+        if not self._windows:
+            self.save_state([view.handle()])
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
         ## module.set_shutdown_flag()
-        ## module.save_state(self.handle())
+        self.save_state(self.get_windows_handles())
         QtGui.QApplication.quit()
+
+    def save_state( self, state ):
+        with file(STATE_FILE_PATH, 'wb') as f:
+            pickle.dump(state, f)
+
+    def load_state( self ):
+        if not os.path.exists(STATE_FILE_PATH):
+            return None
+        with file(STATE_FILE_PATH, 'rb') as f:
+            return pickle.load(f)
 
 
 def main():
@@ -91,6 +95,8 @@ def main():
     server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
 
     app = Application(server, server_commands)
+    windows_handles = app.load_state()
+    print 'loaded state: ', windows_handles
 
     #obj = fsopen('/tmp')
     #obj = process.Process('/usr', 'find')
@@ -100,11 +106,15 @@ def main():
     #obj = process.ProcessList(process.module)
     #obj = file_view.File(os.path.expanduser('~/tmp/numbered.txt'))
     #obj = file_view.File('list_view.py')
-    handle = window.Handle(
-        tab_view.Handle([
-            navigator.Handle(
-                handle)]))
-    win = handle.construct(app)
+
+    if not windows_handles:
+        handle = window.Handle(
+            tab_view.Handle([
+                navigator.Handle(
+                    handle)]))
+        windows_handles = [handle]
+
+    app.open_windows(windows_handles)
     app.exec_()
 
 main()
