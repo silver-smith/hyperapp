@@ -1,6 +1,7 @@
 from PySide import QtCore, QtGui
 from util import key_match, key_match_any
-from object import Dir
+## from object import Dir
+import view_registry
 import view
 import composite
 from line_list_panel import LineListPanel
@@ -9,6 +10,10 @@ import list_view
 
 
 class Handle(composite.Handle):
+
+    @classmethod
+    def from_obj( cls, obj ):
+        return cls(list_view.Handle(obj))
 
     def __init__( self, list_handle ):
         composite.Handle.__init__(self)
@@ -26,36 +31,36 @@ class Handle(composite.Handle):
         return 'narrower.Handle(%r)' % self.list_handle
 
 
-# todo: subscription
-class FilteredDir(Dir):
+## # todo: subscription
+## class FilteredDir(Dir):
 
-    def __init__( self, base, prefix ):
-        Dir.__init__(self)
-        self._base = base
-        self._prefix = prefix
+##     def __init__( self, base, prefix ):
+##         Dir.__init__(self)
+##         self._base = base
+##         self._prefix = prefix
 
-    def get_title( self ):
-        return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
+##     def get_title( self ):
+##         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
 
-    def key( self ):
-        return self._base.key()
+##     def key( self ):
+##         return self._base.key()
 
-    def commands( self ):
-        return self._base.commands()
+##     def commands( self ):
+##         return self._base.commands()
 
-    def get_attributes( self ):
-        return self._base.get_attributes()
+##     def get_attributes( self ):
+##         return self._base.get_attributes()
 
-    def elements( self, start=None, end=None ):
-        elements = []
-        for elt in self._base.elements():
-            key = elt.key()
-            if isinstance(key, basestring) and key.lower().startswith(self._prefix.lower()):
-                elements.append(elt)
-        return elements[start:end]
+##     def elements( self, start=None, end=None ):
+##         elements = []
+##         for elt in self._base.elements():
+##             key = elt.key()
+##             if isinstance(key, basestring) and key.lower().startswith(self._prefix.lower()):
+##                 elements.append(elt)
+##         return elements[start:end]
 
-    def parent( self ):
-        return self._base.parent()
+##     def parent( self ):
+##         return self._base.parent()
 
 
 class View(LineListPanel):
@@ -110,3 +115,6 @@ class View(LineListPanel):
 
     def __del__( self ):
         print '~narrower', self._base_obj.get_title(), self
+
+
+view_registry.register_view('list_narrower', Handle.from_obj)

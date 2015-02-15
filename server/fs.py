@@ -13,7 +13,7 @@ MODULE_NAME = 'file'
 class Dir(ListObject):
 
     iface = ListIface()
-    view_id = 'list'
+    view_id = 'list_narrower'
 
     columns = [
         Column('key', 'File Name'),
