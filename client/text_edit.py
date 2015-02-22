@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 from util import uni2str
+from object import ObjectObserver
 import view
 import view_registry
 
@@ -22,14 +23,16 @@ class Handle(view.Handle):
         return 'text_edit.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
 
 
-class View(view.View, QtGui.QTextEdit):
+class View(view.View, QtGui.QTextEdit, ObjectObserver):
 
     def __init__( self, parent, object, text ):
         QtGui.QTextEdit.__init__(self, text)
         view.View.__init__(self, parent)
         self.object = object
-        self.setText(object.text)
+        self.notify_on_text_changed = True
+        self.setPlainText(object.text)
         self.textChanged.connect(self._on_text_changed)
+        self.object.subscribe(self)
 
     def handle( self ):
         return Handle(self.object, self.toPlainText())
@@ -41,7 +44,16 @@ class View(view.View, QtGui.QTextEdit):
         return self.object
 
     def _on_text_changed( self ):
-        self.object.text_changed(self.toPlainText())
+        if self.notify_on_text_changed:
+            self.object.text_changed(self, self.toPlainText())
+
+    # as ObjectObserver
+    def object_changed( self ):
+        self.notify_on_text_changed = False
+        try:
+            self.setPlainText(self.object.text)
+        finally:
+            self.notify_on_text_changed = True
 
     def __del__( self ):
         print '~text_edit.View'

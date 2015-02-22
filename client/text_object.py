@@ -14,8 +14,9 @@ class TextObject(ProxyObject):
         ProxyObject.__init__(self, server, path, commands)
         self.text = text
 
-    def text_changed( self, new_text ):
+    def text_changed( self, emitter, new_text ):
         self.text = new_text
+        self._notify_object_changed(emitter)
 
     def run_command( self, command_id ):
         if command_id == 'save':
