@@ -57,7 +57,7 @@ class View(view.View, QtGui.QTextEdit, ObjectObserver):
             self.notify_on_text_changed = True
 
     def __del__( self ):
-        print '~text_edit.View'
+        print '~text_edit'
 
 
 view_registry.register_view('text_edit', Handle)

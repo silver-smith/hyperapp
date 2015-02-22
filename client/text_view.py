@@ -52,7 +52,7 @@ class View(view.View, QtGui.QTextBrowser):
             self.open(handle)
 
     def __del__( self ):
-        print '~text_edit.View'
+        print '~text_view'
 
 
 view_registry.register_view('text_view', Handle)

@@ -126,3 +126,6 @@ class View(QtGui.QTabWidget, view.View):
         self.insertTab(idx, child.get_widget(), child.get_title())
         self._children.insert(idx, child)
         self.setCurrentIndex(idx)
+
+    def __del__( self ):
+        print '~tab_view'

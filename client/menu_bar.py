@@ -1,3 +1,4 @@
+import weakref
 from PySide import QtCore, QtGui
 from util import make_action
 #import key_binding
@@ -18,9 +19,9 @@ class MenuBar(object):
         self.dir_menu = QtGui.QMenu('&Dir')
         self.window_menu = QtGui.QMenu('W&indow')
         self.help_menu = QtGui.QMenu('H&elp')
-        self.add_action_to_menu(self.help_menu, '&Dir commands', 'F1', self._open_dir_commands)
-        self.add_action_to_menu(self.help_menu, '&Current element commands', '.', self._open_elt_commands)
-        self.help_menu.setEnabled(False)
+        self.add_action_to_menu(self.help_menu, '&Dir commands', 'F1', MenuBar._open_dir_commands, weakref.ref(self))
+        self.add_action_to_menu(self.help_menu, '&Current element commands', '.', MenuBar._open_elt_commands, weakref.ref(self))
+        ## self.help_menu.setEnabled(False)
         menu_bar = self.window().menuBar()
         menu_bar.addMenu(self.file_menu)
         menu_bar.addMenu(self.dir_menu)
@@ -44,11 +45,15 @@ class MenuBar(object):
     def _current_view( self ):
         return self.window().current_view()
 
-    def _open_dir_commands( self ):
+    @staticmethod
+    def _open_dir_commands( self_wref ):
+        self = self_wref()
         if self.current_dir is None: return
         self._current_view().open(cmd_view.Handle(None, [self.current_dir], take_dir_commands=True))
 
-    def _open_elt_commands( self ):
+    @staticmethod
+    def _open_elt_commands( self_wref ):
+        self = self_wref()
         if not self.selected_elts: return
         self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
 
@@ -76,4 +81,8 @@ class MenuBar(object):
             last_view = cmd.get_inst()
 
     def selected_elements_changed( self, elts ):
+        return
         self.selected_elts = elts
+
+    def __del__( self ):
+        print '~menu_bar'

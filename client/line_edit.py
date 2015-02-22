@@ -38,3 +38,6 @@ class View(view.View, QtGui.QLineEdit):
     ##         return False
     ##     self._parent().object_selected(TextObj(text))
     ##     return True
+
+    def __del__( self ):
+        print '~line_edit'

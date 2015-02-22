@@ -33,6 +33,9 @@ class TextObject(ProxyObject):
         request = dict(self.make_command_request(command_id='open_ref'),
                        ref_id=ref_id)
         return self.server.request_an_object(request)
+
+    def __del__( self ):
+        print '~text_object'
         
 
 

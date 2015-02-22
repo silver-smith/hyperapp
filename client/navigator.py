@@ -92,3 +92,6 @@ class View(composite.Composite):
     ##     current_handle = self._child.handle()
     ##     history = HistoryList(self._back_history + [current_handle] + list(reversed(self._forward_history)))
     ##     return list_view.Handle(history, idx)
+
+    def __del__( self ):
+        print '~navigator'
