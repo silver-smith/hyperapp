@@ -1,3 +1,4 @@
+import weakref
 from util import make_action
 import view_registry
 
@@ -15,10 +16,13 @@ class Command(object):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'])
 
     def _make_action( self, widget, *args ):
-        return make_action(widget, self.text, self.shortcut, self.run, *args)
+        return make_action(widget, self.text, self.shortcut, self.run_with_weaks, *args)
 
 
 class ObjectCommand(Command):
+
+    def run_with_weaks( self, view_wref, obj_wref ):
+        return self.run(view_wref(), obj_wref())
 
     def run( self, view, obj ):
         print 'ObjectCommand.run', self.id, obj, view
@@ -27,10 +31,13 @@ class ObjectCommand(Command):
             view.open(handle)
 
     def make_action( self, widget, view, obj ):
-        return self._make_action(widget, view, obj)
+        return self._make_action(widget, weakref.ref(view), weakref.ref(obj))
 
 
 class ElementCommand(Command):
+
+    def run_with_weaks( self, view_wref, obj_wref, element_key ):
+        return self.run(view_wref(), obj_wref(), element_key)
 
     def run( self, view, obj, element_key ):
         print 'ElementCommand.run', self.id, obj, view, element_key
@@ -39,7 +46,7 @@ class ElementCommand(Command):
             view.open(handle)
 
     def make_action( self, widget, view, obj, element_key ):
-        return self._make_action(widget, view, obj, element_key)
+        return self._make_action(widget, weakref.ref(view), weakref.ref(obj), element_key)
 
 
 class ModuleCommand(Command):
@@ -52,6 +59,9 @@ class ModuleCommand(Command):
     def from_json( cls, data ):
         return cls(data['id'], data['text'], data['desc'], data['shortcut'], data['module_name'])
 
+    def run_with_weaks( self, window_wref, app ):
+        return self.run(window_wref(), app)
+
     def run( self, window, app ):
         print 'ModuleCommand.run', self.id, self.module_name, window, app
         request = dict(
@@ -63,4 +73,4 @@ class ModuleCommand(Command):
             window.current_view().open(handle)
 
     def make_action( self, widget, window, app ):
-        return self._make_action(widget, window, app)
+        return self._make_action(widget, weakref.ref(window), app)

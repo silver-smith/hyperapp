@@ -162,7 +162,7 @@ def key_match_any( evt, keys ):
     return False
 
 def make_action( widget, text, shortcut, fn, *args, **kw ):
-    ## print '--- make_action', widget, title, shortcut, fn, args, kw
+    ## print '--- make_action', widget, text, shortcut, fn, args, kw
     def run():
         print '--- make_action/run', widget, text, shortcut, fn, args, kw
         return fn(*args, **kw)

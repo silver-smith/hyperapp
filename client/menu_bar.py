@@ -1,4 +1,3 @@
-import weakref
 from PySide import QtCore, QtGui
 from util import make_action
 #import key_binding
@@ -19,8 +18,8 @@ class MenuBar(object):
         self.dir_menu = QtGui.QMenu('&Dir')
         self.window_menu = QtGui.QMenu('W&indow')
         self.help_menu = QtGui.QMenu('H&elp')
-        self.help_menu.addAction(make_action(self.window(), '&Dir commands', 'F1', self._open_dir_commands))
-        self.help_menu.addAction(make_action(self.window(), '&Current element commands', '.', self._open_elt_commands))
+        self.add_action_to_menu(self.help_menu, '&Dir commands', 'F1', self._open_dir_commands)
+        self.add_action_to_menu(self.help_menu, '&Current element commands', '.', self._open_elt_commands)
         self.help_menu.setEnabled(False)
         menu_bar = self.window().menuBar()
         menu_bar.addMenu(self.file_menu)
@@ -28,12 +27,18 @@ class MenuBar(object):
         menu_bar.addMenu(self.window_menu)
         menu_bar.addMenu(self.help_menu)
 
+    def add_action_to_menu( self, menu, *args ):
+        menu.addAction(make_action(menu, *args))
+
+    def add_cmd_action_to_menu( self, menu, cmd, *args ):
+        menu.addAction(cmd.make_action(menu, *args))
+
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
         window = self.window()
         for cmd in self.window().get_global_commands():
             # cmd is BoundViewCommand or ModuleCommand
-            menu.addAction(cmd.make_action(window, window, self.app))
+            self.add_cmd_action_to_menu(menu, cmd, window, self.app)
         return menu
 
     def _current_view( self ):
@@ -55,7 +60,7 @@ class MenuBar(object):
         if dir is not None:
             commands = dir.get_commands()
             for cmd in commands:
-                self.dir_menu.addAction(cmd.make_action(self.window(), view, dir))
+                self.add_cmd_action_to_menu(self.dir_menu, cmd, view, dir)
             self.dir_menu.setEnabled(commands != [])
         else:
             self.dir_menu.setEnabled(False)
@@ -67,7 +72,7 @@ class MenuBar(object):
         for cmd in window.get_commands():
             if last_view is not None and cmd.get_inst() is not last_view:
                 self.window_menu.addSeparator()
-            self.window_menu.addAction(cmd.make_action(window))
+            self.add_cmd_action_to_menu(self.window_menu, cmd)
             last_view = cmd.get_inst()
 
     def selected_elements_changed( self, elts ):
