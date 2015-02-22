@@ -71,10 +71,12 @@ class Application(QtGui.QApplication, view.View):
             pickle.dump(state, f)
 
     def load_state( self ):
-        if not os.path.exists(STATE_FILE_PATH):
+        try:
+            with file(STATE_FILE_PATH, 'rb') as f:
+                return pickle.load(f)
+        except (EOFError, IOError, IndexError) as x:
+            print 'Error Loading state:', x
             return None
-        with file(STATE_FILE_PATH, 'rb') as f:
-            return pickle.load(f)
 
 
 def main():
