@@ -48,6 +48,7 @@ class View(view.View, QtGui.QTextEdit, ObjectObserver):
             self.object.text_changed(self, self.toPlainText())
 
     # as ObjectObserver
+    # todo: preserve cursor position
     def object_changed( self ):
         self.notify_on_text_changed = False
         try:
