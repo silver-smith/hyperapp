@@ -1,5 +1,6 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
+import pickle
 from PySide import QtCore, QtGui
 from util import key_match, key_match_any
 from view_command import command
@@ -47,7 +48,7 @@ class View(composite.Composite):
         #print 'history open', self._back_history, self._forward_history, handle
         self._forward_history = []
         ## if not isinstance(self._child.get_object(), HistoryList):
-        self._back_history.append(self._child.handle())
+        self._add2history(self._back_history, self._child.handle())
         if len(self._back_history) > MAX_HISTORY_SIZE:
             self._back_history = self._back_history[-MAX_HISTORY_SIZE:]
         self._open(handle)
@@ -67,24 +68,31 @@ class View(composite.Composite):
 
     @command('Go back', 'Go backward to previous page', ['Escape', 'Alt+Left'])
     def go_back( self ):
-        print '   history back', self._back_history, self._forward_history
+        print '   history back', len(self._back_history), len(self._forward_history)
         self._go_back()
 
     def _go_back( self ):
         if not self._back_history:
             return False
         ## if not isinstance(self._child.get_object(), HistoryList):
-        self._forward_history.append(self._child.handle())
-        self._open(self._back_history.pop())
+        self._add2history(self._forward_history, self._child.handle())
+        self._open(self._pop_history(self._back_history))
 
     @command('Go forward', 'Go forward to next page', 'Alt+Right')
     def go_forward( self ):
-        print '   history forward', self._back_history, self._forward_history
+        print '   history forward', len(self._back_history), len(self._forward_history)
         if not self._forward_history:
             return False
         ## if not isinstance(self._child.get_object(), HistoryList):
-        self._back_history.append(self._child.handle())
-        self._open(self._forward_history.pop())
+        self._add2history(self._back_history, self._child.handle())
+        self._open(self._pop_history(self._forward_history))
+
+    def _add2history( self, history, handle ):
+        history.append(pickle.dumps(handle))
+
+    def _pop_history( self, history ):
+        data = history.pop()
+        return pickle.loads(data)
 
     ## @command('History', 'Open history', 'Ctrl+H')
     ## def open_history( self ):

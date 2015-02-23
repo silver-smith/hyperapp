@@ -111,5 +111,8 @@ class ProxyListObject(ProxyObject, ListObject):
             )
         return self.server.request_an_object(request)
 
+    def __del__( self ):
+        print '~ProxyListObject', self.path
+
 
 iface_registry.register_iface('list', ProxyListObject.from_resp)
