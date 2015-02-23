@@ -13,6 +13,7 @@ class TextObject(ProxyObject):
     def __init__( self, server, path, commands, text ):
         ProxyObject.__init__(self, server, path, commands)
         self.text = text
+        print 'text_object', path
 
     def text_changed( self, emitter, new_text ):
         self.text = new_text

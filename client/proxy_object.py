@@ -2,6 +2,7 @@ from object import Object
 from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListObject
 from command import ObjectCommand, ElementCommand
 import iface_registry
+from server import register_proxy
 
 
 class ProxyObject(Object):
@@ -11,6 +12,7 @@ class ProxyObject(Object):
         self.server = server
         self.path = path
         self.commands = commands
+        register_proxy(self.path, self)
 
     @staticmethod
     def parse_resp( resp ):

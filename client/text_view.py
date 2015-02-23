@@ -1,6 +1,7 @@
 import re
 from PySide import QtCore, QtGui
 from util import uni2str
+from object import ObjectObserver
 import view
 import view_registry
 
@@ -16,14 +17,14 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'text_view construct', parent, self.object.get_title(), repr(self.text)
+        print 'text_view construct', parent, self.object, self.object.get_title(), repr(self.text)
         return View(parent, self.object, self.text)
 
     def __repr__( self ):
         return 'text_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
 
 
-class View(view.View, QtGui.QTextBrowser):
+class View(view.View, QtGui.QTextBrowser, ObjectObserver):
 
     def __init__( self, parent, object, text ):
         QtGui.QTextBrowser.__init__(self)
@@ -32,6 +33,7 @@ class View(view.View, QtGui.QTextBrowser):
         self.object = object
         self.setHtml(self.text2html(object.text))
         self.anchorClicked.connect(self.on_anchor_clicked)
+        self.object.subscribe(self)
 
     def handle( self ):
         return Handle(self.object, self.toPlainText())
@@ -50,6 +52,10 @@ class View(view.View, QtGui.QTextBrowser):
         handle = self.object.open_ref(url.path())
         if handle:
             self.open(handle)
+
+    # as ObjectObserver
+    def object_changed( self ):
+        self.setHtml(self.text2html(self.object.text))
 
     def __del__( self ):
         print '~text_view'

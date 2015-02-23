@@ -16,7 +16,7 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'text_edit construct', parent, self.object.get_title(), repr(self.text)
+        print 'text_edit construct', parent, self.object, self.object.get_title(), repr(self.text)
         return View(parent, self.object, self.text)
 
     def __repr__( self ):

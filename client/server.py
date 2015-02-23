@@ -1,12 +1,31 @@
+import weakref
+from util import path2str
 import json_connection
 import iface_registry
 import view_registry
 
 
+# we want only one object per path, otherwise subscription/notification won't work
+proxy_registry = weakref.WeakValueDictionary()  # path -> ProxyObject
+
+
+def register_proxy( path, proxy_object ):
+    path_str = path2str(path)
+    assert path_str not in proxy_registry, repr(path)
+    proxy_registry[path_str] = proxy_object
+
+def resolve_proxy( path ):
+    print 'resolve_proxy:', path2str(path), proxy_registry.get(path2str(path))
+    return proxy_registry.get(path2str(path))
+
+
 def resolve_object( server, resp ):
     iface_id = resp['iface_id']
-    obj_ctr = iface_registry.resolve_iface(iface_id)
-    object = obj_ctr(server, resp)
+    path = resp['path']
+    object = resolve_proxy(path)
+    if not object:
+        obj_ctr = iface_registry.resolve_iface(iface_id)
+        object = obj_ctr(server, resp)
     view_id = resp['view_id']
     handle_ctr = view_registry.resolve_view(view_id)
     return handle_ctr(object)

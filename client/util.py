@@ -184,3 +184,7 @@ def focused_index( parent, children, default=None ):
             if w is trg: return idx
         w = w.parent()
     return default
+
+
+def path2str( path ):
+    return ','.join('%s=%s' % (key, value) for key, value in sorted(path.items()))
