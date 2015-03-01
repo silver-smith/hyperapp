@@ -1,15 +1,16 @@
 import weakref
-from util import make_action
+from util import is_list_inst, make_action
 import view_registry
 
 
 class Command(object):
 
     def __init__( self, id, text, desc, shortcut ):
+        assert shortcut is None or isinstance(shortcut, basestring) or is_list_inst(shortcut, basestring), repr(shortcut)
         self.id = id
         self.text = text
         self.desc = desc
-        self.shortcut = shortcut
+        self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple
 
     @classmethod
     def from_json( cls, data ):

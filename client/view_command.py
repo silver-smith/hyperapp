@@ -1,5 +1,5 @@
 import weakref
-from util import make_action
+from util import is_list_inst, make_action
 
 
 class BoundViewCommand(object):
@@ -39,9 +39,10 @@ class UnboundViewCommand(object):
 class command(object):
 
     def __init__( self, text, desc, shortcut ):
+        assert shortcut is None or isinstance(shortcut, basestring) or is_list_inst(shortcut, basestring), repr(shortcut)
         self.text = text
         self.desc = desc
-        self.shortcut = shortcut
+        self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple
 
     def __call__( self, class_method ):
         return UnboundViewCommand(self.text, self.desc, self.shortcut, class_method)
