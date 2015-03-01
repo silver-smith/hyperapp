@@ -11,6 +11,13 @@ class BoundViewCommand(object):
         self.class_method = class_method
         self.inst_wref = inst_wref  # weak ref to class instance
 
+    # returns basestring list
+    def get_shortcut_list( self ):
+        if isinstance(self.shortcut, basestring):
+            return [self.shortcut]
+        else:
+            return self.shortcut or []
+
     def get_inst( self ):
         return self.inst_wref()
 
@@ -21,6 +28,10 @@ class BoundViewCommand(object):
 
     def make_action( self, widget, window=None, app=None ):
         return make_action(widget, self.text, self.shortcut, self.run)
+
+    def clone_without_shortcuts( self, shortcut_set ):
+        new_shortcuts = set(self.get_shortcut_list()) - shortcut_set
+        return BoundViewCommand(self.text, self.desc, list(new_shortcuts), self.class_method, self.inst_wref)
 
 
 class UnboundViewCommand(object):

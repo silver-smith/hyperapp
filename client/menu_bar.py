@@ -73,8 +73,18 @@ class MenuBar(object):
 
     def _update_window_menu( self, window ):
         self.window_menu.clear()
+        # remove duplicate shortcuts, with latter (from deeper views) commands overriding former ones
+        commands = []  # in reversed order
+        shortcuts = set()
+        for cmd in reversed(window.get_commands()):
+            cmd_shortcuts = set(cmd.get_shortcut_list())
+            dups = shortcuts & cmd_shortcuts
+            if dups:
+                cmd = cmd.clone_without_shortcuts(dups)
+            commands.append(cmd)
+            shortcuts |= cmd_shortcuts
         last_view = None
-        for cmd in window.get_commands():
+        for cmd in reversed(commands):
             if last_view is not None and cmd.get_inst() is not last_view:
                 self.window_menu.addSeparator()
             self.add_cmd_action_to_menu(self.window_menu, cmd)
