@@ -1,6 +1,7 @@
 from PySide import QtCore, QtGui
 from util import key_match, key_match_any
 from list_object import ListObject
+from view_command import command
 import view_registry
 import view
 import composite
@@ -103,11 +104,12 @@ class View(LineListPanel):
             return True
         return LineListPanel.is_list_event(self, evt)
 
+    @command('Wider', 'Cancel narrowing', ['Escape'])
+    def cancel_narrowing( self ):
+        if self._line_edit.text() and key_match(evt, 'Escape'):
+            self._line_edit.setText('')
+
     def eventFilter( self, obj, evt ):
-        # todo: handle Escape key, override one from navigator
-        ## if self._line_edit.text() and key_match(evt, 'Escape'):
-        ##     self._line_edit.setText('')
-        ##     return True
         if self._line_edit.text() and key_match(evt, 'Space'):
             self._fill_common_prefix()
             return True
