@@ -84,14 +84,17 @@ class View(LineListPanel):
     def get_object( self ):
         return self._base_obj
 
-    def _on_text_edited( self, text ):
-        #print 'on text edited', text
+    def _update_text( self, text ):
         key = self._list_view.current_key()
         if text:
             self._list_view.set_object(FilteredListObj(self._base_obj, text))
         else:
             self._list_view.set_object(self._base_obj)
         self._list_view.set_current_key(key, select_first=True)
+        self.cancel_narrowing.setEnabled(text != '')
+
+    def _on_text_edited( self, text ):
+        self._update_text(text)
 
     def is_list_event( self, evt ):
         if key_match_any(evt, [
@@ -104,10 +107,11 @@ class View(LineListPanel):
             return True
         return LineListPanel.is_list_event(self, evt)
 
-    @command('Wider', 'Cancel narrowing', ['Escape'])
+    @command('Wider', 'Cancel narrowing', ['Escape'], enabled=False)
     def cancel_narrowing( self ):
-        if self._line_edit.text() and key_match(evt, 'Escape'):
+        if self._line_edit.text():
             self._line_edit.setText('')
+            self._update_text('')
 
     def eventFilter( self, obj, evt ):
         if self._line_edit.text() and key_match(evt, 'Space'):

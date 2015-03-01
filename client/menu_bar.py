@@ -77,6 +77,9 @@ class MenuBar(object):
         commands = []  # in reversed order
         shortcuts = set()
         for cmd in reversed(window.get_commands()):
+            if not cmd.is_enabled():
+                commands.append(cmd)
+                continue
             cmd_shortcuts = set(cmd.get_shortcut_list())
             dups = shortcuts & cmd_shortcuts
             if dups:
