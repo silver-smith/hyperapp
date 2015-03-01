@@ -121,11 +121,11 @@ class View(LineListPanel):
 
     def _fill_common_prefix( self ):
         dir = self._list_view.get_object()
-        elements = dir.elements()
+        elements = dir.get_fetched_elements()
         if not elements: return
-        common = elements[0].name
+        common = elements[0].key
         for elt in elements[1:]:
-            while not elt.name.startswith(common):
+            while not elt.key.startswith(common):
                 common = common[:-1]
         self._line_edit.setText(common)
 
