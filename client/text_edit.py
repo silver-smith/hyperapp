@@ -3,6 +3,7 @@ from util import uni2str
 from object import ObjectObserver
 import view
 import view_registry
+from text_object import TextObject
 
 
 class Handle(view.Handle):
@@ -42,6 +43,9 @@ class View(view.View, QtGui.QTextEdit, ObjectObserver):
 
     def get_object( self ):
         return self.object
+
+    def get_object_commands( self ):
+        return (self, self.object.get_commands(TextObject.mode_edit))
 
     def _on_text_changed( self ):
         if self.notify_on_text_changed:

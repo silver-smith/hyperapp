@@ -1,8 +1,12 @@
 from proxy_object import ProxyObject
 import iface_registry
+import view_registry
 
 
 class TextObject(ProxyObject):
+
+    mode_view = object()
+    mode_edit = object()
 
     @classmethod
     def from_resp( cls, server, resp ):
@@ -15,14 +19,37 @@ class TextObject(ProxyObject):
         self.text = text
         print 'text_object', path
 
+    def get_commands( self, mode ):
+        assert mode in [self.mode_view, self.mode_edit], repr(mode)
+        commands = []
+        for cmd in ProxyObject.get_commands(self):
+            if mode is self.mode_view and cmd.id in ['view', 'save']: continue
+            if mode is self.mode_edit and cmd.id in ['edit']: continue
+            commands.append(cmd)
+        return commands
+
     def text_changed( self, emitter, new_text ):
         self.text = new_text
         self._notify_object_changed(emitter)
 
     def run_command( self, command_id ):
+        if command_id == 'edit':
+            return self.run_command_edit()
+        if command_id == 'view':
+            return self.run_command_view()
         if command_id == 'save':
             return self.run_command_save()
         return ProxyObject.run_command(self, command_id)
+
+    def run_command_edit( self ):
+        return self.switch_to_view('text_edit')
+
+    def run_command_view( self ):
+        return self.switch_to_view('text_view')
+
+    def switch_to_view( self, view_id ):
+        handle_ctr = view_registry.resolve_view(view_id)
+        return handle_ctr(self)
 
     def run_command_save( self ):
         request = dict(self.make_command_request(command_id='save'),
