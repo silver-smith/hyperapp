@@ -37,11 +37,11 @@ class View(object):
     def get_widget( self ):
         return self
 
-    def current_child( self ):
+    def get_current_child( self ):
         return None
 
     def get_current_view( self ):
-        child = self.current_child()
+        child = self.get_current_child()
         if child:
             return child.get_current_view()
         else:
@@ -49,7 +49,7 @@ class View(object):
 
     def get_commands( self ):
         commands = self._commands[:]
-        view = self.current_child()
+        view = self.get_current_child()
         if view:
             commands += view.get_commands()
         return commands
@@ -58,7 +58,7 @@ class View(object):
         return view.get_widget()
 
     def get_title( self ):
-        view = self.current_child()
+        view = self.get_current_child()
         if view:
             return view.get_title()
         object = self.get_object()
@@ -67,7 +67,7 @@ class View(object):
         return 'Untitled'
 
     def get_object( self ):
-        view = self.current_child()
+        view = self.get_current_child()
         if view:
             return view.get_object()
         else:
@@ -86,7 +86,7 @@ class View(object):
             self.open(handle)
 
     def get_selected_elts( self ):
-        view = self.current_child()
+        view = self.get_current_child()
         if view:
             return view.get_selected_elts()
         else:
@@ -130,7 +130,7 @@ class View(object):
         w.setFocus()
 
     def get_widget_to_focus( self ):
-        child = self.current_child()
+        child = self.get_current_child()
         if DEBUG_FOCUS: print '  * view.get_widget_to_focus', self, child
         if child:
             return child.get_widget_to_focus()

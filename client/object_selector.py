@@ -110,7 +110,7 @@ class View(view.View, QtGui.QWidget):
     def get_object( self ):
         return self.object
 
-    def current_child( self ):
+    def get_current_child( self ):
         return self.target_view
 
     def open( self, handle ):

@@ -53,7 +53,7 @@ class View(composite.Composite):
             self._back_history = self._back_history[-MAX_HISTORY_SIZE:]
         self._open(handle)
 
-    def current_child( self ):
+    def get_current_child( self ):
         return self._child
 
     def open( self, handle ):

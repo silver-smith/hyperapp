@@ -83,8 +83,8 @@ class View(QtGui.QSplitter, view.View):
         return Handle(self._x.handle(), self._y.handle(), qt2orient(self.orientation()),
                       self._focused or 0, self.sizes())
 
-    def current_child( self ):
-        if DEBUG_FOCUS: print '  * splitter.current_child', self, self._focused
+    def get_current_child( self ):
+        if DEBUG_FOCUS: print '  * splitter.get_current_child', self, self._focused
         if self._focused is not None:
             return self._get_view(self._focused)
         else:

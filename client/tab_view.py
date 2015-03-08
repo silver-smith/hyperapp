@@ -43,7 +43,7 @@ class View(QtGui.QTabWidget, view.View):
     def handle( self ):
         return Handle([view.handle() for view in self._children], self.currentIndex())
 
-    def current_child( self ):
+    def get_current_child( self ):
         idx = self.currentIndex()
         if idx == -1 or idx >= len(self._children): return None  # changing right now
         return self._children[idx]

@@ -20,7 +20,7 @@ class LineListPanel(Composite, QtGui.QWidget):
         self.setLayout(layout)
         self._line_edit.installEventFilter(self)
 
-    def current_child( self ):
+    def get_current_child( self ):
         return self._list_view
 
     def get_widget_to_focus( self ):

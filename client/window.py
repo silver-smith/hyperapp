@@ -64,7 +64,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
     def handle( self ):
         return Handle(self._view.handle(), self.size(), self.pos())
 
-    def current_child( self ):
+    def get_current_child( self ):
         return self._view
 
     def replace_view( self, mapper ):
