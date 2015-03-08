@@ -117,7 +117,7 @@ class View(view.View, QtGui.QTableView):
         if idx.row() != -1:
             return self.list_obj.get_fetched_elements()[idx.row()]
 
-    def selected_elts( self ):
+    def get_selected_elts( self ):
         return filter(None, [self.current_elt()])
 
     def is_in_multi_selection_mode( self ):
@@ -187,7 +187,7 @@ class View(view.View, QtGui.QTableView):
     def setVisible( self, visible ):
         QtGui.QTableView.setVisible(self, visible)
         if visible:
-            self.selected_elements_changed(self.selected_elts())
+            self.selected_elements_changed(self.get_selected_elts())
 
     def ensure_elements( self, element_count ):
         if self.list_obj.are_all_elements_fetched(): return

@@ -85,10 +85,10 @@ class View(object):
         if handle:
             self.open(handle)
 
-    def selected_elts( self ):
+    def get_selected_elts( self ):
         view = self.current_child()
         if view:
-            return view.selected_elts()
+            return view.get_selected_elts()
         else:
             return None
 

@@ -24,7 +24,7 @@ class View(QtGui.QDockWidget):
         dir = window.get_object()
         self._update_dir_commands(window.get_current_view())
         self.current_dir = dir
-        self._update_elts(window.get_current_view(), window.selected_elts())
+        self._update_elts(window.get_current_view(), window.get_selected_elts())
 
     def selected_elements_changed( self, elts ):
         self._update_elts(self.window().get_current_view(), elts)
