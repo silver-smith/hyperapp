@@ -31,7 +31,7 @@ class View(view.View, QtGui.QTextBrowser, ObjectObserver):
         view.View.__init__(self, parent)
         self.setOpenLinks(False)
         self.object = object
-        self.setHtml(self.text2html(object.text))
+        self.setHtml(self.text2html(object.text or ''))
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.object.subscribe(self)
 
