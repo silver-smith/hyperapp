@@ -98,7 +98,7 @@ class View(view.View, QtGui.QTableView):
         self.set_current_key(key, select_first)
 
     def handle( self ):
-        return Handle(self.get_object(), self.current_key(), self.selected_keys(), self._select_first)
+        return Handle(self.get_object(), self.get_current_key(), self.selected_keys(), self._select_first)
 
     def get_title( self ):
         if self.list_obj:
@@ -107,18 +107,18 @@ class View(view.View, QtGui.QTableView):
     def get_object( self ):
         return self.list_obj
 
-    def current_key( self ):
+    def get_current_key( self ):
         idx = self.currentIndex()
         if idx.row() != -1:
             return self.list_obj.get_fetched_elements()[idx.row()].key
 
-    def current_elt( self ):
+    def get_current_elt( self ):
         idx = self.currentIndex()
         if idx.row() != -1:
             return self.list_obj.get_fetched_elements()[idx.row()]
 
     def get_selected_elts( self ):
-        return filter(None, [self.current_elt()])
+        return filter(None, [self.get_current_elt()])
 
     def is_in_multi_selection_mode( self ):
         return False  # todo
@@ -206,7 +206,7 @@ class View(view.View, QtGui.QTableView):
     def _selected_elements_changed( self ):
         self._update_selected_actions()
         if self.isVisible():  # we may being destructed now
-            self.selected_elements_changed([self.current_elt()])
+            self.selected_elements_changed([self.get_current_elt()])
 
     def _update_selected_actions( self ):
         # remove previous actions
@@ -215,7 +215,7 @@ class View(view.View, QtGui.QTableView):
             action_widget.removeAction(action)
         self._elt_actions = []
         # pick selection and commands
-        elt = self.current_elt()
+        elt = self.get_current_elt()
         if not elt: return
         element_key = elt.key
         commands = elt.commands

@@ -78,7 +78,7 @@ class View(LineListPanel):
         self._line_edit.textEdited.connect(self._on_text_edited)
 
     def handle( self ):
-        return Handle(list_view.Handle(self._base_obj, self._list_view.current_key(), self._list_view.selected_keys()),
+        return Handle(list_view.Handle(self._base_obj, self._list_view.get_current_key(), self._list_view.selected_keys()),
                       self._line_edit.text())
 
     def get_title( self ):
@@ -92,7 +92,7 @@ class View(LineListPanel):
         self._update_prefix('')
 
     def _update_prefix( self, text ):
-        key = self._list_view.current_key()
+        key = self._list_view.get_current_key()
         if text:
             self._list_view.set_object(FilteredListObj(self._base_obj, text))
         else:
