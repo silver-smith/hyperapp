@@ -85,6 +85,11 @@ class View(object):
         if handle:
             self.open(handle)
 
+    def run_object_element_command( self, command_id, element_key ):
+        handle = self.get_object().run_element_command(command_id, element_key)
+        if handle:
+            self.open(handle)
+
     def get_selected_elts( self ):
         view = self.get_current_child()
         if view:

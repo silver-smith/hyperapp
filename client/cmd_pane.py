@@ -24,10 +24,10 @@ class View(QtGui.QDockWidget):
         dir = window.get_object()
         self._update_dir_commands(window.get_current_view())
         self.current_dir = dir
-        self._update_elts(window.get_current_view(), window.get_selected_elts())
+        self._update_elements(window.get_current_view(), window.get_selected_elts())
 
     def selected_elements_changed( self, elts ):
-        self._update_elts(self.window().get_current_view(), elts)
+        self._update_elements(self.window().get_current_view(), elts)
 
     def _update_dir_commands( self, view ):
         for btn in self.dir_buttons:
@@ -41,18 +41,16 @@ class View(QtGui.QDockWidget):
             self.dir_buttons.append(button)
             idx += 1
 
-    def _update_elts( self, view, elts ):
+    def _update_elements( self, view, elts ):
         for btn in self.elts_buttons:
             btn.deleteLater()
         self.elts_buttons = []
         if not elts: return
-        dir = self.current_dir
-        if dir is None: return
         assert len(elts) == 1  # no multi-select support yet
         elt = elts[0]
         for cmd in elt.commands:
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run(view, dir, elt.key))
+            button.pressed.connect(lambda cmd=cmd: cmd.run(view, elt.key))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 

@@ -35,17 +35,15 @@ class ObjectCommand(Command):
 
 class ElementCommand(Command):
 
-    def run_with_weaks( self, view_wref, obj_wref, element_key ):
-        return self.run(view_wref(), obj_wref(), element_key)
+    def run_with_weaks( self, view_wref, element_key ):
+        return self.run(view_wref(), element_key)
 
-    def run( self, view, obj, element_key ):
-        print 'ElementCommand.run', self.id, obj, view, element_key
-        handle = obj.run_element_command(self.id, element_key)
-        if handle:
-            view.open(handle)
+    def run( self, view, element_key ):
+        print 'ElementCommand.run', self.id, view, element_key
+        view.run_object_element_command(self.id, element_key)
 
-    def make_action( self, widget, view, obj, element_key ):
-        return self._make_action(widget, weakref.ref(view), weakref.ref(obj), element_key)
+    def make_action( self, widget, view, element_key ):
+        return self._make_action(widget, weakref.ref(view), element_key)
 
 
 class ModuleCommand(Command):

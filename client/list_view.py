@@ -200,7 +200,7 @@ class View(view.View, QtGui.QTableView):
         elt = self.list_obj.get_fetched_elements()[index.row()]
         for cmd in elt.commands:
             if cmd.id == 'open':
-                cmd.run(self, self.list_obj, elt.key)
+                cmd.run(self, elt.key)
                 return
 
     def _selected_elements_changed( self ):
@@ -221,7 +221,7 @@ class View(view.View, QtGui.QTableView):
         commands = elt.commands
         # create actions
         for cmd in commands:
-            action = cmd.make_action(action_widget, self, self.list_obj, element_key)
+            action = cmd.make_action(action_widget, self, element_key)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
