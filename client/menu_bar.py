@@ -60,6 +60,10 @@ class MenuBar(object):
     def view_changed( self, window ):
         self.current_dir = dir = window.get_object()
         self.help_menu.setEnabled(dir is not None)
+        self._update_dir_menu(window, dir)
+        self._update_window_menu(window)
+
+    def _update_dir_menu( self, window, dir ):
         self.dir_menu.clear()
         view = window.current_view()
         if dir is not None:
@@ -69,7 +73,6 @@ class MenuBar(object):
             self.dir_menu.setEnabled(commands != [])
         else:
             self.dir_menu.setEnabled(False)
-        self._update_window_menu(window)
 
     def _update_window_menu( self, window ):
         self.window_menu.clear()
