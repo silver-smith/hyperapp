@@ -2,12 +2,12 @@
 
 import sys
 import os.path
-import pickle
 from PySide import QtCore, QtGui
 
 
 sys.path.append('..')
 
+from util import pickle_dumps, pickle_loads
 from server import Server
 from qt_keys import key_evt2str
 from command import ModuleCommand
@@ -68,12 +68,12 @@ class Application(QtGui.QApplication, view.View):
 
     def save_state( self, state ):
         with file(STATE_FILE_PATH, 'wb') as f:
-            pickle.dump(state, f)
+            f.write(pickle_dumps(state))
 
     def load_state( self ):
         try:
             with file(STATE_FILE_PATH, 'rb') as f:
-                return pickle.load(f)
+                return pickle_loads(f.read())
         except (EOFError, IOError, IndexError) as x:
             print 'Error Loading state:', x
             return None

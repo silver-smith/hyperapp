@@ -1,3 +1,5 @@
+from cStringIO import StringIO
+import pickle
 import weakref
 import itertools
 from datetime import datetime
@@ -188,3 +190,13 @@ def focused_index( parent, children, default=None ):
 
 def path2str( path ):
     return ','.join('%s=%s' % (key, value) for key, value in sorted(path.items()))
+
+
+def pickle_dumps( val ):
+    string_io = StringIO()
+    pickler = pickle.Pickler(string_io, protocol=2)  # use protocol 2 for __getnewargs__ to work
+    pickler.dump(val)
+    return string_io.getvalue()
+
+def pickle_loads( data ):
+    return pickle.loads(data)
