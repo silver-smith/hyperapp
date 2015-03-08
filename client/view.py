@@ -73,6 +73,18 @@ class View(object):
         else:
             return None
 
+    def get_object_commands( self ):
+        object = self.get_object()
+        if object:
+            return object.get_commands()
+        else:
+            return []
+
+    def run_object_command( self, command_id ):
+        handle = self.get_object().run_command(command_id)
+        if handle:
+            self.open(handle)
+
     def selected_elts( self ):
         view = self.current_child()
         if view:

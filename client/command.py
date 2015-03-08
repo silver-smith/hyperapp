@@ -22,17 +22,15 @@ class Command(object):
 
 class ObjectCommand(Command):
 
-    def run_with_weaks( self, view_wref, obj_wref ):
-        return self.run(view_wref(), obj_wref())
+    def run_with_weaks( self, view_wref ):
+        return self.run(view_wref())
 
-    def run( self, view, obj ):
-        print 'ObjectCommand.run', self.id, obj, view
-        handle = obj.run_command(self.id)
-        if handle:
-            view.open(handle)
+    def run( self, view ):
+        print 'ObjectCommand.run', self.id, view
+        view.run_object_command(self.id)
 
-    def make_action( self, widget, view, obj ):
-        return self._make_action(widget, weakref.ref(view), weakref.ref(obj))
+    def make_action( self, widget, view ):
+        return self._make_action(widget, weakref.ref(view))
 
 
 class ElementCommand(Command):

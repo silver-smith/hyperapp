@@ -22,23 +22,21 @@ class View(QtGui.QDockWidget):
 
     def view_changed( self, window ):
         dir = window.get_object()
-        self._update_dir(dir)
+        self._update_dir_commands(window.current_view())
         self.current_dir = dir
         self._update_elts(window.current_view(), window.selected_elts())
 
     def selected_elements_changed( self, elts ):
         self._update_elts(self.window().current_view(), elts)
 
-    def _update_dir( self, dir ):
+    def _update_dir_commands( self, view ):
         for btn in self.dir_buttons:
             btn.deleteLater()
         self.dir_buttons = []
-        if dir is None: return
-        view = self.window().current_view()
         idx = 0
-        for cmd in dir.get_commands():
+        for cmd in view.get_object_commands():
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run(view, dir))
+            button.pressed.connect(lambda cmd=cmd: cmd.run(view))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
             self.dir_buttons.append(button)
             idx += 1
