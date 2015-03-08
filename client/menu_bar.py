@@ -65,8 +65,7 @@ class MenuBar(object):
 
     def _update_dir_menu( self, window ):
         self.dir_menu.clear()
-        view = window.get_current_view()
-        commands = view.get_object_commands()
+        view, commands = window.get_object_commands()
         for cmd in commands:
             self.add_cmd_action_to_menu(self.dir_menu, cmd, view)
         self.dir_menu.setEnabled(commands != [])

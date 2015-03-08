@@ -110,6 +110,9 @@ class View(view.View, QtGui.QWidget):
     def get_object( self ):
         return self.object
 
+    def get_object_commands( self ):
+        return (self, self.object.get_commands())
+
     def get_current_child( self ):
         return self.target_view
 

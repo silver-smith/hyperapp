@@ -74,11 +74,14 @@ class View(object):
             return None
 
     def get_object_commands( self ):
+        child = self.get_current_child()
+        if child:
+            return child.get_object_commands()
         object = self.get_object()
         if object:
-            return object.get_commands()
+            return (self, object.get_commands())
         else:
-            return []
+            return (self, [])
 
     def run_object_command( self, command_id ):
         handle = self.get_object().run_command(command_id)
