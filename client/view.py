@@ -40,10 +40,10 @@ class View(object):
     def current_child( self ):
         return None
 
-    def current_view( self ):
+    def get_current_view( self ):
         child = self.current_child()
         if child:
-            return child.current_view()
+            return child.get_current_view()
         else:
             return self
 

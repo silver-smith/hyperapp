@@ -43,7 +43,7 @@ class MenuBar(object):
         return menu
 
     def _current_view( self ):
-        return self.window().current_view()
+        return self.window().get_current_view()
 
     @staticmethod
     def _open_dir_commands( self_wref ):
@@ -65,7 +65,7 @@ class MenuBar(object):
 
     def _update_dir_menu( self, window ):
         self.dir_menu.clear()
-        view = window.current_view()
+        view = window.get_current_view()
         commands = view.get_object_commands()
         for cmd in commands:
             self.add_cmd_action_to_menu(self.dir_menu, cmd, view)

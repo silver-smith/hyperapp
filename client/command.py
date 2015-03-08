@@ -69,7 +69,7 @@ class ModuleCommand(Command):
             command_id=self.id)
         handle = app.server.request_an_object(request)
         if handle:
-            window.current_view().open(handle)
+            window.get_current_view().open(handle)
 
     def make_action( self, widget, window, app ):
         return self._make_action(widget, weakref.ref(window), app)

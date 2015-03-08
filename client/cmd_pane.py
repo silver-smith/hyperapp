@@ -22,12 +22,12 @@ class View(QtGui.QDockWidget):
 
     def view_changed( self, window ):
         dir = window.get_object()
-        self._update_dir_commands(window.current_view())
+        self._update_dir_commands(window.get_current_view())
         self.current_dir = dir
-        self._update_elts(window.current_view(), window.selected_elts())
+        self._update_elts(window.get_current_view(), window.selected_elts())
 
     def selected_elements_changed( self, elts ):
-        self._update_elts(self.window().current_view(), elts)
+        self._update_elts(self.window().get_current_view(), elts)
 
     def _update_dir_commands( self, view ):
         for btn in self.dir_buttons:
