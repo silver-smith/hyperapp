@@ -1,18 +1,41 @@
+import weakref
+from util import path2str
 from object import Object
 from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListObject
 from command import ObjectCommand, ElementCommand
 import iface_registry
-from server import register_proxy
 
 
 class ProxyObject(Object):
+
+    # we want only one object per path, otherwise subscription/notification won't work
+    proxy_registry = weakref.WeakValueDictionary()  # path -> ProxyObject
+
+    # this schema allows resolving objects while unpickling
+    def __new__( cls, server, path, *args, **kw ):
+        obj = cls.resolve_proxy(path)
+        if obj:
+            print '> resolved from registry:', path, obj
+            return obj
+        return object.__new__(cls)
+
+    @classmethod
+    def resolve_proxy( cls, path ):
+        print '  resolve_proxy:', path2str(path), cls.proxy_registry.get(path2str(path))
+        return cls.proxy_registry.get(path2str(path))
 
     def __init__( self, server, path, commands ):
         Object.__init__(self)
         self.server = server
         self.path = path
         self.commands = commands
-        register_proxy(self.path, self)
+        self.register_proxy()
+
+    def register_proxy( self ):
+        path_str = path2str(self.path)
+        if path_str not in self.proxy_registry:
+            self.proxy_registry[path_str] = self
+            print '< registered in registry:', self.path, self
 
     @staticmethod
     def parse_resp( resp ):
