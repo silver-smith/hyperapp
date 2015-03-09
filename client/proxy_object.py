@@ -1,3 +1,10 @@
+# Rationale for using __new__ to resolve  proxies from registry:
+# I need to keep single proxy object per path for subscription/notification to work.
+# This must work even when unpickling objects. Another solution for pickling/unpickling could be
+# persistent_id/persistend_load mechanism, but in that case class and state information
+# stored in pickling would be lost. I would need to construct proxy objects by myself then if unpickled
+# instance is first with this 'path'.
+
 import weakref
 from util import path2str
 from object import Object
