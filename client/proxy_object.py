@@ -127,7 +127,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self.key_column_idx = key_column_idx
 
     def process_update( self, diff ):
-        print '*** process_update', diff, diff.start_key, diff.end_key, diff.elements
+        print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
         # todo: adding elements
         self.elements = [elt for elt in self.elements
                          if elt.key < diff.start_key or elt.key >= diff.end_key]
