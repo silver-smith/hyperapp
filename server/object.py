@@ -49,6 +49,24 @@ class Command(object):
             )
 
 
+class ListDiff(object):
+
+    @classmethod
+    def delete( cls, key ):
+        return cls(key, key + 1, [])
+
+    def __init__( self, start_key, end_key, elements ):
+        self.start_key = start_key  # replace elements from this one
+        self.end_key = end_key      # up to (but not including) this one
+        self.elements = elements    # with these elemenents
+
+    def as_json( self ):
+        return dict(
+            start_key=self.start_key,
+            end_key=self.end_key,
+            elements=self.elements)
+
+
 class DictObject(object):
 
     def __init__( self ):
@@ -73,6 +91,7 @@ class Response(object):
     def __init__( self ):
         self.object = None
         self.result = DictObject()
+        self.updates = []  # (path, ListDiff) list
 
     def as_json( self ):
         d = {}
@@ -80,6 +99,8 @@ class Response(object):
             d['object'] = self.object
         if self.result:
             d['result'] = self.result.as_json()
+        if self.updates:
+            d['updates'] = [(path, diff.as_json()) for path, diff in self.updates]
         return d
 
 
@@ -107,6 +128,12 @@ class Request(object):
         response = self.make_response()
         for name, value in kw.items():
             response.result[name] = value
+        return response
+
+    def make_response_update( self, path, diff ):
+        assert isinstance(diff, ListDiff), repr(diff)
+        response = self.make_response()
+        response.updates.append((path, diff))
         return response
 
 

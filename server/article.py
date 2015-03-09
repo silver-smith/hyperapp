@@ -1,7 +1,7 @@
 import json
 from pony.orm import db_session, Required, Optional, Set
 from util import str2id
-from object import Object, ListObject, Command, Element, Column
+from object import ListDiff, Object, ListObject, Command, Element, Column
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
 from iface import Iface, TextObjectIface, ListIface
@@ -146,7 +146,8 @@ class ArticleRefList(ListObject):
     @db_session
     def run_element_command_delete( self, request, ref_id ):
         module.ArticleRef[ref_id].delete()
-        return request.make_response_object(self)  # reload
+        diff = ListDiff.delete(ref_id)
+        return request.make_response_update(self.path, diff)
 
 
 class RefSelector(Object):
