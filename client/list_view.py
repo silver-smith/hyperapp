@@ -94,6 +94,7 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
         self.setSelectionMode(self.SingleSelection)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
+        self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self.set_object(obj)
         self.set_current_key(key, select_first)
@@ -109,22 +110,20 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
         return self.list_obj
 
     def object_changed( self ):
-        print '*** list_view.object_changed'
         self.model().layoutChanged.emit()
         self.reset()  # selection etc must be cleared
 
     def get_current_key( self ):
-        idx = self.currentIndex()
-        if idx.row() != -1:
-            return self.list_obj.get_fetched_elements()[idx.row()].key
+        if self._selected_elt:
+            return self._selected_elt.key
+        else:
+            return None
 
     def get_current_elt( self ):
-        idx = self.currentIndex()
-        if idx.row() != -1:
-            return self.list_obj.get_fetched_elements()[idx.row()]
+        return self._selected_elt
 
     def get_selected_elts( self ):
-        return filter(None, [self.get_current_elt()])
+        return filter(None, [self.get_current_elt()])  # [] if no selection
 
     def is_in_multi_selection_mode( self ):
         return False  # todo
@@ -189,6 +188,10 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
 
     def currentChanged( self, idx, prev_idx ):
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
+        if idx.row() != -1:
+            self._selected_elt = self.list_obj.get_fetched_elements()[idx.row()]
+        else:
+            self._selected_elt = None
         self._selected_elements_changed()
 
     def setVisible( self, visible ):
