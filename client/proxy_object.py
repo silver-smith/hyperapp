@@ -30,6 +30,14 @@ class ProxyObject(Object):
     def resolve_proxy( cls, path ):
         return cls.proxy_registry.get(path2str(path))
 
+    @classmethod
+    def process_updates( cls, updates ):
+        for path, diff in updates:
+            obj = cls.resolve_proxy(path)
+            if obj:
+                obj.process_update(diff)
+
+
     def __init__( self, server, path, commands ):
         if hasattr(self, 'init_flag'): return   # after __new__ returns resolved object __init__ is called anyway
         Object.__init__(self)
@@ -77,6 +85,9 @@ class ProxyObject(Object):
         request = self.make_command_request(command_id)
         return self.server.request_an_object(request)
 
+    def process_update( self, diff ):
+        raise NotImplementedError(self.__class__)
+
 
 class ProxyListObject(ProxyObject, ListObject):
 
@@ -114,6 +125,13 @@ class ProxyListObject(ProxyObject, ListObject):
         self.elements = elements
         self.all_elements_fetched = all_elements_fetched
         self.key_column_idx = key_column_idx
+
+    def process_update( self, diff ):
+        print '*** process_update', diff, diff.start_key, diff.end_key, diff.elements
+        # todo: adding elements
+        self.elements = [elt for elt in self.elements
+                         if elt.key < diff.start_key or elt.key >= diff.end_key]
+        self._notify_object_changed()
 
     def get_columns( self ):
         return self.columns

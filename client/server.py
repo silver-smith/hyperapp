@@ -1,6 +1,7 @@
 import json_connection
 import iface_registry
 import view_registry
+from proxy_object import ProxyObject
 
 
 def resolve_object( server, resp ):
@@ -11,6 +12,22 @@ def resolve_object( server, resp ):
     view_id = resp['view_id']
     handle_ctr = view_registry.resolve_view(view_id)
     return handle_ctr(object)
+
+
+class ListDiff(object):
+
+    @classmethod
+    def from_resp( cls, d ):
+        return cls(
+            start_key=d['start_key'],
+            end_key=d['end_key'],
+            elements=d['elements'],
+            )
+
+    def __init__( self, start_key, end_key, elements ):
+        self.start_key = start_key  # replace elements from this one
+        self.end_key = end_key      # up to (but not including) this one
+        self.elements = elements    # with these elemenents
 
 
 class DictObject(object):
@@ -37,6 +54,11 @@ class Response(object):
         if 'object' in self.resp_dict:
             return resolve_object(self.server, self.resp_dict['object'])
 
+    def get_updates( self ):
+        if 'updates' not in self.resp_dict:
+            return []
+        return [(path, ListDiff.from_resp(diff)) for path, diff in self.resp_dict['updates']]
+
 
 class Server(object):
 
@@ -61,7 +83,9 @@ class Server(object):
 
     def execute_request( self, request ):
         self.connection.send(request)
-        return Response(self, self.connection.receive())
+        response = Response(self, self.connection.receive())
+        ProxyObject.process_updates(response.get_updates())
+        return response
 
     def request_an_object( self, request ):
         response = self.execute_request(request)

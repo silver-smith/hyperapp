@@ -37,7 +37,7 @@ class Object(object):
         assert isinstance(observer, ObjectObserver), repr(observer)
         self._observers.add(observer)
 
-    def _notify_object_changed( self, skip_observer ):
+    def _notify_object_changed( self, skip_observer=None ):
         for observer in self._observers:
             if observer is not skip_observer:
                 observer.object_changed()
