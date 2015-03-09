@@ -1,5 +1,5 @@
 import json
-from pony.orm import db_session, Required, Optional, Set
+from pony.orm import db_session, Required, Optional, Set, select
 from util import str2id
 from object import ListDiff, Object, ListObject, Command, Element, Column
 from module import ModuleCommand
@@ -127,7 +127,9 @@ class ArticleRefList(ListObject):
 
     @db_session
     def get_all_elements( self ):
-        return map(self.rec2element, module.Article[self.article_id].refs)
+        return map(self.rec2element, select(ref for ref in module.ArticleRef
+            if ref.article==module.Article[self.article_id]) \
+            .order_by(module.ArticleRef.id))
 
     def rec2element( self, rec ):
         commands = [
