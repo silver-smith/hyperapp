@@ -4,6 +4,7 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 from util import uni2str, key_match, key_match_any
+from object import ObjectObserver
 import view_registry
 import view
 
@@ -74,7 +75,7 @@ class Model(QtCore.QAbstractTableModel):
         print '~list_view.Model'
 
 
-class View(view.View, QtGui.QTableView):
+class View(view.View, QtGui.QTableView, ObjectObserver):
 
     def __init__( self, parent, obj, key, selected_keys, select_first ):
         QtGui.QTableView.__init__(self)
@@ -106,6 +107,11 @@ class View(view.View, QtGui.QTableView):
 
     def get_object( self ):
         return self.list_obj
+
+    def object_changed( self ):
+        print '*** list_view.object_changed'
+        self.model().layoutChanged.emit()
+        self.reset()  # selection etc must be cleared
 
     def get_current_key( self ):
         idx = self.currentIndex()
@@ -153,6 +159,7 @@ class View(view.View, QtGui.QTableView):
         self._model.visible_columns = visible_columns
         self.model().endResetModel()
         self.resizeColumnsToContents()
+        self.list_obj.subscribe(self)
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
