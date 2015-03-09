@@ -21,18 +21,28 @@ class ProxyObject(Object):
 
     @classmethod
     def resolve_proxy( cls, path ):
-        print '  resolve_proxy:', path2str(path), cls.proxy_registry.get(path2str(path))
         return cls.proxy_registry.get(path2str(path))
 
     def __init__( self, server, path, commands ):
+        if hasattr(self, 'init_flag'): return   # after __new__ returns resolved object __init__ is called anyway
         Object.__init__(self)
+        self.init_flag = None
         self.server = server
         self.path = path
         self.commands = commands
         self.register_proxy()
 
+    def __getnewargs__( self ):
+        return (self.server, self.path)
+
+    def __setstate__( self, state ):
+        if hasattr(self, 'init_flag'): return  # after __new__ returns resolved object __setstate__ is called anyway too
+        Object.__setstate__(self, state)
+        self.register_proxy()
+
     def register_proxy( self ):
         path_str = path2str(self.path)
+        assert path_str not in self.proxy_registry, repr(self.path)
         if path_str not in self.proxy_registry:
             self.proxy_registry[path_str] = self
             print '< registered in registry:', self.path, self
@@ -135,7 +145,7 @@ class ProxyListObject(ProxyObject, ListObject):
         return self.server.request_an_object(request)
 
     def __del__( self ):
-        print '~ProxyListObject', self.path
+        print '~ProxyListObject', self, self.path
 
 
 iface_registry.register_iface('list', ProxyListObject.from_resp)

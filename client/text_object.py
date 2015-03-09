@@ -17,7 +17,6 @@ class TextObject(ProxyObject):
     def __init__( self, server, path, commands, text ):
         ProxyObject.__init__(self, server, path, commands)
         self.text = text
-        print 'text_object', path
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
@@ -63,7 +62,7 @@ class TextObject(ProxyObject):
         return self.server.request_an_object(request)
 
     def __del__( self ):
-        print '~text_object'
+        print '~text_object', self
         
 
 

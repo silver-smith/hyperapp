@@ -62,7 +62,7 @@ class View(view.View, QtGui.QTextBrowser, ObjectObserver):
         self.setHtml(self.text2html(self.object.text))
 
     def __del__( self ):
-        print '~text_view'
+        print '~text_view', self
 
 
 view_registry.register_view('text_view', Handle)
