@@ -110,8 +110,17 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
         return self.list_obj
 
     def object_changed( self ):
+        old_key = self._selected_elt.key
         self.model().layoutChanged.emit()
         self.reset()  # selection etc must be cleared
+        # find next or any nearby row
+        row = None
+        for row, element in enumerate(self.list_obj.get_fetched_elements()):
+            if element.key >= old_key:
+                break  # use this row
+        # else: just use last row
+        if row is not None:
+            self.set_current_row(row)
 
     def get_current_key( self ):
         if self._selected_elt:
