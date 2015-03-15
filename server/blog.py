@@ -2,7 +2,7 @@ from datetime import datetime
 from pony.orm import db_session, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
-from object import ListObject, Command, Element, Column
+from object import ListDiff, ListObject, Command, Element, Column
 from module import ModuleCommand
 from iface import ListIface
 import article
@@ -32,7 +32,7 @@ class BlogEntry(article.Article):
         entry_id = path['entry_id']
         return cls(path, entry_id)
 
-    def do_save( self, text ):
+    def do_save( self, request, text ):
         with db_session:
             if self.entry_id is not None:
                 entry_rec = module.BlogEntry[self.entry_id]
@@ -45,7 +45,12 @@ class BlogEntry(article.Article):
                     article=article_rec,
                     created_at=utcnow())
         print 'Blog entry is saved, entry id =', entry_rec.id, ' article_id =', article_rec.id
-        return dict(self.path, entry_id=entry_rec.id)
+        new_path = dict(self.path, entry_id=entry_rec.id)
+        response = request.make_response()
+        response.result.new_path = new_path
+        diff = ListDiff.add(entry_rec.id, Blog.rec2element(entry_rec))
+        response.add_update(module.get_blog_path(), diff)
+        return response
 
 
 class Blog(ListObject):
@@ -76,7 +81,8 @@ class Blog(ListObject):
     def get_all_elements( self ):
         return map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at)))
 
-    def rec2element( self, rec ):
+    @staticmethod
+    def rec2element( rec ):
         commands = [Command('open', 'Open', 'Open blog entry'),
                     Command('delete', 'Delete', 'Delete blog entry', 'Del'),
                     ]
@@ -130,8 +136,11 @@ class BlogModule(PonyOrmModule):
         if command_id == 'create':
             return request.make_response_object(BlogEntry.make(entry_id=None))
         if command_id == 'open_blog':
-            return request.make_response_object(Blog(self.make_path(object='blog')))
+            return request.make_response_object(Blog(self.get_blog_path()))
         return PonyOrmModule.run_command(self, request, command_id)
+
+    def get_blog_path( self ):
+        return self.make_path(object='blog')
 
 
 module = BlogModule()

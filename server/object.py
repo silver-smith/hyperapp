@@ -52,6 +52,10 @@ class Command(object):
 class ListDiff(object):
 
     @classmethod
+    def add( cls, key, element ):
+        return cls(key, key, [element])
+
+    @classmethod
     def delete( cls, key ):
         return cls(key, key + 1, [])
 
@@ -64,7 +68,7 @@ class ListDiff(object):
         return dict(
             start_key=self.start_key,
             end_key=self.end_key,
-            elements=self.elements)
+            elements=[elt.as_json() for elt in self.elements])
 
 
 class ResultDict(object):
@@ -103,6 +107,9 @@ class Response(object):
             d['updates'] = [(path, diff.as_json()) for path, diff in self.updates]
         return d
 
+    def add_update( self, path, diff ):
+        self.updates.append((path, diff))
+
 
 class Request(object):
 
@@ -133,7 +140,7 @@ class Request(object):
     def make_response_update( self, path, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
         response = self.make_response()
-        response.updates.append((path, diff))
+        response.add_update(path, diff)
         return response
 
 

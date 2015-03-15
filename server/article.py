@@ -67,8 +67,7 @@ class Article(Object):
 
     def run_command_save( self, request ):
         text = request['text']
-        new_path = self.do_save(text)
-        return request.make_response_result(new_path=new_path)
+        return self.do_save(request, text)
 
     def run_command_refs( self, request ):
         return request.make_response_object(ArticleRefList.make(self.article_id))
@@ -81,7 +80,7 @@ class Article(Object):
         target = module.run_resolve(target_path)
         return request.make_response_object(target)
 
-    def do_save( self, text ):
+    def do_save( self, request, text ):
         with db_session:
             if self.article_id is not None:
                 article_rec = module.Article[self.article_id]
@@ -89,7 +88,8 @@ class Article(Object):
                 article_rec = None
             article_rec = self.save_article(article_rec, text)
         print 'Article is saved, article_id =', article_rec.id
-        return dict(self.path, article_id=article_rec.id)
+        new_path = dict(self.path, article_id=article_rec.id)
+        return request.make_response_result(new_path=new_path)
 
     def save_article( self, article_rec, text ):
         if article_rec is not None:
