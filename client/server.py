@@ -30,7 +30,7 @@ class ListDiff(object):
         self.elements = elements    # with these elemenents
 
 
-class DictObject(object):
+class ResultDict(object):
 
     def __init__( self, d ):
         self._d = d
@@ -48,7 +48,7 @@ class Response(object):
     @property
     def result( self ):
         if 'result' in self.resp_dict:
-            return DictObject(self.resp_dict['result'])
+            return ResultDict(self.resp_dict['result'])
 
     def object( self ):
         if 'object' in self.resp_dict:

@@ -67,7 +67,7 @@ class ListDiff(object):
             elements=self.elements)
 
 
-class DictObject(object):
+class ResultDict(object):
 
     def __init__( self ):
         self._d = {}
@@ -90,7 +90,7 @@ class Response(object):
 
     def __init__( self ):
         self.object = None
-        self.result = DictObject()
+        self.result = ResultDict()
         self.updates = []  # (path, ListDiff) list
 
     def as_json( self ):
