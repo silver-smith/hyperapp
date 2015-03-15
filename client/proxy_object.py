@@ -96,7 +96,7 @@ class ProxyListObject(ProxyObject, ListObject):
         path, commands = ProxyObject.parse_resp(resp)
         columns = [cls.column_from_json(idx, column) for idx, column in enumerate(resp['columns'])]
         key_column_idx = cls._find_key_column(columns)
-        elements = [cls.element_from_json(key_column_idx, elt) for elt in resp['elements']]
+        elements = [cls.element_from_json(elt) for elt in resp['elements']]
         all_elements_fetched = not resp['has_more']
         return cls(server, path, commands, columns, elements, all_elements_fetched, key_column_idx)
 
@@ -112,9 +112,9 @@ class ProxyListObject(ProxyObject, ListObject):
         return Column(idx, data['id'], data['title'], t)
 
     @staticmethod
-    def element_from_json( key_column_idx, data ):
+    def element_from_json( data ):
+        key = data['key']
         row = data['row']
-        key = row[key_column_idx]
         return Element(key, row, [ElementCommand.from_json(cmd) for cmd in data['commands']])
 
 
@@ -158,7 +158,7 @@ class ProxyListObject(ProxyObject, ListObject):
             count=load_count)
         response = self.server.execute_request(request)
         result_elts = response.result.fetched_elements
-        self.elements += [self.element_from_json(self.key_column_idx, elt) for elt in result_elts['elements']]
+        self.elements += [self.element_from_json(elt) for elt in result_elts['elements']]
         self.all_elements_fetched = not result_elts['has_more']
 
     def run_element_command( self, command_id, element_key ):

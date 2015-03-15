@@ -27,6 +27,7 @@ class Element(object):
 
     def as_json( self ):
         return dict(
+            key=self.key,
             row=self.row,
             commands=[cmd.as_json() for cmd in self.commands],
             )
