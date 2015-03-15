@@ -55,6 +55,10 @@ class ObjectSelector(ProxyObject):
 
 class Handle(view.Handle):
 
+    @classmethod
+    def from_resp( cls, object, resp ):
+        return cls(object)
+
     def __init__( self, object ):
         assert isinstance(object, ObjectSelector), repr(object)
         view.Handle.__init__(self)
@@ -128,4 +132,4 @@ class View(view.View, QtGui.QWidget):
 
 
 iface_registry.register_iface('object_selector', ObjectSelector.from_resp)
-view_registry.register_view('object_selector', Handle)
+view_registry.register_view('object_selector', Handle.from_resp)

@@ -8,6 +8,17 @@ class TextObject(ProxyObject):
     mode_view = object()
     mode_edit = object()
 
+    view_handle_ctr = None
+    edit_handle_ctr = None
+
+    @classmethod
+    def set_view_handle_ctr( cls, ctr ):
+        cls.view_handle_ctr = ctr
+
+    @classmethod
+    def set_edit_handle_ctr( cls, ctr ):
+        cls.edit_handle_ctr = ctr
+
     @classmethod
     def from_resp( cls, server, resp ):
         path, commands = ProxyObject.parse_resp(resp)
@@ -41,14 +52,10 @@ class TextObject(ProxyObject):
         return ProxyObject.run_command(self, command_id)
 
     def run_command_edit( self ):
-        return self.switch_to_view('text_edit')
+        return self.edit_handle_ctr(self)
 
     def run_command_view( self ):
-        return self.switch_to_view('text_view')
-
-    def switch_to_view( self, view_id ):
-        handle_ctr = view_registry.resolve_view(view_id)
-        return handle_ctr(self)
+        return self.view_handle_ctr(self)
 
     def run_command_save( self ):
         request = dict(self.make_command_request(command_id='save'),

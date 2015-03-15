@@ -11,7 +11,7 @@ def resolve_object( server, resp ):
     object = obj_ctr(server, resp)
     view_id = resp['view_id']
     handle_ctr = view_registry.resolve_view(view_id)
-    return handle_ctr(object)
+    return handle_ctr(object, resp)
 
 
 class ListDiff(object):

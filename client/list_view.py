@@ -14,6 +14,10 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 class Handle(view.Handle):
 
+    @classmethod
+    def from_resp( cls, obj, resp ):
+        return cls(obj)
+
     def __init__( self, obj, key=None, selected_keys=None, select_first=True ):
         view.Handle.__init__(self)
         self.obj = obj
@@ -249,4 +253,4 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
         print '~list_view.View'
 
 
-view_registry.register_view('list', Handle)
+view_registry.register_view('list', Handle.from_resp)

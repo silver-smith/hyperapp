@@ -13,7 +13,7 @@ import list_view
 class Handle(composite.Handle):
 
     @classmethod
-    def from_obj( cls, obj ):
+    def from_resp( cls, obj, resp ):
         return cls(list_view.Handle(obj))
 
     def __init__( self, list_handle, prefix=None ):
@@ -139,4 +139,4 @@ class View(LineListPanel):
         print '~narrower', self._base_obj.get_title(), self
 
 
-view_registry.register_view('list_narrower', Handle.from_obj)
+view_registry.register_view('list_narrower', Handle.from_resp)
