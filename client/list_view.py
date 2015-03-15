@@ -16,7 +16,8 @@ class Handle(view.Handle):
 
     @classmethod
     def from_resp( cls, obj, resp ):
-        return cls(obj)
+        selected_key = resp.get('selected_key')
+        return cls(obj, key=selected_key)
 
     def __init__( self, obj, key=None, selected_keys=None, select_first=True ):
         view.Handle.__init__(self)
