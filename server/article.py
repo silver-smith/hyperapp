@@ -31,6 +31,12 @@ class Article(Object):
         article_id = path['article_id']
         return cls(path, article_id=article_id)
 
+    @classmethod
+    def make_new( cls ):
+        article_id = None
+        path = module.make_path(object='article', article_id=article_id)
+        return cls(path, article_id=article_id, mode=cls.mode_edit)
+
     @db_session
     def get( self, **kw ):
         if self.article_id is not None:
@@ -240,7 +246,7 @@ class ArticleModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_object(Article.from_path(self.make_path(object='article', article_id=None)))
+            return request.make_response_object(Article.make_new())
         return PonyOrmModule.run_command(self, request, command_id)
 
     def add_article_fields( self, **fields ):
