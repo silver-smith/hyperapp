@@ -87,6 +87,8 @@ class View(object):
         handle = self.get_object().run_command(command_id)
         if handle:
             self.open(handle)
+        else:
+            self.view_changed()  # commands, title or something also may change now
 
     def run_object_element_command( self, command_id, element_key ):
         handle = self.get_object().run_element_command(command_id, element_key)
