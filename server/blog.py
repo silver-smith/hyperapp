@@ -14,18 +14,18 @@ MODULE_NAME = 'blog'
 class BlogEntry(article.Article):
 
     @db_session
-    def __init__( self, path, entry_id ):
+    def __init__( self, path, entry_id, mode=article.Article.mode_view ):
         if entry_id is None:
             article_id = None
         else:
             entry_rec = module.BlogEntry[entry_id]
             article_id = entry_rec.article.id
-        article.Article.__init__(self, path, article_id)
+        article.Article.__init__(self, path, article_id, mode)
         self.entry_id = entry_id
 
     @classmethod
-    def make( cls, entry_id ):
-        return cls(module.make_path(object='entry', entry_id=entry_id), entry_id)
+    def make( cls, entry_id, mode=article.Article.mode_view ):
+        return cls(module.make_path(object='entry', entry_id=entry_id), entry_id, mode)
 
     @classmethod
     def from_path( cls, path ):
@@ -70,7 +70,7 @@ class Blog(ListObject):
         return ListObject.run_command(self, request, command_id)
 
     def run_command_add( self, request ):
-        return request.make_response_object(BlogEntry.make(entry_id=None))
+        return request.make_response_object(BlogEntry.make(entry_id=None, mode=BlogEntry.mode_edit))
 
     @db_session
     def get_all_elements( self ):

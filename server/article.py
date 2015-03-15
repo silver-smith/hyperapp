@@ -12,12 +12,19 @@ MODULE_NAME = 'article'
 
 class Article(Object):
 
-    iface = TextObjectIface()
-    view_id = 'text_view'
+    mode_view = object()
+    mode_edit = object()
 
-    def __init__( self, path, article_id ):
+    iface = TextObjectIface()
+
+    def __init__( self, path, article_id, mode=mode_view ):
+        assert mode in [self.mode_view, self.mode_edit], repr(mode)
         Object.__init__(self, path)
         self.article_id = article_id
+        if mode == self.mode_view:
+            self.view_id = 'text_view'
+        else:
+            self.view_id = 'text_edit'
 
     @classmethod
     def from_path( cls, path ):
