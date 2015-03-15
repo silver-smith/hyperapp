@@ -128,9 +128,10 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
-        # todo: adding elements
-        self.elements = [elt for elt in self.elements
-                         if elt.key < diff.start_key or elt.key >= diff.end_key]
+        self.elements = \
+          [elt for elt in self.elements if elt.key < diff.start_key] \
+          + diff.elements \
+          + [elt for elt in self.elements if elt.key >= diff.end_key]
         self._notify_object_changed()
 
     def get_columns( self ):
