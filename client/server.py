@@ -1,7 +1,7 @@
 import json_connection
 import iface_registry
 import view_registry
-from proxy_object import ProxyObject
+from proxy_object import ProxyObject, ProxyListObject
 
 
 def resolve_object( server, resp ):
@@ -21,7 +21,7 @@ class ListDiff(object):
         return cls(
             start_key=d['start_key'],
             end_key=d['end_key'],
-            elements=d['elements'],
+            elements=[ProxyListObject.element_from_json(elt) for elt in d['elements']],
             )
 
     def __init__( self, start_key, end_key, elements ):
