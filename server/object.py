@@ -241,3 +241,17 @@ class ListObject(Object):
 
     def run_element_command( self, request, command_id, element_key ):
         assert False, repr(command_id)  # Unexpected command_id
+
+
+# return list object (base) with selected_key selected        
+class ListObjectElement(ObjectBase):
+
+    def __init__( self, base, selected_key ):
+        assert isinstance(base, ListObject), repr(base)
+        self._base = base
+        self._selected_key = selected_key
+
+    def get( self, **kw ):
+        return self._base.get(
+            selected_key=self._selected_key,
+            **kw)

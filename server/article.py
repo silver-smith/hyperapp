@@ -1,7 +1,7 @@
 import json
 from pony.orm import db_session, Required, Optional, Set, select
 from util import str2id
-from object import ListDiff, Object, ListObject, Command, Element, Column
+from object import ListDiff, Object, ListObject, ListObjectElement, Command, Element, Column
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
 from iface import Iface, TextObjectIface, ListIface
@@ -199,7 +199,8 @@ class RefSelector(Object):
                 rec = module.ArticleRef[self.ref_id]
                 rec.path = target_path_str
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
-        return request.make_response_object(ArticleRefList.make(article_id=self.article_id))
+        ref_list = ArticleRefList.make(article_id=self.article_id)
+        return request.make_response_object(ListObjectElement(ref_list, rec.id))
 
 
 class ArticleModule(PonyOrmModule):
