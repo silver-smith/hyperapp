@@ -1,5 +1,5 @@
 from datetime import datetime
-from dateutil.tz import tzutc, tzlocal
+from dateutil.tz import tzutc
 
 
 def utcnow():
