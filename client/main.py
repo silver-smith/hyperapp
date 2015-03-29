@@ -30,10 +30,9 @@ STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 class Application(QtGui.QApplication, view.View):
 
-    def __init__( self, server, server_commands, window_handles=None ):
+    def __init__( self, server_commands, window_handles=None ):
         QtGui.QApplication.__init__(self, sys.argv)
         view.View.__init__(self)
-        self.server = server
         self.server_commands = server_commands
         self._windows = []
         for handle in window_handles or []:
@@ -87,6 +86,9 @@ def main():
             module='file',
             fspath=os.path.expanduser('~'))
 
+    server_commands = []  # todo
+    app = Application(server_commands)
+
     server = Server(('localhost', 8888))
 
     get_request = dict(method='get', path=path)
@@ -94,9 +96,8 @@ def main():
 
     commands_request = dict(method='get_commands')
     commands_response = server.execute_request(commands_request)
-    server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
+    #server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
 
-    app = Application(server, server_commands)
     windows_handles = app.load_state()
     print 'loaded state: ', windows_handles
 

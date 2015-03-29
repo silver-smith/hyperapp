@@ -1,3 +1,4 @@
+from PySide import QtNetwork
 import json_connection
 import iface_registry
 import view_registry
@@ -62,7 +63,7 @@ class Response(object):
 
 class Server(object):
 
-    addr2connection = {}
+    addr2socket = {}
 
     def __init__( self, addr ):
         self.addr = addr
@@ -76,17 +77,45 @@ class Server(object):
         self._open_connection()
 
     def _open_connection( self ):
-        self.connection = self.addr2connection.get(self.addr)
-        if not self.connection:
-            self.connection = json_connection.ClientConnection(self.addr)
-            self.addr2connection[self.addr] = self.connection
+        self.socket = self.addr2socket.get(self.addr)
+        if not self.socket:
+            host, port = self.addr
+            print 'Network: connecting to %s:%d' % (host, port)
+            self.socket = QtNetwork.QTcpSocket()
+            self.socket.error.connect(self._on_error)
+            self.socket.stateChanged.connect(self._on_state_changed)
+            self.socket.hostFound.connect(self._on_host_found)
+            self.socket.connected.connect(self._on_connected)
+            self.socket.connectToHost(host, port)
+            self.addr2socket[self.addr] = self.socket
+
+    def _trace( self, msg ):
+        host, port = self.addr
+        print 'Network, connection to %s:%d: %s' % (host, port, msg)
+
+    def _on_error( self, msg ):
+        self._trace('Error: %s' % msg)
+
+    def _on_state_changed( self, state ):
+        self._trace('State changed: %r' % state)
+
+    def _on_host_found( self ):
+        self._trace('Host found')
+
+    def _on_connected( self ):
+        self._trace('Connected')
 
     def execute_request( self, request ):
+        return
         self.connection.send(request)
         response = Response(self, self.connection.receive())
         ProxyObject.process_updates(response.get_updates())
         return response
 
     def request_an_object( self, request ):
+        return
         response = self.execute_request(request)
         return response.object()
+
+    def __del__( self ):
+        print '~Server', self.addr
