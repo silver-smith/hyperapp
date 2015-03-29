@@ -20,24 +20,16 @@ class JSONEncoder(json.JSONEncoder):
             return json.JSONEncoder.default(self, obj)
 
 
-class JSONDecoder(json.JSONDecoder):
-
-    def decode( self, s ):
-        try:
-            return datetime.datetime.strptime(s, '%Y-%m-%dT%H:%M:%S.%f')
-        except ValueError:
-            return json.JSONDecoder.decode(self, s)
-
-def decoder( obj ):
+def json_decoder( obj ):
     if isinstance(obj, basestring):
         try:
             return datetime.datetime.strptime(obj, '%Y-%m-%dT%H:%M:%S.%f')
         except ValueError:
             return obj
     if isinstance(obj, list):
-        return map(decoder, obj)
+        return map(json_decoder, obj)
     if isinstance(obj, dict):
-        return dict((decoder(key), decoder(value)) for key, value in obj.items())
+        return dict((json_decoder(key), json_decoder(value)) for key, value in obj.items())
     return obj
 
 
@@ -88,7 +80,7 @@ class Connection(object):
             if len(data) < ssize: continue
             data_size = self.decode_size(data[:ssize])
             data = data[ssize:]
-        json_data = json.loads(data, object_hook=decoder)
+        json_data = json.loads(data, object_hook=json_decoder)
         ## print 'received:'
         ## pprint.pprint(json_data)
         return json_data
