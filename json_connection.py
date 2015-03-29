@@ -3,6 +3,7 @@ import json
 import struct
 import socket
 import pprint
+import dateutil.parser
 
 
 RECV_SIZE = 4096
@@ -23,7 +24,7 @@ class JSONEncoder(json.JSONEncoder):
 def json_decoder( obj ):
     if isinstance(obj, basestring):
         try:
-            return datetime.datetime.strptime(obj, '%Y-%m-%dT%H:%M:%S.%f')
+            return dateutil.parser.parse(obj)  # will parse timezone too, if included
         except ValueError:
             return obj
     if isinstance(obj, list):
