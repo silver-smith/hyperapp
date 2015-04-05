@@ -34,9 +34,38 @@ def json_decoder( obj ):
     return obj
 
 
-class Connection(object):
+packet_size_struct_format = '>I'
 
-    size_struct_format = '>I'
+def packet_size_size():
+    return struct.calcsize(packet_size_struct_format)
+
+def encode_packet_size( size ):
+    return struct.pack(packet_size_struct_format, size)
+
+def decode_packet_size( data ):
+    return struct.unpack(packet_size_struct_format, data)[0]
+
+def encode_packet( value ):
+    json_data = json.dumps(value, cls=JSONEncoder)
+    return encode_packet_size(len(json_data)) + json_data
+
+def is_full_packet( data ):
+    ssize = packet_size_size()
+    if len(data) < ssize:
+        return False
+    data_size = decode_packet_size(data[:ssize])
+    return len(data) >= ssize + data_size
+
+def decode_packet( data ):
+    assert is_full_packet(data)
+    ssize = packet_size_size()
+    data_size = decode_packet_size(data[:ssize])
+    remainder = data[ssize + data_size:]
+    json_data = json.loads(data[ssize:ssize + data_size], object_hook=json_decoder)
+    return (json_data, remainder)
+
+
+class Connection(object):
 
     def __init__( self, sock ):
         self.socket = sock
@@ -44,20 +73,10 @@ class Connection(object):
     def close( self ):
         self.socket.close()
 
-    def size_data_size( self ):
-        return struct.calcsize(self.size_struct_format)
-
-    def encode_size( self, size ):
-        return struct.pack(self.size_struct_format, size)
-
-    def decode_size( self, data ):
-        return struct.unpack(self.size_struct_format, data)[0]
-
     def send( self, value ):
         ## print 'send:'
         ## pprint.pprint(value)
-        json_data = json.dumps(value, cls=JSONEncoder)
-        data = self.encode_size(len(json_data)) + json_data
+        data = encode_packet(value)
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
@@ -67,21 +86,17 @@ class Connection(object):
             ofs += sent_size
 
     def receive( self ):
-        data_size = None
         data = ''
-        while data_size is None or len(data) < data_size:
+        while True:
             ## print '  receiving...'
             chunk = self.socket.recv(RECV_SIZE)
             print '  received (%d): %s' % (len(chunk), chunk)
             if chunk == '':
                 raise Error('Socket is closed')
             data += chunk
-            if data_size is not None: continue
-            ssize = self.size_data_size()
-            if len(data) < ssize: continue
-            data_size = self.decode_size(data[:ssize])
-            data = data[ssize:]
-        json_data = json.loads(data, object_hook=json_decoder)
+            if is_full_packet(data): break
+        json_data, remainder = decode_packet(data)
+        assert not remainder, repr(remainder)  # not implemented yet, todo
         ## print 'received:'
         ## pprint.pprint(json_data)
         return json_data

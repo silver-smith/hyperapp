@@ -67,6 +67,9 @@ class Server(object):
 
     def __init__( self, addr ):
         self.addr = addr
+        self._socket = None
+        self._send_data = ''
+        self._recv_data = ''
         self._open_connection()
 
     def __getstate__( self ):
@@ -74,20 +77,25 @@ class Server(object):
 
     def __setstate__( self, state ):
         self.addr = state['addr']
+        self._socket = None
+        self._send_data = ''
+        self._recv_data = ''
         self._open_connection()
 
     def _open_connection( self ):
-        self.socket = self.addr2socket.get(self.addr)
-        if not self.socket:
+        self._socket = self.addr2socket.get(self.addr)
+        if not self._socket:
             host, port = self.addr
             print 'Network: connecting to %s:%d' % (host, port)
-            self.socket = QtNetwork.QTcpSocket()
-            self.socket.error.connect(self._on_error)
-            self.socket.stateChanged.connect(self._on_state_changed)
-            self.socket.hostFound.connect(self._on_host_found)
-            self.socket.connected.connect(self._on_connected)
-            self.socket.connectToHost(host, port)
-            self.addr2socket[self.addr] = self.socket
+            self._socket = QtNetwork.QTcpSocket()
+            self._socket.error.connect(self._on_error)
+            self._socket.stateChanged.connect(self._on_state_changed)
+            self._socket.hostFound.connect(self._on_host_found)
+            self._socket.connected.connect(self._on_connected)
+            self._socket.bytesWritten.connect(self._on_bytes_written)
+            self._socket.readyRead.connect(self._on_ready_read)
+            self._socket.connectToHost(host, port)
+            self.addr2socket[self.addr] = self._socket
 
     def _trace( self, msg ):
         host, port = self.addr
@@ -105,17 +113,37 @@ class Server(object):
     def _on_connected( self ):
         self._trace('Connected')
 
+    def _on_bytes_written( self, size ):
+        self._send_data = self._send_data[size:]
+        self._trace('%d bytes is written, %d bytes to go' % (size, len(self._send_data)))
+        if self._send_data:
+            self._socket.write(self._send_data)
+
+    def _on_ready_read( self ):
+        data = str(self._socket.readAll())
+        self._trace('%d bytes is received: %s' % (len(data), data))
+        self._recv_data += data
+        while json_connection.is_full_packet(self._recv_data):
+            value, self._recv_data = json_connection.decode_packet(self._recv_data)
+            self._trace('received packet (%d bytes remainder): %s' % (len(self._recv_data), value))
+            self._process_packet(value)
+            
+    def _process_packet( self, value ):
+        print 'processing packet:', value
+
     def execute_request( self, request ):
-        return
-        self.connection.send(request)
-        response = Response(self, self.connection.receive())
-        ProxyObject.process_updates(response.get_updates())
-        return response
+        print 'execute_request', request
+        data = json_connection.encode_packet(request)
+        if not self._send_data:
+            self._socket.write(data)
+        self._send_data += data
+        ## response = Response(self, self.connection.receive())
+        ## ProxyObject.process_updates(response.get_updates())
+        ## return response
 
     def request_an_object( self, request ):
-        return
-        response = self.execute_request(request)
-        return response.object()
+        self.execute_request(request)
+        ## return response.object()
 
     def __del__( self ):
         print '~Server', self.addr
