@@ -44,6 +44,7 @@ class ProxyObject(Object):
         self.server = server
         self.path = path
         self.commands = commands
+        self._waiting_for_request_id = None
         self.register_proxy()
 
     def __getnewargs__( self ):
@@ -52,6 +53,7 @@ class ProxyObject(Object):
     def __setstate__( self, state ):
         if hasattr(self, 'init_flag'): return  # after __new__ returns resolved object __setstate__ is called anyway too
         Object.__setstate__(self, state)
+        self._waiting_for_request_id = None
         self.register_proxy()
 
     def register_proxy( self ):
@@ -82,20 +84,32 @@ class ProxyObject(Object):
             **kw)
         return (request_id, request)
 
+    def execute_request( self, request_id, request ):
+        self._waiting_for_request_id = request_id
+        self.server.execute_request(request)
+
     def make_command_request( self, command_id ):
         return self.make_request('run_command', command_id=command_id)
 
     def run_command( self, command_id ):
         request_id, request = self.make_command_request(command_id, request_id)
-        self.server.execute_request(request)
+        self.execute_request(request_id, request)
         return request_id
 
     def process_response_or_update( self, response ):
         for path, diff in response.get_updates():
             if self.path == path:
                 self.process_update(diff)
+        if response.request_id == self._waiting_for_request_id:
+            self.process_response(response)
+
+    def process_response( self, response ):
+        self.process_response_result(response.result)
         if response.handle2open:
             self._notify_response_received(response.request_id, response.handle2open)
+
+    def process_response_result( self, result ):
+        pass
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
@@ -163,22 +177,23 @@ class ProxyListObject(ProxyObject, ListObject):
             last_key = self.elements[-1].key
         else:
             last_key = None
-        request = dict(
-            method='get_elements',
-            path=self.path,
+        request_id, request = self.make_request('get_elements', 
             key=last_key,
-            count=load_count)
-        response = self.server.execute_request(request)
-        result_elts = response.result.fetched_elements
+            count=load_count,
+            )
+        self.execute_request(request_id, request)
+
+    def process_response_result( self, result ):
+        result_elts = result.fetched_elements
         self.elements += [self.element_from_json(elt) for elt in result_elts['elements']]
         self.all_elements_fetched = not result_elts['has_more']
-
+        
     def run_element_command( self, command_id, element_key ):
         request_id, request = self.make_request('run_element_command',
             command_id=command_id,
             element_key=element_key,
             )
-        self.server.execute_request(request)
+        self.execute_request(request_id, request)
         return request_id
 
     def __del__( self ):
