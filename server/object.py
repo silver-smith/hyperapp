@@ -93,13 +93,14 @@ class ResultDict(object):
 
 class Response(object):
 
-    def __init__( self ):
+    def __init__( self, request_id ):
+        self.request_id = request_id
         self.object = None
         self.result = ResultDict()
         self.updates = []  # (path, ListDiff) list
 
     def as_json( self ):
-        d = {}
+        d = dict(request_id=self.request_id)
         if self.object:
             d['object'] = self.object
         if self.result:
@@ -125,7 +126,7 @@ class Request(object):
         return self.params[name]
 
     def make_response( self ):
-        return Response()
+        return Response(self.params['request_id'])
 
     def make_response_object( self, obj ):
         response = self.make_response()

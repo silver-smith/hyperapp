@@ -6,6 +6,7 @@
 # instance is first with this 'path'.
 
 import weakref
+import uuid
 from util import path2str
 from object import Object
 from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListObject
@@ -74,16 +75,22 @@ class ProxyObject(Object):
     def get_commands( self ):
         return self.commands
 
-    def make_command_request( self, command_id ):
-        return dict(
-            method='run_command',
+    def make_request( self, method, **kw ):
+        request_id = str(uuid.uuid4())
+        request = dict(
+            method=method,
             path=self.path,
-            command_id=command_id,
-            )
+            request_id=request_id,
+            **kw)
+        return (request_id, request)
+
+    def make_command_request( self, command_id ):
+        return self.make_request('run_command', command_id=command_id)
 
     def run_command( self, command_id ):
-        request = self.make_command_request(command_id)
-        return self.server.request_an_object(request)
+        request_id, request = self.make_command_request(command_id, request_id)
+        self.server.execute_request(request)
+        return request_id
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
@@ -162,13 +169,12 @@ class ProxyListObject(ProxyObject, ListObject):
         self.all_elements_fetched = not result_elts['has_more']
 
     def run_element_command( self, command_id, element_key ):
-        request = dict(
-            method='run_element_command',
-            path=self.path,
+        request_id, request = self.make_request('run_element_command',
             command_id=command_id,
             element_key=element_key,
             )
-        return self.server.request_an_object(request)
+        self.server.execute_request(request)
+        return request_id
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path

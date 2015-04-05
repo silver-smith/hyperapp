@@ -91,10 +91,10 @@ def main():
 
     server = Server(('localhost', 8888))
 
-    get_request = dict(method='get', path=path)
+    get_request = dict(method='get', path=path, request_id=1)
     handle = server.request_an_object(get_request)
 
-    commands_request = dict(method='get_commands')
+    commands_request = dict(method='get_commands', request_id=2)
     commands_response = server.execute_request(commands_request)
     #server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
 
