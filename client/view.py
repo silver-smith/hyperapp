@@ -88,11 +88,10 @@ class View(object):
         request_id = self.get_object().run_command(command_id)
         self._waiting_for_request_id = request_id
 
-    ## def process_request_response( self, response ):
-    ##     if handle:
-    ##         self.open(handle)
-    ##     else:
-    ##         self.view_changed()  # commands, title or something also may change now
+    def process_response( self, request_id, handle2open ):
+        if request_id == self._waiting_for_request_id and handle2open:
+            self._waiting_for_request_id = None
+            self.open(handle2open)
 
     def run_object_element_command( self, command_id, element_key ):
         request_id = self.get_object().run_element_command(command_id, element_key)

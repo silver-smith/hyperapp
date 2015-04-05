@@ -1,6 +1,6 @@
 from PySide import QtCore, QtGui
 from util import uni2str
-from server import resolve_object
+from server import resolve_handle
 from command import ObjectCommand
 from proxy_object import ProxyObject
 import iface_registry
@@ -13,7 +13,7 @@ class ObjectSelector(ProxyObject):
     @classmethod
     def from_resp( cls, server, resp ):
         path, commands = ProxyObject.parse_resp(resp)
-        handle = resolve_object(server, resp['target'])
+        handle = resolve_handle(server, resp['target'])
         return cls(server, path, commands, handle)
 
     def __init__( self, server, path, commands, target_handle ):

@@ -5,7 +5,7 @@ import view_registry
 from proxy_object import ProxyObject, ProxyListObject
 
 
-def resolve_object( server, resp ):
+def resolve_handle( server, resp ):
     iface_id = resp['iface_id']
     path = resp['path']
     obj_ctr = iface_registry.resolve_iface(iface_id)
@@ -45,15 +45,16 @@ class Response(object):
     def __init__( self, server, resp_dict ):
         self.server = server
         self.resp_dict = resp_dict
+        self.request_id = self.resp_dict['request_id']
+        if 'object' in self.resp_dict:
+            self.handle2open = resolve_handle(self.server, self.resp_dict['object'])
+        else:
+            self.handle2open = None
 
     @property
     def result( self ):
         if 'result' in self.resp_dict:
             return ResultDict(self.resp_dict['result'])
-
-    def object( self ):
-        if 'object' in self.resp_dict:
-            return resolve_object(self.server, self.resp_dict['object'])
 
     def get_updates( self ):
         if 'updates' not in self.resp_dict:
@@ -130,6 +131,8 @@ class Server(object):
             
     def _process_packet( self, value ):
         print 'processing packet:', value
+        response = Response(self, value)
+        ProxyObject.process_received_packet(response)
 
     def execute_request( self, request ):
         print 'execute_request', request

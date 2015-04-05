@@ -32,11 +32,9 @@ class ProxyObject(Object):
         return cls.proxy_registry.get(path2str(path))
 
     @classmethod
-    def process_updates( cls, updates ):
-        for path, diff in updates:
-            obj = cls.resolve_proxy(path)
-            if obj:
-                obj.process_update(diff)
+    def process_received_packet( cls, response ):
+        for obj in cls.proxy_registry.values():
+            obj.process_response_or_update(response)
 
 
     def __init__( self, server, path, commands ):
@@ -91,6 +89,13 @@ class ProxyObject(Object):
         request_id, request = self.make_command_request(command_id, request_id)
         self.server.execute_request(request)
         return request_id
+
+    def process_response_or_update( self, response ):
+        for path, diff in response.get_updates():
+            if self.path == path:
+                self.process_update(diff)
+        if response.handle2open:
+            self._notify_response_received(response.request_id, response.handle2open)
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)

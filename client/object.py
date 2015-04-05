@@ -41,3 +41,7 @@ class Object(object):
         for observer in self._observers:
             if observer is not skip_observer:
                 observer.object_changed()
+
+    def _notify_response_received( self, request_id, handle2open ):
+        for observer in self._observers:
+            observer.process_response(request_id, handle2open)
