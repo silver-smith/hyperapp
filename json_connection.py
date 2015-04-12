@@ -69,6 +69,7 @@ class Connection(object):
 
     def __init__( self, sock ):
         self.socket = sock
+        self.recv_buf = ''
 
     def close( self ):
         self.socket.close()
@@ -86,17 +87,15 @@ class Connection(object):
             ofs += sent_size
 
     def receive( self ):
-        data = ''
         while True:
             ## print '  receiving...'
             chunk = self.socket.recv(RECV_SIZE)
             print '  received (%d): %s' % (len(chunk), chunk)
             if chunk == '':
                 raise Error('Socket is closed')
-            data += chunk
-            if is_full_packet(data): break
-        json_data, remainder = decode_packet(data)
-        assert not remainder, repr(remainder)  # not implemented yet, todo
+            self.recv_buf += chunk
+            if is_full_packet(self.recv_buf): break
+        json_data, self.recv_buf = decode_packet(self.recv_buf)
         ## print 'received:'
         ## pprint.pprint(json_data)
         return json_data
