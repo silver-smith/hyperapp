@@ -57,9 +57,7 @@ class View(view.View, QtGui.QTextBrowser, ObjectObserver):
 
     def on_anchor_clicked( self, url ):
         print 'on_anchor_clicked', repr(url.path())
-        handle = self.object.open_ref(url.path())
-        if handle:
-            self.open(handle)
+        self.object.open_ref(self, url.path())
 
     # as ObjectObserver
     def object_changed( self ):

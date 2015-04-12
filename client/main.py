@@ -19,6 +19,7 @@ import navigator
 import list_view
 import narrower
 import text_object
+import proxy_text_object
 import text_edit
 import text_view
 import object_selector
@@ -91,8 +92,9 @@ def main():
 
     server = Server(('localhost', 8888))
 
-    get_request = dict(method='get', path=path, request_id=1)
-    handle = server.request_an_object(get_request)
+    ## get_request = dict(method='get', path=path, request_id=1)
+    ## handle = server.request_an_object(get_request)
+    handle = text_view.Handle(text_object.TextObject('hello'))
 
     commands_request = dict(method='get_commands', request_id=2)
     commands_response = server.execute_request(commands_request)

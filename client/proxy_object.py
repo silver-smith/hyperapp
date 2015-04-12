@@ -116,8 +116,8 @@ class ProxyObject(Object):
         self.pending_requests['request_id'] = request_rec
         self.server.execute_request(request)
 
-    def run_command( self, initiator_view, command_id ):
-        request = self.prepare_command_request(command_id)
+    def run_command( self, initiator_view, command_id, **kw ):
+        request = self.prepare_command_request(command_id, **kw)
         self.execute_request(initiator_view, request)
 
     def process_response( self, request_rec, initiator_view, request_method, response ):
