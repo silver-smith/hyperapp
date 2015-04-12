@@ -166,4 +166,4 @@ class Server(object):
         ## return response.object()
 
     def __del__( self ):
-        print '~Server', self.addr
+        print '~Server', self._addr

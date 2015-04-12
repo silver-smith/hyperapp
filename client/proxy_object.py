@@ -25,7 +25,7 @@ class RequestRec(object):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
         if object:
-            object.process_response(initiator_view, self.requested_method, response)
+            object.process_response(self, initiator_view, self.requested_method, response)
 
 
 class ProxyObject(Object):
@@ -68,7 +68,7 @@ class ProxyObject(Object):
         self.server = server
         self.path = path
         self.commands = commands
-        self._waiting_for_request_id = None
+        self.pending_request_recs = set()  # explicit refs to RequestRecs to keep them alive until object is alive
         self.register_proxy()
 
     def __getnewargs__( self ):
@@ -111,14 +111,17 @@ class ProxyObject(Object):
         return self.prepare_request('run_command', command_id=command_id, **kw)
 
     def execute_request( self, initiator_view, request ):
-        self.pending_requests['request_id'] = RequestRec(self, initiator_view, request['method'])
+        request_rec = RequestRec(self, initiator_view, request['method'])
+        self.pending_request_recs.add(request_rec)
+        self.pending_requests['request_id'] = request_rec
         self.server.execute_request(request)
 
     def run_command( self, initiator_view, command_id ):
         request = self.prepare_command_request(command_id)
         self.execute_request(initiator_view, request)
 
-    def process_response( self, initiator_view, request_method, response ):
+    def process_response( self, request_rec, initiator_view, request_method, response ):
+        self.pending_request_recs.remove(request_rec)
         self.process_response_result(request_method, response.result)
         handle = response.get_handle2open()
         if not handle: return  # is new view opening is requested?
