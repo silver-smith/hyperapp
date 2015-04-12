@@ -26,7 +26,6 @@ class View(object):
     def __init__( self, parent=None ):
         self._parent = weakref.ref(parent) if parent is not None else None
         self._commands = []  # BoundViewCommand list
-        self._waiting_for_request_id = None
         self._init_commands()
 
     def _init_commands( self ):
@@ -85,19 +84,10 @@ class View(object):
             return (self, [])
 
     def run_object_command( self, command_id ):
-        request_id = self.get_object().run_command(command_id)
-        self._waiting_for_request_id = request_id
-
-    def process_response( self, request_id, handle2open ):
-        if request_id == self._waiting_for_request_id and handle2open:
-            self._waiting_for_request_id = None
-            self.open(handle2open)
+        self.get_object().run_command(self, command_id)
 
     def run_object_element_command( self, command_id, element_key ):
-        request_id = self.get_object().run_element_command(command_id, element_key)
-        self._waiting_for_request_id = request_id
-        ## if handle:
-        ##     self.open(handle)
+        self.get_object().run_element_command(self, command_id, element_key)
 
     def get_selected_elts( self ):
         view = self.get_current_child()

@@ -30,7 +30,7 @@ class Object(object):
     def get_commands( self ):
         raise NotImplementedError(self.__class__)
 
-    def run_command( self, command_id ):
+    def run_command( self, initiator_view, command_id ):
         raise NotImplementedError(self.__class__)
 
     def subscribe( self, observer ):
@@ -41,7 +41,3 @@ class Object(object):
         for observer in self._observers:
             if observer is not skip_observer:
                 observer.object_changed()
-
-    def _notify_response_received( self, request_id, handle2open ):
-        for observer in self._observers:
-            observer.process_response(request_id, handle2open)

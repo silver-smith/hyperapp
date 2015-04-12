@@ -2,7 +2,7 @@
 # I need to keep single proxy object per path for subscription/notification to work.
 # This must work even when unpickling objects. Another solution for pickling/unpickling could be
 # persistent_id/persistend_load mechanism, but in that case class and state information
-# stored in pickling would be lost. I would need to construct proxy objects by myself then if unpickled
+# stored in pickle would be lost. I would need to construct proxy objects by myself then if unpickled
 # instance is first with this 'path'.
 
 import weakref
@@ -14,12 +14,27 @@ from command import ObjectCommand, ElementCommand
 import iface_registry
 
 
+class RequestRec(object):
+
+    def __init__( self, object, initiator_view, requested_method ):
+        self.object = weakref.ref(object)
+        self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
+        self.requested_method = requested_method
+
+    def process_response( self, response ):
+        object = self.object()
+        initiator_view = self.initiator_view() if self.initiator_view else None
+        if object:
+            object.process_response(initiator_view, self.requested_method, response)
+
+
 class ProxyObject(Object):
 
     # we want only one object per path, otherwise subscription/notification won't work
     proxy_registry = weakref.WeakValueDictionary()  # path -> ProxyObject
+    pending_requests = weakref.WeakValueDictionary()  # request_id -> RequestRec
 
-    # this schema allows resolving objects while unpickling
+    # this schema allows resolving/deduplicating objects while unpickling
     def __new__( cls, server, path, *args, **kw ):
         obj = cls.resolve_proxy(path)
         if obj:
@@ -33,8 +48,17 @@ class ProxyObject(Object):
 
     @classmethod
     def process_received_packet( cls, response ):
-        for obj in cls.proxy_registry.values():
-            obj.process_response_or_update(response)
+        cls.process_updates(response.get_updates())
+        request_rec = cls.pending_requests.get(response.request_id)
+        if request_rec:
+            request_rec.process_response(response)
+
+    @classmethod
+    def process_updates( cls, updates ):
+        for path, diff in updates:
+            obj = cls.resolve_proxy(path)
+            if obj:
+                obj.process_update(diff)
 
 
     def __init__( self, server, path, commands ):
@@ -53,7 +77,6 @@ class ProxyObject(Object):
     def __setstate__( self, state ):
         if hasattr(self, 'init_flag'): return  # after __new__ returns resolved object __setstate__ is called anyway too
         Object.__setstate__(self, state)
-        self._waiting_for_request_id = None
         self.register_proxy()
 
     def register_proxy( self ):
@@ -75,44 +98,41 @@ class ProxyObject(Object):
     def get_commands( self ):
         return self.commands
 
-    def make_request( self, method, **kw ):
+    def prepare_request( self, method, **kw ):
         request_id = str(uuid.uuid4())
         request = dict(
             method=method,
             path=self.path,
             request_id=request_id,
             **kw)
-        return (request_id, request)
+        return request
 
-    def execute_request( self, request_id, request ):
-        self._waiting_for_request_id = request_id
+    def prepare_command_request( self, command_id, **kw ):
+        return self.prepare_request('run_command', command_id=command_id, **kw)
+
+    def execute_request( self, initiator_view, request ):
+        self.pending_requests['request_id'] = RequestRec(self, initiator_view, request['method'])
         self.server.execute_request(request)
 
-    def make_command_request( self, command_id ):
-        return self.make_request('run_command', command_id=command_id)
+    def run_command( self, initiator_view, command_id ):
+        request = self.prepare_command_request(command_id)
+        self.execute_request(initiator_view, request)
 
-    def run_command( self, command_id ):
-        request_id, request = self.make_command_request(command_id, request_id)
-        self.execute_request(request_id, request)
-        return request_id
+    def process_response( self, initiator_view, request_method, response ):
+        self.process_response_result(request_method, response.result)
+        handle = response.get_handle2open()
+        if not handle: return  # is new view opening is requested?
+        if not initiator_view: return  # view may already be gone (closed, navigated away) or be missing at all
+        initiator_view.open(handle)
 
-    def process_response_or_update( self, response ):
-        for path, diff in response.get_updates():
-            if self.path == path:
-                self.process_update(diff)
-        if response.request_id == self._waiting_for_request_id:
-            self.process_response(response)
-
-    def process_response( self, response ):
-        self.process_response_result(response.result)
-        if response.handle2open:
-            self._notify_response_received(response.request_id, response.handle2open)
-
-    def process_response_result( self, result ):
+    def process_response_result( self, request_method, result ):
         pass
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
+
+    def __del__( self ):
+        print '~ProxyObject', self, self.path
 
 
 class ProxyListObject(ProxyObject, ListObject):
@@ -177,24 +197,21 @@ class ProxyListObject(ProxyObject, ListObject):
             last_key = self.elements[-1].key
         else:
             last_key = None
-        request_id, request = self.make_request('get_elements', 
-            key=last_key,
-            count=load_count,
-            )
-        self.execute_request(request_id, request)
+        request = self.prepare_request('get_elements', key=last_key, count=load_count)
+        self.execute_request(None, request)
 
-    def process_response_result( self, result ):
+    def process_response_result( self, request_method, result ):
+        if request_method == 'get_elements':
+            self.process_get_elements_result(result)
+
+    def process_get_elements_result( self, result ):
         result_elts = result.fetched_elements
         self.elements += [self.element_from_json(elt) for elt in result_elts['elements']]
         self.all_elements_fetched = not result_elts['has_more']
         
-    def run_element_command( self, command_id, element_key ):
-        request_id, request = self.make_request('run_element_command',
-            command_id=command_id,
-            element_key=element_key,
-            )
-        self.execute_request(request_id, request)
-        return request_id
+    def run_element_command( self, initiator_view, command_id, element_key ):
+        request = self.prepare_request('run_element_command', command=command_id, element_key=element_key)
+        self.execute_request(initiator_view, request)
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path
