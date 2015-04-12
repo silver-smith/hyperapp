@@ -24,7 +24,7 @@ class RequestRec(object):
     def process_response( self, response ):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
-        if object:
+        if not object:
             object.process_response(self, initiator_view, self.requested_method, response)
 
 
@@ -50,8 +50,10 @@ class ProxyObject(Object):
     def process_received_packet( cls, response ):
         cls.process_updates(response.get_updates())
         request_rec = cls.pending_requests.get(response.request_id)
-        if request_rec:
-            request_rec.process_response(response)
+        if not request_rec:
+            print 'Received response #%d for a missing (already closed) object, ignoring' % response.request_id
+            return
+        request_rec.process_response(response)
 
     @classmethod
     def process_updates( cls, updates ):
