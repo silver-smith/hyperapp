@@ -181,7 +181,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self.all_elements_fetched = not result_elts['has_more']
         
     def run_element_command( self, initiator_view, command_id, element_key ):
-        request = self.prepare_request('run_element_command', command=command_id, element_key=element_key)
+        request = self.prepare_request('run_element_command', command_id=command_id, element_key=element_key)
         self.execute_request(initiator_view, request)
 
     def __del__( self ):
