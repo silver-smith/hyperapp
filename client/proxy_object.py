@@ -82,8 +82,7 @@ class ProxyObject(Object):
     def execute_request( self, initiator_view, request ):
         resp_handler = ObjectRespHandler(self, initiator_view, request['method'])
         self.resp_handlers.add(resp_handler)
-        proxy_registry.register_resp_handler(request['request_id'], resp_handler)
-        self.server.execute_request(request)
+        self.server.execute_request(request, resp_handler)
 
     def run_command( self, initiator_view, command_id, **kw ):
         request = self.prepare_command_request(command_id, **kw)

@@ -155,15 +155,13 @@ class Server(object):
                 self.addr2connection[self._addr] = self._connection
         return self._connection
 
-    def execute_request( self, request ):
-        print 'execute_request', request
+    def execute_request( self, request, resp_handler ):
+        request_id = request['request_id']
+        print 'execute_request', request_id, request
+        proxy_registry.register_resp_handler(request_id, resp_handler)
         data = json_connection.encode_packet(request)
         connection = self._get_connection()
         connection.send_data(data)
-
-    def request_an_object( self, request ):
-        self.execute_request(request)
-        ## return response.object()
 
     def __del__( self ):
         print '~Server', self._addr
