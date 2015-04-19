@@ -24,6 +24,7 @@ import text_edit
 import text_view
 import object_selector
 import ref_list
+import proxy_registry
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -60,6 +61,9 @@ class Application(QtGui.QApplication, view.View):
         if not self._windows:
             self.save_state([view.handle()])
 
+    def open_in_any_window( self, handle ):
+        self._windows[0].get_current_view().open(handle)
+
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
         ## module.set_shutdown_flag()
@@ -79,6 +83,16 @@ class Application(QtGui.QApplication, view.View):
             return None
 
 
+class OpenRespHandler(proxy_registry.RespHandler):
+
+    def __init__( self, app ):
+        self.app = app
+
+    def process_response( self, response ):
+        handle = response.get_handle2open()
+        self.app.open_in_any_window(handle)
+
+
 def main():
     if len(sys.argv) > 1:
         path = dict(pair.split('=') for pair in sys.argv[1].split(','))  # module=file,fspath=/usr/portabe
@@ -92,13 +106,16 @@ def main():
 
     server = Server(('localhost', 8888))
 
-    ## get_request = dict(method='get', path=path, request_id=1)
+    resp_handler = OpenRespHandler(app)
+    get_request = dict(method='get', path=path, request_id=1)
+    commands_response = server.execute_request(get_request, resp_handler)
+
     ## handle = server.request_an_object(get_request)
     handle = text_view.Handle(text_object.TextObject('hello'))
 
-    commands_request = dict(method='get_commands', request_id=2)
-    commands_response = server.execute_request(commands_request)
-    #server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
+    ## commands_request = dict(method='get_commands', request_id=2)
+    ## commands_response = server.execute_request(commands_request, resp_handler)
+    ## server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
 
     windows_handles = app.load_state()
     print 'loaded state: ', windows_handles
