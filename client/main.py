@@ -106,9 +106,10 @@ def main():
 
     server = Server(('localhost', 8888))
 
-    resp_handler = OpenRespHandler(app)  # must keep explicit reference to it
-    get_request = dict(method='get', path=path, request_id=1)
-    server.execute_request(get_request, resp_handler)
+    if len(sys.argv) > 1:
+        resp_handler = OpenRespHandler(app)  # must keep explicit reference to it
+        get_request = dict(method='get', path=path, request_id=1)
+        server.execute_request(get_request, resp_handler)
 
     ## handle = server.request_an_object(get_request)
     handle = text_view.Handle(text_object.TextObject('hello'))
