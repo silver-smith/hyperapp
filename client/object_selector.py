@@ -3,7 +3,7 @@ from util import uni2str
 from server import resolve_handle
 from command import ObjectCommand
 from proxy_object import ProxyObject
-import iface_registry
+import proxy_registry
 import view
 import view_registry
 
@@ -131,5 +131,5 @@ class View(view.View, QtGui.QWidget):
         print '~object_selector.View'
 
 
-iface_registry.register_iface('object_selector', ObjectSelector.from_resp)
+proxy_registry.register_iface('object_selector', ObjectSelector.from_resp)
 view_registry.register_view('object_selector', Handle.from_resp)

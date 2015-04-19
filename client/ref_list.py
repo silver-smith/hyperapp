@@ -1,5 +1,5 @@
 import os.path
-import iface_registry
+import proxy_registry
 from proxy_object import ProxyListObject
 
 
@@ -22,4 +22,4 @@ class RefList(ProxyListObject):
             fspath=os.path.expanduser('~'))
 
 
-iface_registry.register_iface('ref_list', RefList.from_resp)
+proxy_registry.register_iface('ref_list', RefList.from_resp)

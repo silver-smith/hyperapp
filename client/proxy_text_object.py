@@ -2,7 +2,7 @@
 
 from text_object import TextObject
 from proxy_object import ProxyObject
-import iface_registry
+import proxy_registry
 
 
 class ProxyTextObject(ProxyObject, TextObject):
@@ -41,4 +41,4 @@ class ProxyTextObject(ProxyObject, TextObject):
             self.path = result.new_path
 
 
-iface_registry.register_iface('text', ProxyTextObject.from_resp)
+proxy_registry.register_iface('text', ProxyTextObject.from_resp)

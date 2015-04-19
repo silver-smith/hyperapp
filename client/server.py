@@ -1,14 +1,14 @@
 from PySide import QtNetwork
 import json_connection
-import iface_registry
+import proxy_registry
 import view_registry
-from proxy_object import ProxyObject, ProxyListObject
+from proxy_object import ProxyListObject
 
 
 def resolve_handle( server, resp ):
     iface_id = resp['iface_id']
     path = resp['path']
-    obj_ctr = iface_registry.resolve_iface(iface_id)
+    obj_ctr = proxy_registry.resolve_iface(iface_id)
     object = obj_ctr(server, resp)
     view_id = resp['view_id']
     handle_ctr = view_registry.resolve_view(view_id)
@@ -120,7 +120,7 @@ class Connection(object):
     def process_packet( self, value ):
         print 'processing packet:', value
         response = Response(self, value)
-        ProxyObject.process_received_packet(response)
+        proxy_registry.process_received_packet(response)
 
     def send_data( self, data ):
         self.trace('sending data, old=%d, write=%d, new=%d' % (len(self.send_buf), len(data), len(self.send_buf) + len(data)))

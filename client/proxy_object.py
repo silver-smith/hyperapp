@@ -7,14 +7,13 @@
 
 import weakref
 import uuid
-from util import path2str
 from object import Object
 from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListObject
 from command import ObjectCommand, ElementCommand
-import iface_registry
+import proxy_registry
 
 
-class RequestRec(object):
+class ObjectRespHandler(proxy_registry.RespHandler):
 
     def __init__( self, object, initiator_view, requested_method ):
         self.object = weakref.ref(object)
@@ -24,44 +23,19 @@ class RequestRec(object):
     def process_response( self, response ):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
-        if not object:
+        if object:
             object.process_response(self, initiator_view, self.requested_method, response)
 
 
 class ProxyObject(Object):
 
-    # we want only one object per path, otherwise subscription/notification won't work
-    proxy_registry = weakref.WeakValueDictionary()  # path -> ProxyObject
-    pending_requests = weakref.WeakValueDictionary()  # request_id -> RequestRec
-
     # this schema allows resolving/deduplicating objects while unpickling
     def __new__( cls, server, path, *args, **kw ):
-        obj = cls.resolve_proxy(path)
+        obj = proxy_registry.resolve_proxy(path)
         if obj:
-            print '> resolved from registry:', path, obj
             return obj
-        return object.__new__(cls)
-
-    @classmethod
-    def resolve_proxy( cls, path ):
-        return cls.proxy_registry.get(path2str(path))
-
-    @classmethod
-    def process_received_packet( cls, response ):
-        cls.process_updates(response.get_updates())
-        request_rec = cls.pending_requests.get(response.request_id)
-        if not request_rec:
-            print 'Received response #%d for a missing (already closed) object, ignoring' % response.request_id
-            return
-        request_rec.process_response(response)
-
-    @classmethod
-    def process_updates( cls, updates ):
-        for path, diff in updates:
-            obj = cls.resolve_proxy(path)
-            if obj:
-                obj.process_update(diff)
-
+        else:
+            return object.__new__(cls)
 
     def __init__( self, server, path, commands ):
         if hasattr(self, 'init_flag'): return   # after __new__ returns resolved object __init__ is called anyway
@@ -70,8 +44,8 @@ class ProxyObject(Object):
         self.server = server
         self.path = path
         self.commands = commands
-        self.pending_request_recs = set()  # explicit refs to RequestRecs to keep them alive until object is alive
-        self.register_proxy()
+        self.resp_handlers = set()  # explicit refs to ObjectRespHandler to keep them alive until object is alive
+        proxy_registry.register_proxy(self.path, self)
 
     def __getnewargs__( self ):
         return (self.server, self.path)
@@ -79,14 +53,7 @@ class ProxyObject(Object):
     def __setstate__( self, state ):
         if hasattr(self, 'init_flag'): return  # after __new__ returns resolved object __setstate__ is called anyway too
         Object.__setstate__(self, state)
-        self.register_proxy()
-
-    def register_proxy( self ):
-        path_str = path2str(self.path)
-        assert path_str not in self.proxy_registry, repr(self.path)
-        if path_str not in self.proxy_registry:
-            self.proxy_registry[path_str] = self
-            print '< registered in registry:', self.path, self
+        proxy_registry.register_proxy(self.path, self)
 
     @staticmethod
     def parse_resp( resp ):
@@ -113,17 +80,17 @@ class ProxyObject(Object):
         return self.prepare_request('run_command', command_id=command_id, **kw)
 
     def execute_request( self, initiator_view, request ):
-        request_rec = RequestRec(self, initiator_view, request['method'])
-        self.pending_request_recs.add(request_rec)
-        self.pending_requests['request_id'] = request_rec
+        resp_handler = ObjectRespHandler(self, initiator_view, request['method'])
+        self.resp_handlers.add(resp_handler)
+        proxy_registry.register_resp_handler(request['request_id'], resp_handler)
         self.server.execute_request(request)
 
     def run_command( self, initiator_view, command_id, **kw ):
         request = self.prepare_command_request(command_id, **kw)
         self.execute_request(initiator_view, request)
 
-    def process_response( self, request_rec, initiator_view, request_method, response ):
-        self.pending_request_recs.remove(request_rec)
+    def process_response( self, resp_handler, initiator_view, request_method, response ):
+        self.resp_handlers.remove(resp_handler)
         self.process_response_result(request_method, response.result)
         handle = response.get_handle2open()
         if not handle: return  # is new view opening is requested?
@@ -222,4 +189,4 @@ class ProxyListObject(ProxyObject, ListObject):
         print '~ProxyListObject', self, self.path
 
 
-iface_registry.register_iface('list', ProxyListObject.from_resp)
+proxy_registry.register_iface('list', ProxyListObject.from_resp)

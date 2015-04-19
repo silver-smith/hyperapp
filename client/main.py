@@ -75,7 +75,7 @@ class Application(QtGui.QApplication, view.View):
             with file(STATE_FILE_PATH, 'rb') as f:
                 return pickle_loads(f.read())
         except (EOFError, IOError, IndexError) as x:
-            print 'Error Loading state:', x
+            print 'Error loading state:', x
             return None
 
 
