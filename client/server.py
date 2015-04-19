@@ -66,6 +66,16 @@ class Response(object):
 
 class Connection(object):
 
+    addr2connection = {}
+
+    @classmethod
+    def get_connection( cls, addr ):
+        connection = cls.addr2connection.get(addr)
+        if not connection:
+            connection = Connection(addr)
+            cls.addr2connection[addr] = connection
+        return connection
+
     def __init__( self, addr ):
         self.addr = addr
         self.socket = None
@@ -119,7 +129,7 @@ class Connection(object):
             
     def process_packet( self, value ):
         print 'processing packet:', value
-        response = Response(self, value)
+        response = Response(Server(self.addr), value)
         proxy_registry.process_received_packet(response)
 
     def send_data( self, data ):
@@ -134,34 +144,12 @@ class Connection(object):
 
 class Server(object):
 
-    addr2connection = {}
-
     def __init__( self, addr ):
-        self._addr = addr
-        self._connection = None
-
-    def __getstate__( self ):
-        return dict(addr=self._addr)
-
-    def __setstate__( self, state ):
-        self._addr = state['addr']
-        self._connection = None
-
-    def _get_connection( self ):
-        if not self._connection:
-            self._connection = self.addr2connection.get(self._addr)
-            if not self._connection:
-                self._connection = Connection(self._addr)
-                self.addr2connection[self._addr] = self._connection
-        return self._connection
+        self.addr = addr
 
     def execute_request( self, request, resp_handler ):
         request_id = request['request_id']
         print 'execute_request', request_id, request
         proxy_registry.register_resp_handler(request_id, resp_handler)
         data = json_connection.encode_packet(request)
-        connection = self._get_connection()
-        connection.send_data(data)
-
-    def __del__( self ):
-        print '~Server', self._addr
+        Connection.get_connection(self.addr).send_data(data)
