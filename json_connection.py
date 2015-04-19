@@ -88,13 +88,13 @@ class Connection(object):
 
     def receive( self ):
         while True:
+            if is_full_packet(self.recv_buf): break
             ## print '  receiving...'
             chunk = self.socket.recv(RECV_SIZE)
             print '  received (%d): %s' % (len(chunk), chunk)
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
-            if is_full_packet(self.recv_buf): break
         json_data, self.recv_buf = decode_packet(self.recv_buf)
         ## print 'received:'
         ## pprint.pprint(json_data)
