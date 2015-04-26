@@ -44,6 +44,9 @@ class FilteredListObj(ListObject):
     def get_title( self ):
         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
 
+    def get_commands( self ):
+        return self._base.get_commands()
+
     def get_columns( self ):
         return self._base.get_columns()
 
