@@ -38,6 +38,23 @@ class Element(object):
         self.commands = commands
 
 
+class ListDiff(object):
+
+    @classmethod
+    def add_many( cls, key, elements ):
+        return cls(key, key, elements)
+
+    @classmethod
+    def append_many( cls, key, elements ):
+        return cls.add_many(None, elements)
+
+    def __init__( self, start_key, end_key, elements ):
+        # keys == None means append
+        self.start_key = start_key  # replace elements from this one
+        self.end_key = end_key      # up to (but not including) this one
+        self.elements = elements    # with these elemenents
+
+
 class ListObject(Object):
 
     def get_columns( self ):

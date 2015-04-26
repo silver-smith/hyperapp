@@ -8,7 +8,7 @@
 import weakref
 import uuid
 from object import Object
-from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListObject
+from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListDiff, ListObject
 from command import ObjectCommand, ElementCommand
 import proxy_registry
 
@@ -133,6 +133,14 @@ class ProxyListObject(ProxyObject, ListObject):
         key = data['key']
         row = data['row']
         return Element(key, row, [ElementCommand.from_json(cmd) for cmd in data['commands']])
+
+    @classmethod
+    def list_diff_from_json( cls, data ):
+        return ListDiff(
+            start_key=data['start_key'],
+            end_key=data['end_key'],
+            elements=[cls.element_from_json(elt) for elt in data['elements']],
+            )
 
 
     def __init__( self, server, path, commands, columns, elements, all_elements_fetched, key_column_idx ):
