@@ -63,13 +63,7 @@ class ListObject(Object):
     def element_count( self ):
         raise NotImplementedError(self.__class__)
 
-    def get_fetched_elements( self ):
-        raise NotImplementedError(self.__class__)
-
-    def are_all_elements_fetched( self ):
-        raise NotImplementedError(self.__class__)
-
-    def load_elements( self, load_count ):
+    def need_elements_count( self, elements_count ):
         raise NotImplementedError(self.__class__)
 
     @staticmethod

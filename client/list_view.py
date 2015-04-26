@@ -154,6 +154,8 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
     def diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
         self._model.diff_applied(diff)
+        # may be this was response from elements fetching, but we may need more elements
+        self.check_if_elements_must_be_fetched()
 
     def get_current_key( self ):
         if self._selected_elt:
@@ -204,23 +206,11 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
         QtGui.QTableView.keyPressEvent(self, evt)
 
     def vscrollValueChanged( self, value ):
-        print 'vscrollValueChanged'
-        first_visible_row = value
-        last_visible_row = self.verticalHeader().visualIndexAt(self.viewport().height())
-        print 'vscrollValueChanged, first_visible_row =', first_visible_row, \
-          ', last_visible_row =', last_visible_row, \
-          'viewport.height =', self.verticalHeader().logicalIndexAt(self.viewport().height())
-        row_height = self.verticalHeader().defaultSectionSize()
-        visible_row_count = self.viewport().height() / row_height
-        self.ensure_elements(first_visible_row + visible_row_count + 1)
+        self.check_if_elements_must_be_fetched()
 
     def resizeEvent( self, evt ):
         result = QtGui.QTableView.resizeEvent(self, evt)
-        row_height = self.verticalHeader().defaultSectionSize()
-        visible_row_count = self.viewport().height() / row_height
-        first_visible_row = self.verticalHeader().visualIndexAt(0)
-        ## print 'resizeEvent, first_visible_row =', first_visible_row, ', visible_row_count =', visible_row_count
-        self.ensure_elements(max(first_visible_row, 0) + visible_row_count + 1)
+        self.check_if_elements_must_be_fetched()
         return result
 
     def currentChanged( self, idx, prev_idx ):
@@ -236,11 +226,15 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
         if visible:
             self.selected_elements_changed(self.get_selected_elts())
 
-    def ensure_elements( self, element_count ):
-        if self.list_obj.are_all_elements_fetched(): return
-        old_element_count = self.list_obj.element_count()
-        if element_count <= old_element_count: return
-        self.list_obj.load_elements(element_count - old_element_count)
+    def get_last_visible_row( self ):
+        first_visible_row = self.verticalHeader().visualIndexAt(0)
+        row_height = self.verticalHeader().defaultSectionSize()
+        visible_row_count = self.viewport().height() / row_height
+        return max(first_visible_row, 0) + visible_row_count + 1
+
+    def check_if_elements_must_be_fetched( self ):
+        last_visible_row = self.get_last_visible_row()
+        self.list_obj.need_elements_count(last_visible_row + 1)
 
     def _on_activated( self, index ):
         elt = self.list_obj.get_fetched_elements()[index.row()]

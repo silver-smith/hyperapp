@@ -60,13 +60,9 @@ class FilteredListObj(ListObject):
                 elements.append(elt)
         return elements
 
-    def are_all_elements_fetched( self ):
-        return self._base.are_all_elements_fetched()
-
-    def load_elements( self, load_count ):
-        required_count = self.element_count() + load_count
-        while not self.are_all_elements_fetched() and self.element_count() < required_count:
-            self._base.load_elements(required_count - self.element_count())
+    def need_elements_count( self, elements_count ):
+        # base may need more elements, but we do not know how much until they are loaded
+        return self._base.need_elements_count(elements_count)
 
     def run_element_command( self, command_id, element_key ):
         return self._base.run_element_command(command_id, element_key)

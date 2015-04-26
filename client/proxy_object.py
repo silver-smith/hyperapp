@@ -150,6 +150,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self.elements = elements
         self.all_elements_fetched = all_elements_fetched
         self.key_column_idx = key_column_idx
+        self.fetch_pending = False  # has pending element fetch request
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
@@ -168,22 +169,25 @@ class ProxyListObject(ProxyObject, ListObject):
     def get_fetched_elements( self ):
         return self.elements
 
-    def are_all_elements_fetched( self ):
-        return self.all_elements_fetched
-
-    def load_elements( self, load_count ):
+    def need_elements_count( self, elements_count ):
+        if self.all_elements_fetched: return
+        if len(self.elements) >= elements_count: return
+        if self.fetch_pending: return
         if self.elements:
             last_key = self.elements[-1].key
         else:
             last_key = None
-        request = self.prepare_request('get_elements', key=last_key, count=load_count)
+        request_count = elements_count - len(self.elements)
+        request = self.prepare_request('get_elements', key=last_key, count=request_count)
         self.execute_request(None, request)
+        self.fetch_pending = True
 
     def process_response_result( self, request_method, result ):
         if request_method == 'get_elements':
             self.process_get_elements_result(result)
 
     def process_get_elements_result( self, result ):
+        self.fetch_pending = False
         result_elts = result.fetched_elements
         new_elements = [self.element_from_json(elt) for elt in result_elts['elements']]
         self.elements += new_elements
