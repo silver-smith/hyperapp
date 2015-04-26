@@ -28,6 +28,7 @@ def json_decoder( obj ):
         # we must check for 'looks like' explicitly because dateutil.parser may successfully decode strings like: '' or '/'
         if re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+', obj):
             try:
+                # dateutil is used to parse datetime because it can detect and parse timezone prefix
                 return dateutil.parser.parse(obj)  # will parse timezone too, if included
             except ValueError:
                 pass
