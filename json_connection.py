@@ -3,6 +3,7 @@ import json
 import struct
 import socket
 import pprint
+import re
 import dateutil.parser
 
 
@@ -23,10 +24,14 @@ class JSONEncoder(json.JSONEncoder):
 
 def json_decoder( obj ):
     if isinstance(obj, basestring):
-        try:
-            return dateutil.parser.parse(obj)  # will parse timezone too, if included
-        except ValueError:
-            return obj
+        # fixme: we decode as datetime all that looks like datetime
+        # we must check for 'looks like' explicitly because dateutil.parser may successfully decode strings like: '' or '/'
+        if re.match(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+', obj):
+            try:
+                return dateutil.parser.parse(obj)  # will parse timezone too, if included
+            except ValueError:
+                pass
+        return obj
     if isinstance(obj, list):
         return map(json_decoder, obj)
     if isinstance(obj, dict):
