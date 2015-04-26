@@ -48,7 +48,7 @@ class BlogEntry(article.Article):
         new_path = dict(self.path, entry_id=entry_rec.id)
         response = request.make_response()
         response.result.new_path = new_path
-        diff = ListDiff.add(entry_rec.id, Blog.rec2element(entry_rec))
+        diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
         response.add_update(module.get_blog_path(), diff)
         return response
 

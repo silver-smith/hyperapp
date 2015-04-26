@@ -53,7 +53,7 @@ class Command(object):
 class ListDiff(object):
 
     @classmethod
-    def add( cls, key, element ):
+    def add_one( cls, key, element ):
         return cls(key, key, [element])
 
     @classmethod
