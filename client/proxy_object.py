@@ -185,8 +185,10 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_get_elements_result( self, result ):
         result_elts = result.fetched_elements
-        self.elements += [self.element_from_json(elt) for elt in result_elts['elements']]
+        new_elements = [self.element_from_json(elt) for elt in result_elts['elements']]
+        self.elements += new_elements
         self.all_elements_fetched = not result_elts['has_more']
+        self._notify_diff_applied(ListDiff(None, None, new_elements))
         
     def run_element_command( self, initiator_view, command_id, element_key ):
         request = self.prepare_request('run_element_command', command_id=command_id, element_key=element_key)

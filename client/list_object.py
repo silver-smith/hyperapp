@@ -81,3 +81,8 @@ class ListObject(Object):
 
     def run_element_command( self, initiator_view, command_id, element_key ):
         raise NotImplementedError(self.__class__)
+
+    def _notify_diff_applied( self, diff ):
+        assert isinstance(diff, ListDiff), repr(diff)
+        for observer in self._observers:
+            observer.diff_applied(diff)
