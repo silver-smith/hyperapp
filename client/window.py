@@ -18,17 +18,15 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class OpenRespHandler(proxy_registry.RespHandler):
 
-    def __init__( self, window_wref ):
-        self.window_wref = window_wref
+    def __init__( self, window ):
+        self.window_wref = weakref.ref(window)
 
     def process_response( self, response ):
         window = self.window_wref()
         if not window:
             print 'Received response for global command, but window issued command is already gone'
             return
-        window.resp_handlers.remove(self)
-        handle = response.get_handle2open()
-        window.get_current_view().open(handle)
+        window.process_open_command_response(self, response)
 
 
 class OpenCommand(Command):
@@ -37,16 +35,15 @@ class OpenCommand(Command):
         Command.__init__(self, id, text, desc, shortcut)
         self.path = path
 
-    def run_with_weaks( self, window_wref, app ):
-        print 'OpenCommand.run', self.id, self.path, window_wref, app
-        resp_handler = OpenRespHandler(window_wref)
-        request_id = str(uuid.uuid4())
-        get_request = dict(method='get', path=self.path, request_id=request_id)
-        app.server.execute_request(get_request, resp_handler)
-        window_wref().resp_handlers.add(resp_handler)
+    def run_with_weaks( self, window_wref ):
+        return self.run(window_wref())
 
-    def make_action( self, widget, window, app ):
-        return self._make_action(widget, weakref.ref(window), app)
+    def run( self, window ):
+        print 'OpenCommand.run', self.id, self.path, window
+        window.run_open_command(self.path)
+
+    def make_action( self, widget, window ):
+        return self._make_action(widget, weakref.ref(window))
 
 
 class Handle(composite.Handle):
@@ -138,6 +135,18 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._menu_bar.view_changed(self)
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
+
+    def run_open_command( self, path ):
+        resp_handler = OpenRespHandler(self)
+        request_id = str(uuid.uuid4())
+        get_request = dict(method='get', path=path, request_id=request_id)
+        self._app.server.execute_request(get_request, resp_handler)
+        self.resp_handlers.add(resp_handler)
+
+    def process_open_command_response( self, resp_handler, response ):
+        self.resp_handlers.remove(resp_handler)
+        handle = response.get_handle2open()
+        self.get_current_view().open(handle)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):

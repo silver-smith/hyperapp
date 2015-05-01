@@ -31,7 +31,7 @@ class BoundViewCommand(object):
             self.class_method(inst)
 
     # must take same parameters as ModuleCommand as they are both used as interchangeable by menu bar global menu
-    def make_action( self, widget, window=None, app=None ):
+    def make_action( self, widget, window=None ):
         action = make_action(widget, self.text, self.shortcut, self.run)
         action.setEnabled(self.enabled)
         return action

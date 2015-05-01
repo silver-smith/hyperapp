@@ -38,8 +38,8 @@ class MenuBar(object):
         menu = QtGui.QMenu(title)
         window = self.window()
         for cmd in self.window().get_global_commands():
-            # cmd is BoundViewCommand or ModuleCommand
-            self.add_cmd_action_to_menu(menu, cmd, window, self.app)
+            # cmd is BoundViewCommand or window.OpenCommand
+            self.add_cmd_action_to_menu(menu, cmd, window)
         return menu
 
     def _current_view( self ):
