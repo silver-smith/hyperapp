@@ -10,7 +10,6 @@ sys.path.append('..')
 from util import pickle_dumps, pickle_loads
 from server import Server
 from qt_keys import key_evt2str
-from command import ModuleCommand
 from view_command import command
 import view
 import window
@@ -32,13 +31,11 @@ STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 class Application(QtGui.QApplication, view.View):
 
-    def __init__( self, server_commands, window_handles=None ):
+    def __init__( self ):
         QtGui.QApplication.__init__(self, sys.argv)
         view.View.__init__(self)
-        self.server_commands = server_commands
+        self.server = Server(('localhost', 8888))
         self._windows = []
-        for handle in window_handles or []:
-            self.open(handle)
 
     def get_windows_handles( self ):
         return [view.handle() for view in self._windows]
@@ -51,7 +48,10 @@ class Application(QtGui.QApplication, view.View):
         return None
 
     def get_global_commands( self ):
-        return self.server_commands + self._commands
+        management_cmd = window.OpenCommand(
+            'open_server', 'Server', 'Open server global commands', 'Alt+G',
+            path=dict(module='management'))
+        return [management_cmd]  + self._commands
 
     def window_created( self, view ):
         self._windows.append(view)
@@ -101,22 +101,14 @@ def main():
             module='file',
             fspath=os.path.expanduser('~'))
 
-    server_commands = []  # todo
-    app = Application(server_commands)
-
-    server = Server(('localhost', 8888))
+    app = Application()
 
     if len(sys.argv) > 1:
         resp_handler = OpenRespHandler(app)  # must keep explicit reference to it
         get_request = dict(method='get', path=path, request_id=1)
-        server.execute_request(get_request, resp_handler)
+        app.server.execute_request(get_request, resp_handler)
 
-    ## handle = server.request_an_object(get_request)
     handle = text_view.Handle(text_object.TextObject('hello'))
-
-    ## commands_request = dict(method='get_commands', request_id=2)
-    ## commands_response = server.execute_request(commands_request, resp_handler)
-    ## server_commands = [ModuleCommand.from_json(cmd) for cmd in commands_response.result.commands]
 
     windows_handles = app.load_state()
     print 'loaded state: ', windows_handles

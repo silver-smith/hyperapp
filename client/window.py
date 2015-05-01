@@ -1,6 +1,9 @@
 import weakref
+import uuid
 from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after
+from command import Command
+import proxy_registry
 from view_command import command
 import view
 import composite
@@ -11,6 +14,39 @@ import cmd_pane
 
 DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
+
+
+class OpenRespHandler(proxy_registry.RespHandler):
+
+    def __init__( self, window_wref ):
+        self.window_wref = window_wref
+
+    def process_response( self, response ):
+        window = self.window_wref()
+        if not window:
+            print 'Received response for global command, but window issued command is already gone'
+            return
+        window.resp_handlers.remove(self)
+        handle = response.get_handle2open()
+        window.get_current_view().open(handle)
+
+
+class OpenCommand(Command):
+
+    def __init__( self, id, text, desc, shortcut, path ):
+        Command.__init__(self, id, text, desc, shortcut)
+        self.path = path
+
+    def run_with_weaks( self, window_wref, app ):
+        print 'OpenCommand.run', self.id, self.path, window_wref, app
+        resp_handler = OpenRespHandler(window_wref)
+        request_id = str(uuid.uuid4())
+        get_request = dict(method='get', path=self.path, request_id=request_id)
+        app.server.execute_request(get_request, resp_handler)
+        window_wref().resp_handlers.add(resp_handler)
+
+    def make_action( self, widget, window, app ):
+        return self._make_action(widget, weakref.ref(window), app)
 
 
 class Handle(composite.Handle):
@@ -37,6 +73,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
     def __init__( self, app, child_handle, size=None, pos=None ):
         QtGui.QMainWindow.__init__(self)
         composite.Composite.__init__(self, app)
+        self._app = app  # alias for _parent()
         self._view = None
         self._child_widget = None
         if size:
@@ -52,6 +89,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
+        self.resp_handlers = set()  # explicit refs to OpenRespHandler to keep them alive until window is alive
         self.set_child(child_handle)
         self.show()
         self._parent().window_created(self)

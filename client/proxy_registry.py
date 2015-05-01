@@ -45,7 +45,7 @@ def process_received_packet( response ):
     process_updates(response.get_updates())
     resp_handler = pending_requests.get(response.request_id)
     if not resp_handler:
-        print 'Received response #%d for a missing (already closed) object, ignoring' % response.request_id
+        print 'Received response #%s for a missing (already closed) object, ignoring' % response.request_id
         return
     resp_handler.process_response(response)
 
