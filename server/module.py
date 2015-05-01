@@ -38,6 +38,10 @@ class Module(ObjectBase):
             module.init_phase3()
 
     @classmethod
+    def get_module_by_name( cls, name ):
+        return cls.module_by_name[name]
+
+    @classmethod
     def run_resolve( cls, path ):
         module = path['module']
         return cls.module_by_name[module].resolve(path)
