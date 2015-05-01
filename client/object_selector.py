@@ -28,10 +28,10 @@ class ObjectSelector(ProxyObject):
         return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')] \
           + self.target_object.get_commands()
 
-    def run_command( self, command_id ):
+    def run_command( self, initiator_view, command_id ):
         if command_id == 'choose':
             return self.run_command_choose()
-        return self.target_object.run_command(command_id)
+        return self.target_object.run_command(initiator_view, command_id)
 
     def run_command_choose( self ):
         if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it

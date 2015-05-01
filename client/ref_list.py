@@ -5,10 +5,10 @@ from proxy_object import ProxyListObject
 
 class RefList(ProxyListObject):
 
-    def run_command( self, command_id ):
+    def run_command( self, initiator_view, command_id ):
         if command_id == 'add':
             return self.run_command_add()
-        return ProxyListObject.run_command(self, command_id)
+        return ProxyListObject.run_command(self, initiator_view, command_id)
 
     def run_command_add( self ):
         request = dict(self.make_command_request(command_id='add'),
