@@ -41,19 +41,11 @@ class Server(object):
 
     def process_request( self, request ):
         method = request['method']
-        # server-global commands
-        if method == 'get_commands':
-            return self.process_get_commands(request)
-        # object commands
         path = request['path']
         object = self.resolve(path)
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
         return object.process_request(request)
-
-    def process_get_commands( self, request ):
-        commands = [cmd.as_json() for cmd in Module.get_all_modules_commands()]
-        return request.make_response_result(commands=commands)
 
     def run( self, connection, cln_addr ):
         print 'accepted connection from %s:%d' % cln_addr
