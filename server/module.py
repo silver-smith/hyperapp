@@ -7,19 +7,14 @@ class ModuleCommand(Command):
         Command.__init__(self, id, text, desc, shortcut)
         self.module_name = module_name
 
-    def as_json( self ):
-        return dict(Command.as_json(self),
-                    module_name=self.module_name)
-
 
 # base class for modules
-class Module(ObjectBase):
+class Module(object):
 
     module_registry = []
     module_by_name = {}
 
     def __init__( self, name ):
-        ObjectBase.__init__(self)
         self.name = name
         self.module_registry.append(self)  # preserves import order
         self.module_by_name[name] = self
