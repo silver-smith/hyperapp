@@ -23,10 +23,8 @@ class OpenRespHandler(proxy_registry.RespHandler):
 
     def process_response( self, response ):
         window = self.window_wref()
-        if not window:
-            print 'Received response for global command, but window issued command is already gone'
-            return
-        window.process_open_command_response(self, response)
+        if window:
+            window.process_open_command_response(self, response)
 
 
 class OpenCommand(Command):
