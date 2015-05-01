@@ -84,10 +84,14 @@ class View(object):
             return (self, [])
 
     def run_object_command( self, command_id ):
-        self.get_object().run_command(self, command_id)
+        handle = self.get_object().run_command(self, command_id)
+        if handle:  # command is handled by client-side
+            self.open(handle)
 
     def run_object_element_command( self, command_id, element_key ):
-        self.get_object().run_element_command(self, command_id, element_key)
+        handle = self.get_object().run_element_command(self, command_id, element_key)
+        if handle:  # command is handled by client-side
+            self.open(handle)
 
     def get_selected_elts( self ):
         view = self.get_current_child()

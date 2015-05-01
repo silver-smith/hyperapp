@@ -30,10 +30,10 @@ class ObjectSelector(ProxyObject):
 
     def run_command( self, initiator_view, command_id ):
         if command_id == 'choose':
-            return self.run_command_choose()
+            return self.run_command_choose(initiator_view)
         return self.target_object.run_command(initiator_view, command_id)
 
-    def run_command_choose( self ):
+    def run_command_choose( self, initiator_view ):
         if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
         request = dict(self.make_command_request(command_id='choose'),
                        target_path=self.target_object.path)

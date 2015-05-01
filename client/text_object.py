@@ -33,7 +33,7 @@ class TextObject(Object):
         self._notify_object_changed(emitter)
 
     def run_command( self, initiator_view, command_id ):
-        # todo: handle 'open_ref' command for client-only object after multi-server support is added
+        # todo: handle 'open_ref' command by client-only object after multi-server support is added
         if command_id == 'edit':
             return self.run_command_edit()
         if command_id == 'view':
