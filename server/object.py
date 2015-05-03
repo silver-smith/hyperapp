@@ -146,21 +146,7 @@ class Request(object):
         return response
 
 
-class ObjectBase(object):
-
-    def process_request( self, request ):
-        method = request['method']
-        if method == 'run_command':
-            command_id = request['command_id']
-            return self.run_command(request, command_id)
-        else:
-            assert False, repr(method)  # Unknown method
-
-    def run_command( self, request, command_id ):
-        assert False, repr(command_id)  # Unknown command
-
-
-class Object(ObjectBase):
+class Object(object):
 
     def __init__( self, path ):
         self.path = path
@@ -183,8 +169,14 @@ class Object(ObjectBase):
         method = request['method']
         if method == 'get':
             return request.make_response_object(self)
+        elif method == 'run_command':
+            command_id = request['command_id']
+            return self.run_command(request, command_id)
         else:
-            return ObjectBase.process_request(self, request)
+            assert False, repr(method)  # Unknown method
+
+    def run_command( self, request, command_id ):
+        assert False, repr(command_id)  # Unknown command
 
 
 class ListObject(Object):
@@ -252,8 +244,8 @@ class ListObject(Object):
         assert False, repr(command_id)  # Unexpected command_id
 
 
-# return list object (base) with selected_key selected        
-class ListObjectElement(ObjectBase):
+# return list object (base) with selected_key selected
+class ListObjectElement(Object):
 
     def __init__( self, base, selected_key ):
         assert isinstance(base, ListObject), repr(base)

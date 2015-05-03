@@ -1,4 +1,4 @@
-from object import Command, ObjectBase
+from object import Command
 
 
 class ModuleCommand(Command):
