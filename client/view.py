@@ -9,6 +9,11 @@ from view_command import BoundViewCommand, UnboundViewCommand
 
 class Handle(object):
 
+    # default implementation - for handles taking object as a single constructor argument
+    @classmethod
+    def from_resp( cls, object, resp ):
+        return cls(object)
+
     def get_object( self ):
         raise NotImplementedError(self.__class__)
 
