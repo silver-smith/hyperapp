@@ -13,8 +13,8 @@ class ObjectSelector(ProxyObject):
     @classmethod
     def from_resp( cls, server, resp ):
         path, commands = ProxyObject.parse_resp(resp)
-        handle = resolve_handle(server, resp['target'])
-        return cls(server, path, commands, handle)
+        target_handle = resolve_handle(server, resp['target'])
+        return cls(server, path, commands, target_handle)
 
     def __init__( self, server, path, commands, target_handle ):
         ProxyObject.__init__(self, server, path, commands)
@@ -35,29 +35,31 @@ class ObjectSelector(ProxyObject):
 
     def run_command_choose( self, initiator_view ):
         if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
-        request = dict(self.make_command_request(command_id='choose'),
-                       target_path=self.target_object.path)
-        handle = self.server.request_an_object(request)
-        return UnwrapHandle(handle)
-
-    def get_target( self ):
-        return self.target
-
-    def set_target( self, object ):
-        self.target = object
+        self.execute_command_request(initiator_view, 'choose', target_path=self.target_object.path)
+        ## return UnwrapHandle(handle)
 
     def get_target_handle( self ):
         return self.target_handle
 
-    def with_another_handle( self, handle ):
+    def clone_and_switch( self, handle ):
         return ObjectSelector(self.server, self.path, self.commands, handle)
 
 
-class Handle(view.Handle):
+class UnwrapObjectSelector(ProxyObject):
 
     @classmethod
-    def from_resp( cls, object, resp ):
-        return cls(object)
+    def from_resp( cls, server, resp ):
+        path, commands = ProxyObject.parse_resp(resp)
+        base_handle = resolve_handle(server, resp['base'])
+        return cls(server, path, commands, base_handle)
+
+    def __init__( self, server, path, commands, base_handle ):
+        ProxyObject.__init__(self, server, path, commands)
+        self.base_object = base_handle.get_object()
+        self.base_handle = base_handle
+
+
+class Handle(view.Handle):
 
     def __init__( self, object ):
         assert isinstance(object, ObjectSelector), repr(object)
@@ -77,20 +79,20 @@ class Handle(view.Handle):
 
 class UnwrapHandle(view.Handle):
 
-    def __init__( self, base_handle ):
-        assert isinstance(base_handle, view.Handle), repr(base_handle)
+    def __init__( self, object ):
+        assert isinstance(object, UnwrapObjectSelector), repr(object)
         view.Handle.__init__(self)
-        self.base_handle = base_handle
+        self.object = object
 
     def get_object( self ):
-        return self.base_handle.get_object()
+        return self.object
 
     def construct( self, parent ):
-        print 'object_selector.UnwrapHandle construct', parent, self.base_handle
-        return self.base_handle.construct(parent)
+        print 'object_selector unwrapper construct', parent, self.object.get_title(), self.object.base_object.get_title()
+        return self.object.base_handle.construct(parent)
 
     def __repr__( self ):
-        return 'object_selector.UnwrapHandle(%r)' % self.base_handle
+        return 'object_selector.UnwrapHandle(%s)' % uni2str(self.object.get_title())
 
 
 class View(view.View, QtGui.QWidget):
@@ -123,7 +125,7 @@ class View(view.View, QtGui.QWidget):
     def open( self, handle ):
         print 'object_selector open', handle
         if not isinstance(handle, UnwrapHandle):
-            new_object = self.object.with_another_handle(handle)
+            new_object = self.object.clone_and_switch(handle)
             handle = Handle(new_object)
         view.View.open(self, handle)
 
@@ -132,4 +134,6 @@ class View(view.View, QtGui.QWidget):
 
 
 proxy_registry.register_iface('object_selector', ObjectSelector.from_resp)
+proxy_registry.register_iface('object_selector_unwrap', UnwrapObjectSelector.from_resp)
 view_registry.register_view('object_selector', Handle.from_resp)
+view_registry.register_view('object_selector_unwrap', UnwrapHandle.from_resp)

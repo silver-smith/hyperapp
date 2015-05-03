@@ -165,6 +165,25 @@ class ArticleRefList(ListObject):
         return request.make_response_update(self.path, diff)
 
 
+class UnwrapSelector(Object):
+
+    iface = Iface('object_selector_unwrap')
+    view_id = 'object_selector_unwrap'
+
+    @classmethod
+    def make( cls, base ):
+        path = module.make_path(object='object_selector_unwrap')
+        return cls(path, base)
+
+    def __init__( self, path, base ):
+        assert isinstance(base, Object), repr(base)
+        Object.__init__(self, path)
+        self._base = base
+
+    def get( self, **kw ):
+        return Object.get(self, base=self._base.get(), **kw)
+
+
 class RefSelector(Object):
 
     iface = Iface('object_selector')
@@ -212,8 +231,10 @@ class RefSelector(Object):
                 rec = module.ArticleRef[self.ref_id]
                 rec.path = target_path_str
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
-        ref_list = ArticleRefList.make(article_id=self.article_id)
-        return request.make_response_object(ListObjectElement(ref_list, rec.id))
+        ref_list_obj = ArticleRefList.make(article_id=self.article_id)
+        list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
+        unwrapper_obj = UnwrapSelector.make(list_elt_obj)
+        return request.make_response_object(unwrapper_obj)
 
 
 class ArticleModule(PonyOrmModule):
