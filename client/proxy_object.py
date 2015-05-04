@@ -50,9 +50,15 @@ class ProxyObject(Object):
     def __getnewargs__( self ):
         return (self.server, self.path)
 
+    def __getstate__( self ):
+        state = Object.__getstate__(self)
+        del state['resp_handlers']
+        return state
+
     def __setstate__( self, state ):
         if hasattr(self, 'init_flag'): return  # after __new__ returns resolved object __setstate__ is called anyway too
         Object.__setstate__(self, state)
+        self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
 
     @staticmethod
