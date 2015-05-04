@@ -33,11 +33,10 @@ class Server(object):
 
     def process_request_raw( self, request ):
         response = self.process_request(request)
-        assert response is None or isinstance(response, Response), repr(response)
-        if response is not None:
-            return response.as_json()
-        else:
-            return None
+        if response is None:
+            response = request.make_response()  # client need a response to cleanup waiting response handler
+        assert isinstance(response, Response), repr(response)
+        return response.as_json()
 
     def process_request( self, request ):
         method = request['method']

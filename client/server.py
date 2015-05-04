@@ -109,8 +109,7 @@ class Connection(object):
         while json_connection.is_full_packet(self.recv_buf):
             value, self.recv_buf = json_connection.decode_packet(self.recv_buf)
             self.trace('received packet (%d bytes remainder): %s' % (len(self.recv_buf), value))
-            if value is not None:
-                self.process_packet(value)
+            self.process_packet(value)
             
     def process_packet( self, value ):
         print 'processing packet:', value
