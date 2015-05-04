@@ -37,7 +37,7 @@ class Server(object):
         if response is not None:
             return response.as_json()
         else:
-            return {}
+            return None
 
     def process_request( self, request ):
         method = request['method']
