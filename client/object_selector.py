@@ -25,8 +25,7 @@ class ObjectSelector(ProxyObject):
     ##     return '%s -> %s' % (self.path, self.target.path)
 
     def get_commands( self ):
-        return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')] \
-          + self.target_object.get_commands()
+        return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')]
 
     def run_command( self, initiator_view, command_id ):
         if command_id == 'choose':
@@ -117,7 +116,8 @@ class View(view.View, QtGui.QWidget):
         return self.object
 
     def get_object_commands( self ):
-        return (self, self.object.get_commands())
+        view, commands = self.target_view.get_object_commands()
+        return (self, self.object.get_commands() + commands)
 
     def get_current_child( self ):
         return self.target_view
