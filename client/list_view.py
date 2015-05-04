@@ -18,7 +18,7 @@ class Handle(view.Handle):
     @classmethod
     def from_resp( cls, obj, resp ):
         selected_key = resp.get('selected_key')
-        return cls(obj, key=selected_key)
+        return cls(obj, key=selected_key, select_first=False)
 
     def __init__( self, obj, key=None, selected_keys=None, select_first=True ):
         view.Handle.__init__(self)
@@ -124,8 +124,10 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
         self.activated.connect(self._on_activated)
         self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
+        self.want_current_key = None
         self.set_object(obj)
-        self.set_current_key(key, select_first)
+        if not self.set_current_key(key, select_first):
+            self.want_current_key = key  # need to fetch elements until this key is fount
 
     def handle( self ):
         return Handle(self.get_object(), self.get_current_key(), self.selected_keys(), self._select_first)
@@ -154,8 +156,13 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
     def diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
         self._model.diff_applied(diff)
+        self._find_wanted_current_key()
         # may be this was response from elements fetching, but we may need more elements
         self.check_if_elements_must_be_fetched()
+
+    def _find_wanted_current_key( self ):
+        if self.set_current_key(self.want_current_key):
+            self.want_current_key = None
 
     def get_current_key( self ):
         if self._selected_elt:
@@ -178,17 +185,26 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
             self.setCurrentIndex(idx)
             self.scrollTo(idx)
 
-    def set_current_key( self, key, select_first=False ):
-        if select_first:
-            row = 0
+    def set_current_key( self, key, select_first=False, accept_near=False ):
+        if accept_near:
+            row = self._find_nearest_key(key)
         else:
-            row = None
+            row = self.model().key2row(key)
+            if row is None and select_first and self.list_obj.get_fetched_elements():
+                row = 0
+        if row is None:
+            return False
+        self.set_current_row(row)
+        return True
+
+    def _find_nearest_key( self, key ):
         for idx, element in enumerate(self.list_obj.get_fetched_elements()):
-            if element.key == key:
-                row = idx
-                break
-        if row is not None and row < self.list_obj.element_count():
-            self.set_current_row(row)
+            if element.key >= key:
+                return idx
+        if self.list_obj.get_fetched_elements():
+            return 0
+        else:
+            return None  # has no rows
 
     def selected_keys( self ):
         return None
@@ -234,7 +250,9 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
 
     def check_if_elements_must_be_fetched( self ):
         last_visible_row = self.get_last_visible_row()
-        self.list_obj.need_elements_count(last_visible_row + 1)
+        want_element_count = last_visible_row + 1
+        force_load = self.want_current_key is not None
+        self.list_obj.need_elements_count(last_visible_row + 1, force_load)
 
     def _on_activated( self, index ):
         elt = self.list_obj.get_fetched_elements()[index.row()]

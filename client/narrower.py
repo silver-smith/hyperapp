@@ -60,9 +60,9 @@ class FilteredListObj(ListObject):
                 elements.append(elt)
         return elements
 
-    def need_elements_count( self, elements_count ):
+    def need_elements_count( self, elements_count, force_load ):
         # base may need more elements, but we do not know how much until they are loaded
-        return self._base.need_elements_count(elements_count)
+        return self._base.need_elements_count(elements_count, force_load)
 
     def run_element_command( self, initiator_view, command_id, element_key ):
         return self._base.run_element_command(initiator_view, command_id, element_key)
