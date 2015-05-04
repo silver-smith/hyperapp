@@ -180,7 +180,7 @@ class ProxyListObject(ProxyObject, ListObject):
             last_key = self.elements[-1].key
         else:
             last_key = None
-        request_count = elements_count - len(self.elements)  # may be 0 in case of force_load, it is ok
+        request_count = max(0, elements_count - len(self.elements))  # may be 0 in case of force_load, it is ok
         request = self.prepare_request('get_elements', key=last_key, count=request_count)
         self.execute_request(None, request)
         self.fetch_pending = True
