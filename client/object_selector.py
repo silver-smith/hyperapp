@@ -14,11 +14,21 @@ class ObjectSelector(ProxyObject):
     def from_resp( cls, server, resp ):
         path, commands = ProxyObject.parse_resp(resp)
         target_handle = resolve_handle(server, resp['target'])
-        return cls(server, path, commands, target_handle)
+        target_object = target_handle.get_object()
+        targeted_path = cls.construct_path(path, target_object)
+        return cls(server, targeted_path, commands, target_object, target_handle)
 
-    def __init__( self, server, path, commands, target_handle ):
+    @staticmethod
+    def construct_path( path, target_object ):
+        if isinstance(target_object, ProxyObject):
+            target_path = target_object.path
+        else:
+            target_path = id(target_object)  # still need to make unique path somehow...
+        return dict(path, target=target_path)
+
+    def __init__( self, server, path, commands, target_object, target_handle ):
         ProxyObject.__init__(self, server, path, commands)
-        self.target_object = target_handle.get_object()
+        self.target_object = target_object
         self.target_handle = target_handle
 
     ## def get_title( self ):
@@ -40,8 +50,10 @@ class ObjectSelector(ProxyObject):
     def get_target_handle( self ):
         return self.target_handle
 
-    def clone_and_switch( self, handle ):
-        return ObjectSelector(self.server, self.path, self.commands, handle)
+    def clone_and_switch( self, target_handle ):
+        target_object = target_handle.get_object()
+        path = self.construct_path(self.path, target_object)
+        return ObjectSelector(self.server, path, self.commands, target_object, target_handle)
 
 
 class UnwrapObjectSelector(ProxyObject):
