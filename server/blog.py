@@ -26,6 +26,19 @@ class BlogEntry(article.Article):
         article_id = path['article_id']
         return cls(path, article_id)
 
+    def get_commands( self ):
+        return [
+            Command('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
+            ] + article.Article.get_commands(self)
+
+    def run_command( self, request, command_id ):
+        if command_id == 'parent':
+            return self.run_command_parent(request)
+        return article.Article.run_command(self, request, command_id)
+    
+    def run_command_parent( self, request ):
+        return request.make_response_object(Blog.make())
+
     @db_session
     def do_save( self, request, text ):
         if self.article_id is not None:
@@ -41,7 +54,7 @@ class BlogEntry(article.Article):
         response = request.make_response()
         response.result.new_path = new_path
         diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
-        response.add_update(module.get_blog_path(), diff)
+        response.add_update(Blog.make_path(), diff)
         return response
 
 
@@ -54,6 +67,14 @@ class Blog(ListObject):
         Column('key', 'Article id'),
         Column('created_at', 'Creation date', type='datetime'),
         ]
+
+    @classmethod
+    def make( cls ):
+        return cls(cls.make_path())
+
+    @classmethod
+    def make_path( cls ):
+        return module.make_path(object='blog')
 
     def __init__( self, path ):
         ListObject.__init__(self, path)
@@ -126,11 +147,8 @@ class BlogModule(PonyOrmModule):
         if command_id == 'create':
             return request.make_response_object(BlogEntry.make(article_id=None))
         if command_id == 'open_blog':
-            return request.make_response_object(Blog(self.get_blog_path()))
+            return request.make_response_object(Blog.make())
         return PonyOrmModule.run_command(self, request, command_id)
-
-    def get_blog_path( self ):
-        return self.make_path(object='blog')
 
 
 module = BlogModule()
