@@ -17,14 +17,20 @@ class Article(Object):
 
     iface = TextObjectIface()
 
-    def __init__( self, path, article_id, mode=mode_view ):
-        assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        Object.__init__(self, path)
-        self.article_id = article_id
-        if mode == self.mode_view:
-            self.view_id = 'text_view'
-        else:
-            self.view_id = 'text_edit'
+    class_registry = {}  # ponyorm entity class -> class
+
+    @classmethod
+    def register_class( cls, ponyorm_entity_class ):
+        cls.class_registry[ponyorm_entity_class] = cls
+
+    @classmethod
+    def from_rec( cls, article_rec ):
+        real_cls = cls.class_registry[article_rec.__class__]
+        return real_cls(real_cls.make_path(article_rec.id), article_rec.id)
+
+    @classmethod
+    def make_path( cls, article_id ):
+        return module.make_path(object='article', article_id=article_id)
 
     @classmethod
     def from_path( cls, path ):
@@ -34,8 +40,17 @@ class Article(Object):
     @classmethod
     def make_new( cls ):
         article_id = None
-        path = module.make_path(object='article', article_id=article_id)
+        path = cls.make_path(article_id)
         return cls(path, article_id=article_id, mode=cls.mode_edit)
+
+    def __init__( self, path, article_id, mode=mode_view ):
+        assert mode in [self.mode_view, self.mode_edit], repr(mode)
+        Object.__init__(self, path)
+        self.article_id = article_id
+        if mode == self.mode_view:
+            self.view_id = 'text_view'
+        else:
+            self.view_id = 'text_edit'
 
     @db_session
     def get( self, **kw ):
@@ -118,12 +133,22 @@ class ArticleRefList(ListObject):
         return cls(path, article_id)
 
     def get_commands( self ):
-        return [Command('add', 'Add ref', 'Create new reference', 'Ins')]
+        return [
+            Command('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
+            Command('add', 'Add ref', 'Create new reference', 'Ins'),
+            ]
 
     def run_command( self, request, command_id ):
+        if command_id == 'parent':
+            return self.run_command_parent(request)
         if command_id == 'add':
             return self.run_command_add(request)
         assert False, repr(command_id)  # Unsupported command
+
+    @db_session
+    def run_command_parent( self, request ):
+        rec = module.Article[self.article_id]
+        return request.make_response_object(Article.from_rec(rec))
 
     def run_command_add( self, request ):
         target_path = request['target_path']
@@ -244,6 +269,7 @@ class ArticleModule(PonyOrmModule):
                                            article=Required(self.Article),
                                            path=Optional(str),
                                            )
+        Article.register_class(self.Article)
 
     def resolve( self, path ):
         objname = path.get('object')

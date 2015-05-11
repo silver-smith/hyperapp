@@ -14,8 +14,12 @@ MODULE_NAME = 'blog'
 class BlogEntry(article.Article):
 
     @classmethod
+    def make_path( cls, article_id ):
+        return module.make_path(object='entry', article_id=article_id)
+
+    @classmethod
     def make( cls, article_id, mode=article.Article.mode_view ):
-        return cls(module.make_path(object='entry', article_id=article_id), article_id, mode)
+        return cls(cls.make_path(article_id), article_id, mode)
 
     @classmethod
     def from_path( cls, path ):
@@ -101,6 +105,7 @@ class BlogModule(PonyOrmModule):
         self.Article = self.article_module.Article
         self.BlogEntry = self.make_inherited_entity('BlogEntry', self.Article,
                                                     created_at=Required(datetime))
+        BlogEntry.register_class(self.BlogEntry)
 
     def resolve( self, path ):
         objname = path.get('object')
