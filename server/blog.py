@@ -1,5 +1,5 @@
 from datetime import datetime
-from pony.orm import db_session, desc, Required, Set
+from pony.orm import db_session, commit, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
 from object import ListDiff, ListObject, Command, Element, Column
@@ -13,39 +13,27 @@ MODULE_NAME = 'blog'
 
 class BlogEntry(article.Article):
 
-    @db_session
-    def __init__( self, path, entry_id, mode=article.Article.mode_view ):
-        if entry_id is None:
-            article_id = None
-        else:
-            entry_rec = module.BlogEntry[entry_id]
-            article_id = entry_rec.article.id
-        article.Article.__init__(self, path, article_id, mode)
-        self.entry_id = entry_id
-
     @classmethod
-    def make( cls, entry_id, mode=article.Article.mode_view ):
-        return cls(module.make_path(object='entry', entry_id=entry_id), entry_id, mode)
+    def make( cls, article_id, mode=article.Article.mode_view ):
+        return cls(module.make_path(object='entry', article_id=article_id), article_id, mode)
 
     @classmethod
     def from_path( cls, path ):
-        entry_id = path['entry_id']
-        return cls(path, entry_id)
+        article_id = path['article_id']
+        return cls(path, article_id)
 
+    @db_session
     def do_save( self, request, text ):
-        with db_session:
-            if self.entry_id is not None:
-                entry_rec = module.BlogEntry[self.entry_id]
-                article_rec = entry_rec.article
-            else:
-                article_rec = None
-            article_rec = self.save_article(article_rec, text)
-            if self.entry_id is None:
-                entry_rec = module.BlogEntry(
-                    article=article_rec,
-                    created_at=utcnow())
-        print 'Blog entry is saved, entry id =', entry_rec.id, ' article_id =', article_rec.id
-        new_path = dict(self.path, entry_id=entry_rec.id)
+        if self.article_id is not None:
+            entry_rec = module.BlogEntry[self.article_id]
+            entry_rec.text = text
+        else:
+            entry_rec = module.BlogEntry(
+                text=text,
+                created_at=utcnow())
+        commit()
+        print 'Blog entry is saved, blog entry id =', entry_rec.id
+        new_path = dict(self.path, article_id=entry_rec.id)
         response = request.make_response()
         response.result.new_path = new_path
         diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
@@ -75,7 +63,7 @@ class Blog(ListObject):
         return ListObject.run_command(self, request, command_id)
 
     def run_command_add( self, request ):
-        return request.make_response_object(BlogEntry.make(entry_id=None, mode=BlogEntry.mode_edit))
+        return request.make_response_object(BlogEntry.make(article_id=None, mode=BlogEntry.mode_edit))
 
     @db_session
     def get_all_elements( self ):
@@ -90,16 +78,15 @@ class Blog(ListObject):
 
     def run_element_command( self, request, command_id, element_key ):
         if command_id == 'open':
-            entry_id = element_key
-            return request.make_response_object(BlogEntry.make(entry_id=element_key))
+            article_id = element_key
+            return request.make_response_object(BlogEntry.make(article_id=element_key))
         if command_id == 'delete':
             return self.run_element_command_delete(request, element_key)
         return ListObject.run_element_command(self, request, command_id, element_key)
 
     @db_session
-    def run_element_command_delete( self, request, entry_id ):
-        rec = module.BlogEntry[entry_id]
-        rec.article.delete()
+    def run_element_command_delete( self, request, article_id ):
+        rec = module.BlogEntry[article_id]
         rec.delete()
         return request.make_response_object(self)  # reload
 
@@ -109,13 +96,11 @@ class BlogModule(PonyOrmModule):
     def __init__( self ):
         PonyOrmModule.__init__(self, MODULE_NAME)
         self.article_module = article.module
-        self.article_module.add_article_fields(blog=Set('BlogEntry'))
 
     def init_phase2( self ):
         self.Article = self.article_module.Article
-        self.BlogEntry = self.make_entity('BlogEntry',
-                                          article=Required(self.Article),
-                                          created_at=Required(datetime))
+        self.BlogEntry = self.make_inherited_entity('BlogEntry', self.Article,
+                                                    created_at=Required(datetime))
 
     def resolve( self, path ):
         objname = path.get('object')
@@ -134,7 +119,7 @@ class BlogModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_object(BlogEntry.make(entry_id=None))
+            return request.make_response_object(BlogEntry.make(article_id=None))
         if command_id == 'open_blog':
             return request.make_response_object(Blog(self.get_blog_path()))
         return PonyOrmModule.run_command(self, request, command_id)

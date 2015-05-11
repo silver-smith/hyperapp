@@ -1,5 +1,5 @@
 import json
-from pony.orm import db_session, Required, Optional, Set, select
+from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
 from object import ListDiff, Object, ListObject, ListObjectElement, Command, Element, Column
 from module import ModuleCommand
@@ -80,23 +80,17 @@ class Article(Object):
         target = module.run_resolve(target_path)
         return request.make_response_object(target)
 
+    @db_session
     def do_save( self, request, text ):
-        with db_session:
-            if self.article_id is not None:
-                article_rec = module.Article[self.article_id]
-            else:
-                article_rec = None
-            article_rec = self.save_article(article_rec, text)
-        print 'Article is saved, article_id =', article_rec.id
-        new_path = dict(self.path, article_id=article_rec.id)
-        return request.make_response_result(new_path=new_path)
-
-    def save_article( self, article_rec, text ):
-        if article_rec is not None:
+        if self.article_id is not None:
+            article_rec = module.Article[self.article_id]
             article_rec.text = text
         else:
             article_rec = module.Article(text=text)
-        return article_rec
+        commit()
+        print 'Article is saved, article_id =', article_rec.id
+        new_path = dict(self.path, article_id=article_rec.id)
+        return request.make_response_result(new_path=new_path)
 
 
 class ArticleRefList(ListObject):
