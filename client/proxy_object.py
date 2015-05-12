@@ -90,6 +90,7 @@ class ProxyObject(Object):
         return (path, commands)
 
     def get_title( self ):
+        print '*** proxy_object.get_title, self.path =', self.path, self
         return ','.join('%s=%s' % (key, value) for key, value in self.path.items())
 
     def get_commands( self ):

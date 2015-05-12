@@ -4,6 +4,7 @@ import weakref
 from PySide import QtCore, QtGui
 from qt_keys import print_key_event
 from util import DEBUG_FOCUS, make_action, focused_index
+from object import ObjectObserver
 from view_command import BoundViewCommand, UnboundViewCommand
 
 
@@ -24,11 +25,12 @@ class Handle(object):
         raise NotImplementedError(self.__class__)
 
 
-class View(object):
+class View(ObjectObserver):
 
     CmdPanelHandleCls = None  # registered by cmd_view
 
     def __init__( self, parent=None ):
+        ObjectObserver.__init__(self)
         self._parent = weakref.ref(parent) if parent is not None else None
         self._commands = []  # BoundViewCommand list
         self._init_commands()
@@ -38,6 +40,9 @@ class View(object):
             attr = getattr(self, name)
             if isinstance(attr, UnboundViewCommand):
                 self._commands.append(attr.bind(self))
+
+    def object_changed( self ):
+        self.view_changed()
 
     def get_widget( self ):
         return self

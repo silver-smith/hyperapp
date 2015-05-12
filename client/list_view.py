@@ -4,7 +4,6 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 from util import uni2str, key_match, key_match_any
-from object import ObjectObserver
 from list_object import ListDiff
 import view_registry
 import view
@@ -104,7 +103,7 @@ class Model(QtCore.QAbstractTableModel):
         print '~list_view.Model'
 
 
-class View(view.View, QtGui.QTableView, ObjectObserver):
+class View(view.View, QtGui.QTableView):
 
     def __init__( self, parent, obj, key, selected_keys, select_first ):
         QtGui.QTableView.__init__(self)
@@ -152,6 +151,7 @@ class View(view.View, QtGui.QTableView, ObjectObserver):
             # else: just use last row
         if row is not None:
             self.set_current_row(row)
+        view.View.object_changed(self)
 
     def diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)

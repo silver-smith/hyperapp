@@ -1,6 +1,5 @@
 from PySide import QtCore, QtGui
 from util import uni2str
-from object import ObjectObserver
 import view
 import view_registry
 from text_object import TextObject
@@ -24,7 +23,7 @@ class Handle(view.Handle):
         return 'text_edit.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
 
 
-class View(view.View, QtGui.QTextEdit, ObjectObserver):
+class View(view.View, QtGui.QTextEdit):
 
     def __init__( self, parent, object, text ):
         QtGui.QTextEdit.__init__(self, text)
@@ -51,7 +50,6 @@ class View(view.View, QtGui.QTextEdit, ObjectObserver):
         if self.notify_on_text_changed:
             self.object.text_changed(self, self.toPlainText())
 
-    # as ObjectObserver
     # todo: preserve cursor position
     def object_changed( self ):
         self.notify_on_text_changed = False
@@ -59,6 +57,7 @@ class View(view.View, QtGui.QTextEdit, ObjectObserver):
             self.setPlainText(self.object.text)
         finally:
             self.notify_on_text_changed = True
+        view.View.object_changed(self)
 
     def __del__( self ):
         print '~text_edit', self
