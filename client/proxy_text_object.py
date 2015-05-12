@@ -36,9 +36,10 @@ class ProxyTextObject(ProxyObject, TextObject):
             return ProxyObject.prepare_command_request(self, command_id, text=self.text, **kw)
         return ProxyObject.prepare_command_request(self, command_id, **kw)
 
-    def process_response_result( self, request_method, result ):
-        if request_method == 'save':
+    def process_command_response_result( self, command_id, result ):
+        if command_id == 'save':
             self.path = result.new_path
+            self._notify_object_changed()
 
 
 proxy_registry.register_iface('text', ProxyTextObject.from_resp)

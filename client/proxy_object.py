@@ -15,16 +15,38 @@ import proxy_registry
 
 class ObjectRespHandler(proxy_registry.RespHandler):
 
-    def __init__( self, object, initiator_view, requested_method ):
+    def __init__( self, object, initiator_view ):
         self.object = weakref.ref(object)
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
-        self.requested_method = requested_method
 
     def process_response( self, response ):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
         if object:
-            object.process_response(self, initiator_view, self.requested_method, response)
+            self.run_process_response(object, response, initiator_view)
+
+    def run_process_response( self, object, response, initiator_view ):
+        raise NotImplementedError(self.__class__)
+
+
+class MethodRespHandler(ObjectRespHandler):
+
+    def __init__( self, object, initiator_view, requested_method ):
+        ObjectRespHandler.__init__(self, object, initiator_view)
+        self.requested_method = requested_method
+
+    def run_process_response( self, object, response, initiator_view ):
+        object.process_response(response, self, initiator_view, self.requested_method)
+
+
+class ObjectCmdRespHandler(ObjectRespHandler):
+
+    def __init__( self, object, initiator_view, command_id ):
+        ObjectRespHandler.__init__(self, object, initiator_view)
+        self.command_id = command_id
+
+    def run_process_response( self, object, response, initiator_view ):
+        object.process_command_response(response, self, initiator_view, self.command_id)
 
 
 class ProxyObject(Object):
@@ -86,20 +108,31 @@ class ProxyObject(Object):
         return self.prepare_request('run_command', command_id=command_id, **kw)
 
     def execute_request( self, initiator_view, request ):
-        resp_handler = ObjectRespHandler(self, initiator_view, request['method'])
-        self.resp_handlers.add(resp_handler)
-        self.server.execute_request(request, resp_handler)
+        resp_handler = MethodRespHandler(self, initiator_view, request['method'])
+        self.execute_request_impl(initiator_view, request, resp_handler)
 
     def run_command( self, initiator_view, command_id, **kw ):
         return self.execute_command_request(initiator_view, command_id, **kw)
 
     def execute_command_request( self, initiator_view, command_id, **kw ):
         request = self.prepare_command_request(command_id, **kw)
-        self.execute_request(initiator_view, request)
+        resp_handler = ObjectCmdRespHandler(self, initiator_view, command_id)
+        self.execute_request_impl(initiator_view, request, resp_handler)
 
-    def process_response( self, resp_handler, initiator_view, request_method, response ):
-        self.resp_handlers.remove(resp_handler)
+    def execute_request_impl( self, initiator_view, request, resp_handler ):
+        self.resp_handlers.add(resp_handler)
+        self.server.execute_request(request, resp_handler)
+
+    def process_response( self, response, resp_handler, initiator_view, request_method ):
         self.process_response_result(request_method, response.result)
+        self.post_process_response(response, resp_handler, initiator_view)
+
+    def process_command_response( self, response, resp_handler, initiator_view, command_id ):
+        self.process_command_response_result(command_id, response.result)
+        self.post_process_response(response, resp_handler, initiator_view)
+
+    def post_process_response( self, response, resp_handler, initiator_view ):
+        self.resp_handlers.remove(resp_handler)
         handle = response.get_handle2open()
         if not handle: return  # is new view opening is requested?
         if not initiator_view: return  # view may already be gone (closed, navigated away) or be missing at all
