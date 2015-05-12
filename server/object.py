@@ -175,6 +175,8 @@ class Object(object):
             return request.make_response_object(self)
         elif method == 'subscribe':
             pass
+        elif method == 'unsubscribe':
+            pass
         elif method == 'run_command':
             command_id = request['command_id']
             return self.run_command(request, command_id)

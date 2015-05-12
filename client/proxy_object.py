@@ -96,6 +96,9 @@ class ProxyObject(Object):
     def get_commands( self ):
         return self.commands
 
+    def observers_gone( self ):
+        self.send_notification('unsubscribe')
+
     # prepare request which does not require/expect response
     def prepare_notification( self, method, **kw ):
         return dict(

@@ -1,4 +1,5 @@
 import weakref
+from util import WeakSetWithCallback
 
 
 class ObjectObserver(object):
@@ -11,9 +12,6 @@ class Object(object):
 
     def __init__( self ):
         self._init_observers()
-
-    def _init_observers( self ):
-        self._observers = weakref.WeakSet()
 
     def __getstate__( self ):
         state = dict(self.__dict__)
@@ -36,6 +34,20 @@ class Object(object):
     def subscribe( self, observer ):
         assert isinstance(observer, ObjectObserver), repr(observer)
         self._observers.add(observer)
+
+    def observers_gone( self ):
+        pass
+
+    def _init_observers( self ):
+        def on_remove( self_ref=weakref.ref(self) ):
+            self = self_ref()
+            if self:
+                self._on_subscriber_removed()
+        self._observers = WeakSetWithCallback(on_remove=on_remove)
+
+    def _on_subscriber_removed( self ):
+        if not self._observers:  # this was last reference to me
+            self.observers_gone()
 
     def _notify_object_changed( self, skip_observer=None ):
         for observer in self._observers:
