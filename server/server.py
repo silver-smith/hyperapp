@@ -33,10 +33,11 @@ class Server(object):
 
     def process_request_raw( self, request ):
         response = self.process_request(request)
-        if response is None:
+        if response is None and request.is_response_needed():
             response = request.make_response()  # client need a response to cleanup waiting response handler
-        assert isinstance(response, Response), repr(response)
-        return response.as_json()
+        if response is not None:
+            assert isinstance(response, Response), repr(response)
+            return response.as_json()
 
     def process_request( self, request ):
         method = request['method']
@@ -51,16 +52,19 @@ class Server(object):
         try:
             while True:
                 request = connection.receive()
-                print 'request:'
+                print 'request:' if 'request_id' in request else 'notification:'
                 pprint.pprint(request)
                 try:
                     response = self.process_request_raw(Request(request))
                 except:
                     traceback.print_exc()
                     response = dict(error='Internal server error')
-                print 'response:'
-                pprint.pprint(response)
-                connection.send(response)
+                if response is not None:
+                    print 'response:'
+                    pprint.pprint(response)
+                    connection.send(response)
+                else:
+                    print 'no response for notification'
         except json_connection.Error as x:
             print x
         except:

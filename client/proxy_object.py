@@ -82,6 +82,7 @@ class ProxyObject(Object):
         Object.__setstate__(self, state)
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
+        self.send_notification('subscribe')
 
     @staticmethod
     def parse_resp( resp ):
@@ -95,17 +96,27 @@ class ProxyObject(Object):
     def get_commands( self ):
         return self.commands
 
+    # prepare request which does not require/expect response
+    def prepare_notification( self, method, **kw ):
+        return dict(
+            method=method,
+            path=self.path,
+            **kw)
+
     def prepare_request( self, method, **kw ):
         request_id = str(uuid.uuid4())
-        request = dict(
+        return dict(
             method=method,
             path=self.path,
             request_id=request_id,
             **kw)
-        return request
 
     def prepare_command_request( self, command_id, **kw ):
         return self.prepare_request('run_command', command_id=command_id, **kw)
+
+    def send_notification( self, method, **kw ):
+        request = self.prepare_notification(method, **kw)
+        self.server.send_notification(request)
 
     def execute_request( self, initiator_view, request ):
         resp_handler = MethodRespHandler(self, initiator_view, request['method'])

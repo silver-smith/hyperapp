@@ -125,6 +125,10 @@ class Request(object):
     def __getitem__( self, name ):
         return self.params[name]
 
+    # request_id is included only in requests, not notifications
+    def is_response_needed( self ):
+        return 'request_id' in self.params
+
     def make_response( self ):
         return Response(self.params['request_id'])
 
@@ -169,6 +173,8 @@ class Object(object):
         method = request['method']
         if method == 'get':
             return request.make_response_object(self)
+        elif method == 'subscribe':
+            pass
         elif method == 'run_command':
             command_id = request['command_id']
             return self.run_command(request, command_id)
