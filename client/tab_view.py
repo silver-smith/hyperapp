@@ -49,7 +49,6 @@ class View(QtGui.QTabWidget, view.View):
         return self._children[idx]
 
     def view_changed( self, child ):
-        print '*** tab_view.view_changed', child
         idx = self.currentIndex()
         if idx == -1: return  # constructing right now
         if idx >= len(self._children) or child is not self._children[idx]:
@@ -62,7 +61,6 @@ class View(QtGui.QTabWidget, view.View):
             self.insertTab(idx, child.get_widget(), child.get_title())
             self.setCurrentIndex(idx)
             child.ensure_has_focus()
-        print '*** tab_view: setTabText', idx, child, child.get_title()
         self.setTabText(idx, child.get_title())
         view.View.view_changed(self)  # notify parents
 
