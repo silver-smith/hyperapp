@@ -142,6 +142,9 @@ class ProxyObject(Object):
     def process_response_result( self, request_method, result ):
         pass
 
+    def process_command_response_result( self, request_method, result ):
+        pass
+
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
 
