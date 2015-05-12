@@ -284,7 +284,7 @@ class View(view.View, QtGui.QTableView):
             self._elt_actions.append(action)
 
     def __del__( self ):
-        print '~list_view.View'
+        print '~list_view.View', self
 
 
 view_registry.register_view('list', Handle.from_resp)
