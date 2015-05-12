@@ -110,8 +110,7 @@ class View(view.View, QtGui.QTableView):
         view.View.__init__(self, parent)
         self._select_first = select_first
         self.list_obj = None
-        self._model = Model()
-        self.setModel(self._model)
+        self.setModel(Model())
         self.verticalHeader().hide()
         opts = self.viewOptions()
         self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + ROW_HEIGHT_PADDING)
@@ -155,7 +154,7 @@ class View(view.View, QtGui.QTableView):
 
     def diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
-        self._model.diff_applied(diff)
+        self.model().diff_applied(diff)
         self._find_wanted_current_key()
         # may be this was response from elements fetching, but we may need more elements
         self.check_if_elements_must_be_fetched()
@@ -181,7 +180,7 @@ class View(view.View, QtGui.QTableView):
 
     def set_current_row( self, row ):
         if row is not None:
-            idx = self._model.createIndex(row, 0)
+            idx = self.model().createIndex(row, 0)
             self.setCurrentIndex(idx)
             self.scrollTo(idx)
 
