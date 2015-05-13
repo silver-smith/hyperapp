@@ -2,6 +2,7 @@ import datetime
 import json
 import struct
 import socket
+import select
 import pprint
 import re
 import dateutil.parser
@@ -109,19 +110,22 @@ class Connection(object):
         
 class Server(object):
 
-    def __init__( self, port, server_fn ):
+    def __init__( self, port, stop_flag, server_fn ):
         self.port = port
+        self.stop_flag = stop_flag
         self.server_fn = server_fn
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind(('', self.port))
         self.socket.listen(5)
+        print 'listening on port %d' % self.port
 
     def run( self ):
-        print 'listening on port %d' % self.port
-        while True:
-            cln_socket, cln_addr = self.socket.accept()
-            self.server_fn(Connection(cln_socket), cln_addr)
+        while not self.stop_flag:
+            rd, wr, xc = select.select([self.socket], [], [self.socket], 0.2)
+            if rd or xc:
+                cln_socket, cln_addr = self.socket.accept()
+                self.server_fn(Connection(cln_socket), cln_addr)
 
 
 class ClientConnection(Connection):

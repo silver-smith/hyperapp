@@ -6,6 +6,8 @@ import os.path
 import traceback
 import re
 import pprint
+import threading
+import signal
 
 sys.path.append('..')
 
@@ -21,6 +23,7 @@ import server_management
 
 
 LISTEN_PORT = 8888
+SERVER_THREAD_COUNT = 10
 
 
 class Server(object):
@@ -74,8 +77,22 @@ class Server(object):
 
 def main():
     server = Server()
-    json_server = json_connection.Server(LISTEN_PORT, server.run)
-    json_server.run()
+    stop_flag = []
+    json_server = json_connection.Server(LISTEN_PORT, stop_flag, server.run)
+    threads = []
+    for i in range(SERVER_THREAD_COUNT):
+        thread = threading.Thread(target=json_server.run)
+        thread.start()
+    try:
+        signal.pause()
+    except KeyboardInterrupt:
+        print
+        print 'Stopping...'
+        stop_flag.append(None)
+        for thread in threads:
+            thread.join()
+    print 'Stopped'
+    
 
 
 main()
