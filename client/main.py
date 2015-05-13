@@ -130,6 +130,8 @@ def main():
         windows_handles = [handle]
 
     app.open_windows(windows_handles)
+    del windows_handles  # do not  keep object alive
+
     app.exec_()
 
 main()
