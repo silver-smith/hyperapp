@@ -121,9 +121,14 @@ class ProxyObject(Object):
         request = self.prepare_notification(method, **kw)
         self.server.send_notification(request)
 
-    def execute_request( self, initiator_view, request ):
+    def execute_request( self, initiator_view, method, **kw ):
+        request = self.prepare_request(method, **kw)
+        self.send_request(initiator_view, request)
+
+    def send_request( self, initiator_view, request ):
         resp_handler = MethodRespHandler(self, initiator_view, request['method'])
-        self.execute_request_impl(initiator_view, request, resp_handler)
+        self.resp_handlers.add(resp_handler)
+        self.server.execute_request(request, resp_handler)
 
     def run_command( self, initiator_view, command_id, **kw ):
         return self.execute_command_request(initiator_view, command_id, **kw)
@@ -131,9 +136,6 @@ class ProxyObject(Object):
     def execute_command_request( self, initiator_view, command_id, **kw ):
         request = self.prepare_command_request(command_id, **kw)
         resp_handler = ObjectCmdRespHandler(self, initiator_view, command_id)
-        self.execute_request_impl(initiator_view, request, resp_handler)
-
-    def execute_request_impl( self, initiator_view, request, resp_handler ):
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
 
@@ -237,8 +239,7 @@ class ProxyListObject(ProxyObject, ListObject):
         else:
             last_key = None
         request_count = max(0, elements_count - len(self.elements))  # may be 0 in case of force_load, it is ok
-        request = self.prepare_request('get_elements', key=last_key, count=request_count)
-        self.execute_request(None, request)
+        self.execute_request(None, 'get_elements', key=last_key, count=request_count)
         self.fetch_pending = True
 
     def process_response_result( self, request_method, result ):
@@ -254,8 +255,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._notify_diff_applied(ListDiff(None, None, new_elements))
         
     def run_element_command( self, initiator_view, command_id, element_key ):
-        request = self.prepare_request('run_element_command', command_id=command_id, element_key=element_key)
-        self.execute_request(initiator_view, request)
+        self.execute_request(initiator_view, 'run_element_command', command_id=command_id, element_key=element_key)
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path
