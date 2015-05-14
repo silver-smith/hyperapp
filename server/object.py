@@ -115,8 +115,9 @@ class Response(object):
 
 class Request(object):
 
-    def __init__( self, params ):
+    def __init__( self, client, params ):
         assert isinstance(params, dict), repr(params)
+        self.client = client
         self.params = params
 
     def __getattr__( self, name ):
@@ -124,6 +125,14 @@ class Request(object):
 
     def __getitem__( self, name ):
         return self.params[name]
+
+    @property
+    def method( self ):
+        return self.params['method']
+
+    @property
+    def path( self ):
+        return self.params['path']
 
     # request_id is included only in requests, not notifications
     def is_response_needed( self ):

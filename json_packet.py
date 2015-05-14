@@ -8,12 +8,6 @@ import re
 import dateutil.parser
 
 
-RECV_SIZE = 4096
-
-
-class Error(Exception): pass
-
-
 class JSONEncoder(json.JSONEncoder):
 
     def default( self, obj ):
@@ -70,66 +64,3 @@ def decode_packet( data ):
     remainder = data[ssize + data_size:]
     json_data = json.loads(data[ssize:ssize + data_size], object_hook=json_decoder)
     return (json_data, remainder)
-
-
-class Connection(object):
-
-    def __init__( self, sock ):
-        self.socket = sock
-        self.recv_buf = ''
-
-    def close( self ):
-        self.socket.close()
-
-    def send( self, value ):
-        ## print 'send:'
-        ## pprint.pprint(value)
-        data = encode_packet(value)
-        ofs = 0
-        while ofs < len(data):
-            sent_size = self.socket.send(data[ofs:])
-            print '  sent (%d) %s' % (sent_size, data[ofs:ofs + sent_size])
-            if sent_size == 0:
-                raise Error('Socket is closed')
-            ofs += sent_size
-
-    def receive( self ):
-        while True:
-            if is_full_packet(self.recv_buf): break
-            ## print '  receiving...'
-            chunk = self.socket.recv(RECV_SIZE)
-            print '  received (%d): %s' % (len(chunk), chunk)
-            if chunk == '':
-                raise Error('Socket is closed')
-            self.recv_buf += chunk
-        json_data, self.recv_buf = decode_packet(self.recv_buf)
-        ## print 'received:'
-        ## pprint.pprint(json_data)
-        return json_data
-                    
-        
-class Server(object):
-
-    def __init__( self, port, stop_flag, server_fn ):
-        self.port = port
-        self.stop_flag = stop_flag
-        self.server_fn = server_fn
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind(('', self.port))
-        self.socket.listen(5)
-        print 'listening on port %d' % self.port
-
-    def run( self ):
-        while not self.stop_flag:
-            rd, wr, xc = select.select([self.socket], [], [self.socket], 0.2)
-            if rd or xc:
-                cln_socket, cln_addr = self.socket.accept()
-                self.server_fn(Connection(cln_socket), cln_addr)
-
-
-class ClientConnection(Connection):
-        
-    def __init__( self, addr ):
-        sock = socket.create_connection(addr)
-        Connection.__init__(self, sock)

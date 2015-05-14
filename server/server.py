@@ -1,19 +1,17 @@
 #!/usr/bin/env python
 
 import sys
-import os
-import os.path
-import traceback
-import re
-import pprint
+import time
 import threading
-import signal
+import socket
+import select
 
 sys.path.append('..')
 
-import json_connection
-from object import Response, Request
 from module import Module
+from client import Client
+
+# self-registering modules:
 import ponyorm_module
 import fs
 import file_view
@@ -23,76 +21,64 @@ import server_management
 
 
 LISTEN_PORT = 8888
-SERVER_THREAD_COUNT = 10
 
 
 class Server(object):
 
     def __init__( self ):
         Module.init_phases()
-
-    def resolve( self, path ):
-        return Module.run_resolve(path)
-
-    def process_request_raw( self, request ):
-        response = self.process_request(request)
-        if response is None and request.is_response_needed():
-            response = request.make_response()  # client need a response to cleanup waiting response handler
-        if response is not None:
-            assert isinstance(response, Response), repr(response)
-            return response.as_json()
-
-    def process_request( self, request ):
-        method = request['method']
-        path = request['path']
-        object = self.resolve(path)
-        print 'Object:', object
-        assert object, repr(path)  # 404: Path not found
-        return object.process_request(request)
-
-    def run( self, connection, cln_addr ):
-        print 'accepted connection from %s:%d' % cln_addr
-        try:
-            while True:
-                request = connection.receive()
-                print 'request:' if 'request_id' in request else 'notification:'
-                pprint.pprint(request)
-                try:
-                    response = self.process_request_raw(Request(request))
-                except:
-                    traceback.print_exc()
-                    response = dict(error='Internal server error')
-                if response is not None:
-                    print 'response:'
-                    pprint.pprint(response)
-                    connection.send(response)
-                else:
-                    print 'no response for notification'
-        except json_connection.Error as x:
-            print x
-        except:
-            traceback.print_exc()
             
+
+class TcpServer(object):
+
+    def __init__( self, port ):
+        self.port = port
+        self.client2thread = {}  # client -> thread
+        self.finished_threads = []
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.socket.bind(('', self.port))
+        self.socket.listen(5)
+        print 'listening on port %d' % self.port
+
+    def run( self ):
+        while True:
+            select.select([self.socket], [], [self.socket])
+            cln_socket, cln_addr = self.socket.accept()
+            print 'accepted connection from %s:%d' % cln_addr
+            client = Client(cln_socket, cln_addr, on_close=self.on_client_closed)
+            thread = threading.Thread(target=client.serve)
+            thread.start()
+            self.client2thread[client] = thread
+            self.join_finished_threads()
+
+    def stop( self ):
+        for client in self.client2thread.keys():
+            client.stop()
+        while self.client2thread:
+            time.sleep(0.1)  # hacky
+        self.join_finished_threads()
+
+    def join_finished_threads( self ):
+        for thread in self.finished_threads:
+            thread.join()
+        self.finished_threads = []
+
+    def on_client_closed( self, client ):
+        self.finished_threads.append(self.client2thread[client])
+        del self.client2thread[client]
+        print 'client %s:%d is finished' % client.addr
 
 
 def main():
-    server = Server()
-    stop_flag = []
-    json_server = json_connection.Server(LISTEN_PORT, stop_flag, server.run)
-    threads = []
-    for i in range(SERVER_THREAD_COUNT):
-        thread = threading.Thread(target=json_server.run)
-        thread.start()
+    server = TcpServer(LISTEN_PORT)
     try:
-        signal.pause()
+        server.run()
     except KeyboardInterrupt:
         print
         print 'Stopping...'
-        stop_flag.append(None)
-        for thread in threads:
-            thread.join()
+        server.stop()
     print 'Stopped'
-    
 
 
 main()

@@ -1,5 +1,5 @@
 from PySide import QtNetwork
-import json_connection
+import json_packet
 import proxy_registry
 import view_registry
 from proxy_object import ProxyListObject
@@ -106,8 +106,8 @@ class Connection(object):
         data = str(self.socket.readAll())
         self.trace('%d bytes is received: %s' % (len(data), data))
         self.recv_buf += data
-        while json_connection.is_full_packet(self.recv_buf):
-            value, self.recv_buf = json_connection.decode_packet(self.recv_buf)
+        while json_packet.is_full_packet(self.recv_buf):
+            value, self.recv_buf = json_packet.decode_packet(self.recv_buf)
             self.trace('received packet (%d bytes remainder): %s' % (len(self.recv_buf), value))
             self.process_packet(value)
             
@@ -133,12 +133,12 @@ class Server(object):
 
     def send_notification( self, request ):
         print 'send_notification', request
-        data = json_connection.encode_packet(request)
+        data = json_packet.encode_packet(request)
         Connection.get_connection(self.addr).send_data(data)
 
     def execute_request( self, request, resp_handler ):
         request_id = request['request_id']
         print 'execute_request', request_id, request
         proxy_registry.register_resp_handler(request_id, resp_handler)
-        data = json_connection.encode_packet(request)
+        data = json_packet.encode_packet(request)
         Connection.get_connection(self.addr).send_data(data)
