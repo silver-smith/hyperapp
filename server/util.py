@@ -64,7 +64,6 @@ class WeakValueMultiDict(object):
             
     @staticmethod
     def _remove( self_wr, wr ):
-        print '*** _remove:', wr
         self = self_wr()
         if self:
             l = self.data.get(wr.key)
