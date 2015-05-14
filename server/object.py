@@ -1,6 +1,10 @@
+from util import path2str, WeakValueMultiDict
 
 
 MIN_ROWS_RETURNED = 10
+
+
+subscription = WeakValueMultiDict()  # path -> client
 
 
 class Column(object):
@@ -143,7 +147,7 @@ class Request(object):
 
     def make_response_object( self, obj ):
         response = self.make_response()
-        response.object = obj.get()
+        response.object = obj.get_json()
         return response
 
     def make_response_result( self, **kw ):
@@ -170,7 +174,7 @@ class Object(object):
     def get_commands( self ):
         return []
 
-    def get( self, **kw ):
+    def get_json( self, **kw ):
         return dict(
             iface_id=self.iface.id,
             view_id=self.view_id,
@@ -181,16 +185,26 @@ class Object(object):
     def process_request( self, request ):
         method = request['method']
         if method == 'get':
-            return request.make_response_object(self)
+            return self.get(request)
         elif method == 'subscribe':
-            pass
+            self.subscribe(request)
         elif method == 'unsubscribe':
-            pass
+            self.unsubscribe(request)
         elif method == 'run_command':
             command_id = request['command_id']
             return self.run_command(request, command_id)
         else:
             assert False, repr(method)  # Unknown method
+
+    def get( self, request ):
+        self.subscribe(request)
+        return request.make_response_object(self)
+
+    def subscribe( self, request ):
+        subscription.add(path2str(self.path), request.client)
+
+    def unsubscribe( self, request ):
+        subscription.remove(path2str(self.path), request.client)
 
     def run_command( self, request, command_id ):
         assert False, repr(command_id)  # Unknown command
@@ -208,9 +222,9 @@ class ListObject(Object):
                 return idx
         assert False, 'Missing "key" column id'
 
-    def get( self, **kw ):
+    def get_json( self, **kw ):
         elements, has_more = self.get_elements_json()
-        return Object.get(self,
+        return Object.get_json(self,
             columns=[column.as_json() for column in self.get_columns()],
             elements=elements,
             has_more=has_more,
@@ -269,7 +283,7 @@ class ListObjectElement(Object):
         self._base = base
         self._selected_key = selected_key
 
-    def get( self, **kw ):
-        return self._base.get(
+    def get_json( self, **kw ):
+        return self._base.get_json(
             selected_key=self._selected_key,
             **kw)
