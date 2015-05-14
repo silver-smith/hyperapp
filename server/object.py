@@ -4,7 +4,24 @@ from util import path2str, WeakValueMultiDict
 MIN_ROWS_RETURNED = 10
 
 
-subscription = WeakValueMultiDict()  # path -> client
+class Subscription(object):
+
+    def __init__( self ):
+        self.path2client = WeakValueMultiDict()  # path -> client
+
+    def add( self, path, client ):
+        self.path2client.add(path2str(path), client)
+
+    def remove( self, path, client ):
+        self.path2client.remove(path2str(path), client)
+
+    def distribute_update( self, path, diff ):
+        assert isinstance(diff, ListDiff), repr(diff)
+        for client in self.path2client.get(path2str(path)):
+            client.send_update(path, diff)
+
+
+subscription = Subscription()
 
 
 class Column(object):
@@ -95,26 +112,37 @@ class ResultDict(object):
         return self._d
 
 
-class Response(object):
+class Notification(object):
 
-    def __init__( self, request_id ):
-        self.request_id = request_id
-        self.object = None
-        self.result = ResultDict()
+    def __init__( self ):
         self.updates = []  # (path, ListDiff) list
 
+    def add_update( self, path, diff ):
+        self.updates.append((path, diff))
+
     def as_json( self ):
-        d = dict(request_id=self.request_id)
-        if self.object:
-            d['object'] = self.object
-        if self.result:
-            d['result'] = self.result.as_json()
+        d = dict()
         if self.updates:
             d['updates'] = [(path, diff.as_json()) for path, diff in self.updates]
         return d
 
-    def add_update( self, path, diff ):
-        self.updates.append((path, diff))
+
+class Response(Notification):
+
+    def __init__( self, request_id ):
+        Notification.__init__(self)
+        self.request_id = request_id
+        self.object = None
+        self.result = ResultDict()
+
+    def as_json( self ):
+        d = Notification.as_json(self)
+        d['request_id'] = self.request_id
+        if self.object:
+            d['object'] = self.object
+        if self.result:
+            d['result'] = self.result.as_json()
+        return d
 
 
 class Request(object):
@@ -201,10 +229,10 @@ class Object(object):
         return request.make_response_object(self)
 
     def subscribe( self, request ):
-        subscription.add(path2str(self.path), request.client)
+        subscription.add(self.path, request.client)
 
     def unsubscribe( self, request ):
-        subscription.remove(path2str(self.path), request.client)
+        subscription.remove(self.path, request.client)
 
     def run_command( self, request, command_id ):
         assert False, repr(command_id)  # Unknown command

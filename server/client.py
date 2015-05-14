@@ -1,6 +1,7 @@
 import traceback
 import pprint
 import select
+from Queue import Queue
 from json_packet import encode_packet, is_full_packet, decode_packet
 from module import Module
 from object import Response, Request
@@ -59,6 +60,10 @@ class Client(object):
         self.addr = addr
         self.on_close = on_close
         self.stop_flag = False
+        self.updates_queue = Queue()  # (path, diff) queue
+
+    def send_update( self, path, diff ):
+        self.updates_queue.put((path, diff))
 
     def stop( self ):
         self.stop_flag = True
@@ -93,6 +98,11 @@ class Client(object):
         response = object.process_request(request)
         if response is None and request.is_response_needed():
             response = request.make_response()  # client need a response to cleanup waiting response handler
+        if response is None and not self.updates_queue.empty():
+            response = Notification()
+        while not self.updates_queue.empty():
+            path, diff = self.updates_queue.get()
+            response.add_update(path, diff)
         assert response is None or isinstance(response, Response), repr(response)
         return response
 

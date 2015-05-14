@@ -2,7 +2,7 @@ from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
-from object import ListDiff, ListObject, Command, Element, Column
+from object import ListDiff, ListObject, Command, Element, Column, subscription
 from module import ModuleCommand
 from iface import ListIface
 import article
@@ -54,7 +54,7 @@ class BlogEntry(article.Article):
         response = request.make_response()
         response.result.new_path = new_path
         diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
-        response.add_update(Blog.make_path(), diff)
+        subscription.distribute_update(Blog.make_path(), diff)
         return response
 
 
