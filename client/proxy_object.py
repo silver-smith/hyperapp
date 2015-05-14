@@ -123,9 +123,6 @@ class ProxyObject(Object):
 
     def execute_request( self, initiator_view, method, **kw ):
         request = self.prepare_request(method, **kw)
-        self.send_request(initiator_view, request)
-
-    def send_request( self, initiator_view, request ):
         resp_handler = MethodRespHandler(self, initiator_view, request['method'])
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
