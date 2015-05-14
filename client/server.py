@@ -24,26 +24,30 @@ class ResultDict(object):
         return self._d[attr]
 
 
-class Response(object):
+class Notification(object):
 
-    def __init__( self, server, resp_dict ):
+    def __init__( self, server, data ):
         self.server = server
-        self.resp_dict = resp_dict
-        self.request_id = self.resp_dict['request_id']
+        self.data = data
+
+    def get_updates( self ):
+        return [(path, ProxyListObject.list_diff_from_json(diff)) for path, diff in self.data.get('updates', [])]
+
+
+class Response(Notification):
+
+    def __init__( self, server, data ):
+        Notification.__init__(self, server, data)
+        self.request_id = self.data['request_id']
 
     @property
     def result( self ):
-        if 'result' in self.resp_dict:
-            return ResultDict(self.resp_dict['result'])
-
-    def get_updates( self ):
-        if 'updates' not in self.resp_dict:
-            return []
-        return [(path, ProxyListObject.list_diff_from_json(diff)) for path, diff in self.resp_dict['updates']]
+        if 'result' in self.data:
+            return ResultDict(self.data['result'])
 
     def get_handle2open( self ):
-        if 'object' in self.resp_dict:
-            return resolve_handle(self.server, self.resp_dict['object'])
+        if 'object' in self.data:
+            return resolve_handle(self.server, self.data['object'])
         else:
             return None
 
@@ -107,14 +111,18 @@ class Connection(object):
         self.trace('%d bytes is received: %s' % (len(data), data))
         self.recv_buf += data
         while json_packet.is_full_packet(self.recv_buf):
-            value, self.recv_buf = json_packet.decode_packet(self.recv_buf)
-            self.trace('received packet (%d bytes remainder): %s' % (len(self.recv_buf), value))
-            self.process_packet(value)
+            packet, self.recv_buf = json_packet.decode_packet(self.recv_buf)
+            self.trace('received packet (%d bytes remainder): %s' % (len(self.recv_buf), packet))
+            self.process_packet(packet)
             
-    def process_packet( self, value ):
-        print 'processing packet:', value
-        response = Response(Server(self.addr), value)
-        proxy_registry.process_received_packet(response)
+    def process_packet( self, packet_data ):
+        print 'processing packet:', packet_data
+        if 'request_id' in packet_data:
+            response = Response(Server(self.addr), packet_data)
+            proxy_registry.process_received_response(response)
+        else:
+            notification = Notification(Server(self.addr), packet_data)
+            proxy_registry.process_received_notification(notification)
 
     def send_data( self, data ):
         self.trace('sending data, old=%d, write=%d, new=%d' % (len(self.send_buf), len(data), len(self.send_buf) + len(data)))

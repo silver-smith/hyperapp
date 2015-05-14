@@ -41,8 +41,11 @@ def process_updates( updates ):
         if obj:
             obj.process_update(diff)
 
-def process_received_packet( response ):
-    process_updates(response.get_updates())
+def process_received_notification( notification ):
+    process_updates(notification.get_updates())
+
+def process_received_response( response ):
+    process_received_notification(response)
     resp_handler = pending_requests.get(response.request_id)
     if not resp_handler:
         print 'Received response #%s for a missing (already closed) object, ignoring' % response.request_id
