@@ -4,7 +4,7 @@ import select
 from Queue import Queue
 from json_packet import encode_packet, is_full_packet, decode_packet
 from module import Module
-from object import Response, Request
+from object import Response, Request, Notification
 
 
 NOTIFICATION_DELAY_TIME = 1  # sec
@@ -72,14 +72,17 @@ class Client(object):
         try:
             while not self.stop_flag:
                 json_packet = self.conn.receive(NOTIFICATION_DELAY_TIME)
-                if json_packet is None: continue
-                print 'request:' if 'request_id' in json_packet else 'notification:'
+                if json_packet is None:
+                    if not self.updates_queue.empty():
+                        self._send_notification()
+                    continue
+                print '%s from %s:%d:' % ('request' if 'request_id' in json_packet else 'notification', self.addr[0], self.addr[1])
                 pprint.pprint(json_packet)
                 request = Request(self, json_packet)
-                response = self.process_request(request)
+                response = self._process_request(request)
                 if response is not None:
                     json_response = response.as_json()
-                    print 'response:'
+                    print 'response to %s:%d:' % self.addr
                     pprint.pprint(json_response)
                     self.conn.send(json_response)
                 else:
@@ -91,8 +94,8 @@ class Client(object):
         self.conn.close()
         self.on_close(self)
 
-    def process_request( self, request ):
-        object = self.resolve(request.path)
+    def _process_request( self, request ):
+        object = self._resolve(request.path)
         print 'Object:', object
         assert object, repr(request.path)  # 404: Path not found
         response = object.process_request(request)
@@ -106,5 +109,15 @@ class Client(object):
         assert response is None or isinstance(response, Response), repr(response)
         return response
 
-    def resolve( self, path ):
+    def _send_notification( self ):
+        notification = Notification()
+        while not self.updates_queue.empty():
+            path, diff = self.updates_queue.get()
+            notification.add_update(path, diff)
+        json_packet = notification.as_json()
+        print 'notification to %s:%d:' % self.addr
+        pprint.pprint(json_packet)
+        self.conn.send(json_packet)
+        
+    def _resolve( self, path ):
         return Module.run_resolve(path)
