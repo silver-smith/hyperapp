@@ -21,13 +21,7 @@ import server_management
 
 
 LISTEN_PORT = 8888
-
-
-class Server(object):
-
-    def __init__( self ):
-        Module.init_phases()
-            
+          
 
 class TcpServer(object):
 
@@ -71,6 +65,7 @@ class TcpServer(object):
 
 
 def main():
+    Module.init_phases()
     server = TcpServer(LISTEN_PORT)
     try:
         server.run()
