@@ -11,12 +11,13 @@ import view_registry
 class ObjectSelector(ProxyObject):
 
     @classmethod
-    def from_resp( cls, server, resp ):
-        path, commands = ProxyObject.parse_resp(resp)
-        target_handle = resolve_handle(server, resp['target'])
+    def from_response( cls, server, response ):
+        path = response['path']
+        target_handle = resolve_handle(server, response['target'])
         target_object = target_handle.get_object()
         targeted_path = cls.construct_path(path, target_object)
-        return cls(server, targeted_path, commands, target_object, target_handle)
+        object = cls(server, targeted_path, target_object, target_handle)
+        object.set_contents(response)
 
     @staticmethod
     def construct_path( path, target_object ):
@@ -26,8 +27,8 @@ class ObjectSelector(ProxyObject):
             target_path = id(target_object)  # still need to make unique path somehow...
         return dict(path, target=target_path)
 
-    def __init__( self, server, path, commands, target_object, target_handle ):
-        ProxyObject.__init__(self, server, path, commands)
+    def __init__( self, server, path, target_object, target_handle ):
+        ProxyObject.__init__(self, server, path)
         self.target_object = target_object
         self.target_handle = target_handle
 
@@ -145,7 +146,7 @@ class View(view.View, QtGui.QWidget):
         print '~object_selector.View'
 
 
-proxy_registry.register_iface('object_selector', ObjectSelector.from_resp)
-proxy_registry.register_iface('object_selector_unwrap', UnwrapObjectSelector.from_resp)
+proxy_registry.register_iface('object_selector', ObjectSelector.from_response)
+proxy_registry.register_iface('object_selector_unwrap', UnwrapObjectSelector.from_response)
 view_registry.register_view('object_selector', Handle.from_resp)
 view_registry.register_view('object_selector_unwrap', UnwrapHandle.from_resp)

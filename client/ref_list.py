@@ -20,4 +20,4 @@ class RefList(ProxyListObject):
             fspath=os.path.expanduser('~'))
 
 
-proxy_registry.register_iface('ref_list', RefList.from_resp)
+proxy_registry.register_iface('ref_list', RefList.from_response)

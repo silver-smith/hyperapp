@@ -51,21 +51,27 @@ class ObjectCmdRespHandler(ObjectRespHandler):
 
 class ProxyObject(Object):
 
+    @classmethod
+    def from_response( cls, server, response ):
+        path = response['path']
+        object = cls(server, path)
+        object.set_contents(response)
+
     # this schema allows resolving/deduplicating objects while unpickling
     def __new__( cls, server, path, *args, **kw ):
         obj = proxy_registry.resolve_proxy(path)
         if obj:
             return obj
         else:
-            return object.__new__(cls)
+            return object.__new__(cls, server, path, *args, **kw)
 
-    def __init__( self, server, path, commands ):
+    def __init__( self, server, path ):
         if hasattr(self, 'init_flag'): return   # after __new__ returns resolved object __init__ is called anyway
         Object.__init__(self)
         self.init_flag = None
         self.server = server
         self.path = path
-        self.commands = commands
+        self.commands = []
         self.resp_handlers = set()  # explicit refs to ObjectRespHandler to keep them alive until object is alive
         proxy_registry.register_proxy(self.path, self)
 
@@ -84,11 +90,8 @@ class ProxyObject(Object):
         proxy_registry.register_proxy(self.path, self)
         self.send_notification('subscribe')
 
-    @staticmethod
-    def parse_resp( resp ):
-        path = resp['path']
-        commands = [ObjectCommand.from_json(cmd) for cmd in resp['commands']]
-        return (path, commands)
+    def set_contents( self, response ):
+        self.commands = [ObjectCommand.from_json(cmd) for cmd in response['commands']]
 
     def get_title( self ):
         return ','.join('%s=%s' % (key, value) for key, value in self.path.items())
@@ -166,15 +169,6 @@ class ProxyObject(Object):
 
 class ProxyListObject(ProxyObject, ListObject):
 
-    @classmethod
-    def from_resp( cls, server, resp ):
-        path, commands = ProxyObject.parse_resp(resp)
-        columns = [cls.column_from_json(idx, column) for idx, column in enumerate(resp['columns'])]
-        key_column_idx = cls._find_key_column(columns)
-        elements = [cls.element_from_json(elt) for elt in resp['elements']]
-        all_elements_fetched = not resp['has_more']
-        return cls(server, path, commands, columns, elements, all_elements_fetched, key_column_idx)
-
     @staticmethod
     def column_from_json( idx, data ):
         ts = data['type']
@@ -201,14 +195,21 @@ class ProxyListObject(ProxyObject, ListObject):
             )
 
 
-    def __init__( self, server, path, commands, columns, elements, all_elements_fetched, key_column_idx ):
-        ProxyObject.__init__(self, server, path, commands)
+    def __init__( self, server, path ):
+        ProxyObject.__init__(self, server, path)
         ListObject.__init__(self)
-        self.columns = columns
-        self.elements = elements
-        self.all_elements_fetched = all_elements_fetched
-        self.key_column_idx = key_column_idx
+        self.columns = []
+        self.key_column_idx = None
+        self.elements = []
+        self.all_elements_fetched = False
         self.fetch_pending = False  # has pending element fetch request
+
+    def set_contents( self, response ):
+        ProxyObject.set_contents(self, response)
+        self.columns = [self.column_from_json(idx, column) for idx, column in enumerate(response['columns'])]
+        self.key_column_idx = self._find_key_column(self.columns)
+        self.elements = [self.element_from_json(elt) for elt in response['elements']]
+        self.all_elements_fetched = not response['has_more']
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements

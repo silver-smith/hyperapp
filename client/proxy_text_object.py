@@ -7,15 +7,13 @@ import proxy_registry
 
 class ProxyTextObject(ProxyObject, TextObject):
 
-    @classmethod
-    def from_resp( cls, server, resp ):
-        path, commands = ProxyObject.parse_resp(resp)
-        text = resp['text']
-        return cls(server, path, commands, text)
+    def __init__( self, server, path ):
+        TextObject.__init__(self, text='')
+        ProxyObject.__init__(self, server, path)
 
-    def __init__( self, server, path, commands, text ):
-        TextObject.__init__(self, text)
-        ProxyObject.__init__(self, server, path, commands)
+    def set_contents( self, response ):
+        ProxyObject.set_contents(self, response)
+        self.text = resp['text']
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
@@ -42,4 +40,4 @@ class ProxyTextObject(ProxyObject, TextObject):
             self._notify_object_changed()
 
 
-proxy_registry.register_iface('text', ProxyTextObject.from_resp)
+proxy_registry.register_iface('text', ProxyTextObject.from_response)
