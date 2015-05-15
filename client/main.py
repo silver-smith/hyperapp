@@ -10,6 +10,7 @@ sys.path.append('..')
 from util import pickle_dumps, pickle_loads
 from server import Server
 from qt_keys import key_evt2str
+from server import resolve_handle
 from view_command import command
 import view
 import window
@@ -89,7 +90,7 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app = app
 
     def process_response( self, response ):
-        handle = response.get_handle2open()
+        handle = resolve_handle(self.app.server, response.result)
         self.app.open_in_any_window(handle)
 
 
