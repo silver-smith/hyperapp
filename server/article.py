@@ -239,16 +239,17 @@ class RefSelector(Object):
             return self.run_command_choose(request)
         return Object.run_command(self, request, command_id)
 
+    @db_session
     def run_command_choose( self, request ):
         target_path = request['target_path']
         target_path_str = json.dumps(target_path)
-        with db_session:
-            if self.ref_id is None:
-                rec = module.ArticleRef(article=module.Article[self.article_id],
-                                        path=target_path_str)
-            else:
-                rec = module.ArticleRef[self.ref_id]
-                rec.path = target_path_str
+        if self.ref_id is None:
+            rec = module.ArticleRef(article=module.Article[self.article_id],
+                                    path=target_path_str)
+        else:
+            rec = module.ArticleRef[self.ref_id]
+            rec.path = target_path_str
+        commit()
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
         ref_list_obj = ArticleRefList.make(article_id=self.article_id)
         list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
