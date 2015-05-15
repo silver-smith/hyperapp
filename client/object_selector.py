@@ -11,13 +11,12 @@ import view_registry
 class ObjectSelector(ProxyObject):
 
     @classmethod
-    def from_response( cls, server, response ):
-        path = response['path']
-        target_handle = resolve_handle(server, response['target'])
+    def from_response( cls, server, path, contents ):
+        target_handle = resolve_handle(server, contents['target'])
         target_object = target_handle.get_object()
         targeted_path = cls.construct_path(path, target_object)
         object = cls(server, targeted_path, target_object, target_handle)
-        object.set_contents(response)
+        object.set_contents(contents)
         return object
 
     @staticmethod
@@ -67,9 +66,9 @@ class UnwrapObjectSelector(ProxyObject):
         self.base_object = None
         self.base_handle = None
 
-    def set_contents( self, response ):
-        ProxyObject.set_contents(self, response)
-        self.base_handle = resolve_handle(self.server, response['base'])
+    def set_contents( self, contents ):
+        ProxyObject.set_contents(self, contents)
+        self.base_handle = resolve_handle(self.server, contents['base'])
         self.base_object = self.base_handle.get_object()
 
 

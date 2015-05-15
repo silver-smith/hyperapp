@@ -53,13 +53,13 @@ class Article(Object):
             self.view_id = 'text_edit'
 
     @db_session
-    def get_json( self, **kw ):
+    def get_contents( self, **kw ):
         if self.article_id is not None:
             rec = module.Article[self.article_id]
             text = rec.text
         else:
             text = None
-        return Object.get_json(self, text=text, **kw)
+        return Object.get_contents(self, text=text, **kw)
 
     def get_commands( self ):
         return [
@@ -199,8 +199,8 @@ class UnwrapSelector(Object):
         Object.__init__(self, path)
         self._base = base
 
-    def get_json( self, **kw ):
-        return Object.get_json(self, base=self._base.get_json(), **kw)
+    def get_contents( self, **kw ):
+        return Object.get_contents(self, base=self._base.get(), **kw)
 
 
 class RefSelector(Object):
@@ -225,14 +225,14 @@ class RefSelector(Object):
         return cls(path, article_id, ref_id)
 
     @db_session
-    def get_json( self, **kw ):
+    def get_contents( self, **kw ):
         if self.ref_id is None:
             target = None
         else:
             rec = module.ArticleRef[self.ref_id]
             target_path = json.loads(rec.path)
             target = module.run_resolve(target_path)
-        return Object.get_json(self, target=target.get_json() if target else None, **kw)
+        return Object.get_contents(self, target=target.get() if target else None, **kw)
 
     def run_command( self, request, command_id ):
         if command_id == 'choose':

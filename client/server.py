@@ -5,20 +5,26 @@ import view_registry
 from proxy_object import ProxyListObject
 
 
-def resolve_handle( server, resp ):
-    iface_id = resp['iface_id']
-    path = resp['path']
+def resolve_handle( server, response ):
+    iface_id = response['iface_id']
+    path = response['path']
     obj_ctr = proxy_registry.resolve_iface(iface_id)
-    object = obj_ctr(server, resp)
-    view_id = resp['view_id']
+    object = obj_ctr(server, path, response['contents'])
+    view_id = response['view_id']
     handle_ctr = view_registry.resolve_view(view_id)
-    return handle_ctr(object, resp)
+    return handle_ctr(object, response)
 
 
 class ResultDict(object):
 
     def __init__( self, d ):
         self._d = d
+
+    def get( self, attr ):
+        return self._d.get(attr)
+
+    def __getitem__( self, attr ):
+        return self._d[attr]
 
     def __getattr__( self, attr ):
         return self._d[attr]

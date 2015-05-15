@@ -4,6 +4,7 @@ from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after
 from command import Command
 import proxy_registry
+from server import resolve_handle
 from view_command import command
 import view
 import composite
@@ -24,7 +25,7 @@ class OpenRespHandler(proxy_registry.RespHandler):
     def process_response( self, response ):
         window = self.window_wref()
         if window:
-            window.process_open_command_response(self, response)
+            window.process_open_command_response(self, response.result)
 
 
 class OpenCommand(Command):
@@ -141,9 +142,9 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._app.server.execute_request(get_request, resp_handler)
         self.resp_handlers.add(resp_handler)
 
-    def process_open_command_response( self, resp_handler, response ):
+    def process_open_command_response( self, resp_handler, result ):
         self.resp_handlers.remove(resp_handler)
-        handle = response.get_handle2open()
+        handle = resolve_handle(self._app.server, result)
         self.get_current_view().open(handle)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')

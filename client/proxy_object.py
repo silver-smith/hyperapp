@@ -52,10 +52,9 @@ class ObjectCmdRespHandler(ObjectRespHandler):
 class ProxyObject(Object):
 
     @classmethod
-    def from_response( cls, server, response ):
-        path = response['path']
+    def from_response( cls, server, path, contents ):
         object = cls(server, path)
-        object.set_contents(response)
+        object.set_contents(contents)
         return object
 
     # this schema allows resolving/deduplicating objects while unpickling
@@ -89,10 +88,10 @@ class ProxyObject(Object):
         Object.__setstate__(self, state)
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
-        self.send_notification('subscribe')
+        self.execute_request(None, 'get')
 
-    def set_contents( self, response ):
-        self.commands = [ObjectCommand.from_json(cmd) for cmd in response['commands']]
+    def set_contents( self, contents ):
+        self.commands = [ObjectCommand.from_json(cmd) for cmd in contents['commands']]
 
     def get_title( self ):
         return ','.join('%s=%s' % (key, value) for key, value in self.path.items())
@@ -156,10 +155,15 @@ class ProxyObject(Object):
         initiator_view.open(handle)
 
     def process_response_result( self, request_method, result ):
-        pass
+        if request_method == 'get':
+            self.process_get_response(result)
 
     def process_command_response_result( self, request_method, result ):
         pass
+
+    def process_get_response( self, result ):
+        self.set_contents(result.contents)
+        self._notify_object_changed()
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
@@ -205,12 +209,12 @@ class ProxyListObject(ProxyObject, ListObject):
         self.all_elements_fetched = False
         self.fetch_pending = False  # has pending element fetch request
 
-    def set_contents( self, response ):
-        ProxyObject.set_contents(self, response)
-        self.columns = [self.column_from_json(idx, column) for idx, column in enumerate(response['columns'])]
+    def set_contents( self, contents ):
+        ProxyObject.set_contents(self, contents)
+        self.columns = [self.column_from_json(idx, column) for idx, column in enumerate(contents['columns'])]
         self.key_column_idx = self._find_key_column(self.columns)
-        self.elements = [self.element_from_json(elt) for elt in response['elements']]
-        self.all_elements_fetched = not response['has_more']
+        self.elements = [self.element_from_json(elt) for elt in contents['elements']]
+        self.all_elements_fetched = not contents['has_more']
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements

@@ -11,9 +11,9 @@ class ProxyTextObject(ProxyObject, TextObject):
         TextObject.__init__(self, text='')
         ProxyObject.__init__(self, server, path)
 
-    def set_contents( self, response ):
-        ProxyObject.set_contents(self, response)
-        self.text = response['text']
+    def set_contents( self, contents ):
+        ProxyObject.set_contents(self, contents)
+        self.text = contents['text']
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)

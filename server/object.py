@@ -175,7 +175,7 @@ class Request(object):
 
     def make_response_object( self, obj ):
         response = self.make_response()
-        response.object = obj.get_json()
+        response.object = obj.get()
         return response
 
     def make_response_result( self, **kw ):
@@ -202,18 +202,23 @@ class Object(object):
     def get_commands( self ):
         return []
 
-    def get_json( self, **kw ):
+    def get( self ):
         return dict(
             iface_id=self.iface.id,
             view_id=self.view_id,
             path=self.get_path(),
+            contents=self.get_contents(),
+            )
+
+    def get_contents( self, **kw ):
+        return dict(
             commands=[cmd.as_json() for cmd in self.get_commands()],
             **kw)
 
     def process_request( self, request ):
         method = request['method']
         if method == 'get':
-            return self.get(request)
+            return self.process_request_get(request)
         elif method == 'subscribe':
             self.subscribe(request)
         elif method == 'unsubscribe':
@@ -224,9 +229,9 @@ class Object(object):
         else:
             assert False, repr(method)  # Unknown method
 
-    def get( self, request ):
+    def process_request_get( self, request ):
         self.subscribe(request)
-        return request.make_response_object(self)
+        return request.make_response_result(**self.get())
 
     def subscribe( self, request ):
         subscription.add(self.path, request.client)
@@ -250,9 +255,9 @@ class ListObject(Object):
                 return idx
         assert False, 'Missing "key" column id'
 
-    def get_json( self, **kw ):
+    def get_contents( self, **kw ):
         elements, has_more = self.get_elements_json()
-        return Object.get_json(self,
+        return Object.get_contents(self,
             columns=[column.as_json() for column in self.get_columns()],
             elements=elements,
             has_more=has_more,
@@ -311,7 +316,15 @@ class ListObjectElement(Object):
         self._base = base
         self._selected_key = selected_key
 
-    def get_json( self, **kw ):
-        return self._base.get_json(
+    def get( self ):
+        return dict(
+            iface_id=self._base.iface.id,
+            view_id=self._base.view_id,
+            path=self._base.get_path(),
+            contents=self.get_contents(),
+            )
+
+    def get_contents( self, **kw ):
+        return self._base.get_contents(
             selected_key=self._selected_key,
             **kw)
