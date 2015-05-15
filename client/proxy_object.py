@@ -248,6 +248,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_response_result( self, request_method, result ):
         if request_method == 'get_elements':
             self.process_get_elements_result(result)
+        ProxyObject.process_response_result(self, request_method, result)
 
     def process_get_elements_result( self, result ):
         self.fetch_pending = False
