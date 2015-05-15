@@ -56,6 +56,7 @@ class ProxyObject(Object):
         path = response['path']
         object = cls(server, path)
         object.set_contents(response)
+        return object
 
     # this schema allows resolving/deduplicating objects while unpickling
     def __new__( cls, server, path, *args, **kw ):
@@ -259,4 +260,4 @@ class ProxyListObject(ProxyObject, ListObject):
         print '~ProxyListObject', self, self.path
 
 
-proxy_registry.register_iface('list', ProxyListObject.from_resp)
+proxy_registry.register_iface('list', ProxyListObject.from_response)

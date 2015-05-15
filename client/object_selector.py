@@ -18,6 +18,7 @@ class ObjectSelector(ProxyObject):
         targeted_path = cls.construct_path(path, target_object)
         object = cls(server, targeted_path, target_object, target_handle)
         object.set_contents(response)
+        return object
 
     @staticmethod
     def construct_path( path, target_object ):
@@ -54,21 +55,22 @@ class ObjectSelector(ProxyObject):
     def clone_and_switch( self, target_handle ):
         target_object = target_handle.get_object()
         path = self.construct_path(self.path, target_object)
-        return ObjectSelector(self.server, path, self.commands, target_object, target_handle)
+        object = ObjectSelector(self.server, path, target_object, target_handle)
+        object.commands = self.commands
+        return object
 
 
 class UnwrapObjectSelector(ProxyObject):
 
-    @classmethod
-    def from_resp( cls, server, resp ):
-        path, commands = ProxyObject.parse_resp(resp)
-        base_handle = resolve_handle(server, resp['base'])
-        return cls(server, path, commands, base_handle)
+    def __init__( self, server, path ):
+        ProxyObject.__init__(self, server, path)
+        self.base_object = None
+        self.base_handle = None
 
-    def __init__( self, server, path, commands, base_handle ):
-        ProxyObject.__init__(self, server, path, commands)
-        self.base_object = base_handle.get_object()
-        self.base_handle = base_handle
+    def set_contents( self, response ):
+        ProxyObject.set_contents(self, response)
+        self.base_handle = resolve_handle(self.server, response['base'])
+        self.base_object = self.base_handle.get_object()
 
 
 class Handle(view.Handle):

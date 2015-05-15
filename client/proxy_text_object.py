@@ -13,7 +13,7 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     def set_contents( self, response ):
         ProxyObject.set_contents(self, response)
-        self.text = resp['text']
+        self.text = response['text']
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
