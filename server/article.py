@@ -1,13 +1,23 @@
 import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
-from object import ListDiff, Object, ListObject, ListObjectElement, Command, Element, Column
+from object import Diff, ListDiff, Object, ListObject, ListObjectElement, Command, Element, Column, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
 from iface import Iface, TextObjectIface, ListIface
 
 
 MODULE_NAME = 'article'
+
+
+class TextDiff(Diff):
+
+    def __init__( self, text ):
+        self.text = text
+
+    def as_json( self ):
+        return dict(
+            text=self.text)
 
 
 class Article(Object):
@@ -104,7 +114,9 @@ class Article(Object):
             article_rec = module.Article(text=text)
         commit()
         print 'Article is saved, article_id =', article_rec.id
+        diff = TextDiff(text)
         new_path = dict(self.path, article_id=article_rec.id)
+        subscription.distribute_update(new_path, diff)
         return request.make_response_result(new_path=new_path)
 
 

@@ -16,7 +16,7 @@ class Subscription(object):
         self.path2client.remove(path2str(path), client)
 
     def distribute_update( self, path, diff ):
-        assert isinstance(diff, ListDiff), repr(diff)
+        assert isinstance(diff, Diff), repr(diff)
         for client in self.path2client.get(path2str(path)):
             client.send_update(path, diff)
 
@@ -71,7 +71,11 @@ class Command(object):
             )
 
 
-class ListDiff(object):
+class Diff(object):
+    pass
+
+
+class ListDiff(Diff):
 
     @classmethod
     def add_one( cls, key, element ):

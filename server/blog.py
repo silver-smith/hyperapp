@@ -53,6 +53,7 @@ class BlogEntry(article.Article):
         new_path = dict(self.path, article_id=entry_rec.id)
         response = request.make_response()
         response.result.new_path = new_path
+        subscription.distribute_update(new_path, article.TextDiff(text))
         diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
         subscription.distribute_update(Blog.make_path(), diff)
         return response
