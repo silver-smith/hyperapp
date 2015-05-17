@@ -2,7 +2,7 @@ from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
-from common.interface.blog import blog_iface
+from common.interface.blog import blog_entry_iface, blog_iface
 from object import ListDiff, ListObject, Command, Element, Column, subscription
 from module import ModuleCommand
 import article
@@ -12,6 +12,9 @@ MODULE_NAME = 'blog'
 
 
 class BlogEntry(article.Article):
+
+    iface = blog_entry_iface
+    proxy_id = 'text'
 
     @classmethod
     def make_path( cls, article_id ):
