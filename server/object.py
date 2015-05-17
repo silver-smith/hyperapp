@@ -278,7 +278,7 @@ class ListObject(Object):
             key = request['key']
             count = request['count']
             elements, has_more = self.get_elements_json(count, key)
-            return request.make_response_result(fetched_elements = dict(
+            return request.make_response_result(fetched_elements=dict(
                 elements=elements,
                 has_more=has_more))
             return response
