@@ -1,6 +1,7 @@
 import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
+from common.interface.article import ref_list_iface, object_selector_iface, onwrap_object_selector_iface
 from object import Diff, ListDiff, Object, ListObject, ListObjectElement, Command, Element, Column, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
@@ -121,7 +122,8 @@ class Article(Object):
 
 class ArticleRefList(ListObject):
 
-    ## iface = ListIface('ref_list')
+    iface = ref_list_iface
+    proxy_id = 'ref_list'
     view_id = 'list'
 
     columns = [
@@ -197,7 +199,8 @@ class ArticleRefList(ListObject):
 
 class UnwrapSelector(Object):
 
-    ## iface = Iface('object_selector_unwrap')
+    iface = onwrap_object_selector_iface
+    proxy_id = 'object_selector_unwrap'
     view_id = 'object_selector_unwrap'
 
     @classmethod
@@ -216,7 +219,8 @@ class UnwrapSelector(Object):
 
 class RefSelector(Object):
 
-    ## iface = Iface('object_selector')
+    iface = object_selector_iface
+    proxy_id = 'object_selector'
     view_id = 'object_selector'
 
     def __init__( self, path, article_id, ref_id ):

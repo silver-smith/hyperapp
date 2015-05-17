@@ -27,6 +27,13 @@ class TInt(Type):
             raise TypeError('%s: Int is expected: %r' % (path, value))
 
 
+class TPath(Type):
+
+    def validate( self, path, value ):
+        if not isinstance(value, dict):
+            raise TypeError('%s: Path (dict) is expected: %r' % (path, value))
+
+
 class Arg(object):
 
     def __init__( self, name, type ):

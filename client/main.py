@@ -9,8 +9,9 @@ sys.path.append('..')
 
 # self-registering ifaces:
 import common.interface.server_management
-import common.interface.blog
 import common.interface.fs
+import common.interface.blog
+import common.interface.article
 
 from util import pickle_dumps, pickle_loads
 from server import Server
