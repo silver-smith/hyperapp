@@ -323,7 +323,8 @@ class ListObjectElement(Object):
 
     def get( self ):
         return dict(
-            iface_id=self._base.iface.id,
+            iface_id=self._base.iface.iface_id,
+            proxy_id=self._base.proxy_id,
             view_id=self._base.view_id,
             path=self._base.get_path(),
             contents=self.get_contents(),

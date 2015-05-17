@@ -4,7 +4,6 @@ from util import str2id
 from object import Diff, ListDiff, Object, ListObject, ListObjectElement, Command, Element, Column, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
-from iface import Iface, TextObjectIface, ListIface
 
 
 MODULE_NAME = 'article'
@@ -25,7 +24,7 @@ class Article(Object):
     mode_view = object()
     mode_edit = object()
 
-    iface = TextObjectIface()
+    ## iface = TextObjectIface()
 
     class_registry = {}  # ponyorm entity class -> class
 
@@ -122,7 +121,7 @@ class Article(Object):
 
 class ArticleRefList(ListObject):
 
-    iface = ListIface('ref_list')
+    ## iface = ListIface('ref_list')
     view_id = 'list'
 
     columns = [
@@ -198,7 +197,7 @@ class ArticleRefList(ListObject):
 
 class UnwrapSelector(Object):
 
-    iface = Iface('object_selector_unwrap')
+    ## iface = Iface('object_selector_unwrap')
     view_id = 'object_selector_unwrap'
 
     @classmethod
@@ -217,7 +216,7 @@ class UnwrapSelector(Object):
 
 class RefSelector(Object):
 
-    iface = Iface('object_selector')
+    ## iface = Iface('object_selector')
     view_id = 'object_selector'
 
     def __init__( self, path, article_id, ref_id ):

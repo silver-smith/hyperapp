@@ -2,9 +2,9 @@ from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
+from common.interface.blog import blog_iface
 from object import ListDiff, ListObject, Command, Element, Column, subscription
 from module import ModuleCommand
-from iface import ListIface
 import article
 
 
@@ -61,7 +61,8 @@ class BlogEntry(article.Article):
 
 class Blog(ListObject):
 
-    iface = ListIface()
+    iface = blog_iface
+    proxy_id = 'list'
     view_id = 'list'
 
     columns = [

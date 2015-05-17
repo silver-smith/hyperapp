@@ -3,7 +3,6 @@ import os.path
 import stat
 from object import ListObject, Command, Element, Column
 from module import Module, ModuleCommand
-from iface import ListIface
 import file_view
 
 
@@ -12,7 +11,7 @@ MODULE_NAME = 'file'
 
 class Dir(ListObject):
 
-    iface = ListIface()
+    ## iface = ListIface()
     view_id = 'list_narrower'
 
     columns = [
