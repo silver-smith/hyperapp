@@ -1,6 +1,7 @@
 import sys
 import os.path
 import stat
+from common.interface.fs import dir_iface
 from object import ListObject, Command, Element, Column
 from module import Module, ModuleCommand
 import file_view
@@ -11,7 +12,8 @@ MODULE_NAME = 'file'
 
 class Dir(ListObject):
 
-    ## iface = ListIface()
+    iface = dir_iface
+    proxy_id = 'list'
     view_id = 'list_narrower'
 
     columns = [

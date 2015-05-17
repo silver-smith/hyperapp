@@ -1,12 +1,14 @@
 # view file, splitted to lines; watch for it's size and follow it's end
 
 import os.path
+from common.interface.fs import file_iface
 from object import ListObject, Element, Column
 
 
 class File(ListObject):
 
-    ## iface = ListIface()
+    iface = file_iface
+    proxy_id = 'list'
     view_id = 'list'
 
     columns = [
