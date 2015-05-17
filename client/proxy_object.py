@@ -124,6 +124,7 @@ class ProxyObject(Object):
             **kw)
 
     def prepare_command_request( self, command_id, **kw ):
+        self.iface.validate_command_request(command_id, **kw)
         return self.prepare_request('run_command', command_id=command_id, **kw)
 
     def send_notification( self, method, **kw ):

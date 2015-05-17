@@ -8,7 +8,10 @@ from . interface import (
     )
 
 
-blog_entry_iface = Interface('blog_entry', [])
+blog_entry_iface = Interface('blog_entry', [
+    Command('save'),
+    ])
+
 blog_iface = Interface('blog', [])
 
 register_iface(blog_entry_iface)
