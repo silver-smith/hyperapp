@@ -46,7 +46,6 @@ class ObjectSelector(ProxyObject):
     def run_command_choose( self, initiator_view ):
         if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
         self.execute_command_request('choose', initiator_view, target_path=self.target_object.path)
-        ## return UnwrapHandle(handle)
 
     def get_target_handle( self ):
         return self.target_handle
