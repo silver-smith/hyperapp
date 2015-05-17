@@ -102,7 +102,7 @@ class FileModule(Module):
     def resolve( self, path ):
         fspath = path.get('fspath')
         if fspath is not None:
-            return Dir(path)
+            return self.open(path, fspath)
         return Module.resolve(self, path)
 
     def get_commands( self ):
@@ -115,6 +115,9 @@ class FileModule(Module):
 
     def open_fspath( self, fspath ):
         path = self.make_path(fspath=fspath)
+        return self.open(path, fspath)
+
+    def open( self, path, fspath ):
         if os.path.isdir(fspath):
             return Dir(path)
         else:
