@@ -7,6 +7,7 @@
 
 import weakref
 import uuid
+from common.interface import resolve_iface
 from object import Object
 from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListDiff, ListObject
 from command import ObjectCommand, ElementCommand
@@ -87,11 +88,14 @@ class ProxyObject(Object):
     def __getstate__( self ):
         state = Object.__getstate__(self)
         del state['resp_handlers']
+        del state['iface']
+        state['iface_id'] = self.iface.iface_id
         return state
 
     def __setstate__( self, state ):
         if hasattr(self, 'init_flag'): return  # after __new__ returns resolved object __setstate__ is called anyway too
         Object.__setstate__(self, state)
+        self.iface = resolve_iface(state['iface_id'])
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
         self.execute_request('get')
