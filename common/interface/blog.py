@@ -9,7 +9,7 @@ from . interface import (
 
 
 blog_entry_iface = Interface('blog_entry', [
-    Command('save'),
+    Command('save', [Arg('text', TString())]),
     ])
 
 blog_iface = Interface('blog', [])
