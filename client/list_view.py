@@ -138,7 +138,7 @@ class View(view.View, QtGui.QTableView):
         return self.list_obj
 
     def object_changed( self ):
-        old_key = self._selected_elt.key
+        old_key = self._selected_elt.key if self._selected_elt else None
         self.model().reset()
         ## self.reset()  # selection etc must be cleared
         row = self.model().key2row(old_key)
