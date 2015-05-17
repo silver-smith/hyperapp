@@ -1,5 +1,5 @@
 from PySide import QtNetwork
-import json_packet
+from common import json_packet
 import proxy_registry
 import view_registry
 from proxy_object import ProxyListObject
