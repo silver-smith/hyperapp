@@ -57,8 +57,8 @@ class ObjectCmdRespHandler(ObjectRespHandler):
 class ProxyObject(Object):
 
     @classmethod
-    def from_response( cls, server, path, contents ):
-        object = cls(server, path)
+    def from_response( cls, server, path, iface, contents ):
+        object = cls(server, path, iface)
         object.set_contents(contents)
         return object
 
@@ -70,12 +70,13 @@ class ProxyObject(Object):
         else:
             return object.__new__(cls, server, path, *args, **kw)
 
-    def __init__( self, server, path ):
+    def __init__( self, server, path, iface ):
         if hasattr(self, 'init_flag'): return   # after __new__ returns resolved object __init__ is called anyway
         Object.__init__(self)
         self.init_flag = None
         self.server = server
         self.path = path
+        self.iface = iface
         self.commands = []
         self.resp_handlers = set()  # explicit refs to ObjectRespHandler to keep them alive until object is alive
         proxy_registry.register_proxy(self.path, self)
@@ -205,8 +206,8 @@ class ProxyListObject(ProxyObject, ListObject):
             )
 
 
-    def __init__( self, server, path ):
-        ProxyObject.__init__(self, server, path)
+    def __init__( self, server, path, iface ):
+        ProxyObject.__init__(self, server, path, iface)
         ListObject.__init__(self)
         self.columns = []
         self.key_column_idx = None

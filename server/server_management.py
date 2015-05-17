@@ -1,7 +1,7 @@
 # server management module: used to expose module commands in one list
 
 from object import ListDiff, ListObject, Command, Element, Column
-from iface import ListIface
+from common.interface.server_management import server_management_iface
 from module import Module
 
 
@@ -10,7 +10,8 @@ MODULE_NAME = 'management'
 
 class CommandList(ListObject):
 
-    iface = ListIface()
+    iface = server_management_iface
+    proxy_id = 'list'
     view_id = 'list'
 
     columns = [

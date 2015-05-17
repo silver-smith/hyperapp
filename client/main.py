@@ -7,16 +7,22 @@ from PySide import QtCore, QtGui
 
 sys.path.append('..')
 
+# self-registering ifaces:
+import common.interface.server_management
+
 from util import pickle_dumps, pickle_loads
 from server import Server
 from qt_keys import key_evt2str
 from server import resolve_handle
 from view_command import command
 import view
+import list_view
+import proxy_registry
+
+# self-registering views:
 import window
 import tab_view
 import navigator
-import list_view
 import narrower
 import text_object
 import proxy_text_object
@@ -24,7 +30,6 @@ import text_edit
 import text_view
 import object_selector
 import ref_list
-import proxy_registry
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')

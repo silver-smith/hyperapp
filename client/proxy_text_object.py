@@ -7,9 +7,9 @@ import proxy_registry
 
 class ProxyTextObject(ProxyObject, TextObject):
 
-    def __init__( self, server, path ):
+    def __init__( self, server, path, iface ):
         TextObject.__init__(self, text='')
-        ProxyObject.__init__(self, server, path)
+        ProxyObject.__init__(self, server, path, iface)
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)

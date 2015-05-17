@@ -1,5 +1,6 @@
 from PySide import QtNetwork
 from common import json_packet
+from common.interface import resolve_iface
 import proxy_registry
 import view_registry
 from proxy_object import ProxyListObject
@@ -7,9 +8,11 @@ from proxy_object import ProxyListObject
 
 def resolve_handle( server, response ):
     iface_id = response['iface_id']
+    proxy_id = response['proxy_id']
     path = response['path']
-    obj_ctr = proxy_registry.resolve_iface(iface_id)
-    object = obj_ctr(server, path, response['contents'])
+    iface = resolve_iface(iface_id)
+    obj_ctr = proxy_registry.resolve_iface(proxy_id)
+    object = obj_ctr(server, path, iface, response['contents'])
     view_id = response['view_id']
     handle_ctr = view_registry.resolve_view(view_id)
     return handle_ctr(object, response)

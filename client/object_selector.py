@@ -11,11 +11,11 @@ import view_registry
 class ObjectSelector(ProxyObject):
 
     @classmethod
-    def from_response( cls, server, path, contents ):
+    def from_response( cls, server, path, iface, contents ):
         target_handle = resolve_handle(server, contents['target'])
         target_object = target_handle.get_object()
         targeted_path = cls.construct_path(path, target_object)
-        object = cls(server, targeted_path, target_object, target_handle)
+        object = cls(server, targeted_path, iface, target_object, target_handle)
         object.set_contents(contents)
         return object
 
@@ -27,8 +27,8 @@ class ObjectSelector(ProxyObject):
             target_path = id(target_object)  # still need to make unique path somehow...
         return dict(path, target=target_path)
 
-    def __init__( self, server, path, target_object, target_handle ):
-        ProxyObject.__init__(self, server, path)
+    def __init__( self, server, path, iface, target_object, target_handle ):
+        ProxyObject.__init__(self, server, path, iface)
         self.target_object = target_object
         self.target_handle = target_handle
 
@@ -53,15 +53,15 @@ class ObjectSelector(ProxyObject):
     def clone_and_switch( self, target_handle ):
         target_object = target_handle.get_object()
         path = self.construct_path(self.path, target_object)
-        object = ObjectSelector(self.server, path, target_object, target_handle)
+        object = ObjectSelector(self.server, path, self.iface, target_object, target_handle)
         object.commands = self.commands
         return object
 
 
 class UnwrapObjectSelector(ProxyObject):
 
-    def __init__( self, server, path ):
-        ProxyObject.__init__(self, server, path)
+    def __init__( self, server, path, iface ):
+        ProxyObject.__init__(self, server, path, iface)
         self.base_object = None
         self.base_handle = None
 

@@ -208,7 +208,8 @@ class Object(object):
 
     def get( self ):
         return dict(
-            iface_id=self.iface.id,
+            iface_id=self.iface.iface_id,
+            proxy_id=self.proxy_id,
             view_id=self.view_id,
             path=self.get_path(),
             contents=self.get_contents(),
