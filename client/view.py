@@ -94,12 +94,12 @@ class View(ObjectObserver):
             return (self, [])
 
     def run_object_command( self, command_id ):
-        handle = self.get_object().run_command(self, command_id)
+        handle = self.get_object().run_command(command_id, self)
         if handle:  # command is handled by client-side
             self.open(handle)
 
     def run_object_element_command( self, command_id, element_key ):
-        handle = self.get_object().run_element_command(self, command_id, element_key)
+        handle = self.get_object().run_element_command(command_id, element_key, self)
         if handle:  # command is handled by client-side
             self.open(handle)
 

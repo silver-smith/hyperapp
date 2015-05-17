@@ -24,10 +24,10 @@ class ProxyTextObject(ProxyObject, TextObject):
             commands.append(cmd)
         return commands
 
-    def run_command( self, initiator_view, command_id, **kw ):
+    def run_command( self, command_id, initiator_view=None, **kw ):
         if command_id == 'edit' or command_id == 'view':
-            return TextObject.run_command(self, initiator_view, command_id, **kw)
-        return ProxyObject.run_command(self, initiator_view, command_id, **kw)
+            return TextObject.run_command(self, command_id, initiator_view, **kw)
+        return ProxyObject.run_command(self, command_id, initiator_view, **kw)
 
     def prepare_command_request( self, command_id, **kw ):
         if command_id == 'save':

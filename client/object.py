@@ -28,7 +28,7 @@ class Object(object):
     def get_commands( self ):
         raise NotImplementedError(self.__class__)
 
-    def run_command( self, initiator_view, command_id ):
+    def run_command( self, command_id, initiator_view=None ):
         raise NotImplementedError(self.__class__)
 
     def subscribe( self, observer ):

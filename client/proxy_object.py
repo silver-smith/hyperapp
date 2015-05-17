@@ -11,11 +11,14 @@ from object import Object
 from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListDiff, ListObject
 from command import ObjectCommand, ElementCommand
 import proxy_registry
+import view
 
 
 class ObjectRespHandler(proxy_registry.RespHandler):
 
     def __init__( self, object, initiator_view ):
+        assert isinstance(object, Object), repr(object)
+        assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
         self.object = weakref.ref(object)
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
 
@@ -32,6 +35,7 @@ class ObjectRespHandler(proxy_registry.RespHandler):
 class MethodRespHandler(ObjectRespHandler):
 
     def __init__( self, object, initiator_view, requested_method ):
+        assert isinstance(requested_method, basestring), repr(requested_method)
         ObjectRespHandler.__init__(self, object, initiator_view)
         self.requested_method = requested_method
 
@@ -42,6 +46,7 @@ class MethodRespHandler(ObjectRespHandler):
 class ObjectCmdRespHandler(ObjectRespHandler):
 
     def __init__( self, object, initiator_view, command_id ):
+        assert isinstance(command_id, basestring), repr(command_id)
         ObjectRespHandler.__init__(self, object, initiator_view)
         self.command_id = command_id
 
@@ -88,7 +93,7 @@ class ProxyObject(Object):
         Object.__setstate__(self, state)
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
-        self.execute_request(None, 'get')
+        self.execute_request('get')
 
     def set_contents( self, contents ):
         self.commands = [ObjectCommand.from_json(cmd) for cmd in contents['commands']]
@@ -124,16 +129,16 @@ class ProxyObject(Object):
         request = self.prepare_notification(method, **kw)
         self.server.send_notification(request)
 
-    def execute_request( self, initiator_view, method, **kw ):
+    def execute_request( self, method, initiator_view=None, **kw ):
         request = self.prepare_request(method, **kw)
         resp_handler = MethodRespHandler(self, initiator_view, request['method'])
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
 
-    def run_command( self, initiator_view, command_id, **kw ):
-        return self.execute_command_request(initiator_view, command_id, **kw)
+    def run_command( self, command_id, initiator_view=None, **kw ):
+        return self.execute_command_request(command_id, initiator_view, **kw)
 
-    def execute_command_request( self, initiator_view, command_id, **kw ):
+    def execute_command_request( self, command_id, initiator_view, **kw ):
         request = self.prepare_command_request(command_id, **kw)
         resp_handler = ObjectCmdRespHandler(self, initiator_view, command_id)
         self.resp_handlers.add(resp_handler)
@@ -242,7 +247,7 @@ class ProxyListObject(ProxyObject, ListObject):
         else:
             last_key = None
         request_count = max(0, elements_count - len(self.elements))  # may be 0 in case of force_load, it is ok
-        self.execute_request(None, 'get_elements', key=last_key, count=request_count)
+        self.execute_request('get_elements', key=last_key, count=request_count)
         self.fetch_pending = True
 
     def process_response_result( self, request_method, result ):
@@ -258,8 +263,8 @@ class ProxyListObject(ProxyObject, ListObject):
         self.all_elements_fetched = not result_elts['has_more']
         self._notify_diff_applied(ListDiff(None, None, new_elements))
         
-    def run_element_command( self, initiator_view, command_id, element_key ):
-        self.execute_request(initiator_view, 'run_element_command', command_id=command_id, element_key=element_key)
+    def run_element_command( self, command_id, element_key, initiator_view=None ):
+        self.execute_request('run_element_command', initiator_view, command_id=command_id, element_key=element_key)
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path

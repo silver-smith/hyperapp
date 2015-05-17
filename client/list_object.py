@@ -73,7 +73,7 @@ class ListObject(Object):
                 return col.idx
         assert False, 'No "key" column'
 
-    def run_element_command( self, initiator_view, command_id, element_key ):
+    def run_element_command( self, command_id, element_key, initiator_view ):
         raise NotImplementedError(self.__class__)
 
     def _notify_diff_applied( self, diff ):

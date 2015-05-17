@@ -5,13 +5,13 @@ from proxy_object import ProxyListObject
 
 class RefList(ProxyListObject):
 
-    def run_command( self, initiator_view, command_id ):
+    def run_command( self, command_id, initiator_view=None ):
         if command_id == 'add':
             return self.run_command_add(initiator_view)
-        return ProxyListObject.run_command(self, initiator_view, command_id)
+        return ProxyListObject.run_command(self, command_id, initiator_view)
 
     def run_command_add( self, initiator_view ):
-        self.execute_command_request(initiator_view, 'add', target_path=self.get_default_ref())
+        self.execute_command_request('add', initiator_view, target_path=self.get_default_ref())
 
     # todo
     def get_default_ref( self ):

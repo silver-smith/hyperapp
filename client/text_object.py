@@ -32,13 +32,13 @@ class TextObject(Object):
         self.text = new_text
         self._notify_object_changed(emitter)
 
-    def run_command( self, initiator_view, command_id ):
+    def run_command( self, command_id, initiator_view=None ):
         # todo: handle 'open_ref' command by client-only object after multi-server support is added
         if command_id == 'edit':
             return self.run_command_edit()
         if command_id == 'view':
             return self.run_command_view()
-        return Object.run_command(self, initiator_view, command_id)
+        return Object.run_command(self, command_id, initiator_view)
 
     def run_command_edit( self ):
         return self.edit_handle_ctr(self)
@@ -47,7 +47,7 @@ class TextObject(Object):
         return self.view_handle_ctr(self)
 
     def open_ref( self, initiator_view, ref_id ):
-        self.run_command(initiator_view, 'open_ref', ref_id=ref_id)
+        self.run_command('open_ref', initiator_view, ref_id=ref_id)
 
     def __del__( self ):
         print '~text_object', self
