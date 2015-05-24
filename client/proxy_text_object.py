@@ -27,14 +27,11 @@ class ProxyTextObject(ProxyObject, TextObject):
     def run_command( self, command_id, initiator_view=None, **kw ):
         if command_id == 'edit' or command_id == 'view':
             return TextObject.run_command(self, command_id, initiator_view, **kw)
+        if command_id == 'save':
+            return ProxyObject.run_command(self, command_id, initiator_view, text=self.text, **kw)
         return ProxyObject.run_command(self, command_id, initiator_view, **kw)
 
-    def prepare_command_request( self, command_id, **kw ):
-        if command_id == 'save':
-            return ProxyObject.prepare_command_request(self, command_id, text=self.text, **kw)
-        return ProxyObject.prepare_command_request(self, command_id, **kw)
-
-    def process_command_response_result( self, command_id, result ):
+    def process_response_result( self, command_id, result ):
         if command_id == 'save':
             self.path = result.new_path
             self._notify_object_changed()

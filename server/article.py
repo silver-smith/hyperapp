@@ -80,20 +80,19 @@ class Article(Object):
             Command('refs', 'Refs', 'Open article references', 'Ctrl+R'),
             ]
 
-    def run_command( self, request, command_id ):
+    def process_request( self, request ):
         # view and edit commands are expected to be handled by client side enterely
-        if command_id == 'save':
+        if request.command_id == 'save':
             return self.run_command_save(request)
-        elif command_id == 'refs':
+        elif request.command_id == 'refs':
             return self.run_command_refs(request)
-        elif command_id == 'open_ref':
+        elif request.command_id == 'open_ref':
             return self.run_command_open_ref(request)
         else:
-            return Object.run_command(self, request, command_id)
+            return Object.process_request(self, request)
 
     def run_command_save( self, request ):
-        text = request['text']
-        return self.do_save(request, text)
+        return self.do_save(request, request.params.text)
 
     def run_command_refs( self, request ):
         return request.make_response_object(ArticleRefList.make(self.article_id))
