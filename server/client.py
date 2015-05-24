@@ -78,8 +78,7 @@ class Client(object):
                     continue
                 print '%s from %s:%d:' % ('request' if 'request_id' in json_packet else 'notification', self.addr[0], self.addr[1])
                 pprint.pprint(json_packet)
-                request = Request(self, json_packet)
-                response = self._process_request(request)
+                response = self._process_json_packet(json_packet)
                 if response is not None:
                     json_response = response.as_json()
                     print 'response to %s:%d:' % self.addr
@@ -94,11 +93,16 @@ class Client(object):
         self.conn.close()
         self.on_close(self)
 
-    def _process_request( self, request ):
-        object = self._resolve(request.path)
+    def _process_json_packet( self, json_packet ):
+        path = json_packet['path']
+        object = self._resolve(path)
         print 'Object:', object
-        assert object, repr(request.path)  # 404: Path not found
+        assert object, repr(path)  # 404: Path not found
+        request = Request(self, object.iface, json_packet)
         response = object.process_request(request)
+        return self.prepare_response(request, response)
+
+    def prepare_response( self, request, response ):
         if response is None and request.is_response_needed():
             response = request.make_response()  # client need a response to cleanup waiting response handler
         if response is None and not self.updates_queue.empty():

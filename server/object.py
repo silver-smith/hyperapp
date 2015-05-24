@@ -1,4 +1,5 @@
 from util import path2str, WeakValueMultiDict
+from common.interface import Interface
 
 
 MIN_ROWS_RETURNED = 10
@@ -151,9 +152,11 @@ class Response(Notification):
 
 class Request(object):
 
-    def __init__( self, client, params ):
+    def __init__( self, client, iface, params ):
+        assert isinstance(iface, Interface), repr(iface)
         assert isinstance(params, dict), repr(params)
         self.client = client
+        self.iface = iface
         self.params = params
 
     def __getattr__( self, name ):
