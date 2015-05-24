@@ -4,6 +4,7 @@ from . interface import (
     TPath,
     Field,
     Command,
+    ElementCommand,
     Interface,
     register_iface,
     )
@@ -17,6 +18,7 @@ blog_entry_iface = Interface('blog_entry', [
     ])
 
 blog_iface = Interface('blog', [
+    ElementCommand('open'),
     Command('add'),
     ])
 
