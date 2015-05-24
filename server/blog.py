@@ -54,12 +54,10 @@ class BlogEntry(article.Article):
         commit()
         print 'Blog entry is saved, blog entry id =', entry_rec.id
         new_path = dict(self.path, article_id=entry_rec.id)
-        response = request.make_response()
-        response.result.new_path = new_path
         subscription.distribute_update(new_path, article.TextDiff(text))
         diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
         subscription.distribute_update(Blog.make_path(), diff)
-        return response
+        return request.make_response_result(new_path=new_path)
 
 
 class Blog(ListObject):
