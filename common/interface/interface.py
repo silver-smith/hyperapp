@@ -50,7 +50,8 @@ class Command(object):
 
     def __init__( self, command_id, args=None, result=None ):
         self.command_id = command_id
-        self.args = args or []
+        self.params_fields  = args or []
+        self.result_fields = result
         self.name2arg = dict((field.name, field) for field in args or [])
         self.name2result = dict((field.name, field) for field in result or [])
 
@@ -75,6 +76,13 @@ class GetCommand(Command):
         pass  # todo
 
 
+class ElementCommand(Command):
+
+    def __init__( self, command_id, args=None, result=None ):
+        args = [Field('element_key', TString())] + (args or [])
+        Command.__init__(self, command_id, args, result)
+
+
 basic_commands = [
     GetCommand('get'),
     ]
@@ -85,6 +93,9 @@ class Interface(object):
     def __init__( self, iface_id, commands ):
         self.iface_id = iface_id
         self.commands = dict((cmd.command_id, cmd) for cmd in commands + basic_commands)
+
+    def get_command( self, command_id ):
+        return self.commands[command_id]
 
     def validate_request( self, command_id, args ):
         cmd = self.commands.get(command_id)
