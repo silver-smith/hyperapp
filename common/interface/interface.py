@@ -94,9 +94,9 @@ class Interface(object):
         Command('unsubscribe'),
         ]
 
-    def __init__( self, iface_id, commands ):
+    def __init__( self, iface_id, commands=None ):
         self.iface_id = iface_id
-        self.commands = dict((cmd.command_id, cmd) for cmd in commands + self.basic_commands)
+        self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
     def get_command( self, command_id ):
         return self.commands[command_id]
@@ -115,12 +115,16 @@ class Interface(object):
 
 
 class ListInterface(Interface):
-
-    basic_commands = Interface.basic_commands + [
-        Command('get_elements', [Field('count', TInt()),
-                                 Field('key', TString())]),
-        ]
         
+    def __init__( self, iface_id, commands=None, key_type=TString() ):
+        Interface.__init__(self, iface_id, (commands or []) + self.get_basic_commands(key_type))
+
+    def get_basic_commands( self, key_type ):
+        return [
+            Command('get_elements', [Field('count', TInt()),
+                                     Field('key', key_type)]),
+                                     ]
+
 
 iface_registry = {}  # iface id -> Interface
 
