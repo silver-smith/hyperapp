@@ -73,18 +73,16 @@ class Dir(ListObject):
         else:
             return [Command('open', 'Open', 'Open file')]
 
-    def run_element_command( self, request, command_id, element_key ):
-        if command_id == 'open':
-            fname = element_key
+    def process_request( self, request ):
+        if request.command_id == 'open':
+            fname = request.params.element_key
             fspath = os.path.join(self.fspath, fname)
             return request.make_response_object(module.open_fspath(fspath))
-        return ListObject.run_element_command(self, request, command_id, element_key)
-
-    def run_command( self, request, command_id ):
-        assert command_id == 'parent', repr(command_id)
-        fspath = self.get_parent_dir()
-        if fspath is not None:
-            return request.make_response_object(module.open_fspath(fspath))
+        if request.command_id == 'parent':
+            fspath = self.get_parent_dir()
+            if fspath is not None:
+                return request.make_response_object(module.open_fspath(fspath))
+        return ListObject.process_request(self, request)
 
     def get_parent_dir( self ):
         dir = os.path.dirname(self.fspath)

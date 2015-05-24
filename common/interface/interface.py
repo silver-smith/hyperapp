@@ -83,16 +83,16 @@ class ElementCommand(Command):
         Command.__init__(self, command_id, args, result)
 
 
-basic_commands = [
-    GetCommand('get'),
-    ]
-
-
 class Interface(object):
+
+    basic_commands = [
+        GetCommand('get'),
+        Command('unsubscribe'),
+        ]
 
     def __init__( self, iface_id, commands ):
         self.iface_id = iface_id
-        self.commands = dict((cmd.command_id, cmd) for cmd in commands + basic_commands)
+        self.commands = dict((cmd.command_id, cmd) for cmd in commands + self.basic_commands)
 
     def get_command( self, command_id ):
         return self.commands[command_id]
@@ -109,6 +109,14 @@ class Interface(object):
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_result(self.iface_id, rec)
 
+
+class ListInterface(Interface):
+
+    basic_commands = Interface.basic_commands + [
+        Command('get_elements', [Field('count', TInt()),
+                                 Field('key', TString())]),
+        ]
+        
 
 iface_registry = {}  # iface id -> Interface
 

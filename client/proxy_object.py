@@ -87,6 +87,9 @@ class ProxyObject(Object):
     def get_commands( self ):
         return self.commands
 
+    def run_command( self, command_id, initiator_view=None, **kw ):
+        self.execute_request(command_id, initiator_view, **kw)
+
     def observers_gone( self ):
         self.send_notification('unsubscribe')
 

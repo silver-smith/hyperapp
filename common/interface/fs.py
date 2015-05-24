@@ -3,14 +3,17 @@ from . interface import (
     TInt,
     Field,
     Command,
+    ElementCommand,
     Interface,
+    ListInterface,
     register_iface,
     )
 
 
-file_iface = Interface('fs_file', [])
-dir_iface = Interface('fs_dir', [
+file_iface = ListInterface('fs_file', [])
+dir_iface = ListInterface('fs_dir', [
     Command('parent'),
+    ElementCommand('open'),
     ])
 
 register_iface(file_iface)
