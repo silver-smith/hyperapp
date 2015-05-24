@@ -173,6 +173,10 @@ class Request(object):
     def path( self ):
         return self.params['path']
 
+    @property
+    def command_id( self ):
+        return self.params['command_id']
+
     # request_id is included only in requests, not notifications
     def is_response_needed( self ):
         return 'request_id' in self.params
@@ -186,6 +190,8 @@ class Request(object):
         return response
 
     def make_response_result( self, **kw ):
+        if 'command_id' in self.params:  # todo: remove after requests merged with commands
+            self.iface.validate_command_result(self.command_id, kw)
         response = self.make_response()
         for name, value in kw.items():
             response.result[name] = value

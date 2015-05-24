@@ -54,12 +54,18 @@ class Command(object):
         self.name2arg = dict((field.name, field) for field in args or [])
         self.name2result = dict((field.name, field) for field in result or [])
 
-    def validate_request( self, path, args ):
-        for name, value in args.items():
-            field = self.name2arg.get(name)
+    def validate_request( self, path, rec ):
+        self._validate_record('params', self.name2arg, path, rec)
+
+    def validate_result( self, path, rec ):
+        self._validate_record('result', self.name2result, path, rec)
+
+    def _validate_record( self, rec_name, name2field, path, rec ):
+        for name, value in rec.items():
+            field = name2field.get(name)
             if not field:
-                raise TypeError('%s: Argument %r for command %r is not supported' % (path, name, self.command_id))
-            field.validate(join(path, self.command_id, name), value)
+                raise TypeError('%s: Unexpected %s field %r for command %r' % (path, rec_name, name, self.command_id))
+            field.validate(join(path, self.command_id, rec_name, name), value)
 
 
 class Interface(object):
@@ -73,6 +79,12 @@ class Interface(object):
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_request(self.iface_id, args)
+
+    def validate_command_result( self, command_id, rec ):
+        cmd = self.commands.get(command_id)
+        if not cmd:
+            raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
+        cmd.validate_result(self.iface_id, rec)
 
 
 iface_registry = {}  # iface id -> Interface
