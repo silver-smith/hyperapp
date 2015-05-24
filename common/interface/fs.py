@@ -1,7 +1,7 @@
 from . interface import (
     TString,
     TInt,
-    Arg,
+    Field,
     Command,
     Interface,
     register_iface,

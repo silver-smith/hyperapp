@@ -34,7 +34,7 @@ class TPath(Type):
             raise TypeError('%s: Path (dict) is expected: %r' % (path, value))
 
 
-class Arg(object):
+class Field(object):
 
     def __init__( self, name, type ):
         assert isinstance(type, Type), repr(type)
@@ -47,17 +47,18 @@ class Arg(object):
 
 class Command(object):
 
-    def __init__( self, command_id, args=None ):
+    def __init__( self, command_id, args=None, result=None ):
         self.command_id = command_id
         self.args = args or []
-        self.name2arg = dict((arg.name, arg) for arg in args or [])
+        self.name2arg = dict((field.name, field) for field in args or [])
+        self.name2result = dict((field.name, field) for field in result or [])
 
     def validate_request( self, path, **kw ):
         for name, value in kw.items():
-            arg = self.name2arg.get(name)
-            if not arg:
+            field = self.name2arg.get(name)
+            if not field:
                 raise TypeError('%s: Argument %r for command %r is not supported' % (path, name, self.command_id))
-            arg.validate(join(path, self.command_id, name), value)
+            field.validate(join(path, self.command_id, name), value)
 
 
 class Interface(object):

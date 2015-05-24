@@ -2,7 +2,7 @@ from . interface import (
     TString,
     TInt,
     TPath,
-    Arg,
+    Field,
     Command,
     Interface,
     register_iface,
@@ -11,11 +11,11 @@ from . interface import (
 
 ref_list_iface = Interface('article_ref_list', [
     Command('parent'),
-    Command('add', [Arg('target_path', TPath())]),
+    Command('add', [Field('target_path', TPath())]),
     ])
 
 object_selector_iface = Interface('article_object_selector', [
-    Command('choose', [Arg('target_path', TPath())]),
+    Command('choose', [Field('target_path', TPath())]),
     ])
 
 onwrap_object_selector_iface = Interface('article_unwrap_object_selector', [])

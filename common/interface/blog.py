@@ -1,7 +1,7 @@
 from . interface import (
     TString,
     TInt,
-    Arg,
+    Field,
     Command,
     Interface,
     register_iface,
@@ -10,8 +10,8 @@ from . interface import (
 
 blog_entry_iface = Interface('blog_entry', [
     Command('parent'),
-    Command('open_ref', [Arg('ref_id', TString())]),
-    Command('save', [Arg('text', TString())]),
+    Command('open_ref', [Field('ref_id', TString())]),
+    Command('save', [Field('text', TString())]),
     Command('refs'),
     ])
 
