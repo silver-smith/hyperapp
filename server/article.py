@@ -1,7 +1,7 @@
 import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
-from common.interface.article import ref_list_iface, object_selector_iface, onwrap_object_selector_iface
+from common.interface.article import article_iface, ref_list_iface, object_selector_iface, onwrap_object_selector_iface
 from object import Diff, ListDiff, Object, ListObject, ListObjectElement, Command, Element, Column, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
@@ -25,7 +25,8 @@ class Article(Object):
     mode_view = object()
     mode_edit = object()
 
-    ## iface = TextObjectIface()
+    iface = article_iface
+    proxy_id = 'text'
 
     class_registry = {}  # ponyorm entity class -> class
 
