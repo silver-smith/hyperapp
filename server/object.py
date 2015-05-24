@@ -175,7 +175,7 @@ class Request(object):
 
     @property
     def command_id( self ):
-        return self.params['command_id']
+        return self.params['command']
 
     # request_id is included only in requests, not notifications
     def is_response_needed( self ):
@@ -191,7 +191,7 @@ class Request(object):
 
     def make_response_result( self, **kw ):
         if 'command_id' in self.params:  # todo: remove after requests merged with commands
-            self.iface.validate_command_result(self.command_id, kw)
+            self.iface.validate_result(self.command_id, kw)
         response = self.make_response()
         for name, value in kw.items():
             response.result[name] = value
@@ -230,18 +230,15 @@ class Object(object):
             **kw)
 
     def process_request( self, request ):
-        method = request['method']
-        if method == 'get':
+        command_id = request.command_id
+        if command_id == 'get':
             return self.process_request_get(request)
-        elif method == 'subscribe':
+        elif command_id == 'subscribe':
             self.subscribe(request)
-        elif method == 'unsubscribe':
+        elif command_id == 'unsubscribe':
             self.unsubscribe(request)
-        elif method == 'run_command':
-            command_id = request['command_id']
-            return self.run_command(request, command_id)
         else:
-            assert False, repr(method)  # Unknown method
+            assert False, repr(command_id)  # Unknown command
 
     def process_request_get( self, request ):
         self.subscribe(request)
@@ -252,9 +249,6 @@ class Object(object):
 
     def unsubscribe( self, request ):
         subscription.remove(self.path, request.client)
-
-    def run_command( self, request, command_id ):
-        assert False, repr(command_id)  # Unknown command
 
 
 class ListObject(Object):
@@ -282,8 +276,7 @@ class ListObject(Object):
         return ([elt.as_json() for elt in elements], has_more)
 
     def process_request( self, request ):
-        method = request['method']
-        if method == 'get_elements':
+        if request.command_id == 'get_elements':
             key = request['key']
             count = request['count']
             elements, has_more = self.get_elements_json(count, key)
@@ -291,7 +284,7 @@ class ListObject(Object):
                 elements=elements,
                 has_more=has_more))
             return response
-        elif method == 'run_element_command':
+        elif request.command_id == 'run_element_command':
             command_id = request['command_id']
             element_key = request['element_key']
             return self.run_element_command(request, command_id, element_key)

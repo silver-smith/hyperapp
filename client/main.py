@@ -114,7 +114,7 @@ def main():
 
     if len(sys.argv) > 1:
         resp_handler = OpenRespHandler(app)  # must keep explicit reference to it
-        get_request = dict(method='get', path=path, request_id=1)
+        get_request = dict(command='get', path=path, request_id=1)
         app.server.execute_request(get_request, resp_handler)
 
     handle = text_view.Handle(text_object.TextObject('hello'))

@@ -138,7 +138,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
     def run_open_command( self, path ):
         resp_handler = OpenRespHandler(self)
         request_id = str(uuid.uuid4())
-        get_request = dict(method='get', path=path, request_id=request_id)
+        get_request = dict(command='get', path=path, request_id=request_id)
         self._app.server.execute_request(get_request, resp_handler)
         self.resp_handlers.add(resp_handler)
 

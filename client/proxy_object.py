@@ -15,44 +15,22 @@ import proxy_registry
 import view
 
 
-class ObjectRespHandler(proxy_registry.RespHandler):
+class RespHandler(proxy_registry.RespHandler):
 
-    def __init__( self, object, initiator_view ):
+    def __init__( self, object, command_id, initiator_view ):
         assert isinstance(object, Object), repr(object)
+        assert isinstance(command_id, basestring), repr(command_id)
         assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
         self.object = weakref.ref(object)
+        self.command_id = command_id
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
 
     def process_response( self, response ):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
         if object:
-            self.run_process_response(object, response, initiator_view)
+            object.process_response(response, self, self.command_id, initiator_view)
 
-    def run_process_response( self, object, response, initiator_view ):
-        raise NotImplementedError(self.__class__)
-
-
-class MethodRespHandler(ObjectRespHandler):
-
-    def __init__( self, object, initiator_view, requested_method ):
-        assert isinstance(requested_method, basestring), repr(requested_method)
-        ObjectRespHandler.__init__(self, object, initiator_view)
-        self.requested_method = requested_method
-
-    def run_process_response( self, object, response, initiator_view ):
-        object.process_response(response, self, initiator_view, self.requested_method)
-
-
-class ObjectCmdRespHandler(ObjectRespHandler):
-
-    def __init__( self, object, initiator_view, command_id ):
-        assert isinstance(command_id, basestring), repr(command_id)
-        ObjectRespHandler.__init__(self, object, initiator_view)
-        self.command_id = command_id
-
-    def run_process_response( self, object, response, initiator_view ):
-        object.process_command_response(response, self, initiator_view, self.command_id)
 
 
 class ProxyObject(Object):
@@ -113,64 +91,42 @@ class ProxyObject(Object):
         self.send_notification('unsubscribe')
 
     # prepare request which does not require/expect response
-    def prepare_notification( self, method, **kw ):
+    def prepare_notification( self, command_id, **kw ):
         return dict(
-            method=method,
             path=self.path,
+            command=command_id,
             **kw)
 
-    def prepare_request( self, method, **kw ):
+    def prepare_request( self, command_id, **kw ):
+        self.iface.validate_request(command_id, kw)
         request_id = str(uuid.uuid4())
         return dict(
-            method=method,
             path=self.path,
             request_id=request_id,
+            command=command_id,
             **kw)
 
-    def prepare_command_request( self, command_id, **kw ):
-        self.iface.validate_command_request(command_id, kw)
-        return self.prepare_request('run_command', command_id=command_id, **kw)
-
-    def send_notification( self, method, **kw ):
-        request = self.prepare_notification(method, **kw)
+    def send_notification( self, command_id, **kw ):
+        request = self.prepare_notification(command_id, **kw)
         self.server.send_notification(request)
 
-    def execute_request( self, method, initiator_view=None, **kw ):
-        request = self.prepare_request(method, **kw)
-        resp_handler = MethodRespHandler(self, initiator_view, request['method'])
+    def execute_request( self, command_id, initiator_view=None, **kw ):
+        request = self.prepare_request(command_id, **kw)
+        resp_handler = RespHandler(self, command_id, initiator_view)
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
-        return self.execute_command_request(command_id, initiator_view, **kw)
-
-    def execute_command_request( self, command_id, initiator_view, **kw ):
-        request = self.prepare_command_request(command_id, **kw)
-        resp_handler = ObjectCmdRespHandler(self, initiator_view, command_id)
-        self.resp_handlers.add(resp_handler)
-        self.server.execute_request(request, resp_handler)
-
-    def process_response( self, response, resp_handler, initiator_view, request_method ):
-        self.process_response_result(request_method, response.result)
-        self.post_process_response(response, resp_handler, initiator_view)
-
-    def process_command_response( self, response, resp_handler, initiator_view, command_id ):
-        self.process_command_response_result(command_id, response.result)
-        self.post_process_response(response, resp_handler, initiator_view)
-
-    def post_process_response( self, response, resp_handler, initiator_view ):
+    def process_response( self, response, resp_handler, command_id, initiator_view ):
+        self.process_response_result(command_id, response.result)
         self.resp_handlers.remove(resp_handler)
         handle = response.get_handle2open()
         if not handle: return  # is new view opening is requested?
         if not initiator_view: return  # view may already be gone (closed, navigated away) or be missing at all
         initiator_view.open(handle)
 
-    def process_response_result( self, request_method, result ):
-        if request_method == 'get':
+    def process_response_result( self, command_id, result ):
+        if command_id == 'get':
             self.process_get_response(result)
-
-    def process_command_response_result( self, request_method, result ):
-        pass
 
     def process_get_response( self, result ):
         self.set_contents(result.contents)
@@ -256,10 +212,10 @@ class ProxyListObject(ProxyObject, ListObject):
         self.execute_request('get_elements', key=last_key, count=request_count)
         self.fetch_pending = True
 
-    def process_response_result( self, request_method, result ):
-        if request_method == 'get_elements':
+    def process_response_result( self, command_id, result ):
+        if command_id == 'get_elements':
             self.process_get_elements_result(result)
-        ProxyObject.process_response_result(self, request_method, result)
+        ProxyObject.process_response_result(self, command_id, result)
 
     def process_get_elements_result( self, result ):
         self.fetch_pending = False
@@ -270,7 +226,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._notify_diff_applied(ListDiff(None, None, new_elements))
         
     def run_element_command( self, command_id, element_key, initiator_view=None ):
-        self.execute_request('run_element_command', initiator_view, command_id=command_id, element_key=element_key)
+        self.execute_request(command_id, initiator_view, element_key=element_key)
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path

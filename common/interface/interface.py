@@ -68,19 +68,31 @@ class Command(object):
             field.validate(join(path, self.command_id, rec_name, name), value)
 
 
+
+class GetCommand(Command):
+
+    def validate_result( self, path, rec ):
+        pass  # todo
+
+
+basic_commands = [
+    GetCommand('get'),
+    ]
+
+
 class Interface(object):
 
     def __init__( self, iface_id, commands ):
         self.iface_id = iface_id
-        self.commands = dict((cmd.command_id, cmd) for cmd in commands)
+        self.commands = dict((cmd.command_id, cmd) for cmd in commands + basic_commands)
 
-    def validate_command_request( self, command_id, args ):
+    def validate_request( self, command_id, args ):
         cmd = self.commands.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_request(self.iface_id, args)
 
-    def validate_command_result( self, command_id, rec ):
+    def validate_result( self, command_id, rec ):
         cmd = self.commands.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
