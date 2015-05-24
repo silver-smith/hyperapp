@@ -12,26 +12,27 @@ class Type(object):
     def validate( self, value ):
         raise NotImplementedError(self.__class__)
 
+    def expect( self, path, value, name, expr ):
+        if not expr:
+            raise TypeError('%s: %s is expected, but got: %r' % (path, name, value))
+
 
 class TString(Type):
 
     def validate( self, path, value ):
-        if not isinstance(value, basestring):
-            raise TypeError('%s: String is expected: %r' % (path, value))
+        self.expect(path, value, 'String', isinstance(value, basestring))
 
 
 class TInt(Type):
 
     def validate( self, path, value ):
-        if not isinstance(value, int):
-            raise TypeError('%s: Int is expected: %r' % (path, value))
+        self.expect(path, value, 'Int', isinstance(value, int))
 
 
 class TPath(Type):
 
     def validate( self, path, value ):
-        if not isinstance(value, dict):
-            raise TypeError('%s: Path (dict) is expected: %r' % (path, value))
+        self.expect(path, value, 'Path (dict)', isinstance(value, dict))
 
 
 class Field(object):
