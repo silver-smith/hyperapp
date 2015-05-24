@@ -98,6 +98,9 @@ class ListDiff(Diff):
             elements=[elt.as_json() for elt in self.elements])
 
 
+class Parameters(object): pass
+
+
 class ResultDict(object):
 
     def __init__( self ):
@@ -152,37 +155,44 @@ class Response(Notification):
 
 class Request(object):
 
-    def __init__( self, client, iface, params ):
+    def __init__( self, client, iface, data ):
         assert isinstance(iface, Interface), repr(iface)
-        assert isinstance(params, dict), repr(params)
+        assert isinstance(data, dict), repr(data)
         self.client = client
         self.iface = iface
-        self.params = params
+        self.data = data
+        self.params = self.construct_params(self.data)
 
     def __getattr__( self, name ):
-        return self.params[name]
+        return self.data[name]
 
     def __getitem__( self, name ):
-        return self.params[name]
+        return self.data[name]
 
     @property
     def method( self ):
-        return self.params['method']
+        return self.data['method']
 
     @property
     def path( self ):
-        return self.params['path']
+        return self.data['path']
 
     @property
     def command_id( self ):
-        return self.params['command']
+        return self.data['command']
 
     # request_id is included only in requests, not notifications
     def is_response_needed( self ):
-        return 'request_id' in self.params
+        return 'request_id' in self.data
+
+    def construct_params( self, data ):
+        params = Parameters()
+        for field in self.iface.get_command(self.command_id).params_fields:
+            setattr(params, field.name, data[field.name])
+        return params
 
     def make_response( self ):
-        return Response(self.params['request_id'])
+        return Response(self.data['request_id'])
 
     def make_response_object( self, obj ):
         response = self.make_response()
@@ -190,7 +200,7 @@ class Request(object):
         return response
 
     def make_response_result( self, **kw ):
-        if 'command_id' in self.params:  # todo: remove after requests merged with commands
+        if 'command_id' in self.data:  # todo: remove after requests merged with commands
             self.iface.validate_result(self.command_id, kw)
         response = self.make_response()
         for name, value in kw.items():
