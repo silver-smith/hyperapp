@@ -32,13 +32,13 @@ class CommandList(ListObject):
         id = '%s.%s' % (cmd.module_name, cmd.id)
         return Element(id, [id, cmd.module_name, cmd.text], commands)
 
-    def run_element_command( self, request, command_id, element_key ):
-        if command_id == 'open':
-            return self.run_module_command(request, element_key)
-        return ListObject.run_element_command(self, request, command_id, element_key)
+    def process_request( self, request ):
+        if request.command_id == 'open':
+            return self.run_module_command(request)
+        return ListObject.process_request(self, request)
 
-    def run_module_command( self, request, element_key ):
-        module_name, command_id = element_key.split('.')
+    def run_module_command( self, request ):
+        module_name, command_id = request.params.element_key.split('.')
         module = Module.get_module_by_name(module_name)
         return module.run_command(request, command_id)
 
