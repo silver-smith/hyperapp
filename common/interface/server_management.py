@@ -4,12 +4,12 @@ from . interface import (
     Field,
     Command,
     ElementCommand,
-    Interface,
+    ListInterface,
     register_iface,
     )
 
 
-server_management_iface = Interface('server_management', [
+server_management_iface = ListInterface('server_management', [
     ElementCommand('open'),
     ])
 

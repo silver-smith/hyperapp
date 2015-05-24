@@ -6,6 +6,7 @@ from . interface import (
     Command,
     ElementCommand,
     Interface,
+    ListInterface,
     register_iface,
     )
 
@@ -17,7 +18,7 @@ blog_entry_iface = Interface('blog_entry', [
     Command('refs'),
     ])
 
-blog_iface = Interface('blog', [
+blog_iface = ListInterface('blog', [
     ElementCommand('open'),
     Command('add'),
     ])

@@ -43,48 +43,44 @@ class Field(object):
         self.type = type
 
     def validate( self, path, value ):
-        self.type.validate(path, value)
+        self.type.validate(join(path, self.name), value)
 
 
 class Command(object):
 
-    def __init__( self, command_id, args=None, result=None ):
+    def __init__( self, command_id, params_fields=None, result_fields=None ):
         self.command_id = command_id
-        self.params_fields  = args or []
-        self.result_fields = result
-        self.name2arg = dict((field.name, field) for field in args or [])
-        self.name2result = dict((field.name, field) for field in result or [])
+        self.params_fields = params_fields or []
+        self.result_fields = result_fields or []
 
-    def validate_request( self, path, rec ):
-        self._validate_record('params', self.name2arg, path, rec)
+    def get_params_fields( self, iface ):
+        return self.params_fields
 
-    def validate_result( self, path, rec ):
-        self._validate_record('result', self.name2result, path, rec)
+    def get_result_fields( self, iface ):
+        return self.result_fields
 
-    def _validate_record( self, rec_name, name2field, path, rec ):
+    def validate_request( self, iface, path, rec ):
+        self._validate_record('params', self.get_params_fields(iface), path, rec)
+
+    def validate_result( self, iface, path, rec ):
+        self._validate_record('result', self.get_result_fields(iface), path, rec)
+
+    def _validate_record( self, rec_name, fields, path, rec ):
         rec_path = join(path, self.command_id, rec_name)
-        missing = set(name2field.keys())
-        for name, value in rec.items():
-            field = name2field.get(name)
-            if not field:
-                raise TypeError('%s: Unexpected %s field %r for command %r' % (path, rec_name, name, self.command_id))
-            field.validate(join(rec_path, name), value)
-            missing.remove(name)
-        if missing:
-            raise TypeError('%s: Missing fields: %s' % (rec_path, ', '.join(missing)))
+        unexpected = set(rec.keys())
+        for field in fields:
+            if field.name not in rec:
+                raise TypeError('%s: Missing field: %s' % (rec_path, field.name))
+            field.validate(rec_path, rec[field.name])
+            unexpected.remove(field.name)
+        if unexpected:
+            raise TypeError('%s: Unexpected fields: %s' % (rec_path, ', '.join(unexpected)))
 
 
 class GetCommand(Command):
 
-    def validate_result( self, path, rec ):
+    def validate_result( self, iface, path, rec ):
         pass  # todo
-
-
-class ElementCommand(Command):
-
-    def __init__( self, command_id, args=None, result=None ):
-        args = [Field('element_key', TString())] + (args or [])
-        Command.__init__(self, command_id, args, result)
 
 
 class Interface(object):
@@ -105,19 +101,31 @@ class Interface(object):
         cmd = self.commands.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        cmd.validate_request(self.iface_id, args)
+        cmd.validate_request(self, self.iface_id, args)
 
     def validate_result( self, command_id, rec ):
         cmd = self.commands.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        cmd.validate_result(self.iface_id, rec)
+        cmd.validate_result(self, self.iface_id, rec)
+
+
+class ElementCommand(Command):
+
+    def __init__( self, command_id, args=None, result=None ):
+        Command.__init__(self, command_id, args, result)
+
+    def get_params_fields( self, iface ):
+        assert isinstance(iface, ListInterface), repr(iface)  # ElementCommands can only be used with ListInterface
+        fields = Command.get_params_fields(self, iface)
+        return [Field('element_key', iface.key_type)] + fields
 
 
 class ListInterface(Interface):
         
     def __init__( self, iface_id, commands=None, key_type=TString() ):
         Interface.__init__(self, iface_id, (commands or []) + self.get_basic_commands(key_type))
+        self.key_type = key_type
 
     def get_basic_commands( self, key_type ):
         return [
