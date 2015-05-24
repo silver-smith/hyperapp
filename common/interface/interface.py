@@ -62,12 +62,16 @@ class Command(object):
         self._validate_record('result', self.name2result, path, rec)
 
     def _validate_record( self, rec_name, name2field, path, rec ):
+        rec_path = join(path, self.command_id, rec_name)
+        missing = set(name2field.keys())
         for name, value in rec.items():
             field = name2field.get(name)
             if not field:
                 raise TypeError('%s: Unexpected %s field %r for command %r' % (path, rec_name, name, self.command_id))
-            field.validate(join(path, self.command_id, rec_name, name), value)
-
+            field.validate(join(rec_path, name), value)
+            missing.remove(name)
+        if missing:
+            raise TypeError('%s: Missing fields: %s' % (rec_path, ', '.join(missing)))
 
 
 class GetCommand(Command):
