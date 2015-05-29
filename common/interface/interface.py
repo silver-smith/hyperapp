@@ -94,8 +94,8 @@ class Interface(object):
         self.iface_id = iface_id
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
-    def get_command( self, command_id ):
-        return self.commands[command_id]
+    def get_command_params_fields( self, command_id ):
+        return self.commands[command_id].get_params_fields(self)
 
     def validate_request( self, command_id, args ):
         cmd = self.commands.get(command_id)

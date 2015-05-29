@@ -187,7 +187,7 @@ class Request(object):
 
     def construct_params( self, data ):
         params = Parameters()
-        for field in self.iface.get_command(self.command_id).params_fields:
+        for field in self.iface.get_command_params_fields(self.command_id):
             setattr(params, field.name, data[field.name])
         return params
 
