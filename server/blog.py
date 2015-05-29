@@ -85,10 +85,15 @@ class Blog(ListObject):
     def get_commands( self ):
         return [Command('add', 'Add entry', 'Create new blog entry', 'Ins')]
 
-    def run_command( self, request, command_id ):
-        if command_id == 'add':
+    def process_request( self, request ):
+        if request.command_id == 'add':
             return self.run_command_add(request)
-        return ListObject.run_command(self, request, command_id)
+        if request.command_id == 'open':
+            article_id = request.params.element_key
+            return request.make_response_object(BlogEntry.make(article_id=article_id))
+        if request.command_id == 'delete':
+            return self.run_element_command_delete(request)
+        return ListObject.process_request(self, request)
 
     def run_command_add( self, request ):
         return request.make_response_object(BlogEntry.make(article_id=None, mode=BlogEntry.mode_edit))
@@ -104,16 +109,9 @@ class Blog(ListObject):
                     ]
         return Element(rec.id, [rec.id, rec.created_at], commands)
 
-    def run_element_command( self, request, command_id, element_key ):
-        if command_id == 'open':
-            article_id = element_key
-            return request.make_response_object(BlogEntry.make(article_id=element_key))
-        if command_id == 'delete':
-            return self.run_element_command_delete(request, element_key)
-        return ListObject.run_element_command(self, request, command_id, element_key)
-
     @db_session
-    def run_element_command_delete( self, request, article_id ):
+    def run_element_command_delete( self, request ):
+        article_id = request.params.element_key
         rec = module.BlogEntry[article_id]
         rec.delete()
         return request.make_response_object(self)  # reload

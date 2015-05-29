@@ -20,8 +20,9 @@ blog_entry_iface = Interface('blog_entry', [
 
 blog_iface = ListInterface('blog', [
     ElementCommand('open'),
+    ElementCommand('delete'),
     Command('add'),
-    ])
+    ], key_type=TInt())
 
 register_iface(blog_entry_iface)
 register_iface(blog_iface)
