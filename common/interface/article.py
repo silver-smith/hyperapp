@@ -11,6 +11,7 @@ from . interface import (
 
 article_iface = Interface('article', [
     Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
+    Command('refs'),
     ])
 
 ref_list_iface = Interface('article_ref_list', [

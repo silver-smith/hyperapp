@@ -34,10 +34,10 @@ class BlogEntry(article.Article):
             Command('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
             ] + article.Article.get_commands(self)
 
-    def run_command( self, request, command_id ):
-        if command_id == 'parent':
+    def process_request( self, request ):
+        if request.command_id == 'parent':
             return self.run_command_parent(request)
-        return article.Article.run_command(self, request, command_id)
+        return article.Article.process_request(self, request)
     
     def run_command_parent( self, request ):
         return request.make_response_object(Blog.make())
