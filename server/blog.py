@@ -112,9 +112,9 @@ class Blog(ListObject):
     @db_session
     def run_element_command_delete( self, request ):
         article_id = request.params.element_key
-        rec = module.BlogEntry[article_id]
-        rec.delete()
-        return request.make_response_object(self)  # reload
+        module.BlogEntry[article_id].delete()
+        diff = ListDiff.delete(article_id)
+        return request.make_response_update(self.path, diff)
 
 
 class BlogModule(PonyOrmModule):
