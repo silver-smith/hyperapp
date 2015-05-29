@@ -151,12 +151,16 @@ class ArticleRefList(ListObject):
             Command('add', 'Add ref', 'Create new reference', 'Ins'),
             ]
 
-    def run_command( self, request, command_id ):
-        if command_id == 'parent':
+    def process_request( self, request ):
+        if request.command_id == 'parent':
             return self.run_command_parent(request)
-        if command_id == 'add':
+        if request.command_id == 'add':
             return self.run_command_add(request)
-        assert False, repr(command_id)  # Unsupported command
+        if request.command_id == 'open':
+            return request.make_response_object(RefSelector.make(self.article_id, ref_id=request.params.element_key))
+        if request.command_id == 'delete':
+            return self.run_element_command_delete(request)
+        return ListObject.process_request(self, request)
 
     @db_session
     def run_command_parent( self, request ):
@@ -164,11 +168,17 @@ class ArticleRefList(ListObject):
         return request.make_response_object(Article.from_rec(rec))
 
     def run_command_add( self, request ):
-        target_path = request['target_path']
         with db_session:
             rec = module.ArticleRef(article=module.Article[self.article_id],
-                                    path=json.dumps(target_path))
+                                    path=json.dumps(request.params.target_path))
         return request.make_response_object(RefSelector.make(self.article_id, ref_id=rec.id))
+
+    @db_session
+    def run_element_command_delete( self, request ):
+        ref_id = request.params.element_key
+        module.ArticleRef[ref_id].delete()
+        diff = ListDiff.delete(ref_id)
+        return request.make_response_update(self.path, diff)
 
     @db_session
     def get_all_elements( self ):
@@ -182,19 +192,6 @@ class ArticleRefList(ListObject):
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
         return Element(rec.id, [rec.id, rec.path], commands)
-
-    def run_element_command( self, request, command_id, element_key ):
-        if command_id == 'open':
-            return request.make_response_object(RefSelector.make(self.article_id, ref_id=element_key))
-        if command_id == 'delete':
-            return self.run_element_command_delete(request, element_key)
-        return ListObject.run_element_command(self, request, command_id, element_key)
-
-    @db_session
-    def run_element_command_delete( self, request, ref_id ):
-        module.ArticleRef[ref_id].delete()
-        diff = ListDiff.delete(ref_id)
-        return request.make_response_update(self.path, diff)
 
 
 class UnwrapSelector(Object):
@@ -249,15 +246,14 @@ class RefSelector(Object):
             target = module.run_resolve(target_path)
         return Object.get_contents(self, target=target.get() if target else None, **kw)
 
-    def run_command( self, request, command_id ):
-        if command_id == 'choose':
+    def process_request( self, request ):
+        if request.command_id == 'choose':
             return self.run_command_choose(request)
-        return Object.run_command(self, request, command_id)
+        return Object.process_request(self, request)
 
     @db_session
     def run_command_choose( self, request ):
-        target_path = request['target_path']
-        target_path_str = json.dumps(target_path)
+        target_path_str = json.dumps(request.params.target_path)
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=target_path_str)

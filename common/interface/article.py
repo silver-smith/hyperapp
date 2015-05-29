@@ -4,7 +4,9 @@ from . interface import (
     TPath,
     Field,
     Command,
+    ElementCommand,
     Interface,
+    ListInterface,
     register_iface,
     )
 
@@ -14,10 +16,12 @@ article_iface = Interface('article', [
     Command('refs'),
     ])
 
-ref_list_iface = Interface('article_ref_list', [
+ref_list_iface = ListInterface('article_ref_list', [
     Command('parent'),
     Command('add', [Field('target_path', TPath())]),
-    ])
+    ElementCommand('open'),
+    ElementCommand('delete'),
+    ], key_type=TInt())
 
 object_selector_iface = Interface('article_object_selector', [
     Command('choose', [Field('target_path', TPath())]),

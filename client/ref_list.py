@@ -11,7 +11,7 @@ class RefList(ProxyListObject):
         return ProxyListObject.run_command(self, command_id, initiator_view)
 
     def run_command_add( self, initiator_view ):
-        self.execute_command_request('add', initiator_view, target_path=self.get_default_ref())
+        self.execute_request('add', initiator_view, target_path=self.get_default_ref())
 
     # todo
     def get_default_ref( self ):
