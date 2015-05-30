@@ -72,7 +72,7 @@ class Model(QtCore.QAbstractTableModel):
             self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
         if diff.start_key == None and diff.end_key == None:  # append
             element_count = self._list_obj.element_count()
-            self.rowsInserted.emit(QtCore.QModelIndex(), element_count - added_count, element_count - 1)
+            self.rowsInserted.emit(QtCore.QModelIndex(), element_count - len(diff.elements), element_count - 1)
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
