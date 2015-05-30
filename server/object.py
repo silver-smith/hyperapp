@@ -84,11 +84,11 @@ class ListDiff(Diff):
 
     @classmethod
     def delete( cls, key ):
-        return cls(key, key + 1, [])
+        return cls(key, key, [])
 
     def __init__( self, start_key, end_key, elements ):
         self.start_key = start_key  # replace elements from this one
-        self.end_key = end_key      # up to (but not including) this one
+        self.end_key = end_key      # up to (and including) this one
         self.elements = elements    # with these elemenents
 
     def as_json( self ):

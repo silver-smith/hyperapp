@@ -188,10 +188,18 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
-        self.elements = \
-          [elt for elt in self.elements if elt.key < diff.start_key] \
-          + diff.elements \
-          + [elt for elt in self.elements if elt.key >= diff.end_key]
+        if self.elements and self.elements[0].key < self.elements[-1].key:  # ascending keys
+            assert diff.start_key <= diff.end_key, (diff.start_key, diff.end_key)
+            self.elements = \
+              [elt for elt in self.elements if elt.key < diff.start_key] \
+              + diff.elements \
+              + [elt for elt in self.elements if elt.key > diff.end_key]
+        else:  # descending keys or single element (todo)
+            assert diff.start_key >= diff.end_key, (diff.start_key, diff.end_key)
+            self.elements = \
+              [elt for elt in self.elements if elt.key > diff.start_key] \
+              + diff.elements \
+              + [elt for elt in self.elements if elt.key < diff.end_key]
         self._notify_object_changed()
 
     def get_columns( self ):
