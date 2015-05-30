@@ -16,7 +16,7 @@ article_iface = Interface('article', [
     Command('refs'),
     ])
 
-ref_list_iface = ListInterface('article_ref_list', [], [
+ref_list_iface = ListInterface('article_ref_list', [TInt(), TString()], [
     Command('parent'),
     Command('add', [Field('target_path', TPath())]),
     ElementCommand('open'),

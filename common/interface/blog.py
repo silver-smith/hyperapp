@@ -1,6 +1,7 @@
 from . interface import (
     TString,
     TInt,
+    TDateTime,
     TPath,
     Field,
     Command,
@@ -18,7 +19,7 @@ blog_entry_iface = Interface('blog_entry', [
     Command('refs'),
     ])
 
-blog_iface = ListInterface('blog', [], [
+blog_iface = ListInterface('blog', [TInt(), TDateTime()], [
     ElementCommand('open'),
     ElementCommand('delete'),
     Command('add'),
