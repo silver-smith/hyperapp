@@ -235,9 +235,6 @@ class ProxyListObject(ProxyObject, ListObject):
         self.elements += new_elements
         self.all_elements_fetched = not result_elts['has_more']
         self._notify_diff_applied(ListDiff(None, None, new_elements))
-        
-    def run_element_command( self, command_id, element_key, initiator_view=None ):
-        self.execute_request(command_id, initiator_view, element_key=element_key)
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path

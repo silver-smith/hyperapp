@@ -64,8 +64,8 @@ class FilteredListObj(ListObject):
         # base may need more elements, but we do not know how much until they are loaded
         return self._base.need_elements_count(elements_count, force_load)
 
-    def run_element_command( self, command_id, element_key, initiator_view ):
-        return self._base.run_element_command(command_id, element_key, initiator_view, )
+    def run_command( self, command_id, initiator_view, **kw ):
+        return self._base.run_command(command_id, initiator_view, **kw)
 
 
 class View(LineListPanel):

@@ -74,7 +74,7 @@ class ListObject(Object):
         assert False, 'No "key" column'
 
     def run_element_command( self, command_id, element_key, initiator_view ):
-        raise NotImplementedError(self.__class__)
+        return self.run_command(command_id, initiator_view, element_key=element_key)
 
     def _notify_diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
