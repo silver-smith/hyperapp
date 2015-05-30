@@ -10,8 +10,8 @@ from . interface import (
     )
 
 
-file_iface = ListInterface('fs_file', key_type=TInt())
-dir_iface = ListInterface('fs_dir', [
+file_iface = ListInterface('fs_file', [TInt(), TString()], key_type=TInt())
+dir_iface = ListInterface('fs_dir', [TString(), TString(), TInt(), TInt()], [
     Command('parent'),
     ElementCommand('open'),
     ])

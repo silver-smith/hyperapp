@@ -9,7 +9,7 @@ from . interface import (
     )
 
 
-server_management_iface = ListInterface('server_management', [
+server_management_iface = ListInterface('server_management', [], [
     ElementCommand('open'),
     ])
 

@@ -1,4 +1,5 @@
-from util import path2str, WeakValueMultiDict
+from common.util import path2str
+from util import WeakValueMultiDict
 from common.interface import Interface
 
 
@@ -200,8 +201,7 @@ class Request(object):
         return response
 
     def make_response_result( self, **kw ):
-        if 'command_id' in self.data:  # todo: remove after requests merged with commands
-            self.iface.validate_result(self.command_id, kw)
+        self.iface.validate_result(self.command_id, kw)
         response = self.make_response()
         for name, value in kw.items():
             response.result[name] = value

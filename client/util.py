@@ -115,14 +115,6 @@ def uni2str( v ):
     else:
         return v
 
-def is_list_inst( val, cls ):
-    if not isinstance(val, list):
-        return False
-    for elt in val:
-        if not isinstance(elt, cls):
-            return False
-    return True
-
 # from itertools recipes
 def flatten(listOfLists):
     "Flatten one level of nesting"
@@ -186,10 +178,6 @@ def focused_index( parent, children, default=None ):
             if w is trg: return idx
         w = w.parent()
     return default
-
-
-def path2str( path ):
-    return ','.join('%s=%s' % (key, value) for key, value in sorted(path.items()))
 
 
 def pickle_dumps( val ):

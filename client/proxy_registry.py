@@ -1,7 +1,7 @@
 # registries for proxy objects and requests
 
 import weakref
-from util import path2str
+from common.util import path2str
 
 
 class RespHandler(object):

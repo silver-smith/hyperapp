@@ -1,3 +1,4 @@
+from .. util import is_list_inst
 
 
 class TypeError(Exception): pass
@@ -9,12 +10,15 @@ def join( *args ):
 
 class Type(object):
 
-    def validate( self, value ):
+    def validate( self, path, value ):
         raise NotImplementedError(self.__class__)
 
     def expect( self, path, value, name, expr ):
         if not expr:
-            raise TypeError('%s: %s is expected, but got: %r' % (path, name, value))
+            self.failure(path, '%s is expected, but got: %r' % (name, value))
+
+    def failure( self, path, desc ):
+        raise TypeError('%s: %s' % (path, desc))
 
 
 class TString(Type):
@@ -26,7 +30,13 @@ class TString(Type):
 class TInt(Type):
 
     def validate( self, path, value ):
-        self.expect(path, value, 'Int', isinstance(value, int))
+        self.expect(path, value, 'Int', isinstance(value, (int, long)))
+
+
+class TBool(Type):
+
+    def validate( self, path, value ):
+        self.expect(path, value, 'Bool', isinstance(value, bool))
 
 
 class TPath(Type):
@@ -35,9 +45,67 @@ class TPath(Type):
         self.expect(path, value, 'Path (dict)', isinstance(value, dict))
 
 
+class TOptional(Type):
+
+    def __init__( self, type ):
+        assert isinstance(type, Type), repr(type)
+        self.type = type
+
+    def validate( self, path, value ):
+        if value is None: return
+        self.type.validate(path, value)
+
+
+class TRecord(Type):
+
+    def __init__( self, fields ):
+        assert is_list_inst(fields, Field), repr(fields)
+        self.fields = fields
+
+    def validate( self, path, value ):
+        self.expect(path, value, 'dict', isinstance(value, dict))
+        name2field = dict((field.name, field) for field in self.fields)
+        missing = set(name2field.keys())
+        for name, item in value.items():
+            field = name2field.get(name)
+            if not field:
+                self.failure(path, 'Unexpected field: %r' % name)
+            field.validate(path, item)
+            missing.remove(name)
+        if missing:
+            self.failure(path, 'Missing fields: %s' % ', '.join(missing))
+
+
+class TList(Type):
+
+    def __init__( self, element_type ):
+        assert isinstance(element_type, Type), repr(element_type)
+        self.element_type = element_type
+
+    def validate( self, path, value ):
+        self.expect(path, value, 'list', isinstance(value, list))
+        for idx, item in enumerate(value):
+            self.element_type.validate(join(path, '#%d' % idx), item)
+
+
+class TRow(Type):
+
+    def __init__( self, columns ):
+        assert is_list_inst(columns, Type), repr(columns)
+        self.columns = columns
+
+    def validate( self, path, value ):
+        self.expect(path, value, 'list', isinstance(value, list))
+        if len(value) != len(self.columns):
+            self.failure(path, 'Wrong row length: %d; required length: %d' % (len(value), len(self.columns)))
+        for idx, (item, type) in enumerate(zip(value, self.columns)):
+            type.validate(join(path, '#%d' % idx), item)
+
+        
 class Field(object):
 
     def __init__( self, name, type ):
+        assert isinstance(name, str), repr(name)
         assert isinstance(type, Type), repr(type)
         self.name = name
         self.type = type
@@ -123,15 +191,39 @@ class ElementCommand(Command):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, commands=None, key_type=TString() ):
-        Interface.__init__(self, iface_id, (commands or []) + self.get_basic_commands(key_type))
+    def __init__( self, iface_id, columns, commands=None, key_type=TString() ):
+        assert is_list_inst(columns, Type), repr(columns)
+        self.columns = columns
         self.key_type = key_type
+        Interface.__init__(self, iface_id, (commands or []) + self._get_basic_commands(key_type))
 
-    def get_basic_commands( self, key_type ):
+    def _get_basic_commands( self, key_type ):
         return [
             Command('get_elements', [Field('count', TInt()),
-                                     Field('key', key_type)]),
-                                     ]
+                                     Field('key', key_type)],
+                                    [Field('fetched_elements', self._get_fetched_elements_type())]),
+                ]
+
+    def _get_fetched_elements_type( self ):
+        return TRecord([
+            Field('elements', TList(self._get_element_type())),
+            Field('has_more', TBool()),
+            ])
+
+    def _get_element_type( self ):
+        return TRecord([
+            Field('commands', TList(self._get_command_type())),
+            Field('key', self.key_type),
+            Field('row', TRow(self.columns)),
+            ])
+
+    def _get_command_type( self ):
+        return TRecord([
+            Field('id', TString()),
+            Field('text', TString()),
+            Field('desc', TString()),
+            Field('shortcut', TOptional(TString())),
+            ])
 
 
 iface_registry = {}  # iface id -> Interface

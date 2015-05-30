@@ -19,9 +19,6 @@ def id2str( id ):
     else:
         return str(id)
 
-def path2str( path ):
-    return ','.join('%s=%s' % (key, value) for key, value in sorted(path.items()))
-
 
 class _KeyedRef(weakref.ref):
 

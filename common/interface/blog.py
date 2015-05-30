@@ -18,7 +18,7 @@ blog_entry_iface = Interface('blog_entry', [
     Command('refs'),
     ])
 
-blog_iface = ListInterface('blog', [
+blog_iface = ListInterface('blog', [], [
     ElementCommand('open'),
     ElementCommand('delete'),
     Command('add'),

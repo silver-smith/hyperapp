@@ -1,5 +1,6 @@
 import weakref
-from util import is_list_inst, make_action
+from common.util import is_list_inst
+from util import make_action
 
 
 class Command(object):
