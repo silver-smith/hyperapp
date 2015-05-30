@@ -1,3 +1,4 @@
+import datetime
 from .. util import is_list_inst
 
 
@@ -21,22 +22,27 @@ class Type(object):
         raise TypeError('%s: %s' % (path, desc))
 
 
-class TString(Type):
+class TPrimitive(Type):
 
     def validate( self, path, value ):
-        self.expect(path, value, 'String', isinstance(value, basestring))
+        self.expect(path, value, self.type_name, isinstance(value, self.type))
 
 
-class TInt(Type):
+class TString(TPrimitive):
+    type_name = 'string'
+    type = basestring
 
-    def validate( self, path, value ):
-        self.expect(path, value, 'Int', isinstance(value, (int, long)))
+class TInt(TPrimitive):
+    type_name = 'int'
+    type = (int, long)
 
+class TBool(TPrimitive):
+    type_name = 'bool'
+    type = bool
 
-class TBool(Type):
-
-    def validate( self, path, value ):
-        self.expect(path, value, 'Bool', isinstance(value, bool))
+class TDateTime(TPrimitive):
+    type_name = 'datetime'
+    type = datetime.datetime
 
 
 class TPath(Type):
