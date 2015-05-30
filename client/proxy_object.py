@@ -200,7 +200,7 @@ class ProxyListObject(ProxyObject, ListObject):
               [elt for elt in self.elements if elt.key > diff.start_key] \
               + diff.elements \
               + [elt for elt in self.elements if elt.key < diff.end_key]
-        self._notify_object_changed()
+        self._notify_diff_applied(diff)
 
     def get_columns( self ):
         return self.columns

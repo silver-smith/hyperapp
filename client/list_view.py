@@ -48,14 +48,31 @@ class Model(QtCore.QAbstractTableModel):
     def element_count( self ):
         return self._list_obj.element_count()
 
-    def elements_added( self, added_count ):
-        element_count = self._list_obj.element_count()
-        self.rowsInserted.emit(QtCore.QModelIndex(), element_count - added_count, element_count - 1)
-
     def diff_applied( self, diff ):
+        self._update_mapping()  # underlying list object elements are already changed
+        if diff.start_key is not None:
+            assert diff.start_key == diff.end_key  # only signle key removal is supported by now
+            elements = self._list_obj.get_fetched_elements()
+            if elements and elements[0].key < elements[-1].key:
+                for row, elt in enumerate(elements):
+                    if elt.key > diff.start_key:
+                        self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
+                        break
+            else:
+                for row, elt in enumerate(elements):
+                    if elt.key < diff.start_key:
+                        self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
+                        break
+            assert diff.end_key is not None
+            start_row = self._key2row[diff.start_key]
+            end_row = self._key2row[diff.end_key]
+            diff.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
+        if diff.start_key is not None and diff.elements:
+            start_row = self._key2row[diff.start_key]
+            self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
         if diff.start_key == None and diff.end_key == None:  # append
-            self._update_mapping()
-            self.elements_added(len(diff.elements))
+            element_count = self._list_obj.element_count()
+            self.rowsInserted.emit(QtCore.QModelIndex(), element_count - added_count, element_count - 1)
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
