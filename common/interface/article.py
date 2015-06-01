@@ -16,18 +16,21 @@ article_iface = Interface('article', [
     Command('refs'),
     ])
 
-ref_list_iface = ListInterface('article_ref_list', [TInt(), TString()], [
-    Command('parent'),
-    Command('add', [Field('target_path', TPath())]),
-    ElementCommand('open'),
-    ElementCommand('delete'),
-    ], key_type=TInt())
+ref_list_iface = ListInterface('article_ref_list',
+                               columns=[TInt(), TString()],
+                               commands=[
+                                   Command('parent'),
+                                   Command('add', [Field('target_path', TPath())]),
+                                   ElementCommand('open'),
+                                   ElementCommand('delete'),
+                                   ],
+                                key_type=TInt())
 
-object_selector_iface = Interface('article_object_selector', [
+object_selector_iface = Interface('article_object_selector', commands=[
     Command('choose', [Field('target_path', TPath())]),
     ])
 
-onwrap_object_selector_iface = Interface('article_unwrap_object_selector', [])
+onwrap_object_selector_iface = Interface('article_unwrap_object_selector')
 
 
 register_iface(article_iface)

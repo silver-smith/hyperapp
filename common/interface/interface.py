@@ -144,19 +144,29 @@ class Command(object):
 
 class GetCommand(Command):
 
-    def validate_result( self, iface, path, rec ):
-        pass  # todo
+    def __init__( self ):
+        Command.__init__(self, 'get')
+
+    def get_result_fields( self, iface ):
+        return [
+            Field('path', TPath()),
+            Field('iface_id', TString()),
+            Field('proxy_id', TString()),
+            Field('view_id', TString()),
+            Field('contents', iface.get_contents_type()),
+            ]
 
 
 class Interface(object):
 
     basic_commands = [
-        GetCommand('get'),
+        GetCommand(),
         Command('unsubscribe'),
         ]
 
-    def __init__( self, iface_id, commands=None ):
+    def __init__( self, iface_id, content_fields=None, commands=None ):
         self.iface_id = iface_id
+        self.content_fields = content_fields or []
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
     def get_command_params_fields( self, command_id ):
@@ -174,6 +184,20 @@ class Interface(object):
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_result(self, self.iface_id, rec)
 
+    def get_contents_type( self ):
+        return TRecord(self.get_default_content_fields() + self.content_fields)
+
+    def get_default_content_fields( self ):
+        return [Field('commands', TList(self._get_command_type()))]
+
+    def _get_command_type( self ):
+        return TRecord([
+            Field('id', TString()),
+            Field('text', TString()),
+            Field('desc', TString()),
+            Field('shortcut', TOptional(TString())),
+            ])
+
 
 class ElementCommand(Command):
 
@@ -188,11 +212,25 @@ class ElementCommand(Command):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, columns, commands=None, key_type=TString() ):
+    def __init__( self, iface_id, content_fields=None, columns=None, commands=None, key_type=TString() ):
         assert is_list_inst(columns, Type), repr(columns)
         self.columns = columns
         self.key_type = key_type
-        Interface.__init__(self, iface_id, (commands or []) + self._get_basic_commands(key_type))
+        Interface.__init__(self, iface_id, content_fields, (commands or []) + self._get_basic_commands(key_type))
+
+    def get_default_content_fields( self ):
+        return Interface.get_default_content_fields(self) + [
+            Field('columns', TList(self._get_column_type())),
+            Field('elements', TList(self._get_element_type())),
+            Field('has_more', TBool()),
+            ]
+
+    def _get_column_type( self ):
+        return TRecord([
+            Field('id', TString()),
+            Field('type', TString()),
+            Field('title', TOptional(TString())),
+            ])
 
     def _get_basic_commands( self, key_type ):
         return [
@@ -212,14 +250,6 @@ class ListInterface(Interface):
             Field('commands', TList(self._get_command_type())),
             Field('key', self.key_type),
             Field('row', TRow(self.columns)),
-            ])
-
-    def _get_command_type( self ):
-        return TRecord([
-            Field('id', TString()),
-            Field('text', TString()),
-            Field('desc', TString()),
-            Field('shortcut', TOptional(TString())),
             ])
 
 

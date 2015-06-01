@@ -9,8 +9,10 @@ from . interface import (
     )
 
 
-server_management_iface = ListInterface('server_management', [], [
-    ElementCommand('open'),
-    ])
+server_management_iface = ListInterface('server_management',
+                                        columns=[TString(), TString(), TString()],
+                                        commands=[
+                                            ElementCommand('open'),
+                                            ])
 
 register_iface(server_management_iface)
