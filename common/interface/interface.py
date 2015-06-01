@@ -68,18 +68,16 @@ class TRecord(Type):
         assert is_list_inst(fields, Field), repr(fields)
         self.fields = fields
 
-    def validate( self, path, value ):
-        self.expect(path, value, 'dict', isinstance(value, dict))
-        name2field = dict((field.name, field) for field in self.fields)
-        missing = set(name2field.keys())
-        for name, item in value.items():
-            field = name2field.get(name)
-            if not field:
-                self.failure(path, 'Unexpected field: %r' % name)
-            field.validate(path, item)
-            missing.remove(name)
-        if missing:
-            self.failure(path, 'Missing fields: %s' % ', '.join(missing))
+    def validate( self, path, rec ):
+        self.expect(path, rec, 'dict', isinstance(rec, dict))
+        unexpected = set(rec.keys())
+        for field in self.fields:
+            if field.name not in rec:
+                raise TypeError('%s: Missing field: %s' % (path, field.name))
+            field.validate(path, rec[field.name])
+            unexpected.remove(field.name)
+        if unexpected:
+            raise TypeError('%s: Unexpected fields: %s' % (path, ', '.join(unexpected)))
 
 
 class TList(Type):
@@ -141,14 +139,7 @@ class Command(object):
 
     def _validate_record( self, rec_name, fields, path, rec ):
         rec_path = join(path, self.command_id, rec_name)
-        unexpected = set(rec.keys())
-        for field in fields:
-            if field.name not in rec:
-                raise TypeError('%s: Missing field: %s' % (rec_path, field.name))
-            field.validate(rec_path, rec[field.name])
-            unexpected.remove(field.name)
-        if unexpected:
-            raise TypeError('%s: Unexpected fields: %s' % (rec_path, ', '.join(unexpected)))
+        TRecord(fields).validate(rec_path, rec)
 
 
 class GetCommand(Command):
