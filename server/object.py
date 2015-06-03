@@ -161,33 +161,17 @@ class Request(object):
         assert isinstance(data, dict), repr(data)
         self.client = client
         self.iface = iface
-        self.data = data
-        self.params = self.iface.params_dict2attributes(data['command'], self.data)
-
-    def __getattr__( self, name ):
-        return self.data[name]
-
-    def __getitem__( self, name ):
-        return self.data[name]
-
-    @property
-    def method( self ):
-        return self.data['method']
-
-    @property
-    def path( self ):
-        return self.data['path']
-
-    @property
-    def command_id( self ):
-        return self.data['command']
+        self.path = data['path']
+        self.command_id = data['command']
+        self.request_id = data.get('request_id')
+        self.params = self.iface.params_dict2attributes(self.command_id, data)
 
     # request_id is included only in requests, not notifications
     def is_response_needed( self ):
-        return 'request_id' in self.data
+        return self.request_id is not None
 
     def make_response( self ):
-        return Response(self.data['request_id'])
+        return Response(self.request_id)
 
     def make_response_object( self, obj ):
         response = self.make_response()
@@ -281,16 +265,16 @@ class ListObject(Object):
 
     def process_request( self, request ):
         if request.command_id == 'get_elements':
-            key = request['key']
-            count = request['count']
+            key = request.params.key
+            count = request.params.count
             elements, has_more = self.get_elements_json(count, key)
             return request.make_response_result(fetched_elements=dict(
                 elements=elements,
                 has_more=has_more))
             return response
         elif request.command_id == 'run_element_command':
-            command_id = request['command_id']
-            element_key = request['element_key']
+            command_id = request.command_id
+            element_key = request.params.element_key
             return self.run_element_command(request, command_id, element_key)
         else:
             return Object.process_request(self, request)

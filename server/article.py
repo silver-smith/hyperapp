@@ -99,7 +99,7 @@ class Article(Object):
 
     @db_session
     def run_command_open_ref( self, request ):
-        ref_id = request['ref_id']
+        ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
         target_path = json.loads(rec.path)
         target = module.run_resolve(target_path)
