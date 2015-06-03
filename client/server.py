@@ -35,7 +35,9 @@ class Response(Notification):
         self.request_id = self.data['request_id']
 
     def get_result( self, iface, command_id ):
-        return iface.result_dict2attributes(command_id, self.data['result'])
+        result_dict = self.data.get('result')
+        if result_dict:
+            return iface.result_dict2attributes(command_id, result_dict)
 
     def get_handle2open( self ):
         if 'object' in self.data:

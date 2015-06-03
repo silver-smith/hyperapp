@@ -99,28 +99,6 @@ class ListDiff(Diff):
             elements=[elt.as_json() for elt in self.elements])
 
 
-class Parameters(object): pass
-
-
-class ResultDict(object):
-
-    def __init__( self ):
-        self._d = {}
-
-    def __setattr__( self, attr, value ):
-        if attr == '_d':
-            return object.__setattr__(self, attr, value)
-        self._d[attr] = value
-
-    def __setitem__( self, attr, value ):
-        if attr == '_d':
-            return object.__setattr__(self, attr, value)
-        self._d[attr] = value
-
-    def as_json( self ):
-        return self._d
-
-
 class Notification(object):
 
     def __init__( self ):
@@ -138,19 +116,19 @@ class Notification(object):
 
 class Response(Notification):
 
-    def __init__( self, request_id ):
+    def __init__( self, request_id, result_dict=None ):
         Notification.__init__(self)
         self.request_id = request_id
         self.object = None
-        self.result = ResultDict()
+        self.result_dict = result_dict
 
     def as_json( self ):
         d = Notification.as_json(self)
         d['request_id'] = self.request_id
         if self.object:
             d['object'] = self.object
-        if self.result:
-            d['result'] = self.result.as_json()
+        if self.result_dict:
+            d['result'] = self.result_dict
         return d
 
 
@@ -170,8 +148,8 @@ class Request(object):
     def is_response_needed( self ):
         return self.request_id is not None
 
-    def make_response( self ):
-        return Response(self.request_id)
+    def make_response( self, result_dict=None ):
+        return Response(self.request_id, result_dict)
 
     def make_response_object( self, obj ):
         response = self.make_response()
@@ -180,10 +158,7 @@ class Request(object):
 
     def make_response_result( self, **kw ):
         self.iface.validate_result(self.command_id, kw)
-        response = self.make_response()
-        for name, value in kw.items():
-            response.result[name] = value
-        return response
+        return self.make_response(kw)
 
     def make_response_update( self, path, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
