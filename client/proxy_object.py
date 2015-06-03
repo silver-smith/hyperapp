@@ -120,7 +120,7 @@ class ProxyObject(Object):
         self.server.execute_request(request, resp_handler)
 
     def process_response( self, response, resp_handler, command_id, initiator_view ):
-        self.process_response_result(command_id, response.result)
+        self.process_response_result(command_id, response.get_result(self.iface, command_id))
         self.resp_handlers.remove(resp_handler)
         handle = response.get_handle2open()
         if not handle: return  # is new view opening is requested?

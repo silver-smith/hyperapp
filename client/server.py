@@ -18,21 +18,6 @@ def resolve_handle( server, response ):
     return handle_ctr(object, response)
 
 
-class ResultDict(object):
-
-    def __init__( self, d ):
-        self._d = d
-
-    def get( self, attr ):
-        return self._d.get(attr)
-
-    def __getitem__( self, attr ):
-        return self._d[attr]
-
-    def __getattr__( self, attr ):
-        return self._d[attr]
-
-
 class Notification(object):
 
     def __init__( self, server, data ):
@@ -49,10 +34,8 @@ class Response(Notification):
         Notification.__init__(self, server, data)
         self.request_id = self.data['request_id']
 
-    @property
-    def result( self ):
-        if 'result' in self.data:
-            return ResultDict(self.data['result'])
+    def get_result( self, iface, command_id ):
+        return iface.result_dict2attributes(command_id, self.data['result'])
 
     def get_handle2open( self ):
         if 'object' in self.data:

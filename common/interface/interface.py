@@ -170,7 +170,7 @@ class Command(object):
         return TRecord(self.get_params_fields(iface)).dict2attributes(params_dict)
 
     def result_dict2attributes( self, iface, result_dict ):
-        return TRecord(self.get_result_fields(iface)).dict2attributes(params_dict)
+        return TRecord(self.get_result_fields(iface)).dict2attributes(result_dict)
 
 
 class GetCommand(Command):
@@ -196,6 +196,8 @@ class Interface(object):
         ]
 
     def __init__( self, iface_id, content_fields=None, commands=None ):
+        assert is_list_inst(content_fields or [], Field), repr(content_fields)
+        assert is_list_inst(commands or [], Command), repr(commands)
         self.iface_id = iface_id
         self.content_fields = content_fields or []
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
