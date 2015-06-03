@@ -162,7 +162,7 @@ class Request(object):
         self.client = client
         self.iface = iface
         self.data = data
-        self.params = self.construct_params(self.data)
+        self.params = self.iface.params_dict2attributes(data['command'], self.data)
 
     def __getattr__( self, name ):
         return self.data[name]
@@ -185,12 +185,6 @@ class Request(object):
     # request_id is included only in requests, not notifications
     def is_response_needed( self ):
         return 'request_id' in self.data
-
-    def construct_params( self, data ):
-        params = Parameters()
-        for field in self.iface.get_command_params_fields(self.command_id):
-            setattr(params, field.name, data[field.name])
-        return params
 
     def make_response( self ):
         return Response(self.data['request_id'])

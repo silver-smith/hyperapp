@@ -14,6 +14,9 @@ class Type(object):
     def validate( self, path, value ):
         raise NotImplementedError(self.__class__)
 
+    def dict2attributes( self, value ):
+        raise NotImplementedError(self.__class__)
+
     def expect( self, path, value, name, expr ):
         if not expr:
             self.failure(path, '%s is expected, but got: %r' % (name, value))
@@ -26,6 +29,9 @@ class TPrimitive(Type):
 
     def validate( self, path, value ):
         self.expect(path, value, self.type_name, isinstance(value, self.type))
+        
+    def dict2attributes( self, value ):
+        return value
 
 
 class TString(TPrimitive):
@@ -61,6 +67,12 @@ class TOptional(Type):
         if value is None: return
         self.type.validate(path, value)
 
+    def dict2attributes( self, value ):
+        return self.type.dict2attributes(value)
+
+
+class Record(object): pass
+
 
 class TRecord(Type):
 
@@ -79,6 +91,12 @@ class TRecord(Type):
         if unexpected:
             raise TypeError('%s: Unexpected fields: %s' % (path, ', '.join(unexpected)))
 
+    def dict2attributes( self, value ):
+        rec = Record()
+        for field in self.fields:
+            setattr(rec, field.name, value[field.name])
+        return rec
+
 
 class TList(Type):
 
@@ -90,6 +108,9 @@ class TList(Type):
         self.expect(path, value, 'list', isinstance(value, list))
         for idx, item in enumerate(value):
             self.element_type.validate(join(path, '#%d' % idx), item)
+
+    def dict2attributes( self, value ):
+        return [self.element_type.dict2attributes(elt) for elt in value]
 
 
 class TRow(Type):
@@ -105,6 +126,10 @@ class TRow(Type):
         for idx, (item, type) in enumerate(zip(value, self.columns)):
             type.validate(join(path, '#%d' % idx), item)
 
+    def dict2attributes( self, value ):
+        assert isisntance(value, list) and len(value) == len(self.columns), repr(value)
+        return [t.dict2attributes(elt) for (t, elt) in zip(self.columns, value)]
+            
         
 class Field(object):
 
@@ -131,15 +156,21 @@ class Command(object):
     def get_result_fields( self, iface ):
         return self.result_fields
 
-    def validate_request( self, iface, path, rec ):
-        self._validate_record('params', self.get_params_fields(iface), path, rec)
+    def validate_request( self, iface, path, params_dict ):
+        self._validate_record('params', self.get_params_fields(iface), path, params_dict)
 
-    def validate_result( self, iface, path, rec ):
-        self._validate_record('result', self.get_result_fields(iface), path, rec)
+    def validate_result( self, iface, path, result_dict ):
+        self._validate_record('result', self.get_result_fields(iface), path, result_dict)
 
-    def _validate_record( self, rec_name, fields, path, rec ):
+    def _validate_record( self, rec_name, fields, path, rec_dict ):
         rec_path = join(path, self.command_id, rec_name)
-        TRecord(fields).validate(rec_path, rec)
+        TRecord(fields).validate(rec_path, rec_dict)
+
+    def params_dict2attributes( self, iface, params_dict ):
+        return TRecord(self.get_params_fields(iface)).dict2attributes(params_dict)
+
+    def result_dict2attributes( self, iface, result_dict ):
+        return TRecord(self.get_result_fields(iface)).dict2attributes(params_dict)
 
 
 class GetCommand(Command):
@@ -183,6 +214,14 @@ class Interface(object):
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_result(self, self.iface_id, rec)
+
+    def params_dict2attributes( self, command_id, params_dict ):
+        cmd = self.commands[command_id]
+        return cmd.params_dict2attributes(self, params_dict)
+
+    def result_dict2attributes( self, command_id, result_dict ):
+        cmd = self.commands[command_id]
+        return cmd.result_dict2attributes(self, result_dict)
 
     def get_contents_type( self ):
         return TRecord(self.get_default_content_fields() + self.content_fields)
