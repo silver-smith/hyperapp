@@ -11,10 +11,11 @@ from . interface import (
     )
 
 
-article_iface = Interface('article', [
-    Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
-    Command('refs'),
-    ])
+article_iface = Interface('article',
+                          commands=[
+                              Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
+                              Command('refs'),
+                              ])
 
 ref_list_iface = ListInterface('article_ref_list',
                                columns=[TInt(), TString()],
