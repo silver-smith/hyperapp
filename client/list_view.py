@@ -168,6 +168,7 @@ class View(view.View, QtGui.QTableView):
         if row is not None:
             self.set_current_row(row)
         view.View.object_changed(self)
+        self.check_if_elements_must_be_fetched()
 
     def diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
