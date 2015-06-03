@@ -27,9 +27,13 @@ ref_list_iface = ListInterface('article_ref_list',
                                    ],
                                 key_type=TInt())
 
-object_selector_iface = Interface('article_object_selector', commands=[
-    Command('choose', [Field('target_path', TPath())]),
-    ])
+object_selector_iface = Interface('article_object_selector',
+                                  content_fields=[
+                                      Field('target', TPath()),
+                                      ],
+                                  commands=[
+                                      Command('choose', [Field('target_path', TPath())]),
+                                  ])
 
 onwrap_object_selector_iface = Interface('article_unwrap_object_selector')
 
