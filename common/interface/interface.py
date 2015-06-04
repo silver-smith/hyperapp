@@ -51,12 +51,6 @@ class TDateTime(TPrimitive):
     type = datetime.datetime
 
 
-class TPath(Type):
-
-    def validate( self, path, value ):
-        self.expect(path, value, 'Path (dict)', isinstance(value, dict))
-
-
 class TOptional(Type):
 
     def __init__( self, type ):
@@ -69,6 +63,18 @@ class TOptional(Type):
 
     def dict2attributes( self, value ):
         return self.type.dict2attributes(value)
+
+        
+class Field(object):
+
+    def __init__( self, name, type ):
+        assert isinstance(name, str), repr(name)
+        assert type is None or isinstance(type, Type), repr(type)
+        self.name = name
+        self.type = type
+
+    def validate( self, path, value ):
+        self.type.validate(join(path, self.name), value)
 
 
 class Record(object): pass
@@ -129,18 +135,31 @@ class TRow(Type):
     def dict2attributes( self, value ):
         assert isisntance(value, list) and len(value) == len(self.columns), repr(value)
         return [t.dict2attributes(elt) for (t, elt) in zip(self.columns, value)]
-            
-        
-class Field(object):
 
-    def __init__( self, name, type ):
-        assert isinstance(name, str), repr(name)
-        assert isinstance(type, Type), repr(type)
-        self.name = name
-        self.type = type
+
+class TPath(Type):
 
     def validate( self, path, value ):
-        self.type.validate(join(path, self.name), value)
+        self.expect(path, value, 'Path (dict)', isinstance(value, dict))
+
+
+class TObject(TRecord):
+
+    def __init__( self ):
+        TRecord.__init__(self, [
+            Field('iface_id', TString()),
+            Field('path', TPath()),
+            Field('proxy_id', TString()),
+            Field('view_id', TString()),
+            Field('contents', None),
+            ])
+
+    def validate( self, path, value ):
+        TRecord.validate(self, path, value)
+        iface_id = value['iface_id']
+        iface = resolve_iface(iface_id)
+        assert iface, repr(iface_id)  # Unknown iface
+        iface.validate_contents(join(path, 'contents'), value['contents'])
 
 
 class Command(object):
@@ -150,6 +169,12 @@ class Command(object):
         self.params_fields = params_fields or []
         self.result_fields = result_fields or []
 
+    def get_params_type( self, iface ):
+        return TRecord(self.get_params_fields(iface))
+
+    def get_result_type( self, iface ):
+        return TRecord(self.get_result_fields(iface))
+
     def get_params_fields( self, iface ):
         return self.params_fields
 
@@ -157,20 +182,20 @@ class Command(object):
         return self.result_fields
 
     def validate_request( self, iface, path, params_dict ):
-        self._validate_record('params', self.get_params_fields(iface), path, params_dict)
+        self._validate_record('params', self.get_params_type(iface), path, params_dict)
 
     def validate_result( self, iface, path, result_dict ):
-        self._validate_record('result', self.get_result_fields(iface), path, result_dict)
+        self._validate_record('result', self.get_result_type(iface), path, result_dict)
 
-    def _validate_record( self, rec_name, fields, path, rec_dict ):
+    def _validate_record( self, rec_name, type, path, rec_dict ):
         rec_path = join(path, self.command_id, rec_name)
-        TRecord(fields).validate(rec_path, rec_dict)
+        type.validate(rec_path, rec_dict)
 
     def params_dict2attributes( self, iface, params_dict ):
-        return TRecord(self.get_params_fields(iface)).dict2attributes(params_dict)
+        return self.get_params_type(iface).dict2attributes(params_dict)
 
     def result_dict2attributes( self, iface, result_dict ):
-        return TRecord(self.get_result_fields(iface)).dict2attributes(result_dict)
+        return self.get_result_type(iface).dict2attributes(result_dict)
 
 
 class GetCommand(Command):
@@ -178,20 +203,24 @@ class GetCommand(Command):
     def __init__( self ):
         Command.__init__(self, 'get')
 
-    def get_result_fields( self, iface ):
-        return [
-            Field('path', TPath()),
-            Field('iface_id', TString()),
-            Field('proxy_id', TString()),
-            Field('view_id', TString()),
-            Field('contents', iface.get_contents_type()),
-            ]
+    def get_result_type( self, iface ):
+        return TObject()
+
+
+class SubscribeCommand(Command):
+
+    def __init__( self ):
+        Command.__init__(self, 'subscribe')
+
+    def get_result_type( self, iface ):
+        return iface.get_contents_type()
 
 
 class Interface(object):
 
     basic_commands = [
         GetCommand(),
+        SubscribeCommand(),
         Command('unsubscribe'),
         ]
 
@@ -216,6 +245,9 @@ class Interface(object):
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_result(self, self.iface_id, rec)
+
+    def validate_contents( self, path, value ):
+        self.get_contents_type().validate(path, value)
 
     def params_dict2attributes( self, command_id, params_dict ):
         cmd = self.commands[command_id]

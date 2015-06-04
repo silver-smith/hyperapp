@@ -196,6 +196,8 @@ class Object(object):
         command_id = request.command_id
         if command_id == 'get':
             return self.process_request_get(request)
+        if command_id == 'subscribe':
+            return self.process_request_subscribe(request)
         elif command_id == 'subscribe':
             self.subscribe(request)
         elif command_id == 'unsubscribe':
@@ -206,6 +208,10 @@ class Object(object):
     def process_request_get( self, request ):
         self.subscribe(request)
         return request.make_response_result(**self.get())
+
+    def process_request_subscribe( self, request ):
+        self.subscribe(request)
+        return request.make_response_result(**self.get_contents())
 
     def subscribe( self, request ):
         subscription.add(self.path, request.client)

@@ -76,10 +76,10 @@ class ProxyObject(Object):
         self.iface = resolve_iface(state['iface_id'])
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
-        self.execute_request('get')
+        self.execute_request('subscribe')
 
     def set_contents( self, contents ):
-        self.commands = [ObjectCommand.from_json(cmd) for cmd in contents['commands']]
+        self.commands = [ObjectCommand.from_json(cmd) for cmd in contents.commands]
 
     def get_title( self ):
         return ','.join('%s=%s' % (key, value) for key, value in self.path.items())
@@ -128,11 +128,11 @@ class ProxyObject(Object):
         initiator_view.open(handle)
 
     def process_response_result( self, command_id, result ):
-        if command_id == 'get':
-            self.process_get_response(result)
+        if command_id == 'subscribe':
+            self.process_subscribe_response(result)
 
-    def process_get_response( self, result ):
-        self.set_contents(result.contents)
+    def process_subscribe_response( self, result ):
+        self.set_contents(result)
         self._notify_object_changed()
 
     def process_update( self, diff ):
@@ -181,10 +181,10 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self.columns = [self.column_from_json(idx, column) for idx, column in enumerate(contents['columns'])]
+        self.columns = [self.column_from_json(idx, column) for idx, column in enumerate(contents.columns)]
         self.key_column_idx = self._find_key_column(self.columns)
-        self.elements = [self.element_from_json(elt) for elt in contents['elements']]
-        self.all_elements_fetched = not contents['has_more']
+        self.elements = [self.element_from_json(elt) for elt in contents.elements]
+        self.all_elements_fetched = not contents.has_more
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
