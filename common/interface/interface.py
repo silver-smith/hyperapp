@@ -6,7 +6,7 @@ class TypeError(Exception): pass
 
 
 def join( *args ):
-    return '.'.join(args)
+    return '.'.join(filter(None, args))
 
 
 class Type(object):
@@ -233,6 +233,9 @@ class Interface(object):
     def is_open_command( self, command_id ):
         return isinstance(self.commands[command_id], OpenCommand)
 
+    def get_command_result_type( self, command_id ):
+        return self.commands[command_id].get_result_type(self)
+
     def get_command_param_fields( self, command_id ):
         return self.commands[command_id].get_param_fields(self)
 
@@ -331,12 +334,23 @@ class ListInterface(Interface):
             ])
 
 
-iface_registry = {}  # iface id -> Interface
+class IfaceRegistry(object):
 
+    def __init__( self ):
+        self.registry = {}  # iface id -> Interface
+
+    def register( self, iface ):
+        assert isinstance(iface, Interface), repr(iface)
+        self.registry[iface.iface_id] = iface
+
+    def resolve( self, iface_id ):
+        return self.registry[iface_id]
+
+
+iface_registry = IfaceRegistry()
 
 def register_iface( iface ):
-    assert isinstance(iface, Interface), repr(iface)
-    iface_registry[iface.iface_id] = iface
+    iface_registry.register(iface)
 
 def resolve_iface( iface_id ):
-    return iface_registry[iface_id]
+    return iface_registry.resolve(iface_id)

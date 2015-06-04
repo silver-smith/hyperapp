@@ -4,7 +4,6 @@ from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after
 from command import Command
 import proxy_registry
-from server import resolve_handle
 from view_command import command
 import view
 import composite
@@ -144,7 +143,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     def process_open_command_response( self, resp_handler, result ):
         self.resp_handlers.remove(resp_handler)
-        handle = resolve_handle(self._app.server, result)
+        handle = self._app.server.resolve_handle(result)
         self.get_current_view().open(handle)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')

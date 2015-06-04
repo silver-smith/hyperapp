@@ -57,10 +57,10 @@ def is_full_packet( data ):
     data_size = decode_packet_size(data[:ssize])
     return len(data) >= ssize + data_size
 
-def decode_packet( data ):
+def decode_packet( data, decode_datetime=True ):
     assert is_full_packet(data)
     ssize = packet_size_size()
     data_size = decode_packet_size(data[:ssize])
     remainder = data[ssize + data_size:]
-    json_data = json.loads(data[ssize:ssize + data_size], object_hook=json_decoder)
+    json_data = json.loads(data[ssize:ssize + data_size], object_hook=json_decoder if decode_datetime else None)
     return (json_data, remainder)

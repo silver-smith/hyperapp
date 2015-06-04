@@ -1,21 +1,10 @@
 from PySide import QtNetwork
 from common import json_packet
-from common.interface import resolve_iface
+from common.json_decoder import JsonDecoder
+from common.interface import iface_registry
 import proxy_registry
 import view_registry
 from proxy_object import ProxyListObject
-
-
-def resolve_handle( server, objinfo ):
-    iface_id = objinfo.iface_id
-    proxy_id = objinfo.proxy_id
-    path = objinfo.path
-    iface = resolve_iface(iface_id)
-    obj_ctr = proxy_registry.resolve_iface(proxy_id)
-    object = obj_ctr(server, path, iface, objinfo.contents)
-    view_id = objinfo.view_id
-    handle_ctr = view_registry.resolve_view(view_id)
-    return handle_ctr(object, objinfo)
 
 
 class Notification(object):
@@ -36,14 +25,10 @@ class Response(Notification):
 
     def get_result( self, iface, command_id ):
         result_dict = self.data.get('result')
-        if result_dict:
-            return iface.result_dict2attributes(command_id, result_dict)
-
-    def get_handle2open( self ):
-        if 'object' in self.data:
-            return resolve_handle(self.server, self.data['object'])
-        else:
-            return None
+        if result_dict is None: return None
+        t = iface.get_command_result_type(command_id)
+        decoder = JsonDecoder(iface_registry, self.server.resolve_handle)
+        return decoder.decode(t, result_dict)
 
 
 class Connection(object):
@@ -105,7 +90,7 @@ class Connection(object):
         self.trace('%d bytes is received: %s' % (len(data), data))
         self.recv_buf += data
         while json_packet.is_full_packet(self.recv_buf):
-            packet, self.recv_buf = json_packet.decode_packet(self.recv_buf)
+            packet, self.recv_buf = json_packet.decode_packet(self.recv_buf, decode_datetime=False)
             self.trace('received packet (%d bytes remainder): %s' % (len(self.recv_buf), packet))
             self.process_packet(packet)
             
@@ -132,6 +117,17 @@ class Server(object):
 
     def __init__( self, addr ):
         self.addr = addr
+
+    def resolve_handle( self, objinfo ):
+        iface_id = objinfo.iface_id
+        proxy_id = objinfo.proxy_id
+        path = objinfo.path
+        iface = iface_registry.resolve(iface_id)
+        obj_ctr = proxy_registry.resolve_iface(proxy_id)
+        object = obj_ctr(self, path, iface, objinfo.contents)
+        view_id = objinfo.view_id
+        handle_ctr = view_registry.resolve_view(view_id)
+        return handle_ctr(object, objinfo)
 
     def send_notification( self, request ):
         print 'send_notification', request
