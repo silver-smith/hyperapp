@@ -126,9 +126,8 @@ class ProxyObject(Object):
         if not self.iface.is_open_command(command_id): return
         if result is None: return  # no new view opening is requested
         assert isinstance(result, view.Handle), repr(result)
-        handle = resolve_handle(result)
         if not initiator_view: return  # view may already be gone (closed, navigated away) or be missing at all
-        initiator_view.open(handle)
+        initiator_view.open(result)
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':
@@ -149,20 +148,20 @@ class ProxyListObject(ProxyObject, ListObject):
 
     @staticmethod
     def column_from_json( idx, data ):
-        ts = data['type']
+        ts = data.type
         if ts == 'str':
             t = StrColumnType()
         elif ts == 'datetime':
             t = DateTimeColumnType()
         else:
             assert False, repr(t)  # Unknown column type
-        return Column(idx, data['id'], data['title'], t)
+        return Column(idx, data.id, data.title, t)
 
     @staticmethod
     def element_from_json( data ):
-        key = data['key']
-        row = data['row']
-        return Element(key, row, [ElementCommand.from_json(cmd) for cmd in data['commands']])
+        key = data.key
+        row = data.row
+        return Element(key, row, [ElementCommand.from_json(cmd) for cmd in data.commands])
 
     @classmethod
     def list_diff_from_json( cls, data ):
@@ -234,9 +233,9 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_get_elements_result( self, result ):
         self.fetch_pending = False
         result_elts = result.fetched_elements
-        new_elements = [self.element_from_json(elt) for elt in result_elts['elements']]
+        new_elements = [self.element_from_json(elt) for elt in result_elts.elements]
         self.elements += new_elements
-        self.all_elements_fetched = not result_elts['has_more']
+        self.all_elements_fetched = not result_elts.has_more
         self._notify_diff_applied(ListDiff(None, None, new_elements))
 
     def __del__( self ):

@@ -14,7 +14,7 @@ class Command(object):
 
     @classmethod
     def from_json( cls, data ):
-        return cls(data['id'], data['text'], data['desc'], data['shortcut'])
+        return cls(data.id, data.text, data.desc, data.shortcut)
 
     def _make_action( self, widget, *args ):
         return make_action(widget, self.text, self.shortcut, self.run_with_weaks, *args)
