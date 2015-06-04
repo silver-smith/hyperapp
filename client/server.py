@@ -6,16 +6,16 @@ import view_registry
 from proxy_object import ProxyListObject
 
 
-def resolve_handle( server, response ):
-    iface_id = response['iface_id']
-    proxy_id = response['proxy_id']
-    path = response['path']
+def resolve_handle( server, objinfo ):
+    iface_id = objinfo.iface_id
+    proxy_id = objinfo.proxy_id
+    path = objinfo.path
     iface = resolve_iface(iface_id)
     obj_ctr = proxy_registry.resolve_iface(proxy_id)
-    object = obj_ctr(server, path, iface, response['contents'])
-    view_id = response['view_id']
+    object = obj_ctr(server, path, iface, objinfo.contents)
+    view_id = objinfo.view_id
     handle_ctr = view_registry.resolve_view(view_id)
-    return handle_ctr(object, response)
+    return handle_ctr(object, objinfo)
 
 
 class Notification(object):

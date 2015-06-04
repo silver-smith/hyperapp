@@ -152,9 +152,9 @@ class Request(object):
         return Response(self.request_id, result_dict)
 
     def make_response_object( self, obj ):
-        response = self.make_response()
-        response.object = obj.get()
-        return response
+        result = obj.get()
+        self.iface.validate_result(self.command_id, result)
+        return self.make_response(result)
 
     def make_response_result( self, **kw ):
         self.iface.validate_result(self.command_id, kw)

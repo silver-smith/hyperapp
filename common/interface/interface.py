@@ -74,7 +74,8 @@ class Field(object):
         self.type = type
 
     def validate( self, path, value ):
-        self.type.validate(join(path, self.name), value)
+        if self.type:
+            self.type.validate(join(path, self.name), value)
 
 
 class Record(object): pass
@@ -155,6 +156,7 @@ class TObject(TRecord):
             ])
 
     def validate( self, path, value ):
+        if value is None: return  # missing objects are allowed
         TRecord.validate(self, path, value)
         iface_id = value['iface_id']
         iface = resolve_iface(iface_id)
@@ -164,19 +166,19 @@ class TObject(TRecord):
 
 class Command(object):
 
-    def __init__( self, command_id, params_fields=None, result_fields=None ):
+    def __init__( self, command_id, param_fields=None, result_fields=None ):
         self.command_id = command_id
-        self.params_fields = params_fields or []
+        self.param_fields = param_fields or []
         self.result_fields = result_fields or []
 
     def get_params_type( self, iface ):
-        return TRecord(self.get_params_fields(iface))
+        return TRecord(self.get_param_fields(iface))
 
     def get_result_type( self, iface ):
         return TRecord(self.get_result_fields(iface))
 
-    def get_params_fields( self, iface ):
-        return self.params_fields
+    def get_param_fields( self, iface ):
+        return self.param_fields
 
     def get_result_fields( self, iface ):
         return self.result_fields
@@ -198,10 +200,7 @@ class Command(object):
         return self.get_result_type(iface).dict2attributes(result_dict)
 
 
-class GetCommand(Command):
-
-    def __init__( self ):
-        Command.__init__(self, 'get')
+class OpenCommand(Command):
 
     def get_result_type( self, iface ):
         return TObject()
@@ -219,7 +218,7 @@ class SubscribeCommand(Command):
 class Interface(object):
 
     basic_commands = [
-        GetCommand(),
+        OpenCommand('get'),
         SubscribeCommand(),
         Command('unsubscribe'),
         ]
@@ -231,8 +230,11 @@ class Interface(object):
         self.content_fields = content_fields or []
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
-    def get_command_params_fields( self, command_id ):
-        return self.commands[command_id].get_params_fields(self)
+    def is_open_command( self, command_id ):
+        return isinstance(self.commands[command_id], OpenCommand)
+
+    def get_command_param_fields( self, command_id ):
+        return self.commands[command_id].get_param_fields(self)
 
     def validate_request( self, command_id, args ):
         cmd = self.commands.get(command_id)
@@ -274,13 +276,16 @@ class Interface(object):
 
 class ElementCommand(Command):
 
-    def __init__( self, command_id, args=None, result=None ):
-        Command.__init__(self, command_id, args, result)
-
-    def get_params_fields( self, iface ):
+    def get_param_fields( self, iface ):
         assert isinstance(iface, ListInterface), repr(iface)  # ElementCommands can only be used with ListInterface
-        fields = Command.get_params_fields(self, iface)
+        fields = Command.get_param_fields(self, iface)
         return [Field('element_key', iface.key_type)] + fields
+
+
+class ElementOpenCommand(ElementCommand, OpenCommand):
+
+    get_param_fields = ElementCommand.get_param_fields
+    get_result_type = OpenCommand.get_result_type
 
 
 class ListInterface(Interface):

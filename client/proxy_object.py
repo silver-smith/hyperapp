@@ -120,12 +120,14 @@ class ProxyObject(Object):
         self.server.execute_request(request, resp_handler)
 
     def process_response( self, response, resp_handler, command_id, initiator_view ):
-        self.process_response_result(command_id, response.get_result(self.iface, command_id))
+        result = response.get_result(self.iface, command_id)
+        self.process_response_result(command_id, result)
         self.resp_handlers.remove(resp_handler)
-        handle = response.get_handle2open()
-        if not handle: return  # is new view opening is requested?
-        if not initiator_view: return  # view may already be gone (closed, navigated away) or be missing at all
-        initiator_view.open(handle)
+        if self.iface.is_open_command(command_id):
+            handle = resolve_handle(result)
+            if not handle: return  # is new view opening is requested?
+            if not initiator_view: return  # view may already be gone (closed, navigated away) or be missing at all
+            initiator_view.open(handle)
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':
