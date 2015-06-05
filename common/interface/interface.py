@@ -304,6 +304,7 @@ class ListInterface(Interface):
             Field('columns', TList(self._get_column_type())),
             Field('elements', TList(self._get_element_type())),
             Field('has_more', TBool()),
+            Field('selected_key', TOptional(self.key_type)),
             ]
 
     def _get_column_type( self ):

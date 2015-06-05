@@ -238,6 +238,7 @@ class ListObject(Object):
             columns=[column.as_json() for column in self.get_columns()],
             elements=elements,
             has_more=has_more,
+            selected_key=None,
             **kw)
 
     def get_elements_json( self, count=None, key=None ):

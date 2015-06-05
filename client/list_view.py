@@ -15,8 +15,8 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, obj, resp ):
-        selected_key = resp.get('selected_key')
+    def from_resp( cls, obj, contents ):
+        selected_key = contents.selected_key
         return cls(obj, key=selected_key, select_first=False)
 
     def __init__( self, obj, key=None, selected_keys=None, select_first=True ):

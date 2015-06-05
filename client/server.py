@@ -127,7 +127,7 @@ class Server(object):
         object = obj_ctr(self, path, iface, objinfo.contents)
         view_id = objinfo.view_id
         handle_ctr = view_registry.resolve_view(view_id)
-        return handle_ctr(object, objinfo)
+        return handle_ctr(object, objinfo.contents)
 
     def send_notification( self, request ):
         print 'send_notification', request
