@@ -95,27 +95,33 @@ class Application(QtGui.QApplication, view.View):
 
 class OpenRespHandler(proxy_registry.RespHandler):
 
-    def __init__( self, app ):
+    def __init__( self, iface, command_id, app ):
+        self.iface = iface
+        self.command_id = command_id
         self.app = app
 
     def process_response( self, response ):
-        handle = self.app.server.resolve_handle(response.result)
+        handle = response.get_result(self.iface, self.command_id)
         self.app.open_in_any_window(handle)
 
 
 def main():
     if len(sys.argv) > 1:
-        path = dict(pair.split('=') for pair in sys.argv[1].split(','))  # module=file,fspath=/usr/portabe
+        iface_id, path_str = sys.argv[1].split(':')
+        path = dict(pair.split('=') for pair in path_str.split(','))  # module=file,fspath=/usr/portabe
     else:
+        iface_id = 'fs_dir'
         path=dict(
             module='file',
             fspath=os.path.expanduser('~'))
+    iface = iface_registry.resolve(iface_id)
 
     app = Application()
 
     if len(sys.argv) > 1:
-        resp_handler = OpenRespHandler(app)  # must keep explicit reference to it
-        get_request = dict(command='get', path=path, request_id=1)
+        command_id = 'get'
+        resp_handler = OpenRespHandler(iface, command_id, app)  # must keep explicit reference to it
+        get_request = dict(command=command_id, path=path, request_id=1)
         app.server.execute_request(get_request, resp_handler)
 
     handle = text_view.Handle(text_object.TextObject('hello'))
