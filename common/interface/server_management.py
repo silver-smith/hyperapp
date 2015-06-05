@@ -4,6 +4,7 @@ from . interface import (
     Field,
     Command,
     ElementCommand,
+    ElementOpenCommand,
     ListInterface,
     register_iface,
     )
@@ -12,7 +13,7 @@ from . interface import (
 server_management_iface = ListInterface('server_management',
                                         columns=[TString(), TString(), TString()],
                                         commands=[
-                                            ElementCommand('open'),
+                                            ElementOpenCommand('open'),
                                             ])
 
 register_iface(server_management_iface)

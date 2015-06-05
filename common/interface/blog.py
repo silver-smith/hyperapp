@@ -2,6 +2,7 @@ from . interface import (
     TString,
     TInt,
     TDateTime,
+    TOptional,
     TPath,
     Field,
     Command,
@@ -15,10 +16,10 @@ from . interface import (
 
 
 blog_entry_iface = Interface('blog_entry',
-                             content_fields=[Field('text', TString())],
+                             content_fields=[Field('text', TOptional(TString()))],
                              commands=[
                                  Command('parent'),
-                                 Command('open_ref', [Field('ref_id', TString())]),
+                                 OpenCommand('open_ref', [Field('ref_id', TString())]),
                                  Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
                                  OpenCommand('refs'),
                                  ])

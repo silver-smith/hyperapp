@@ -1,10 +1,13 @@
 from . interface import (
     TString,
     TInt,
+    TOptional,
     TPath,
+    TObject,
     Field,
     Command,
     ElementCommand,
+    ElementOpenCommand,
     Interface,
     ListInterface,
     register_iface,
@@ -12,6 +15,7 @@ from . interface import (
 
 
 article_iface = Interface('article',
+                          content_fields=[Field('text', TOptional(TString()))],
                           commands=[
                               Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
                               Command('refs'),
@@ -22,14 +26,14 @@ ref_list_iface = ListInterface('article_ref_list',
                                commands=[
                                    Command('parent'),
                                    Command('add', [Field('target_path', TPath())]),
-                                   ElementCommand('open'),
+                                   ElementOpenCommand('open'),
                                    ElementCommand('delete'),
                                    ],
                                 key_type=TInt())
 
 object_selector_iface = Interface('article_object_selector',
                                   content_fields=[
-                                      Field('target', TPath()),
+                                      Field('target', TObject()),
                                       ],
                                   commands=[
                                       Command('choose', [Field('target_path', TPath())]),

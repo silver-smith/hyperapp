@@ -3,7 +3,9 @@ from . interface import (
     TInt,
     Field,
     Command,
+    OpenCommand,
     ElementCommand,
+    ElementOpenCommand,
     Interface,
     ListInterface,
     register_iface,
@@ -12,8 +14,8 @@ from . interface import (
 
 file_iface = ListInterface('fs_file', columns=[TInt(), TString()], key_type=TInt())
 dir_iface = ListInterface('fs_dir', columns=[TString(), TString(), TInt(), TInt()], commands=[
-    Command('parent'),
-    ElementCommand('open'),
+    OpenCommand('parent'),
+    ElementOpenCommand('open'),
     ])
 
 register_iface(file_iface)
