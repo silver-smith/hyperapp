@@ -11,7 +11,7 @@ class ObjectSelector(ProxyObject):
 
     @classmethod
     def from_response( cls, server, path, iface, contents ):
-        target_handle = server.resolve_handle(contents.target)
+        target_handle = contents.target
         target_object = target_handle.get_object()
         targeted_path = cls.construct_path(path, target_object)
         object = cls(server, targeted_path, iface, target_object, target_handle)
