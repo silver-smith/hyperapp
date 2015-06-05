@@ -13,6 +13,7 @@ import common.interface.fs
 import common.interface.blog
 import common.interface.article
 
+from common.interface import iface_registry
 from util import pickle_dumps, pickle_loads
 from server import Server
 from qt_keys import key_evt2str
@@ -56,9 +57,10 @@ class Application(QtGui.QApplication, view.View):
         return None
 
     def get_global_commands( self ):
+        management_iface = iface_registry.resolve('server_management')
         management_cmd = window.OpenCommand(
             'open_server', 'Server', 'Open server global commands', 'Alt+G',
-            path=dict(module='management'))
+            management_iface, path=dict(module='management'))
         return [management_cmd]  + self._commands
 
     def window_created( self, view ):

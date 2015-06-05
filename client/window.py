@@ -2,6 +2,7 @@ import weakref
 import uuid
 from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after
+from common.interface import Interface
 from command import Command
 import proxy_registry
 from view_command import command
@@ -18,27 +19,32 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class OpenRespHandler(proxy_registry.RespHandler):
 
-    def __init__( self, window ):
+    def __init__( self, iface, command_id, window ):
+        self.iface = iface
+        self.command_id = command_id
         self.window_wref = weakref.ref(window)
 
     def process_response( self, response ):
         window = self.window_wref()
-        if window:
-            window.process_open_command_response(self, response.result)
+        if not window: return
+        result = response.get_result(self.iface, self.command_id)
+        window.process_open_command_response(self, result)
 
 
 class OpenCommand(Command):
 
-    def __init__( self, id, text, desc, shortcut, path ):
+    def __init__( self, id, text, desc, shortcut, iface, path ):
+        assert isinstance(iface, Interface), repr(iface)
         Command.__init__(self, id, text, desc, shortcut)
+        self.iface = iface
         self.path = path
 
     def run_with_weaks( self, window_wref ):
         return self.run(window_wref())
 
     def run( self, window ):
-        print 'OpenCommand.run', self.id, self.path, window
-        window.run_open_command(self.path)
+        print 'OpenCommand.run', self.id, self.iface, self.path, window
+        window.run_open_command(self.iface, self.path)
 
     def make_action( self, widget, window ):
         return self._make_action(widget, weakref.ref(window))
@@ -134,16 +140,16 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
-    def run_open_command( self, path ):
-        resp_handler = OpenRespHandler(self)
+    def run_open_command( self, iface, path ):
+        command_id = 'get'
+        resp_handler = OpenRespHandler(iface, command_id, self)
         request_id = str(uuid.uuid4())
-        get_request = dict(command='get', path=path, request_id=request_id)
+        get_request = dict(command=command_id, path=path, request_id=request_id)
         self._app.server.execute_request(get_request, resp_handler)
         self.resp_handlers.add(resp_handler)
 
-    def process_open_command_response( self, resp_handler, result ):
+    def process_open_command_response( self, resp_handler, handle ):
         self.resp_handlers.remove(resp_handler)
-        handle = self._app.server.resolve_handle(result)
         self.get_current_view().open(handle)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
