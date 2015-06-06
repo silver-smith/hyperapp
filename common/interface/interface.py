@@ -14,9 +14,6 @@ class Type(object):
     def validate( self, path, value ):
         raise NotImplementedError(self.__class__)
 
-    def dict2attributes( self, value ):
-        raise NotImplementedError(self.__class__)
-
     def expect( self, path, value, name, expr ):
         if not expr:
             self.failure(path, '%s is expected, but got: %r' % (name, value))
@@ -30,9 +27,6 @@ class TPrimitive(Type):
     def validate( self, path, value ):
         self.expect(path, value, self.type_name, isinstance(value, self.type))
         
-    def dict2attributes( self, value ):
-        return value
-
 
 class TString(TPrimitive):
     type_name = 'string'
@@ -60,9 +54,6 @@ class TOptional(Type):
     def validate( self, path, value ):
         if value is None: return
         self.type.validate(path, value)
-
-    def dict2attributes( self, value ):
-        return self.type.dict2attributes(value)
 
         
 class Field(object):
@@ -98,12 +89,6 @@ class TRecord(Type):
         if unexpected:
             raise TypeError('%s: Unexpected fields: %s' % (path, ', '.join(unexpected)))
 
-    def dict2attributes( self, value ):
-        rec = Record()
-        for field in self.fields:
-            setattr(rec, field.name, value[field.name])
-        return rec
-
 
 class TList(Type):
 
@@ -115,9 +100,6 @@ class TList(Type):
         self.expect(path, value, 'list', isinstance(value, list))
         for idx, item in enumerate(value):
             self.element_type.validate(join(path, '#%d' % idx), item)
-
-    def dict2attributes( self, value ):
-        return [self.element_type.dict2attributes(elt) for elt in value]
 
 
 class TRow(Type):
@@ -132,10 +114,6 @@ class TRow(Type):
             self.failure(path, 'Wrong row length: %d; required length: %d' % (len(value), len(self.columns)))
         for idx, (item, type) in enumerate(zip(value, self.columns)):
             type.validate(join(path, '#%d' % idx), item)
-
-    def dict2attributes( self, value ):
-        assert isisntance(value, list) and len(value) == len(self.columns), repr(value)
-        return [t.dict2attributes(elt) for (t, elt) in zip(self.columns, value)]
 
 
 class TPath(Type):
@@ -192,12 +170,6 @@ class Command(object):
     def _validate_record( self, rec_name, type, path, rec_dict ):
         rec_path = join(path, self.command_id, rec_name)
         type.validate(rec_path, rec_dict)
-
-    def params_dict2attributes( self, iface, params_dict ):
-        return self.get_params_type(iface).dict2attributes(params_dict)
-
-    def result_dict2attributes( self, iface, result_dict ):
-        return self.get_result_type(iface).dict2attributes(result_dict)
 
 
 class OpenCommand(Command):
@@ -256,14 +228,6 @@ class Interface(object):
 
     def validate_contents( self, path, value ):
         self.get_contents_type().validate(path, value)
-
-    def params_dict2attributes( self, command_id, params_dict ):
-        cmd = self.commands[command_id]
-        return cmd.params_dict2attributes(self, params_dict)
-
-    def result_dict2attributes( self, command_id, result_dict ):
-        cmd = self.commands[command_id]
-        return cmd.result_dict2attributes(self, result_dict)
 
     def get_contents_type( self ):
         return TRecord(self.get_default_content_fields() + self.content_fields)
