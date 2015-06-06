@@ -192,9 +192,11 @@ class Object(object):
             )
 
     def get_contents( self, **kw ):
-        return dict(
+        contents = dict(
             commands=[cmd.as_json() for cmd in self.get_commands()],
             **kw)
+        self.iface.validate_contents(self.iface.iface_id, contents)
+        return contents
 
     def process_request( self, request ):
         command_id = request.command_id
