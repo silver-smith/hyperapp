@@ -236,13 +236,13 @@ class ListObject(Object):
                 return idx
         assert False, 'Missing "key" column id'
 
-    def get_contents( self, **kw ):
+    def get_contents( self, selected_key=None, **kw ):
         elements, has_more = self.get_elements_json()
         return Object.get_contents(self,
             columns=[column.as_json() for column in self.get_columns()],
             elements=elements,
             has_more=has_more,
-            selected_key=None,
+            selected_key=selected_key,
             **kw)
 
     def get_elements_json( self, count=None, key=None ):
