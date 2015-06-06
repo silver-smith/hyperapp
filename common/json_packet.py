@@ -28,9 +28,12 @@ def encode_packet_size( size ):
 def decode_packet_size( data ):
     return struct.unpack(packet_size_struct_format, data)[0]
 
-def encode_packet( value ):
+def encode_json_packet( value ):
     json_data = json.dumps(value, cls=JSONEncoder)
-    return encode_packet_size(len(json_data)) + json_data
+    return encode_packet(json_data)
+
+def encode_packet( data ):
+    return encode_packet_size(len(data)) + data
 
 def is_full_packet( data ):
     ssize = packet_size_size()

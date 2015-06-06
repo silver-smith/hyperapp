@@ -122,6 +122,13 @@ class TPath(Type):
         self.expect(path, value, 'Path (dict)', isinstance(value, dict))
 
 
+# base class for server objects
+class Object(object):
+
+    def get( self ):
+        raise NotImplementedError(self.__class__)
+
+
 class TObject(TRecord):
 
     def __init__( self ):
@@ -135,11 +142,7 @@ class TObject(TRecord):
 
     def validate( self, path, value ):
         if value is None: return  # missing objects are allowed
-        TRecord.validate(self, path, value)
-        iface_id = value['iface_id']
-        iface = resolve_iface(iface_id)
-        assert iface, repr(iface_id)  # Unknown iface
-        iface.validate_contents(join(path, 'contents'), value['contents'])
+        assert isinstance(value, Object), repr(value)
 
 
 class Command(object):
@@ -228,6 +231,15 @@ class Interface(object):
 
     def validate_contents( self, path, value ):
         self.get_contents_type().validate(path, value)
+
+    def get_type( self ):
+        return TRecord([
+            Field('iface_id', TString()),
+            Field('proxy_id', TString()),
+            Field('view_id', TString()),
+            Field('path', TPath()),
+            Field('contents', self.get_contents_type()),
+            ])
 
     def get_contents_type( self ):
         return TRecord(self.get_default_content_fields() + self.content_fields)

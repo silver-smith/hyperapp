@@ -244,7 +244,7 @@ class RefSelector(Object):
             rec = module.ArticleRef[self.ref_id]
             target_path = json.loads(rec.path)
             target = module.run_resolve(target_path)
-        return Object.get_contents(self, target=target.get() if target else None, **kw)
+        return Object.get_contents(self, target=target, **kw)
 
     def process_request( self, request ):
         if request.command_id == 'choose':

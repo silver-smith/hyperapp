@@ -1,5 +1,7 @@
+import pprint
 from common.util import path2str
-from common.interface.interface import iface_registry
+from common.interface.interface import Field, TRecord, TString, iface_registry
+import common.interface.interface as interface_module
 from common.json_decoder import JsonDecoder
 from util import WeakValueMultiDict
 from common.interface import Interface
@@ -118,8 +120,10 @@ class Notification(object):
 
 class Response(Notification):
 
-    def __init__( self, request_id, result_dict=None ):
+    def __init__( self, iface, command_id, request_id, result_dict=None ):
         Notification.__init__(self)
+        self.iface = iface
+        self.command_id = command_id
         self.request_id = request_id
         self.object = None
         self.result_dict = result_dict
@@ -133,6 +137,18 @@ class Response(Notification):
             d['result'] = self.result_dict
         return d
 
+    def pprint( self ):
+        pprint.pprint(self.as_json())
+
+    def encode( self, encoder ):
+        return encoder.encode(self.get_packet_type(), self.as_json())
+
+    def get_packet_type( self ):
+        result_type = self.iface.get_command_result_type(self.command_id)
+        return TRecord([
+            Field('request_id', TString()),
+            Field('result', result_type),
+            ])
 
 class Request(object):
 
@@ -153,12 +169,11 @@ class Request(object):
         return self.request_id is not None
 
     def make_response( self, result_dict=None ):
-        return Response(self.request_id, result_dict)
+        return Response(self.iface, self.command_id, self.request_id, result_dict)
 
     def make_response_object( self, obj ):
-        result = obj.get()
-        self.iface.validate_result(self.command_id, result)
-        return self.make_response(result)
+        self.iface.validate_result(self.command_id, obj)
+        return self.make_response(obj)
 
     def make_response_result( self, **kw ):
         self.iface.validate_result(self.command_id, kw)
@@ -171,7 +186,7 @@ class Request(object):
         return response
 
 
-class Object(object):
+class Object(interface_module.Object):
 
     def __init__( self, path ):
         self.path = path

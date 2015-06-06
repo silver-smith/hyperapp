@@ -3,6 +3,7 @@ import pprint
 import select
 from Queue import Queue
 from common.json_packet import encode_packet, is_full_packet, decode_packet
+from common.json_encoder import JsonEncoder
 from module import Module
 from object import Response, Request, Notification
 
@@ -23,10 +24,8 @@ class Connection(object):
     def close( self ):
         self.socket.close()
 
-    def send( self, value ):
-        ## print 'send:'
-        ## pprint.pprint(value)
-        data = encode_packet(value)
+    def send( self, packet ):
+        data = encode_packet(packet)
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
@@ -80,10 +79,9 @@ class Client(object):
                 pprint.pprint(json_packet)
                 response = self._process_json_packet(json_packet)
                 if response is not None:
-                    json_response = response.as_json()
                     print 'response to %s:%d:' % self.addr
-                    pprint.pprint(json_response)
-                    self.conn.send(json_response)
+                    response.pprint()
+                    self.conn.send(response.encode(JsonEncoder()))
                 else:
                     print 'no response'
         except Error as x:

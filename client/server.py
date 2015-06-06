@@ -131,12 +131,12 @@ class Server(object):
 
     def send_notification( self, request ):
         print 'send_notification', request
-        data = json_packet.encode_packet(request)
+        data = json_packet.encode_json_packet(request)
         Connection.get_connection(self.addr).send_data(data)
 
     def execute_request( self, request, resp_handler ):
         request_id = request['request_id']
         print 'execute_request', request_id, request
         proxy_registry.register_resp_handler(request_id, resp_handler)
-        data = json_packet.encode_packet(request)
+        data = json_packet.encode_json_packet(request)
         Connection.get_connection(self.addr).send_data(data)
