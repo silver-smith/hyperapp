@@ -119,14 +119,10 @@ class Server(object):
         self.addr = addr
 
     def resolve_handle( self, objinfo ):
-        iface_id = objinfo.iface_id
-        proxy_id = objinfo.proxy_id
-        path = objinfo.path
-        iface = iface_registry.resolve(iface_id)
-        obj_ctr = proxy_registry.resolve_iface(proxy_id)
-        object = obj_ctr(self, path, iface, objinfo.contents)
-        view_id = objinfo.view_id
-        handle_ctr = view_registry.resolve_view(view_id)
+        iface = iface_registry.resolve(objinfo.iface_id)
+        obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
+        object = obj_ctr(self, objinfo.path, iface, objinfo.contents)
+        handle_ctr = view_registry.resolve_view(objinfo.view_id)
         return handle_ctr(object, objinfo.contents)
 
     def send_notification( self, request ):
