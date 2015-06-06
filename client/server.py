@@ -1,10 +1,11 @@
 from PySide import QtNetwork
 from common import json_packet
 from common.json_decoder import JsonDecoder
-from common.interface import iface_registry
+from common.json_encoder import JsonEncoder
+from common.interface import Interface, iface_registry
 import proxy_registry
 import view_registry
-from proxy_object import ProxyListObject
+from proxy_object import Request, ProxyListObject
 
 
 class Notification(object):
@@ -29,7 +30,7 @@ class Response(Notification):
         t = iface.get_command_result_type(command_id)
         decoder = JsonDecoder(iface_registry, self.server.resolve_handle)
         return decoder.decode(t, result_dict)
-
+    
 
 class Connection(object):
 
@@ -126,13 +127,15 @@ class Server(object):
         return handle_ctr(object, objinfo.contents)
 
     def send_notification( self, request ):
+        assert isinstance(request, Request), repr(request)
         print 'send_notification', request
-        data = json_packet.encode_json_packet(request)
+        data = json_packet.encode_packet(request.encode(JsonEncoder()))
         Connection.get_connection(self.addr).send_data(data)
 
     def execute_request( self, request, resp_handler ):
-        request_id = request['request_id']
+        assert isinstance(request, Request), repr(request)
+        request_id = request.request_id
         print 'execute_request', request_id, request
         proxy_registry.register_resp_handler(request_id, resp_handler)
-        data = json_packet.encode_json_packet(request)
+        data = json_packet.encode_packet(request.encode(JsonEncoder()))
         Connection.get_connection(self.addr).send_data(data)

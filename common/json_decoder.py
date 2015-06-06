@@ -28,7 +28,7 @@ class JsonDecoder(object):
         self.iface_registry = iface_registry  # IfaceRegistry
         self.handle_resolver = handle_resolver  # obj info -> handle
 
-    def decode( self, t, value, path=None ):
+    def decode( self, t, value, path='root' ):
         return self.dispatch(t, value, path)
 
     def expect( self, path, expr, desc ):
