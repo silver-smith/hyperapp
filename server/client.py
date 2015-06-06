@@ -2,12 +2,12 @@ import traceback
 import pprint
 import select
 from Queue import Queue
+from common.request import ServerNotification
 from common.json_packet import encode_packet, is_full_packet, decode_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
 from common.interface import TRequest, iface_registry
 from module import Module
-from object import Response, Request, Notification
 
 
 NOTIFICATION_DELAY_TIME = 1  # sec
@@ -104,10 +104,10 @@ class Client(object):
         return self.prepare_response(request, response)
 
     def prepare_response( self, request, response ):
-        if response is None and request.is_response_needed():
+        if response is None and isinstance(request, Request):
             response = request.make_response()  # client need a response to cleanup waiting response handler
         if response is None and not self.updates_queue.empty():
-            response = Notification()
+            response = ServerNotification()
         while not self.updates_queue.empty():
             path, diff = self.updates_queue.get()
             response.add_update(path, diff)
@@ -115,7 +115,7 @@ class Client(object):
         return response
 
     def _send_notification( self ):
-        notification = Notification()
+        notification = ServerNotification()
         while not self.updates_queue.empty():
             path, diff = self.updates_queue.get()
             notification.add_update(path, diff)

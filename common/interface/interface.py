@@ -214,6 +214,32 @@ class Interface(object):
         self.content_fields = content_fields or []
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
+    def get_request_type( self, command_id ):
+        params_type = self.get_command_params_type(command_id)
+        return TRecord([
+            Field('iface_id', TString()),
+            Field('path', TPath()),
+            Field('command', TString()),
+            Field('request_id', TString()),
+            Field('params', params_type),
+            ])
+
+    def get_client_notification_type( self ):
+        params_type = self.get_command_params_type(command_id)
+        return TRecord([
+            Field('iface_id', TString()),
+            Field('path', TPath()),
+            Field('command', TString()),
+            Field('params', params_type),
+            ])
+
+    def get_response_type( self, command_id ):
+        result_type = self.get_command_result_type(command_id)
+        return TRecord([
+            Field('request_id', TString()),
+            Field('result', result_type),
+            ])
+
     def is_open_command( self, command_id ):
         return isinstance(self.commands[command_id], OpenCommand)
 
