@@ -1,5 +1,6 @@
 import dateutil.parser
 from method_dispatch import method_dispatch
+from request import ClientNotification, Request
 from interface.interface import (
     TString,
     TInt,
@@ -11,6 +12,8 @@ from interface.interface import (
     TRow,
     TPath,
     TObject,
+    TClientNotification,
+    TRequest,
     )
 
 
@@ -24,7 +27,8 @@ class Record(object): pass
 
 class JsonDecoder(object):
 
-    def __init__( self, iface_registry, handle_resolver=None ):
+    def __init__( self, peer, iface_registry, handle_resolver=None ):
+        self.peer = peer
         self.iface_registry = iface_registry  # IfaceRegistry
         self.handle_resolver = handle_resolver  # obj info -> handle
 
@@ -113,3 +117,21 @@ class JsonDecoder(object):
         iface = self.iface_registry.resolve(value['iface_id'])
         objinfo = self.decode_record(t, value, path, contents=iface.get_contents_type())
         return self.handle_resolver(objinfo)
+
+    @dispatch.register(TRequest)
+    @dispatch.register(TClientNotification)
+    def decode_request_or_notification( self, t, value, path ):
+        self.expect_type(path, isinstance(value, dict), value, 'request/notification (dict)')
+        self.expect(path, 'iface_id' in value, 'iface_id field is missing')
+        self.expect(path, 'path' in value, 'path field is missing')
+        self.expect(path, 'command_id' in value, 'command_id field is missing')
+        iface = self.iface_registry.resolve(value['iface_id'])
+        obj_path = value['path']
+        command_id = value['command_id']
+        params_type = iface.get_command_params_type(command_id)
+        params = self.dispatch(params_type, value.get('params'))
+        request_id = value.get('request_id')
+        if request_id:
+            return Request(self.peer, iface, obj_path, command_id, request_id, params)
+        else:
+            return ClientNotification(self.peer, iface, obj_path, command_id, params)

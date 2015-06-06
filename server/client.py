@@ -3,7 +3,9 @@ import pprint
 import select
 from Queue import Queue
 from common.json_packet import encode_packet, is_full_packet, decode_packet
+from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
+from common.interface import TRequest, iface_registry
 from module import Module
 from object import Response, Request, Notification
 
@@ -96,7 +98,8 @@ class Client(object):
         object = self._resolve(path)
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
-        request = Request(self, object.iface, json_packet)
+        decoder = JsonDecoder(self, iface_registry)
+        request = decoder.decode(TRequest(), json_packet)
         response = object.process_request(request)
         return self.prepare_response(request, response)
 

@@ -1,5 +1,6 @@
 import datetime
 from .. util import is_list_inst
+from .. request import ClientNotification, Request
 
 
 class TypeError(Exception): pass
@@ -43,6 +44,14 @@ class TBool(TPrimitive):
 class TDateTime(TPrimitive):
     type_name = 'datetime'
     type = datetime.datetime
+
+class TClientNotification(TPrimitive):
+    type_name = 'client_notification'
+    type = ClientNotification
+
+class TRequest(TPrimitive):
+    type_name = 'request'
+    type = Request
 
 
 class TOptional(Type):

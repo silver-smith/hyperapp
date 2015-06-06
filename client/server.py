@@ -1,4 +1,5 @@
 from PySide import QtNetwork
+from common.request import ClientNotification, Request
 from common import json_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
@@ -8,7 +9,7 @@ import view_registry
 from proxy_object import Request, ProxyListObject
 
 
-class Notification(object):
+class ServerNotification(object):
 
     def __init__( self, server, data ):
         self.server = server
@@ -18,10 +19,10 @@ class Notification(object):
         return [(path, ProxyListObject.list_diff_from_json(diff)) for path, diff in self.data.get('updates', [])]
 
 
-class Response(Notification):
+class Response(ServerNotification):
 
     def __init__( self, server, data ):
-        Notification.__init__(self, server, data)
+        ServerNotification.__init__(self, server, data)
         self.request_id = self.data['request_id']
 
     def get_result( self, iface, command_id ):
@@ -101,7 +102,7 @@ class Connection(object):
             response = Response(Server(self.addr), packet_data)
             proxy_registry.process_received_response(response)
         else:
-            notification = Notification(Server(self.addr), packet_data)
+            notification = ServerNotification(Server(self.addr), packet_data)
             proxy_registry.process_received_notification(notification)
 
     def send_data( self, data ):
@@ -127,7 +128,7 @@ class Server(object):
         return handle_ctr(object, objinfo.contents)
 
     def send_notification( self, request ):
-        assert isinstance(request, Request), repr(request)
+        assert isinstance(request, ClientNotification), repr(request)
         print 'send_notification', request
         data = json_packet.encode_packet(request.encode(JsonEncoder()))
         Connection.get_connection(self.addr).send_data(data)

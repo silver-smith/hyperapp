@@ -7,63 +7,13 @@
 
 import weakref
 import uuid
+from common.request import ClientNotification, Request
 from common.interface import Interface, Field, TRecord, TString, TPath, resolve_iface
 from object import Object
 from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListDiff, ListObject
 from command import ObjectCommand, ElementCommand
 import proxy_registry
 import view
-
-
-class Notification(object):
-
-    def __init__( self, iface, path, command_id, params_dict ):
-        assert isinstance(iface, Interface), repr(iface)
-        self.iface = iface
-        self.path = path
-        self.command_id = command_id
-        self.params_dict = params_dict
-
-    def encode( self, encoder ):
-        return encoder.encode(self.get_packet_type(), self.as_dict())
-
-    def as_dict( self ):
-        return dict(
-            iface_id=self.iface.iface_id,
-            path=self.path,
-            command=self.command_id,
-            params=self.params_dict)
-
-    def get_packet_type( self ):
-        params_type = self.iface.get_command_params_type(self.command_id)
-        return TRecord([
-            Field('iface_id', TString()),
-            Field('path', TPath()),
-            Field('command', TString()),
-            Field('params', params_type),
-            ])
-
-
-class Request(Notification):
-
-    def __init__( self, iface, path, command_id, request_id, params_dict ):
-        Notification.__init__(self, iface, path, command_id, params_dict)
-        self.request_id = request_id
-
-    def as_dict( self ):
-        return dict(Notification.as_dict(self),
-                    request_id=self.request_id)
-
-    def get_packet_type( self ):
-        params_type = self.iface.get_command_params_type(self.command_id)
-        return TRecord([
-            Field('iface_id', TString()),
-            Field('path', TPath()),
-            Field('command', TString()),
-            Field('request_id', TString()),
-            Field('params', params_type),
-            ])
-
 
 
 class RespHandler(proxy_registry.RespHandler):
@@ -146,12 +96,12 @@ class ProxyObject(Object):
 
     # prepare request which does not require/expect response
     def prepare_notification( self, command_id, **kw ):
-        return Notification(self.iface, self.path, command_id, params_dict=kw)
+        return ClientNotification(self.iface, self.path, command_id, params=kw)
 
     def prepare_request( self, command_id, **kw ):
         self.iface.validate_request(command_id, kw)
         request_id = str(uuid.uuid4())
-        return Request(self.iface, self.path, command_id, request_id, params_dict=kw)
+        return Request(self.iface, self.path, command_id, request_id, params=kw)
 
     def send_notification( self, command_id, **kw ):
         request = self.prepare_notification(command_id, **kw)

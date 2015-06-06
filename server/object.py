@@ -2,7 +2,6 @@ import pprint
 from common.util import path2str
 from common.interface.interface import Field, TRecord, TString, iface_registry
 import common.interface.interface as interface_module
-from common.json_decoder import JsonDecoder
 from util import WeakValueMultiDict
 from common.interface import Interface
 
