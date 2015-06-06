@@ -40,7 +40,8 @@ object_selector_iface = Interface('article_object_selector',
                                       OpenCommand('choose', [Field('target_path', TPath())]),
                                   ])
 
-onwrap_object_selector_iface = Interface('article_unwrap_object_selector')
+onwrap_object_selector_iface = Interface('article_unwrap_object_selector',
+                                         content_fields=[Field('base', TObject())])
 
 
 register_iface(article_iface)

@@ -66,7 +66,7 @@ class UnwrapObjectSelector(ProxyObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self.base_handle = resolve_handle(self.server, contents['base'])
+        self.base_handle = contents.base
         self.base_object = self.base_handle.get_object()
 
 
