@@ -29,7 +29,7 @@ blog_iface = ListInterface('blog',
                            commands=[
                                ElementOpenCommand('open'),
                                ElementCommand('delete'),
-                               Command('add'),
+                               OpenCommand('add'),
                                ],
                             key_type=TInt())
 

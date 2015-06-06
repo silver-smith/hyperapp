@@ -37,7 +37,7 @@ object_selector_iface = Interface('article_object_selector',
                                       Field('target', TObject()),
                                       ],
                                   commands=[
-                                      Command('choose', [Field('target_path', TPath())]),
+                                      OpenCommand('choose', [Field('target_path', TPath())]),
                                   ])
 
 onwrap_object_selector_iface = Interface('article_unwrap_object_selector')
