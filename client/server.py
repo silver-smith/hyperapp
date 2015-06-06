@@ -90,7 +90,7 @@ class Connection(object):
         self.trace('%d bytes is received: %s' % (len(data), data))
         self.recv_buf += data
         while json_packet.is_full_packet(self.recv_buf):
-            packet, self.recv_buf = json_packet.decode_packet(self.recv_buf, decode_datetime=False)
+            packet, self.recv_buf = json_packet.decode_packet(self.recv_buf)
             self.trace('received packet (%d bytes remainder): %s' % (len(self.recv_buf), packet))
             self.process_packet(packet)
             
