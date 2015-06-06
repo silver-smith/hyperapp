@@ -1,4 +1,6 @@
 from common.util import path2str
+from common.interface.interface import iface_registry
+from common.json_decoder import JsonDecoder
 from util import WeakValueMultiDict
 from common.interface import Interface
 
@@ -142,7 +144,9 @@ class Request(object):
         self.path = data['path']
         self.command_id = data['command']
         self.request_id = data.get('request_id')
-        self.params = self.iface.params_dict2attributes(self.command_id, data)
+        params_type = self.iface.get_command_params_type(self.command_id)
+        decoder = JsonDecoder(iface_registry)
+        self.params = decoder.decode(params_type, data)
 
     # request_id is included only in requests, not notifications
     def is_response_needed( self ):

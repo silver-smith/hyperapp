@@ -24,7 +24,7 @@ class Record(object): pass
 
 class JsonDecoder(object):
 
-    def __init__( self, iface_registry, handle_resolver ):
+    def __init__( self, iface_registry, handle_resolver=None ):
         self.iface_registry = iface_registry  # IfaceRegistry
         self.handle_resolver = handle_resolver  # obj info -> handle
 
@@ -107,6 +107,7 @@ class JsonDecoder(object):
 
     @dispatch.register(TObject)
     def decode_object( self, t, value, path ):
+        assert self.handle_resolver  # object decoding is not supported
         self.expect_type(path, isinstance(value, dict), 'object (dict)', value)
         self.expect(path, 'iface_id' in value, 'iface_id field is missing')
         iface = self.iface_registry.resolve(value['iface_id'])

@@ -166,19 +166,19 @@ class TObject(TRecord):
 
 class Command(object):
 
-    def __init__( self, command_id, param_fields=None, result_fields=None ):
+    def __init__( self, command_id, params_fields=None, result_fields=None ):
         self.command_id = command_id
-        self.param_fields = param_fields or []
+        self.params_fields = params_fields or []
         self.result_fields = result_fields or []
 
     def get_params_type( self, iface ):
-        return TRecord(self.get_param_fields(iface))
+        return TRecord(self.get_params_fields(iface))
 
     def get_result_type( self, iface ):
         return TRecord(self.get_result_fields(iface))
 
-    def get_param_fields( self, iface ):
-        return self.param_fields
+    def get_params_fields( self, iface ):
+        return self.params_fields
 
     def get_result_fields( self, iface ):
         return self.result_fields
@@ -233,11 +233,14 @@ class Interface(object):
     def is_open_command( self, command_id ):
         return isinstance(self.commands[command_id], OpenCommand)
 
+    def get_command_params_type( self, command_id ):
+        return self.commands[command_id].get_params_type(self)
+
     def get_command_result_type( self, command_id ):
         return self.commands[command_id].get_result_type(self)
 
-    def get_command_param_fields( self, command_id ):
-        return self.commands[command_id].get_param_fields(self)
+    def get_command_params_fields( self, command_id ):
+        return self.commands[command_id].get_params_fields(self)
 
     def validate_request( self, command_id, args ):
         cmd = self.commands.get(command_id)
@@ -279,15 +282,15 @@ class Interface(object):
 
 class ElementCommand(Command):
 
-    def get_param_fields( self, iface ):
+    def get_params_fields( self, iface ):
         assert isinstance(iface, ListInterface), repr(iface)  # ElementCommands can only be used with ListInterface
-        fields = Command.get_param_fields(self, iface)
+        fields = Command.get_params_fields(self, iface)
         return [Field('element_key', iface.key_type)] + fields
 
 
 class ElementOpenCommand(ElementCommand, OpenCommand):
 
-    get_param_fields = ElementCommand.get_param_fields
+    get_params_fields = ElementCommand.get_params_fields
     get_result_type = OpenCommand.get_result_type
 
 
