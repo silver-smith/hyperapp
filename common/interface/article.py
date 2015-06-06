@@ -6,6 +6,7 @@ from . interface import (
     TObject,
     Field,
     Command,
+    OpenCommand,
     ElementCommand,
     ElementOpenCommand,
     Interface,
@@ -18,14 +19,14 @@ article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(TString()))],
                           commands=[
                               Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
-                              Command('refs'),
+                              OpenCommand('refs'),
                               ])
 
 ref_list_iface = ListInterface('article_ref_list',
                                columns=[TInt(), TString()],
                                commands=[
-                                   Command('parent'),
-                                   Command('add', [Field('target_path', TPath())]),
+                                   OpenCommand('parent'),
+                                   OpenCommand('add', [Field('target_path', TPath())]),
                                    ElementOpenCommand('open'),
                                    ElementCommand('delete'),
                                    ],
