@@ -150,6 +150,7 @@ class Response(Notification):
             Field('result', result_type),
             ])
 
+
 class Request(object):
 
     def __init__( self, client, iface, data ):
