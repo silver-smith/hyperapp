@@ -18,7 +18,6 @@ from interface.interface import (
 class JsonEncoder(object):
 
     def encode( self, t, value ):
-        print self.dispatch(t, value)
         return json.dumps(self.dispatch(t, value))
 
     @method_dispatch
