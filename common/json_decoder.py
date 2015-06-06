@@ -63,7 +63,7 @@ class JsonDecoder(object):
 
     @dispatch.register(TDateTime)
     def decode_datetime( self, t, value, path ):
-        self.expect_type(path, isinstance(value, basestring), 'datetime (string)', value)
+        self.expect_type(path, isinstance(value, basestring), value, 'datetime (string)')
         return dateutil.parser.parse(value)
 
     @dispatch.register(TOptional)
@@ -74,7 +74,7 @@ class JsonDecoder(object):
 
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
-        self.expect_type(path, isinstance(value, dict), 'record (dict)', value)
+        self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         rec = Record()
         for field in t.fields:
             self.expect(path, field.name in value, 'field %r is missing' % field.name)
@@ -88,13 +88,13 @@ class JsonDecoder(object):
 
     @dispatch.register(TList)
     def decode_list( self, t, value, path ):
-        self.expect_type(path, isinstance(value, list), 'list', value)
+        self.expect_type(path, isinstance(value, list), value, 'list')
         return [self.dispatch(t.element_type, elt, join_path(path, '#%d' % idx))
                 for idx, elt in enumerate(value)]
 
     @dispatch.register(TRow)
     def decode_row( self, t, value, path ):
-        self.expect_type(path, isinstance(value, list), 'row (list)', value)
+        self.expect_type(path, isinstance(value, list), value, 'row (list)')
         result = []
         for idx, t in enumerate(t.columns):
             result.append(self.dispatch(t, value[idx], join_path(path, '#%d' % idx)))
@@ -102,13 +102,13 @@ class JsonDecoder(object):
 
     @dispatch.register(TPath)
     def decode_path( self, t, value, path ):
-        self.expect_type(path, isinstance(value, dict), 'path (dict)', value)
+        self.expect_type(path, isinstance(value, dict), value, 'path (dict)')
         return value
 
     @dispatch.register(TObject)
     def decode_object( self, t, value, path ):
         assert self.handle_resolver  # object decoding is not supported
-        self.expect_type(path, isinstance(value, dict), 'object (dict)', value)
+        self.expect_type(path, isinstance(value, dict), value, 'object (dict)')
         self.expect(path, 'iface_id' in value, 'iface_id field is missing')
         iface = self.iface_registry.resolve(value['iface_id'])
         objinfo = self.decode_record(t, value, path, contents=iface.get_contents_type())
