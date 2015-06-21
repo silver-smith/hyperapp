@@ -71,17 +71,17 @@ class Object(interface_module.Object):
 
     def process_request_get( self, request ):
         self.subscribe(request)
-        return request.make_response_result(**self.get())
+        return request.make_response_object(self)
 
     def process_request_subscribe( self, request ):
         self.subscribe(request)
         return request.make_response_result(**self.get_contents())
 
     def subscribe( self, request ):
-        subscription.add(self.path, request.client)
+        subscription.add(self.path, request.peer)
 
     def unsubscribe( self, request ):
-        subscription.remove(self.path, request.client)
+        subscription.remove(self.path, request.peer)
 
 
 class ListObject(Object):

@@ -1,3 +1,4 @@
+import pprint
 from . util import is_list_inst
 
 
@@ -186,12 +187,12 @@ class Response(ServerNotification):
 
 class ClientNotification(object):
 
-    def __init__( self, peer, iface, path, command_id, params ):
+    def __init__( self, peer, iface, path, command_id, params=None ):
         self.peer = peer
         self.iface = iface
         self.path = path
         self.command_id = command_id
-        self.params = params
+        self.params = params or {}
 
     def encode( self, encoder ):
         return encoder.encode(self.get_packet_type(), self.as_dict())
@@ -209,7 +210,7 @@ class ClientNotification(object):
 
 class Request(ClientNotification):
 
-    def __init__( self, peer, iface, path, command_id, request_id, params ):
+    def __init__( self, peer, iface, path, command_id, request_id, params=None ):
         ClientNotification.__init__(self, peer, iface, path, command_id, params)
         self.request_id = request_id
 

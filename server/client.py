@@ -2,7 +2,7 @@ import traceback
 import pprint
 import select
 from Queue import Queue
-from common.request import ServerNotification
+from common.request import ServerNotification, Response
 from common.json_packet import encode_packet, is_full_packet, decode_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder

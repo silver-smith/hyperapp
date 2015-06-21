@@ -252,11 +252,11 @@ class Interface(object):
     def get_command_params_fields( self, command_id ):
         return self.commands[command_id].get_params_fields(self)
 
-    def validate_request( self, command_id, args ):
+    def validate_request( self, command_id, args=None ):
         cmd = self.commands.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        cmd.validate_request(self, self.iface_id, args)
+        cmd.validate_request(self, self.iface_id, args or {})
 
     def validate_result( self, command_id, rec ):
         cmd = self.commands.get(command_id)
