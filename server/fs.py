@@ -2,7 +2,8 @@ import sys
 import os.path
 import stat
 from common.interface.fs import dir_iface
-from object import ListObject, Command, Element, Column
+from common.request import Command, Element, Column
+from object import ListObject
 from module import Module, ModuleCommand
 import file_view
 

@@ -3,7 +3,8 @@ from pony.orm import db_session, commit, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
 from common.interface.blog import blog_entry_iface, blog_iface
-from object import ListDiff, ListObject, Command, Element, Column, subscription
+from common.request import ListDiff, Command, Element, Column, DateTimeColumnType
+from object import ListObject, subscription
 from module import ModuleCommand
 import article
 
@@ -68,7 +69,7 @@ class Blog(ListObject):
 
     columns = [
         Column('key', 'Article id'),
-        Column('created_at', 'Creation date', type='datetime'),
+        Column('created_at', 'Creation date', type=DateTimeColumnType()),
         ]
 
     @classmethod

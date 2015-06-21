@@ -7,10 +7,10 @@
 
 import weakref
 import uuid
-from common.request import ClientNotification, Request
 from common.interface import Interface, Field, TRecord, TString, TPath, resolve_iface
+from common.request import StrColumnType, DateTimeColumnType, Column, Element, ListDiff, ClientNotification, Request
 from object import Object
-from list_object import StrColumnType, DateTimeColumnType, Column, Element, ListDiff, ListObject
+from list_object import ListObject
 from command import ObjectCommand, ElementCommand
 import proxy_registry
 import view
@@ -139,32 +139,6 @@ class ProxyObject(Object):
 
 
 class ProxyListObject(ProxyObject, ListObject):
-
-    @staticmethod
-    def column_from_json( idx, data ):
-        ts = data.type
-        if ts == 'str':
-            t = StrColumnType()
-        elif ts == 'datetime':
-            t = DateTimeColumnType()
-        else:
-            assert False, repr(t)  # Unknown column type
-        return Column(idx, data.id, data.title, t)
-
-    @staticmethod
-    def element_from_json( data ):
-        key = data.key
-        row = data.row
-        return Element(key, row, [ElementCommand.from_json(cmd) for cmd in data.commands])
-
-    @classmethod
-    def list_diff_from_json( cls, data ):
-        return ListDiff(
-            start_key=data['start_key'],
-            end_key=data['end_key'],
-            elements=[cls.element_from_json(elt) for elt in data['elements']],
-            )
-
 
     def __init__( self, server, path, iface ):
         ProxyObject.__init__(self, server, path, iface)

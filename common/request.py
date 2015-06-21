@@ -1,3 +1,140 @@
+from . util import is_list_inst
+
+
+class ColumnType(object):
+
+    def to_string( self, value ):
+        raise NotImplementedError(self.__class__)
+
+
+class StrColumnType(ColumnType):
+
+    id = 'str'
+
+    def to_string( self, value ):
+        return value
+
+
+class DateTimeColumnType(ColumnType):
+
+    id = 'datetime'
+
+    def to_string( self, value ):
+        return dt2local_str(value)
+
+
+class Column(object):
+
+    def __init__( self, id, title=None, type=StrColumnType() ):
+        assert isinstance(type, ColumnType), repr(type)
+        self.id = id
+        self.title = title
+        self.type = type
+
+    def as_json( self ):
+        return dict(
+            id=self.id,
+            title=self.title,
+            type=self.type.id
+            )
+
+    @classmethod
+    def column_from_json( cls, idx, data ):
+        ts = data.type
+        if ts == 'str':
+            t = StrColumnType()
+        elif ts == 'datetime':
+            t = DateTimeColumnType()
+        else:
+            assert False, repr(t)  # Unknown column type
+        return cls(idx, data.id, data.title, t)
+
+
+class Element(object):
+
+    def __init__( self, key, row, commands=None ):
+        self.key = key
+        self.row = row  # value list
+        self.commands = commands or []
+
+    def as_json( self ):
+        return dict(
+            key=self.key,
+            row=self.row,
+            commands=[cmd.as_json() for cmd in self.commands],
+            )
+
+    @classmethod
+    def from_json( cls, data ):
+        key = data.key
+        row = data.row
+        return cls(key, row, [Command.from_json(cmd) for cmd in data.commands])
+
+
+class Command(object):
+
+    def __init__( self, id, text, desc, shortcut=None ):
+        assert shortcut is None or isinstance(shortcut, basestring) or is_list_inst(shortcut, basestring), repr(shortcut)
+        self.id = id
+        self.text = text
+        self.desc = desc
+        self.shortcut = shortcut
+
+    def as_json( self ):
+        return dict(
+            id=self.id,
+            text=self.text,
+            desc=self.desc,
+            shortcut=self.shortcut,
+            )
+
+    @classmethod
+    def from_json( cls, data ):
+        return cls(data.id, data.text, data.desc, data.shortcut)
+
+
+class Diff(object):
+    pass
+
+
+class ListDiff(Diff):
+
+    @classmethod
+    def add_one( cls, key, element ):
+        return cls(key, key, [element])
+
+    @classmethod
+    def add_many( cls, key, elements ):
+        return cls(key, key, elements)
+
+    @classmethod
+    def append_many( cls, key, elements ):
+        return cls.add_many(None, elements)
+
+    @classmethod
+    def delete( cls, key ):
+        return cls(key, key, [])
+
+    def __init__( self, start_key, end_key, elements ):
+        # keys == None means append
+        self.start_key = start_key  # replace elements from this one
+        self.end_key = end_key      # up to (and including) this one
+        self.elements = elements    # with these elemenents
+
+    def as_json( self ):
+        return dict(
+            start_key=self.start_key,
+            end_key=self.end_key,
+            elements=[elt.as_json() for elt in self.elements])
+
+    @classmethod
+    def from_json( cls, data ):
+        return cls(
+            start_key=data['start_key'],
+            end_key=data['end_key'],
+            elements=[Element.from_json(elt) for elt in data['elements']],
+            )
+
 
 class ServerNotification(object):
 
@@ -13,6 +150,9 @@ class ServerNotification(object):
         if self.updates:
             d['updates'] = [(path, diff.as_json()) for path, diff in self.updates]
         return d
+
+    def get_updates( self ):
+        return [(path, ListDiff.from_json(diff)) for path, diff in self.data.get('updates', [])]
 
 
 class Response(ServerNotification):

@@ -2,7 +2,8 @@
 
 import os.path
 from common.interface.fs import file_iface
-from object import ListObject, Element, Column
+from common.request import Element, Column
+from object import ListObject
 
 
 class File(ListObject):

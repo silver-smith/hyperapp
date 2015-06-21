@@ -1,4 +1,4 @@
-from object import Command
+from common.request import Command
 
 
 class ModuleCommand(Command):
