@@ -21,8 +21,7 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class OpenRespHandler(proxy_registry.RespHandler):
 
     def __init__( self, iface, command_id, window ):
-        self.iface = iface
-        self.command_id = command_id
+        proxy_registry.RespHandler.__init__(self, iface, command_id)
         self.window_wref = weakref.ref(window)
 
     def process_response( self, response ):

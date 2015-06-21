@@ -139,9 +139,9 @@ class ListDiff(Diff):
 
 class ServerNotification(object):
 
-    def __init__( self, peer ):
+    def __init__( self, peer, updates=None ):
         self.peer = peer
-        self.updates = []  # (path, ListDiff) list
+        self.updates = updates or []  # (path, ListDiff) list
 
     def add_update( self, path, diff ):
         self.updates.append((path, diff))
@@ -152,18 +152,16 @@ class ServerNotification(object):
             d['updates'] = [(path, diff.as_json()) for path, diff in self.updates]
         return d
 
-    def get_updates( self ):
-        return [(path, ListDiff.from_json(diff)) for path, diff in self.data.get('updates', [])]
-
 
 class Response(ServerNotification):
 
-    def __init__( self, peer, iface, command_id, request_id, result_dict=None ):
-        ServerNotification.__init__(self, peer)
+    def __init__( self, peer, iface, command_id, request_id, result_dict=None, result=None, updates=None ):
+        ServerNotification.__init__(self, peer, updates)
         self.iface = iface
         self.command_id = command_id
         self.request_id = request_id
         self.result_dict = result_dict
+        self.result = result
 
     def as_json( self ):
         return dict(ServerNotification.as_json(self),

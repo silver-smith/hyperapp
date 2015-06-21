@@ -20,10 +20,9 @@ class RespHandler(proxy_registry.RespHandler):
 
     def __init__( self, object, command_id, initiator_view ):
         assert isinstance(object, Object), repr(object)
-        assert isinstance(command_id, basestring), repr(command_id)
+        proxy_registry.RespHandler.__init__(self, object.iface, command_id)
         assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
         self.object = weakref.ref(object)
-        self.command_id = command_id
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
 
     def process_response( self, response ):
@@ -151,9 +150,9 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self.columns = [self.column_from_json(idx, column) for idx, column in enumerate(contents.columns)]
+        self.columns = contents.columns
         self.key_column_idx = self._find_key_column(self.columns)
-        self.elements = [self.element_from_json(elt) for elt in contents.elements]
+        self.elements = contents.elements
         self.all_elements_fetched = not contents.has_more
 
     def process_update( self, diff ):

@@ -1,6 +1,6 @@
 import dateutil.parser
 from method_dispatch import method_dispatch
-from request import ClientNotification, Request
+from request import ClientNotification, Request, ServerNotification, Response
 from interface.interface import (
     TString,
     TInt,
@@ -135,3 +135,21 @@ class JsonDecoder(object):
             return Request(self.peer, iface, obj_path, command_id, request_id, params)
         else:
             return ClientNotification(self.peer, iface, obj_path, command_id, params)
+
+    def decode_response_or_notification( self, value ):
+        self.expect_type('response-or-server_notification', isinstance(value, dict), value, 'response/notification (dict)')
+        if 'request_id' in value:
+            return self.decode_response(value, 'response')
+        else:
+            return self.decode_server_notification(value, 'server_notification')
+
+    def decode_response( self, value, path ):
+        self.expect(path, 'iface_id' in value, 'iface_id field is missing')
+        self.expect(path, 'command' in value, 'command_id field is missing')
+        iface = self.iface_registry.resolve(value['iface_id'])
+        command_id = value['command']
+        request_id = value.get('request_id')
+        result_type = iface.get_command_result_type(command_id)
+        result = self.dispatch(result_type, value.get('result'), join_path(path, 'result'))
+        updates = [(path, ListDiff.from_json(diff)) for path, diff in value.get('updates', [])]
+        return Response(self.peer, iface, command_id, request_id, result=result, updates=updates)

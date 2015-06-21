@@ -18,7 +18,7 @@ class ListObject(Object):
     def _find_key_column( columns ):
         for idx, col in enumerate(columns):
             if col.id == 'key':
-                return col.idx
+                return idx
         assert False, 'No "key" column'
 
     def run_element_command( self, command_id, element_key, initiator_view ):

@@ -1,5 +1,5 @@
 from PySide import QtNetwork
-from common.request import ClientNotification, Request
+from common.request import ClientNotification, Request, ServerNotification, Response
 from common import json_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
@@ -8,30 +8,6 @@ import proxy_registry
 import view_registry
 from proxy_object import Request, ProxyListObject
 
-
-class ServerNotification(object):
-
-    def __init__( self, server, data ):
-        self.server = server
-        self.data = data
-
-    def get_updates( self ):
-        return [(path, ProxyListObject.list_diff_from_json(diff)) for path, diff in self.data.get('updates', [])]
-
-
-class Response(ServerNotification):
-
-    def __init__( self, server, data ):
-        ServerNotification.__init__(self, server, data)
-        self.request_id = self.data['request_id']
-
-    def get_result( self, iface, command_id ):
-        result_dict = self.data.get('result')
-        if result_dict is None: return None
-        t = iface.get_command_result_type(command_id)
-        decoder = JsonDecoder(iface_registry, self.server.resolve_handle)
-        return decoder.decode(t, result_dict)
-    
 
 class Connection(object):
 
@@ -98,11 +74,13 @@ class Connection(object):
             
     def process_packet( self, packet_data ):
         print 'processing packet:', packet_data
-        if 'request_id' in packet_data:
-            response = Response(Server(self.addr), packet_data)
+        server = Server(self.addr)
+        decoder = JsonDecoder(server, iface_registry, server.resolve_handle)
+        response = decoder.decode_response_or_notification(packet_data)
+        if isinstance(response, Response):
             proxy_registry.process_received_response(response)
         else:
-            notification = ServerNotification(Server(self.addr), packet_data)
+            assert isinstance(response, ServerNotification), repr(response)
             proxy_registry.process_received_notification(notification)
 
     def send_data( self, data ):

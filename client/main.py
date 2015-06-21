@@ -98,12 +98,11 @@ class Application(QtGui.QApplication, view.View):
 class OpenRespHandler(proxy_registry.RespHandler):
 
     def __init__( self, iface, command_id, app ):
-        self.iface = iface
-        self.command_id = command_id
+        proxy_registry.RespHandler.__init__(self, iface, command_id)
         self.app = app
 
     def process_response( self, response ):
-        handle = response.get_result(self.iface, self.command_id)
+        handle = response.result
         self.app.open_in_any_window(handle)
 
 

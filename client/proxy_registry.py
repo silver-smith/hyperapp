@@ -2,9 +2,16 @@
 
 import weakref
 from common.util import path2str
+from common.interface import Interface
 
 
 class RespHandler(object):
+
+    def __init__( self, iface, command_id ):
+        assert isinstance(iface, Interface), repr(iface)
+        assert isinstance(command_id, basestring), repr(command_id)
+        self.iface = iface
+        self.command_id = command_id
 
     def process_response( self, response ):
         raise NotImplementedError(self.__class__)
@@ -42,7 +49,7 @@ def process_updates( updates ):
             obj.process_update(diff)
 
 def process_received_notification( notification ):
-    process_updates(notification.get_updates())
+    process_updates(notification.updates)
 
 def process_received_response( response ):
     process_received_notification(response)
