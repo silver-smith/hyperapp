@@ -163,17 +163,15 @@ class Response(ServerNotification):
         self.iface = iface
         self.command_id = command_id
         self.request_id = request_id
-        self.object = None
         self.result_dict = result_dict
 
     def as_json( self ):
-        d = ServerNotification.as_json(self)
-        d['request_id'] = self.request_id
-        if self.object:
-            d['object'] = self.object
-        if self.result_dict:
-            d['result'] = self.result_dict
-        return d
+        return dict(ServerNotification.as_json(self),
+                    iface_id=self.iface.iface_id,
+                    command=self.command_id,
+                    request_id=self.request_id,
+                    result=self.result_dict,
+                    )
 
     def pprint( self ):
         pprint.pprint(self.as_json())

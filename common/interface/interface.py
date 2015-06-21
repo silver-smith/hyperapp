@@ -236,6 +236,8 @@ class Interface(object):
     def get_response_type( self, command_id ):
         result_type = self.get_command_result_type(command_id)
         return TRecord([
+            Field('iface_id', TString()),
+            Field('command', TString()),
             Field('request_id', TString()),
             Field('result', result_type),
             ])
