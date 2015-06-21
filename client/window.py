@@ -3,6 +3,7 @@ import uuid
 from PySide import QtCore, QtGui
 from util import DEBUG_FOCUS, call_after
 from common.interface import Interface
+from common.request import Request
 from command import Command
 import proxy_registry
 from view_command import command
@@ -142,10 +143,11 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     def run_open_command( self, iface, path ):
         command_id = 'get'
+        iface.validate_request(command_id)
         resp_handler = OpenRespHandler(iface, command_id, self)
         request_id = str(uuid.uuid4())
-        get_request = dict(command=command_id, path=path, request_id=request_id)
-        self._app.server.execute_request(get_request, resp_handler)
+        request = Request(self._app.server, iface, path, command_id, request_id)
+        self._app.server.execute_request(request, resp_handler)
         self.resp_handlers.add(resp_handler)
 
     def process_open_command_response( self, resp_handler, handle ):
