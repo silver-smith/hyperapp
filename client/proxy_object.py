@@ -100,7 +100,7 @@ class ProxyObject(Object):
     def prepare_request( self, command_id, **kw ):
         self.iface.validate_request(command_id, kw)
         request_id = str(uuid.uuid4())
-        return Request(self.iface, self.path, command_id, request_id, params=kw)
+        return Request(self.server, self.iface, self.path, command_id, request_id, params=kw)
 
     def send_notification( self, command_id, **kw ):
         request = self.prepare_notification(command_id, **kw)
@@ -113,7 +113,7 @@ class ProxyObject(Object):
         self.server.execute_request(request, resp_handler)
 
     def process_response( self, response, resp_handler, command_id, initiator_view ):
-        result = response.get_result(self.iface, command_id)
+        result = response.result
         self.process_response_result(command_id, result)
         self.resp_handlers.remove(resp_handler)
         if not self.iface.is_open_command(command_id): return
