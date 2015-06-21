@@ -2,6 +2,7 @@
 
 import sys
 import os.path
+import uuid
 from PySide import QtCore, QtGui
 
 
@@ -14,6 +15,7 @@ import common.interface.blog
 import common.interface.article
 
 from common.interface import iface_registry
+from common.request import Request
 from util import pickle_dumps, pickle_loads
 from server import Server
 from qt_keys import key_evt2str
@@ -121,8 +123,9 @@ def main():
     if len(sys.argv) > 1:
         command_id = 'get'
         resp_handler = OpenRespHandler(iface, command_id, app)  # must keep explicit reference to it
-        get_request = dict(command=command_id, path=path, request_id=1)
-        app.server.execute_request(get_request, resp_handler)
+        request_id = str(uuid.uuid4())
+        request = Request(app.server, iface, path, command_id, request_id)
+        app.server.execute_request(request, resp_handler)
 
     handle = text_view.Handle(text_object.TextObject('hello'))
 
