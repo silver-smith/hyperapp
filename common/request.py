@@ -36,19 +36,8 @@ class Column(object):
         return dict(
             id=self.id,
             title=self.title,
-            type=self.type.id
+            type=self.type,
             )
-
-    @classmethod
-    def column_from_json( cls, idx, data ):
-        ts = data.type
-        if ts == 'str':
-            t = StrColumnType()
-        elif ts == 'datetime':
-            t = DateTimeColumnType()
-        else:
-            assert False, repr(t)  # Unknown column type
-        return cls(idx, data.id, data.title, t)
 
 
 class Element(object):

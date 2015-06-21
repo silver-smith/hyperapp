@@ -1,6 +1,6 @@
 import datetime
 from .. util import is_list_inst
-from .. request import ClientNotification, Request
+from .. request import ColumnType, ClientNotification, Request
 
 
 class TypeError(Exception): pass
@@ -44,6 +44,10 @@ class TBool(TPrimitive):
 class TDateTime(TPrimitive):
     type_name = 'datetime'
     type = datetime.datetime
+
+class TColumnType(TPrimitive):
+    type_name = 'column_type'
+    type = ColumnType
 
 class TClientNotification(TPrimitive):
     type_name = 'client_notification'
@@ -326,7 +330,7 @@ class ListInterface(Interface):
     def _get_column_type( self ):
         return TRecord([
             Field('id', TString()),
-            Field('type', TString()),
+            Field('type', TColumnType()),
             Field('title', TOptional(TString())),
             ])
 

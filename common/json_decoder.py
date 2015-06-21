@@ -1,6 +1,6 @@
 import dateutil.parser
 from method_dispatch import method_dispatch
-from request import ClientNotification, Request, ServerNotification, Response
+from request import StrColumnType, DateTimeColumnType, ClientNotification, Request, ServerNotification, Response
 from interface.interface import (
     TString,
     TInt,
@@ -10,6 +10,7 @@ from interface.interface import (
     TRecord,
     TList,
     TRow,
+    TColumnType,
     TPath,
     TObject,
     TClientNotification,
@@ -103,6 +104,16 @@ class JsonDecoder(object):
         for idx, t in enumerate(t.columns):
             result.append(self.dispatch(t, value[idx], join_path(path, '#%d' % idx)))
         return result
+
+    @dispatch.register(TColumnType)
+    def decode_path( self, t, value, path ):
+        self.expect_type(path, isinstance(value, basestring), value, 'column_type id (str)')
+        if value == 'str':
+            return StrColumnType()
+        elif value == 'datetime':
+            return DateTimeColumnType()
+        else:
+            assert False, repr(value)  # Unknown column type
 
     @dispatch.register(TPath)
     def decode_path( self, t, value, path ):
