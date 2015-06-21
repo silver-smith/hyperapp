@@ -82,7 +82,8 @@ class Field(object):
             self.type.validate(join(path, self.name), value)
 
 
-class Record(object): pass
+class Record(object):
+    pass
 
 
 class TRecord(Type):
@@ -113,6 +114,10 @@ class TList(Type):
         self.expect(path, value, 'list', isinstance(value, list))
         for idx, item in enumerate(value):
             self.element_type.validate(join(path, '#%d' % idx), item)
+
+
+class TIndexedList(TList):
+    pass
 
 
 class TRow(Type):
@@ -321,7 +326,7 @@ class ListInterface(Interface):
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
-            Field('columns', TList(self._get_column_type())),
+            Field('columns', TIndexedList(self._get_column_type())),
             Field('elements', TList(self._get_element_type())),
             Field('has_more', TBool()),
             Field('selected_key', TOptional(self.key_type)),

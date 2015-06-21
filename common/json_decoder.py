@@ -9,6 +9,7 @@ from interface.interface import (
     TOptional,
     TRecord,
     TList,
+    TIndexedList,
     TRow,
     TColumnType,
     TPath,
@@ -96,6 +97,16 @@ class JsonDecoder(object):
         self.expect_type(path, isinstance(value, list), value, 'list')
         return [self.dispatch(t.element_type, elt, join_path(path, '#%d' % idx))
                 for idx, elt in enumerate(value)]
+
+    @dispatch.register(TIndexedList)
+    def decode_list( self, t, value, path ):
+        self.expect_type(path, isinstance(value, list), value, 'list')
+        decoded_elts = []
+        for idx, elt in enumerate(value):
+            decoded_elt = self.dispatch(t.element_type, elt, join_path(path, '#%d' % idx))
+            setattr(decoded_elt, 'idx', idx)
+            decoded_elts.append(decoded_elt)
+        return decoded_elts
 
     @dispatch.register(TRow)
     def decode_row( self, t, value, path ):
