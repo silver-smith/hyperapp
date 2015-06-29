@@ -45,6 +45,7 @@ class ElementCommand(Command):
     def make_action( self, widget, view, element_key ):
         return self._make_action(widget, weakref.ref(view), element_key)
 
+
 def make_cmd_action( cmd, widget, run, *args ):
     return make_action(widget, cmd.text, cmd.shortcut, run, cmd, *args)
 
