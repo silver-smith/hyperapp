@@ -212,7 +212,7 @@ class UnwrapSelector(Object):
         self._base = base
 
     def get_contents( self, **kw ):
-        return Object.get_contents(self, base=self._base.get(), **kw)
+        return Object.get_contents(self, base=self._base, **kw)
 
 
 class RefSelector(Object):
