@@ -27,8 +27,7 @@ class OpenRespHandler(proxy_registry.RespHandler):
     def process_response( self, response ):
         window = self.window_wref()
         if not window: return
-        result = response.get_result(self.iface, self.command_id)
-        window.process_open_command_response(self, result)
+        window.process_open_command_response(self, response.result)
 
 
 class OpenCommand(Command):
