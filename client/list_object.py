@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from util import dt2local_str
+from common.util import dt2local_str
 from object import Object
 
 

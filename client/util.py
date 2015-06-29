@@ -3,13 +3,12 @@ import pickle
 import weakref
 import itertools
 from datetime import datetime
-from dateutil.tz import tzutc, tzlocal
+from dateutil.tz import tzutc
 from PySide import QtCore, QtGui
 
 
 DEBUG_FOCUS = False
 DEBUG_EVENTS = False
-DATETIME_FORMAT = '%d.%m.%Y %H:%M:%S'
 
 
 class Thread(QtCore.QThread):
@@ -122,12 +121,6 @@ def flatten(listOfLists):
 
 def utcnow():
     return datetime.now(tzutc())
-
-def dt2local_str( dt ):
-    if dt is None: return ''
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=tzutc())  # naive -> utc
-    return dt.astimezone(tzlocal()).strftime(DATETIME_FORMAT)
 
 def key_match( evt, key_str ):
     tokens = key_str.split('+')
