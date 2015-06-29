@@ -5,6 +5,7 @@ sys.path.append('..')
 
 from util import uni2str, key_match, key_match_any
 from common.request import ListDiff
+from command import run_element_command, make_element_action
 import view_registry
 import view
 
@@ -275,7 +276,7 @@ class View(view.View, QtGui.QTableView):
         elt = self.list_obj.get_fetched_elements()[index.row()]
         for cmd in elt.commands:
             if cmd.id == 'open':
-                cmd.run(self, elt.key)
+                run_element_command(cmd, self, elt.key)
                 return
 
     def _selected_elements_changed( self ):
@@ -296,7 +297,7 @@ class View(view.View, QtGui.QTableView):
         commands = elt.commands
         # create actions
         for cmd in commands:
-            action = cmd.make_action(action_widget, self, element_key)
+            action = make_element_action(cmd, action_widget, self, element_key)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
