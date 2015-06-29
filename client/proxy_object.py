@@ -200,7 +200,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_get_elements_result( self, result ):
         self.fetch_pending = False
         result_elts = result.fetched_elements
-        new_elements = [self.element_from_json(elt) for elt in result_elts.elements]
+        new_elements = result_elts.elements
         self.elements += new_elements
         self.all_elements_fetched = not result_elts.has_more
         self._notify_diff_applied(ListDiff(None, None, new_elements))
