@@ -18,7 +18,7 @@ from . interface import (
 blog_entry_iface = Interface('blog_entry',
                              content_fields=[Field('text', TOptional(TString()))],
                              commands=[
-                                 Command('parent'),
+                                 OpenCommand('parent'),
                                  OpenCommand('open_ref', [Field('ref_id', TString())]),
                                  Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
                                  OpenCommand('refs'),
