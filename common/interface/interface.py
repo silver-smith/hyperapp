@@ -160,7 +160,7 @@ class TObject(TRecord):
 
     def validate( self, path, value ):
         if value is None: return  # missing objects are allowed
-        assert isinstance(value, Object), repr(value)
+        self.expect(path, value, 'Object', isinstance(value, Object))
 
 
 class Command(object):
