@@ -242,6 +242,12 @@ class ElementOpenCommand(ElementCommand, OpenCommand):
     get_result_type = OpenCommand.get_result_type
 
 
+class ListObject(Object):
+
+    def FetchedElements( self, **kw ):
+        return self.iface.FetchedElements(**kw)
+
+
 class ListInterface(Interface):
         
     def __init__( self, iface_id, content_fields=None, update_type=None, commands=None, columns=None, key_type=TString() ):

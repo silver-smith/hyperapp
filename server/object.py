@@ -88,7 +88,7 @@ class Object(interface_module.Object):
         subscription.remove(self.path, request.peer)
 
 
-class ListObject(Object):
+class ListObject(Object, interface_module.ListObject):
 
     def __init__( self, path ):
         Object.__init__(self, path)
@@ -114,7 +114,7 @@ class ListObject(Object):
             key = request.params.key
             count = request.params.count
             elements, has_more = self.get_elements(count, key)
-            return request.make_response_result(fetched_elements=self.iface.FetchedElements(
+            return request.make_response_result(fetched_elements=self.FetchedElements(
                 elements=elements,
                 has_more=has_more))
             return response
