@@ -113,8 +113,8 @@ class ListObject(Object):
         if request.command_id == 'get_elements':
             key = request.params.key
             count = request.params.count
-            elements, has_more = self.get_elements_json(count, key)
-            return request.make_response_result(fetched_elements=dict(
+            elements, has_more = self.get_elements(count, key)
+            return request.make_response_result(fetched_elements=self.iface.FetchedElements(
                 elements=elements,
                 has_more=has_more))
             return response

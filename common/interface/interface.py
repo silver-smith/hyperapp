@@ -280,6 +280,9 @@ class ListInterface(Interface):
             Field('has_more', TBool()),
             ])
 
+    def FetchedElements( self, **kw ):
+        return self._get_fetched_elements_type().instantiate(**kw)
+
     def _get_element_type( self ):
         return TRecord([
             Field('commands', TList(self._get_command_type())),
