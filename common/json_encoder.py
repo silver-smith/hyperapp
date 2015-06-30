@@ -1,6 +1,6 @@
 import json
 from method_dispatch import method_dispatch
-from interface.interface import (
+from interface.types import (
     TString,
     TInt,
     TBool,

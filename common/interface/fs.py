@@ -1,7 +1,9 @@
-from . interface import (
+from . types import (
     TString,
     TInt,
     Field,
+    )
+from . interface import (
     Command,
     OpenCommand,
     ElementCommand,

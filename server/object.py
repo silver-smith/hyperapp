@@ -1,7 +1,12 @@
 import pprint
 from common.util import path2str
-from common.interface.interface import Field, TRecord, TString, iface_registry
-import common.interface.interface as interface_module
+from common.interface.interface import (
+    TString,
+    Field,
+    TRecord,
+    iface_registry,
+    )
+import common.interface.types as interface_types
 from common.request import Diff, Update
 from util import WeakValueMultiDict
 from common.interface import Interface
@@ -30,7 +35,7 @@ class Subscription(object):
 subscription = Subscription()
 
 
-class Object(interface_module.Object):
+class Object(interface_types.Object):
 
     def __init__( self, path ):
         self.path = path

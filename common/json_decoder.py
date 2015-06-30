@@ -1,7 +1,7 @@
 import dateutil.parser
 from method_dispatch import method_dispatch
 from request import StrColumnType, DateTimeColumnType, ClientNotification, Request, ServerNotification, Response
-from interface.interface import (
+from interface.types import (
     TString,
     TInt,
     TBool,
@@ -14,6 +14,8 @@ from interface.interface import (
     TColumnType,
     TPath,
     TObject,
+    )
+from interface.interface import (
     TClientNotification,
     TRequest,
     )

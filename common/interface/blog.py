@@ -1,10 +1,12 @@
-from . interface import (
+from . types import (
     TString,
     TInt,
     TDateTime,
     TOptional,
     TPath,
     Field,
+    )
+from . interface import (
     Command,
     OpenCommand,
     ElementCommand,
