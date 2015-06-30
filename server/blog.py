@@ -115,7 +115,7 @@ class Blog(ListObject):
         article_id = request.params.element_key
         module.BlogEntry[article_id].delete()
         diff = ListDiff.delete(article_id)
-        return request.make_response_update(self.path, diff)
+        return request.make_response_update(self.iface, self.path, diff)
 
 
 class BlogModule(PonyOrmModule):

@@ -2,7 +2,7 @@ import traceback
 import pprint
 import select
 from Queue import Queue
-from common.request import ServerNotification, Response
+from common.request import Update, ServerNotification, Response
 from common.json_packet import encode_packet, is_full_packet, decode_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
@@ -61,10 +61,11 @@ class Client(object):
         self.addr = addr
         self.on_close = on_close
         self.stop_flag = False
-        self.updates_queue = Queue()  # (path, diff) queue
+        self.updates_queue = Queue()  # Update queue
 
-    def send_update( self, path, diff ):
-        self.updates_queue.put((path, diff))
+    def send_update( self, update ):
+        assert isinstance(update, Update), repr(update)
+        self.updates_queue.put(update)
 
     def stop( self ):
         self.stop_flag = True
@@ -109,16 +110,14 @@ class Client(object):
         if response is None and not self.updates_queue.empty():
             response = ServerNotification()
         while not self.updates_queue.empty():
-            path, diff = self.updates_queue.get()
-            response.add_update(path, diff)
+            response.add_update(self.updates_queue.get())
         assert response is None or isinstance(response, Response), repr(response)
         return response
 
     def _send_notification( self ):
         notification = ServerNotification()
         while not self.updates_queue.empty():
-            path, diff = self.updates_queue.get()
-            notification.add_update(path, diff)
+            notification.add_update(self.updates_queue.get())
         json_packet = notification.as_json()
         print 'notification to %s:%d:' % self.addr
         pprint.pprint(json_packet)

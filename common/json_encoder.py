@@ -11,9 +11,11 @@ from interface.interface import (
     TRow,
     TColumnType,
     TPath,
+    TUpdate,
     Object,
     TObject,
     )
+from request import Update
 
 
 class JsonEncoder(object):
@@ -66,6 +68,15 @@ class JsonEncoder(object):
     @dispatch.register(TPath)
     def encode_path( self, t, value ):
         return value
+
+    @dispatch.register(TUpdate)
+    def encode_update( self, t, value ):
+        assert isinstance(value, Update), repr(value)
+        iface = value.iface
+        info = self.dispatch(t.info_type, dict(iface_id=iface.iface_id,
+                                               path=value.path))
+        return dict(info,
+                    diff=self.dispatch(iface.get_update_type(), value.diff))
 
     @dispatch.register(TObject)
     def encode_object( self, t, obj ):

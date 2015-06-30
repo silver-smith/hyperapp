@@ -126,20 +126,29 @@ class ListDiff(Diff):
             )
 
 
+class Update(object):
+
+    def __init__( self, iface, path, diff ):
+        #assert isinstance(iface, Interface), repr(iface)
+        assert isinstance(path, dict), repr(path)
+        assert isinstance(diff, Diff), repr(diff)
+        self.iface = iface
+        self.path = path
+        self.diff = diff
+
+
 class ServerNotification(object):
 
     def __init__( self, peer, updates=None ):
         self.peer = peer
-        self.updates = updates or []  # (path, ListDiff) list
+        self.updates = updates or []  # Update list
 
-    def add_update( self, path, diff ):
-        self.updates.append((path, diff))
+    def add_update( self, update ):
+        assert isinstance(update, Update), repr(update)
+        self.updates.append(update)
 
-    def as_json( self ):
-        d = dict()
-        if self.updates:
-            d['updates'] = [(path, diff.as_json()) for path, diff in self.updates]
-        return d
+    def as_dict( self ):
+        return dict(updates=self.updates)
 
 
 class Response(ServerNotification):
@@ -152,19 +161,20 @@ class Response(ServerNotification):
         self.result_dict = result_dict
         self.result = result
 
-    def as_json( self ):
-        return dict(ServerNotification.as_json(self),
+    def as_dict( self ):
+        return dict(ServerNotification.as_dict(self),
                     iface_id=self.iface.iface_id,
                     command=self.command_id,
                     request_id=self.request_id,
                     result=self.result_dict,
+                    updates=self.updates,
                     )
 
     def pprint( self ):
-        pprint.pprint(self.as_json())
+        pprint.pprint(self.as_dict())
 
     def encode( self, encoder ):
-        return encoder.encode(self.get_packet_type(), self.as_json())
+        return encoder.encode(self.get_packet_type(), self.as_dict())
 
     def get_packet_type( self ):
         return self.iface.get_response_type(self.command_id)
@@ -217,8 +227,7 @@ class Request(ClientNotification):
         self.iface.validate_result(self.command_id, kw)
         return self.make_response(kw)
 
-    def make_response_update( self, path, diff ):
-        assert isinstance(diff, ListDiff), repr(diff)
+    def make_response_update( self, iface, path, diff ):
         response = self.make_response()
-        response.add_update(path, diff)
+        response.add_update(Update(iface, path, diff))
         return response

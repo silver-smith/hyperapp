@@ -2,7 +2,7 @@ import pprint
 from common.util import path2str
 from common.interface.interface import Field, TRecord, TString, iface_registry
 import common.interface.interface as interface_module
-from common.request import Diff
+from common.request import Diff, Update
 from util import WeakValueMultiDict
 from common.interface import Interface
 
@@ -21,10 +21,10 @@ class Subscription(object):
     def remove( self, path, client ):
         self.path2client.remove(path2str(path), client)
 
-    def distribute_update( self, path, diff ):
-        assert isinstance(diff, Diff), repr(diff)
+    def distribute_update( self, iface, path, diff ):
+        update = Update(iface, path, diff)
         for client in self.path2client.get(path2str(path)):
-            client.send_update(path, diff)
+            client.send_update(update)
 
 
 subscription = Subscription()

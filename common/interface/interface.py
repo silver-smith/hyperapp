@@ -1,6 +1,6 @@
 import datetime
 from .. util import is_list_inst
-from .. request import ColumnType, ClientNotification, Request
+from .. request import ColumnType, Diff, Update, ClientNotification, Request
 
 
 class TypeError(Exception): pass
@@ -140,6 +140,15 @@ class TPath(Type):
         self.expect(path, value, 'Path (dict)', isinstance(value, dict))
 
 
+class TUpdate(Type):
+
+    def __init__( self ):
+        self.info_type = TRecord([
+            Field('iface_id', TString()),
+            Field('path', TPath()),
+            ])
+
+
 # base class for server objects
 class Object(object):
 
@@ -216,11 +225,13 @@ class Interface(object):
         Command('unsubscribe'),
         ]
 
-    def __init__( self, iface_id, content_fields=None, commands=None ):
+    def __init__( self, iface_id, content_fields=None, update_type=None, commands=None ):
         assert is_list_inst(content_fields or [], Field), repr(content_fields)
+        assert update_type is None or isinstance(update_type, Type), repr(update_type)
         assert is_list_inst(commands or [], Command), repr(commands)
         self.iface_id = iface_id
         self.content_fields = content_fields or []
+        self.update_type = update_type
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
     def get_request_type( self, command_id ):
@@ -249,7 +260,11 @@ class Interface(object):
             Field('command', TString()),
             Field('request_id', TString()),
             Field('result', result_type),
+            Field('updates', self.get_updates_type()),
             ])
+
+    def get_updates_type( self ):
+        return TList(TUpdate())
 
     def is_open_command( self, command_id ):
         return isinstance(self.commands[command_id], OpenCommand)
@@ -293,6 +308,9 @@ class Interface(object):
     def get_default_content_fields( self ):
         return [Field('commands', TList(self._get_command_type()))]
 
+    def get_update_type( self ):
+        return self.update_type
+
     def _get_command_type( self ):
         return TRecord([
             Field('id', TString()),
@@ -318,11 +336,13 @@ class ElementOpenCommand(ElementCommand, OpenCommand):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, content_fields=None, columns=None, commands=None, key_type=TString() ):
+    def __init__( self, iface_id, content_fields=None, update_type=None, commands=None, columns=None, key_type=TString() ):
         assert is_list_inst(columns, Type), repr(columns)
+        assert isinstance(key_type, Type), repr(key_type)
         self.columns = columns
         self.key_type = key_type
-        Interface.__init__(self, iface_id, content_fields, (commands or []) + self._get_basic_commands(key_type))
+        Interface.__init__(self, iface_id, content_fields, update_type,
+                           (commands or []) + self._get_basic_commands(key_type))
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
