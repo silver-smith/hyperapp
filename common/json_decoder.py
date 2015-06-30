@@ -137,8 +137,8 @@ class JsonDecoder(object):
     def decode_object( self, t, value, path ):
         assert self.handle_resolver  # object decoding is not supported
         self.expect_type(path, isinstance(value, dict), value, 'object (dict)')
-        self.expect(path, 'iface_id' in value, 'iface_id field is missing')
-        iface = self.iface_registry.resolve(value['iface_id'])
+        self.expect(path, 'iface' in value, 'iface field is missing')
+        iface = self.iface_registry.resolve(value['iface'])
         objinfo = self.decode_record(t, value, path, contents=iface.get_contents_type())
         return self.handle_resolver(objinfo)
 

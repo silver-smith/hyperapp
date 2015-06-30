@@ -47,8 +47,8 @@ class Object(interface_types.Object):
         return []
 
     def get( self ):
-        return dict(
-            iface_id=self.iface.iface_id,
+        return self.iface.Object(
+            iface=self.iface,
             proxy_id=self.proxy_id,
             view_id=self.view_id,
             path=self.get_path(),

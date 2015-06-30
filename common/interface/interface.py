@@ -48,15 +48,15 @@ class Command(object):
     def get_result_fields( self, iface ):
         return self.result_fields
 
-    def validate_request( self, iface, path, params_dict ):
-        self._validate_record('params', self.get_params_type(iface), path, params_dict)
+    def validate_request( self, iface, path, params_kw ):
+        self._validate_record('params', self.get_params_type(iface), path, params_kw)
 
-    def validate_result( self, iface, path, result_dict ):
-        self._validate_record('result', self.get_result_type(iface), path, result_dict)
+    def validate_result( self, iface, path, result_kw ):
+        self._validate_record('result', self.get_result_type(iface), path, result_kw)
 
-    def _validate_record( self, rec_name, type, path, rec_dict ):
+    def _validate_record( self, rec_name, type, path, rec_kw ):
         rec_path = join_path(path, self.command_id, rec_name)
-        type.validate(rec_path, rec_dict)
+        type.validate_kw(rec_path, rec_kw)
 
 
 class OpenCommand(Command):
@@ -129,6 +129,9 @@ class Interface(object):
     def get_command_params_type( self, command_id ):
         return self.commands[command_id].get_params_type(self)
 
+    def make_params( self, command_id, **kw ):
+        return self.get_command_params_type(command_id).instantiate(**kw)
+
     def get_command_result_type( self, command_id ):
         return self.commands[command_id].get_result_type(self)
 
@@ -150,30 +153,33 @@ class Interface(object):
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_result(self, self.iface_id, rec)
 
-    def Contents( self, **kw ):
-        return self.get_contents_type().instantiate(**kw)
-        
-    def validate_contents( self, path, value ):
-        self.get_contents_type().validate(path, value)
-
     def validate_update_diff( self, diff ):
         assert self.update_type, 'No update type is defined for %r interface' % self.iface_id
         self.update_type.validate('diff', diff)
 
     def get_type( self ):
         return TRecord([
-            Field('iface_id', TString()),
+            Field('iface', TIface()),
             Field('proxy_id', TString()),
             Field('view_id', TString()),
             Field('path', TPath()),
             Field('contents', self.get_contents_type()),
             ])
 
-    def get_contents_type( self ):
-        return TRecord(self.get_default_content_fields() + self.content_fields)
+    def Object( self, **kw ):
+        return self.get_type().instantiate(**kw)
 
     def get_default_content_fields( self ):
         return [Field('commands', TList(self._get_command_type()))]
+
+    def get_contents_type( self ):
+        return TRecord(self.get_default_content_fields() + self.content_fields)
+
+    def Contents( self, **kw ):
+        return self.get_contents_type().instantiate(**kw)
+        
+    def validate_contents( self, path, value ):
+        self.get_contents_type().validate(path, value)
 
     def get_update_type( self ):
         return self.update_type

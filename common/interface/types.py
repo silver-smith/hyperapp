@@ -91,6 +91,17 @@ class TRecord(Type):
                 raise TypeError('%s: Missing field: %s' % (path, field.name))
             field.validate(path, getattr(rec, field.name))
 
+    ## def validate_kw( self, path, rec_kw ):
+    ##     self.expect(path, rec_kw, 'dict', isinstance(rec_kw, dict))
+    ##     unexpected = set(rec_kw.keys())
+    ##     for field in self.fields:
+    ##         if field.name not in rec_kw:
+    ##             raise TypeError('%s: Missing field: %s' % (path, field.name))
+    ##         field.validate(path, rec_kw[field.name])
+    ##         unexpected.remove(field.name)
+    ##     if unexpected:
+    ##         raise TypeError('%s: Unexpected fields: %s' % (path, ', '.join_path(unexpected)))
+
     def instantiate( self, *args, **kw ):
         fields = dict(kw)
         for field, arg in zip(self.fields, args):

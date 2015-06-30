@@ -98,9 +98,9 @@ class ProxyObject(Object):
         return ClientNotification(self.iface, self.path, command_id, params=kw)
 
     def prepare_request( self, command_id, **kw ):
-        self.iface.validate_request(command_id, kw)
         request_id = str(uuid.uuid4())
-        return Request(self.server, self.iface, self.path, command_id, request_id, params=kw)
+        params = self.iface.make_params(command_id, **kw)
+        return Request(self.server, self.iface, self.path, command_id, request_id, params=params)
 
     def send_notification( self, command_id, **kw ):
         request = self.prepare_notification(command_id, **kw)
