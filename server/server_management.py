@@ -1,7 +1,8 @@
 # server management module: used to expose module commands in one list
 
+from common.interface import Command
 from common.interface.server_management import server_management_iface
-from common.request import ListDiff, Command, Element, Column
+from common.request import ListDiff, Element, Column
 from object import ListObject
 from module import Module
 

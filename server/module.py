@@ -1,10 +1,13 @@
-from common.request import Command
+from common.interface import Command
 
 
-class ModuleCommand(Command):
+class ModuleCommand(object):
 
     def __init__( self, id, text, desc, shortcut, module_name ):
-        Command.__init__(self, id, text, desc, shortcut)
+        self.id = id
+        self.text = text
+        self.desc = desc
+        self.shortcut = shortcut
         self.module_name = module_name
 
 

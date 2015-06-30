@@ -1,6 +1,6 @@
 import json
 from method_dispatch import method_dispatch
-from interface.types import (
+from . interface import (
     TString,
     TInt,
     TBool,
@@ -14,6 +14,8 @@ from interface.types import (
     TUpdate,
     Object,
     TObject,
+    Interface,
+    TIface,
     )
 from request import Update
 
@@ -45,9 +47,11 @@ class JsonEncoder(object):
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value, **kw ):
+        print '*** encoding record', value, kw, t
         result = {}
         for field in t.fields:
-            result[field.name] = self.dispatch(field.type, value[field.name])
+            print '  * field', field.name, getattr(value, field.name)
+            result[field.name] = self.dispatch(field.type, getattr(value, field.name))
         return result
 
     @dispatch.register(TList)
@@ -82,3 +86,8 @@ class JsonEncoder(object):
     def encode_object( self, t, obj ):
         assert isinstance(obj, Object), repr(obj)
         return self.dispatch(obj.iface.get_type(), obj.get())
+
+    @dispatch.register(TIface)
+    def encode_iface( self, t, obj ):
+        assert isinstance(obj, Interface), repr(obj)
+        return obj.iface_id

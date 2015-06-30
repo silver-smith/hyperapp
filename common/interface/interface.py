@@ -94,9 +94,9 @@ class Interface(object):
     def get_request_type( self, command_id ):
         params_type = self.get_command_params_type(command_id)
         return TRecord([
-            Field('iface_id', TString()),
+            Field('iface', TIface()),
             Field('path', TPath()),
-            Field('command', TString()),
+            Field('command_id', TString()),
             Field('request_id', TString()),
             Field('params', params_type),
             ])
@@ -113,8 +113,8 @@ class Interface(object):
     def get_response_type( self, command_id ):
         result_type = self.get_command_result_type(command_id)
         return TRecord([
-            Field('iface_id', TString()),
-            Field('command', TString()),
+            Field('iface', TIface()),
+            Field('command_id', TString()),
             Field('request_id', TString()),
             Field('result', result_type),
             Field('updates', self.get_updates_type()),
@@ -132,6 +132,9 @@ class Interface(object):
     def get_command_result_type( self, command_id ):
         return self.commands[command_id].get_result_type(self)
 
+    def make_result( self, command_id, **kw ):
+        return self.get_command_result_type(command_id).instantiate(**kw)
+
     def get_command_params_fields( self, command_id ):
         return self.commands[command_id].get_params_fields(self)
 
@@ -147,6 +150,9 @@ class Interface(object):
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.validate_result(self, self.iface_id, rec)
 
+    def Contents( self, **kw ):
+        return self.get_contents_type().instantiate(**kw)
+        
     def validate_contents( self, path, value ):
         self.get_contents_type().validate(path, value)
 
@@ -179,6 +185,11 @@ class Interface(object):
             Field('desc', TString()),
             Field('shortcut', TOptional(TString())),
             ])
+
+
+class TIface(TPrimitive):
+    type_name = 'interface'
+    type = Interface
 
 
 class ElementCommand(Command):

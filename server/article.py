@@ -1,8 +1,9 @@
 import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
+from common.interface import Command
 from common.interface.article import article_iface, ref_list_iface, object_selector_iface, onwrap_object_selector_iface
-from common.request import Diff, ListDiff, Command, Element, Column
+from common.request import Diff, ListDiff, Element, Column
 from object import Object, ListObject, ListObjectElement, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule

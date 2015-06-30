@@ -56,11 +56,9 @@ class Object(interface_types.Object):
             )
 
     def get_contents( self, **kw ):
-        contents = dict(
-            commands=[cmd.as_json() for cmd in self.get_commands()],
+        return self.iface.Contents(
+            commands=self.get_commands(),
             **kw)
-        self.iface.validate_contents(self.iface.iface_id, contents)
-        return contents
 
     def process_request( self, request ):
         command_id = request.command_id
@@ -81,7 +79,7 @@ class Object(interface_types.Object):
 
     def process_request_subscribe( self, request ):
         self.subscribe(request)
-        return request.make_response_result(**self.get_contents())
+        return request.make_response(self.get_contents())
 
     def subscribe( self, request ):
         subscription.add(self.path, request.peer)
@@ -103,17 +101,13 @@ class ListObject(Object):
         assert False, 'Missing "key" column id'
 
     def get_contents( self, selected_key=None, **kw ):
-        elements, has_more = self.get_elements_json()
+        elements, has_more = self.get_elements()
         return Object.get_contents(self,
-            columns=[column.as_json() for column in self.get_columns()],
+            columns=self.get_columns(),
             elements=elements,
             has_more=has_more,
             selected_key=selected_key,
             **kw)
-
-    def get_elements_json( self, count=None, key=None ):
-        elements, has_more = self.get_elements(count, key)
-        return ([elt.as_json() for elt in elements], has_more)
 
     def process_request( self, request ):
         if request.command_id == 'get_elements':

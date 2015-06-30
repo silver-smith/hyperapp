@@ -61,28 +61,6 @@ class Element(object):
         return cls(key, row, [Command.from_json(cmd) for cmd in data.commands])
 
 
-class Command(object):
-
-    def __init__( self, id, text, desc, shortcut=None ):
-        assert shortcut is None or isinstance(shortcut, basestring) or is_list_inst(shortcut, basestring), repr(shortcut)
-        self.id = id
-        self.text = text
-        self.desc = desc
-        self.shortcut = shortcut
-
-    def as_json( self ):
-        return dict(
-            id=self.id,
-            text=self.text,
-            desc=self.desc,
-            shortcut=self.shortcut,
-            )
-
-    @classmethod
-    def from_json( cls, data ):
-        return cls(data.id, data.text, data.desc, data.shortcut)
-
-
 class Diff(object):
     pass
 
@@ -153,12 +131,11 @@ class ServerNotification(object):
 
 class Response(ServerNotification):
 
-    def __init__( self, peer, iface, command_id, request_id, result_dict=None, result=None, updates=None ):
+    def __init__( self, peer, iface, command_id, request_id, result=None, updates=None ):
         ServerNotification.__init__(self, peer, updates)
         self.iface = iface
         self.command_id = command_id
         self.request_id = request_id
-        self.result_dict = result_dict
         self.result = result
 
     def as_dict( self ):
@@ -166,7 +143,7 @@ class Response(ServerNotification):
                     iface_id=self.iface.iface_id,
                     command=self.command_id,
                     request_id=self.request_id,
-                    result=self.result_dict,
+                    result=self.result,
                     updates=self.updates,
                     )
 
@@ -174,7 +151,7 @@ class Response(ServerNotification):
         pprint.pprint(self.as_dict())
 
     def encode( self, encoder ):
-        return encoder.encode(self.get_packet_type(), self.as_dict())
+        return encoder.encode(self.get_packet_type(), self)
 
     def get_packet_type( self ):
         return self.iface.get_response_type(self.command_id)
@@ -190,14 +167,7 @@ class ClientNotification(object):
         self.params = params or {}
 
     def encode( self, encoder ):
-        return encoder.encode(self.get_packet_type(), self.as_dict())
-
-    def as_dict( self ):
-        return dict(
-            iface_id=self.iface.iface_id,
-            path=self.path,
-            command=self.command_id,
-            params=self.params)
+        return encoder.encode(self.get_packet_type(), self)
 
     def get_packet_type( self ):
         return self.iface.get_client_notification_type(self.command_id)
@@ -216,16 +186,15 @@ class Request(ClientNotification):
     def get_packet_type( self ):
         return self.iface.get_request_type(self.command_id)
 
-    def make_response( self, result_dict=None ):
-        return Response(self.peer, self.iface, self.command_id, self.request_id, result_dict)
+    def make_response( self, result=None ):
+        return Response(self.peer, self.iface, self.command_id, self.request_id, result)
 
     def make_response_object( self, obj ):
         self.iface.validate_result(self.command_id, obj)
         return self.make_response(obj)
 
     def make_response_result( self, **kw ):
-        self.iface.validate_result(self.command_id, kw)
-        return self.make_response(kw)
+        return self.make_response(self.iface.make_result(self.command_id, **kw))
 
     def make_response_update( self, iface, path, diff ):
         response = self.make_response()

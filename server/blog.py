@@ -2,8 +2,9 @@ from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
 from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
+from common.interface import Command
 from common.interface.blog import blog_entry_iface, blog_iface
-from common.request import ListDiff, Command, Element, Column, DateTimeColumnType
+from common.request import ListDiff, Element, Column, DateTimeColumnType
 from object import ListObject, subscription
 from module import ModuleCommand
 import article

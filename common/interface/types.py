@@ -85,16 +85,34 @@ class TRecord(Type):
         self.fields = fields
 
     def validate( self, path, rec ):
-        self.expect(path, rec, 'dict', isinstance(rec, dict))
-        unexpected = set(rec.keys())
+        print '*** record validate', path, rec
         for field in self.fields:
-            if field.name not in rec:
+            if not hasattr(rec, field.name):
                 raise TypeError('%s: Missing field: %s' % (path, field.name))
-            field.validate(path, rec[field.name])
-            unexpected.remove(field.name)
-        if unexpected:
-            raise TypeError('%s: Unexpected fields: %s' % (path, ', '.join_path(unexpected)))
+            field.validate(path, getattr(rec, field.name))
 
+    def instantiate( self, *args, **kw ):
+        fields = dict(kw)
+        for field, arg in zip(self.fields, args):
+            assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
+            fields[field.name] = arg
+        rec = Record()
+        rec.type = self
+        unexpected = set(fields.keys())
+        for field in self.fields:
+            if field.name in fields:
+                value = fields[field.name]
+                unexpected.remove(field.name)
+            else:
+                if isinstance(field.type, TOptional):
+                    value = None
+                else:
+                    raise TypeError('Record field is missing: %r' % field.name)
+            field.type.validate(join_path('Record', field.name), value)
+            setattr(rec, field.name, value)
+        assert not unexpected, 'Unexpected record fields: %s' % ', '.join(unexpected)
+        return rec
+        
 
 class TList(Type):
 
@@ -162,3 +180,13 @@ class TObject(TRecord):
     def validate( self, path, value ):
         if value is None: return  # missing objects are allowed
         self.expect(path, value, 'Object', isinstance(value, Object))
+
+
+tCommand = TRecord([
+            Field('id', TString()),
+            Field('text', TString()),
+            Field('desc', TString()),
+            Field('shortcut', TOptional(TString())),
+            ])
+
+Command = tCommand.instantiate
