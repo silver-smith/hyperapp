@@ -131,7 +131,7 @@ class Update(object):
     def __init__( self, iface, path, diff ):
         #assert isinstance(iface, Interface), repr(iface)
         assert isinstance(path, dict), repr(path)
-        assert isinstance(diff, Diff), repr(diff)
+        iface.validate_update_diff(diff)
         self.iface = iface
         self.path = path
         self.diff = diff

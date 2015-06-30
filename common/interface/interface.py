@@ -293,6 +293,10 @@ class Interface(object):
     def validate_contents( self, path, value ):
         self.get_contents_type().validate(path, value)
 
+    def validate_update_diff( self, diff ):
+        assert self.update_type, 'No update type is defined for %r interface' % self.iface_id
+        self.update_type.validate('diff', diff)
+
     def get_type( self ):
         return TRecord([
             Field('iface_id', TString()),
