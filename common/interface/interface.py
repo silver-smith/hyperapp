@@ -14,10 +14,40 @@ from . types import (
     TIndexedList,
     TRow,
     TPath,
-    TUpdate,
-    TObject,
     )
 from .. request import ClientNotification, Request
+
+
+class TUpdate(Type):
+
+    def __init__( self ):
+        self.info_type = TRecord([
+            Field('iface', TIface()),
+            Field('path', TPath()),
+            ])
+
+
+# base class for server objects
+class Object(object):
+
+    def get( self ):
+        raise NotImplementedError(self.__class__)
+
+
+class TObject(TRecord):
+
+    def __init__( self ):
+        TRecord.__init__(self, [
+            Field('iface', TIface()),
+            Field('path', TPath()),
+            Field('proxy_id', TString()),
+            Field('view_id', TString()),
+            Field('contents', None),
+            ])
+
+    def validate( self, path, value ):
+        if value is None: return  # missing objects are allowed
+        self.expect(path, value, 'Object', isinstance(value, Object))
 
 
 class TClientNotification(TPrimitive):
@@ -104,7 +134,7 @@ class Interface(object):
     def get_client_notification_type( self ):
         params_type = self.get_command_params_type(command_id)
         return TRecord([
-            Field('iface_id', TString()),
+            Field('iface', TIface()),
             Field('path', TPath()),
             Field('command', TString()),
             Field('params', params_type),

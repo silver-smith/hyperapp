@@ -3,10 +3,10 @@ from . types import (
     TInt,
     TOptional,
     TPath,
-    TObject,
     Field,
     )
 from . interface import (
+    TObject,
     Command,
     OpenCommand,
     ElementCommand,

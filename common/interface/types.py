@@ -161,38 +161,6 @@ class TPath(Type):
         self.expect(path, value, 'Path (dict)', isinstance(value, dict))
 
 
-class TUpdate(Type):
-
-    def __init__( self ):
-        self.info_type = TRecord([
-            Field('iface_id', TString()),
-            Field('path', TPath()),
-            ])
-
-
-# base class for server objects
-class Object(object):
-
-    def get( self ):
-        raise NotImplementedError(self.__class__)
-
-
-class TObject(TRecord):
-
-    def __init__( self ):
-        TRecord.__init__(self, [
-            Field('iface_id', TString()),
-            Field('path', TPath()),
-            Field('proxy_id', TString()),
-            Field('view_id', TString()),
-            Field('contents', None),
-            ])
-
-    def validate( self, path, value ):
-        if value is None: return  # missing objects are allowed
-        self.expect(path, value, 'Object', isinstance(value, Object))
-
-
 tCommand = TRecord([
             Field('id', TString()),
             Field('text', TString()),

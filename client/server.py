@@ -99,9 +99,8 @@ class Server(object):
         self.addr = addr
 
     def resolve_handle( self, objinfo ):
-        iface = iface_registry.resolve(objinfo.iface_id)
         obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
-        object = obj_ctr(self, objinfo.path, iface, objinfo.contents)
+        object = obj_ctr(self, objinfo.path, objinfo.iface, objinfo.contents)
         handle_ctr = view_registry.resolve_view(objinfo.view_id)
         return handle_ctr(object, objinfo.contents)
 

@@ -1,7 +1,7 @@
 import dateutil.parser
 from method_dispatch import method_dispatch
 from request import StrColumnType, DateTimeColumnType, ClientNotification, Request, ServerNotification, Response
-from interface.types import (
+from . interface import (
     TString,
     TInt,
     TBool,
@@ -14,8 +14,7 @@ from interface.types import (
     TColumnType,
     TPath,
     TObject,
-    )
-from interface.interface import (
+    TIface,
     TClientNotification,
     TRequest,
     )
@@ -82,6 +81,7 @@ class JsonDecoder(object):
 
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
+        print '*** decoding record', path, value, kw
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         rec = Record()
         for field in t.fields:
@@ -141,6 +141,12 @@ class JsonDecoder(object):
         iface = self.iface_registry.resolve(value['iface'])
         objinfo = self.decode_record(t, value, path, contents=iface.get_contents_type())
         return self.handle_resolver(objinfo)
+
+    @dispatch.register(TIface)
+    def decode_iface( self, t, value, path ):
+        self.expect_type(path, isinstance(value, basestring), value, 'iface id (str)')
+        iface_id = value
+        return self.iface_registry.resolve(iface_id)
 
     @dispatch.register(TRequest)
     @dispatch.register(TClientNotification)
