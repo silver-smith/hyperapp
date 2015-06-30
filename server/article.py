@@ -118,7 +118,7 @@ class Article(Object):
         print 'Article is saved, article_id =', article_rec.id
         diff = TextDiff(text)
         new_path = dict(self.path, article_id=article_rec.id)
-        subscription.distribute_update(new_path, diff)
+        subscription.distribute_update(ref_list_iface, new_path, diff)
         return request.make_response_result(new_path=new_path)
 
 

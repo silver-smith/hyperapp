@@ -56,7 +56,7 @@ class BlogEntry(article.Article):
         commit()
         print 'Blog entry is saved, blog entry id =', entry_rec.id
         new_path = dict(self.path, article_id=entry_rec.id)
-        subscription.distribute_update(new_path, article.TextDiff(text))
+        subscription.distribute_update(blog_iface, new_path, article.TextDiff(text))
         diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
         subscription.distribute_update(Blog.make_path(), diff)
         return request.make_response_result(new_path=new_path)
