@@ -11,6 +11,7 @@ from . types import (
     TList,
     TIndexedList,
     TRow,
+    tCommand,
     )
 from . interface import Command, OpenCommand, Object, Interface
 
@@ -78,7 +79,7 @@ class ListInterface(Interface):
 
     def _get_element_type( self ):
         return TRecord([
-            Field('commands', TList(self._get_command_type())),
+            Field('commands', TList(tCommand)),
             Field('key', self.key_type),
             Field('row', TRow(self.columns)),
             ])

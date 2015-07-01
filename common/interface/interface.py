@@ -9,6 +9,7 @@ from . types import (
     TRecord,
     TList,
     TPath,
+    tCommand,
     )
 from .. request import ClientNotification, Request
 
@@ -195,7 +196,7 @@ class Interface(object):
         return self.get_type().instantiate(**kw)
 
     def get_default_content_fields( self ):
-        return [Field('commands', TList(self._get_command_type()))]
+        return [Field('commands', TList(tCommand))]
 
     def get_contents_type( self ):
         return TRecord(self.get_default_content_fields() + self.content_fields)
@@ -208,14 +209,6 @@ class Interface(object):
 
     def get_update_type( self ):
         return self.update_type
-
-    def _get_command_type( self ):
-        return TRecord([
-            Field('id', TString()),
-            Field('text', TString()),
-            Field('desc', TString()),
-            Field('shortcut', TOptional(TString())),
-            ])
 
 
 class TIface(TPrimitive):
