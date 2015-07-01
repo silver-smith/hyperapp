@@ -108,13 +108,13 @@ class Interface(object):
         Command('unsubscribe'),
         ]
 
-    def __init__( self, iface_id, content_fields=None, update_type=None, commands=None ):
+    def __init__( self, iface_id, content_fields=None, diff_type=None, commands=None ):
         assert is_list_inst(content_fields or [], Field), repr(content_fields)
-        assert update_type is None or isinstance(update_type, Type), repr(update_type)
+        assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
         assert is_list_inst(commands or [], Command), repr(commands)
         self.iface_id = iface_id
         self.content_fields = content_fields or []
-        self.update_type = update_type
+        self.diff_type = diff_type
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
     def get_request_type( self, command_id ):
@@ -180,8 +180,8 @@ class Interface(object):
         cmd.validate_result(self, self.iface_id, rec)
 
     def validate_update_diff( self, diff ):
-        assert self.update_type, 'No update type is defined for %r interface' % self.iface_id
-        self.update_type.validate('diff', diff)
+        assert self.diff_type, 'No diff type is defined for %r interface' % self.iface_id
+        self.diff_type.validate('diff', diff)
 
     def get_type( self ):
         return TRecord([
@@ -207,8 +207,8 @@ class Interface(object):
     def validate_contents( self, path, value ):
         self.tContents().validate(path, value)
 
-    def get_update_type( self ):
-        return self.update_type
+    def get_diff_type( self ):
+        return self.diff_type
 
 
 class TIface(TPrimitive):
