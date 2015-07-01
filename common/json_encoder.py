@@ -75,10 +75,9 @@ class JsonEncoder(object):
     def encode_update( self, t, value ):
         assert isinstance(value, Update), repr(value)
         iface = value.iface
-        info = self.dispatch(t.info_type, dict(iface_id=iface.iface_id,
-                                               path=value.path))
+        info = self.dispatch(t.info_type, value)
         return dict(info,
-                    diff=self.dispatch(iface.get_update_type(), value.diff))
+                    diff=self.dispatch(iface.tDiff(), value.diff))
 
     @dispatch.register(TObject)
     def encode_object( self, t, obj ):

@@ -210,6 +210,16 @@ class Interface(object):
     def get_diff_type( self ):
         return self.diff_type
 
+    def tUpdate( self ):
+        return TRecord([
+            Field('iface', TIface()),
+            Field('path', TPath()),
+            Field('diff', self.get_diff_type()),
+            ])
+
+    def Update( self, *args, **kw ):
+        return self.tUpdate().instantiate(*args, **kw)
+
 
 class TIface(TPrimitive):
     type_name = 'interface'
