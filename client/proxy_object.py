@@ -8,9 +8,9 @@
 import weakref
 import uuid
 from common.interface import Interface, Field, TString, TPath, resolve_iface
-from common.request import StrColumnType, DateTimeColumnType, ListDiff, ClientNotification, Request
+from common.request import StrColumnType, DateTimeColumnType, ClientNotification, Request
 from object import Object
-from list_object import ListObject
+from list_object import ListDiff, ListObject
 from command import ObjectCommand, ElementCommand
 import proxy_registry
 import view
@@ -203,7 +203,7 @@ class ProxyListObject(ProxyObject, ListObject):
         new_elements = result_elts.elements
         self.elements += new_elements
         self.all_elements_fetched = not result_elts.has_more
-        self._notify_diff_applied(ListDiff(None, None, new_elements))
+        self._notify_diff_applied(ListDiff.append_many(new_elements))
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path

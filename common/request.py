@@ -24,49 +24,6 @@ class DateTimeColumnType(ColumnType):
         return dt2local_str(value)
 
 
-class Diff(object):
-    pass
-
-
-class ListDiff(Diff):
-
-    @classmethod
-    def add_one( cls, key, element ):
-        return cls(key, key, [element])
-
-    @classmethod
-    def add_many( cls, key, elements ):
-        return cls(key, key, elements)
-
-    @classmethod
-    def append_many( cls, key, elements ):
-        return cls.add_many(None, elements)
-
-    @classmethod
-    def delete( cls, key ):
-        return cls(key, key, [])
-
-    def __init__( self, start_key, end_key, elements ):
-        # keys == None means append
-        self.start_key = start_key  # replace elements from this one
-        self.end_key = end_key      # up to (and including) this one
-        self.elements = elements    # with these elemenents
-
-    def as_json( self ):
-        return dict(
-            start_key=self.start_key,
-            end_key=self.end_key,
-            elements=[elt.as_json() for elt in self.elements])
-
-    @classmethod
-    def from_json( cls, data ):
-        return cls(
-            start_key=data['start_key'],
-            end_key=data['end_key'],
-            elements=[Element.from_json(elt) for elt in data['elements']],
-            )
-
-
 class Update(object):
 
     def __init__( self, iface, path, diff ):

@@ -14,7 +14,8 @@ article_iface = Interface('article',
                           commands=[
                               Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
                               OpenCommand('refs'),
-                              ])
+                              ],
+                          diff_type=TString())
 
 ref_list_iface = ListInterface('article_ref_list',
                                columns=[TInt(), TString()],

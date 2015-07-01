@@ -7,7 +7,7 @@ from common.interface.interface import (
     )
 import common.interface.interface as interface_module
 import common.interface.list as list_module
-from common.request import Diff, Update
+from common.request import Update
 from util import WeakValueMultiDict
 from common.interface import Interface
 

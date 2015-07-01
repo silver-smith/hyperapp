@@ -2,7 +2,6 @@
 
 from common.interface import Command, Column
 from common.interface.server_management import server_management_iface
-from common.request import ListDiff
 from object import ListObject
 from module import Module
 

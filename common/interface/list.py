@@ -54,15 +54,35 @@ class ListObject(Object):
     def FetchedElements( cls, *args, **kw ):
         return cls.iface.FetchedElements(*args, **kw)
 
+    @classmethod
+    def Diff( cls, *args, **kw ):
+        return cls.iface.Diff(*args, **kw)
+
+    @classmethod
+    def Diff_insert_one( cls, key, element ):
+        return cls.Diff_insert_many(key, [element])
+
+    @classmethod
+    def Diff_insert_many( cls, key, elements ):
+        return cls.Diff(key, key, elements)
+
+    @classmethod
+    def Diff_append_many( cls, elements ):
+        return cls.Diff.insert_many(None, elements)
+
+    @classmethod
+    def Diff_delete( cls, key ):
+        return cls.Diff(key, key, [])
+
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, content_fields=None, update_type=None, commands=None, columns=None, key_type=TString() ):
+    def __init__( self, iface_id, content_fields=None, commands=None, columns=None, key_type=TString() ):
         assert is_list_inst(columns, Type), repr(columns)
         assert isinstance(key_type, Type), repr(key_type)
         self.columns = columns
         self.key_type = key_type
-        Interface.__init__(self, iface_id, content_fields, update_type,
+        Interface.__init__(self, iface_id, content_fields, self.tDiff(),
                            (commands or []) + self._get_basic_commands(key_type))
 
     def get_default_content_fields( self ):
@@ -98,3 +118,13 @@ class ListInterface(Interface):
 
     def Element( self, *args, **kw ):
         return self.tElement().instantiate(*args, **kw)
+
+    def tDiff( self ):
+        return TRecord([
+            Field('start_key', self.key_type),          # replace elements from this one
+            Field('end_key', self.key_type),            # up to (and including) this one
+            Field('elements', TList(self.tElement())),  # with these elemenents
+            ])
+
+    def Diff( self, *args, **kw ):
+        return self.tDiff().instantiate(*args, **kw)

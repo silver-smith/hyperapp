@@ -4,7 +4,7 @@ from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
 from common.interface import Command, Column
 from common.interface.blog import blog_entry_iface, blog_iface
-from common.request import ListDiff, DateTimeColumnType
+from common.request import DateTimeColumnType
 from object import ListObject, subscription
 from module import ModuleCommand
 import article
@@ -56,9 +56,9 @@ class BlogEntry(article.Article):
         commit()
         print 'Blog entry is saved, blog entry id =', entry_rec.id
         new_path = dict(self.path, article_id=entry_rec.id)
-        subscription.distribute_update(blog_iface, new_path, article.TextDiff(text))
-        diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
-        subscription.distribute_update(Blog.make_path(), diff)
+        subscription.distribute_update(self.iface, new_path, text)
+        diff = Blog.Diff_insert_one(entry_rec.id, Blog.rec2element(entry_rec))
+        subscription.distribute_update(blog_iface, Blog.make_path(), diff)
         return request.make_response_result(new_path=new_path)
 
 
@@ -115,7 +115,7 @@ class Blog(ListObject):
     def run_element_command_delete( self, request ):
         article_id = request.params.element_key
         module.BlogEntry[article_id].delete()
-        diff = ListDiff.delete(article_id)
+        diff = self.Diff_delete(article_id)
         return request.make_response_update(self.iface, self.path, diff)
 
 

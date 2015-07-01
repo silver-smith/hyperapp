@@ -4,7 +4,7 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 from util import uni2str, key_match, key_match_any
-from common.request import ListDiff
+from list_object import ListDiff
 from command import run_element_command, make_element_action
 import view_registry
 import view

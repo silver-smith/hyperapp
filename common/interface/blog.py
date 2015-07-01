@@ -17,7 +17,8 @@ blog_entry_iface = Interface('blog_entry',
                                  OpenCommand('open_ref', [Field('ref_id', TString())]),
                                  Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
                                  OpenCommand('refs'),
-                                 ])
+                                 ],
+                             diff_type=TString())
 
 blog_iface = ListInterface('blog',
                            columns=[TInt(), TDateTime()],

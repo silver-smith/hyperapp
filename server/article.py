@@ -3,23 +3,12 @@ from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
 from common.interface import Command, Column
 from common.interface.article import article_iface, ref_list_iface, object_selector_iface, onwrap_object_selector_iface
-from common.request import Diff, ListDiff
 from object import Object, ListObject, ListObjectElement, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
 
 
 MODULE_NAME = 'article'
-
-
-class TextDiff(Diff):
-
-    def __init__( self, text ):
-        self.text = text
-
-    def as_json( self ):
-        return dict(
-            text=self.text)
 
 
 class Article(Object):
@@ -116,9 +105,8 @@ class Article(Object):
             article_rec = module.Article(text=text)
         commit()
         print 'Article is saved, article_id =', article_rec.id
-        diff = TextDiff(text)
         new_path = dict(self.path, article_id=article_rec.id)
-        subscription.distribute_update(ref_list_iface, new_path, diff)
+        subscription.distribute_update(self.iface, new_path, text)
         return request.make_response_result(new_path=new_path)
 
 
@@ -179,7 +167,7 @@ class ArticleRefList(ListObject):
     def run_element_command_delete( self, request ):
         ref_id = request.params.element_key
         module.ArticleRef[ref_id].delete()
-        diff = ListDiff.delete(ref_id)
+        diff = self.ListDiff_delete(ref_id)
         return request.make_response_update(self.path, diff)
 
     @db_session

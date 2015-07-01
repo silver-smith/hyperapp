@@ -1,6 +1,6 @@
 import datetime
 from .. util import is_list_inst
-from .. request import ColumnType, Diff, Update
+from .. request import ColumnType, Update
 
 
 class TypeError(Exception): pass

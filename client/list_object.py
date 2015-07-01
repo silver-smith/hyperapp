@@ -1,7 +1,31 @@
 from PySide import QtCore, QtGui
 from common.util import dt2local_str
-from common.request import ListDiff
 from object import Object
+
+
+class ListDiff(object):
+
+    @classmethod
+    def add_one( cls, key, element ):
+        return cls(key, key, [element])
+
+    @classmethod
+    def add_many( cls, key, elements ):
+        return cls(key, key, elements)
+
+    @classmethod
+    def append_many( cls, elements ):
+        return cls.add_many(None, elements)
+
+    @classmethod
+    def delete( cls, key ):
+        return cls(key, key, [])
+
+    def __init__( self, start_key, end_key, elements ):
+        # keys == None means append
+        self.start_key = start_key  # replace elements from this one
+        self.end_key = end_key      # up to (and including) this one
+        self.elements = elements    # with these elemenents
 
 
 class ListObject(Object):
