@@ -131,7 +131,8 @@ class TRecord(Type):
                     value = None
                 else:
                     raise TypeError('Record field is missing: %r' % field.name)
-            field.type.validate(join_path('Record', field.name), value)
+            if field.type is not None:  # open type, todo
+                field.type.validate(join_path('Record', field.name), value)
             adopted_args[field.name] = value
         self.assert_('Record', not unexpected,
                      'Unexpected fields: %s; allowed are: %s'

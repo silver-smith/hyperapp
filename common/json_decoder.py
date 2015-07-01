@@ -25,7 +25,6 @@ def join_path( *args ):
 
 
 class DecodeError(Exception): pass
-class Record(object): pass
 
 
 class JsonDecoder(object):
@@ -82,7 +81,7 @@ class JsonDecoder(object):
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
-        rec = Record()
+        elements = {}
         for field in t.fields:
             self.expect(path, field.name in value, 'field %r is missing' % field.name)
             if field.type is not None:
@@ -90,8 +89,8 @@ class JsonDecoder(object):
             else:  # open type
                 field_type = kw[field.name]  # must be passed explicitly
             elt = self.dispatch(field_type, value[field.name], join_path(path, field.name))
-            setattr(rec, field.name, elt)
-        return rec
+            elements[field.name] = elt
+        return t.instantiate(**elements)
 
     @dispatch.register(TList)
     def decode_list( self, t, value, path ):
