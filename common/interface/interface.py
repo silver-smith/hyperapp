@@ -199,7 +199,7 @@ class Interface(object):
         return [Field('commands', TList(tCommand))]
 
     def tContents( self ):
-        return TRecord(join_path(self.iface_id, 'Contents'), self.get_default_content_fields() + self.content_fields)
+        return TRecord(self.get_default_content_fields() + self.content_fields)
 
     def Contents( self, **kw ):
         return self.tContents().instantiate(**kw)

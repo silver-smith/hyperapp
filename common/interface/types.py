@@ -78,6 +78,11 @@ class Field(object):
             self.type.validate(join_path(path, self.name), value)
 
 
+# class for instantiated records
+class Record(object):
+    pass
+
+
 class TRecord(Type):
 
     def __init__( self, fields ):
@@ -101,6 +106,7 @@ class TRecord(Type):
     ##     if unexpected:
     ##         raise TypeError('%s: Unexpected fields: %s' % (path, ', '.join_path(unexpected)))
 
+    # base for usual classes
     def make_class( self ):
         class Record(object):
             type = self
@@ -127,13 +133,16 @@ class TRecord(Type):
                     raise TypeError('Record field is missing: %r' % field.name)
             field.type.validate(join_path('Record', field.name), value)
             adopted_args[field.name] = value
-        self.assert_(self.name, not unexpected,
+        self.assert_('Record', not unexpected,
                      'Unexpected fields: %s; allowed are: %s'
                      % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
         return adopted_args
 
     def instantiate( self, *args, **kw ):
-        return self.make_class()(*args, **kw)
+        rec = Record()
+        for name, val in self.adopt_args(args, kw).items():
+            setattr(rec, name, val)
+        return rec
         
 
 class TList(Type):
