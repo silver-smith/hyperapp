@@ -16,6 +16,13 @@ from . types import (
 from . interface import Command, OpenCommand, Object, Interface
 
 
+tColumn = TRecord([
+    Field('id', TString()),
+    Field('title', TOptional(TString())),
+    Field('type', TColumnType()),
+    ])
+
+
 class ElementCommand(Command):
 
     def get_params_fields( self, iface ):
@@ -53,34 +60,27 @@ class ListInterface(Interface):
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
-            Field('columns', TIndexedList(self._get_column_type())),
+            Field('columns', TIndexedList(tColumn)),
             Field('elements', TList(self.tElement())),
             Field('has_more', TBool()),
             Field('selected_key', TOptional(self.key_type)),
             ]
 
-    def _get_column_type( self ):
-        return TRecord([
-            Field('id', TString()),
-            Field('type', TColumnType()),
-            Field('title', TOptional(TString())),
-            ])
-
     def _get_basic_commands( self, key_type ):
         return [
             Command('get_elements', [Field('count', TInt()),
                                      Field('key', key_type)],
-                                    [Field('fetched_elements', self._get_fetched_elements_type())]),
+                                    [Field('fetched_elements', self.tFetchedElements())]),
                 ]
 
-    def _get_fetched_elements_type( self ):
+    def tFetchedElements( self ):
         return TRecord([
             Field('elements', TList(self.tElement())),
             Field('has_more', TBool()),
             ])
 
     def FetchedElements( self, *args, **kw ):
-        return self._get_fetched_elements_type().instantiate(*args, **kw)
+        return self.tFetchedElements().instantiate(*args, **kw)
 
     def tElement( self ):
         return TRecord([
