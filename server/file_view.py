@@ -2,7 +2,7 @@
 
 import os.path
 from common.interface.fs import file_iface
-from common.request import Element, Column
+from common.request import Column
 from object import ListObject
 
 
@@ -25,7 +25,7 @@ class File(ListObject):
         return []
 
     def get_all_elements( self ):
-        return [Element(idx, [idx, line]) for idx, line in enumerate(self._load_lines())]
+        return [self.Element(idx, [idx, line]) for idx, line in enumerate(self._load_lines())]
 
     def _load_lines( self, ofs=0 ):
         with file(self.fspath) as f:

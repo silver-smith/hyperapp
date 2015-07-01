@@ -2,7 +2,7 @@
 
 from common.interface import Command
 from common.interface.server_management import server_management_iface
-from common.request import ListDiff, Element, Column
+from common.request import ListDiff, Column
 from object import ListObject
 from module import Module
 
@@ -28,11 +28,11 @@ class CommandList(ListObject):
     def get_all_elements( self ):
         return map(self.cmd2element, Module.get_all_modules_commands())
 
-    @staticmethod
-    def cmd2element( cmd ):
+    @classmethod
+    def cmd2element( cls, cmd ):
         commands = [Command('open', 'Run', 'Run command')]
         id = '%s.%s' % (cmd.module_name, cmd.id)
-        return Element(id, [id, cmd.module_name, cmd.text], commands)
+        return cls.Element(id, [id, cmd.module_name, cmd.text], commands)
 
     def process_request( self, request ):
         if request.command_id == 'open':

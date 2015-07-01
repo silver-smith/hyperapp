@@ -4,7 +4,7 @@ from ponyorm_module import PonyOrmModule
 from util import utcnow, str2id
 from common.interface import Command
 from common.interface.blog import blog_entry_iface, blog_iface
-from common.request import ListDiff, Element, Column, DateTimeColumnType
+from common.request import ListDiff, Column, DateTimeColumnType
 from object import ListObject, subscription
 from module import ModuleCommand
 import article
@@ -104,12 +104,12 @@ class Blog(ListObject):
     def get_all_elements( self ):
         return map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at)))
 
-    @staticmethod
-    def rec2element( rec ):
+    @classmethod
+    def rec2element( cls, rec ):
         commands = [Command('open', 'Open', 'Open blog entry'),
                     Command('delete', 'Delete', 'Delete blog entry', 'Del'),
                     ]
-        return Element(rec.id, [rec.id, rec.created_at], commands)
+        return cls.Element(rec.id, [rec.id, rec.created_at], commands)
 
     @db_session
     def run_element_command_delete( self, request ):

@@ -3,7 +3,7 @@ import os.path
 import stat
 from common.interface.fs import dir_iface
 from common.interface import Command
-from common.request import Element, Column
+from common.request import Column
 from object import ListObject
 from module import Module, ModuleCommand
 import file_view
@@ -67,7 +67,7 @@ class Dir(ListObject):
  
     def make_elt( self, finfo ):
         row = [finfo[column.id] for column in self.columns]
-        return Element(finfo['key'], row, commands=self.elt_commands(finfo))
+        return self.Element(finfo['key'], row, commands=self.elt_commands(finfo))
 
     def elt_commands( self, finfo ):
         if finfo['ftype'] == 'dir':

@@ -40,27 +40,6 @@ class Column(object):
             )
 
 
-class Element(object):
-
-    def __init__( self, key, row, commands=None ):
-        self.key = key
-        self.row = row  # value list
-        self.commands = commands or []
-
-    def as_json( self ):
-        return dict(
-            key=self.key,
-            row=self.row,
-            commands=[cmd.as_json() for cmd in self.commands],
-            )
-
-    @classmethod
-    def from_json( cls, data ):
-        key = data.key
-        row = data.row
-        return cls(key, row, [Command.from_json(cmd) for cmd in data.commands])
-
-
 class Diff(object):
     pass
 

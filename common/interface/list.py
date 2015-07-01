@@ -32,8 +32,13 @@ class ElementOpenCommand(ElementCommand, OpenCommand):
 
 class ListObject(Object):
 
-    def FetchedElements( self, **kw ):
-        return self.iface.FetchedElements(**kw)
+    @classmethod
+    def Element( cls, *args, **kw ):
+        return cls.iface.Element(*args, **kw)
+
+    @classmethod
+    def FetchedElements( cls, *args, **kw ):
+        return cls.iface.FetchedElements(*args, **kw)
 
 
 class ListInterface(Interface):
@@ -49,7 +54,7 @@ class ListInterface(Interface):
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
             Field('columns', TIndexedList(self._get_column_type())),
-            Field('elements', TList(self._get_element_type())),
+            Field('elements', TList(self.tElement())),
             Field('has_more', TBool()),
             Field('selected_key', TOptional(self.key_type)),
             ]
@@ -70,16 +75,19 @@ class ListInterface(Interface):
 
     def _get_fetched_elements_type( self ):
         return TRecord([
-            Field('elements', TList(self._get_element_type())),
+            Field('elements', TList(self.tElement())),
             Field('has_more', TBool()),
             ])
 
-    def FetchedElements( self, **kw ):
-        return self._get_fetched_elements_type().instantiate(**kw)
+    def FetchedElements( self, *args, **kw ):
+        return self._get_fetched_elements_type().instantiate(*args, **kw)
 
-    def _get_element_type( self ):
+    def tElement( self ):
         return TRecord([
-            Field('commands', TList(tCommand)),
             Field('key', self.key_type),
             Field('row', TRow(self.columns)),
+            Field('commands', TList(tCommand)),
             ])
+
+    def Element( self, *args, **kw ):
+        return self.tElement().instantiate(*args, **kw)
