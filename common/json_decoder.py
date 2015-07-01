@@ -81,7 +81,6 @@ class JsonDecoder(object):
 
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
-        print '*** decoding record', path, value, kw
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         rec = Record()
         for field in t.fields:

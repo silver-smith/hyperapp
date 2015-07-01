@@ -47,7 +47,6 @@ class JsonEncoder(object):
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value, **kw ):
-        print '*** encoding record', value, kw, t
         result = {}
         for field in t.fields:
             print '  * field', field.name, getattr(value, field.name)

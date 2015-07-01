@@ -74,10 +74,6 @@ class Field(object):
             self.type.validate(join_path(path, self.name), value)
 
 
-class Record(object):
-    pass
-
-
 class TRecord(Type):
 
     def __init__( self, fields ):
@@ -85,7 +81,6 @@ class TRecord(Type):
         self.fields = fields
 
     def validate( self, path, rec ):
-        print '*** record validate', path, rec
         for field in self.fields:
             if not hasattr(rec, field.name):
                 raise TypeError('%s: Missing field: %s' % (path, field.name))
