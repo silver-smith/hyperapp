@@ -97,7 +97,7 @@ class SubscribeCommand(Command):
         Command.__init__(self, 'subscribe')
 
     def get_result_type( self, iface ):
-        return iface.get_contents_type()
+        return iface.tContents()
 
 
 class Interface(object):
@@ -189,7 +189,7 @@ class Interface(object):
             Field('proxy_id', TString()),
             Field('view_id', TString()),
             Field('path', TPath()),
-            Field('contents', self.get_contents_type()),
+            Field('contents', self.tContents()),
             ])
 
     def Object( self, **kw ):
@@ -198,14 +198,14 @@ class Interface(object):
     def get_default_content_fields( self ):
         return [Field('commands', TList(tCommand))]
 
-    def get_contents_type( self ):
-        return TRecord(self.get_default_content_fields() + self.content_fields)
+    def tContents( self ):
+        return TRecord(join_path(self.iface_id, 'Contents'), self.get_default_content_fields() + self.content_fields)
 
     def Contents( self, **kw ):
-        return self.get_contents_type().instantiate(**kw)
+        return self.tContents().instantiate(**kw)
         
     def validate_contents( self, path, value ):
-        self.get_contents_type().validate(path, value)
+        self.tContents().validate(path, value)
 
     def get_update_type( self ):
         return self.update_type

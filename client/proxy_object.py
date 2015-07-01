@@ -7,7 +7,7 @@
 
 import weakref
 import uuid
-from common.interface import Interface, Field, TRecord, TString, TPath, resolve_iface
+from common.interface import Interface, Field, TString, TPath, resolve_iface
 from common.request import StrColumnType, DateTimeColumnType, ListDiff, ClientNotification, Request
 from object import Object
 from list_object import ListObject

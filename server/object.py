@@ -3,7 +3,6 @@ from common.util import path2str
 from common.interface.interface import (
     TString,
     Field,
-    TRecord,
     iface_registry,
     )
 import common.interface.interface as interface_module

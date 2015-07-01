@@ -19,6 +19,10 @@ class Type(object):
         if not expr:
             self.failure(path, '%s is expected, but got: %r' % (name, value))
 
+    def assert_( self, path, expr, desc ):
+        if not expr:
+            self.failure(path, desc)
+
     def failure( self, path, desc ):
         raise TypeError('%s: %s' % (path, desc))
 
@@ -123,7 +127,9 @@ class TRecord(Type):
                     raise TypeError('Record field is missing: %r' % field.name)
             field.type.validate(join_path('Record', field.name), value)
             adopted_args[field.name] = value
-        assert not unexpected, 'Unexpected record fields: %s' % ', '.join(unexpected)
+        self.assert_(self.name, not unexpected,
+                     'Unexpected fields: %s; allowed are: %s'
+                     % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
         return adopted_args
 
     def instantiate( self, *args, **kw ):
