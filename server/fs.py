@@ -1,9 +1,8 @@
 import sys
 import os.path
 import stat
+from common.interface import Command, Column
 from common.interface.fs import dir_iface
-from common.interface import Command
-from common.request import Column
 from object import ListObject
 from module import Module, ModuleCommand
 import file_view

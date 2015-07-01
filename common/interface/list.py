@@ -14,6 +14,7 @@ from . types import (
     tCommand,
     )
 from . interface import Command, OpenCommand, Object, Interface
+from .. request import StrColumnType
 
 
 tColumn = TRecord([
@@ -21,6 +22,12 @@ tColumn = TRecord([
     Field('title', TOptional(TString())),
     Field('type', TColumnType()),
     ])
+
+
+class Column(tColumn.make_class()):
+
+    def __init__( self, id, title=None, type=StrColumnType() ):
+        super(Column, self).__init__(id, title, type)
 
 
 class ElementCommand(Command):

@@ -102,13 +102,20 @@ class TRecord(Type):
     ##     if unexpected:
     ##         raise TypeError('%s: Unexpected fields: %s' % (path, ', '.join_path(unexpected)))
 
-    def instantiate( self, *args, **kw ):
+    def make_class( self ):
+        class Record(object):
+            type = self
+            def __init__( self, *args, **kw ):
+                for name, val in self.type.adopt_args(args, kw).items():
+                    setattr(self, name, val)
+        return Record
+
+    def adopt_args( self, args, kw ):
         fields = dict(kw)
         for field, arg in zip(self.fields, args):
             assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
             fields[field.name] = arg
-        rec = Record()
-        rec.type = self
+        adopted_args = {}
         unexpected = set(fields.keys())
         for field in self.fields:
             if field.name in fields:
@@ -120,9 +127,12 @@ class TRecord(Type):
                 else:
                     raise TypeError('Record field is missing: %r' % field.name)
             field.type.validate(join_path('Record', field.name), value)
-            setattr(rec, field.name, value)
+            adopted_args[field.name] = value
         assert not unexpected, 'Unexpected record fields: %s' % ', '.join(unexpected)
-        return rec
+        return adopted_args
+
+    def instantiate( self, *args, **kw ):
+        return self.make_class()(*args, **kw)
         
 
 class TList(Type):

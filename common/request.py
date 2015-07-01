@@ -24,22 +24,6 @@ class DateTimeColumnType(ColumnType):
         return dt2local_str(value)
 
 
-class Column(object):
-
-    def __init__( self, id, title=None, type=StrColumnType() ):
-        assert isinstance(type, ColumnType), repr(type)
-        self.id = id
-        self.title = title
-        self.type = type
-
-    def as_json( self ):
-        return dict(
-            id=self.id,
-            title=self.title,
-            type=self.type,
-            )
-
-
 class Diff(object):
     pass
 
