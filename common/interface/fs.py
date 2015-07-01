@@ -3,15 +3,8 @@ from . types import (
     TInt,
     Field,
     )
-from . interface import (
-    Command,
-    OpenCommand,
-    ElementCommand,
-    ElementOpenCommand,
-    Interface,
-    ListInterface,
-    register_iface,
-    )
+from . interface import Command, OpenCommand, Interface, register_iface
+from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 
 file_iface = ListInterface('fs_file', columns=[TInt(), TString()], key_type=TInt())

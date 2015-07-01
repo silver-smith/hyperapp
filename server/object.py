@@ -7,6 +7,7 @@ from common.interface.interface import (
     iface_registry,
     )
 import common.interface.interface as interface_module
+import common.interface.list as list_module
 from common.request import Diff, Update
 from util import WeakValueMultiDict
 from common.interface import Interface
@@ -88,7 +89,7 @@ class Object(interface_module.Object):
         subscription.remove(self.path, request.peer)
 
 
-class ListObject(Object, interface_module.ListObject):
+class ListObject(Object, list_module.ListObject):
 
     def __init__( self, path ):
         Object.__init__(self, path)

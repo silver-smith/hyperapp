@@ -5,16 +5,8 @@ from . types import (
     TPath,
     Field,
     )
-from . interface import (
-    TObject,
-    Command,
-    OpenCommand,
-    ElementCommand,
-    ElementOpenCommand,
-    Interface,
-    ListInterface,
-    register_iface,
-    )
+from . interface import TObject, Command, OpenCommand, Interface, register_iface
+from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 
 article_iface = Interface('article',

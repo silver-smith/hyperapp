@@ -1,13 +1,6 @@
-from . interface import (
-    TString,
-    TInt,
-    Field,
-    Command,
-    ElementCommand,
-    ElementOpenCommand,
-    ListInterface,
-    register_iface,
-    )
+from . types import TString
+from . interface import register_iface
+from . list import ElementOpenCommand, ListInterface
 
 
 server_management_iface = ListInterface('server_management',
