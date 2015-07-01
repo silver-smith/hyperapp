@@ -49,7 +49,6 @@ class JsonEncoder(object):
     def encode_record( self, t, value, **kw ):
         result = {}
         for field in t.fields:
-            print '  * field', field.name, getattr(value, field.name)
             result[field.name] = self.dispatch(field.type, getattr(value, field.name))
         return result
 
