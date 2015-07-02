@@ -1,6 +1,7 @@
 import weakref
 from PySide import QtCore, QtGui
 from util import make_action
+from view_command import ViewCommandBase
 #import key_binding
 #import cmd_view
 
@@ -28,32 +29,33 @@ class MenuBar(object):
         menu_bar.addMenu(self.window_menu)
         menu_bar.addMenu(self.help_menu)
 
-    def add_action_to_menu( self, menu, *args ):
-        menu.addAction(make_action(menu, *args))
+    def add_action_to_menu( self, menu, text, shortcut, fn, self_wr ):
+        menu.addAction(make_action(menu, text, shortcut, fn, self_wr))
 
     def add_cmd_action_to_menu( self, menu, cmd, *args ):
+        return
         menu.addAction(cmd.make_action(menu, *args))
 
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
         window = self.window()
         for cmd in self.window().get_global_commands():
-            # cmd is BoundViewCommand or window.OpenCommand
-            self.add_cmd_action_to_menu(menu, cmd, window)
+            assert isinstance(cmd, ViewCommandBase), repr(cmd)
+            menu.addAction(cmd.make_action(menu, window))
         return menu
 
     def _current_view( self ):
         return self.window().get_current_view()
 
     @staticmethod
-    def _open_dir_commands( self_wref ):
-        self = self_wref()
+    def _open_dir_commands( self_wr ):
+        self = self_wr()
         if self.current_dir is None: return
         self._current_view().open(cmd_view.Handle(None, [self.current_dir], take_dir_commands=True))
 
     @staticmethod
-    def _open_elt_commands( self_wref ):
-        self = self_wref()
+    def _open_elt_commands( self_wr ):
+        self = self_wr()
         if not self.selected_elts: return
         self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
 

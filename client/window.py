@@ -1,12 +1,12 @@
 import weakref
 import uuid
 from PySide import QtCore, QtGui
-from util import DEBUG_FOCUS, call_after
+from common.util import is_list_inst
+from util import DEBUG_FOCUS, call_after, make_action
 from common.interface import Interface
 from common.request import Request
-from command import Command
 import proxy_registry
-from view_command import command
+from view_command import ViewCommandBase, command
 import view
 import composite
 from menu_bar import MenuBar
@@ -30,23 +30,23 @@ class OpenRespHandler(proxy_registry.RespHandler):
         window.process_open_command_response(self, response.result)
 
 
-class OpenCommand(Command):
+class OpenCommand(ViewCommandBase):
 
     def __init__( self, id, text, desc, shortcut, iface, path ):
         assert isinstance(iface, Interface), repr(iface)
-        Command.__init__(self, id, text, desc, shortcut)
+        ViewCommandBase.__init__(self, text, desc, shortcut)
+        self.id = id
         self.iface = iface
         self.path = path
 
-    def run_with_weaks( self, window_wref ):
-        return self.run(window_wref())
-
-    def run( self, window ):
-        print 'OpenCommand.run', self.id, self.iface, self.path, window
-        window.run_open_command(self.iface, self.path)
+    def run( self, window_wr ):
+        print 'OpenCommand.run', self.id, self.iface, self.path, window_wr
+        window = window_wr()
+        if window:
+            window.run_open_command(self.iface, self.path)
 
     def make_action( self, widget, window ):
-        return self._make_action(widget, weakref.ref(window))
+        return make_action(widget, self.text, self.shortcut, self.run, weakref.ref(window))
 
 
 class Handle(composite.Handle):

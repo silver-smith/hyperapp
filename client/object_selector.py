@@ -1,6 +1,5 @@
 from PySide import QtCore, QtGui
 from util import uni2str
-from command import ObjectCommand
 from proxy_object import ProxyObject
 import proxy_registry
 import view

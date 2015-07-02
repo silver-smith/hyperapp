@@ -11,7 +11,6 @@ from common.interface import Interface, Field, TString, TPath, resolve_iface
 from common.request import StrColumnType, DateTimeColumnType, ClientNotification, Request
 from object import Object
 from list_object import ListDiff, ListObject
-from command import ObjectCommand, ElementCommand
 import proxy_registry
 import view
 
@@ -79,7 +78,7 @@ class ProxyObject(Object):
         self.execute_request('subscribe')
 
     def set_contents( self, contents ):
-        self.commands = [ObjectCommand.from_json(cmd) for cmd in contents.commands]
+        self.commands = contents.commands
 
     def get_title( self ):
         return ','.join('%s=%s' % (key, value) for key, value in self.path.items())
