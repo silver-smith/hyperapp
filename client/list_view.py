@@ -67,7 +67,7 @@ class Model(QtCore.QAbstractTableModel):
             assert diff.end_key is not None
             start_row = self._key2row[diff.start_key]
             end_row = self._key2row[diff.end_key]
-            diff.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
+            self.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
         if diff.start_key is not None and diff.elements:
             start_row = self._key2row[diff.start_key]
             self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
