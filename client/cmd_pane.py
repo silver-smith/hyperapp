@@ -2,6 +2,7 @@
 
 import weakref
 from PySide import QtCore, QtGui
+from command import run_object_command, run_element_command
 
 
 class View(QtGui.QDockWidget):
@@ -37,7 +38,7 @@ class View(QtGui.QDockWidget):
         view, commands = window.get_object_commands()
         for cmd in commands:
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run(view))
+            button.pressed.connect(lambda cmd=cmd: run_object_command(cmd, view))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
             self.dir_buttons.append(button)
             idx += 1
@@ -51,7 +52,7 @@ class View(QtGui.QDockWidget):
         elt = elts[0]
         for cmd in elt.commands:
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run(view, elt.key))
+            button.pressed.connect(lambda cmd=cmd: run_element_command(cmd, view, elt.key))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 

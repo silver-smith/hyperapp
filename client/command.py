@@ -5,11 +5,14 @@ from util import make_action
 def make_cmd_action( cmd, widget, run, *args ):
     return make_action(widget, cmd.text, cmd.shortcut, run, cmd, *args)
 
+def run_object_command( cmd, view ):
+    view.run_object_command(cmd.id)
+
 def make_object_cmd_action( cmd, widget, view ):
     def run( cmd, view_wr ):
         view = view_wr()
         if view:
-            view.run_object_command(cmd.id)
+            run_object_command(cmd, view)
     return make_cmd_action(cmd, widget, run, weakref.ref(view))
 
 def run_element_command( cmd, view, element_key ):
