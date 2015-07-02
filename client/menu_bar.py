@@ -1,6 +1,7 @@
 import weakref
 from PySide import QtCore, QtGui
 from util import make_action
+from command import make_object_cmd_action
 from view_command import ViewCommandBase, BoundViewCommand
 #import key_binding
 #import cmd_view
@@ -31,10 +32,6 @@ class MenuBar(object):
 
     def add_action_to_menu( self, menu, text, shortcut, fn, self_wr ):
         menu.addAction(make_action(menu, text, shortcut, fn, self_wr))
-
-    def add_cmd_action_to_menu( self, menu, cmd, *args ):
-        return
-        menu.addAction(cmd.make_action(menu, *args))
 
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
@@ -69,7 +66,8 @@ class MenuBar(object):
         self.dir_menu.clear()
         view, commands = window.get_object_commands()
         for cmd in commands:
-            self.add_cmd_action_to_menu(self.dir_menu, cmd, view)
+            # cmd is object command, which is Command Record interface type
+            self.dir_menu.addAction(make_object_cmd_action(cmd, self.dir_menu, view))
         self.dir_menu.setEnabled(commands != [])
 
     def _update_window_menu( self, window ):

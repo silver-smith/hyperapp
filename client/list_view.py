@@ -5,7 +5,7 @@ sys.path.append('..')
 
 from util import uni2str, key_match, key_match_any
 from list_object import ListDiff
-from command import run_element_command, make_element_action
+from command import run_element_command, make_element_cmd_action
 import view_registry
 import view
 
@@ -297,7 +297,7 @@ class View(view.View, QtGui.QTableView):
         commands = elt.commands
         # create actions
         for cmd in commands:
-            action = make_element_action(cmd, action_widget, self, element_key)
+            action = make_element_cmd_action(cmd, action_widget, self, element_key)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
