@@ -17,7 +17,6 @@ from . interface import (
     Interface,
     TIface,
     )
-from request import Update
 
 
 class JsonEncoder(object):
@@ -73,7 +72,6 @@ class JsonEncoder(object):
 
     @dispatch.register(TUpdate)
     def encode_update( self, t, value ):
-        assert isinstance(value, Update), repr(value)
         iface = value.iface
         info = self.dispatch(t.info_type, value)
         return dict(info,

@@ -205,8 +205,8 @@ class Interface(object):
             Field('diff', self.get_diff_type()),
             ])
 
-    def Update( self, *args, **kw ):
-        return self.tUpdate().instantiate(*args, **kw)
+    def Update( self, path, diff ):
+        return self.tUpdate().instantiate(self, path, diff)
 
 
 class TIface(TPrimitive):

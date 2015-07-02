@@ -7,7 +7,6 @@ from common.interface.interface import (
     )
 import common.interface.interface as interface_module
 import common.interface.list as list_module
-from common.request import Update
 from util import WeakValueMultiDict
 from common.interface import Interface
 
@@ -27,7 +26,7 @@ class Subscription(object):
         self.path2client.remove(path2str(path), client)
 
     def distribute_update( self, iface, path, diff ):
-        update = Update(iface, path, diff)
+        update = iface.Update(path, diff)
         for client in self.path2client.get(path2str(path)):
             client.send_update(update)
 

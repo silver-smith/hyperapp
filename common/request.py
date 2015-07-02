@@ -24,17 +24,6 @@ class DateTimeColumnType(ColumnType):
         return dt2local_str(value)
 
 
-class Update(object):
-
-    def __init__( self, iface, path, diff ):
-        #assert isinstance(iface, Interface), repr(iface)
-        assert isinstance(path, dict), repr(path)
-        iface.validate_update_diff(diff)
-        self.iface = iface
-        self.path = path
-        self.diff = diff
-
-
 class ServerNotification(object):
 
     def __init__( self, peer, updates=None ):
@@ -42,7 +31,6 @@ class ServerNotification(object):
         self.updates = updates or []  # Update list
 
     def add_update( self, update ):
-        assert isinstance(update, Update), repr(update)
         self.updates.append(update)
 
     def as_dict( self ):
@@ -119,5 +107,5 @@ class Request(ClientNotification):
 
     def make_response_update( self, iface, path, diff ):
         response = self.make_response()
-        response.add_update(Update(iface, path, diff))
+        response.add_update(iface.Update(path, diff))
         return response

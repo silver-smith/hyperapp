@@ -2,7 +2,7 @@ import traceback
 import pprint
 import select
 from Queue import Queue
-from common.request import Update, ServerNotification, Response
+from common.request import ServerNotification, Response
 from common.json_packet import encode_packet, is_full_packet, decode_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
@@ -64,7 +64,6 @@ class Client(object):
         self.updates_queue = Queue()  # Update queue
 
     def send_update( self, update ):
-        assert isinstance(update, Update), repr(update)
         self.updates_queue.put(update)
 
     def stop( self ):
