@@ -30,7 +30,7 @@ def _get_actual_type( cls ):
         ])
 
 # decorator for base classes
-def dynamic_type( base_cls ):
+def dynamic_type_base( base_cls ):
     base_cls.register = _register
     base_cls.get_actual_type = _get_actual_type
     base_cls.type = TDynamic(base_cls)

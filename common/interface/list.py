@@ -12,11 +12,11 @@ from . types import (
     TRow,
     tCommand,
     )
-from . dynamic_type import dynamic_type
+from . dynamic_type import dynamic_type_base
 from . interface import Command, OpenCommand, Object, Interface
 
 
-@dynamic_type
+@dynamic_type_base
 class ColumnType(object):
 
     def to_string( self, value ):
