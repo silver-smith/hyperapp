@@ -1,7 +1,7 @@
 import weakref
 from PySide import QtCore, QtGui
 from util import make_action
-from view_command import ViewCommandBase
+from view_command import ViewCommandBase, BoundViewCommand
 #import key_binding
 #import cmd_view
 
@@ -91,7 +91,8 @@ class MenuBar(object):
         for cmd in reversed(commands):
             if last_view is not None and cmd.get_inst() is not last_view:
                 self.window_menu.addSeparator()
-            self.add_cmd_action_to_menu(self.window_menu, cmd)
+            assert isinstance(cmd, BoundViewCommand), repr(cmd)
+            self.window_menu.addAction(cmd.make_action(self.window_menu))
             last_view = cmd.get_inst()
 
     def selected_elements_changed( self, elts ):
