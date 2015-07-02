@@ -5,9 +5,9 @@ class TDynamic(Type):
 
     discriminator_type = TString()
 
-    def __init__( self, base_cls, registry ):
+    def __init__( self, base_cls ):
         self.base_cls = base_cls
-        self.registry = registry
+        self.registry = {}  # discriminator -> child class
 
     def resolve( self, discriminator ):
         assert discriminator in self.registry, 'Unknown class discriminator: %r' % discriminator
@@ -24,10 +24,6 @@ def _register( cls, discriminator ):
     cls.type.registry[discriminator] = cls
 
 @classmethod
-def _resolve( cls, discriminator ):
-    return cls.type.resolve(discriminator)
-
-@classmethod
 def _get_actual_type( cls ):
     return TRecord([
         Field('discriminator', cls.type.discriminator_type),
@@ -35,9 +31,7 @@ def _get_actual_type( cls ):
 
 # decorator for base classes
 def dynamic_type( base_cls ):
-    registry = {}  # discriminator -> child class
     base_cls.register = _register
-    base_cls.resolve = _resolve
     base_cls.get_actual_type = _get_actual_type
-    base_cls.type = TDynamic(base_cls, registry)
+    base_cls.type = TDynamic(base_cls)
     return base_cls
