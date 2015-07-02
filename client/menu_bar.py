@@ -3,8 +3,6 @@ from PySide import QtCore, QtGui
 from util import make_action
 from command import make_object_cmd_action
 from view_command import ViewCommandBase, BoundViewCommand
-#import key_binding
-#import cmd_view
 
 
 class MenuBar(object):
