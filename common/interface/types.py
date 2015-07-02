@@ -80,7 +80,13 @@ class Field(object):
 
 # class for instantiated records
 class Record(object):
-    pass
+
+    def belongs( self, t ):
+        try:
+            t.validate('Record', self)
+            return True
+        except TypeError:
+            return False
 
 
 class TRecord(Type):
@@ -91,8 +97,7 @@ class TRecord(Type):
 
     def validate( self, path, rec ):
         for field in self.fields:
-            if not hasattr(rec, field.name):
-                raise TypeError('%s: Missing field: %s' % (path, field.name))
+            self.assert_(path, hasattr(rec, field.name), 'Missing field: %s' % field.name)
             field.validate(path, getattr(rec, field.name))
 
     ## def validate_kw( self, path, rec_kw ):

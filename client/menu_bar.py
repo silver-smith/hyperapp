@@ -1,5 +1,6 @@
 import weakref
 from PySide import QtCore, QtGui
+from common.interface.types import tCommand
 from util import make_action
 from command import make_object_cmd_action
 from view_command import ViewCommandBase, BoundViewCommand
@@ -64,7 +65,7 @@ class MenuBar(object):
         self.dir_menu.clear()
         view, commands = window.get_object_commands()
         for cmd in commands:
-            # cmd is object command, which is Command Record interface type
+            assert cmd.belongs(tCommand), repr(cmd)
             self.dir_menu.addAction(make_object_cmd_action(cmd, self.dir_menu, view))
         self.dir_menu.setEnabled(commands != [])
 
