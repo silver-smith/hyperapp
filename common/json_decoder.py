@@ -14,6 +14,8 @@ from . interface import (
     TColumnType,
     TPath,
     TObject,
+    TUpdate,
+    tUpdateList,
     TIface,
     TClientNotification,
     TRequest,
@@ -131,6 +133,13 @@ class JsonDecoder(object):
         self.expect_type(path, isinstance(value, dict), value, 'path (dict)')
         return value
 
+    @dispatch.register(TUpdate)
+    def decode_update( self, t, value, path ):
+        self.expect_type(path, isinstance(value, dict), value, 'update (dict)')
+        self.expect(path, 'iface' in value, 'iface field is missing')
+        iface = self.iface_registry.resolve(value['iface'])
+        return self.dispatch(iface.tUpdate(), value, path)
+
     @dispatch.register(TObject)
     def decode_object( self, t, value, path ):
         assert self.handle_resolver  # object decoding is not supported
@@ -174,10 +183,11 @@ class JsonDecoder(object):
     def decode_response( self, value, path ):
         self.expect(path, 'iface' in value, 'iface field is missing')
         self.expect(path, 'command_id' in value, 'command_id field is missing')
+        self.expect(path, 'updates' in value, 'updates field is missing')
         iface = self.iface_registry.resolve(value['iface'])
         command_id = value['command_id']
         request_id = value.get('request_id')
         result_type = iface.get_command_result_type(command_id)
         result = self.dispatch(result_type, value.get('result'), join_path(path, 'result'))
-        updates = [(path, ListDiff.from_json(diff)) for path, diff in value.get('updates', [])]
+        updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
         return Response(self.peer, iface, command_id, request_id, result=result, updates=updates)

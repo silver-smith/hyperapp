@@ -172,7 +172,7 @@ class View(view.View, QtGui.QTableView):
         self.check_if_elements_must_be_fetched()
 
     def diff_applied( self, diff ):
-        assert isinstance(diff, ListDiff), repr(diff)
+        #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update record
         self.model().diff_applied(diff)
         self._find_wanted_current_key()
         # may be this was response from elements fetching, but we may need more elements

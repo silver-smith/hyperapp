@@ -14,15 +14,6 @@ from . types import (
 from .. request import ClientNotification, Request
 
 
-class TUpdate(Type):
-
-    def __init__( self ):
-        self.info_type = TRecord([
-            Field('iface', TIface()),
-            Field('path', TPath()),
-            ])
-
-
 # base class for server objects
 class Object(object):
 
@@ -143,11 +134,8 @@ class Interface(object):
             Field('command_id', TString()),
             Field('request_id', TString()),
             Field('result', result_type),
-            Field('updates', self.get_updates_type()),
+            Field('updates', tUpdateList),
             ])
-
-    def get_updates_type( self ):
-        return TList(TUpdate())
 
     def is_open_command( self, command_id ):
         return isinstance(self.commands[command_id], OpenCommand)
@@ -224,6 +212,17 @@ class Interface(object):
 class TIface(TPrimitive):
     type_name = 'interface'
     type = Interface
+
+
+class TUpdate(Type):
+
+    def __init__( self ):
+        self.info_type = TRecord([
+            Field('iface', TIface()),
+            Field('path', TPath()),
+            ])
+
+tUpdateList = TList(TUpdate())
 
 
 class IfaceRegistry(object):

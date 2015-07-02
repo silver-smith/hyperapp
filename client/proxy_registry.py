@@ -43,10 +43,10 @@ def resolve_proxy( path ):
     return obj
 
 def process_updates( updates ):
-    for path, diff in updates:
-        obj = resolve_proxy(path)
+    for update in updates:
+        obj = resolve_proxy(update.path)
         if obj:
-            obj.process_update(diff)
+            obj.process_update(update.diff)
 
 def process_received_notification( notification ):
     process_updates(notification.updates)

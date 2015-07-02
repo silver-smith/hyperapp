@@ -50,6 +50,6 @@ class ListObject(Object):
         return self.run_command(command_id, initiator_view, element_key=element_key)
 
     def _notify_diff_applied( self, diff ):
-        assert isinstance(diff, ListDiff), repr(diff)
+        #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update Record
         for observer in self._observers:
             observer.diff_applied(diff)
