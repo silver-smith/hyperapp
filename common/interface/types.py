@@ -1,6 +1,5 @@
 import datetime
 from .. util import is_list_inst
-from .. request import ColumnType
 
 
 class TypeError(Exception): pass
@@ -48,10 +47,6 @@ class TBool(TPrimitive):
 class TDateTime(TPrimitive):
     type_name = 'datetime'
     type = datetime.datetime
-
-class TColumnType(TPrimitive):
-    type_name = 'column_type'
-    type = ColumnType
 
 
 class TOptional(Type):

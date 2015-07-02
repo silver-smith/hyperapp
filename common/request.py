@@ -1,27 +1,5 @@
 import pprint
-from . util import is_list_inst, dt2local_str
-
-
-class ColumnType(object):
-
-    def to_string( self, value ):
-        raise NotImplementedError(self.__class__)
-
-
-class StrColumnType(ColumnType):
-
-    id = 'str'
-
-    def to_string( self, value ):
-        return value
-
-
-class DateTimeColumnType(ColumnType):
-
-    id = 'datetime'
-
-    def to_string( self, value ):
-        return dt2local_str(value)
+from . util import is_list_inst
 
 
 class ServerNotification(object):

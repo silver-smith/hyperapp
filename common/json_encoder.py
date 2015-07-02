@@ -9,8 +9,8 @@ from . interface import (
     TRecord,
     TList,
     TRow,
-    TColumnType,
     TPath,
+    TDynamic,
     TUpdate,
     Object,
     TObject,
@@ -62,9 +62,9 @@ class JsonEncoder(object):
             result.append(self.dispatch(t, value[idx]))
         return result
 
-    @dispatch.register(TColumnType)
-    def encode_column_type( self, t, value ):
-        return value.id
+    @dispatch.register(TDynamic)
+    def encode_dynamic( self, t, value ):
+        return self.dispatch(value.get_actual_type(), value)
 
     @dispatch.register(TPath)
     def encode_path( self, t, value ):

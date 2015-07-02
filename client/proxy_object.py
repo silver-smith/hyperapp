@@ -8,7 +8,7 @@
 import weakref
 import uuid
 from common.interface import Interface, Field, TString, TPath, resolve_iface
-from common.request import StrColumnType, DateTimeColumnType, ClientNotification, Request
+from common.request import ClientNotification, Request
 from object import Object
 from list_object import ListDiff, ListObject
 import proxy_registry

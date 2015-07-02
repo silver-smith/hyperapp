@@ -1,6 +1,6 @@
 import dateutil.parser
 from method_dispatch import method_dispatch
-from request import StrColumnType, DateTimeColumnType, ClientNotification, Request, ServerNotification, Response
+from request import ClientNotification, Request, ServerNotification, Response
 from . interface import (
     TString,
     TInt,
@@ -11,7 +11,7 @@ from . interface import (
     TList,
     TIndexedList,
     TRow,
-    TColumnType,
+    TDynamic,
     TPath,
     TObject,
     TUpdate,
@@ -83,7 +83,11 @@ class JsonDecoder(object):
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
-        elements = {}
+        fields = self.decode_record_fields(t, value, path, **kw)
+        return t.instantiate(**fields)
+
+    def decode_record_fields( self, t, value, path, **kw ):
+        fields = {}
         for field in t.fields:
             self.expect(path, field.name in value, 'field %r is missing' % field.name)
             if field.type is not None:
@@ -91,8 +95,8 @@ class JsonDecoder(object):
             else:  # open type
                 field_type = kw[field.name]  # must be passed explicitly
             elt = self.dispatch(field_type, value[field.name], join_path(path, field.name))
-            elements[field.name] = elt
-        return t.instantiate(**elements)
+            fields[field.name] = elt
+        return fields
 
     @dispatch.register(TList)
     def decode_list( self, t, value, path ):
@@ -118,15 +122,16 @@ class JsonDecoder(object):
             result.append(self.dispatch(t, value[idx], join_path(path, '#%d' % idx)))
         return result
 
-    @dispatch.register(TColumnType)
-    def decode_path( self, t, value, path ):
-        self.expect_type(path, isinstance(value, basestring), value, 'column_type id (str)')
-        if value == 'str':
-            return StrColumnType()
-        elif value == 'datetime':
-            return DateTimeColumnType()
-        else:
-            assert False, repr(value)  # Unknown column type
+    @dispatch.register(TDynamic)
+    def decode_dynamic( self, t, value, path ):
+        self.expect_type(path, isinstance(value, dict), value, 'dynamic record (dict)')
+        self.expect(path, 'discriminator' in value, 'discriminator field is missing')
+        discriminator = self.dispatch(TDynamic.discriminator_type, value['discriminator'],
+                                      join_path(path, 'discriminator'))
+        cls = t.resolve(discriminator)
+        fields = self.decode_record_fields(cls.get_actual_type(), value, path)
+        del fields['discriminator']
+        return cls(**fields)
 
     @dispatch.register(TPath)
     def decode_path( self, t, value, path ):

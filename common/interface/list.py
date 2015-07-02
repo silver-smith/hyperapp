@@ -1,11 +1,10 @@
-from .. util import is_list_inst
+from .. util import is_list_inst, dt2local_str
 from . types import (
     Type,
     TString,
     TInt,
     TBool,
     TOptional,
-    TColumnType,
     Field,
     TRecord,
     TList,
@@ -13,14 +12,37 @@ from . types import (
     TRow,
     tCommand,
     )
+from . dynamic_type import dynamic_type
 from . interface import Command, OpenCommand, Object, Interface
-from .. request import StrColumnType
+
+
+@dynamic_type
+class ColumnType(object):
+
+    def to_string( self, value ):
+        raise NotImplementedError(self.__class__)
+
+
+class StrColumnType(ColumnType):
+
+    def to_string( self, value ):
+        return value
+
+
+class DateTimeColumnType(ColumnType):
+
+    def to_string( self, value ):
+        return dt2local_str(value)
+
+
+StrColumnType.register('str')
+DateTimeColumnType.register('datetime')
 
 
 tColumn = TRecord([
     Field('id', TString()),
     Field('title', TOptional(TString())),
-    Field('type', TColumnType()),
+    Field('type', ColumnType.type),
     ])
 
 
