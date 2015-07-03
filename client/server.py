@@ -75,7 +75,7 @@ class Connection(object):
     def process_packet( self, packet_data ):
         print 'processing packet:', packet_data
         server = Server(self.addr)
-        decoder = JsonDecoder(server, iface_registry, server.resolve_handle)
+        decoder = JsonDecoder(server, iface_registry, server.resolve_object)
         response = decoder.decode_response_or_notification(packet_data)
         if isinstance(response, Response):
             proxy_registry.process_received_response(response)
@@ -98,11 +98,9 @@ class Server(object):
     def __init__( self, addr ):
         self.addr = addr
 
-    def resolve_handle( self, objinfo ):
+    def resolve_object( self, objinfo ):
         obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
-        object = obj_ctr(self, objinfo.path, objinfo.iface, objinfo.contents)
-        handle_ctr = view_registry.resolve_view(objinfo.view_id)
-        return handle_ctr(object, objinfo.contents)
+        return obj_ctr(self, objinfo.path, objinfo.iface, objinfo.contents)
 
     def send_notification( self, request ):
         assert isinstance(request, ClientNotification), repr(request)

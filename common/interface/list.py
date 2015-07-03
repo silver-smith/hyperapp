@@ -13,15 +13,18 @@ from . types import (
     tCommand,
     )
 from . dynamic_type import dynamic_type_base
-from . interface import Command, OpenCommand, Handle, Object, Interface
+from . interface import Command, OpenCommand, ObjHandle, Object, Interface
 
 
-Handle.register('list')
-Handle.register('list_narrower')
+ObjHandle.register('list')
+ObjHandle.register('list_narrower')
 
 
 @dynamic_type_base
 class ColumnType(object):
+
+    def __init__( self, discriminator=None ):
+        pass
 
     def to_string( self, value ):
         raise NotImplementedError(self.__class__)

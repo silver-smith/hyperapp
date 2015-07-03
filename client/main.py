@@ -14,7 +14,7 @@ import common.interface.fs
 import common.interface.blog
 import common.interface.article
 
-from common.interface import iface_registry
+from common.interface import Handle, iface_registry
 from common.request import Request
 from util import pickle_dumps, pickle_loads
 from server import Server
@@ -106,7 +106,13 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app.open_in_any_window(handle)
 
 
+def register_handles():
+    Handle.register('list', list_view.Handle)
+    Handle.register('list_narrower', narrower.Handle.from_resp)
+
 def main():
+    register_handles()
+
     if len(sys.argv) > 1:
         iface_id, path_str = sys.argv[1].split(':')
         path = dict(pair.split('=') for pair in path_str.split(','))  # module=file,fspath=/usr/portabe

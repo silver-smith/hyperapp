@@ -11,7 +11,8 @@ class TDynamic(Type):
 
     def resolve( self, discriminator ):
         assert discriminator in self.registry, 'Unknown class discriminator: %r' % discriminator
-        return self.registry[discriminator].cls
+        rec = self.registry[discriminator]
+        return (rec.type, rec.cls if rec.cls else self.base_cls)
 
     def validate( self, path, value ):
         self.expect(path, value, self.base_cls.__name__, isinstance(value, self.base_cls))
@@ -21,8 +22,8 @@ class TDynamic(Type):
 class Dynamic(object):
 
     def __init__( self, discriminator ):
-        assert hasattr(self.__class__, 'registry'), 'Use dynamic_type_base decorator for base class'
-        assert discriminator in self.registry, 'Unknown/unregistered class: %r' % discriminator
+        assert hasattr(self.__class__, 'type'), 'Use dynamic_type_base decorator for base class'
+        assert discriminator in self.type.registry, 'Unknown/unregistered class: %r' % discriminator
         self.discriminator = discriminator
 
 
@@ -34,18 +35,24 @@ class ClassRec(object):
 
 
 @classmethod
-def _register( cls, discriminator ):
+def _register( self_cls, discriminator, cls=None ):
     assert isinstance(discriminator, basestring), repr(discriminator)
+    registry = self_cls.type.registry
+    if discriminator in registry:
+        assert cls or self_cls is not self_cls.type.base_cls  # overriding used for setting custom class only
+        registry[discriminator].cls = cls or self_cls
+        return
     rec = ClassRec()
-    if cls is not cls.type.base_cls:  # called on base class?
-        cls.discriminator = discriminator
+    if self_cls is self_cls.type.base_cls:  # called on base class?
         rec.cls = cls
-        rec.type = cls.my_type
-    cls.type.registry[discriminator] = rec
+    else:
+        self_cls.discriminator = discriminator
+        rec.cls = cls or self_cls
+        rec.type = self_cls.my_type
+    registry[discriminator] = rec
 
-@classmethod
-def _get_actual_type( cls ):
-    return cls.type.registry[cls.discriminator].type
+def _get_actual_type( self ):
+    return self.type.registry[self.discriminator].type
 
 # decorator for base classes
 def dynamic_type_base( base_cls ):

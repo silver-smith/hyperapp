@@ -37,7 +37,6 @@ class TObject(TRecord):
             Field('iface', TIface()),
             Field('path', TPath()),
             Field('proxy_id', TString()),
-            Field('view_id', TString()),
             Field('contents', None),
             ])
 
@@ -52,8 +51,14 @@ class Handle(Dynamic):
 
 
 # handle containing object
-class ObjectHandle(Handle):
+class ObjHandle(Handle):
+
     my_type = TRecord([Field('object', TObject())])
+
+    def __init__( self, discriminator, object ):
+        assert isinstance(object, Object), repr(object)
+        Handle.__init__(self, discriminator)
+        self.object = object
 
 
 class TClientNotification(TPrimitive):
@@ -98,7 +103,7 @@ class Command(object):
 class OpenCommand(Command):
 
     def get_result_type( self, iface ):
-        return TObject()
+        return Handle.type
 
 
 class SubscribeCommand(Command):

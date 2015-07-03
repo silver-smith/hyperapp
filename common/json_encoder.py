@@ -70,6 +70,7 @@ class JsonEncoder(object):
             d = self.dispatch(actual_type, value)
         else:
             d = {}
+        print '*** encode_dynamic', `discriminator`, d
         return dict(d, discriminator=discriminator)
 
     @dispatch.register(TPath)

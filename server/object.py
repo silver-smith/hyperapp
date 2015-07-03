@@ -1,8 +1,9 @@
 import pprint
 from common.util import path2str
-from common.interface.interface import (
+from common.interface import (
     TString,
     Field,
+    ObjHandle,
     iface_registry,
     )
 import common.interface.interface as interface_module
@@ -74,7 +75,7 @@ class Object(interface_module.Object):
 
     def process_request_get( self, request ):
         self.subscribe(request)
-        return request.make_response_object(self)
+        return request.make_response(ObjHandle(self.view_id, self))
 
     def process_request_subscribe( self, request ):
         self.subscribe(request)

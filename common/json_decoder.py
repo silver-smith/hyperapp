@@ -31,10 +31,10 @@ class DecodeError(Exception): pass
 
 class JsonDecoder(object):
 
-    def __init__( self, peer, iface_registry, handle_resolver=None ):
+    def __init__( self, peer, iface_registry, object_resolver=None ):
         self.peer = peer
         self.iface_registry = iface_registry  # IfaceRegistry
-        self.handle_resolver = handle_resolver  # obj info -> handle
+        self.object_resolver = object_resolver  # obj info -> handle
 
     def decode( self, t, value, path='root' ):
         return self.dispatch(t, value, path)
@@ -128,13 +128,12 @@ class JsonDecoder(object):
         self.expect(path, 'discriminator' in value, 'discriminator field is missing')
         discriminator = self.dispatch(t.discriminator_type, value['discriminator'],
                                       join_path(path, 'discriminator'))
-        cls = t.resolve(discriminator)
-        actual_type = cls.get_actual_type()
+        actual_type, cls = t.resolve(discriminator)
         if actual_type is not None:
-            fields = self.decode_record_fields(cls.get_actual_type(), value, path)
-            del fields['discriminator']
+            fields = self.decode_record_fields(actual_type, value, path)
         else:
             fields = {}
+        print '*** decode_dynamic', `discriminator`, actual_type, cls, fields
         return cls(**fields)
 
     @dispatch.register(TPath)
@@ -151,12 +150,12 @@ class JsonDecoder(object):
 
     @dispatch.register(TObject)
     def decode_object( self, t, value, path ):
-        assert self.handle_resolver  # object decoding is not supported
+        assert self.object_resolver  # object decoding is not supported
         self.expect_type(path, isinstance(value, dict), value, 'object (dict)')
         self.expect(path, 'iface' in value, 'iface field is missing')
         iface = self.iface_registry.resolve(value['iface'])
         objinfo = self.decode_record(t, value, path, contents=iface.tContents())
-        return self.handle_resolver(objinfo)
+        return self.object_resolver(objinfo)
 
     @dispatch.register(TIface)
     def decode_iface( self, t, value, path ):

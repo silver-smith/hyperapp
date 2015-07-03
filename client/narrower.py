@@ -13,8 +13,8 @@ import list_view
 class Handle(composite.Handle):
 
     @classmethod
-    def from_resp( cls, obj, resp ):
-        return cls(list_view.Handle(obj))
+    def from_resp( cls, object ):
+        return cls(list_view.Handle(object))
 
     def __init__( self, list_handle, prefix=None ):
         composite.Handle.__init__(self)
