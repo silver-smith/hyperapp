@@ -14,7 +14,7 @@ import common.interface.fs
 import common.interface.blog
 import common.interface.article
 
-from common.interface import ObjHandle, iface_registry
+from common.interface import Handle, iface_registry
 from common.request import Request
 from util import pickle_dumps, pickle_loads
 from server import Server
@@ -107,10 +107,10 @@ class OpenRespHandler(proxy_registry.RespHandler):
 
 
 def register_handles():
-    ObjHandle.register('list', list_view.Handle)
-    ObjHandle.register('list_narrower', narrower.Handle.from_resp)
-    ObjHandle.register('text_view', text_view.Handle)
-    ObjHandle.register('text_edit', text_edit.Handle)
+    Handle.register('list', list_view.Handle)
+    Handle.register('list_narrower', narrower.Handle.from_resp)
+    Handle.register('text_view', text_view.Handle)
+    Handle.register('text_edit', text_edit.Handle)
 
 def main():
     register_handles()

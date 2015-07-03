@@ -5,9 +5,12 @@ from . types import (
     TPath,
     Field,
     )
-from . interface import TObject, Command, OpenCommand, Interface, register_iface
+from . interface import ObjHandle, TObject, Command, OpenCommand, Interface, register_iface
 from . list import ElementCommand, ElementOpenCommand, ListInterface
 
+
+ObjHandle.register('text_view')
+ObjHandle.register('text_edit')
 
 article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(TString()))],

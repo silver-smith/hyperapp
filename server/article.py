@@ -296,6 +296,4 @@ class ArticleModule(PonyOrmModule):
         self.article_fields.update(fields)
 
 
-ObjHandle.register('text_view')
-ObjHandle.register('text_edit')
 module = ArticleModule()
