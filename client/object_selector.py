@@ -77,6 +77,7 @@ class Handle(view.Handle):
     def __init__( self, object, target ):
         print '*** object_selector Handle', object, target
         assert isinstance(object, ObjectSelector), repr(object)
+        assert isinstance(target, view.Handle), repr(target)
         view.Handle.__init__(self)
         self.object = object
         self.target = target
@@ -126,7 +127,7 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(l)
 
     def handle( self ):
-        return Handle(self.object)
+        return Handle(self.object, self.target_view.handle())
 
     def get_object( self ):
         return self.object
