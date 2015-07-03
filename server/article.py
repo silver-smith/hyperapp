@@ -147,7 +147,7 @@ class ArticleRefList(ListObject):
         if request.command_id == 'add':
             return self.run_command_add(request)
         if request.command_id == 'open':
-            return request.make_response_handle(RefSelector.make(self.article_id, ref_id=request.params.element_key))
+            return self.run_command_open(request)
         if request.command_id == 'delete':
             return self.run_element_command_delete(request)
         return ListObject.process_request(self, request)
@@ -162,6 +162,9 @@ class ArticleRefList(ListObject):
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=json.dumps(request.params.target_path))
         return request.make_response_handle(RefSelector.make(self.article_id, ref_id=rec.id))
+
+    def run_command_open( self, request ):
+        return request.make_response_handle(RefSelector.make(self.article_id, ref_id=request.params.element_key))
 
     @db_session
     def run_element_command_delete( self, request ):
