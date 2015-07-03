@@ -1,4 +1,4 @@
-from . types import Type, TString, Field, TRecord
+from . types import join_path, Type, TString, Field, TRecord
 
 
 class TDynamic(Type):
@@ -16,6 +16,10 @@ class TDynamic(Type):
 
     def validate( self, path, value ):
         self.expect(path, value, self.base_cls.__name__, isinstance(value, self.base_cls))
+        self.assert_(path, value.__class__ is not self.base_cls, 'Expected derived from %r' % self.base_cls.__name__)
+        t = value.get_actual_type()
+        if t:
+            t.validate(join_path(path, value.discriminator), value)
 
 
 # optional base class for dynamic classes

@@ -64,6 +64,8 @@ class JsonEncoder(object):
 
     @dispatch.register(TDynamic)
     def encode_dynamic( self, t, value ):
+        assert isinstance(value, t.base_cls), repr(value)
+        assert value.__class__ is not  t.base_cls, repr(value)
         discriminator = self.dispatch(t.discriminator_type, value.discriminator)
         actual_type = value.get_actual_type()
         if actual_type:
