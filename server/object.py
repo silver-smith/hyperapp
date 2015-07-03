@@ -60,6 +60,9 @@ class Object(interface_module.Object):
             commands=self.get_commands(),
             **kw)
 
+    def get_handle( self ):
+        return ObjHandle(self.view_id, self)
+
     def process_request( self, request ):
         command_id = request.command_id
         if command_id == 'get':

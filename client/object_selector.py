@@ -1,59 +1,62 @@
 from PySide import QtCore, QtGui
+import common.interface as common_interface
 from util import uni2str
 from proxy_object import ProxyObject
 import proxy_registry
 import view
 import view_registry
+from command import Command
 
 
 class ObjectSelector(ProxyObject):
+    pass
 
-    @classmethod
-    def from_response( cls, server, path, iface, contents ):
-        target_handle = contents.target
-        target_object = target_handle.get_object()
-        targeted_path = cls.construct_path(path, target_object)
-        object = cls(server, targeted_path, iface, target_object, target_handle)
-        object.set_contents(contents)
-        return object
+    ## @classmethod
+    ## def from_response( cls, server, path, iface, contents ):
+    ##     target_handle = contents.target
+    ##     target_object = target_handle.get_object()
+    ##     targeted_path = cls.construct_path(path, target_object)
+    ##     object = cls(server, targeted_path, iface, target_object, target_handle)
+    ##     object.set_contents(contents)
+    ##     return object
 
-    @staticmethod
-    def construct_path( path, target_object ):
-        if isinstance(target_object, ProxyObject):
-            target_path = target_object.path
-        else:
-            target_path = id(target_object)  # still need to make unique path somehow...
-        return dict(path, target=target_path)
+    ## @staticmethod
+    ## def construct_path( path, target_object ):
+    ##     if isinstance(target_object, ProxyObject):
+    ##         target_path = target_object.path
+    ##     else:
+    ##         target_path = id(target_object)  # still need to make unique path somehow...
+    ##     return dict(path, target=target_path)
 
-    def __init__( self, server, path, iface, target_object, target_handle ):
-        ProxyObject.__init__(self, server, path, iface)
-        self.target_object = target_object
-        self.target_handle = target_handle
+    ## def __init__( self, server, path, iface, target_object, target_handle ):
+    ##     ProxyObject.__init__(self, server, path, iface)
+    ##     self.target_object = target_object
+    ##     self.target_handle = target_handle
 
     ## def get_title( self ):
     ##     return '%s -> %s' % (self.path, self.target.path)
 
-    def get_commands( self ):
-        return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')]
+    ## def get_commands( self ):
+    ##     return [ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return')]
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
-        if command_id == 'choose':
-            return self.run_command_choose(initiator_view)
-        return self.target_object.run_command(command_id, initiator_view, **kw)
+    ## def run_command( self, command_id, initiator_view=None, **kw ):
+    ##     if command_id == 'choose':
+    ##         return self.run_command_choose(initiator_view)
+    ##     return self.target_object.run_command(command_id, initiator_view, **kw)
 
-    def run_command_choose( self, initiator_view ):
-        if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
-        self.execute_request('choose', initiator_view, target_path=self.target_object.path)
+    ## def run_command_choose( self, initiator_view ):
+    ##     if not isinstance(self.target_object, ProxyObject): return  # not a proxy - can not choose it
+    ##     self.execute_request('choose', initiator_view, target_path=self.target_object.path)
 
-    def get_target_handle( self ):
-        return self.target_handle
+    ## def get_target_handle( self ):
+    ##     return self.target_handle
 
-    def clone_and_switch( self, target_handle ):
-        target_object = target_handle.get_object()
-        path = self.construct_path(self.path, target_object)
-        object = ObjectSelector(self.server, path, self.iface, target_object, target_handle)
-        object.commands = self.commands
-        return object
+    ## def clone_and_switch( self, target_handle ):
+    ##     target_object = target_handle.get_object()
+    ##     path = self.construct_path(self.path, target_object)
+    ##     object = ObjectSelector(self.server, path, self.iface, target_object, target_handle)
+    ##     object.commands = self.commands
+    ##     return object
 
 
 class UnwrapObjectSelector(ProxyObject):
@@ -71,17 +74,19 @@ class UnwrapObjectSelector(ProxyObject):
 
 class Handle(view.Handle):
 
-    def __init__( self, object ):
+    def __init__( self, object, target ):
+        print '*** object_selector Handle', object, target
         assert isinstance(object, ObjectSelector), repr(object)
         view.Handle.__init__(self)
         self.object = object
+        self.target = target
 
     def get_object( self ):
         return self.object
 
     def construct( self, parent ):
-        print 'object_selector construct', parent, self.object.get_title(), self.object.target_object.get_title()
-        return View(parent, self.object)
+        print 'object_selector construct', parent, self.object.get_title(), self.target.get_object().get_title()
+        return View(parent, self.object, self.target)
 
     def __repr__( self ):
         return 'object_selector.Handle(%s)' % uni2str(self.object.get_title())
@@ -107,11 +112,11 @@ class UnwrapHandle(view.Handle):
 
 class View(view.View, QtGui.QWidget):
 
-    def __init__( self, parent, object ):
+    def __init__( self, parent, object, target ):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
-        self.target_view = self.object.get_target_handle().construct(self)
+        self.target_view = target.construct(self)
         self.groupBox = QtGui.QGroupBox('Select object for %s' % self.object.get_title())
         gbl = QtGui.QVBoxLayout()
         gbl.addWidget(self.target_view.get_widget())
@@ -128,7 +133,8 @@ class View(view.View, QtGui.QWidget):
 
     def get_object_commands( self ):
         view, commands = self.target_view.get_object_commands()
-        return (self, self.object.get_commands() + commands)
+        choose_cmd = Command('choose', 'Choose', 'Choose current object', 'Ctrl+Return')
+        return (self, [choose_cmd] + commands)
 
     def get_current_child( self ):
         return self.target_view
@@ -146,5 +152,6 @@ class View(view.View, QtGui.QWidget):
 
 proxy_registry.register_iface('object_selector', ObjectSelector.from_response)
 proxy_registry.register_iface('object_selector_unwrap', UnwrapObjectSelector.from_response)
-view_registry.register_view('object_selector', Handle.from_resp)
-view_registry.register_view('object_selector_unwrap', UnwrapHandle.from_resp)
+## view_registry.register_view('object_selector', Handle.from_resp)
+## view_registry.register_view('object_selector_unwrap', UnwrapHandle.from_resp)
+common_interface.Handle.register('object_selector', Handle)

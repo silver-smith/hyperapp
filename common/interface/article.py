@@ -4,13 +4,40 @@ from . types import (
     TOptional,
     TPath,
     Field,
+    TRecord,
     )
-from . interface import ObjHandle, TObject, Command, OpenCommand, Interface, register_iface
+from . interface import (
+    Handle,
+    ObjHandle,
+    TObject,
+    Object,
+    Command,
+    OpenCommand,
+    Interface,
+    register_iface,
+    )
 from . list import ElementCommand, ElementOpenCommand, ListInterface
+
+
+class ObjSelectorHandle(Handle):
+
+    my_type = TRecord([
+        Field('object', TObject()),
+        Field('target', Handle.type),
+        ])
+
+    def __init__( self, object, target ):
+        assert isinstance(object, Object), repr(object)
+        assert target is None or isinstance(target, Handle), repr(target)
+        Handle.__init__(self, 'object_selector')
+        self.object = object
+        self.target = target
 
 
 ObjHandle.register('text_view')
 ObjHandle.register('text_edit')
+ObjSelectorHandle.register('object_selector')
+
 
 article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(TString()))],
@@ -31,9 +58,6 @@ ref_list_iface = ListInterface('article_ref_list',
                                 key_type=TInt())
 
 object_selector_iface = Interface('article_object_selector',
-                                  content_fields=[
-                                      Field('target', TObject()),
-                                      ],
                                   commands=[
                                       OpenCommand('choose', [Field('target_path', TPath())]),
                                   ])

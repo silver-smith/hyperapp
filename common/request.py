@@ -82,7 +82,7 @@ class Request(ClientNotification):
         return self.make_response(obj)
 
     def make_response_handle( self, obj ):
-        return self.make_response(ObjHandle(obj.view_id, obj))
+        return self.make_response(obj.get_handle())
 
     def make_response_result( self, **kw ):
         return self.make_response(self.iface.make_result(self.command_id, **kw))

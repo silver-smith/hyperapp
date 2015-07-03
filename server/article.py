@@ -2,7 +2,13 @@ import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
 from common.interface import Command, ObjHandle, Column
-from common.interface.article import article_iface, ref_list_iface, object_selector_iface, onwrap_object_selector_iface
+from common.interface.article import (
+    ObjSelectorHandle,
+    article_iface,
+    ref_list_iface,
+    object_selector_iface,
+    onwrap_object_selector_iface,
+    )
 from object import Object, ListObject, ListObjectElement, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
@@ -164,7 +170,8 @@ class ArticleRefList(ListObject):
         return request.make_response_handle(RefSelector.make(self.article_id, ref_id=rec.id))
 
     def run_command_open( self, request ):
-        return request.make_response_handle(RefSelector.make(self.article_id, ref_id=request.params.element_key))
+        return request.make_response(
+            RefSelector.make(self.article_id, ref_id=request.params.element_key).make_handle())
 
     @db_session
     def run_element_command_delete( self, request ):
@@ -229,16 +236,6 @@ class RefSelector(Object):
         ref_id = path['ref_id']
         return cls(path, article_id, ref_id)
 
-    @db_session
-    def get_contents( self, **kw ):
-        if self.ref_id is None:
-            target = None
-        else:
-            rec = module.ArticleRef[self.ref_id]
-            target_path = json.loads(rec.path)
-            target = module.run_resolve(target_path)
-        return Object.get_contents(self, target=target, **kw)
-
     def process_request( self, request ):
         if request.command_id == 'choose':
             return self.run_command_choose(request)
@@ -259,6 +256,16 @@ class RefSelector(Object):
         list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
         unwrapper_obj = UnwrapSelector.make(list_elt_obj)
         return request.make_response_handle(unwrapper_obj)
+
+    @db_session
+    def make_handle( self ):
+        if self.ref_id is None:
+            target = None
+        else:
+            rec = module.ArticleRef[self.ref_id]
+            target_path = json.loads(rec.path)
+            target_obj = module.run_resolve(target_path)
+        return ObjSelectorHandle(self, target_obj.get_handle())
 
 
 class ArticleModule(PonyOrmModule):
