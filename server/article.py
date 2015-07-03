@@ -1,7 +1,7 @@
 import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
-from common.interface import Command, Column
+from common.interface import Command, ObjHandle, Column
 from common.interface.article import article_iface, ref_list_iface, object_selector_iface, onwrap_object_selector_iface
 from object import Object, ListObject, ListObjectElement, subscription
 from module import ModuleCommand
@@ -296,4 +296,6 @@ class ArticleModule(PonyOrmModule):
         self.article_fields.update(fields)
 
 
+ObjHandle.register('text_view')
+ObjHandle.register('text_edit')
 module = ArticleModule()
