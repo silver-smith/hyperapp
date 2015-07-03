@@ -137,15 +137,20 @@ class View(view.View, QtGui.QWidget):
         choose_cmd = Command('choose', 'Choose', 'Choose current object', 'Ctrl+Return')
         return (self, [choose_cmd] + commands)
 
+    def run_object_command( self, command_id ):
+        if command_id != 'choose':
+            self.target_view.run_object_command(command_id)
+
     def get_current_child( self ):
         return self.target_view
 
     def open( self, handle ):
         print 'object_selector open', handle
-        if not isinstance(handle, UnwrapHandle):
-            new_object = self.object.clone_and_switch(handle)
-            handle = Handle(new_object)
-        view.View.open(self, handle)
+        ## if not isinstance(handle, UnwrapHandle):
+        ##     new_object = self.object.clone_and_switch(handle)
+        ##     handle = Handle(new_object)
+        sel_handle = Handle(self.object, handle)
+        view.View.open(self, sel_handle)
 
     def __del__( self ):
         print '~object_selector.View'
