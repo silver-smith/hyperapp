@@ -1,5 +1,6 @@
 import pprint
 from . util import is_list_inst
+from . interface import TPrimitive, ObjHandle
 
 
 class ServerNotification(object):
@@ -80,6 +81,9 @@ class Request(ClientNotification):
     def make_response_object( self, obj ):
         return self.make_response(obj)
 
+    def make_response_handle( self, obj ):
+        return self.make_response(ObjHandle(obj.view_id, obj))
+
     def make_response_result( self, **kw ):
         return self.make_response(self.iface.make_result(self.command_id, **kw))
 
@@ -87,3 +91,12 @@ class Request(ClientNotification):
         response = self.make_response()
         response.add_update(iface.Update(path, diff))
         return response
+
+
+class TClientNotification(TPrimitive):
+    type_name = 'client_notification'
+    type = ClientNotification
+
+class TRequest(TPrimitive):
+    type_name = 'request'
+    type = Request

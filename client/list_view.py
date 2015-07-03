@@ -20,22 +20,22 @@ class Handle(view.Handle):
         selected_key = contents.selected_key
         return cls(obj, key=selected_key, select_first=False)
 
-    def __init__( self, obj, key=None, selected_keys=None, select_first=True ):
+    def __init__( self, object, key=None, selected_keys=None, select_first=True ):
         view.Handle.__init__(self)
-        self.obj = obj
+        self.object = object
         self.key = key
         self.selected_keys = selected_keys  # for multi-select mode only
         self.select_first = select_first  # bool
 
     def get_object( self ):
-        return self.obj
+        return self.object
 
     def construct( self, parent ):
-        print 'list_view construct', parent, self.obj.get_title(), self.obj, repr(self.key)
-        return View(parent, self.obj, self.key, self.selected_keys, self.select_first)
+        print 'list_view construct', parent, self.object.get_title(), self.object, repr(self.key)
+        return View(parent, self.object, self.key, self.selected_keys, self.select_first)
 
     def __repr__( self ):
-        return 'list_view.Handle(%s, %s)' % (uni2str(self.obj.get_title()), uni2str(self.key))
+        return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
 
 
 class Model(QtCore.QAbstractTableModel):

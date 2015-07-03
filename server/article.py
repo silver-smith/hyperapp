@@ -86,7 +86,7 @@ class Article(Object):
         return self.do_save(request, request.params.text)
 
     def run_command_refs( self, request ):
-        return request.make_response_object(ArticleRefList.make(self.article_id))
+        return request.make_response_handle(ArticleRefList.make(self.article_id))
 
     @db_session
     def run_command_open_ref( self, request ):
@@ -94,7 +94,7 @@ class Article(Object):
         rec = module.ArticleRef[ref_id]
         target_path = json.loads(rec.path)
         target = module.run_resolve(target_path)
-        return request.make_response_object(target)
+        return request.make_response_handle(target)
 
     @db_session
     def do_save( self, request, text ):
@@ -147,7 +147,7 @@ class ArticleRefList(ListObject):
         if request.command_id == 'add':
             return self.run_command_add(request)
         if request.command_id == 'open':
-            return request.make_response_object(RefSelector.make(self.article_id, ref_id=request.params.element_key))
+            return request.make_response_handle(RefSelector.make(self.article_id, ref_id=request.params.element_key))
         if request.command_id == 'delete':
             return self.run_element_command_delete(request)
         return ListObject.process_request(self, request)
@@ -155,13 +155,13 @@ class ArticleRefList(ListObject):
     @db_session
     def run_command_parent( self, request ):
         rec = module.Article[self.article_id]
-        return request.make_response_object(Article.from_rec(rec))
+        return request.make_response_handle(Article.from_rec(rec))
 
     def run_command_add( self, request ):
         with db_session:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=json.dumps(request.params.target_path))
-        return request.make_response_object(RefSelector.make(self.article_id, ref_id=rec.id))
+        return request.make_response_handle(RefSelector.make(self.article_id, ref_id=rec.id))
 
     @db_session
     def run_element_command_delete( self, request ):
@@ -255,7 +255,7 @@ class RefSelector(Object):
         ref_list_obj = ArticleRefList.make(article_id=self.article_id)
         list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
         unwrapper_obj = UnwrapSelector.make(list_elt_obj)
-        return request.make_response_object(unwrapper_obj)
+        return request.make_response_handle(unwrapper_obj)
 
 
 class ArticleModule(PonyOrmModule):
@@ -289,7 +289,7 @@ class ArticleModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_object(Article.make_new())
+            return request.make_response_handle(Article.make_new())
         return PonyOrmModule.run_command(self, request, command_id)
 
     def add_article_fields( self, **fields ):

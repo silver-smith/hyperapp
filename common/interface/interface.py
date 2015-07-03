@@ -12,7 +12,6 @@ from . types import (
     tCommand,
     )
 from . dynamic_type import dynamic_type_base, Dynamic
-from .. request import ClientNotification, Request
 
 
 class TIface(TPrimitive):
@@ -59,15 +58,6 @@ class ObjHandle(Handle):
         assert isinstance(object, Object), repr(object)
         Handle.__init__(self, discriminator)
         self.object = object
-
-
-class TClientNotification(TPrimitive):
-    type_name = 'client_notification'
-    type = ClientNotification
-
-class TRequest(TPrimitive):
-    type_name = 'request'
-    type = Request
 
 
 class Command(object):

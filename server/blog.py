@@ -41,7 +41,7 @@ class BlogEntry(article.Article):
         return article.Article.process_request(self, request)
     
     def run_command_parent( self, request ):
-        return request.make_response_object(Blog.make())
+        return request.make_response_handle(Blog.make())
 
     @db_session
     def do_save( self, request, text ):
@@ -91,13 +91,13 @@ class Blog(ListObject):
             return self.run_command_add(request)
         if request.command_id == 'open':
             article_id = request.params.element_key
-            return request.make_response_object(BlogEntry.make(article_id=article_id))
+            return request.make_response_handle(BlogEntry.make(article_id=article_id))
         if request.command_id == 'delete':
             return self.run_element_command_delete(request)
         return ListObject.process_request(self, request)
 
     def run_command_add( self, request ):
-        return request.make_response_object(BlogEntry.make(article_id=None, mode=BlogEntry.mode_edit))
+        return request.make_response_handle(BlogEntry.make(article_id=None, mode=BlogEntry.mode_edit))
 
     @db_session
     def get_all_elements( self ):
@@ -147,9 +147,9 @@ class BlogModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_object(BlogEntry.make(article_id=None))
+            return request.make_response_handle(BlogEntry.make(article_id=None))
         if command_id == 'open_blog':
-            return request.make_response_object(Blog.make())
+            return request.make_response_handle(Blog.make())
         return PonyOrmModule.run_command(self, request, command_id)
 
 

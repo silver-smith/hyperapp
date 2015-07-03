@@ -1,6 +1,5 @@
 import dateutil.parser
 from method_dispatch import method_dispatch
-from request import ClientNotification, Request, ServerNotification, Response
 from . interface import (
     TString,
     TInt,
@@ -17,8 +16,14 @@ from . interface import (
     TUpdate,
     tUpdateList,
     TIface,
+    )
+from request import (
     TClientNotification,
     TRequest,
+    ClientNotification,
+    Request,
+    ServerNotification,
+    Response,
     )
 
 
