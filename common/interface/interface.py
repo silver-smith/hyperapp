@@ -11,7 +11,16 @@ from . types import (
     TPath,
     tCommand,
     )
+from . dynamic_type import dynamic_type_base, Dynamic
 from .. request import ClientNotification, Request
+
+
+class TIface(TPrimitive):
+
+    type_name = 'interface'
+
+    def get_type( self ):
+        return Interface
 
 
 # base class for server objects
@@ -35,6 +44,16 @@ class TObject(TRecord):
     def validate( self, path, value ):
         if value is None: return  # missing objects are allowed
         self.expect(path, value, 'Object', isinstance(value, Object))
+
+
+@dynamic_type_base
+class Handle(Dynamic):
+    pass
+
+
+# handle containing object
+class ObjectHandle(Handle):
+    my_type = TRecord([Field('object', TObject())])
 
 
 class TClientNotification(TPrimitive):
@@ -207,11 +226,6 @@ class Interface(object):
 
     def Update( self, path, diff ):
         return self.tUpdate().instantiate(self, path, diff)
-
-
-class TIface(TPrimitive):
-    type_name = 'interface'
-    type = Interface
 
 
 class TUpdate(Type):

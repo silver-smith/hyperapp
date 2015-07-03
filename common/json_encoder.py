@@ -64,7 +64,13 @@ class JsonEncoder(object):
 
     @dispatch.register(TDynamic)
     def encode_dynamic( self, t, value ):
-        return self.dispatch(value.get_actual_type(), value)
+        discriminator = self.dispatch(t.discriminator_type, value.discriminator)
+        actual_type = value.get_actual_type()
+        if actual_type:
+            d = self.dispatch(actual_type, value)
+        else:
+            d = {}
+        return dict(d, discriminator=discriminator)
 
     @dispatch.register(TPath)
     def encode_path( self, t, value ):

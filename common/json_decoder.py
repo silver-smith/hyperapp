@@ -126,11 +126,15 @@ class JsonDecoder(object):
     def decode_dynamic( self, t, value, path ):
         self.expect_type(path, isinstance(value, dict), value, 'dynamic record (dict)')
         self.expect(path, 'discriminator' in value, 'discriminator field is missing')
-        discriminator = self.dispatch(TDynamic.discriminator_type, value['discriminator'],
+        discriminator = self.dispatch(t.discriminator_type, value['discriminator'],
                                       join_path(path, 'discriminator'))
         cls = t.resolve(discriminator)
-        fields = self.decode_record_fields(cls.get_actual_type(), value, path)
-        del fields['discriminator']
+        actual_type = cls.get_actual_type()
+        if actual_type is not None:
+            fields = self.decode_record_fields(cls.get_actual_type(), value, path)
+            del fields['discriminator']
+        else:
+            fields = {}
         return cls(**fields)
 
     @dispatch.register(TPath)

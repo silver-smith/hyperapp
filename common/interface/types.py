@@ -29,7 +29,10 @@ class Type(object):
 class TPrimitive(Type):
 
     def validate( self, path, value ):
-        self.expect(path, value, self.type_name, isinstance(value, self.type))
+        self.expect(path, value, self.type_name, isinstance(value, self.get_type()))
+
+    def get_type( self ):
+        return self.type
         
 
 class TString(TPrimitive):

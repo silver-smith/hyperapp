@@ -13,7 +13,11 @@ from . types import (
     tCommand,
     )
 from . dynamic_type import dynamic_type_base
-from . interface import Command, OpenCommand, Object, Interface
+from . interface import Command, OpenCommand, Handle, Object, Interface
+
+
+Handle.register('list')
+Handle.register('list_narrower')
 
 
 @dynamic_type_base
