@@ -7,9 +7,10 @@
 
 import weakref
 import uuid
-from common.interface import Interface, Field, TString, TPath, resolve_iface
+from common.interface import Interface, Field, TString, TPath, tCommand, resolve_iface
 from common.request import ClientNotification, Request
 from object import Object
+from command import Command
 from list_object import ListDiff, ListObject
 import proxy_registry
 import view
@@ -209,3 +210,4 @@ class ProxyListObject(ProxyObject, ListObject):
 
 
 proxy_registry.register_iface('list', ProxyListObject.from_response)
+tCommand.use_class(Command)

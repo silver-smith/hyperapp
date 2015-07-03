@@ -92,6 +92,10 @@ class TRecord(Type):
     def __init__( self, fields ):
         assert is_list_inst(fields, Field), repr(fields)
         self.fields = fields
+        self.use_cls = None
+
+    def use_class( self, cls ):
+        self.use_cls = cls
 
     def validate( self, path, rec ):
         for field in self.fields:
@@ -143,10 +147,14 @@ class TRecord(Type):
         return adopted_args
 
     def instantiate( self, *args, **kw ):
-        rec = Record()
-        for name, val in self.adopt_args(args, kw).items():
-            setattr(rec, name, val)
-        return rec
+        fields = self.adopt_args(args, kw)
+        if self.use_cls:
+            return self.use_cls(**fields)
+        else:
+            rec = Record()
+            for name, val in fields.items():
+                setattr(rec, name, val)
+            return rec
         
 
 class TList(Type):
