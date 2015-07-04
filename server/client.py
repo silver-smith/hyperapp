@@ -114,10 +114,10 @@ class Client(object):
         return response
 
     def _send_notification( self ):
-        notification = ServerNotification()
+        notification = ServerNotification(self)
         while not self.updates_queue.empty():
             notification.add_update(self.updates_queue.get())
-        json_packet = notification.as_json()
+        json_packet = notification.encode(JsonEncoder())
         print 'notification to %s:%d:' % self.addr
         pprint.pprint(json_packet)
         self.conn.send(json_packet)

@@ -80,7 +80,7 @@ class Connection(object):
             proxy_registry.process_received_response(response)
         else:
             assert isinstance(response, ServerNotification), repr(response)
-            proxy_registry.process_received_notification(notification)
+            proxy_registry.process_received_notification(response)
 
     def send_data( self, data ):
         self.trace('sending data, old=%d, write=%d, new=%d' % (len(self.send_buf), len(data), len(self.send_buf) + len(data)))

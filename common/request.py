@@ -1,6 +1,11 @@
 import pprint
 from . util import is_list_inst
-from . interface import TPrimitive, ObjHandle
+from . interface import TPrimitive, Field, TRecord, ObjHandle, tUpdateList
+
+
+tServerNotification = TRecord([
+    Field('updates', tUpdateList),
+    ])
 
 
 class ServerNotification(object):
@@ -14,6 +19,12 @@ class ServerNotification(object):
 
     def as_dict( self ):
         return dict(updates=self.updates)
+
+    def encode( self, encoder ):
+        return encoder.encode(self.get_packet_type(), self)
+
+    def get_packet_type( self ):
+        return tServerNotification
 
 
 class Response(ServerNotification):
@@ -36,9 +47,6 @@ class Response(ServerNotification):
 
     def pprint( self ):
         pprint.pprint(self.as_dict())
-
-    def encode( self, encoder ):
-        return encoder.encode(self.get_packet_type(), self)
 
     def get_packet_type( self ):
         return self.iface.get_response_type(self.command_id)

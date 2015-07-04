@@ -204,3 +204,8 @@ class JsonDecoder(object):
         result = self.dispatch(result_type, value.get('result'), join_path(path, 'result'))
         updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
         return Response(self.peer, iface, command_id, request_id, result=result, updates=updates)
+
+    def decode_server_notification( self, value, path ):
+        self.expect(path, 'updates' in value, 'updates field is missing')
+        updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
+        return ServerNotification(self.peer, updates)
