@@ -21,9 +21,9 @@ from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 class ObjSelectorHandle(Handle):
 
-    my_type = TRecord([
+    actual_type = TRecord([
         Field('ref', TObject()),
-        Field('target', Handle.type),
+        Field('target', Handle.dyn_type),
         ])
 
     def __init__( self, ref, target ):
@@ -36,8 +36,8 @@ class ObjSelectorHandle(Handle):
 
 class ObjSelectorUnwrap(Handle):
 
-    my_type = TRecord([
-        Field('base_handle', Handle.type),
+    actual_type = TRecord([
+        Field('base_handle', Handle.dyn_type),
         ])
 
     def __init__( self, base_handle ):

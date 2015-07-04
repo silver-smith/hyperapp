@@ -52,7 +52,7 @@ class Handle(Dynamic):
 # handle containing object
 class ObjHandle(Handle):
 
-    my_type = TRecord([Field('object', TObject())])
+    actual_type = TRecord([Field('object', TObject())])
 
     def __init__( self, discriminator, object ):
         assert isinstance(object, Object), repr(object)
@@ -93,7 +93,7 @@ class Command(object):
 class OpenCommand(Command):
 
     def get_result_type( self, iface ):
-        return Handle.type
+        return Handle.dyn_type
 
 
 class SubscribeCommand(Command):

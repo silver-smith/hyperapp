@@ -49,7 +49,7 @@ DateTimeColumnType.register('datetime')
 tColumn = TRecord([
     Field('id', TString()),
     Field('title', TOptional(TString())),
-    Field('type', ColumnType.type),
+    Field('type', ColumnType.dyn_type),
     ])
 
 
