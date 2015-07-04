@@ -5,7 +5,6 @@ from util import uni2str
 from proxy_object import ProxyObject
 import proxy_registry
 import view
-import view_registry
 from command import Command
 
 

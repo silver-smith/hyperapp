@@ -5,7 +5,6 @@ from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
 from common.interface import Interface, iface_registry
 import proxy_registry
-import view_registry
 from proxy_object import Request, ProxyListObject
 
 

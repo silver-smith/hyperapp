@@ -6,7 +6,6 @@ sys.path.append('..')
 from util import uni2str, key_match, key_match_any
 from list_object import ListDiff
 from command import run_element_command, make_element_cmd_action
-import view_registry
 import view
 
 
@@ -304,6 +303,3 @@ class View(view.View, QtGui.QTableView):
 
     def __del__( self ):
         print '~list_view.View', self
-
-
-view_registry.register_view('list', Handle.from_resp)

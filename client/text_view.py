@@ -2,7 +2,6 @@ import re
 from PySide import QtCore, QtGui
 from util import uni2str
 import view
-import view_registry
 from text_object import TextObject
 
 
@@ -66,5 +65,4 @@ class View(view.View, QtGui.QTextBrowser):
         print '~text_view', self
 
 
-view_registry.register_view('text_view', Handle.from_resp)
 TextObject.set_view_handle_ctr(Handle)

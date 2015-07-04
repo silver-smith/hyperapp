@@ -2,7 +2,6 @@ from PySide import QtCore, QtGui
 from util import key_match, key_match_any
 from list_object import ListObject
 from view_command import command
-import view_registry
 import view
 import composite
 from line_list_panel import LineListPanel
@@ -136,6 +135,3 @@ class View(LineListPanel):
 
     def __del__( self ):
         print '~narrower', self._base_obj.get_title(), self
-
-
-view_registry.register_view('list_narrower', Handle.from_resp)
