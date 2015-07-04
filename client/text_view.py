@@ -7,10 +7,6 @@ from text_object import TextObject
 
 class Handle(view.Handle):
 
-    @classmethod
-    def from_resp( cls, object, resp ):
-        return cls(object)
-
     def __init__( self, object, text=None ):
         view.Handle.__init__(self)
         self.object = object
