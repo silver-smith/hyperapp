@@ -168,7 +168,7 @@ class ArticleRefList(ListObject):
         with db_session:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=json.dumps(request.params.target_path))
-        return request.make_response_handle(RefSelector.make(self.article_id, ref_id=rec.id))
+        return request.make_response(RefSelector.make(self.article_id, ref_id=rec.id).make_handle())
 
     def run_command_open( self, request ):
         return request.make_response(
@@ -178,8 +178,8 @@ class ArticleRefList(ListObject):
     def run_element_command_delete( self, request ):
         ref_id = request.params.element_key
         module.ArticleRef[ref_id].delete()
-        diff = self.ListDiff_delete(ref_id)
-        return request.make_response_update(self.path, diff)
+        diff = self.Diff_delete(ref_id)
+        return request.make_response_update(self.iface, self.path, diff)
 
     @db_session
     def get_all_elements( self ):
@@ -193,26 +193,6 @@ class ArticleRefList(ListObject):
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
         return self.Element(rec.id, [rec.id, rec.path], commands)
-
-
-## class UnwrapSelector(Object):
-
-##     iface = onwrap_object_selector_iface
-##     proxy_id = 'object_selector_unwrap'
-##     view_id = 'object_selector_unwrap'
-
-##     @classmethod
-##     def make( cls, base ):
-##         path = module.make_path(object='object_selector_unwrap')
-##         return cls(path, base)
-
-##     def __init__( self, path, base ):
-##         assert isinstance(base, Object), repr(base)
-##         Object.__init__(self, path)
-##         self._base = base
-
-##     def get_contents( self, **kw ):
-##         return Object.get_contents(self, base=self._base, **kw)
 
 
 class RefSelector(Object):
