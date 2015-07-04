@@ -74,23 +74,23 @@ class UnwrapObjectSelector(ProxyObject):
 
 class Handle(view.Handle):
 
-    def __init__( self, object, target ):
-        print '*** object_selector Handle', object, target
-        assert isinstance(object, ObjectSelector), repr(object)
+    def __init__( self, ref, target ):
+        print '*** object_selector Handle', ref, target
+        assert isinstance(ref, ObjectSelector), repr(ref)
         assert isinstance(target, view.Handle), repr(target)
         view.Handle.__init__(self)
-        self.object = object
+        self.ref = ref
         self.target = target
 
     def get_object( self ):
-        return self.object
+        return self.ref
 
     def construct( self, parent ):
-        print 'object_selector construct', parent, self.object.get_title(), self.target.get_object().get_title()
-        return View(parent, self.object, self.target)
+        print 'object_selector construct', parent, self.ref.get_title(), self.target.get_object().get_title()
+        return View(parent, self.ref, self.target)
 
     def __repr__( self ):
-        return 'object_selector.Handle(%s)' % uni2str(self.object.get_title())
+        return 'object_selector.Handle(%s)' % uni2str(self.ref.get_title())
 
 
 class UnwrapHandle(view.Handle):
@@ -113,12 +113,12 @@ class UnwrapHandle(view.Handle):
 
 class View(view.View, QtGui.QWidget):
 
-    def __init__( self, parent, object, target ):
+    def __init__( self, parent, ref, target ):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
-        self.object = object
+        self.ref = ref
         self.target_view = target.construct(self)
-        self.groupBox = QtGui.QGroupBox('Select object for %s' % self.object.get_title())
+        self.groupBox = QtGui.QGroupBox('Select object for %s' % self.ref.get_title())
         gbl = QtGui.QVBoxLayout()
         gbl.addWidget(self.target_view.get_widget())
         self.groupBox.setLayout(gbl)
@@ -127,10 +127,10 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(l)
 
     def handle( self ):
-        return Handle(self.object, self.target_view.handle())
+        return Handle(self.ref, self.target_view.handle())
 
     def get_object( self ):
-        return self.object
+        return self.ref
 
     def get_object_commands( self ):
         view, commands = self.target_view.get_object_commands()
@@ -147,9 +147,9 @@ class View(view.View, QtGui.QWidget):
     def open( self, handle ):
         print 'object_selector open', handle
         ## if not isinstance(handle, UnwrapHandle):
-        ##     new_object = self.object.clone_and_switch(handle)
+        ##     new_object = self.ref.clone_and_switch(handle)
         ##     handle = Handle(new_object)
-        sel_handle = Handle(self.object, handle)
+        sel_handle = Handle(self.ref, handle)
         view.View.open(self, sel_handle)
 
     def __del__( self ):

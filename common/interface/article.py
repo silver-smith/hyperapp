@@ -22,15 +22,15 @@ from . list import ElementCommand, ElementOpenCommand, ListInterface
 class ObjSelectorHandle(Handle):
 
     my_type = TRecord([
-        Field('object', TObject()),
+        Field('ref', TObject()),
         Field('target', Handle.type),
         ])
 
-    def __init__( self, object, target ):
-        assert isinstance(object, Object), repr(object)
+    def __init__( self, ref, target ):
+        assert isinstance(ref, Object), repr(ref)
         assert target is None or isinstance(target, Handle), repr(target)
         Handle.__init__(self, 'object_selector')
-        self.object = object
+        self.ref = ref
         self.target = target
 
 
