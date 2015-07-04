@@ -81,9 +81,10 @@ class Client(object):
                 pprint.pprint(json_packet)
                 response = self._process_json_packet(json_packet)
                 if response is not None:
+                    json_response = response.encode(JsonEncoder())
                     print 'response to %s:%d:' % self.addr
-                    response.pprint()
-                    self.conn.send(response.encode(JsonEncoder()))
+                    pprint.pprint(json_response)
+                    self.conn.send(json_response)
                 else:
                     print 'no response'
         except Error as x:

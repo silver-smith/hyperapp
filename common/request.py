@@ -1,4 +1,3 @@
-import pprint
 from . util import is_list_inst
 from . interface import TPrimitive, Field, TRecord, ObjHandle, tUpdateList
 
@@ -17,9 +16,6 @@ class ServerNotification(object):
     def add_update( self, update ):
         self.updates.append(update)
 
-    def as_dict( self ):
-        return dict(updates=self.updates)
-
     def encode( self, encoder ):
         return encoder.encode(self.get_packet_type(), self)
 
@@ -35,18 +31,6 @@ class Response(ServerNotification):
         self.command_id = command_id
         self.request_id = request_id
         self.result = result
-
-    def as_dict( self ):
-        return dict(ServerNotification.as_dict(self),
-                    iface_id=self.iface.iface_id,
-                    command=self.command_id,
-                    request_id=self.request_id,
-                    result=self.result,
-                    updates=self.updates,
-                    )
-
-    def pprint( self ):
-        pprint.pprint(self.as_dict())
 
     def get_packet_type( self ):
         return self.iface.get_response_type(self.command_id)
@@ -73,10 +57,6 @@ class Request(ClientNotification):
     def __init__( self, peer, iface, path, command_id, request_id, params=None ):
         ClientNotification.__init__(self, peer, iface, path, command_id, params)
         self.request_id = request_id
-
-    def as_dict( self ):
-        return dict(ClientNotification.as_dict(self),
-                    request_id=self.request_id)
 
     def get_packet_type( self ):
         return self.iface.get_request_type(self.command_id)

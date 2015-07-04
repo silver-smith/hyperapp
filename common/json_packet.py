@@ -3,7 +3,6 @@ import json
 import struct
 import socket
 import select
-import pprint
 import re
 import dateutil.parser
 
