@@ -34,9 +34,21 @@ class ObjSelectorHandle(Handle):
         self.target = target
 
 
+class ObjSelectorUnwrap(Handle):
+
+    my_type = TRecord([
+        Field('base_handle', Handle.type),
+        ])
+
+    def __init__( self, base_handle ):
+        Handle.__init__(self, 'object_selector_unwrap')
+        self.base_handle = base_handle
+
+
 ObjHandle.register('text_view')
 ObjHandle.register('text_edit')
 ObjSelectorHandle.register('object_selector')
+ObjSelectorUnwrap.register('object_selector_unwrap')
 
 
 article_iface = Interface('article',

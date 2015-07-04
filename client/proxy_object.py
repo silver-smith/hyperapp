@@ -8,6 +8,7 @@
 import weakref
 import uuid
 from common.interface import Interface, Field, TString, TPath, tCommand, resolve_iface
+import common.interface as interface_module
 from common.request import ClientNotification, Request
 from object import Object
 from command import Command
@@ -32,8 +33,7 @@ class RespHandler(proxy_registry.RespHandler):
             object.process_response(response, self, self.command_id, initiator_view)
 
 
-
-class ProxyObject(Object):
+class ProxyObject(Object, interface_module.Object):
 
     @classmethod
     def from_response( cls, server, path, iface, contents ):
@@ -52,6 +52,7 @@ class ProxyObject(Object):
     def __init__( self, server, path, iface ):
         if hasattr(self, 'init_flag'): return   # after __new__ returns resolved object __init__ is called anyway
         Object.__init__(self)
+        interface_module.Object.__init__(self)
         self.init_flag = None
         self.server = server
         self.path = path

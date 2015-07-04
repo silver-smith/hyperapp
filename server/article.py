@@ -4,6 +4,7 @@ from util import str2id
 from common.interface import Command, ObjHandle, Column
 from common.interface.article import (
     ObjSelectorHandle,
+    ObjSelectorUnwrap,
     article_iface,
     ref_list_iface,
     object_selector_iface,
@@ -194,24 +195,24 @@ class ArticleRefList(ListObject):
         return self.Element(rec.id, [rec.id, rec.path], commands)
 
 
-class UnwrapSelector(Object):
+## class UnwrapSelector(Object):
 
-    iface = onwrap_object_selector_iface
-    proxy_id = 'object_selector_unwrap'
-    view_id = 'object_selector_unwrap'
+##     iface = onwrap_object_selector_iface
+##     proxy_id = 'object_selector_unwrap'
+##     view_id = 'object_selector_unwrap'
 
-    @classmethod
-    def make( cls, base ):
-        path = module.make_path(object='object_selector_unwrap')
-        return cls(path, base)
+##     @classmethod
+##     def make( cls, base ):
+##         path = module.make_path(object='object_selector_unwrap')
+##         return cls(path, base)
 
-    def __init__( self, path, base ):
-        assert isinstance(base, Object), repr(base)
-        Object.__init__(self, path)
-        self._base = base
+##     def __init__( self, path, base ):
+##         assert isinstance(base, Object), repr(base)
+##         Object.__init__(self, path)
+##         self._base = base
 
-    def get_contents( self, **kw ):
-        return Object.get_contents(self, base=self._base, **kw)
+##     def get_contents( self, **kw ):
+##         return Object.get_contents(self, base=self._base, **kw)
 
 
 class RefSelector(Object):
@@ -253,9 +254,10 @@ class RefSelector(Object):
         commit()
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
         ref_list_obj = ArticleRefList.make(article_id=self.article_id)
-        list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
-        unwrapper_obj = UnwrapSelector.make(list_elt_obj)
-        return request.make_response_handle(unwrapper_obj)
+        ## list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
+        list_elt = ref_list_obj.get_handle()
+        handle = ObjSelectorUnwrap(list_elt)
+        return request.make_response(handle)
 
     @db_session
     def make_handle( self ):
