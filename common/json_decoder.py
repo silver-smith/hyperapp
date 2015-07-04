@@ -138,7 +138,7 @@ class JsonDecoder(object):
             fields = self.decode_record_fields(actual_type, value, path)
         else:
             fields = {}
-        print '*** decode_dynamic', `discriminator`, actual_type, cls, fields
+        #print '*** decode_dynamic', `discriminator`, actual_type, cls, fields
         return cls(**fields)
 
     @dispatch.register(TPath)
