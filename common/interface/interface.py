@@ -52,7 +52,9 @@ class Handle(Dynamic):
 # handle containing object
 class ObjHandle(Handle):
 
-    actual_type = TRecord([Field('object', TObject())])
+    actual_type = TRecord([
+        Field('object', TObject()),
+        ])
 
     def __init__( self, discriminator, object ):
         assert isinstance(object, Object), repr(object)
