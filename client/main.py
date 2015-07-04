@@ -106,6 +106,8 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app.open_in_any_window(handle)
 
 
+# list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,
+# and vice versa, so we need to bind them in another, independent place
 def register_handles():
     Handle.register('list', list_view.Handle)
     Handle.register('list_narrower', narrower.Handle.from_resp)
