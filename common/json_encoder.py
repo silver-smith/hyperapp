@@ -46,8 +46,11 @@ class JsonEncoder(object):
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value, **kw ):
+        return self.encode_record_fields(t.fields, value, **kw)
+
+    def encode_record_fields( self, tfields, value, **kw ):
         result = {}
-        for field in t.fields:
+        for field in tfields:
             result[field.name] = self.dispatch(field.type, getattr(value, field.name))
         return result
 
@@ -64,6 +67,8 @@ class JsonEncoder(object):
 
     @dispatch.register(TDynamic)
     def encode_dynamic( self, t, value ):
+        fixed_d = self.encode_record_fields(t.fixed_fields(), value)
+        
         assert isinstance(value, t.base_cls), repr(value)
         assert value.__class__ is not  t.base_cls, repr(value)
         discriminator = self.dispatch(t.discriminator_type, value.discriminator)

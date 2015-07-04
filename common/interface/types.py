@@ -122,7 +122,7 @@ class TRecord(Type):
                     setattr(self, name, val)
         return Record
 
-    def adopt_args( self, args, kw ):
+    def adopt_args( self, args, kw, check_unexpected ):
         fields = dict(kw)
         for field, arg in zip(self.fields, args):
             assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
@@ -141,13 +141,17 @@ class TRecord(Type):
             if field.type is not None:  # open type, todo
                 field.type.validate(join_path('Record', field.name), value)
             adopted_args[field.name] = value
-        self.assert_('Record', not unexpected,
-                     'Unexpected fields: %s; allowed are: %s'
-                     % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
+        if check_unexpected:
+            self.assert_('Record', not unexpected,
+                         'Unexpected fields: %s; allowed are: %s'
+                         % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
         return adopted_args
 
     def instantiate( self, *args, **kw ):
-        fields = self.adopt_args(args, kw)
+        self.instantiate_impl(args, kw)
+
+    def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
+        fields = self.adopt_args(args, kw or {}, check_unexpected)
         if self.use_cls:
             return self.use_cls(**fields)
         else:

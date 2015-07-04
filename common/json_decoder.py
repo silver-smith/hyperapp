@@ -88,12 +88,12 @@ class JsonDecoder(object):
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
-        fields = self.decode_record_fields(t, value, path, **kw)
+        fields = self.decode_record_fields(t.fields, value, path, **kw)
         return t.instantiate(**fields)
 
-    def decode_record_fields( self, t, value, path, **kw ):
+    def decode_record_fields( self, tfields, value, path, **kw ):
         fields = {}
-        for field in t.fields:
+        for field in tfields:
             self.expect(path, field.name in value, 'field %r is missing' % field.name)
             if field.type is not None:
                 field_type = field.type
@@ -129,17 +129,10 @@ class JsonDecoder(object):
 
     @dispatch.register(TDynamic)
     def decode_dynamic( self, t, value, path ):
-        self.expect_type(path, isinstance(value, dict), value, 'dynamic record (dict)')
-        self.expect(path, 'discriminator' in value, 'discriminator field is missing')
-        discriminator = self.dispatch(t.discriminator_type, value['discriminator'],
-                                      join_path(path, 'discriminator'))
-        actual_type, cls = t.resolve(discriminator)
-        if actual_type is not None:
-            fields = self.decode_record_fields(actual_type, value, path)
-        else:
-            fields = {}
-        #print '*** decode_dynamic', `discriminator`, actual_type, cls, fields
-        return cls(**fields)
+        fixed_fields = self.decode_record_fields(t.get_fixed_fields(), value, join_path(path, 'fixed'))
+        fixed_rec = t.instantiate_fixed(**fixed_fields)
+        dynamic_fields = self.decode_record_fields(t.get_dynamic_fields(fixed_rec), value, join_path(path, 'dynamic'))
+        return t.instantiate(dict(fixed_fields, **dynamic_fields))
 
     @dispatch.register(TPath)
     def decode_path( self, t, value, path ):

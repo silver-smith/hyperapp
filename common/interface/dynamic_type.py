@@ -3,6 +3,75 @@ from . types import join_path, Type, TString, Field, TRecord
 
 class TDynamic(Type):
 
+    # fixed_fields = []
+
+    def get_fixed_fields( self ):
+        return self.fixed_fields
+
+    def get_dynamic_fields( self, fixed_rec ):
+        raise NotImplementedError(self.__class__)
+
+    def get_class( self, fixed_rec ):
+        raise NotImplementedError(self.__class__)
+
+    def instantiate_fixed( self, **fields ):
+        t = TRecord(self.get_fixed_fields())
+        return t.instantiate(**fields)
+
+    def instantiate( self, **fields ):
+        ft = TRecord(self.get_fixed_fields())
+        fixed_rec = ft.instantiate_impl(kw=fields, check_unexpected=False)
+        t = TRecord(self.get_fixed_fields() + self.get_dynamic_fields(fixed_rec))
+        t.use_class(self.get_class(fixed_rec))
+        return t.instantiate(**fields)
+
+
+class RegistryRec(object):
+
+    def __init__( self, cls=None, dynamic_fields=None ):
+        assert dynamic_fields is None or is_list_inst(dynamic_fields, Field), repr(dynamic_fields)
+        self.cls = cls  # derived class or None
+        self.dynamic_fields = dynamic_fields  # Field list
+
+
+class TDynamicRegistry(Type):
+
+    fixed_fields = [
+        Field('discriminator', TString()),
+        ]
+
+    def __init__( self ):
+        self.registry = {}  # discriminator value -> RegistryRec
+
+    def register( self, discriminator, fields=None, cls=None ):
+        reg_rec = self.registry.get(discriminator)
+        if fields:
+            assert not reg_rec, 'Discriminator is already registered: %r' % discriminator
+            self.registry[discriminator] = RegistryRec(cls, fields)
+            
+        else:
+            assert reg_rec, 'Discriminator is unknown: %r' % discriminator
+            assert reg_rec.cls is None or issubclass(cls, reg_rec.cls), \
+                   repr(reg_rec.cls)  # must be subclass to override
+            reg_rec.cls = cls
+
+    def get_dynamic_fields( self, fixed_rec ):
+        reg_rec = self._resolve(fixed_rec)
+        return reg_rec.dynamic_fields
+
+    def get_class( self, fixed_rec ):
+        reg_rec = self._resolve(fixed_rec)
+        return reg_rec.cls
+
+    def _resolve( self, fixed_rec ):
+        assert fixed_rec.discriminator in self.registry, \
+               'Dynamic type: unknown discriminator: %r. Known are: %r' \
+               % (fixed_rec.discriminator, sorted(self.registry.keys()))
+        return self.registry[fixed_rec.discriminator]
+
+
+class TDynamic(Type):
+
     discriminator_type = TString()
 
     def __init__( self, base_cls ):
