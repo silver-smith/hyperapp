@@ -46,6 +46,7 @@ class TObject(TRecord):
 
 tHandle = TRegistryRec()
 
+
 class Handle(Dynamic):
     pass
 
@@ -53,14 +54,13 @@ class Handle(Dynamic):
 # handle containing object
 class ObjHandle(Handle):
 
-    fields = [
-        Field('object', TObject()),
-        ]
-
     def __init__( self, discriminator, object ):
         assert isinstance(object, Object), repr(object)
         Handle.__init__(self, discriminator)
         self.object = object
+
+
+tObjHandle = TRecord(cls=ObjHandle, fields=[Field('object', TObject())], base=tHandle)
 
 
 class Command(object):

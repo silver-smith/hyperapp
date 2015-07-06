@@ -3,6 +3,7 @@ from common.interface import (
     TString,
     Field,
     ObjHandle,
+    ListHandle,
     iface_registry,
     )
 import common.interface.interface as interface_module
@@ -77,7 +78,7 @@ class Object(interface_module.Object):
 
     def process_request_get( self, request ):
         self.subscribe(request)
-        return request.make_response(ObjHandle(self.view_id, self))
+        return request.make_response(self.get_handle())
 
     def process_request_subscribe( self, request ):
         self.subscribe(request)
@@ -110,6 +111,9 @@ class ListObject(Object, list_module.ListObject):
             has_more=has_more,
             selected_key=selected_key,
             **kw)
+
+    def get_handle( self ):
+        return ListHandle(self.view_id, self)
 
     def process_request( self, request ):
         if request.command_id == 'get_elements':

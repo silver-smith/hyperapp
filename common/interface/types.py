@@ -75,6 +75,9 @@ class Field(object):
         if self.type:
             self.type.validate(join_path(path, self.name), value)
 
+    def __repr__( self ):
+        return 'Field(%r, %r)' % (self.name, self.type)
+
 
 # class for instantiated records
 class Record(object):
@@ -168,7 +171,7 @@ class TRecord(Type):
 
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
         fields = self.adopt_args(args, kw or {}, check_unexpected)
-        ## print '*** instantiate', self.cls, fields 
+        print '*** instantiate', self.cls, fields 
         if self.cls:
             return self.cls(**fields)
         else:

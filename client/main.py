@@ -108,16 +108,17 @@ class OpenRespHandler(proxy_registry.RespHandler):
 
 class ListViewHandle(list_view.Handle):
 
-    def __init__( self, object ):
-        list_view.Handle.__init__(self, object)
+    def __init__( self, object, key=None ):
+        list_view.Handle.__init__(self, object, key)
         self.discriminator = 'list'
 
 
 class NarrowerHandle(narrower.Handle):
 
-    def __init__( self, object ):
-        narrower.Handle.__init__(self, list_view.Handle(object))
+    def __init__( self, object, key=None ):
+        narrower.Handle.__init__(self, list_view.Handle(object, key))
         self.discriminator = 'list_narrower'
+        self.object = object
 
 
 # list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,

@@ -9,6 +9,7 @@ from . types import (
 from . interface import (
     tHandle,
     Handle,
+    tObjHandle,
     ObjHandle,
     TObject,
     Object,
@@ -46,8 +47,8 @@ class ObjSelectorUnwrap(Handle):
         self.base_handle = base_handle
 
 
-tHandle.register('text_view', cls=ObjHandle, fields=ObjHandle.fields)
-tHandle.register('text_edit', cls=ObjHandle, fields=ObjHandle.fields)
+tHandle.register('text_view', tObjHandle)
+tHandle.register('text_edit', tObjHandle)
 tHandle.register('object_selector', cls=ObjSelectorHandle, fields=ObjSelectorHandle.fields)
 tHandle.register('object_selector_unwrap', cls=ObjSelectorUnwrap, fields=ObjSelectorUnwrap.fields)
 

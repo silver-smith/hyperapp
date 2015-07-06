@@ -46,15 +46,16 @@ class JsonEncoder(object):
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value ):
-        ## print '*** encoding record', t, value
+        ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
         result = {}
         while True:
-            ## print '  * encoding', t
+            ## print '  * encoding', t, [field.name for field in t.get_fields()]
             for field in t.get_fields():
                 result[field.name] = self.dispatch(field.type, getattr(value, field.name))
             if not isinstance(t, TDynamicRec): break
             t = t.resolve_rec(value)
-        ## print '  >', result
+        ##     print '  resolved', t, [f.name for f in t.fields], str(result)[:100], value
+        ## print '  >', str(result)[:100]
         return result
 
     @dispatch.register(TList)

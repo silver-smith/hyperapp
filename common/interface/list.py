@@ -12,12 +12,32 @@ from . types import (
     TRow,
     tCommand,
     )
-from . dynamic_record import TRegistryRec, Dynamic
-from . interface import Command, OpenCommand, tHandle, ObjHandle, Object, Interface
+from . dynamic_record import TDynamicRec, TRegistryRec, Dynamic
+from . interface import Command, OpenCommand, tHandle, tObjHandle, ObjHandle, Object, Interface
 
 
-tHandle.register('list', cls=ObjHandle, fields=ObjHandle.fields)
-tHandle.register('list_narrower', cls=ObjHandle, fields=ObjHandle.fields)
+class TListHandle(TDynamicRec):
+
+    def __init__( self ):
+        TDynamicRec.__init__(self, base=tObjHandle)
+
+    def resolve_rec( self, rec ):
+        assert isinstance(rec.object.iface, ListInterface), repr(rec.object.iface)
+        fields = [Field('key', TOptional(TString()))]
+        return TRecord(cls=ListHandle, fields=fields, base=self)
+
+
+class ListHandle(ObjHandle):
+
+    def __init__( self, discriminator, object, key=None ):
+        ObjHandle.__init__(self, discriminator, object)
+        self.key = key
+
+
+tListHandle = TListHandle()
+
+tHandle.register('list', tListHandle)
+tHandle.register('list_narrower', tListHandle)
 
 
 tColumnType = TRegistryRec()
