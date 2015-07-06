@@ -10,7 +10,7 @@ from . interface import (
     TList,
     TRow,
     TPath,
-    TDynamic,
+    TDynamicRec,
     TUpdate,
     Object,
     TObject,
@@ -45,13 +45,16 @@ class JsonEncoder(object):
         return self.dispatch(t.type, value)
 
     @dispatch.register(TRecord)
-    def encode_record( self, t, value, **kw ):
-        return self.encode_record_fields(t.fields, value, **kw)
-
-    def encode_record_fields( self, tfields, value, **kw ):
+    def encode_record( self, t, value ):
+        ## print '*** encoding record', t, value
         result = {}
-        for field in tfields:
-            result[field.name] = self.dispatch(field.type, getattr(value, field.name))
+        while True:
+            ## print '  * encoding', t
+            for field in t.get_fields():
+                result[field.name] = self.dispatch(field.type, getattr(value, field.name))
+            if not isinstance(t, TDynamicRec): break
+            t = t.resolve_rec(value)
+        ## print '  >', result
         return result
 
     @dispatch.register(TList)
@@ -64,21 +67,6 @@ class JsonEncoder(object):
         for idx, t in enumerate(t.columns):
             result.append(self.dispatch(t, value[idx]))
         return result
-
-    @dispatch.register(TDynamic)
-    def encode_dynamic( self, t, value ):
-        fixed_d = self.encode_record_fields(t.fixed_fields(), value)
-        
-        assert isinstance(value, t.base_cls), repr(value)
-        assert value.__class__ is not  t.base_cls, repr(value)
-        discriminator = self.dispatch(t.discriminator_type, value.discriminator)
-        actual_type = value.get_actual_type()
-        if actual_type:
-            d = self.dispatch(actual_type, value)
-        else:
-            d = {}
-        #print '*** encode_dynamic', `discriminator`, d
-        return dict(d, discriminator=discriminator)
 
     @dispatch.register(TPath)
     def encode_path( self, t, value ):

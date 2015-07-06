@@ -7,6 +7,7 @@ from . types import (
     TRecord,
     )
 from . interface import (
+    tHandle,
     Handle,
     ObjHandle,
     TObject,
@@ -21,10 +22,10 @@ from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 class ObjSelectorHandle(Handle):
 
-    actual_type = TRecord([
+    fields = [
         Field('ref', TObject()),
-        Field('target', Handle.dyn_type),
-        ])
+        Field('target', tHandle),
+        ]
 
     def __init__( self, ref, target ):
         assert isinstance(ref, Object), repr(ref)
@@ -36,19 +37,19 @@ class ObjSelectorHandle(Handle):
 
 class ObjSelectorUnwrap(Handle):
 
-    actual_type = TRecord([
-        Field('base_handle', Handle.dyn_type),
-        ])
+    fields = [
+        Field('base_handle', tHandle),
+        ]
 
     def __init__( self, base_handle ):
         Handle.__init__(self, 'object_selector_unwrap')
         self.base_handle = base_handle
 
 
-ObjHandle.register('text_view')
-ObjHandle.register('text_edit')
-ObjSelectorHandle.register('object_selector')
-ObjSelectorUnwrap.register('object_selector_unwrap')
+tHandle.register('text_view', cls=ObjHandle, fields=ObjHandle.fields)
+tHandle.register('text_edit', cls=ObjHandle, fields=ObjHandle.fields)
+tHandle.register('object_selector', cls=ObjSelectorHandle, fields=ObjSelectorHandle.fields)
+tHandle.register('object_selector_unwrap', cls=ObjSelectorUnwrap, fields=ObjSelectorUnwrap.fields)
 
 
 article_iface = Interface('article',

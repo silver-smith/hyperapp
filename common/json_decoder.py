@@ -10,7 +10,7 @@ from . interface import (
     TList,
     TIndexedList,
     TRow,
-    TDynamic,
+    TDynamicRec,
     TPath,
     TObject,
     TUpdate,
@@ -88,8 +88,16 @@ class JsonDecoder(object):
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
-        fields = self.decode_record_fields(t.fields, value, path, **kw)
-        return t.instantiate(**fields)
+        ## print '*** decoding record', path, t, value
+        fields = {}
+        while True:
+            ## print '  * decoding', t
+            fields.update(self.decode_record_fields(t.get_fields(), value, path, **kw))
+            rec = t.instantiate(**fields)
+            if not isinstance(t, TDynamicRec): break
+            t = t.resolve_rec(rec)
+        ## print '  >', rec
+        return rec
 
     def decode_record_fields( self, tfields, value, path, **kw ):
         fields = {}
@@ -126,13 +134,6 @@ class JsonDecoder(object):
         for idx, t in enumerate(t.columns):
             result.append(self.dispatch(t, value[idx], join_path(path, '#%d' % idx)))
         return result
-
-    @dispatch.register(TDynamic)
-    def decode_dynamic( self, t, value, path ):
-        fixed_fields = self.decode_record_fields(t.get_fixed_fields(), value, join_path(path, 'fixed'))
-        fixed_rec = t.instantiate_fixed(**fixed_fields)
-        dynamic_fields = self.decode_record_fields(t.get_dynamic_fields(fixed_rec), value, join_path(path, 'dynamic'))
-        return t.instantiate(dict(fixed_fields, **dynamic_fields))
 
     @dispatch.register(TPath)
     def decode_path( self, t, value, path ):

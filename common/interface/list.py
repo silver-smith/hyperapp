@@ -12,19 +12,18 @@ from . types import (
     TRow,
     tCommand,
     )
-from . dynamic_type import dynamic_type_base
-from . interface import Command, OpenCommand, ObjHandle, Object, Interface
+from . dynamic_record import TRegistryRec
+from . interface import Command, OpenCommand, tHandle, Object, Interface
 
 
-ObjHandle.register('list')
-ObjHandle.register('list_narrower')
+tHandle.register('list')
+tHandle.register('list_narrower')
 
 
-@dynamic_type_base
+tColumnType = TRegistryRec()
+
+
 class ColumnType(object):
-
-    def __init__( self, discriminator=None ):
-        pass
 
     def to_string( self, value ):
         raise NotImplementedError(self.__class__)
@@ -42,14 +41,14 @@ class DateTimeColumnType(ColumnType):
         return dt2local_str(value)
 
 
-StrColumnType.register('str')
-DateTimeColumnType.register('datetime')
+tColumnType.register('str', cls=StrColumnType)
+tColumnType.register('datetime', cls=DateTimeColumnType)
 
 
 tColumn = TRecord([
     Field('id', TString()),
     Field('title', TOptional(TString())),
-    Field('type', ColumnType.dyn_type),
+    Field('type', tColumnType),
     ])
 
 

@@ -11,7 +11,7 @@ from . types import (
     TPath,
     tCommand,
     )
-from . dynamic_type import dynamic_type_base, Dynamic
+from . dynamic_record import TRegistryRec, Dynamic
 
 
 class TIface(TPrimitive):
@@ -44,7 +44,8 @@ class TObject(TRecord):
         self.expect(path, value, 'Object', isinstance(value, Object))
 
 
-@dynamic_type_base
+tHandle = TRegistryRec()
+
 class Handle(Dynamic):
     pass
 
@@ -52,9 +53,9 @@ class Handle(Dynamic):
 # handle containing object
 class ObjHandle(Handle):
 
-    actual_type = TRecord([
+    fields = [
         Field('object', TObject()),
-        ])
+        ]
 
     def __init__( self, discriminator, object ):
         assert isinstance(object, Object), repr(object)
@@ -95,7 +96,7 @@ class Command(object):
 class OpenCommand(Command):
 
     def get_result_type( self, iface ):
-        return Handle.dyn_type
+        return tHandle
 
 
 class SubscribeCommand(Command):

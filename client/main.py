@@ -14,7 +14,7 @@ import common.interface.fs
 import common.interface.blog
 import common.interface.article
 
-from common.interface import Handle, iface_registry
+from common.interface import tHandle, iface_registry
 from common.request import Request
 from util import pickle_dumps, pickle_loads
 from server import Server
@@ -109,10 +109,10 @@ class OpenRespHandler(proxy_registry.RespHandler):
 # list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,
 # and vice versa, so we need to bind them in another, independent place
 def register_handles():
-    Handle.register('list', list_view.Handle)
-    Handle.register('list_narrower', narrower.Handle.from_resp)
-    Handle.register('text_view', text_view.Handle)
-    Handle.register('text_edit', text_edit.Handle)
+    tHandle.resolve('list').use_class(list_view.Handle)
+    tHandle.resolve('list_narrower').use_class(narrower.Handle.from_resp)
+    tHandle.resolve('text_view').use_class(text_view.Handle)
+    tHandle.resolve('text_edit').use_class(text_edit.Handle)
 
 def main():
     register_handles()

@@ -89,5 +89,5 @@ class View(view.View, QtGui.QWidget):
 
 
 proxy_registry.register_iface('object_selector', ProxyObject.from_response)
-common_iface.Handle.register('object_selector', Handle)
-common_iface.Handle.register('object_selector_unwrap', ObjSelectorUnwrap)
+common_iface.tHandle.resolve('object_selector').use_class(Handle)
+common_iface.tHandle.resolve('object_selector_unwrap').use_class(ObjSelectorUnwrap)

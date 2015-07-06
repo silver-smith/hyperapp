@@ -89,16 +89,23 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__( self, fields ):
-        assert is_list_inst(fields, Field), repr(fields)
-        self.fields = fields
-        self.use_cls = None
+    def __init__( self, fields=None, cls=None ):
+        assert fields is None or is_list_inst(fields, Field), repr(fields)
+        self.fields = fields or []
+        self.cls = cls
+
+    def get_fields( self ):
+        return self.fields
+
+    def get_class( self ):
+        return self.cls
 
     def use_class( self, cls ):
-        self.use_cls = cls
+        self.cls = cls
 
     def validate( self, path, rec ):
         for field in self.fields:
+            # print '*** validate', path, `rec`, `field.name`, hasattr(rec, field.name)
             self.assert_(path, hasattr(rec, field.name), 'Missing field: %s' % field.name)
             field.validate(path, getattr(rec, field.name))
 
@@ -122,11 +129,12 @@ class TRecord(Type):
                     setattr(self, name, val)
         return Record
 
-    def adopt_args( self, args, kw, check_unexpected ):
+    def adopt_args( self, args, kw, check_unexpected=True ):
         fields = dict(kw)
         for field, arg in zip(self.fields, args):
             assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
             fields[field.name] = arg
+        print '*** adopt_args', fields, self, [field.name for field in self.fields]
         adopted_args = {}
         unexpected = set(fields.keys())
         for field in self.fields:
@@ -139,21 +147,22 @@ class TRecord(Type):
                 else:
                     raise TypeError('Record field is missing: %r' % field.name)
             if field.type is not None:  # open type, todo
-                field.type.validate(join_path('Record', field.name), value)
+                field.type.validate(join_path('<Record>', field.name), value)
             adopted_args[field.name] = value
         if check_unexpected:
-            self.assert_('Record', not unexpected,
+            self.assert_('<Record>', not unexpected,
                          'Unexpected fields: %s; allowed are: %s'
                          % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
         return adopted_args
 
     def instantiate( self, *args, **kw ):
-        self.instantiate_impl(args, kw)
+        return self.instantiate_impl(args, kw)
 
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
         fields = self.adopt_args(args, kw or {}, check_unexpected)
-        if self.use_cls:
-            return self.use_cls(**fields)
+        ## print '*** instantiate', self.cls, fields 
+        if self.cls:
+            return self.cls(**fields)
         else:
             rec = Record()
             for name, val in fields.items():
