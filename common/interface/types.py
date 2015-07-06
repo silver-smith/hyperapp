@@ -89,10 +89,12 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__( self, fields=None, cls=None ):
+    def __init__( self, fields=None, cls=None, base=None ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         self.fields = fields or []
         self.cls = cls
+        if base:
+            self.fields = base.fields + self.fields
 
     def get_fields( self ):
         return self.fields
@@ -134,7 +136,7 @@ class TRecord(Type):
         for field, arg in zip(self.fields, args):
             assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
             fields[field.name] = arg
-        print '*** adopt_args', fields, self, [field.name for field in self.fields]
+        ## print '*** adopt_args', fields, self, [field.name for field in self.fields]
         adopted_args = {}
         unexpected = set(fields.keys())
         for field in self.fields:

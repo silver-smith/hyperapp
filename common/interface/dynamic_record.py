@@ -20,11 +20,7 @@ class TRegistryRec(TDynamicRec):
         assert trec is None or isinstance(trec, TRecord), repr(trec)
         assert discriminator not in self.registry, repr(discriminator)  # Already registered/dup
         print '*** register', discriminator, trec, cls, fields
-        if trec is None:
-            trec = TRecord(fields, cls)
-        if trec.cls and not issubclass(trec.cls, Dynamic):
-            trec.cls.discriminator = discriminator
-        self.registry[discriminator] = trec
+        self.registry[discriminator] = trec or TRecord(fields, cls, base=self)
 
     def resolve_rec( self, rec ):
         return self.resolve(rec.discriminator)
