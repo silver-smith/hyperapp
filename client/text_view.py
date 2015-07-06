@@ -7,7 +7,7 @@ from text_object import TextObject
 
 class Handle(view.Handle):
 
-    def __init__( self, object, text=None, discriminator=None ):
+    def __init__( self, object, text=None ):
         view.Handle.__init__(self)
         self.object = object
         self.text = text

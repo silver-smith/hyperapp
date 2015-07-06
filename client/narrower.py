@@ -11,10 +11,6 @@ import list_view
 
 class Handle(composite.Handle):
 
-    @classmethod
-    def from_resp( cls, discriminator, object ):
-        return cls(list_view.Handle(object))
-
     def __init__( self, list_handle, prefix=None ):
         composite.Handle.__init__(self)
         assert isinstance(list_handle, list_view.Handle), repr(list_handle)

@@ -93,6 +93,9 @@ class JsonDecoder(object):
         while True:
             ## print '  * decoding', t
             fields.update(self.decode_record_fields(t.get_fields(), value, path, **kw))
+            has_fields = set(field.name for field in t.get_fields())
+            # drop fields not needed by descendant class before instantiation:
+            fields = dict((key, value) for key, value in fields.items() if key in has_fields)
             rec = t.instantiate(**fields)
             if not isinstance(t, TDynamicRec): break
             t = t.resolve_rec(rec)

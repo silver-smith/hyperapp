@@ -105,9 +105,15 @@ class TRecord(Type):
     def use_class( self, cls ):
         self.cls = cls
 
+    def override( self, cls=None, drop_field=None ):
+        self.cls = cls
+        if drop_field:
+            self.fields = [field for field in self.fields if field.name != drop_field]
+
     def validate( self, path, rec ):
+        ## print '*** trecord validate', path, rec, self, [field.name for field in self.fields]
         for field in self.fields:
-            # print '*** validate', path, `rec`, `field.name`, hasattr(rec, field.name)
+            ## print '  * validating', path, `rec`, `field.name`, hasattr(rec, field.name)
             self.assert_(path, hasattr(rec, field.name), 'Missing field: %s' % field.name)
             field.validate(path, getattr(rec, field.name))
 

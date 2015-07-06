@@ -106,13 +106,27 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app.open_in_any_window(handle)
 
 
+class ListViewHandle(list_view.Handle):
+
+    def __init__( self, object ):
+        list_view.Handle.__init__(self, object)
+        self.discriminator = 'list'
+
+
+class NarrowerHandle(narrower.Handle):
+
+    def __init__( self, object ):
+        narrower.Handle.__init__(self, list_view.Handle(object))
+        self.discriminator = 'list_narrower'
+
+
 # list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,
 # and vice versa, so we need to bind them in another, independent place
 def register_handles():
-    tHandle.resolve('list').use_class(list_view.Handle)
-    tHandle.resolve('list_narrower').use_class(narrower.Handle.from_resp)
-    tHandle.resolve('text_view').use_class(text_view.Handle)
-    tHandle.resolve('text_edit').use_class(text_edit.Handle)
+    tHandle.resolve('list').override(cls=ListViewHandle, drop_field='discriminator')
+    tHandle.resolve('list_narrower').override(cls=NarrowerHandle, drop_field='discriminator')
+    tHandle.resolve('text_view').override(cls=text_view.Handle, drop_field='discriminator')
+    tHandle.resolve('text_edit').override(cls=text_edit.Handle, drop_field='discriminator')
 
 def main():
     register_handles()
