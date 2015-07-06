@@ -1,7 +1,7 @@
 import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
-from common.interface import Command, ObjHandle, Column
+from common.interface import Command, Column
 from common.interface.article import (
     ObjSelectorHandle,
     ObjSelectorUnwrap,
