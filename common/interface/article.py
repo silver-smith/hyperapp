@@ -10,7 +10,6 @@ from . interface import (
     tHandle,
     Handle,
     tObjHandle,
-    ObjHandle,
     TObject,
     Object,
     Command,

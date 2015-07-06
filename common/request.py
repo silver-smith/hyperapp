@@ -1,5 +1,5 @@
 from . util import is_list_inst
-from . interface import TPrimitive, Field, TRecord, ObjHandle, tUpdateList
+from . interface import TPrimitive, Field, TRecord, tUpdateList
 
 
 tServerNotification = TRecord([
