@@ -8,7 +8,7 @@ import view
 from command import Command
 
 
-class ObjSelectorUnwrap(article_iface.ObjSelectorUnwrap, view.Handle):
+class ObjSelectorUnwrap(article_iface.tObjSelectorUnwrap.make_class(), view.Handle):
 
     def get_object( self ):
         return self.base_handle.get_object()

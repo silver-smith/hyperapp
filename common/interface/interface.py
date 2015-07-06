@@ -45,22 +45,10 @@ class TObject(TRecord):
 
 
 tHandle = TRegistryRec()
+Handle = tHandle.instantiate
 
-
-class Handle(Dynamic):
-    pass
-
-
-# handle containing object
-class ObjHandle(Handle):
-
-    def __init__( self, discriminator, object ):
-        assert isinstance(object, Object), repr(object)
-        Handle.__init__(self, discriminator)
-        self.object = object
-
-
-tObjHandle = TRecord(cls=ObjHandle, fields=[Field('object', TObject())], base=tHandle)
+tObjHandle = TRecord(fields=[Field('object', TObject())], base=tHandle)
+ObjHandle = tObjHandle.instantiate
 
 
 class Command(object):

@@ -21,36 +21,21 @@ from . interface import (
 from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 
-class ObjSelectorHandle(Handle):
-
-    fields = [
+tObjSelectorHandle = TRecord(base=tHandle, fields=[
         Field('ref', TObject()),
         Field('target', tHandle),
-        ]
+        ])
+ObjSelectorHandle = tObjSelectorHandle.instantiate
 
-    def __init__( self, ref, target ):
-        assert isinstance(ref, Object), repr(ref)
-        assert target is None or isinstance(target, Handle), repr(target)
-        Handle.__init__(self, 'object_selector')
-        self.ref = ref
-        self.target = target
-
-
-class ObjSelectorUnwrap(Handle):
-
-    fields = [
+tObjSelectorUnwrap = TRecord(base=tHandle, fields=[
         Field('base_handle', tHandle),
-        ]
-
-    def __init__( self, base_handle ):
-        Handle.__init__(self, 'object_selector_unwrap')
-        self.base_handle = base_handle
-
+        ])
+ObjSelectorUnwrap = tObjSelectorUnwrap.instantiate
 
 tHandle.register('text_view', tObjHandle)
 tHandle.register('text_edit', tObjHandle)
-tHandle.register('object_selector', cls=ObjSelectorHandle, fields=ObjSelectorHandle.fields)
-tHandle.register('object_selector_unwrap', cls=ObjSelectorUnwrap, fields=ObjSelectorUnwrap.fields)
+tHandle.register('object_selector', tObjSelectorHandle)
+tHandle.register('object_selector_unwrap', tObjSelectorUnwrap)
 
 
 article_iface = Interface('article',

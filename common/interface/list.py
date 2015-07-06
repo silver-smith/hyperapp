@@ -24,17 +24,11 @@ class TListHandle(TDynamicRec):
     def resolve_rec( self, rec ):
         assert isinstance(rec.object.iface, ListInterface), repr(rec.object.iface)
         fields = [Field('key', TOptional(TString()))]
-        return TRecord(cls=ListHandle, fields=fields, base=self)
-
-
-class ListHandle(ObjHandle):
-
-    def __init__( self, discriminator, object, key=None ):
-        ObjHandle.__init__(self, discriminator, object)
-        self.key = key
+        return TRecord(fields=fields, base=self)
 
 
 tListHandle = TListHandle()
+ListHandle = tListHandle.instantiate
 
 tHandle.register('list', tListHandle)
 tHandle.register('list_narrower', tListHandle)
