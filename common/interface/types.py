@@ -178,14 +178,14 @@ class TRecord(Type):
 
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
         fields = self.adopt_args(args, kw or {}, check_unexpected)
-        ## print '*** instantiate', fields, self.cls, self.fields
+        ## print '*** instantiate', fields, self, self.cls, self.fields
         if self.cls:
             return self.cls(**fields)
         else:
             rec = Record()
             for name, val in fields.items():
                 setattr(rec, name, val)
-            ## print '*** instantiate', rec, fields, self, self.cls, self.fields
+            ## print '*** >', rec, fields, self, self.cls, self.fields
             return rec
         
 
