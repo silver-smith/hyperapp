@@ -3,7 +3,7 @@ from . types import join_path, Type, TString, Field, TRecord
 
 class TDynamicRec(TRecord):
 
-    def resolve( self, rec ):
+    def resolve_rec( self, rec ):
         raise NotImplementedError(self.__class__)
 
     def instantiate( self, *args, **kw ):
