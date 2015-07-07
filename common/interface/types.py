@@ -172,6 +172,10 @@ class TRecord(Type):
     def instantiate( self, *args, **kw ):
         return self.instantiate_impl(args, kw)
 
+    # do not dive into dynamic record
+    def instantiate_only( self, *args, **kw ):
+        return self.instantiate_impl(args, kw)
+
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
         fields = self.adopt_args(args, kw or {}, check_unexpected)
         print '*** instantiate', self.cls, fields 
