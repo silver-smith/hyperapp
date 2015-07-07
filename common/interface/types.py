@@ -141,6 +141,9 @@ class TRecord(Type):
         return Record
 
     def adopt_args( self, args, kw, check_unexpected=True ):
+        if check_unexpected:
+            self.assert_('<Record>', len(args) <= len(self.fields),
+                         'instantiate takes at most %d argumants (%d given)' % (len(self.fields), len(args)))
         fields = dict(kw)
         for field, arg in zip(self.fields, args):
             assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
