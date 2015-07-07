@@ -12,7 +12,6 @@ from . types import (
     TRow,
     tCommand,
     )
-from . dynamic_record import TDynamicRec, TRegistryRec, Dynamic
 from . interface import Command, OpenCommand, tHandle, tObjHandle, Object, Interface
 
 

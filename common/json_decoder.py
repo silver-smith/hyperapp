@@ -10,7 +10,7 @@ from . interface import (
     TList,
     TIndexedList,
     TRow,
-    TDynamicRec,
+    THierarchy,
     TPath,
     TObject,
     TUpdate,
@@ -89,18 +89,17 @@ class JsonDecoder(object):
     def decode_record( self, t, value, path, **kw ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         ## print '*** decoding record', path, t, value
-        fields = {}
-        while True:
-            ## print '  * decoding', t
-            fields.update(self.decode_record_fields(t.get_fields(), value, path, **kw))
-            has_fields = set(field.name for field in t.get_fields())
-            # drop fields not needed by descendant class before instantiation:
-            fields = dict((key, value) for key, value in fields.items() if key in has_fields)
-            rec = t.instantiate_only(**fields)
-            if not isinstance(t, TDynamicRec): break
-            t = t.resolve_rec(rec)
-        ## print '  >', rec
-        return rec
+        fields = self.decode_record_fields(t.get_fields(), value, path, **kw)
+        return t.instantiate(**fields)
+
+    @dispatch.register(THierarchy)
+    def decode_hierarchy_obj( self, t, value, path ):
+        self.expect_type(path, isinstance(value, dict), value, 'hierarchy object (dict)')
+        self.expect(path, '_class_id' in value, '_class_id field is missing')
+        id = self.dispatch(TString(), value['_class_id'], join_path(path, '_class_id'))
+        tclass = t.resolve(id)
+        fields = self.decode_record_fields(tclass.get_fields(), value, path)
+        return tclass.instantiate(**fields)
 
     def decode_record_fields( self, tfields, value, path, **kw ):
         fields = {}

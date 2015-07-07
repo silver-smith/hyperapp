@@ -10,7 +10,7 @@ from . interface import (
     TList,
     TRow,
     TPath,
-    TDynamicRec,
+    THierarchy,
     TUpdate,
     Object,
     TObject,
@@ -48,16 +48,16 @@ class JsonEncoder(object):
     def encode_record( self, t, value ):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
         result = {}
-        while True:
-            ## print '***   encoding', t, [field.name for field in t.get_fields()]
-            for field in t.get_fields():
-                if not hasattr(value, field.name):
-                    import pdb; pdb.set_trace()
-                result[field.name] = self.dispatch(field.type, getattr(value, field.name))
-            if not isinstance(t, TDynamicRec): break
-            t = t.resolve_rec(value)
-            ## print '*** resolved', t, [f.name for f in t.fields], str(result)[:100], value
-        ## print '***>', str(result)[:100]
+        for field in t.get_fields():
+            result[field.name] = self.dispatch(field.type, getattr(value, field.name))
+        return result
+
+    @dispatch.register(THierarchy)
+    def encode_hierarchy_obj( self, t, value ):
+        tclass = t.resolve(value._class_id)
+        result = dict(_class_id=self.dispatch(TString(), value._class_id))
+        for field in tclass.get_fields():
+            result[field.name] = self.dispatch(field.type, getattr(value, field.name))
         return result
 
     @dispatch.register(TList)

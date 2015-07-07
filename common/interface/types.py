@@ -136,13 +136,13 @@ class TRecord(Type):
         class Record(object):
             type = self
             def __init__( self, *args, **kw ):
-                for name, val in self.type.adopt_args(args, kw).items():
+                for name, val in self.type.adopt_args('<Record>', args, kw).items():
                     setattr(self, name, val)
         return Record
 
-    def adopt_args( self, args, kw, check_unexpected=True ):
+    def adopt_args( self, path, args, kw, check_unexpected=True ):
         if check_unexpected:
-            self.assert_('<Record>', len(args) <= len(self.fields),
+            self.assert_(path, len(args) <= len(self.fields),
                          'instantiate takes at most %d argumants (%d given)' % (len(self.fields), len(args)))
         fields = dict(kw)
         for field, arg in zip(self.fields, args):
@@ -164,7 +164,7 @@ class TRecord(Type):
                 field.type.validate(join_path('<Record>', field.name), value)
             adopted_args[field.name] = value
         if check_unexpected:
-            self.assert_('<Record>', not unexpected,
+            self.assert_(path, not unexpected,
                          'Unexpected fields: %s; allowed are: %s'
                          % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
         return adopted_args
@@ -177,7 +177,7 @@ class TRecord(Type):
         return self.instantiate_impl(args, kw)
 
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
-        fields = self.adopt_args(args, kw or {}, check_unexpected)
+        fields = self.adopt_args('<Record>', args, kw or {}, check_unexpected)
         ## print '*** instantiate', fields, self, self.cls, self.fields
         if self.cls:
             return self.cls(**fields)

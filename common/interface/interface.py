@@ -11,7 +11,7 @@ from . types import (
     TPath,
     tCommand,
     )
-from . dynamic_record import TRegistryRec, Dynamic
+from . hierarchy import THierarchy
 
 
 class TIface(TPrimitive):
@@ -44,10 +44,8 @@ class TObject(TRecord):
         self.expect(path, value, 'Object', isinstance(value, Object))
 
 
-tHandle = TRegistryRec()
-Handle = tHandle.instantiate
-
-tObjHandle = TRecord(fields=[Field('object', TObject())], base=tHandle)
+tHandle = THierarchy()
+tObjHandle = tHandle.register('obj_handle', fields=[Field('object', TObject())])
 ObjHandle = tObjHandle.instantiate
 
 
