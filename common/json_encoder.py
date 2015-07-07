@@ -49,13 +49,15 @@ class JsonEncoder(object):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
         result = {}
         while True:
-            ## print '  * encoding', t, [field.name for field in t.get_fields()]
+            ## print '***   encoding', t, [field.name for field in t.get_fields()]
             for field in t.get_fields():
+                if not hasattr(value, field.name):
+                    import pdb; pdb.set_trace()
                 result[field.name] = self.dispatch(field.type, getattr(value, field.name))
             if not isinstance(t, TDynamicRec): break
             t = t.resolve_rec(value)
-        ##     print '  resolved', t, [f.name for f in t.fields], str(result)[:100], value
-        ## print '  >', str(result)[:100]
+            ## print '*** resolved', t, [f.name for f in t.fields], str(result)[:100], value
+        ## print '***>', str(result)[:100]
         return result
 
     @dispatch.register(TList)
