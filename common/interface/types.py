@@ -92,12 +92,12 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__( self, fields=None, cls=None, base=None ):
+    def __init__( self, fields=None, cls=None, base=None, drop_field=None ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         self.fields = fields or []
         self.cls = cls
-        if base:
-            self.fields = base.fields + self.fields
+        self.fields = [field for field in (base.fields if base else []) + self.fields
+                       if field.name != drop_field]
 
     def get_fields( self ):
         return self.fields
