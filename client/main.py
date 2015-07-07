@@ -14,7 +14,7 @@ import common.interface.fs
 import common.interface.blog
 import common.interface.article
 
-from common.interface import tHandle, iface_registry
+from common.interface import tHandle, tListHandle, iface_registry
 from common.request import Request
 from util import pickle_dumps, pickle_loads
 from server import Server
@@ -124,8 +124,8 @@ class NarrowerHandle(narrower.Handle):
 # list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,
 # and vice versa, so we need to bind them in another, independent place
 def register_handles():
-    tHandle.resolve('list').override(cls=ListViewHandle, drop_field='discriminator')
-    tHandle.resolve('list_narrower').override(cls=NarrowerHandle, drop_field='discriminator')
+    tListHandle.override(cls=ListViewHandle, drop_field='discriminator')
+    tListHandle.override(cls=NarrowerHandle, drop_field='discriminator')
     tHandle.resolve('text_view').override(cls=text_view.Handle, drop_field='discriminator')
     tHandle.resolve('text_edit').override(cls=text_edit.Handle, drop_field='discriminator')
 

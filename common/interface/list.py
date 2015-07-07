@@ -24,7 +24,7 @@ class TListHandle(TDynamicRec):
     def resolve_rec( self, rec ):
         assert isinstance(rec.object.iface, ListInterface), repr(rec.object.iface)
         fields = [Field('key', TOptional(TString()))]
-        return TRecord(fields=fields, base=self)
+        return TRecord(fields=fields, base=self, cls=self.cls)
 
 
 tListHandle = TListHandle()
