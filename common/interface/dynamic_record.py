@@ -6,6 +6,11 @@ class TDynamicRec(TRecord):
     def resolve( self, rec ):
         raise NotImplementedError(self.__class__)
 
+    def instantiate( self, *args, **kw ):
+        rec = self.instantiate_impl(args, kw, check_unexpected=False)
+        t = self.resolve_rec(rec)
+        return t.instantiate(*args, **kw)
+
 
 class TRegistryRec(TDynamicRec):
 
