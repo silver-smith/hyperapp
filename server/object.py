@@ -151,26 +151,3 @@ class ListObject(Object, list_module.ListObject):
 
     def run_element_command( self, request, command_id, element_key ):
         assert False, repr(command_id)  # Unexpected command_id
-
-
-# return list object (base) with selected_key selected
-class ListObjectElement(Object):
-
-    def __init__( self, base, selected_key ):
-        assert isinstance(base, ListObject), repr(base)
-        self._base = base
-        self._selected_key = selected_key
-
-    def get( self ):
-        return dict(
-            iface_id=self._base.iface.iface_id,
-            proxy_id=self._base.proxy_id,
-            view_id=self._base.view_id,
-            path=self._base.get_path(),
-            contents=self.get_contents(),
-            )
-
-    def get_contents( self, **kw ):
-        return self._base.get_contents(
-            selected_key=self._selected_key,
-            **kw)

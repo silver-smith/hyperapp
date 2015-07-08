@@ -12,7 +12,7 @@ from common.interface.article import (
     object_selector_iface,
     onwrap_object_selector_iface,
     )
-from object import Object, ListObject, ListObjectElement, subscription
+from object import Object, ListObject, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
 
