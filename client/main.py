@@ -107,13 +107,6 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app.open_in_any_window(handle)
 
 
-class ListViewHandle(list_view.Handle):
-
-    def __init__( self, object, key=None ):
-        list_view.Handle.__init__(self, object, key)
-        self.discriminator = 'list'
-
-
 class NarrowerHandle(narrower.Handle):
 
     def __init__( self, object, key=None ):

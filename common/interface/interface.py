@@ -178,7 +178,6 @@ class Interface(object):
         return TRecord([
             Field('iface', TIface()),
             Field('proxy_id', TString()),
-            Field('view_id', TString()),
             Field('path', TPath()),
             Field('contents', self.tContents()),
             ])

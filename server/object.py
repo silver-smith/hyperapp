@@ -49,7 +49,6 @@ class Object(interface_module.Object):
         return self.iface.Object(
             iface=self.iface,
             proxy_id=self.proxy_id,
-            view_id=self.view_id,
             path=self.get_path(),
             contents=self.get_contents(),
             )
@@ -60,7 +59,7 @@ class Object(interface_module.Object):
             **kw)
 
     def get_handle( self ):
-        return ObjHandle(self)
+        raise NotImplementedError(self.__class__)
 
     def process_request( self, request ):
         command_id = request.command_id

@@ -3,6 +3,8 @@ from pony.orm import db_session, commit, Required, Optional, Set, select
 from util import str2id
 from common.interface import Command, Column
 from common.interface.article import (
+    TextViewHandle,
+    TextEditHandle,
     ObjSelectorHandle,
     ObjSelectorUnwrapHandle,
     article_iface,
@@ -56,10 +58,7 @@ class Article(Object):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
         Object.__init__(self, path)
         self.article_id = article_id
-        if mode == self.mode_view:
-            self.view_id = 'text_view'
-        else:
-            self.view_id = 'text_edit'
+        self.mode = mode
 
     @db_session
     def get_contents( self, **kw ):
@@ -69,6 +68,12 @@ class Article(Object):
         else:
             text = None
         return Object.get_contents(self, text=text, **kw)
+
+    def get_handle( self ):
+        if self.mode == self.mode_view:
+            return TextViewHandle(self)
+        else:
+            return TextEditHandle(self)
 
     def get_commands( self ):
         return [

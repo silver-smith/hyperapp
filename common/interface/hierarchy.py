@@ -55,7 +55,7 @@ class TClass(object):
     # only to be used as base for usual classes
     def make_class( self ):
         tclass = self
-        class Class(object):
+        class ClassBase(object):
             def __init__( self, *args, **kw ):
                 self._class_id = tclass.id
                 for name, val in tclass._adopt_args(args, kw).items():
