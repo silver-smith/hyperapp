@@ -10,7 +10,8 @@ class Class(object):
 
 class TClass(object):
 
-    def __init__( self, id, base, fields, cls ):
+    def __init__( self, hierarchy, id, base, fields, cls ):
+        self.hierarchy = hierarchy
         self.id = id
         self.base = base
         self.fields = fields  # Field list
@@ -18,6 +19,7 @@ class TClass(object):
 
     def register_class( self, cls ):
         self.cls = cls
+        self.hierarchy.cls2id[cls] = self.id
 
     def get_class( self ):
         if self.cls:
@@ -75,7 +77,7 @@ class THierarchy(Type):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TClass), repr(base)
         assert id not in self.registry, 'Class id is already registered: %r' % id
-        tclass = TClass(id, base, fields or [], cls)
+        tclass = TClass(self, id, base, fields or [], cls)
         self.registry[id] = tclass
         if cls:
             self.cls2id[tclass.get_class()] = id
