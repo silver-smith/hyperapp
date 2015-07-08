@@ -10,7 +10,6 @@ class File(ListObject):
 
     iface = file_iface
     proxy_id = 'list'
-    view_id = 'list'
 
     columns = [
         Column('key', 'idx'),

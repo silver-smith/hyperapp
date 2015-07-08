@@ -126,7 +126,6 @@ class ArticleRefList(ListObject):
 
     iface = ref_list_iface
     proxy_id = 'ref_list'
-    view_id = 'list'
 
     columns = [
         Column('key', 'Ref id'),
@@ -204,7 +203,6 @@ class RefSelector(Object):
 
     iface = object_selector_iface
     proxy_id = 'object_selector'
-    view_id = 'object_selector'
 
     def __init__( self, path, article_id, ref_id ):
         Object.__init__(self, path)

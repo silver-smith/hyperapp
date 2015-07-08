@@ -65,7 +65,6 @@ class Blog(ListObject):
 
     iface = blog_iface
     proxy_id = 'list'
-    view_id = 'list'
 
     columns = [
         Column('key', 'Article id'),

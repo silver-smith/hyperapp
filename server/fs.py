@@ -15,7 +15,6 @@ class Dir(ListObject):
 
     iface = dir_iface
     proxy_id = 'list'
-    view_id = 'list_narrower'
 
     columns = [
         Column('key', 'File Name'),

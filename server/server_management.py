@@ -13,7 +13,6 @@ class CommandList(ListObject):
 
     iface = server_management_iface
     proxy_id = 'list'
-    view_id = 'list'
 
     columns = [
         Column('key'),
