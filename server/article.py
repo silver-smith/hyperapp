@@ -239,8 +239,7 @@ class RefSelector(Object):
         commit()
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
         ref_list_obj = ArticleRefList.make(article_id=self.article_id)
-        ## list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
-        list_elt = ref_list_obj.get_handle()
+        list_elt = ArticleRefList.ListHandle(ref_list_obj, rec.id)
         handle = ObjSelectorUnwrapHandle(list_elt)
         return request.make_response(handle)
 
