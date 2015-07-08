@@ -12,31 +12,17 @@ from . types import (
     TRow,
     tCommand,
     )
+from . hierarchy import THierarchy
 from . interface import Command, OpenCommand, tHandle, tObjHandle, Object, Interface
 
 
-class TListHandle(TDynamicRec):
+tListHandleBase = tHandle.register('list_base', base=tObjHandle)
+tListNarrowerHandleBase = tHandle.register('list_narrower_base', base=tObjHandle)
 
-    def __init__( self ):
-        TDynamicRec.__init__(self, base=tObjHandle)
-
-    def resolve_rec( self, rec ):
-        assert isinstance(rec.object.iface, ListInterface), repr(rec.object.iface)
-        fields = [Field('key', TOptional(TString()))]
-        return TRecord(fields=fields, base=self, cls=self.cls)
+tColumnType = THierarchy()
 
 
-tListHandle = TListHandle()
-ListHandle = tListHandle.instantiate
-
-tHandle.register('list', tListHandle)
-tHandle.register('list_narrower', tListHandle)
-
-
-tColumnType = TRegistryRec()
-
-
-class ColumnType(Dynamic):
+class ColumnType(object):
 
     def to_string( self, value ):
         raise NotImplementedError(self.__class__)
@@ -44,17 +30,11 @@ class ColumnType(Dynamic):
 
 class StrColumnType(ColumnType):
 
-    def __init__( self, discriminator='str' ):
-        ColumnType.__init__(self, discriminator)
-
     def to_string( self, value ):
         return value
 
 
 class DateTimeColumnType(ColumnType):
-
-    def __init__( self, discriminator='datetime' ):
-        ColumnType.__init__(self, discriminator)
 
     def to_string( self, value ):
         return dt2local_str(value)
@@ -121,6 +101,14 @@ class ListObject(Object):
     def Diff_delete( cls, key ):
         return cls.Diff(key, key, [])
 
+    @classmethod
+    def ListHandle( cls, *args, **kw ):
+        return cls.iface.ListHandle(*args, **kw)
+
+    @classmethod
+    def ListNarrowerHandle( cls, *args, **kw ):
+        return cls.iface.ListNarrowerHandle(*args, **kw)
+
 
 class ListInterface(Interface):
         
@@ -131,6 +119,14 @@ class ListInterface(Interface):
         self.key_type = key_type
         Interface.__init__(self, iface_id, content_fields, self.tDiff(),
                            (commands or []) + self._get_basic_commands(key_type))
+        self._register_types()
+
+    def _register_types( self ):
+        fields = [Field('key', TOptional(self.key_type))]
+        self._tListHandle = tHandle.register(
+            '%s.list' % self.iface_id, fields, base=tListHandleBase)
+        self._tListNarrowerHandle = tHandle.register(
+            '%s.list_narrower' % self.iface_id, fields, base=tListNarrowerHandleBase)
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
@@ -175,3 +171,9 @@ class ListInterface(Interface):
 
     def Diff( self, *args, **kw ):
         return self.tDiff().instantiate(*args, **kw)
+
+    def ListHandle( self, *args, **kw ):
+        return self._tListHandle.instantiate(*args, **kw)
+
+    def ListNarrowerHandle( self, *args, **kw ):
+        return self._tListNarrowerHandle.instantiate(*args, **kw)

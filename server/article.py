@@ -4,7 +4,7 @@ from util import str2id
 from common.interface import Command, Column
 from common.interface.article import (
     ObjSelectorHandle,
-    ObjSelectorUnwrap,
+    ObjSelectorUnwrapHandle,
     article_iface,
     ref_list_iface,
     object_selector_iface,
@@ -236,7 +236,7 @@ class RefSelector(Object):
         ref_list_obj = ArticleRefList.make(article_id=self.article_id)
         ## list_elt_obj = ListObjectElement(ref_list_obj, rec.id)
         list_elt = ref_list_obj.get_handle()
-        handle = ObjSelectorUnwrap(list_elt)
+        handle = ObjSelectorUnwrapHandle(list_elt)
         return request.make_response(handle)
 
     @db_session

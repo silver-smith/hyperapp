@@ -8,7 +8,6 @@ from . types import (
     )
 from . interface import (
     tHandle,
-    Handle,
     tObjHandle,
     TObject,
     Object,
@@ -20,21 +19,19 @@ from . interface import (
 from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 
-tObjSelectorHandle = TRecord(base=tHandle, fields=[
+tObjSelectorHandle = tHandle.register('object_selector', fields=[
         Field('ref', TObject()),
         Field('target', tHandle),
         ])
 ObjSelectorHandle = tObjSelectorHandle.instantiate
 
-tObjSelectorUnwrap = TRecord(base=tHandle, fields=[
+tObjSelectorUnwrapHandle = tHandle.register('object_selector_unwrap', fields=[
         Field('base_handle', tHandle),
         ])
-ObjSelectorUnwrap = tObjSelectorUnwrap.instantiate
+ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
 
-tHandle.register('text_view', tObjHandle)
-tHandle.register('text_edit', tObjHandle)
-tHandle.register('object_selector', tObjSelectorHandle)
-tHandle.register('object_selector_unwrap', tObjSelectorUnwrap)
+tTextViewHandle = tHandle.register('text_view', base=tObjHandle)
+tTextEditHandle = tHandle.register('text_edit', base=tObjHandle)
 
 
 article_iface = Interface('article',

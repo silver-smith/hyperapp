@@ -8,7 +8,7 @@ import view
 from command import Command
 
 
-class ObjSelectorUnwrap(article_iface.tObjSelectorUnwrap.make_class(), view.Handle):
+class ObjSelectorUnwrap(article_iface.tObjSelectorUnwrapHandle.make_class(), view.Handle):
 
     def get_object( self ):
         return self.base_handle.get_object()
@@ -89,5 +89,5 @@ class View(view.View, QtGui.QWidget):
 
 
 proxy_registry.register_iface('object_selector', ProxyObject.from_response)
-common_iface.tHandle.resolve('object_selector').override(cls=Handle, drop_field='discriminator')
-common_iface.tHandle.resolve('object_selector_unwrap').override(cls=ObjSelectorUnwrap, drop_field='discriminator')
+article_iface.tObjSelectorHandle.register_class(Handle)
+article_iface.tObjSelectorUnwrapHandle.register_class(ObjSelectorUnwrap)

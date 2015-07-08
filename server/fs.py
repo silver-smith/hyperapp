@@ -74,6 +74,9 @@ class Dir(ListObject):
         else:
             return [Command('open', 'Open', 'Open file')]
 
+    def get_handle( self ):
+        return self.ListNarrowerHandle(self)
+
     def process_request( self, request ):
         if request.command_id == 'open':
             fname = request.params.element_key
