@@ -1,5 +1,5 @@
 from .. util import is_list_inst
-from . types import join_path, Type, Field, TRecordBase
+from . types import join_path, Type, Field, TRecord
 
 
 class Class(object):
@@ -8,14 +8,13 @@ class Class(object):
         self._class_id = id
 
 
-class TClass(TRecordBase):
+class TClass(TRecord):
 
     def __init__( self, hierarchy, id, base, fields, cls ):
+        TRecord.__init__(self, fields, cls)
         self.hierarchy = hierarchy
         self.id = id
         self.base = base
-        self.fields = fields  # Field list
-        self.cls = cls  # class to instantiate or None
 
     def register_class( self, cls ):
         self.cls = cls

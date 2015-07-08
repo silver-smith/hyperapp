@@ -94,6 +94,8 @@ class JsonDecoder(object):
         while True:
             new_fields = [field for field in t.get_fields() if field.name not in base_fields]
             decoded_fields.update(self.decode_record_fields(new_fields, value, path, **kw))
+            if t.want_peer_arg:
+                decoded_fields.update(peer=self.peer)
             rec = t.instantiate(**decoded_fields)
             if not isinstance(t, TDynamicRec):
                 return rec

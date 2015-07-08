@@ -100,9 +100,13 @@ class TRecordBase(Type):
         for field, arg in zip(tfields, args):
             assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
             fields[field.name] = arg
-        ## print '*** adopt_args', fields, self, [field.name for field in tfields]
         adopted_args = {}
         unexpected = set(fields.keys())
+        if self.want_peer_arg:
+            self.assert_(path, 'peer' in fields, "Record field is missing: 'peer'")
+            adopted_args['peer'] = fields['peer']
+            unexpected.remove('peer')
+        ## print '*** adopt_args', fields, self, [field.name for field in tfields]
         for field in tfields:
             if field.name in fields:
                 value = fields[field.name]
@@ -123,7 +127,7 @@ class TRecordBase(Type):
 
     def instantiate_impl( self, tfields, cls, args=(), kw=None, check_unexpected=True ):
         fields = self.adopt_args('<Record>', tfields, args, kw or {}, check_unexpected)
-        print '*** instantiate', self, self.cls, sorted(fields.keys()), sorted(f.name for f in self.fields)
+        ## print '*** instantiate', self, self.cls, self.want_peer_arg, sorted(fields.keys()), sorted(f.name for f in self.fields)
         if self.cls:
             return self.cls(**fields)
         else:
@@ -136,11 +140,12 @@ class TRecordBase(Type):
     
 class TRecord(TRecordBase):
 
-    def __init__( self, fields=None, cls=None, base=None ):
+    def __init__( self, fields=None, cls=None, base=None, want_peer_arg=False ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
         self.fields = fields or []
         self.cls = cls
+        self.want_peer_arg = want_peer_arg
         if base:
             self.fields = base.fields + self.fields
 

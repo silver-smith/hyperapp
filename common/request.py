@@ -57,7 +57,7 @@ class TResponse(TDynamicRec):
 
     def resolve_dynamic( self, rec ):
         fields = [Field('result', rec.iface.get_command_result_type(rec.command_id))]
-        return TRecord(fields, cls=Response, base=self)
+        return TRecord(fields, cls=Response, base=self, want_peer_arg=True)
 
 
 tServerPacket = TServerPacket()
