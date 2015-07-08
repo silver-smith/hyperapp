@@ -159,8 +159,8 @@ class ListInterface(Interface):
             Field('commands', TList(tCommand)),
             ])
 
-    def Element( self, *args, **kw ):
-        return self.tElement().instantiate(*args, **kw)
+    def Element( self, key, row, commands=None ):
+        return self.tElement().instantiate(key, row, commands or [])
 
     def tDiff( self ):
         return TRecord([
