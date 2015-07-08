@@ -80,7 +80,7 @@ class JsonEncoder(object):
         iface = value.iface
         info = self.dispatch(t.info_type, value)
         return dict(info,
-                    diff=self.dispatch(iface.tDiff(), value.diff))
+                    diff=self.dispatch(iface.get_diff_type(), value.diff))
 
     @dispatch.register(TObject)
     def encode_object( self, t, obj ):
