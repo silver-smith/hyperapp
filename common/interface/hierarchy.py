@@ -62,7 +62,7 @@ class TClass(object):
                 self._class_id = tclass.id
                 for name, val in tclass._adopt_args(args, kw).items():
                     setattr(self, name, val)
-        return Class
+        return ClassBase
             
 
 class THierarchy(Type):
