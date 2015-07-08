@@ -7,6 +7,7 @@ from . interface import (
     TDateTime,
     TOptional,
     TRecord,
+    TDynamicRec,
     TList,
     TIndexedList,
     TRow,
@@ -88,9 +89,16 @@ class JsonDecoder(object):
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path, **kw ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
-        ## print '*** decoding record', path, t, value
-        fields = self.decode_record_fields(t.get_fields(), value, path, **kw)
-        return t.instantiate(**fields)
+        base_fields = set()
+        decoded_fields = {}
+        while True:
+            new_fields = [field for field in t.get_fields() if field.name not in base_fields]
+            decoded_fields.update(self.decode_record_fields(new_fields, value, path, **kw))
+            rec = t.instantiate(**decoded_fields)
+            if not isinstance(t, TDynamicRec):
+                return rec
+            base_fields = set(field.name for field in t.get_fields())
+            t = t.resolve_dynamic(rec)
 
     @dispatch.register(THierarchy)
     def decode_hierarchy_obj( self, t, value, path ):
@@ -182,26 +190,26 @@ class JsonDecoder(object):
         else:
             return ClientNotification(self.peer, iface, obj_path, command_id, params)
 
-    def decode_response_or_notification( self, value ):
-        self.expect_type('response-or-server_notification', isinstance(value, dict), value, 'response/notification (dict)')
-        if 'request_id' in value:
-            return self.decode_response(value, 'response')
-        else:
-            return self.decode_server_notification(value, 'server_notification')
+    ## def decode_response_or_notification( self, value ):
+    ##     self.expect_type('response-or-server_notification', isinstance(value, dict), value, 'response/notification (dict)')
+    ##     if 'request_id' in value:
+    ##         return self.decode_response(value, 'response')
+    ##     else:
+    ##         return self.decode_server_notification(value, 'server_notification')
 
-    def decode_response( self, value, path ):
-        self.expect(path, 'iface' in value, 'iface field is missing')
-        self.expect(path, 'command_id' in value, 'command_id field is missing')
-        self.expect(path, 'updates' in value, 'updates field is missing')
-        iface = self.iface_registry.resolve(value['iface'])
-        command_id = value['command_id']
-        request_id = value.get('request_id')
-        result_type = iface.get_command_result_type(command_id)
-        result = self.dispatch(result_type, value.get('result'), join_path(path, 'result'))
-        updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
-        return Response(self.peer, iface, command_id, request_id, result=result, updates=updates)
+    ## def decode_response( self, value, path ):
+    ##     self.expect(path, 'iface' in value, 'iface field is missing')
+    ##     self.expect(path, 'command_id' in value, 'command_id field is missing')
+    ##     self.expect(path, 'updates' in value, 'updates field is missing')
+    ##     iface = self.iface_registry.resolve(value['iface'])
+    ##     command_id = value['command_id']
+    ##     request_id = value.get('request_id')
+    ##     result_type = iface.get_command_result_type(command_id)
+    ##     result = self.dispatch(result_type, value.get('result'), join_path(path, 'result'))
+    ##     updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
+    ##     return Response(self.peer, iface, command_id, request_id, result=result, updates=updates)
 
-    def decode_server_notification( self, value, path ):
-        self.expect(path, 'updates' in value, 'updates field is missing')
-        updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
-        return ServerNotification(self.peer, updates)
+    ## def decode_server_notification( self, value, path ):
+    ##     self.expect(path, 'updates' in value, 'updates field is missing')
+    ##     updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
+    ##     return ServerNotification(self.peer, updates)

@@ -1,5 +1,5 @@
 from PySide import QtNetwork
-from common.request import ClientNotification, Request, ServerNotification, Response
+from common.request import tServerPacket, ClientNotification, Request, ServerNotification, Response
 from common import json_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
@@ -75,7 +75,7 @@ class Connection(object):
         print 'processing packet:', packet_data
         server = Server(self.addr)
         decoder = JsonDecoder(server, iface_registry, server.resolve_object)
-        response = decoder.decode_response_or_notification(packet_data)
+        response = decoder.decode(tServerPacket, packet_data)
         if isinstance(response, Response):
             proxy_registry.process_received_response(response)
         else:

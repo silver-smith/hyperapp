@@ -1,5 +1,5 @@
 from .. util import is_list_inst
-from . types import join_path, Type, Field, TRecord
+from . types import join_path, Type, Field, TRecordBase
 
 
 class Class(object):
@@ -8,7 +8,7 @@ class Class(object):
         self._class_id = id
 
 
-class TClass(object):
+class TClass(TRecordBase):
 
     def __init__( self, hierarchy, id, base, fields, cls ):
         self.hierarchy = hierarchy
@@ -41,7 +41,7 @@ class TClass(object):
             field.validate(path, getattr(obj, field.name))
 
     def _adopt_args( self, args, kw ):
-        return TRecord(self.get_fields()).adopt_args('<Class %s>' % self.id, args, kw)
+        return self.adopt_args('<Class %s>' % self.id, self.get_fields(), args, kw)
 
     def instantiate( self, *args, **kw ):
         fields = self._adopt_args(args, kw)

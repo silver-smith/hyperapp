@@ -1,3 +1,4 @@
+from dynamic_record import TDynamicRec
 from list import *
 from interface import *
 from hierarchy import *

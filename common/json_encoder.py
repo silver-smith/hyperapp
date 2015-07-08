@@ -7,6 +7,7 @@ from . interface import (
     TDateTime,
     TOptional,
     TRecord,
+    TDynamicRec,
     TList,
     TRow,
     TPath,
@@ -48,9 +49,15 @@ class JsonEncoder(object):
     def encode_record( self, t, value ):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
         result = {}
-        for field in t.get_fields():
-            result[field.name] = self.dispatch(field.type, getattr(value, field.name))
-        return result
+        base_fields = set()
+        while True:
+            new_fields = [field for field in t.get_fields() if field.name not in base_fields]
+            for field in new_fields:
+                result[field.name] = self.dispatch(field.type, getattr(value, field.name))
+            if not isinstance(t, TDynamicRec):
+                return result
+            base_fields = set(field.name for field in t.get_fields())
+            t = t.resolve_dynamic(value)
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj( self, t, value ):

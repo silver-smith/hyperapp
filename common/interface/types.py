@@ -90,14 +90,59 @@ class Record(object):
             return False
 
 
-class TRecord(Type):
+class TRecordBase(Type):
 
-    def __init__( self, fields=None, cls=None, base=None, drop_field=None ):
+    def adopt_args( self, path, tfields, args, kw, check_unexpected=True ):
+        if check_unexpected:
+            self.assert_(path, len(args) <= len(tfields),
+                         'instantiate takes at most %d argumants (%d given)' % (len(tfields), len(args)))
+        fields = dict(kw)
+        for field, arg in zip(tfields, args):
+            assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
+            fields[field.name] = arg
+        ## print '*** adopt_args', fields, self, [field.name for field in tfields]
+        adopted_args = {}
+        unexpected = set(fields.keys())
+        for field in tfields:
+            if field.name in fields:
+                value = fields[field.name]
+                unexpected.remove(field.name)
+            else:
+                if isinstance(field.type, TOptional):
+                    value = None
+                else:
+                    raise TypeError('Record field is missing: %r' % field.name)
+            if field.type is not None:  # open type, todo
+                field.type.validate(join_path(path, field.name), value)
+            adopted_args[field.name] = value
+        if check_unexpected:
+            self.assert_(path, not unexpected,
+                         'Unexpected fields: %s; allowed are: %s'
+                         % (', '.join(unexpected), ', '.join(field.name for field in tfields)))
+        return adopted_args
+
+    def instantiate_impl( self, tfields, cls, args=(), kw=None, check_unexpected=True ):
+        fields = self.adopt_args('<Record>', tfields, args, kw or {}, check_unexpected)
+        print '*** instantiate', self, self.cls, sorted(fields.keys()), sorted(f.name for f in self.fields)
+        if self.cls:
+            return self.cls(**fields)
+        else:
+            rec = Record()
+            for name, val in fields.items():
+                setattr(rec, name, val)
+            ## print '*** >', rec, fields, self, self.cls, self.fields
+            return rec
+
+    
+class TRecord(TRecordBase):
+
+    def __init__( self, fields=None, cls=None, base=None ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
+        assert base is None or isinstance(base, TRecord), repr(base)
         self.fields = fields or []
         self.cls = cls
-        self.fields = [field for field in (base.fields if base else []) + self.fields
-                       if field.name != drop_field]
+        if base:
+            self.fields = base.fields + self.fields
 
     def get_fields( self ):
         return self.fields
@@ -136,57 +181,12 @@ class TRecord(Type):
         class Record(object):
             type = self
             def __init__( self, *args, **kw ):
-                for name, val in self.type.adopt_args('<Record>', args, kw).items():
+                for name, val in self.type.adopt_args('<Record>', self.type.fields, args, kw).items():
                     setattr(self, name, val)
         return Record
 
-    def adopt_args( self, path, args, kw, check_unexpected=True ):
-        if check_unexpected:
-            self.assert_(path, len(args) <= len(self.fields),
-                         'instantiate takes at most %d argumants (%d given)' % (len(self.fields), len(args)))
-        fields = dict(kw)
-        for field, arg in zip(self.fields, args):
-            assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
-            fields[field.name] = arg
-        ## print '*** adopt_args', fields, self, [field.name for field in self.fields]
-        adopted_args = {}
-        unexpected = set(fields.keys())
-        for field in self.fields:
-            if field.name in fields:
-                value = fields[field.name]
-                unexpected.remove(field.name)
-            else:
-                if isinstance(field.type, TOptional):
-                    value = None
-                else:
-                    raise TypeError('Record field is missing: %r' % field.name)
-            if field.type is not None:  # open type, todo
-                field.type.validate(join_path(path, field.name), value)
-            adopted_args[field.name] = value
-        if check_unexpected:
-            self.assert_(path, not unexpected,
-                         'Unexpected fields: %s; allowed are: %s'
-                         % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
-        return adopted_args
-
     def instantiate( self, *args, **kw ):
-        return self.instantiate_impl(args, kw)
-
-    # do not dive into dynamic record
-    def instantiate_only( self, *args, **kw ):
-        return self.instantiate_impl(args, kw)
-
-    def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
-        fields = self.adopt_args('<Record>', args, kw or {}, check_unexpected)
-        ## print '*** instantiate', fields, self, self.cls, self.fields
-        if self.cls:
-            return self.cls(**fields)
-        else:
-            rec = Record()
-            for name, val in fields.items():
-                setattr(rec, name, val)
-            ## print '*** >', rec, fields, self, self.cls, self.fields
-            return rec
+        return self.instantiate_impl(self.fields, self.cls, args, kw)
         
 
 class TList(Type):

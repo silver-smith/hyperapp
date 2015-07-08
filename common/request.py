@@ -1,13 +1,11 @@
 from . util import is_list_inst
-from . interface import TPrimitive, Field, TRecord, tUpdateList
-
-
-tServerNotification = TRecord([
-    Field('updates', tUpdateList),
-    ])
+from . interface import TPrimitive, TString, Field, TRecord, TIface, TPath, tUpdateList
+from . interface.dynamic_record import TDynamicRec
 
 
 class ServerNotification(object):
+
+    packet_type = 'notification'
 
     def __init__( self, peer, updates=None ):
         self.peer = peer
@@ -16,24 +14,55 @@ class ServerNotification(object):
     def add_update( self, update ):
         self.updates.append(update)
 
-    def encode( self, encoder ):
-        return encoder.encode(self.get_packet_type(), self)
-
-    def get_packet_type( self ):
-        return tServerNotification
-
 
 class Response(ServerNotification):
 
-    def __init__( self, peer, iface, command_id, request_id, result=None, updates=None ):
+    packet_type = 'response'
+
+    def __init__( self, peer, iface, command_id, request_id, result=None, updates=None, packet_type=None ):
         ServerNotification.__init__(self, peer, updates)
+        self.packet_type = 'response'
         self.iface = iface
         self.command_id = command_id
         self.request_id = request_id
         self.result = result
 
-    def get_packet_type( self ):
-        return self.iface.get_response_type(self.command_id)
+
+class TServerPacket(TDynamicRec):
+
+    def __init__( self ):
+        fields = [
+            Field('updates', tUpdateList),
+            Field('packet_type', TString()),
+            ]
+        TDynamicRec.__init__(self, fields)
+
+    def resolve_dynamic( self, rec ):
+        if rec.packet_type == Response.packet_type:
+            return tResponse
+        if rec.packet_type == ServerNotification.packet_type:
+            return tServerNotification
+        assert False, repr(rec.packet_type)  # unknown packet type
+
+
+class TResponse(TDynamicRec):
+
+    def __init__( self ):
+        fields = [
+            Field('iface', TIface()),
+            Field('command_id', TString()),
+            Field('request_id', TString()),
+            ]
+        TDynamicRec.__init__(self, fields, base=tServerPacket)
+
+    def resolve_dynamic( self, rec ):
+        fields = [Field('result', rec.iface.get_command_result_type(rec.command_id))]
+        return TRecord(fields, cls=Response, base=self)
+
+
+tServerPacket = TServerPacket()
+tResponse = TResponse()
+tServerNotification = TRecord(base=tServerPacket, cls=ServerNotification)
 
 
 class ClientNotification(object):
@@ -50,7 +79,7 @@ class ClientNotification(object):
 
     def get_packet_type( self ):
         return self.iface.get_client_notification_type(self.command_id)
-
+        
 
 class Request(ClientNotification):
 
