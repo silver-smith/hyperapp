@@ -154,8 +154,8 @@ class TRecord(Type):
                          % (', '.join(unexpected), ', '.join(field.name for field in tfields)))
         return adopted_args
 
-    def instantiate_impl( self, tfields, cls, args=(), kw=None, check_unexpected=True ):
-        fields = self.adopt_args('<Record>', tfields, args, kw or {}, check_unexpected)
+    def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
+        fields = self.adopt_args('<Record>', self.fields, args, kw or {}, check_unexpected)
         ## print '*** instantiate', self, self.cls, self.want_peer_arg, sorted(fields.keys()), sorted(f.name for f in self.fields)
         if self.cls:
             return self.cls(**fields)
@@ -176,10 +176,10 @@ class TRecord(Type):
         return Record
 
     def instantiate( self, *args, **kw ):
-        return self.instantiate_impl(self.fields, self.cls, args, kw)
+        return self.instantiate_impl(args, kw)
 
     def instantiate_fixed( self, *args, **kw ):
-        return self.instantiate_impl(self.fields, self.cls, args, kw)
+        return self.instantiate_impl(args, kw)
         
 
 class TList(Type):
