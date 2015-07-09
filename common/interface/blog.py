@@ -1,7 +1,7 @@
 from . types import (
     tString,
     tInt,
-    TDateTime,
+    tDateTime,
     TOptional,
     TPath,
     Field,
@@ -21,7 +21,7 @@ blog_entry_iface = Interface('blog_entry',
                              diff_type=tString)
 
 blog_iface = ListInterface('blog',
-                           columns=[tInt, TDateTime()],
+                           columns=[tInt, tDateTime],
                            commands=[
                                ElementOpenCommand('open'),
                                ElementCommand('delete'),

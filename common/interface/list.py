@@ -3,7 +3,7 @@ from . types import (
     Type,
     tString,
     tInt,
-    TBool,
+    tBool,
     TOptional,
     Field,
     TRecord,
@@ -132,7 +132,7 @@ class ListInterface(Interface):
         return Interface.get_default_content_fields(self) + [
             Field('columns', TIndexedList(tColumn)),
             Field('elements', TList(self.tElement())),
-            Field('has_more', TBool()),
+            Field('has_more', tBool),
             Field('selected_key', TOptional(self.key_type)),
             ]
 
@@ -146,7 +146,7 @@ class ListInterface(Interface):
     def tFetchedElements( self ):
         return TRecord([
             Field('elements', TList(self.tElement())),
-            Field('has_more', TBool()),
+            Field('has_more', tBool),
             ])
 
     def FetchedElements( self, *args, **kw ):
