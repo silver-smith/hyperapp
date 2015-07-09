@@ -192,6 +192,9 @@ class TRecord(TRecordBase):
 
     def instantiate( self, *args, **kw ):
         return self.instantiate_impl(self.fields, self.cls, args, kw)
+
+    def instantiate_fixed( self, *args, **kw ):
+        return self.instantiate_impl(self.fields, self.cls, args, kw)
         
 
 class TList(Type):

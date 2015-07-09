@@ -192,15 +192,8 @@ class Interface(object):
     def get_diff_type( self ):
         return self.diff_type
 
-    def tUpdate( self ):
-        return TRecord([
-            Field('iface', TIface()),
-            Field('path', TPath()),
-            Field('diff', self.get_diff_type()),
-            ])
-
     def Update( self, path, diff ):
-        return self.tUpdate().instantiate(self, path, diff)
+        return tUpdate.instantiate(self, path, diff)
 
 
 class TUpdate(TDynamicRec):
@@ -217,7 +210,8 @@ class TUpdate(TDynamicRec):
         return TRecord([Field('diff', diff_type)], base=self)
 
 
-tUpdateList = TList(TUpdate())
+tUpdate = TUpdate()
+tUpdateList = TList(tUpdate)
 
 
 class IfaceRegistry(object):

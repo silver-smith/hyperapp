@@ -86,7 +86,7 @@ class JsonDecoder(object):
             decoded_fields.update(self.decode_record_fields(new_fields, value, path, **kw))
             if t.want_peer_arg:
                 decoded_fields.update(peer=self.peer)
-            rec = t.instantiate(**decoded_fields)
+            rec = t.instantiate_fixed(**decoded_fields)
             if not isinstance(t, TDynamicRec):
                 return rec
             base_fields = set(field.name for field in t.get_fields())
