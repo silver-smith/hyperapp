@@ -131,35 +131,6 @@ class Interface(object):
             return self.rt_notification
         assert False, command_id  # Only RequestCmd or NotificationCmd are expected here
 
-    ## def get_request_type( self, command_id ):
-    ##     params_type = self.get_command_params_type(command_id)
-    ##     return TRecord([
-    ##         Field('iface', TIface()),
-    ##         Field('path', TPath()),
-    ##         Field('command_id', TString()),
-    ##         Field('request_id', TString()),
-    ##         Field('params', params_type),
-    ##         ])
-
-    ## def get_client_notification_type( self ):
-    ##     params_type = self.get_command_params_type(command_id)
-    ##     return TRecord([
-    ##         Field('iface', TIface()),
-    ##         Field('path', TPath()),
-    ##         Field('command', TString()),
-    ##         Field('params', params_type),
-    ##         ])
-
-    def get_response_type( self, command_id ):
-        result_type = self.get_command_result_type(command_id)
-        return TRecord([
-            Field('iface', TIface()),
-            Field('command_id', TString()),
-            Field('request_id', TString()),
-            Field('result', result_type),
-            Field('updates', tUpdateList),
-            ])
-
     def is_open_command( self, command_id ):
         return isinstance(self.commands[command_id], OpenCommand)
 
