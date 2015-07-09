@@ -142,18 +142,11 @@ class Interface(object):
     def make_result( self, command_id, **kw ):
         return self.get_command_result_type(command_id).instantiate(**kw)
 
-    def get_command_params_fields( self, command_id ):
-        return self.commands[command_id].get_params_fields(self)
-
     def validate_request( self, command_id, params=None ):
         cmd = self.commands.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.get_params_type(self).validate(join_path(self.iface_id, command_id, 'params'), params)
-
-    def validate_update_diff( self, diff ):
-        assert self.diff_type, 'No diff type is defined for %r interface' % self.iface_id
-        self.diff_type.validate('diff', diff)
 
     def Object( self, **kw ):
         return tObject.instantiate(**kw)
