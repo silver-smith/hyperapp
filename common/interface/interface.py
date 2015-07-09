@@ -49,7 +49,7 @@ tObjHandle = tHandle.register('obj_handle', fields=[Field('object', TObject())])
 ObjHandle = tObjHandle.instantiate
 
 
-class Command(object):
+class IfaceCommand(object):
 
     def __init__( self, command_id, params_fields=None, result_fields=None ):
         self.command_id = command_id
@@ -79,16 +79,23 @@ class Command(object):
         type.validate_kw(rec_path, rec_kw)
 
 
-class OpenCommand(Command):
+class RequestCmd(IfaceCommand):
+    pass
+
+class NotificationCmd(IfaceCommand):
+    pass
+
+
+class OpenCommand(RequestCmd):
 
     def get_result_type( self, iface ):
         return tHandle
 
 
-class SubscribeCommand(Command):
+class SubscribeCommand(RequestCmd):
 
     def __init__( self ):
-        Command.__init__(self, 'subscribe')
+        RequestCmd.__init__(self, 'subscribe')
 
     def get_result_type( self, iface ):
         return iface.tContents()
@@ -99,13 +106,13 @@ class Interface(object):
     basic_commands = [
         OpenCommand('get'),
         SubscribeCommand(),
-        Command('unsubscribe'),
+        NotificationCmd('unsubscribe'),
         ]
 
     def __init__( self, iface_id, content_fields=None, diff_type=None, commands=None ):
         assert is_list_inst(content_fields or [], Field), repr(content_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
-        assert is_list_inst(commands or [], Command), repr(commands)
+        assert is_list_inst(commands or [], (RequestCmd, NotificationCmd)), repr(commands)
         self.iface_id = iface_id
         self.content_fields = content_fields or []
         self.diff_type = diff_type

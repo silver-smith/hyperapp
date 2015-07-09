@@ -1,5 +1,5 @@
+from types import *
 from dynamic_record import TDynamicRec
-from list import *
-from interface import *
 from hierarchy import *
-from types import *  # Command from types must override one from interface
+from interface import *
+from list import *

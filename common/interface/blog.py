@@ -6,7 +6,7 @@ from . types import (
     TPath,
     Field,
     )
-from . interface import Command, OpenCommand, Interface, register_iface
+from . interface import RequestCmd, OpenCommand, Interface, register_iface
 from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 
@@ -15,7 +15,7 @@ blog_entry_iface = Interface('blog_entry',
                              commands=[
                                  OpenCommand('parent'),
                                  OpenCommand('open_ref', [Field('ref_id', TString())]),
-                                 Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
+                                 RequestCmd('save', [Field('text', TString())], [Field('new_path', TPath())]),
                                  OpenCommand('refs'),
                                  ],
                              diff_type=TString())

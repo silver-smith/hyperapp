@@ -11,7 +11,7 @@ from . interface import (
     tObjHandle,
     TObject,
     Object,
-    Command,
+    RequestCmd,
     OpenCommand,
     Interface,
     register_iface,
@@ -40,7 +40,7 @@ ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
 article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(TString()))],
                           commands=[
-                              Command('save', [Field('text', TString())], [Field('new_path', TPath())]),
+                              RequestCmd('save', [Field('text', TString())], [Field('new_path', TPath())]),
                               OpenCommand('refs'),
                               ],
                           diff_type=TString())

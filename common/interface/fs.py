@@ -3,7 +3,7 @@ from . types import (
     TInt,
     Field,
     )
-from . interface import Command, OpenCommand, Interface, register_iface
+from . interface import OpenCommand, Interface, register_iface
 from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 

@@ -13,7 +13,7 @@ from . types import (
     tCommand,
     )
 from . hierarchy import THierarchy
-from . interface import Command, OpenCommand, tHandle, tObjHandle, Object, Interface
+from . interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Object, Interface
 
 
 tListHandleBase = tHandle.register('list_base', base=tObjHandle)
@@ -57,11 +57,11 @@ class Column(tColumn.make_class()):
         super(Column, self).__init__(id, title, type)
 
 
-class ElementCommand(Command):
+class ElementCommand(RequestCmd):
 
     def get_params_fields( self, iface ):
         assert isinstance(iface, ListInterface), repr(iface)  # ElementCommands can only be used with ListInterface
-        fields = Command.get_params_fields(self, iface)
+        fields = RequestCmd.get_params_fields(self, iface)
         return [Field('element_key', iface.key_type)] + fields
 
 
@@ -138,7 +138,7 @@ class ListInterface(Interface):
 
     def _get_basic_commands( self, key_type ):
         return [
-            Command('get_elements', [Field('count', TInt()),
+            RequestCmd('get_elements', [Field('count', TInt()),
                                      Field('key', key_type)],
                                     [Field('fetched_elements', self.tFetchedElements())]),
                 ]
