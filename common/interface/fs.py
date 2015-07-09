@@ -1,14 +1,14 @@
 from . types import (
     tString,
-    TInt,
+    tInt,
     Field,
     )
 from . interface import OpenCommand, Interface, register_iface
 from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 
-file_iface = ListInterface('fs_file', columns=[TInt(), tString], key_type=TInt())
-dir_iface = ListInterface('fs_dir', columns=[tString, tString, TInt(), TInt()], commands=[
+file_iface = ListInterface('fs_file', columns=[tInt, tString], key_type=tInt)
+dir_iface = ListInterface('fs_dir', columns=[tString, tString, tInt, tInt], commands=[
     OpenCommand('parent'),
     ElementOpenCommand('open'),
     ])

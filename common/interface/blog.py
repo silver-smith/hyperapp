@@ -1,6 +1,6 @@
 from . types import (
     tString,
-    TInt,
+    tInt,
     TDateTime,
     TOptional,
     TPath,
@@ -21,13 +21,13 @@ blog_entry_iface = Interface('blog_entry',
                              diff_type=tString)
 
 blog_iface = ListInterface('blog',
-                           columns=[TInt(), TDateTime()],
+                           columns=[tInt, TDateTime()],
                            commands=[
                                ElementOpenCommand('open'),
                                ElementCommand('delete'),
                                OpenCommand('add'),
                                ],
-                            key_type=TInt())
+                            key_type=tInt)
 
 register_iface(blog_entry_iface)
 register_iface(blog_iface)

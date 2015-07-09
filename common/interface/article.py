@@ -1,6 +1,6 @@
 from . types import (
     tString,
-    TInt,
+    tInt,
     TOptional,
     TPath,
     Field,
@@ -46,14 +46,14 @@ article_iface = Interface('article',
                           diff_type=tString)
 
 ref_list_iface = ListInterface('article_ref_list',
-                               columns=[TInt(), tString],
+                               columns=[tInt, tString],
                                commands=[
                                    OpenCommand('parent'),
                                    OpenCommand('add', [Field('target_path', TPath())]),
                                    ElementOpenCommand('open'),
                                    ElementCommand('delete'),
                                    ],
-                                key_type=TInt())
+                                key_type=tInt)
 
 object_selector_iface = Interface('article_object_selector',
                                   commands=[

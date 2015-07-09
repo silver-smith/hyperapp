@@ -2,7 +2,7 @@ from .. util import is_list_inst, dt2local_str
 from . types import (
     Type,
     tString,
-    TInt,
+    tInt,
     TBool,
     TOptional,
     Field,
@@ -138,7 +138,7 @@ class ListInterface(Interface):
 
     def _get_basic_commands( self, key_type ):
         return [
-            RequestCmd('get_elements', [Field('count', TInt()),
+            RequestCmd('get_elements', [Field('count', tInt),
                                      Field('key', key_type)],
                                     [Field('fetched_elements', self.tFetchedElements())]),
                 ]
