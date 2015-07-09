@@ -48,7 +48,7 @@ class TClass(TRecord):
         class ClassBase(object):
             def __init__( self, *args, **kw ):
                 self._class_id = tclass.id
-                for name, val in tclass.adopt_args('<Class>', args, kw).items():
+                for name, val in tclass.adopt_args(args, kw).items():
                     setattr(self, name, val)
         return ClassBase
             
