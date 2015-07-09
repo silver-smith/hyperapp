@@ -233,5 +233,4 @@ tCommand = TRecord([
             Field('desc', tString),
             Field('shortcut', TOptional(tString)),
             ])
-
 Command = tCommand.instantiate
