@@ -178,6 +178,7 @@ class TRecord(Type):
     def instantiate( self, *args, **kw ):
         return self.instantiate_impl(args, kw)
 
+    # this is not overriden by TDynamicRec, need for decoder
     def instantiate_fixed( self, *args, **kw ):
         return self.instantiate_impl(args, kw)
         
