@@ -30,23 +30,28 @@ class Object(object):
         raise NotImplementedError(self.__class__)
 
 
-class TObject(TRecord):
+class TObject(TDynamicRec):
 
     def __init__( self ):
-        TRecord.__init__(self, [
+        TDynamicRec.__init__(self, [
             Field('iface', TIface()),
             Field('path', TPath()),
             Field('proxy_id', TString()),
-            Field('contents', None),
             ])
+
+    def resolve_dynamic( self, rec ):
+        tContents = rec.iface.tContents()
+        return TRecord([Field('contents', tContents)], base=self)
 
     def validate( self, path, value ):
         if value is None: return  # missing objects are allowed
         self.expect(path, value, 'Object', isinstance(value, Object))
 
 
+tObject = TObject()
+
 tHandle = THierarchy()
-tObjHandle = tHandle.register('obj_handle', fields=[Field('object', TObject())])
+tObjHandle = tHandle.register('obj_handle', fields=[Field('object', tObject)])
 ObjHandle = tObjHandle.instantiate
 
 
@@ -166,16 +171,8 @@ class Interface(object):
         assert self.diff_type, 'No diff type is defined for %r interface' % self.iface_id
         self.diff_type.validate('diff', diff)
 
-    def get_type( self ):
-        return TRecord([
-            Field('iface', TIface()),
-            Field('proxy_id', TString()),
-            Field('path', TPath()),
-            Field('contents', self.tContents()),
-            ])
-
     def Object( self, **kw ):
-        return self.get_type().instantiate(**kw)
+        return tObject.instantiate(**kw)
 
     def get_default_content_fields( self ):
         return [Field('commands', TList(tCommand))]

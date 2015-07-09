@@ -9,7 +9,7 @@ from . types import (
 from . interface import (
     tHandle,
     tObjHandle,
-    TObject,
+    tObject,
     Object,
     RequestCmd,
     OpenCommand,
@@ -26,7 +26,7 @@ tTextEditHandle = tHandle.register('text_edit', base=tObjHandle)
 TextEditHandle = tTextEditHandle.instantiate
 
 tObjSelectorHandle = tHandle.register('object_selector', fields=[
-        Field('ref', TObject()),
+        Field('ref', tObject),
         Field('target', tHandle),
         ])
 ObjSelectorHandle = tObjSelectorHandle.instantiate
@@ -61,7 +61,7 @@ object_selector_iface = Interface('article_object_selector',
                                   ])
 
 onwrap_object_selector_iface = Interface('article_unwrap_object_selector',
-                                         content_fields=[Field('base', TObject())])
+                                         content_fields=[Field('base', tObject)])
 
 
 register_iface(article_iface)
