@@ -90,7 +90,37 @@ class Record(object):
             return False
 
 
-class TRecordBase(Type):
+class TRecord(Type):
+
+    def __init__( self, fields=None, cls=None, base=None, want_peer_arg=False ):
+        assert fields is None or is_list_inst(fields, Field), repr(fields)
+        assert base is None or isinstance(base, TRecord), repr(base)
+        self.fields = fields or []
+        self.cls = cls
+        self.want_peer_arg = want_peer_arg
+        if base:
+            self.fields = base.fields + self.fields
+
+    def get_fields( self ):
+        return self.fields
+
+    def get_class( self ):
+        return self.cls
+
+    def use_class( self, cls ):
+        self.cls = cls
+
+    def override( self, cls=None, drop_field=None ):
+        self.cls = cls
+        if drop_field:
+            self.fields = [field for field in self.fields if field.name != drop_field]
+
+    def validate( self, path, rec ):
+        ## print '*** trecord validate', path, rec, self, [field.name for field in self.fields]
+        for field in self.fields:
+            ## print '  * validating', path, `rec`, `field.name`, hasattr(rec, field.name)
+            self.assert_(path, hasattr(rec, field.name), 'Missing field: %s' % field.name)
+            field.validate(path, getattr(rec, field.name))
 
     def adopt_args( self, path, tfields, args, kw, check_unexpected=True ):
         if check_unexpected:
@@ -135,39 +165,6 @@ class TRecordBase(Type):
                 setattr(rec, name, val)
             ## print '*** >', rec, fields, self, self.cls, self.fields
             return rec
-
-    
-class TRecord(TRecordBase):
-
-    def __init__( self, fields=None, cls=None, base=None, want_peer_arg=False ):
-        assert fields is None or is_list_inst(fields, Field), repr(fields)
-        assert base is None or isinstance(base, TRecord), repr(base)
-        self.fields = fields or []
-        self.cls = cls
-        self.want_peer_arg = want_peer_arg
-        if base:
-            self.fields = base.fields + self.fields
-
-    def get_fields( self ):
-        return self.fields
-
-    def get_class( self ):
-        return self.cls
-
-    def use_class( self, cls ):
-        self.cls = cls
-
-    def override( self, cls=None, drop_field=None ):
-        self.cls = cls
-        if drop_field:
-            self.fields = [field for field in self.fields if field.name != drop_field]
-
-    def validate( self, path, rec ):
-        ## print '*** trecord validate', path, rec, self, [field.name for field in self.fields]
-        for field in self.fields:
-            ## print '  * validating', path, `rec`, `field.name`, hasattr(rec, field.name)
-            self.assert_(path, hasattr(rec, field.name), 'Missing field: %s' % field.name)
-            field.validate(path, getattr(rec, field.name))
 
     # base for usual classes
     def make_class( self ):
