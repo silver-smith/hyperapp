@@ -11,6 +11,7 @@ from . types import (
     TPath,
     tCommand,
     )
+from dynamic_record import TDynamicRec
 from . hierarchy import THierarchy
 
 
@@ -202,13 +203,19 @@ class Interface(object):
         return self.tUpdate().instantiate(self, path, diff)
 
 
-class TUpdate(Type):
+class TUpdate(TDynamicRec):
 
     def __init__( self ):
-        self.info_type = TRecord([
+        fields = [
             Field('iface', TIface()),
             Field('path', TPath()),
-            ])
+            ]
+        TDynamicRec.__init__(self, fields)
+
+    def resolve_dynamic( self, rec ):
+        diff_type = rec.iface.get_diff_type()
+        return TRecord([Field('diff', diff_type)], base=self)
+
 
 tUpdateList = TList(TUpdate())
 

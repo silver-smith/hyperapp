@@ -12,7 +12,6 @@ from . interface import (
     TRow,
     TPath,
     THierarchy,
-    TUpdate,
     Object,
     TObject,
     Interface,
@@ -81,13 +80,6 @@ class JsonEncoder(object):
     @dispatch.register(TPath)
     def encode_path( self, t, value ):
         return value
-
-    @dispatch.register(TUpdate)
-    def encode_update( self, t, value ):
-        iface = value.iface
-        info = self.dispatch(t.info_type, value)
-        return dict(info,
-                    diff=self.dispatch(iface.get_diff_type(), value.diff))
 
     @dispatch.register(TObject)
     def encode_object( self, t, obj ):

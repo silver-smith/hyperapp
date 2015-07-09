@@ -14,8 +14,6 @@ from . interface import (
     THierarchy,
     TPath,
     TObject,
-    TUpdate,
-    tUpdateList,
     TIface,
     )
 
@@ -143,13 +141,6 @@ class JsonDecoder(object):
     def decode_path( self, t, value, path ):
         self.expect_type(path, isinstance(value, dict), value, 'path (dict)')
         return value
-
-    @dispatch.register(TUpdate)
-    def decode_update( self, t, value, path ):
-        self.expect_type(path, isinstance(value, dict), value, 'update (dict)')
-        self.expect(path, 'iface' in value, 'iface field is missing')
-        iface = self.iface_registry.resolve(value['iface'])
-        return self.dispatch(iface.tUpdate(), value, path)
 
     @dispatch.register(TObject)
     def decode_object( self, t, value, path ):
