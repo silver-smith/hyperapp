@@ -67,7 +67,7 @@ class Field(object):
 
     def __init__( self, name, type ):
         assert isinstance(name, str), repr(name)
-        assert type is None or isinstance(type, Type), repr(type)
+        assert isinstance(type, Type), repr(type)
         self.name = name
         self.type = type
 
@@ -116,8 +116,7 @@ class TRecordBase(Type):
                     value = None
                 else:
                     raise TypeError('Record field is missing: %r' % field.name)
-            if field.type is not None:  # open type, todo
-                field.type.validate(join_path(path, field.name), value)
+            field.type.validate(join_path(path, field.name), value)
             adopted_args[field.name] = value
         if check_unexpected:
             self.assert_(path, not unexpected,

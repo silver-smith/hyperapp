@@ -77,13 +77,13 @@ class JsonDecoder(object):
         return self.dispatch(t.type, value, path)
 
     @dispatch.register(TRecord)
-    def decode_record( self, t, value, path, **kw ):
+    def decode_record( self, t, value, path ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         base_fields = set()
         decoded_fields = {}
         while True:
             new_fields = [field for field in t.get_fields() if field.name not in base_fields]
-            decoded_fields.update(self.decode_record_fields(new_fields, value, path, **kw))
+            decoded_fields.update(self.decode_record_fields(new_fields, value, path))
             if t.want_peer_arg:
                 decoded_fields.update(peer=self.peer)
             rec = t.instantiate_fixed(**decoded_fields)
@@ -101,15 +101,11 @@ class JsonDecoder(object):
         fields = self.decode_record_fields(tclass.get_fields(), value, path)
         return tclass.instantiate(**fields)
 
-    def decode_record_fields( self, tfields, value, path, **kw ):
+    def decode_record_fields( self, tfields, value, path ):
         fields = {}
         for field in tfields:
             self.expect(path, field.name in value, 'field %r is missing' % field.name)
-            if field.type is not None:
-                field_type = field.type
-            else:  # open type
-                field_type = kw[field.name]  # must be passed explicitly
-            elt = self.dispatch(field_type, value[field.name], join_path(path, field.name))
+            elt = self.dispatch(field.type, value[field.name], join_path(path, field.name))
             fields[field.name] = elt
         return fields
 
