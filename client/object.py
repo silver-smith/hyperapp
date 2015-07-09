@@ -1,4 +1,5 @@
 import weakref
+import traceback
 from util import WeakSetWithCallback
 
 
@@ -46,8 +47,11 @@ class Object(object):
         self._observers = WeakSetWithCallback(on_remove=on_remove)
 
     def _on_subscriber_removed( self ):
-        if not self._observers:  # this was last reference to me
-            self.observers_gone()
+        try:
+            if not self._observers:  # this was last reference to me
+                self.observers_gone()
+        except:
+            traceback.print_exc()
 
     def _notify_object_changed( self, skip_observer=None ):
         for observer in self._observers:
