@@ -20,6 +20,8 @@ class TClass(TRecord):
         self.cls = cls
         self.hierarchy.cls2id[cls] = self.id
 
+    # need to pick base.cls here, not in __init__
+    # because base.register_class may be called after derived object is constructed
     def get_class( self ):
         if self.cls:
             return self.cls
