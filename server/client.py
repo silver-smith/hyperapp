@@ -4,7 +4,7 @@ import pprint
 import select
 from Queue import Queue
 from common.interface import iface_registry
-from common.request import tResponse, tClientPacket, ServerNotification, Response
+from common.request import tServerPacket, tClientPacket, ServerNotification, Response
 from common.json_packet import encode_packet, is_full_packet, decode_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
@@ -82,7 +82,7 @@ class Client(object):
                 pprint.pprint(json_packet)
                 response = self._process_json_packet(json_packet)
                 if response is not None:
-                    json_response = JsonEncoder().encode(tResponse, response)
+                    json_response = JsonEncoder().encode(tServerPacket, response)
                     print 'response to %s:%d:' % self.addr
                     pprint.pprint(json.loads(json_response))
                     self.conn.send(json_response)

@@ -75,21 +75,21 @@ class TServerPacket(TDynamicRec):
 
     def resolve_dynamic( self, rec ):
         if rec.packet_type == Response.packet_type:
-            return tResponse
+            return TResponse(self)
         if rec.packet_type == ServerNotification.packet_type:
-            return tServerNotification
+            return TRecord(base=self, cls=ServerNotification)
         assert False, repr(rec.packet_type)  # unknown packet type
 
 
 class TResponse(TDynamicRec):
 
-    def __init__( self ):
+    def __init__( self, base ):
         fields = [
             Field('iface', TIface()),
             Field('command_id', TString()),
             Field('request_id', TString()),
             ]
-        TDynamicRec.__init__(self, fields, base=tServerPacket)
+        TDynamicRec.__init__(self, fields, base=base)
 
     def resolve_dynamic( self, rec ):
         fields = [Field('result', rec.iface.get_command_result_type(rec.command_id))]
@@ -121,6 +121,4 @@ class TClientPacket(TDynamicRec):
 
 
 tServerPacket = TServerPacket()
-tResponse = TResponse()
-tServerNotification = TRecord(base=tServerPacket, cls=ServerNotification)
 tClientPacket = TClientPacket()
