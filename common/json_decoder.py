@@ -18,14 +18,6 @@ from . interface import (
     tUpdateList,
     TIface,
     )
-from request import (
-    TClientNotification,
-    TRequest,
-    ClientNotification,
-    Request,
-    ServerNotification,
-    Response,
-    )
 
 
 def join_path( *args ):
@@ -173,45 +165,3 @@ class JsonDecoder(object):
         self.expect_type(path, isinstance(value, basestring), value, 'iface id (str)')
         iface_id = value
         return self.iface_registry.resolve(iface_id)
-
-    @dispatch.register(TRequest)
-    @dispatch.register(TClientNotification)
-    def decode_request_or_notification( self, t, value, path ):
-        self.expect_type(path, isinstance(value, dict), value, 'request/notification (dict)')
-        self.expect(path, 'iface' in value, 'iface field is missing')
-        self.expect(path, 'path' in value, 'path field is missing')
-        self.expect(path, 'command_id' in value, 'command_id field is missing')
-        iface = self.iface_registry.resolve(value['iface'])
-        obj_path = value['path']
-        command_id = value['command_id']
-        params_type = iface.get_command_params_type(command_id)
-        params = self.dispatch(params_type, value.get('params'), join_path(path, 'params'))
-        request_id = value.get('request_id')
-        if request_id:
-            return Request(self.peer, iface, obj_path, command_id, request_id, params)
-        else:
-            return ClientNotification(self.peer, iface, obj_path, command_id, params)
-
-    ## def decode_response_or_notification( self, value ):
-    ##     self.expect_type('response-or-server_notification', isinstance(value, dict), value, 'response/notification (dict)')
-    ##     if 'request_id' in value:
-    ##         return self.decode_response(value, 'response')
-    ##     else:
-    ##         return self.decode_server_notification(value, 'server_notification')
-
-    ## def decode_response( self, value, path ):
-    ##     self.expect(path, 'iface' in value, 'iface field is missing')
-    ##     self.expect(path, 'command_id' in value, 'command_id field is missing')
-    ##     self.expect(path, 'updates' in value, 'updates field is missing')
-    ##     iface = self.iface_registry.resolve(value['iface'])
-    ##     command_id = value['command_id']
-    ##     request_id = value.get('request_id')
-    ##     result_type = iface.get_command_result_type(command_id)
-    ##     result = self.dispatch(result_type, value.get('result'), join_path(path, 'result'))
-    ##     updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
-    ##     return Response(self.peer, iface, command_id, request_id, result=result, updates=updates)
-
-    ## def decode_server_notification( self, value, path ):
-    ##     self.expect(path, 'updates' in value, 'updates field is missing')
-    ##     updates = self.dispatch(tUpdateList, value['updates'], join_path(path, 'updates'))
-    ##     return ServerNotification(self.peer, updates)

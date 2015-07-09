@@ -1,11 +1,11 @@
 from PySide import QtNetwork
-from common.request import tServerPacket, ClientNotification, Request, ServerNotification, Response
 from common import json_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
 from common.interface import Interface, iface_registry
+from common.request import tServerPacket, tClientPacket, ClientNotification, Request, ServerNotification, Response
 import proxy_registry
-from proxy_object import Request, ProxyListObject
+from proxy_object import ProxyListObject
 
 
 class Connection(object):
@@ -104,13 +104,15 @@ class Server(object):
     def send_notification( self, request ):
         assert isinstance(request, ClientNotification), repr(request)
         print 'send_notification', request
-        data = json_packet.encode_packet(request.encode(JsonEncoder()))
-        Connection.get_connection(self.addr).send_data(data)
+        json_data = JsonEncoder().encode(tClientPacket, request)
+        packet = json_packet.encode_packet(json_data)
+        Connection.get_connection(self.addr).send_data(packet)
 
     def execute_request( self, request, resp_handler ):
         assert isinstance(request, Request), repr(request)
         request_id = request.request_id
         print 'execute_request', request_id, request
         proxy_registry.register_resp_handler(request_id, resp_handler)
-        data = json_packet.encode_packet(request.encode(JsonEncoder()))
-        Connection.get_connection(self.addr).send_data(data)
+        json_data = JsonEncoder().encode(tClientPacket, request)
+        packet = json_packet.encode_packet(json_data)
+        Connection.get_connection(self.addr).send_data(packet)

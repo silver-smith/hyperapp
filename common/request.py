@@ -1,5 +1,5 @@
 from . util import is_list_inst
-from . interface import TPrimitive, TString, Field, TRecord, TIface, TPath, tUpdateList
+from . interface import TPrimitive, TString, Field, TRecord, TIface, TPath, tUpdateList, Interface
 from . interface.dynamic_record import TDynamicRec
 
 
@@ -26,6 +26,42 @@ class Response(ServerNotification):
         self.command_id = command_id
         self.request_id = request_id
         self.result = result
+
+
+class ClientNotification(object):
+
+    def __init__( self, peer, iface, path, command_id, params=None ):
+        self.peer = peer
+        self.iface = iface
+        self.path = path
+        self.command_id = command_id
+        self.params = params
+        
+
+class Request(ClientNotification):
+
+    def __init__( self, peer, iface, path, command_id, request_id, params=None ):
+        ClientNotification.__init__(self, peer, iface, path, command_id, params)
+        self.request_id = request_id
+
+    def make_response( self, result=None ):
+        result_type = self.iface.get_command_result_type(self.command_id)
+        result_type.validate(self.iface.iface_id +  '.Request.result', result)
+        return Response(self.peer, self.iface, self.command_id, self.request_id, result)
+
+    def make_response_object( self, obj ):
+        return self.make_response(obj)
+
+    def make_response_handle( self, obj ):
+        return self.make_response(obj.get_handle())
+
+    def make_response_result( self, **kw ):
+        return self.make_response(self.iface.make_result(self.command_id, **kw))
+
+    def make_response_update( self, iface, path, diff ):
+        response = self.make_response()
+        response.add_update(iface.Update(path, diff))
+        return response
 
 
 class TServerPacket(TDynamicRec):
@@ -60,60 +96,31 @@ class TResponse(TDynamicRec):
         return TRecord(fields, cls=Response, base=self, want_peer_arg=True)
 
 
+class TClientPacket(TDynamicRec):
+
+    def __init__( self ):
+        fields = [
+            Field('iface', TIface()),
+            Field('path', TPath()),
+            Field('command_id', TString()),
+            ]
+        TDynamicRec.__init__(self, fields)
+
+    def resolve_dynamic( self, rec ):
+        request_type = rec.iface.get_request_type(rec.command_id)
+        params_type = rec.iface.get_request_params_type(rec.command_id)
+        params_field = Field('params', params_type)
+        if request_type == Interface.rt_request:
+            return TRecord(base=self, cls=Request, want_peer_arg=True, fields=[
+                params_field,
+                Field('request_id', TString()),
+                ])
+        if request_type == Interface.rt_notification:
+            return TRecord(fields=[params_field], base=self, cls=ClientNotification, want_peer_arg=True)
+        assert False, repr(request_type)  # Unexpected request type
+
+
 tServerPacket = TServerPacket()
 tResponse = TResponse()
 tServerNotification = TRecord(base=tServerPacket, cls=ServerNotification)
-
-
-class ClientNotification(object):
-
-    def __init__( self, peer, iface, path, command_id, params=None ):
-        self.peer = peer
-        self.iface = iface
-        self.path = path
-        self.command_id = command_id
-        self.params = params or {}
-
-    def encode( self, encoder ):
-        return encoder.encode(self.get_packet_type(), self)
-
-    def get_packet_type( self ):
-        return self.iface.get_client_notification_type(self.command_id)
-        
-
-class Request(ClientNotification):
-
-    def __init__( self, peer, iface, path, command_id, request_id, params=None ):
-        ClientNotification.__init__(self, peer, iface, path, command_id, params)
-        self.request_id = request_id
-
-    def get_packet_type( self ):
-        return self.iface.get_request_type(self.command_id)
-
-    def make_response( self, result=None ):
-        result_type = self.iface.get_command_result_type(self.command_id)
-        result_type.validate(self.iface.iface_id +  '.Request.result', result)
-        return Response(self.peer, self.iface, self.command_id, self.request_id, result)
-
-    def make_response_object( self, obj ):
-        return self.make_response(obj)
-
-    def make_response_handle( self, obj ):
-        return self.make_response(obj.get_handle())
-
-    def make_response_result( self, **kw ):
-        return self.make_response(self.iface.make_result(self.command_id, **kw))
-
-    def make_response_update( self, iface, path, diff ):
-        response = self.make_response()
-        response.add_update(iface.Update(path, diff))
-        return response
-
-
-class TClientNotification(TPrimitive):
-    type_name = 'client_notification'
-    type = ClientNotification
-
-class TRequest(TPrimitive):
-    type_name = 'request'
-    type = Request
+tClientPacket = TClientPacket()

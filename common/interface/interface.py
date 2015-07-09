@@ -103,6 +103,10 @@ class SubscribeCommand(RequestCmd):
 
 class Interface(object):
 
+    # client request types
+    rt_request = 1
+    rt_notification =2
+
     basic_commands = [
         OpenCommand('get'),
         SubscribeCommand(),
@@ -119,23 +123,32 @@ class Interface(object):
         self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
 
     def get_request_type( self, command_id ):
-        params_type = self.get_command_params_type(command_id)
-        return TRecord([
-            Field('iface', TIface()),
-            Field('path', TPath()),
-            Field('command_id', TString()),
-            Field('request_id', TString()),
-            Field('params', params_type),
-            ])
+        assert command_id in self.commands, repr(command_id)  # Unknown command id
+        command = self.commands[command_id]
+        if isinstance(command, RequestCmd):
+            return self.rt_request
+        if isinstance(command, NotificationCmd):
+            return self.rt_notification
+        assert False, command_id  # Only RequestCmd or NotificationCmd are expected here
 
-    def get_client_notification_type( self ):
-        params_type = self.get_command_params_type(command_id)
-        return TRecord([
-            Field('iface', TIface()),
-            Field('path', TPath()),
-            Field('command', TString()),
-            Field('params', params_type),
-            ])
+    ## def get_request_type( self, command_id ):
+    ##     params_type = self.get_command_params_type(command_id)
+    ##     return TRecord([
+    ##         Field('iface', TIface()),
+    ##         Field('path', TPath()),
+    ##         Field('command_id', TString()),
+    ##         Field('request_id', TString()),
+    ##         Field('params', params_type),
+    ##         ])
+
+    ## def get_client_notification_type( self ):
+    ##     params_type = self.get_command_params_type(command_id)
+    ##     return TRecord([
+    ##         Field('iface', TIface()),
+    ##         Field('path', TPath()),
+    ##         Field('command', TString()),
+    ##         Field('params', params_type),
+    ##         ])
 
     def get_response_type( self, command_id ):
         result_type = self.get_command_result_type(command_id)
@@ -150,11 +163,11 @@ class Interface(object):
     def is_open_command( self, command_id ):
         return isinstance(self.commands[command_id], OpenCommand)
 
-    def get_command_params_type( self, command_id ):
+    def get_request_params_type( self, command_id ):
         return self.commands[command_id].get_params_type(self)
 
     def make_params( self, command_id, **kw ):
-        return self.get_command_params_type(command_id).instantiate(**kw)
+        return self.get_request_params_type(command_id).instantiate(**kw)
 
     def get_command_result_type( self, command_id ):
         return self.commands[command_id].get_result_type(self)
