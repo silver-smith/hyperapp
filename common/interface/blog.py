@@ -1,5 +1,5 @@
 from . types import (
-    TString,
+    tString,
     TInt,
     TDateTime,
     TOptional,
@@ -11,14 +11,14 @@ from . list import ElementCommand, ElementOpenCommand, ListInterface
 
 
 blog_entry_iface = Interface('blog_entry',
-                             content_fields=[Field('text', TOptional(TString()))],
+                             content_fields=[Field('text', TOptional(tString))],
                              commands=[
                                  OpenCommand('parent'),
-                                 OpenCommand('open_ref', [Field('ref_id', TString())]),
-                                 RequestCmd('save', [Field('text', TString())], [Field('new_path', TPath())]),
+                                 OpenCommand('open_ref', [Field('ref_id', tString)]),
+                                 RequestCmd('save', [Field('text', tString)], [Field('new_path', TPath())]),
                                  OpenCommand('refs'),
                                  ],
-                             diff_type=TString())
+                             diff_type=tString)
 
 blog_iface = ListInterface('blog',
                            columns=[TInt(), TDateTime()],

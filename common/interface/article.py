@@ -1,5 +1,5 @@
 from . types import (
-    TString,
+    tString,
     TInt,
     TOptional,
     TPath,
@@ -38,15 +38,15 @@ ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
 
 
 article_iface = Interface('article',
-                          content_fields=[Field('text', TOptional(TString()))],
+                          content_fields=[Field('text', TOptional(tString))],
                           commands=[
-                              RequestCmd('save', [Field('text', TString())], [Field('new_path', TPath())]),
+                              RequestCmd('save', [Field('text', tString)], [Field('new_path', TPath())]),
                               OpenCommand('refs'),
                               ],
-                          diff_type=TString())
+                          diff_type=tString)
 
 ref_list_iface = ListInterface('article_ref_list',
-                               columns=[TInt(), TString()],
+                               columns=[TInt(), tString],
                                commands=[
                                    OpenCommand('parent'),
                                    OpenCommand('add', [Field('target_path', TPath())]),

@@ -1,5 +1,5 @@
 from . util import is_list_inst
-from . interface import TPrimitive, TString, Field, TRecord, TIface, TPath, tUpdateList, Interface
+from . interface import TPrimitive, tString, Field, TRecord, TIface, TPath, tUpdateList, Interface
 from . interface.dynamic_record import TDynamicRec
 
 
@@ -69,7 +69,7 @@ class TServerPacket(TDynamicRec):
     def __init__( self ):
         fields = [
             Field('updates', tUpdateList),
-            Field('packet_type', TString()),
+            Field('packet_type', tString),
             ]
         TDynamicRec.__init__(self, fields)
 
@@ -86,8 +86,8 @@ class TResponse(TDynamicRec):
     def __init__( self, base ):
         fields = [
             Field('iface', TIface()),
-            Field('command_id', TString()),
-            Field('request_id', TString()),
+            Field('command_id', tString),
+            Field('request_id', tString),
             ]
         TDynamicRec.__init__(self, fields, base=base)
 
@@ -102,7 +102,7 @@ class TClientPacket(TDynamicRec):
         fields = [
             Field('iface', TIface()),
             Field('path', TPath()),
-            Field('command_id', TString()),
+            Field('command_id', tString),
             ]
         TDynamicRec.__init__(self, fields)
 
@@ -113,7 +113,7 @@ class TClientPacket(TDynamicRec):
         if request_type == Interface.rt_request:
             return TRecord(base=self, cls=Request, want_peer_arg=True, fields=[
                 params_field,
-                Field('request_id', TString()),
+                Field('request_id', tString),
                 ])
         if request_type == Interface.rt_notification:
             return TRecord(fields=[params_field], base=self, cls=ClientNotification, want_peer_arg=True)

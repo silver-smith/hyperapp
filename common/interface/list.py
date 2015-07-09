@@ -1,7 +1,7 @@
 from .. util import is_list_inst, dt2local_str
 from . types import (
     Type,
-    TString,
+    tString,
     TInt,
     TBool,
     TOptional,
@@ -45,8 +45,8 @@ tColumnType.register('datetime', cls=DateTimeColumnType)
 
 
 tColumn = TRecord([
-    Field('id', TString()),
-    Field('title', TOptional(TString())),
+    Field('id', tString),
+    Field('title', TOptional(tString)),
     Field('type', tColumnType),
     ])
 
@@ -112,7 +112,7 @@ class ListObject(Object):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, content_fields=None, commands=None, columns=None, key_type=TString() ):
+    def __init__( self, iface_id, content_fields=None, commands=None, columns=None, key_type=tString ):
         assert is_list_inst(columns, Type), repr(columns)
         assert isinstance(key_type, Type), repr(key_type)
         self.columns = columns

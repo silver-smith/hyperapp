@@ -5,6 +5,7 @@ from . interface import (
     TInt,
     TBool,
     TDateTime,
+    tString,
     TOptional,
     TRecord,
     TDynamicRec,
@@ -61,7 +62,7 @@ class JsonEncoder(object):
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj( self, t, value ):
         tclass = t.resolve_obj(value)
-        result = dict(_class_id=self.dispatch(TString(), tclass.id))
+        result = dict(_class_id=self.dispatch(tString, tclass.id))
         for field in tclass.get_fields():
             result[field.name] = self.dispatch(field.type, getattr(value, field.name))
         return result

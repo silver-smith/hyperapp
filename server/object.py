@@ -1,6 +1,6 @@
 from common.util import path2str
 from common.interface import (
-    TString,
+    tString,
     Field,
     ObjHandle,
     iface_registry,

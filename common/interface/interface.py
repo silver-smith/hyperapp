@@ -3,7 +3,7 @@ from . types import (
     join_path,
     Type,
     TPrimitive,
-    TString,
+    tString,
     TOptional,
     Field,
     TRecord,
@@ -36,7 +36,7 @@ class TObject(TDynamicRec):
         TDynamicRec.__init__(self, [
             Field('iface', TIface()),
             Field('path', TPath()),
-            Field('proxy_id', TString()),
+            Field('proxy_id', tString),
             ])
 
     def resolve_dynamic( self, rec ):

@@ -52,6 +52,12 @@ class TDateTime(TPrimitive):
     type = datetime.datetime
 
 
+tString = TString()
+tInt = TInt()
+tBool = TBool()
+tDateTime = TDateTime()
+
+
 class TOptional(Type):
 
     def __init__( self, type ):
@@ -219,11 +225,13 @@ class TPath(Type):
         self.expect(path, value, 'Path (dict)', isinstance(value, dict))
 
 
+tPath = TPath()
+
 tCommand = TRecord([
-            Field('id', TString()),
-            Field('text', TString()),
-            Field('desc', TString()),
-            Field('shortcut', TOptional(TString())),
+            Field('id', tString),
+            Field('text', tString),
+            Field('desc', tString),
+            Field('shortcut', TOptional(tString)),
             ])
 
 Command = tCommand.instantiate
