@@ -40,7 +40,7 @@ class TClass(TRecord):
             field.validate(path, getattr(obj, field.name))
 
     def _adopt_args( self, args, kw ):
-        return self.adopt_args('<Class %s>' % self.id, self.get_fields(), args, kw)
+        return self.adopt_args('<Class %s>' % self.id, args, kw)
 
     def instantiate( self, *args, **kw ):
         fields = self._adopt_args(args, kw)

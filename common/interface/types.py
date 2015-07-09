@@ -122,7 +122,8 @@ class TRecord(Type):
             self.assert_(path, hasattr(rec, field.name), 'Missing field: %s' % field.name)
             field.validate(path, getattr(rec, field.name))
 
-    def adopt_args( self, path, tfields, args, kw, check_unexpected=True ):
+    def adopt_args( self, path, args, kw, check_unexpected=True ):
+        tfields = self.get_fields()
         if check_unexpected:
             self.assert_(path, len(args) <= len(tfields),
                          'instantiate takes at most %d argumants (%d given)' % (len(tfields), len(args)))
@@ -155,7 +156,7 @@ class TRecord(Type):
         return adopted_args
 
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
-        fields = self.adopt_args('<Record>', self.fields, args, kw or {}, check_unexpected)
+        fields = self.adopt_args('<Record>', args, kw or {}, check_unexpected)
         ## print '*** instantiate', self, self.cls, self.want_peer_arg, sorted(fields.keys()), sorted(f.name for f in self.fields)
         if self.cls:
             return self.cls(**fields)
@@ -171,7 +172,7 @@ class TRecord(Type):
         class Record(object):
             type = self
             def __init__( self, *args, **kw ):
-                for name, val in self.type.adopt_args('<Record>', self.type.fields, args, kw).items():
+                for name, val in self.type.adopt_args('<Record>', args, kw).items():
                     setattr(self, name, val)
         return Record
 
