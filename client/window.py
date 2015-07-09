@@ -141,7 +141,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     def run_open_command( self, iface, path ):
         command_id = 'get'
-        #iface.validate_request(command_id)
+        iface.validate_request(command_id)
         resp_handler = OpenRespHandler(iface, command_id, self)
         request_id = str(uuid.uuid4())
         request = Request(self._app.server, iface, path, command_id, request_id)

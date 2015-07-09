@@ -74,16 +74,6 @@ class IfaceCommand(object):
     def get_result_fields( self, iface ):
         return self.result_fields
 
-    def validate_request( self, iface, path, params_kw ):
-        self._validate_record('params', self.get_params_type(iface), path, params_kw)
-
-    def validate_result( self, iface, path, result_kw ):
-        self._validate_record('result', self.get_result_type(iface), path, result_kw)
-
-    def _validate_record( self, rec_name, type, path, rec_kw ):
-        rec_path = join_path(path, self.command_id, rec_name)
-        type.validate_kw(rec_path, rec_kw)
-
 
 class RequestCmd(IfaceCommand):
     pass
@@ -155,17 +145,11 @@ class Interface(object):
     def get_command_params_fields( self, command_id ):
         return self.commands[command_id].get_params_fields(self)
 
-    def validate_request( self, command_id, args=None ):
+    def validate_request( self, command_id, params=None ):
         cmd = self.commands.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        cmd.validate_request(self, self.iface_id, args or {})
-
-    def validate_result( self, command_id, rec ):
-        cmd = self.commands.get(command_id)
-        if not cmd:
-            raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        cmd.validate_result(self, self.iface_id, rec)
+        cmd.get_params_type(self).validate(join_path(self.iface_id, command_id, 'params'), params)
 
     def validate_update_diff( self, diff ):
         assert self.diff_type, 'No diff type is defined for %r interface' % self.iface_id
