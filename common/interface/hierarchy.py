@@ -39,19 +39,8 @@ class TClass(TRecord):
                 raise TypeError('%s: %s' % (path, 'Missing field: %s' % field.name))
             field.validate(path, getattr(obj, field.name))
 
-    def _adopt_args( self, args, kw ):
-        return self.adopt_args('<Class %s>' % self.id, args, kw)
-
-    def instantiate( self, *args, **kw ):
-        fields = self._adopt_args(args, kw)
-        cls = self.get_class()
-        if cls:
-            return cls(**fields)
-        else:
-            rec = Class(self.id)
-            for name, val in fields.items():
-                setattr(rec, name, val)
-            return rec
+    def make_object( self ):
+        return Class(self.id)
 
     # only to be used as base for usual classes
     def make_class( self ):
@@ -59,7 +48,7 @@ class TClass(TRecord):
         class ClassBase(object):
             def __init__( self, *args, **kw ):
                 self._class_id = tclass.id
-                for name, val in tclass._adopt_args(args, kw).items():
+                for name, val in tclass.adopt_args('<Class>', args, kw).items():
                     setattr(self, name, val)
         return ClassBase
             

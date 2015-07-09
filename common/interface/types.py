@@ -110,11 +110,6 @@ class TRecord(Type):
     def use_class( self, cls ):
         self.cls = cls
 
-    def override( self, cls=None, drop_field=None ):
-        self.cls = cls
-        if drop_field:
-            self.fields = [field for field in self.fields if field.name != drop_field]
-
     def validate( self, path, rec ):
         ## print '*** trecord validate', path, rec, self, [field.name for field in self.fields]
         for field in self.fields:
@@ -158,14 +153,17 @@ class TRecord(Type):
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
         fields = self.adopt_args('<Record>', args, kw or {}, check_unexpected)
         ## print '*** instantiate', self, self.cls, self.want_peer_arg, sorted(fields.keys()), sorted(f.name for f in self.fields)
-        if self.cls:
-            return self.cls(**fields)
+        cls = self.get_class()
+        if cls:
+            return cls(**fields)
         else:
-            rec = Record()
+            rec = self.make_object()
             for name, val in fields.items():
                 setattr(rec, name, val)
-            ## print '*** >', rec, fields, self, self.cls, self.fields
             return rec
+
+    def make_object( self ):
+        return Record()
 
     # base for usual classes
     def make_class( self ):
