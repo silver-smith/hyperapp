@@ -96,7 +96,7 @@ class ProxyObject(Object, interface_module.Object):
 
     # prepare request which does not require/expect response
     def prepare_notification( self, command_id, **kw ):
-        return ClientNotification(self.iface, self.path, command_id, params=kw)
+        return ClientNotification(self.server, self.iface, self.path, command_id, params=kw)
 
     def prepare_request( self, command_id, **kw ):
         request_id = str(uuid.uuid4())
