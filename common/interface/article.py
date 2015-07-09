@@ -2,7 +2,7 @@ from . types import (
     tString,
     tInt,
     TOptional,
-    TPath,
+    tPath,
     Field,
     TRecord,
     )
@@ -40,7 +40,7 @@ ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
 article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(tString))],
                           commands=[
-                              RequestCmd('save', [Field('text', tString)], [Field('new_path', TPath())]),
+                              RequestCmd('save', [Field('text', tString)], [Field('new_path', tPath)]),
                               OpenCommand('refs'),
                               ],
                           diff_type=tString)
@@ -49,7 +49,7 @@ ref_list_iface = ListInterface('article_ref_list',
                                columns=[tInt, tString],
                                commands=[
                                    OpenCommand('parent'),
-                                   OpenCommand('add', [Field('target_path', TPath())]),
+                                   OpenCommand('add', [Field('target_path', tPath)]),
                                    ElementOpenCommand('open'),
                                    ElementCommand('delete'),
                                    ],
@@ -57,7 +57,7 @@ ref_list_iface = ListInterface('article_ref_list',
 
 object_selector_iface = Interface('article_object_selector',
                                   commands=[
-                                      OpenCommand('choose', [Field('target_path', TPath())]),
+                                      OpenCommand('choose', [Field('target_path', tPath)]),
                                   ])
 
 onwrap_object_selector_iface = Interface('article_unwrap_object_selector',

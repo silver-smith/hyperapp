@@ -7,7 +7,7 @@
 
 import weakref
 import uuid
-from common.interface import Interface, Field, tString, TPath, tCommand, resolve_iface
+from common.interface import Interface, Field, tString, tPath, tCommand, resolve_iface
 import common.interface as interface_module
 from common.request import ClientNotification, Request
 from object import Object

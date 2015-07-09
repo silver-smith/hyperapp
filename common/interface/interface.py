@@ -8,7 +8,7 @@ from . types import (
     Field,
     TRecord,
     TList,
-    TPath,
+    tPath,
     tCommand,
     )
 from dynamic_record import TDynamicRec
@@ -35,7 +35,7 @@ class TObject(TDynamicRec):
     def __init__( self ):
         TDynamicRec.__init__(self, [
             Field('iface', TIface()),
-            Field('path', TPath()),
+            Field('path', tPath),
             Field('proxy_id', tString),
             ])
 
@@ -175,7 +175,7 @@ class TUpdate(TDynamicRec):
     def __init__( self ):
         fields = [
             Field('iface', TIface()),
-            Field('path', TPath()),
+            Field('path', tPath),
             ]
         TDynamicRec.__init__(self, fields)
 

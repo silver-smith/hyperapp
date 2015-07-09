@@ -3,7 +3,7 @@ from . types import (
     tInt,
     tDateTime,
     TOptional,
-    TPath,
+    tPath,
     Field,
     )
 from . interface import RequestCmd, OpenCommand, Interface, register_iface
@@ -15,7 +15,7 @@ blog_entry_iface = Interface('blog_entry',
                              commands=[
                                  OpenCommand('parent'),
                                  OpenCommand('open_ref', [Field('ref_id', tString)]),
-                                 RequestCmd('save', [Field('text', tString)], [Field('new_path', TPath())]),
+                                 RequestCmd('save', [Field('text', tString)], [Field('new_path', tPath)]),
                                  OpenCommand('refs'),
                                  ],
                              diff_type=tString)
