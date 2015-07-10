@@ -1,5 +1,4 @@
 import traceback
-import json
 import pprint
 import select
 from Queue import Queue
@@ -95,8 +94,7 @@ class Client(object):
 
     def _send( self, encoding, response_or_notification ):
         packet = packet_coders.encode(encoding, response_or_notification, tServerPacket)
-        print '%s packet to %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
-        pprint.pprint(json.loads(packet.contents))
+        print '%s packet to %s:%d: %s' % (packet.encoding, self.addr[0], self.addr[1], packet.contents)
         self.conn.send(packet)
 
     def _process_packet( self, packet ):
