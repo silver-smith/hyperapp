@@ -3,15 +3,15 @@ import json
 import pprint
 import select
 from Queue import Queue
+from common.packet import Packet
+from common.packet_coders import packet_coders
 from common.interface import iface_registry
 from common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response
-from common.packet import Packet
-from common.json_decoder import JsonDecoder
-from common.json_encoder import JsonEncoder
 from util import XPathNotFound
 from module import Module
 
 
+PACKET_ENCODING = 'json'
 NOTIFICATION_DELAY_TIME = 1  # sec
 RECV_SIZE = 4096
 
@@ -83,10 +83,7 @@ class Client(object):
                 pprint.pprint(packet.contents)
                 response = self._process_packet(packet)
                 if response is not None:
-                    resp_packet = JsonEncoder().encode(tServerPacket, response)
-                    print '%s response to %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
-                    pprint.pprint(json.loads(resp_packet))
-                    self.conn.send(Packet(packet.encoding, resp_packet))
+                    self._send(packet.encoding, response)
                 else:
                     print 'no response'
         except Error as x:
@@ -96,9 +93,14 @@ class Client(object):
         self.conn.close()
         self.on_close(self)
 
+    def _send( self, encoding, response_or_notification ):
+        packet = packet_coders.encode(encoding, response_or_notification, tServerPacket)
+        print '%s packet to %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
+        pprint.pprint(json.loads(packet.contents))
+        self.conn.send(packet)
+
     def _process_packet( self, packet ):
-        decoder = JsonDecoder(self, iface_registry)
-        request = decoder.decode(tClientPacket, packet.contents)
+        request = packet_coders.decode(packet, tClientPacket, self, iface_registry)
         path = request.path
         object = self._resolve(path)
         print 'Object:', object
@@ -120,10 +122,7 @@ class Client(object):
         notification = ServerNotification(self)
         while not self.updates_queue.empty():
             notification.add_update(self.updates_queue.get())
-        packet = JsonEncoder().encode(tServerPacket, notification)
-        print 'notification to %s:%d:' % self.addr
-        pprint.pprint(packet)
-        self.conn.send(packet)
+        self._send(PACKET_ENCODING, notification)
         
     def _resolve( self, path ):
         return Module.run_resolver(path)
