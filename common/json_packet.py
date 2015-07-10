@@ -7,15 +7,6 @@ import re
 import dateutil.parser
 
 
-class JSONEncoder(json.JSONEncoder):
-
-    def default( self, obj ):
-        if isinstance(obj, datetime.datetime):
-            return obj.isoformat()
-        else:
-            return json.JSONEncoder.default(self, obj)
-
-
 packet_size_struct_format = '>I'
 
 def packet_size_size():
@@ -26,10 +17,6 @@ def encode_packet_size( size ):
 
 def decode_packet_size( data ):
     return struct.unpack(packet_size_struct_format, data)[0]
-
-def encode_json_packet( value ):
-    json_data = json.dumps(value, cls=JSONEncoder)
-    return encode_packet(json_data)
 
 def encode_packet( data ):
     return encode_packet_size(len(data)) + data
