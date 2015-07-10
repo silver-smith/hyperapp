@@ -15,9 +15,7 @@ class RefList(ProxyListObject):
 
     # todo
     def get_default_ref( self ):
-        return dict(
-            module='file',
-            fspath=os.path.expanduser('~'))
+        return ['file'] + os.path.expanduser('~').split('/')
 
 
 proxy_registry.register_iface('ref_list', RefList.from_response)

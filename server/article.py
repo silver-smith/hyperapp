@@ -1,6 +1,6 @@
-import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
-from util import str2id, path_part_to_str
+from common.util import path2str, str2path
+from util import path_part_to_str
 from common.interface import Command, Column
 from common.interface.article import (
     TextViewHandle,
@@ -42,7 +42,7 @@ class Article(Object):
 
     @classmethod
     def resolve( cls, path ):
-        article_id = path.pop_int()
+        article_id = path.pop_int_opt(none_str='new')
         return cls(article_id)
 
     def __init__( self, article_id=None, mode=mode_view ):
@@ -52,7 +52,7 @@ class Article(Object):
         self.mode = mode
 
     def get_path( self ):
-        return module.make_path(self.class_name, path_part_to_str(self.article_id))
+        return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
         
     @db_session
     def get_contents( self, **kw ):
@@ -92,14 +92,14 @@ class Article(Object):
         return self.do_save(request, request.params.text)
 
     def run_command_refs( self, request ):
-        return request.make_response_handle(ArticleRefList.make(self.article_id))
+        return request.make_response_handle(ArticleRefList(self.article_id))
 
     @db_session
     def run_command_open_ref( self, request ):
         ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
-        target_path = json.loads(rec.path)
-        target = module.run_resolve(target_path)
+        target_path = str2path(rec.path)
+        target = module.run_resolver(target_path)
         return request.make_response_handle(target)
 
     @db_session
@@ -127,19 +127,17 @@ class ArticleRefList(ListObject):
         Column('path', 'Path'),
         ]
 
-    def __init__( self, path, article_id ):
-        ListObject.__init__(self, path)
+    @classmethod
+    def resolve( cls, path ):
+        article_id = path.pop_int()
+        return cls(article_id)
+
+    def __init__( self, article_id ):
+        ListObject.__init__(self)
         self.article_id = article_id
 
-    @classmethod
-    def make( cls, article_id ):
-        path = module.make_path(object='article_ref_list', article_id=article_id)
-        return cls(path, article_id)
-
-    @classmethod
-    def from_path( cls, path ):
-        article_id = path['article_id']
-        return cls(path, article_id)
+    def get_path( self ):
+        return module.make_path(self.class_name, path_part_to_str(self.article_id))
 
     def get_commands( self ):
         return [
@@ -166,19 +164,19 @@ class ArticleRefList(ListObject):
     def run_command_add( self, request ):
         with db_session:
             rec = module.ArticleRef(article=module.Article[self.article_id],
-                                    path=json.dumps(request.params.target_path))
-        return request.make_response(RefSelector.make(self.article_id, ref_id=rec.id).make_handle())
+                                    path=path2str(request.params.target_path))
+        return request.make_response(RefSelector(self.article_id, ref_id=rec.id).make_handle())
 
     def run_command_open( self, request ):
         return request.make_response(
-            RefSelector.make(self.article_id, ref_id=request.params.element_key).make_handle())
+            RefSelector(self.article_id, ref_id=request.params.element_key).make_handle())
 
     @db_session
     def run_element_command_delete( self, request ):
         ref_id = request.params.element_key
         module.ArticleRef[ref_id].delete()
         diff = self.Diff_delete(ref_id)
-        return request.make_response_update(self.iface, self.path, diff)
+        return request.make_response_update(self.iface, self.get_path(), diff)
 
     @db_session
     def get_all_elements( self ):
@@ -200,21 +198,19 @@ class RefSelector(Object):
     proxy_id = 'object_selector'
     class_name = 'object_selector'
 
-    def __init__( self, path, article_id, ref_id ):
-        Object.__init__(self, path)
+    @classmethod
+    def resolve( cls, path ):
+        article_id = path.pop_int()
+        ref_id = path.pop_int()
+        return cls(article_id, ref_id)
+
+    def __init__( self, article_id, ref_id ):
+        Object.__init__(self)
         self.article_id = article_id
         self.ref_id = ref_id
 
-    @classmethod
-    def make( cls, article_id, ref_id ):
-        path = module.make_path(object='article_ref_selector', article_id=article_id, ref_id=ref_id)
-        return cls(path, article_id, ref_id)
-
-    @classmethod
-    def from_path( cls, path ):
-        article_id = path['article_id']
-        ref_id = path['ref_id']
-        return cls(path, article_id, ref_id)
+    def get_path( self ):
+        return module.make_path(self.class_name, path_part_to_str(self.article_id), path_part_to_str(self.ref_id))
 
     def process_request( self, request ):
         if request.command_id == 'choose':
@@ -223,7 +219,7 @@ class RefSelector(Object):
 
     @db_session
     def run_command_choose( self, request ):
-        target_path_str = json.dumps(request.params.target_path)
+        target_path_str = path2str(request.params.target_path)
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=target_path_str)
@@ -232,7 +228,7 @@ class RefSelector(Object):
             rec.path = target_path_str
         commit()
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
-        ref_list_obj = ArticleRefList.make(article_id=self.article_id)
+        ref_list_obj = ArticleRefList(self.article_id)
         list_elt = ArticleRefList.ListHandle(ref_list_obj, rec.id)
         handle = ObjSelectorUnwrapHandle(list_elt)
         return request.make_response(handle)
@@ -243,8 +239,8 @@ class RefSelector(Object):
             target = None
         else:
             rec = module.ArticleRef[self.ref_id]
-            target_path = json.loads(rec.path)
-            target_obj = module.run_resolve(target_path)
+            target_path = str2path(rec.path)
+            target_obj = module.run_resolver(target_path)
         return ObjSelectorHandle(self, target_obj.get_handle())
 
 

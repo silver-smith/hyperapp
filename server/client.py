@@ -8,7 +8,7 @@ from common.request import tServerPacket, tClientPacket, ServerNotification, Req
 from common.json_packet import encode_packet, is_full_packet, decode_packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
-from util import XPathNotFound, Path
+from util import XPathNotFound
 from module import Module
 
 
@@ -126,4 +126,4 @@ class Client(object):
         self.conn.send(json_packet)
         
     def _resolve( self, path ):
-        return Module.run_resolver(Path(path))
+        return Module.run_resolver(path)

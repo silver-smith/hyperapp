@@ -14,6 +14,7 @@ import common.interface.fs
 import common.interface.blog
 import common.interface.article
 
+from common.util import str2path
 from common.interface import tListHandleBase, tListNarrowerHandleBase, iface_registry
 from common.interface.article import tTextViewHandle, tTextEditHandle
 from common.request import Request
@@ -128,7 +129,7 @@ def main():
 
     if len(sys.argv) > 1:
         iface_id, path_str = sys.argv[1].split(':')
-        path = path_str.split('/')
+        path = str2path(path_str)
     else:
         iface_id = 'fs_dir'
         path=dict(

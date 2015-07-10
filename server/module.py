@@ -1,4 +1,5 @@
 from common.interface import Command
+from util import Path
 
 
 class ModuleCommand(object):
@@ -41,6 +42,7 @@ class Module(object):
 
     @classmethod
     def run_resolver( cls, path ):
+        path = Path(path)
         module = path.pop_str()
         return cls.module_by_name[module].resolve(path)
 

@@ -15,6 +15,9 @@ def is_list_inst( val, cls ):
 def path2str( path ):
     return '/'.join(path)
 
+def str2path( path_str ):
+    return path_str.split('/')
+
 def dt2local_str( dt ):
     if dt is None: return ''
     if dt.tzinfo is None:

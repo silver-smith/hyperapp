@@ -29,14 +29,20 @@ class Path(object):
         self.path = self.path[1:]
         return part
 
-    def pop_int( self ):
+    def pop_int_opt( self, none_str='' ):
         s = self.pop_str()
-        if not s:
+        if s == none_str:
             return None
         try:
             return int(s)
         except ValueError:
             self.raise_not_found()
+
+    def pop_int( self ):
+        v = self.pop_int_opt()
+        if v is None:
+            self.raise_not_found()
+        return v
 
     def pop_tail_as_str( self ):
         tail = '/'.join(self.path)
@@ -44,26 +50,14 @@ class Path(object):
         return tail
 
 
-def path_part_to_str( val ):
+def path_part_to_str( val, none_str='' ):
     if val is None:
-        return ''
+        return none_str
     else:
         return str(val)
 
 def utcnow():
     return datetime.now(tzutc())
-
-def str2id( s ):
-    if s == 'new':
-        return None
-    else:
-        return int(s)
-
-def id2str( id ):
-    if id is None:
-        return 'new'
-    else:
-        return str(id)
 
 
 class _KeyedRef(weakref.ref):
