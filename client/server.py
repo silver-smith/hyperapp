@@ -11,6 +11,11 @@ from proxy_object import ProxyListObject
 PACKET_ENCODING = 'json'
 
 
+def resolve_object( server, objinfo ):
+    obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
+    return obj_ctr(server, objinfo.path, objinfo.iface, objinfo.contents)
+
+
 class Connection(object):
 
     addr2connection = {}
@@ -78,7 +83,7 @@ class Connection(object):
     def process_packet( self, packet ):
         print 'processing %s packet: %s' % (packet.encoding, packet.contents)
         server = Server(self.addr)
-        decoder = JsonDecoder(server, iface_registry, server.resolve_object)
+        decoder = JsonDecoder(server, iface_registry, resolve_object)
         response = decoder.decode(tServerPacket, packet.contents)
         if isinstance(response, Response):
             proxy_registry.process_received_response(response)
@@ -100,10 +105,6 @@ class Server(object):
 
     def __init__( self, addr ):
         self.addr = addr
-
-    def resolve_object( self, objinfo ):
-        obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
-        return obj_ctr(self, objinfo.path, objinfo.iface, objinfo.contents)
 
     def send_notification( self, request ):
         assert isinstance(request, ClientNotification), repr(request)

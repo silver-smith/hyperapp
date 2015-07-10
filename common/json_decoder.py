@@ -138,7 +138,7 @@ class JsonDecoder(object):
     def decode_object( self, t, value, path ):
         assert self.object_resolver  # object decoding is not supported
         objinfo = self.decode_record(t, value, path)
-        return self.object_resolver(objinfo)
+        return self.object_resolver(self.peer, objinfo)
 
     @dispatch.register(TIface)
     def decode_iface( self, t, value, path ):
