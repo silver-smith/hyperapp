@@ -2,16 +2,48 @@ import sys
 import os.path
 import stat
 from common.interface import Command, Column
-from common.interface.fs import dir_iface
+from common.interface.fs import file_iface, dir_iface
 from object import ListObject
 from module import Module, ModuleCommand
-import file_view
 
 
 MODULE_NAME = 'file'
 
 
-class Dir(ListObject):
+class FsObject(ListObject):
+
+    def __init__( self, fspath ):
+        ListObject.__init__(self)
+        self.fspath = os.path.abspath(fspath)
+
+    def get_path( self ):
+        return module.make_path(*self.fspath.split('/'))
+
+
+class File(FsObject):
+
+    iface = file_iface
+    proxy_id = 'list'
+
+    columns = [
+        Column('key', 'idx'),
+        Column('line', 'line'),
+        ]
+
+    def get_commands( self ):
+        return []
+
+    def get_all_elements( self ):
+        return [self.Element(idx, [idx, line]) for idx, line in enumerate(self._load_lines())]
+
+    def _load_lines( self, ofs=0 ):
+        with file(self.fspath) as f:
+            if ofs:
+                f.seek(ofs)
+            return f.readlines()
+
+
+class Dir(FsObject):
 
     iface = dir_iface
     proxy_id = 'list'
@@ -22,10 +54,6 @@ class Dir(ListObject):
         Column('ftime', 'Modification time'),
         Column('fsize', 'File size'),
         ]
-
-    def __init__( self, path ):
-        ListObject.__init__(self, path)
-        self.fspath = os.path.abspath(path['fspath'])
 
     def get_all_elements( self ):
         dirs  = []
@@ -80,11 +108,11 @@ class Dir(ListObject):
         if request.command_id == 'open':
             fname = request.params.element_key
             fspath = os.path.join(self.fspath, fname)
-            return request.make_response_handle(module.open_fspath(fspath))
+            return request.make_response_handle(module.open(fspath))
         if request.command_id == 'parent':
             fspath = self.get_parent_dir()
             if fspath is not None:
-                return request.make_response_handle(module.open_fspath(fspath))
+                return request.make_response_handle(module.open(fspath))
         return ListObject.process_request(self, request)
 
     def get_parent_dir( self ):
@@ -103,28 +131,22 @@ class FileModule(Module):
         Module.__init__(self, MODULE_NAME)
 
     def resolve( self, path ):
-        fspath = path.get('fspath')
-        if fspath is not None:
-            return self.open(path, fspath)
-        return Module.resolve(self, path)
+        fspath = path.pop_tail_as_str()
+        return self.open(fspath)
 
     def get_commands( self ):
         return [ModuleCommand('home', 'Home', 'Open home directory', 'Alt+H', self.name)]
 
     def run_command( self, request, command_id ):
         if command_id == 'home':
-            return request.make_response_handle(self.open_fspath(os.path.expanduser('~')))
+            return request.make_response_handle(self.open(os.path.expanduser('~')))
         return Module.run_command(self, request, command_id)
 
-    def open_fspath( self, fspath ):
-        path = self.make_path(fspath=fspath)
-        return self.open(path, fspath)
-
-    def open( self, path, fspath ):
+    def open( self, fspath ):
         if os.path.isdir(fspath):
-            return Dir(path)
+            return Dir(fspath)
         else:
-            return file_view.File(path)
+            return File(fspath)
 
 
 if sys.platform == 'win32':

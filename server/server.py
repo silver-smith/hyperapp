@@ -14,7 +14,6 @@ from client import Client
 # self-registering modules:
 import ponyorm_module
 import fs
-import file_view
 import article
 import blog
 import server_management

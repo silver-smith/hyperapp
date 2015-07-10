@@ -225,7 +225,7 @@ class TPath(Type):
         self.expect(path, value, 'Path (dict)', isinstance(value, dict))
 
 
-tPath = TPath()
+tPath = TList(tString)
 
 tCommand = TRecord([
             Field('id', tString),

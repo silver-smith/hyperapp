@@ -83,7 +83,7 @@ class ProxyObject(Object, interface_module.Object):
         self.commands = contents.commands
 
     def get_title( self ):
-        return ','.join('%s=%s' % (key, value) for key, value in self.path.items())
+        return '/' + '/'.join(self.path)
 
     def get_commands( self ):
         return self.commands

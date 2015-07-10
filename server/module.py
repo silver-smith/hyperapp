@@ -40,12 +40,12 @@ class Module(object):
         return cls.module_by_name[name]
 
     @classmethod
-    def run_resolve( cls, path ):
-        module = path['module']
+    def run_resolver( cls, path ):
+        module = path.pop_str()
         return cls.module_by_name[module].resolve(path)
 
     def resolve( self, path ):
-        return self
+        path.raise_not_found()
 
     def get_commands( self ):
         return []
@@ -57,5 +57,5 @@ class Module(object):
             commands += module.get_commands()
         return commands
     
-    def make_path( self, **kw ):
-        return dict(module=self.name, **kw)
+    def make_path( self, *args ):
+        return [self.name] + list(args)

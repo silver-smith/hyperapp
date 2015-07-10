@@ -36,11 +36,11 @@ subscription = Subscription()
 
 class Object(interface_module.Object):
 
-    def __init__( self, path ):
-        self.path = path
+    def __init__( self ):
+        pass
 
     def get_path( self ):
-        return self.path
+        raise NotImplementedError(self.__class__)
 
     def get_commands( self ):
         return []
@@ -83,16 +83,16 @@ class Object(interface_module.Object):
         return request.make_response(self.get_contents())
 
     def subscribe( self, request ):
-        subscription.add(self.path, request.peer)
+        subscription.add(self.get_path(), request.peer)
 
     def unsubscribe( self, request ):
-        subscription.remove(self.path, request.peer)
+        subscription.remove(self.get_path(), request.peer)
 
 
 class ListObject(Object, list_module.ListObject):
 
-    def __init__( self, path ):
-        Object.__init__(self, path)
+    def __init__( self ):
+        Object.__init__(self)
         self.key_column_idx = self._pick_key_column_idx(self.get_columns())
 
     def _pick_key_column_idx( self, columns ):

@@ -1,6 +1,6 @@
 import json
 from pony.orm import db_session, commit, Required, Optional, Set, select
-from util import str2id
+from util import str2id, path_part_to_str
 from common.interface import Command, Column
 from common.interface.article import (
     TextViewHandle,
@@ -27,6 +27,7 @@ class Article(Object):
 
     iface = article_iface
     proxy_id = 'text'
+    class_name = 'article'
 
     class_registry = {}  # ponyorm entity class -> class
 
@@ -40,26 +41,19 @@ class Article(Object):
         return real_cls(real_cls.make_path(article_rec.id), article_rec.id)
 
     @classmethod
-    def make_path( cls, article_id ):
-        return module.make_path(object='article', article_id=article_id)
+    def resolve( cls, path ):
+        article_id = path.pop_int()
+        return cls(article_id)
 
-    @classmethod
-    def from_path( cls, path ):
-        article_id = path['article_id']
-        return cls(path, article_id=article_id)
-
-    @classmethod
-    def make_new( cls ):
-        article_id = None
-        path = cls.make_path(article_id)
-        return cls(path, article_id=article_id, mode=cls.mode_edit)
-
-    def __init__( self, path, article_id, mode=mode_view ):
+    def __init__( self, article_id=None, mode=mode_view ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        Object.__init__(self, path)
+        Object.__init__(self)
         self.article_id = article_id
         self.mode = mode
 
+    def get_path( self ):
+        return module.make_path(self.class_name, path_part_to_str(self.article_id))
+        
     @db_session
     def get_contents( self, **kw ):
         if self.article_id is not None:
@@ -116,16 +110,17 @@ class Article(Object):
         else:
             article_rec = module.Article(text=text)
         commit()
-        print 'Article is saved, article_id =', article_rec.id
-        new_path = dict(self.path, article_id=article_rec.id)
-        subscription.distribute_update(self.iface, new_path, text)
-        return request.make_response_result(new_path=new_path)
+        self.article_id = article_rec.id  # now may have new get_path()
+        print 'Article is saved, article_id =', self.article_id
+        subscription.distribute_update(self.iface, self.get_path(), text)
+        return request.make_response_result(new_path=self.get_path())
 
 
 class ArticleRefList(ListObject):
 
     iface = ref_list_iface
     proxy_id = 'ref_list'
+    class_name = 'ref_list'
 
     columns = [
         Column('key', 'Ref id'),
@@ -203,6 +198,7 @@ class RefSelector(Object):
 
     iface = object_selector_iface
     proxy_id = 'object_selector'
+    class_name = 'object_selector'
 
     def __init__( self, path, article_id, ref_id ):
         Object.__init__(self, path)
@@ -268,22 +264,21 @@ class ArticleModule(PonyOrmModule):
         Article.register_class(self.Article)
 
     def resolve( self, path ):
-        objname = path.get('object')
-        if objname == 'article':
-            return Article.from_path(path)
-        if objname == 'article_ref_list':
-            return ArticleRefList.from_path(path)
-        if objname == 'article_ref_selector':
-            return RefSelector.from_path(path)
-        assert objname is None, repr(objname)  # Unknown object name
-        return PonyOrmModule.resolve(self, path)
+        objname = path.pop_str()
+        if objname == Article.class_name:
+            return Article.resolve(path)
+        if objname == ArticleRefList.class_name:
+            return ArticleRefList.resolve(path)
+        if objname == RefSelector.class_name:
+            return RefSelector.resolve(path)
+        path.raise_not_found()
 
     def get_commands( self ):
         return [ModuleCommand('create', 'Create article', 'Create new article', 'Alt+A', self.name)]
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_handle(Article.make_new())
+            return request.make_response_handle(Article(mode=Article.mode_edit))
         return PonyOrmModule.run_command(self, request, command_id)
 
     def add_article_fields( self, **fields ):

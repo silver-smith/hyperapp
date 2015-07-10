@@ -20,8 +20,11 @@ class CommandList(ListObject):
         Column('text', 'Name'),
         ]
 
-    def __init__( self, path ):
-        ListObject.__init__(self, path)
+    def __init__( self ):
+        ListObject.__init__(self)
+
+    def get_path( self ):
+        return module.make_path()
 
     def get_all_elements( self ):
         return map(self.cmd2element, Module.get_all_modules_commands())
@@ -49,7 +52,8 @@ class ManagementModule(Module):
         Module.__init__(self, MODULE_NAME)
 
     def resolve( self, path ):
-        return CommandList(path)
+        path.check_empty()
+        return CommandList()
 
 
 module = ManagementModule()

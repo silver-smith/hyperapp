@@ -63,7 +63,7 @@ class Application(QtGui.QApplication, view.View):
         management_iface = iface_registry.resolve('server_management')
         management_cmd = window.OpenCommand(
             'open_server', 'Server', 'Open server global commands', 'Alt+G',
-            management_iface, path=dict(module='management'))
+            management_iface, path=['management'])
         return [management_cmd]  + self._commands
 
     def window_created( self, view ):
@@ -128,7 +128,7 @@ def main():
 
     if len(sys.argv) > 1:
         iface_id, path_str = sys.argv[1].split(':')
-        path = dict(pair.split('=') for pair in path_str.split(','))  # module=file,fspath=/usr/portabe
+        path = path_str.split('/')
     else:
         iface_id = 'fs_dir'
         path=dict(

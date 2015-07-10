@@ -13,7 +13,7 @@ def is_list_inst( val, cls ):
     return True
 
 def path2str( path ):
-    return ','.join('%s=%s' % (key, value) for key, value in sorted(path.items()))
+    return '/'.join(path)
 
 def dt2local_str( dt ):
     if dt is None: return ''
