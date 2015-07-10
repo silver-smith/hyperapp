@@ -7,31 +7,48 @@ import re
 import dateutil.parser
 
 
-packet_size_struct_format = '>I'
+class Header(object):
 
-def packet_size_size():
-    return struct.calcsize(packet_size_struct_format)
+    struct_format = '>II'
 
-def encode_packet_size( size ):
-    return struct.pack(packet_size_struct_format, size)
+    def __init__( self, encoding_size, contents_size ):
+        self.encoding_size = encoding_size
+        self.contents_size = contents_size
 
-def decode_packet_size( data ):
-    return struct.unpack(packet_size_struct_format, data)[0]
+    @classmethod
+    def size( cls ):
+        return struct.calcsize(cls.struct_format)
 
-def encode_packet( data ):
-    return encode_packet_size(len(data)) + data
+    def encode( self ):
+        return struct.pack(self.struct_format, self.encoding_size, self.contents_size)
+
+    @classmethod
+    def decode( cls, data ):
+        encoding_size, contents_size = struct.unpack(cls.struct_format, data)
+        return cls(encoding_size, contents_size)
+
+
+def encode_packet( encoding, contents ):
+    assert isinstance(encoding, str), repr(encoding)
+    assert isinstance(contents, str), repr(contents)
+    encoding_size = len(encoding)
+    contents_size = len(contents)
+    return Header(encoding_size, contents_size).encode() + encoding + contents
 
 def is_full_packet( data ):
-    ssize = packet_size_size()
-    if len(data) < ssize:
+    hsize = Header.size()
+    if len(data) < hsize:
         return False
-    data_size = decode_packet_size(data[:ssize])
-    return len(data) >= ssize + data_size
+    header = Header.decode(data[:hsize])
+    return len(data) >= hsize + header.encoding_size + header.contents_size
 
 def decode_packet( data ):
     assert is_full_packet(data)
-    ssize = packet_size_size()
-    data_size = decode_packet_size(data[:ssize])
-    remainder = data[ssize + data_size:]
-    json_data = json.loads(data[ssize:ssize + data_size])
-    return (json_data, remainder)
+    hsize = Header.size()
+    header = Header.decode(data[:hsize])
+    contents_ofs = hsize + header.encoding_size
+    contents_end = contents_ofs + header.contents_size
+    encoding = data[hsize:contents_ofs]
+    contents = data[contents_ofs:contents_end]
+    remainder = data[contents_end:]
+    return (encoding, contents, remainder)

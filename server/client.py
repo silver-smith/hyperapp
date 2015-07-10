@@ -28,8 +28,8 @@ class Connection(object):
     def close( self ):
         self.socket.close()
 
-    def send( self, packet ):
-        data = encode_packet(packet)
+    def send( self, encoding, packet ):
+        data = encode_packet(encoding, packet)
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
@@ -50,10 +50,10 @@ class Connection(object):
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
-        json_data, self.recv_buf = decode_packet(self.recv_buf)
+        encoding, json_data, self.recv_buf = decode_packet(self.recv_buf)
         ## print 'received:'
         ## pprint.pprint(json_data)
-        return json_data
+        return (encoding, json_data)
 
 
 class Client(object):
@@ -74,19 +74,20 @@ class Client(object):
     def serve( self ):
         try:
             while not self.stop_flag:
-                json_packet = self.conn.receive(NOTIFICATION_DELAY_TIME)
-                if json_packet is None:
+                encoding_and_packet = self.conn.receive(NOTIFICATION_DELAY_TIME)
+                if not encoding_and_packet:
                     if not self.updates_queue.empty():
                         self._send_notification()
                     continue
-                print '%s from %s:%d:' % ('request' if 'request_id' in json_packet else 'notification', self.addr[0], self.addr[1])
-                pprint.pprint(json_packet)
-                response = self._process_json_packet(json_packet)
+                encoding, packet = encoding_and_packet
+                print '%s packet from %s:%d:' % (encoding, self.addr[0], self.addr[1])
+                pprint.pprint(packet)
+                response = self._process_packet(encoding, packet)
                 if response is not None:
-                    json_response = JsonEncoder().encode(tServerPacket, response)
-                    print 'response to %s:%d:' % self.addr
-                    pprint.pprint(json.loads(json_response))
-                    self.conn.send(json_response)
+                    resp_packet = JsonEncoder().encode(tServerPacket, response)
+                    print '%s response to %s:%d:' % (encoding, self.addr[0], self.addr[1])
+                    pprint.pprint(json.loads(resp_packet))
+                    self.conn.send(encoding, resp_packet)
                 else:
                     print 'no response'
         except Error as x:
@@ -96,13 +97,13 @@ class Client(object):
         self.conn.close()
         self.on_close(self)
 
-    def _process_json_packet( self, json_packet ):
-        path = json_packet['path']
+    def _process_packet( self, encoding, packet ):
+        decoder = JsonDecoder(self, iface_registry)
+        request = decoder.decode(tClientPacket, packet)
+        path = request.path
         object = self._resolve(path)
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
-        decoder = JsonDecoder(self, iface_registry)
-        request = decoder.decode(tClientPacket, json_packet)
         response = object.process_request(request)
         return self.prepare_response(request, response)
 
@@ -120,10 +121,10 @@ class Client(object):
         notification = ServerNotification(self)
         while not self.updates_queue.empty():
             notification.add_update(self.updates_queue.get())
-        json_packet = JsonEncoder().encode(tServerPacket, notification)
+        packet = JsonEncoder().encode(tServerPacket, notification)
         print 'notification to %s:%d:' % self.addr
-        pprint.pprint(json_packet)
-        self.conn.send(json_packet)
+        pprint.pprint(packet)
+        self.conn.send(packet)
         
     def _resolve( self, path ):
         return Module.run_resolver(path)

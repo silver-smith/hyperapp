@@ -1,3 +1,4 @@
+import json
 import dateutil.parser
 from method_dispatch import method_dispatch
 from . interface import (
@@ -33,7 +34,7 @@ class JsonDecoder(object):
         self.object_resolver = object_resolver  # obj info -> handle
 
     def decode( self, t, value, path='root' ):
-        return self.dispatch(t, value, path)
+        return self.dispatch(t, json.loads(value), path)
 
     def expect( self, path, expr, desc ):
         if not expr:

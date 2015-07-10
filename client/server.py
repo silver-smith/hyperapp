@@ -8,6 +8,9 @@ import proxy_registry
 from proxy_object import ProxyListObject
 
 
+PACKET_ENCODING = 'json'
+
+
 class Connection(object):
 
     addr2connection = {}
@@ -67,8 +70,8 @@ class Connection(object):
         self.trace('%d bytes is received: %s' % (len(data), data))
         self.recv_buf += data
         while json_packet.is_full_packet(self.recv_buf):
-            packet, self.recv_buf = json_packet.decode_packet(self.recv_buf)
-            self.trace('received packet (%d bytes remainder): %s' % (len(self.recv_buf), packet))
+            encoding, packet, self.recv_buf = json_packet.decode_packet(self.recv_buf)
+            self.trace('received %s packet (%d bytes remainder): %s' % (encoding, len(self.recv_buf), packet))
             self.process_packet(packet)
             
     def process_packet( self, packet_data ):
@@ -105,7 +108,7 @@ class Server(object):
         assert isinstance(request, ClientNotification), repr(request)
         print 'send_notification', request
         json_data = JsonEncoder().encode(tClientPacket, request)
-        packet = json_packet.encode_packet(json_data)
+        packet = json_packet.encode_packet(PACKET_ENCODING, json_data)
         Connection.get_connection(self.addr).send_data(packet)
 
     def execute_request( self, request, resp_handler ):
@@ -114,5 +117,5 @@ class Server(object):
         print 'execute_request', request_id, request
         proxy_registry.register_resp_handler(request_id, resp_handler)
         json_data = JsonEncoder().encode(tClientPacket, request)
-        packet = json_packet.encode_packet(json_data)
+        packet = json_packet.encode_packet(PACKET_ENCODING, json_data)
         Connection.get_connection(self.addr).send_data(packet)
