@@ -3,7 +3,7 @@ import struct
 
 class Header(object):
 
-    struct_format = '>II'
+    struct_format = '!II'
 
     @classmethod
     def size( cls ):
