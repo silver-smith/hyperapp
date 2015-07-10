@@ -13,7 +13,6 @@ from . interface import (
     TIndexedList,
     TRow,
     THierarchy,
-    TPath,
     TObject,
     TIface,
     )
@@ -133,11 +132,6 @@ class JsonDecoder(object):
         for idx, t in enumerate(t.columns):
             result.append(self.dispatch(t, value[idx], join_path(path, '#%d' % idx)))
         return result
-
-    @dispatch.register(TPath)
-    def decode_path( self, t, value, path ):
-        self.expect_type(path, isinstance(value, dict), value, 'path (dict)')
-        return value
 
     @dispatch.register(TObject)
     def decode_object( self, t, value, path ):

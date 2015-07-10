@@ -11,7 +11,6 @@ from . interface import (
     TDynamicRec,
     TList,
     TRow,
-    TPath,
     THierarchy,
     Object,
     TObject,
@@ -77,10 +76,6 @@ class JsonEncoder(object):
         for idx, t in enumerate(t.columns):
             result.append(self.dispatch(t, value[idx]))
         return result
-
-    @dispatch.register(TPath)
-    def encode_path( self, t, value ):
-        return value
 
     @dispatch.register(TObject)
     def encode_object( self, t, obj ):
