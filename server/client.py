@@ -5,7 +5,7 @@ import select
 from Queue import Queue
 from common.interface import iface_registry
 from common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response
-from common.json_packet import encode_packet, is_full_packet, decode_packet
+from common.packet import Packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
 from util import XPathNotFound
@@ -28,8 +28,8 @@ class Connection(object):
     def close( self ):
         self.socket.close()
 
-    def send( self, encoding, packet ):
-        data = encode_packet(encoding, packet)
+    def send( self, packet ):
+        data = packet.encode()
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
@@ -40,7 +40,7 @@ class Connection(object):
 
     def receive( self, timeout ):
         while True:
-            if is_full_packet(self.recv_buf): break
+            if Packet.is_full(self.recv_buf): break
             ## print '  receiving...'
             rd, wr, xc = select.select([self.socket], [], [self.socket], timeout)
             if not rd and not xc:
@@ -50,10 +50,10 @@ class Connection(object):
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
-        encoding, json_data, self.recv_buf = decode_packet(self.recv_buf)
+        packet, self.recv_buf = Packet.decode(self.recv_buf)
         ## print 'received:'
         ## pprint.pprint(json_data)
-        return (encoding, json_data)
+        return packet
 
 
 class Client(object):
@@ -74,20 +74,19 @@ class Client(object):
     def serve( self ):
         try:
             while not self.stop_flag:
-                encoding_and_packet = self.conn.receive(NOTIFICATION_DELAY_TIME)
-                if not encoding_and_packet:
+                packet = self.conn.receive(NOTIFICATION_DELAY_TIME)
+                if not packet:
                     if not self.updates_queue.empty():
                         self._send_notification()
                     continue
-                encoding, packet = encoding_and_packet
-                print '%s packet from %s:%d:' % (encoding, self.addr[0], self.addr[1])
-                pprint.pprint(packet)
-                response = self._process_packet(encoding, packet)
+                print '%s packet from %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
+                pprint.pprint(packet.contents)
+                response = self._process_packet(packet)
                 if response is not None:
                     resp_packet = JsonEncoder().encode(tServerPacket, response)
-                    print '%s response to %s:%d:' % (encoding, self.addr[0], self.addr[1])
+                    print '%s response to %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
                     pprint.pprint(json.loads(resp_packet))
-                    self.conn.send(encoding, resp_packet)
+                    self.conn.send(Packet(packet.encoding, resp_packet))
                 else:
                     print 'no response'
         except Error as x:
@@ -97,9 +96,9 @@ class Client(object):
         self.conn.close()
         self.on_close(self)
 
-    def _process_packet( self, encoding, packet ):
+    def _process_packet( self, packet ):
         decoder = JsonDecoder(self, iface_registry)
-        request = decoder.decode(tClientPacket, packet)
+        request = decoder.decode(tClientPacket, packet.contents)
         path = request.path
         object = self._resolve(path)
         print 'Object:', object

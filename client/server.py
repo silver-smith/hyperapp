@@ -1,5 +1,5 @@
 from PySide import QtNetwork
-from common import json_packet
+from common.packet import Packet
 from common.json_decoder import JsonDecoder
 from common.json_encoder import JsonEncoder
 from common.interface import Interface, iface_registry
@@ -69,16 +69,17 @@ class Connection(object):
         data = str(self.socket.readAll())
         self.trace('%d bytes is received: %s' % (len(data), data))
         self.recv_buf += data
-        while json_packet.is_full_packet(self.recv_buf):
-            encoding, packet, self.recv_buf = json_packet.decode_packet(self.recv_buf)
-            self.trace('received %s packet (%d bytes remainder): %s' % (encoding, len(self.recv_buf), packet))
+        while Packet.is_full(self.recv_buf):
+            packet, self.recv_buf = Packet.decode(self.recv_buf)
+            self.trace('received %s packet (%d bytes remainder): %s'
+                       % (packet.encoding, len(self.recv_buf), packet.contents))
             self.process_packet(packet)
             
-    def process_packet( self, packet_data ):
-        print 'processing packet:', packet_data
+    def process_packet( self, packet ):
+        print 'processing %s packet: %s' % (packet.encoding, packet.contents)
         server = Server(self.addr)
         decoder = JsonDecoder(server, iface_registry, server.resolve_object)
-        response = decoder.decode(tServerPacket, packet_data)
+        response = decoder.decode(tServerPacket, packet.contents)
         if isinstance(response, Response):
             proxy_registry.process_received_response(response)
         else:
@@ -108,8 +109,8 @@ class Server(object):
         assert isinstance(request, ClientNotification), repr(request)
         print 'send_notification', request
         json_data = JsonEncoder().encode(tClientPacket, request)
-        packet = json_packet.encode_packet(PACKET_ENCODING, json_data)
-        Connection.get_connection(self.addr).send_data(packet)
+        packet_data = Packet(PACKET_ENCODING, json_data).encode()
+        Connection.get_connection(self.addr).send_data(packet_data)
 
     def execute_request( self, request, resp_handler ):
         assert isinstance(request, Request), repr(request)
@@ -117,5 +118,5 @@ class Server(object):
         print 'execute_request', request_id, request
         proxy_registry.register_resp_handler(request_id, resp_handler)
         json_data = JsonEncoder().encode(tClientPacket, request)
-        packet = json_packet.encode_packet(PACKET_ENCODING, json_data)
-        Connection.get_connection(self.addr).send_data(packet)
+        packet_data = Packet(PACKET_ENCODING, json_data).encode()
+        Connection.get_connection(self.addr).send_data(packet_data)
