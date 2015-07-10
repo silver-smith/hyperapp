@@ -38,7 +38,7 @@ class Article(Object):
     @classmethod
     def from_rec( cls, article_rec ):
         real_cls = cls.class_registry[article_rec.__class__]
-        return real_cls(real_cls.make_path(article_rec.id), article_rec.id)
+        return real_cls(article_rec.id)
 
     @classmethod
     def resolve( cls, path ):

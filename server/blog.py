@@ -1,7 +1,7 @@
 from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
 from ponyorm_module import PonyOrmModule
-from util import utcnow
+from util import utcnow, path_part_to_str
 from common.interface import Command, Column, DateTimeColumnType
 from common.interface.blog import blog_entry_iface, blog_iface
 from object import ListObject, subscription
@@ -17,18 +17,8 @@ class BlogEntry(article.Article):
     iface = blog_entry_iface
     proxy_id = 'text'
 
-    @classmethod
-    def make_path( cls, article_id ):
-        return module.make_path(object='entry', article_id=article_id)
-
-    @classmethod
-    def make( cls, article_id, mode=article.Article.mode_view ):
-        return cls(cls.make_path(article_id), article_id, mode)
-
-    @classmethod
-    def from_path( cls, path ):
-        article_id = path['article_id']
-        return cls(path, article_id)
+    def get_path( self ):
+        return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
 
     def get_commands( self ):
         return [
@@ -41,7 +31,7 @@ class BlogEntry(article.Article):
         return article.Article.process_request(self, request)
     
     def run_command_parent( self, request ):
-        return request.make_response_handle(Blog.make())
+        return request.make_response_handle(Blog())
 
     @db_session
     def do_save( self, request, text ):
@@ -53,18 +43,19 @@ class BlogEntry(article.Article):
                 text=text,
                 created_at=utcnow())
         commit()
-        print 'Blog entry is saved, blog entry id =', entry_rec.id
-        new_path = dict(self.path, article_id=entry_rec.id)
-        subscription.distribute_update(self.iface, new_path, text)
+        self.article_id = entry_rec.id  # now may have new get_path()
+        print 'Blog entry is saved, blog entry id =', self.article_id
+        subscription.distribute_update(self.iface, self.get_path(), text)
         diff = Blog.Diff_insert_one(entry_rec.id, Blog.rec2element(entry_rec))
-        subscription.distribute_update(blog_iface, Blog.make_path(), diff)
-        return request.make_response_result(new_path=new_path)
+        subscription.distribute_update(blog_iface, Blog.get_path(), diff)
+        return request.make_response_result(new_path=self.get_path())
 
 
 class Blog(ListObject):
 
     iface = blog_iface
     proxy_id = 'list'
+    class_name = 'blog'
 
     columns = [
         Column('key', 'Article id'),
@@ -72,15 +63,15 @@ class Blog(ListObject):
         ]
 
     @classmethod
-    def make( cls ):
-        return cls(cls.make_path())
+    def resolve( cls, path ):
+        return cls()
+
+    def __init__( self ):
+        ListObject.__init__(self)
 
     @classmethod
-    def make_path( cls ):
-        return module.make_path(object='blog')
-
-    def __init__( self, path ):
-        ListObject.__init__(self, path)
+    def get_path( cls ):
+        return module.make_path(cls.class_name)
 
     def get_commands( self ):
         return [Command('add', 'Add entry', 'Create new blog entry', 'Ins')]
@@ -90,13 +81,13 @@ class Blog(ListObject):
             return self.run_command_add(request)
         if request.command_id == 'open':
             article_id = request.params.element_key
-            return request.make_response_handle(BlogEntry.make(article_id=article_id))
+            return request.make_response_handle(BlogEntry(article_id))
         if request.command_id == 'delete':
             return self.run_element_command_delete(request)
         return ListObject.process_request(self, request)
 
     def run_command_add( self, request ):
-        return request.make_response_handle(BlogEntry.make(article_id=None, mode=BlogEntry.mode_edit))
+        return request.make_response_handle(BlogEntry(mode=BlogEntry.mode_edit))
 
     @db_session
     def get_all_elements( self ):
@@ -114,7 +105,7 @@ class Blog(ListObject):
         article_id = request.params.element_key
         module.BlogEntry[article_id].delete()
         diff = self.Diff_delete(article_id)
-        return request.make_response_update(self.iface, self.path, diff)
+        return request.make_response_update(self.iface, self.get_path(), diff)
 
 
 class BlogModule(PonyOrmModule):
@@ -130,13 +121,12 @@ class BlogModule(PonyOrmModule):
         BlogEntry.register_class(self.BlogEntry)
 
     def resolve( self, path ):
-        objname = path.get('object')
-        if objname == 'blog':
-            return Blog(path)
-        if objname == 'entry':
-            return BlogEntry.from_path(path)
-        assert objname is None, repr(objname)  # Unknown object name
-        return PonyOrmModule.resolve(self, path)
+        objname = path.pop_str()
+        if objname == BlogEntry.class_name:
+            return BlogEntry.resolve(path)
+        if objname == Blog.class_name:
+            return Blog.resolve(path)
+        path.raise_not_found()
 
     def get_commands( self ):
         return [
@@ -146,9 +136,9 @@ class BlogModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_handle(BlogEntry.make(article_id=None))
+            return request.make_response_handle(BlogEntry())
         if command_id == 'open_blog':
-            return request.make_response_handle(Blog.make())
+            return request.make_response_handle(Blog())
         return PonyOrmModule.run_command(self, request, command_id)
 
 
