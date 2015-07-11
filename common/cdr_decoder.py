@@ -99,11 +99,11 @@ class CdrDecoder(object):
 
     @dispatch.register(TOptional)
     def decode_optional( self, t, path ):
-        is_none = self.read_bool(path)
-        if is_none:
-            return None
-        else:
+        value_present = self.read_bool(path)
+        if value_present:
             return self.dispatch(t.type, path)
+        else:
+            return None
 
     @dispatch.register(TRecord)
     def decode_record( self, t, path ):
@@ -159,7 +159,7 @@ class CdrDecoder(object):
         self.expect(path, size == len(t.columns),
                     'Row size mismatch: got %d elements, expected %d' % (size, len(t.columns)))
         elements = []
-        for tcol in t.columns:
+        for idx, tcol in enumerate(t.columns):
             elt = self.dispatch(tcol, join_path(path, '#%d' % idx))
             elements.append(elt)
         return elements
