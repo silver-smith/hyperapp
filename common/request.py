@@ -7,7 +7,7 @@ class ServerNotification(object):
 
     packet_type = 'notification'
 
-    def __init__( self, peer, updates=None ):
+    def __init__( self, peer, updates=None, packet_type=None ):
         self.peer = peer
         self.updates = updates or []  # Update list
 
@@ -77,7 +77,7 @@ class TServerPacket(TDynamicRec):
         if rec.packet_type == Response.packet_type:
             return TResponse(self)
         if rec.packet_type == ServerNotification.packet_type:
-            return TRecord(base=self, cls=ServerNotification)
+            return TRecord(base=self, cls=ServerNotification, want_peer_arg=True)
         assert False, repr(rec.packet_type)  # unknown packet type
 
 
