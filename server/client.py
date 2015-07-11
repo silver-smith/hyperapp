@@ -32,7 +32,7 @@ class Connection(object):
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
-            print '  sent (%d) %s' % (sent_size, data[ofs:ofs + min(sent_size, 100)])
+            print '  sent (%d) %s...' % (sent_size, data[ofs:ofs + min(sent_size, 100)])
             if sent_size == 0:
                 raise Error('Socket is closed')
             ofs += sent_size
@@ -45,7 +45,7 @@ class Connection(object):
             if not rd and not xc:
                 return None
             chunk = self.socket.recv(RECV_SIZE)
-            print '  received (%d) %s' % (len(chunk), chunk[:100])
+            print '  received (%d) %s...' % (len(chunk), chunk[:100])
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
