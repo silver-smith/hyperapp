@@ -108,19 +108,11 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app.open_in_any_window(handle)
 
 
-class NarrowerHandle(narrower.Handle):
-
-    def __init__( self, object, key=None ):
-        narrower.Handle.__init__(self, list_view.Handle(object, key))
-        self.discriminator = 'list_narrower'
-        self.object = object
-
-
 # list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,
 # and vice versa, so we need to bind them in another, independent place
 def register_handles():
     tListHandleBase.register_class(list_view.Handle)
-    tListNarrowerHandleBase.register_class(NarrowerHandle)
+    tListNarrowerHandleBase.register_class(narrower.Handle)
     tTextViewHandle.register_class(text_view.Handle)
     tTextEditHandle.register_class(text_edit.Handle)
 

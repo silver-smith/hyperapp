@@ -1,31 +1,26 @@
 from PySide import QtCore, QtGui
-from util import key_match, key_match_any
+from util import uni2str, key_match, key_match_any
 from list_object import ListObject
 from view_command import command
 import view
-import composite
 from line_list_panel import LineListPanel
 import line_edit
 import list_view
 
 
-class Handle(composite.Handle):
+class Handle(list_view.Handle):
 
-    def __init__( self, list_handle, prefix=None ):
-        composite.Handle.__init__(self)
-        assert isinstance(list_handle, list_view.Handle), repr(list_handle)
-        self.list_handle = list_handle
+    def __init__( self, object, key=None, selected_keys=None, select_first=True, prefix=None ):
+        assert prefix is None or isinstance(prefix, basestring), repr(prefix)
+        list_view.Handle.__init__(self, object, key, selected_keys, select_first)
         self.prefix = prefix
 
-    def get_child_handle( self ):
-        return self.list_handle
-
     def construct( self, parent ):
-        print 'narrower construct', parent, self.list_handle, self.prefix
-        return View(parent, self.list_handle, self.prefix)
+        print 'narrower construct', parent, self.object.get_title(), self.object, repr(self.key), repr(self.prefix)
+        return View(parent, self.object, self.key, self.selected_keys, self.select_first, self.prefix)
 
     def __repr__( self ):
-        return 'narrower.Handle(%r/%r)' % (self.list_handle, self.prefix)
+        return 'narrower.Handle(%s/%r/%r)' % (uni2str(self.object.get_title()), uni2str(self.key), self.prefix)
 
 
 # todo: subscription
@@ -65,14 +60,18 @@ class FilteredListObj(ListObject):
 
 class View(LineListPanel):
 
-    def __init__( self, parent, list_handle, prefix ):
-        LineListPanel.__init__(self, parent, line_edit.Handle(prefix), list_handle)
+    def __init__( self, parent, obj, key, selected_keys, select_first, prefix ):
+        line_edit_handle = line_edit.Handle(prefix)
+        list_handle = list_view.Handle(obj, key, selected_keys, select_first)
+        LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._base_obj = self._list_view.get_object()
         self._update_prefix(prefix or '')
         self._line_edit.textEdited.connect(self._on_text_edited)
 
     def handle( self ):
-        return Handle(list_view.Handle(self._base_obj, self._list_view.get_current_key(), self._list_view.selected_keys()),
+        list_handle = self._list_view.handle()
+        return Handle(self._base_obj,
+                      list_handle.key, list_handle.selected_keys, list_handle.select_first,
                       self._line_edit.text())
 
     def get_title( self ):
