@@ -219,12 +219,6 @@ class TRow(Type):
             type.validate(join_path(path, '#%d' % idx), item)
 
 
-class TPath(Type):
-
-    def validate( self, path, value ):
-        self.expect(path, value, 'Path (dict)', isinstance(value, dict))
-
-
 tPath = TList(tString)
 
 tCommand = TRecord([
