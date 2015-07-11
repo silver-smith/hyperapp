@@ -112,13 +112,12 @@ class ListObject(Object):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, content_fields=None, commands=None, columns=None, key_type=tString ):
+    def __init__( self, iface_id, base=None, content_fields=None, commands=None, columns=None, key_type=tString ):
         assert is_list_inst(columns, Type), repr(columns)
         assert isinstance(key_type, Type), repr(key_type)
         self.columns = columns
         self.key_type = key_type
-        Interface.__init__(self, iface_id, content_fields, self.tDiff(),
-                           (commands or []) + self._get_basic_commands(key_type))
+        Interface.__init__(self, iface_id, base, content_fields, self.tDiff(), commands)
         self._register_types()
 
     def _register_types( self ):
@@ -136,12 +135,12 @@ class ListInterface(Interface):
             Field('selected_key', TOptional(self.key_type)),
             ]
 
-    def _get_basic_commands( self, key_type ):
-        return [
-            RequestCmd('get_elements', [Field('count', tInt),
-                                     Field('key', key_type)],
-                                    [Field('fetched_elements', self.tFetchedElements())]),
-                ]
+    def get_basic_commands( self ):
+        return Interface.get_basic_commands(self) \
+            + [RequestCmd('get_elements',
+                          [Field('count', tInt),
+                           Field('key', self.key_type)],
+                          [Field('fetched_elements', self.tFetchedElements())])]
 
     def tFetchedElements( self ):
         return TRecord([

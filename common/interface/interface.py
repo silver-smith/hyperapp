@@ -103,24 +103,32 @@ class Interface(object):
     rt_request = 1
     rt_notification =2
 
-    basic_commands = [
-        OpenCommand('get'),
-        SubscribeCommand(),
-        NotificationCmd('unsubscribe'),
-        ]
-
-    def __init__( self, iface_id, content_fields=None, diff_type=None, commands=None ):
+    def __init__( self, iface_id, base=None, content_fields=None, diff_type=None, commands=None ):
+        assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(content_fields or [], Field), repr(content_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
         assert is_list_inst(commands or [], (RequestCmd, NotificationCmd)), repr(commands)
         self.iface_id = iface_id
         self.content_fields = content_fields or []
         self.diff_type = diff_type
-        self.commands = dict((cmd.command_id, cmd) for cmd in (commands or []) + self.basic_commands)
+        self.commands = commands or []
+        if base:
+            self.content_fields = base.content_fields + self.content_fields
+            self.commands = base.commands + self.commands
+            assert diff_type is None, repr(diff_type)  # Inherited from base
+            self.diff_type = base.diff_type
+        self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
+
+    def get_basic_commands( self ):
+        return [
+            OpenCommand('get'),
+            SubscribeCommand(),
+            NotificationCmd('unsubscribe'),
+            ]
 
     def get_request_type( self, command_id ):
-        assert command_id in self.commands, repr(command_id)  # Unknown command id
-        command = self.commands[command_id]
+        assert command_id in self.id2command, repr(command_id)  # Unknown command id
+        command = self.id2command[command_id]
         if isinstance(command, RequestCmd):
             return self.rt_request
         if isinstance(command, NotificationCmd):
@@ -128,22 +136,22 @@ class Interface(object):
         assert False, command_id  # Only RequestCmd or NotificationCmd are expected here
 
     def is_open_command( self, command_id ):
-        return isinstance(self.commands[command_id], OpenCommand)
+        return isinstance(self.id2command[command_id], OpenCommand)
 
     def get_request_params_type( self, command_id ):
-        return self.commands[command_id].get_params_type(self)
+        return self.id2command[command_id].get_params_type(self)
 
     def make_params( self, command_id, **kw ):
         return self.get_request_params_type(command_id).instantiate(**kw)
 
     def get_command_result_type( self, command_id ):
-        return self.commands[command_id].get_result_type(self)
+        return self.id2command[command_id].get_result_type(self)
 
     def make_result( self, command_id, **kw ):
         return self.get_command_result_type(command_id).instantiate(**kw)
 
     def validate_request( self, command_id, params=None ):
-        cmd = self.commands.get(command_id)
+        cmd = self.id2command.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.get_params_type(self).validate(join_path(self.iface_id, command_id, 'params'), params)
