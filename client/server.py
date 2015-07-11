@@ -7,7 +7,7 @@ import proxy_registry
 from proxy_object import ProxyListObject
 
 
-PACKET_ENCODING = 'json'
+PACKET_ENCODING = 'cdr'
 
 
 def resolve_object( server, objinfo ):
