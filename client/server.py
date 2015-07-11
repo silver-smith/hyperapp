@@ -71,12 +71,12 @@ class Connection(object):
 
     def on_ready_read( self ):
         data = str(self.socket.readAll())
-        self.trace('%d bytes is received: %s' % (len(data), data))
+        self.trace('%d bytes is received: %r' % (len(data), data))
         self.recv_buf += data
         while Packet.is_full(self.recv_buf):
             packet, self.recv_buf = Packet.decode(self.recv_buf)
-            self.trace('received %s packet (%d bytes remainder): %s'
-                       % (packet.encoding, len(self.recv_buf), packet.contents))
+            self.trace('received %s packet (%d bytes remainder): [%d] %r'
+                       % (packet.encoding, len(self.recv_buf), len(packet.contents), packet.contents))
             Server(self.addr).process_packet(packet)
 
     def send_packet( self, packet ):
@@ -113,7 +113,7 @@ class Server(object):
         Connection.get_connection(self.addr).send_packet(packet)
 
     def process_packet( self, packet ):
-        print 'processing %s packet: %s' % (packet.encoding, packet.contents)
+        print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
         response = packet_coders.decode(packet, tServerPacket, self, iface_registry, resolve_object)
         if isinstance(response, Response):
             proxy_registry.process_received_response(response)
