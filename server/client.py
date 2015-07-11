@@ -10,7 +10,7 @@ from util import XPathNotFound
 from module import Module
 
 
-PACKET_ENCODING = 'json'
+PACKET_ENCODING = 'cdr'
 NOTIFICATION_DELAY_TIME = 1  # sec
 RECV_SIZE = 4096
 
