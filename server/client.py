@@ -1,11 +1,11 @@
 import traceback
-import pprint
 import select
 from Queue import Queue
 from common.packet import Packet
 from common.packet_coders import packet_coders
 from common.interface import iface_registry
 from common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response
+from common.visual_rep import pprint
 from util import XPathNotFound
 from module import Module
 
@@ -32,7 +32,7 @@ class Connection(object):
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
-            print '  sent (%d) %s' % (sent_size, data[ofs:ofs + sent_size])
+            print '  sent (%d) %s' % (sent_size, data[ofs:ofs + min(sent_size, 100)])
             if sent_size == 0:
                 raise Error('Socket is closed')
             ofs += sent_size
@@ -45,7 +45,7 @@ class Connection(object):
             if not rd and not xc:
                 return None
             chunk = self.socket.recv(RECV_SIZE)
-            print '  received (%d): %s' % (len(chunk), chunk)
+            print '  received (%d) %s' % (len(chunk), chunk[:100])
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
@@ -78,8 +78,6 @@ class Client(object):
                     if not self.updates_queue.empty():
                         self._send_notification()
                     continue
-                print '%s packet from %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
-                pprint.pprint(packet.contents)
                 response = self._process_packet(packet)
                 if response is not None:
                     self._send(packet.encoding, response)
@@ -94,11 +92,14 @@ class Client(object):
 
     def _send( self, encoding, response_or_notification ):
         packet = packet_coders.encode(encoding, response_or_notification, tServerPacket)
-        print '%s packet to %s:%d: %s' % (packet.encoding, self.addr[0], self.addr[1], packet.contents)
+        print '%s packet to %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
+        pprint(tServerPacket, response_or_notification)
         self.conn.send(packet)
 
     def _process_packet( self, packet ):
         request = packet_coders.decode(packet, tClientPacket, self, iface_registry)
+        print '%s packet from %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
+        pprint(tClientPacket, request)
         path = request.path
         object = self._resolve(path)
         print 'Object:', object
