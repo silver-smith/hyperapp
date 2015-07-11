@@ -1,5 +1,6 @@
 import json
 from method_dispatch import method_dispatch
+from common.util import path2str
 from . interface import (
     TPrimitive,
     TString,
@@ -17,6 +18,8 @@ from . interface import (
     TObject,
     Interface,
     TIface,
+    tPath,
+    tCommand,
     )
 
 
@@ -70,6 +73,8 @@ class VisualRepEncoder(object):
                 break
             base_fields = set(field.name for field in t.get_fields())
             t = t.resolve_dynamic(value)
+        if t is tCommand:
+            return RepNode('command: %s' % ', '.join(child.text for child in children))
         return RepNode('record', children)
 
     @dispatch.register(THierarchy)
@@ -86,6 +91,8 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TList)
     def encode_list( self, t, value ):
+        if t is tPath:
+            return self.encode_path(value)
         children = [self.dispatch(t.element_type, elt) for elt in value]
         return RepNode('list', children)
 
@@ -94,7 +101,7 @@ class VisualRepEncoder(object):
         children = []
         for idx, t in enumerate(t.columns):
             children.append(self.dispatch(t, value[idx]))
-        return RepNode('row', children)
+        return RepNode('row: %s' % ', '.join(child.text for child in children))
 
     @dispatch.register(TObject)
     def encode_object( self, t, obj ):
@@ -106,6 +113,9 @@ class VisualRepEncoder(object):
     def encode_iface( self, t, obj ):
         assert isinstance(obj, Interface), repr(obj)
         return RepNode('iface %r' % obj.iface_id)
+
+    def encode_path( self, obj ):
+        return RepNode(path2str(obj))
 
 
 def pprint( t, value ):
