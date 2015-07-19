@@ -25,8 +25,13 @@ class TestList(ListObject):
     def get_path( self ):
         return module.make_path()
 
-    def get_all_elements( self ):
-        return [self.Element(str(idx), [str(idx), 'field1#%d' % idx, 'field2', 'field3']) for idx in xrange(1000)]
+    def get_elements( self, count=None, from_key=None ):
+        start = from_key or 0
+        stop = start + max(count or 10, 10)
+        elements = [self.Element(idx, [str(idx), 'field1#%d' % idx, 'field2', 'field3'])
+                    for idx in xrange(start, stop)]
+        has_more = True
+        return (elements, has_more)
 
     
 class TestListModule(Module):
