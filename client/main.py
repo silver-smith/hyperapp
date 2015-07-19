@@ -13,6 +13,7 @@ import common.interface.server_management
 import common.interface.fs
 import common.interface.blog
 import common.interface.article
+import common.interface.test_list
 
 from common.util import str2path
 from common.interface import tListHandleBase, tListNarrowerHandleBase, iface_registry

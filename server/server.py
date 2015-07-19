@@ -17,6 +17,7 @@ import fs
 import article
 import blog
 import server_management
+import test_list
 
 
 LISTEN_PORT = 8888
