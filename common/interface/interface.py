@@ -139,6 +139,7 @@ class Interface(object):
         return isinstance(self.id2command[command_id], OpenCommand)
 
     def get_request_params_type( self, command_id ):
+        assert command_id in self.id2command, repr(command_id)  # Unknown command
         return self.id2command[command_id].get_params_type(self)
 
     def make_params( self, command_id, **kw ):
