@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from common.interface import tStringFieldHandle, tIntFieldHandle, tFormHandle
+from common.interface import tStringFieldHandle, tIntFieldHandle, tFormHandle, FormField
 from util import uni2str
 import view
 
@@ -64,7 +64,7 @@ class Handle(view.Handle):
         return View(parent, self.object, self.fields)
 
     def __repr__( self ):
-        return 'form.Handle(%s, %s)' % (uni2str(self.object.title()), self.fields)
+        return 'form.Handle(%s, %s)' % (uni2str(self.object.get_title()), self.fields)
 
 
 class View(view.View, QtGui.QWidget):
@@ -77,18 +77,23 @@ class View(view.View, QtGui.QWidget):
         layout = QtGui.QVBoxLayout()
         for field in fields:
             self._construct_field(layout, field.name, field.handle)
+        layout.addStretch()
         self.setLayout(layout)
 
     def _construct_field( self, layout, name, field_handle ):
         field_view = field_handle.construct(self)
-        self.fields.append(field_view)
+        self.fields.append((name, field_view))
+        label = QtGui.QLabel(name)
+        label.setBuddy(field_view)
+        layout.addWidget(label)
         layout.addWidget(field_view)
+        layout.addSpacing(10)
 
     def get_current_child( self ):
-        return self.fields[0]
+        return self.fields[0][1]
 
     def handle( self ):
-        return Handle(self.object, [field.handle() for field in self.fields])
+        return Handle(self.object, [FormField(name, field.handle()) for name, field in self.fields])
 
 
 tStringFieldHandle.register_class(StringFieldHandle)
