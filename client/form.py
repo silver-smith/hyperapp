@@ -73,11 +73,16 @@ class View(view.View, QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
-        self.fields = [field.construct(self) for field in fields]
+        self.fields = []
         layout = QtGui.QVBoxLayout()
-        for field in self.fields:
-            layout.addWidget(field)
+        for field in fields:
+            self._construct_field(layout, field.name, field.handle)
         self.setLayout(layout)
+
+    def _construct_field( self, layout, name, field_handle ):
+        field_view = field_handle.construct(self)
+        self.fields.append(field_view)
+        layout.addWidget(field_view)
 
     def get_current_child( self ):
         return self.fields[0]

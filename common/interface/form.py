@@ -2,6 +2,7 @@ from . types import (
     tString,
     tInt,
     Field,
+    TRecord,
     TList,
     )
 from . interface import tHandle, tObjHandle
@@ -15,5 +16,11 @@ StringFieldHandle = tStringFieldHandle.instantiate
 tIntFieldHandle = tHandle.register('int_field', base=tFieldHandle, fields=[Field('value', tInt)])
 IntFieldHandle = tIntFieldHandle.instantiate
 
-tFormHandle = tHandle.register('form', base=tObjHandle, fields=[Field('fields', TList(tHandle))])
+tFormField = TRecord([
+    Field('name', tString),
+    Field('handle', tHandle),
+    ])
+FormField = tFormField.instantiate
+
+tFormHandle = tHandle.register('form', base=tObjHandle, fields=[Field('fields', TList(tFormField))])
 FormHandle = tFormHandle.instantiate

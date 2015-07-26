@@ -1,4 +1,4 @@
-from common.interface import Command, Column, StringFieldHandle, IntFieldHandle, FormHandle
+from common.interface import Command, Column, StringFieldHandle, IntFieldHandle, FormField, FormHandle
 from common.interface.test_list import params_form_iface, test_list_iface
 from object import Object, ListObject
 from module import Module, ModuleCommand
@@ -17,7 +17,9 @@ class ParamsForm(Object):
         return module.make_path(self.class_name)
 
     def get_handle( self ):
-        return FormHandle(self, [StringFieldHandle('test-string'), IntFieldHandle(123)])
+        return FormHandle(self, [
+            FormField('prefix', StringFieldHandle('test-string')),
+            FormField('size', IntFieldHandle(123))])
 
 
 class TestList(ListObject):
