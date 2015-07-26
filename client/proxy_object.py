@@ -210,5 +210,6 @@ class ProxyListObject(ProxyObject, ListObject):
         print '~ProxyListObject', self, self.path
 
 
+proxy_registry.register_iface('object', ProxyObject.from_response)
 proxy_registry.register_iface('list', ProxyListObject.from_response)
 tCommand.use_class(Command)

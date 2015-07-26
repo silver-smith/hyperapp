@@ -1,16 +1,30 @@
-from common.interface import Command, Column
-from common.interface.test_list import test_list_iface
-from object import ListObject
+from common.interface import Command, Column, StringFieldHandle, IntFieldHandle, FormHandle
+from common.interface.test_list import params_form_iface, test_list_iface
+from object import Object, ListObject
 from module import Module, ModuleCommand
 
 
 MODULE_NAME = 'test_list'
 
 
+class ParamsForm(Object):
+
+    iface = params_form_iface
+    proxy_id = 'object'
+    class_name = 'params'
+
+    def get_path( self ):
+        return module.make_path(self.class_name)
+
+    def get_handle( self ):
+        return FormHandle(self, [StringFieldHandle('test-string'), IntFieldHandle(123)])
+
+
 class TestList(ListObject):
 
     iface = test_list_iface
     proxy_id = 'list'
+    class_name = 'list'
 
     columns = [
         Column('key'),
@@ -23,7 +37,18 @@ class TestList(ListObject):
         ListObject.__init__(self)
 
     def get_path( self ):
-        return module.make_path()
+        return module.make_path(self.class_name)
+
+    def get_commands( self ):
+        return [Command('params', 'Params', 'Edit params', 'Return')]
+
+    def process_request( self, request ):
+        if request.command_id == 'params':
+            return self.run_command_params(request)
+        return ListObject.process_request(self, request)
+
+    def run_command_params( self, request ):
+        return request.make_response_handle(ParamsForm())
 
     def get_elements( self, count=None, from_key=None ):
         start = from_key or 0
@@ -40,11 +65,16 @@ class TestListModule(Module):
         Module.__init__(self, MODULE_NAME)
 
     def resolve( self, path ):
+        class_name = path.pop_str()
         path.check_empty()
-        return TestList()
+        if class_name == ParamsForm.class_name:
+            return ParamsForm()
+        if class_name == TestList.class_name:
+            return TestList()
+        path.raise_not_found()
 
     def get_commands( self ):
-        return [ModuleCommand('test_list', 'Test list', 'Open test lisg', 'Alt+T', self.name)]
+        return [ModuleCommand('test_list', 'Test list', 'Open test list', 'Alt+T', self.name)]
 
     def run_command( self, request, command_id ):
         if command_id == 'test_list':

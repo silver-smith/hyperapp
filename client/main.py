@@ -38,6 +38,7 @@ import text_edit
 import text_view
 import object_selector
 import ref_list
+import form
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
