@@ -20,7 +20,7 @@ class ParamsForm(Object):
 
     def get_handle( self ):
         return FormHandle(self, [
-            FormField('prefix', StringFieldHandle('test-string')),
+            FormField('key', IntFieldHandle(0)),
             FormField('size', IntFieldHandle(123))])
 
     def get_commands( self ):
@@ -32,8 +32,10 @@ class ParamsForm(Object):
         return Object.process_request(self, request)
 
     def run_command_submit( self, request ):
-        print 'submitted: ', `request.params.prefix`, `request.params.size`
-        return request.make_response_handle(TestList(request.params.size))
+        print 'submitted: ', `request.params.key`, `request.params.size`
+        object = TestList(request.params.size)
+        handle = TestList.iface.ListHandle(object, request.params.key)
+        return request.make_response(handle)
 
 
 class TestList(ListObject):
