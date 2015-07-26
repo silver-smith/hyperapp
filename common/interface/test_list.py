@@ -3,12 +3,13 @@ from . types import (
     tInt,
     Field,
     )
-from . interface import register_iface, OpenCommand, Interface
+from . interface import register_iface, RequestCmd, OpenCommand, Interface
 from . list import ListInterface
 from . form import tStringFieldHandle, tIntFieldHandle, tFormHandle
 
 
 params_form_iface = Interface('test_list_params', commands=[
+    RequestCmd('submit', [Field('prefix', tString), Field('size', tInt)]),
     ])
 
 test_list_iface = ListInterface('test_list', key_type=tInt, columns=[tString, tString, tString, tString], commands=[

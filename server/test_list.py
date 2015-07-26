@@ -21,6 +21,17 @@ class ParamsForm(Object):
             FormField('prefix', StringFieldHandle('test-string')),
             FormField('size', IntFieldHandle(123))])
 
+    def get_commands( self ):
+        return [Command('submit', 'Submit', 'Submit form', 'Return')]
+
+    def process_request( self, request ):
+        if request.command_id == 'submit':
+            return self.run_command_submit(request)
+        return Object.process_request(self, request)
+
+    def run_command_submit( self, request ):
+        print 'submitted: ', `request.params.prefix`, `request.params.size`
+
 
 class TestList(ListObject):
 

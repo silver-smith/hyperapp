@@ -31,7 +31,10 @@ class StringField(view.View, QtGui.QLineEdit):
         view.View.__init__(self, parent)
 
     def handle( self ):
-        return StringFieldHandle(self.text())
+        return StringFieldHandle(self.get_value())
+
+    def get_value( self ):
+        return self.text()
 
     def __del__( self ):
         print '~string_field'
@@ -45,7 +48,10 @@ class IntField(view.View, QtGui.QLineEdit):
         view.View.__init__(self, parent)
 
     def handle( self ):
-        return IntFieldHandle(int(self.text()))
+        return IntFieldHandle(self.get_value())
+
+    def get_value( self ):
+        return int(self.text())
 
     def __del__( self ):
         print '~int_field'
@@ -89,11 +95,29 @@ class View(view.View, QtGui.QWidget):
         layout.addWidget(field_view)
         layout.addSpacing(10)
 
-    def get_current_child( self ):
-        return self.fields[0][1]
+    def get_object( self ):
+        return self.object
+
+    def get_widget_to_focus( self ):
+        return self.fields[0][1].get_widget()
 
     def handle( self ):
         return Handle(self.object, [FormField(name, field.handle()) for name, field in self.fields])
+
+    def run_object_command( self, command_id ):
+        if command_id == 'submit':
+            self.run_object_command_submit(command_id)
+        else:
+            view.View.run_object_command(command_id)
+
+    def run_object_command_submit( self, command_id ):
+        field_values = {}
+        for name, field in self.fields:
+            field_values[name] = field.get_value()
+        handle = self.object.run_command(command_id, self, **field_values)
+        if handle:  # command is handled by client-side
+            self.open(handle)
+
 
 
 tStringFieldHandle.register_class(StringFieldHandle)
