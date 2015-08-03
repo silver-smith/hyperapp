@@ -18,10 +18,10 @@ class ParamsForm(Object):
     def get_path( self ):
         return module.make_path(self.class_name)
 
-    def get_handle( self ):
+    def make_handle( self, key=0, size=DEFAULT_SIZE ):
         return FormHandle(self, [
-            FormField('key', IntFieldHandle(0)),
-            FormField('size', IntFieldHandle(123))])
+            FormField('key', IntFieldHandle(key)),
+            FormField('size', IntFieldHandle(size))])
 
     def get_commands( self ):
         return [Command('submit', 'Submit', 'Submit form', 'Return')]
@@ -73,7 +73,7 @@ class TestList(ListObject):
         return ListObject.process_request(self, request)
 
     def run_command_params( self, request ):
-        return request.make_response_handle(ParamsForm())
+        return request.make_response(ParamsForm().make_handle(size=self.size))
 
     def get_elements( self, count=None, from_key=None ):
         elements = []
