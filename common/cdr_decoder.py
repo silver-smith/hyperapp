@@ -26,21 +26,6 @@ def join_path( *args ):
 class DecodeError(Exception): pass
 
 
-class IStream(object):
-
-    def __init__( self, data ):
-        self.data = data
-        self.ofs = 0
-
-    def read( self, size, path ):
-        if self.ofs + size > len(self.data):
-            raise DecodeError('%s: Unexpected EOF while reading %d bytes from ofs %d. Total size is %d'
-                              % (path, size, self.ofs, len(self.data)))
-        result = self.data[self.ofs : self.ofs + size]
-        self.ofs += size
-        return result
-
-
 class CdrDecoder(object):
 
     def __init__( self, peer, iface_registry, object_resolver=None ):
@@ -50,7 +35,8 @@ class CdrDecoder(object):
 
     def decode( self, t, value, path='root' ):
         assert isinstance(value, str), repr(value)
-        self.istr = IStream(value)
+        self.data = value
+        self.ofs = 0
         return self.dispatch(t, path)
 
     def expect( self, path, expr, desc ):
@@ -64,10 +50,18 @@ class CdrDecoder(object):
     def dispatch( self, t, path ):
         assert False, repr((t, path))  # Unknown type
 
+    def read( self, size, path ):
+        if self.ofs + size > len(self.data):
+            raise DecodeError('%s: Unexpected EOF while reading %d bytes from ofs %d. Total size is %d'
+                              % (path, size, self.ofs, len(self.data)))
+        result = self.data[self.ofs : self.ofs + size]
+        self.ofs += size
+        return result
+    
     def unpack( self, fmt, path ):
         fmt = '!' + fmt
         size = struct.calcsize(fmt)
-        data = self.istr.read(size, path)
+        data = self.read(size, path)
         return struct.unpack(fmt, data)[0]
 
     def read_int( self, path ):
@@ -78,7 +72,7 @@ class CdrDecoder(object):
 
     def read_str( self, path ):
         size = self.read_int(path)
-        data = self.istr.read(size, path)
+        data = self.read(size, path)
         return data.decode('utf-8')
 
     @dispatch.register(TString)
