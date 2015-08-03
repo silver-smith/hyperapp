@@ -19,40 +19,28 @@ from . interface import (
     )
 
 
-class OStream(object):
-
-    def __init__( self ):
-        self.data = ''
-
-    def get_result( self ):
-        return self.data
-
-    def write( self, data ):
-        self.data += data
-
-        
 class CdrEncoder(object):
 
     def encode( self, t, value ):
-        self.os = OStream()
+        self.data = ''
         self.dispatch(t, value)
-        return self.os.get_result()
+        return self.data
 
     @method_dispatch
     def dispatch( self, t, value ):
         assert False, repr((t, value))  # Unknown type
 
     def write_int( self, value ):
-        self.os.write(struct.pack('!q', value))
+        self.data += struct.pack('!q', value)
 
     def write_bool( self, value ):
-        self.os.write(struct.pack('!?', value))
+        self.data += struct.pack('!?', value)
 
     def write_str( self, value ):
         if isinstance(value, unicode):
             value = value.encode('utf-8')
         self.write_int(len(value))
-        self.os.write(value)
+        self.data += value
 
     @dispatch.register(TInt)
     def encode_primitive( self, t, value ):
