@@ -1,6 +1,6 @@
 from PySide import QtCore, QtGui
 from common.interface import tStringFieldHandle, tIntFieldHandle, tFormHandle, FormField
-from util import uni2str
+from util import uni2str, call_after
 import view
 
 
@@ -29,6 +29,7 @@ class StringField(view.View, QtGui.QLineEdit):
     def __init__( self, parent, value ):
         QtGui.QLineEdit.__init__(self, value)
         view.View.__init__(self, parent)
+        self.selectAll()
 
     def handle( self ):
         return StringFieldHandle(self.get_value())
@@ -46,6 +47,7 @@ class IntField(view.View, QtGui.QLineEdit):
         # todo: input mask
         QtGui.QLineEdit.__init__(self, str(value))
         view.View.__init__(self, parent)
+        self.selectAll()
 
     def handle( self ):
         return IntFieldHandle(self.get_value())
@@ -59,15 +61,16 @@ class IntField(view.View, QtGui.QLineEdit):
 
 class Handle(view.Handle):
 
-    def __init__( self, object, fields ):
+    def __init__( self, object, fields, current_field=0 ):
         self.object = object
         self.fields = fields
+        self.current_field = current_field
 
     def get_object( self ):
         return self.object
 
     def construct( self, parent ):
-        return View(parent, self.object, self.fields)
+        return View(parent, self.object, self.fields, self.current_field)
 
     def __repr__( self ):
         return 'form.Handle(%s, %s)' % (uni2str(self.object.get_title()), self.fields)
@@ -75,18 +78,19 @@ class Handle(view.Handle):
 
 class View(view.View, QtGui.QWidget):
 
-    def __init__( self, parent, object, fields ):
+    def __init__( self, parent, object, fields, current_field ):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
         self.fields = []
         layout = QtGui.QVBoxLayout()
-        for field in fields:
-            self._construct_field(layout, field.name, field.handle)
+        for idx, field in enumerate(fields):
+            self._construct_field(layout, field.name, field.handle, focus_it=idx == current_field)
         layout.addStretch()
         self.setLayout(layout)
 
-    def _construct_field( self, layout, name, field_handle ):
+    def _construct_field( self, layout, name, field_handle, focus_it ):
+        print '*** construct', name, focus_it
         field_view = field_handle.construct(self)
         self.fields.append((name, field_view))
         label = QtGui.QLabel(name)
@@ -94,6 +98,8 @@ class View(view.View, QtGui.QWidget):
         layout.addWidget(label)
         layout.addWidget(field_view)
         layout.addSpacing(10)
+        if focus_it:
+            call_after(field_view.ensure_has_focus)
 
     def get_object( self ):
         return self.object
@@ -102,7 +108,13 @@ class View(view.View, QtGui.QWidget):
         return self.fields[0][1].get_widget()
 
     def handle( self ):
-        return Handle(self.object, [FormField(name, field.handle()) for name, field in self.fields])
+        fields = []
+        focused_idx = None
+        for idx, (name, field) in enumerate(self.fields):
+            if field.has_focus():
+                focused_idx = idx
+            fields.append(FormField(name, field.handle()))
+        return Handle(self.object, fields, focused_idx)
 
     def run_object_command( self, command_id ):
         if command_id == 'submit':

@@ -22,5 +22,13 @@ tFormField = TRecord([
     ])
 FormField = tFormField.instantiate
 
-tFormHandle = tHandle.register('form', base=tObjHandle, fields=[Field('fields', TList(tFormField))])
-FormHandle = tFormHandle.instantiate
+tFormHandle = tHandle.register('form', base=tObjHandle, fields=[
+    Field('fields', TList(tFormField)),
+    Field('current_field', tInt),
+    ])
+
+
+class FormHandle(tFormHandle.make_class()):
+
+    def __init__( self, object, fields, current_field=0 ):
+        super(FormHandle, self).__init__(object, fields, current_field)
