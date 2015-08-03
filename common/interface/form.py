@@ -22,11 +22,11 @@ tFormField = TRecord([
     ])
 FormField = tFormField.instantiate
 
+
 tFormHandle = tHandle.register('form', base=tObjHandle, fields=[
     Field('fields', TList(tFormField)),
     Field('current_field', tInt),
     ])
-
 
 class FormHandle(tFormHandle.make_class()):
 
