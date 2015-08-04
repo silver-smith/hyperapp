@@ -1,3 +1,4 @@
+from operator import attrgetter
 from common.util import path2str
 from common.interface import (
     tString,
@@ -91,63 +92,55 @@ class Object(interface_module.Object):
 
 class ListObject(Object, list_module.ListObject):
 
+    default_sort_by_column = 'key'
+
     def __init__( self ):
         Object.__init__(self)
-        self.key_column_idx = self._pick_key_column_idx(self.get_columns())
 
-    def _pick_key_column_idx( self, columns ):
-        for idx, column in enumerate(self.get_columns()):
-            if column.id == 'key':
-                return idx
-        assert False, 'Missing "key" column id'
-
-    def get_contents( self, selected_key=None, **kw ):
-        elements, has_more = self.get_elements()
+    def get_contents( self, **kw ):
+        elements, eof = self.fetch_elements(sort_by_column=default_sort_by_column)
         return Object.get_contents(self,
-            columns=self.get_columns(),
+            sorted_by_column=default_sort_by_column,
             elements=elements,
-            has_more=has_more,
-            selected_key=selected_key,
+            eof=eof,
             **kw)
 
     def get_handle( self ):
         return self.ListHandle(self)
 
     def process_request( self, request ):
-        if request.command_id == 'get_elements':
-            key = request.params.key
-            count = request.params.count
-            elements, has_more = self.get_elements(count, key)
-            return request.make_response_result(fetched_elements=self.FetchedElements(
-                elements=elements,
-                has_more=has_more))
-            return response
+        if request.command_id == 'fetch_elements':
+            params = request.params
+            elements, eof = self.fetch_elements(params.sort_by_column, params.key, params.desc_count, params.asc_count)
+            return request.make_response_result(elements=elements, eof=eof))
         elif request.command_id == 'run_element_command':
-            command_id = request.command_id
-            element_key = request.params.element_key
-            return self.run_element_command(request, command_id, element_key)
+            return self.run_element_command(request, request.command_id, request.params.element_key)
         else:
             return Object.process_request(self, request)
 
-    def get_columns( self ):
-        return self.columns
-
-    def get_elements( self, count=None, from_key=None ):
-        elements = self.get_all_elements()
-        from_idx = 0
-        if from_key is not None:
-            for idx, elt in enumerate(elements):
-                if elt.row[self.key_column_idx] == from_key:
-                    from_idx = idx + 1
-                    break
-            else:
-                print 'Warning: unknown "from_key" is requested: %r' % from_key
-        to_idx = from_idx + max(count or 0, MIN_ROWS_RETURNED)
-        has_more = to_idx <= len(elements)
-        return (elements[from_idx:to_idx], has_more)
-
-    def get_all_elements( self ):
+    # must return tuple (self.iface.Element list, eof:bool)
+    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 
     def run_element_command( self, request, command_id, element_key ):
         assert False, repr(command_id)  # Unexpected command_id
+
+
+class SmallListObject(ListObject):
+
+    def get_elements( self, sort_by_column, key, desc_count, asc_count ):
+        elt2sort_key = attrgetter('row.%s' % self.iface.key_column)
+        sorted_elements = sorted(self.get_all_elements(), key=elt2sort_key)
+        for idx, element in enumerate(sorted_elements):
+            if elt2sort_key(element) >= key:
+                break
+        else:
+            idx = len(sorted_elements)
+        elements = sorted_elements[idx - desc_count : idx + asc_count]
+        eof = idx + asc_count >= len(sorted_elements)
+        return (elements, eof)
+
+    # must return self.iface.Element list
+    def get_all_elements( self ):
+        raise NotImplementedError(self.__class__)
+    

@@ -4,12 +4,12 @@ from . types import (
     tString,
     tInt,
     tBool,
+    tDateTime,
     TOptional,
     Field,
     TRecord,
     TList,
     TIndexedList,
-    TRow,
     tCommand,
     )
 from . hierarchy import THierarchy
@@ -30,11 +30,15 @@ class ColumnType(object):
 
 class StrColumnType(ColumnType):
 
+    type = tString
+
     def to_string( self, value ):
         return value
 
 
 class DateTimeColumnType(ColumnType):
+
+    type = tDateTime
 
     def to_string( self, value ):
         return dt2local_str(value)
@@ -44,17 +48,15 @@ tColumnType.register('str', cls=StrColumnType)
 tColumnType.register('datetime', cls=DateTimeColumnType)
 
 
-tColumn = TRecord([
-    Field('id', tString),
-    Field('title', TOptional(tString)),
-    Field('type', tColumnType),
-    ])
-
-
-class Column(tColumn.make_class()):
+class Column(object):
 
     def __init__( self, id, title=None, type=StrColumnType() ):
-        super(Column, self).__init__(id, title, type)
+        assert isinstance(id, basestring), repr(id)
+        assert isinstance(title, basestring), repr(title)
+        assert isinstance(type, ColumnType), repr(type)
+        self.id = id
+        self.title = title
+        self.type = type
 
 
 class ElementCommand(RequestCmd):
@@ -76,10 +78,6 @@ class ListObject(Object):
     @classmethod
     def Element( cls, *args, **kw ):
         return cls.iface.Element(*args, **kw)
-
-    @classmethod
-    def FetchedElements( cls, *args, **kw ):
-        return cls.iface.FetchedElements(*args, **kw)
 
     @classmethod
     def Diff( cls, *args, **kw ):
@@ -112,13 +110,21 @@ class ListObject(Object):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, base=None, content_fields=None, commands=None, columns=None, key_type=tString ):
-        assert is_list_inst(columns, Type), repr(columns)
-        assert isinstance(key_type, Type), repr(key_type)
+    def __init__( self, iface_id, base=None, content_fields=None, commands=None, columns=None, key_column='key' ):
+        assert is_list_inst(columns, Column), repr(columns)
+        assert isinstance(key_column, basestring), repr(key_column)
         self.columns = columns
-        self.key_type = key_type
+        self.key_column = key_column
         Interface.__init__(self, iface_id, base, content_fields, self.tDiff(), commands)
+        self.tRowRecord = TRecord([Field(column.id, column.type.type) for column in columns])
+        self.key_type = self._pick_key_column().type.type
         self._register_types()
+
+    def _pick_key_column( self ):
+        for column in self.columns:
+            if column.id == self.key_column:
+                return column
+        assert False, repr((self.key_column, [column.id for column in self.columns]))  # unknown key column
 
     def _register_types( self ):
         fields = [Field('key', TOptional(self.key_type))]
@@ -129,37 +135,32 @@ class ListInterface(Interface):
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
-            Field('columns', TIndexedList(tColumn)),
+            Field('sorted_by_column', tString),
             Field('elements', TList(self.tElement())),
-            Field('has_more', tBool),
-            Field('selected_key', TOptional(self.key_type)),
+            Field('eof', tBool),
             ]
 
     def get_basic_commands( self ):
         return Interface.get_basic_commands(self) \
-            + [RequestCmd('get_elements',
-                          [Field('count', tInt),
-                           Field('key', self.key_type)],
-                          [Field('fetched_elements', self.tFetchedElements())])]
+            + [RequestCmd('fetch_elements',
+                          [Field('sort_by_column', tString),
+                           Field('key', self.key_type),
+                           Field('desc_count', tInt),
+                           Field('asc_count', tInt)],
+                          [Field('elements', TList(self.tElement())),
+                           Field('eof', tBool)])]
 
-    def tFetchedElements( self ):
-        return TRecord([
-            Field('elements', TList(self.tElement())),
-            Field('has_more', tBool),
-            ])
-
-    def FetchedElements( self, *args, **kw ):
-        return self.tFetchedElements().instantiate(*args, **kw)
+    def Row( self, *args, **kw ):
+        return self.tRowRecord.instantiate(*args, **kw)
 
     def tElement( self ):
         return TRecord([
-            Field('key', self.key_type),
-            Field('row', TRow(self.columns)),
+            Field('row', self.tRowRecord),
             Field('commands', TList(tCommand)),
             ])
 
-    def Element( self, key, row, commands=None ):
-        return self.tElement().instantiate(key, row, commands or [])
+    def Element( self, row, commands=None ):
+        return self.tElement().instantiate(row, commands or [])
 
     def tDiff( self ):
         return TRecord([
