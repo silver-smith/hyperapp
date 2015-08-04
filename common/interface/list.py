@@ -52,7 +52,7 @@ class Column(object):
 
     def __init__( self, id, title=None, type=StrColumnType() ):
         assert isinstance(id, basestring), repr(id)
-        assert isinstance(title, basestring), repr(title)
+        assert title is None or isinstance(title, basestring), repr(title)
         assert isinstance(type, ColumnType), repr(type)
         self.id = id
         self.title = title
@@ -115,9 +115,9 @@ class ListInterface(Interface):
         assert isinstance(key_column, basestring), repr(key_column)
         self.columns = columns
         self.key_column = key_column
+        self.key_type = self._pick_key_column().type.type  # used by parent __init__
+        self.tRowRecord = TRecord([Field(column.id, column.type.type) for column in columns])  # --//--
         Interface.__init__(self, iface_id, base, content_fields, self.tDiff(), commands)
-        self.tRowRecord = TRecord([Field(column.id, column.type.type) for column in columns])
-        self.key_type = self._pick_key_column().type.type
         self._register_types()
 
     def _pick_key_column( self ):
@@ -137,6 +137,7 @@ class ListInterface(Interface):
         return Interface.get_default_content_fields(self) + [
             Field('sorted_by_column', tString),
             Field('elements', TList(self.tElement())),
+            Field('bof', tBool),
             Field('eof', tBool),
             ]
 
@@ -148,6 +149,7 @@ class ListInterface(Interface):
                            Field('desc_count', tInt),
                            Field('asc_count', tInt)],
                           [Field('elements', TList(self.tElement())),
+                           Field('bof', tBool),
                            Field('eof', tBool)])]
 
     def Row( self, *args, **kw ):

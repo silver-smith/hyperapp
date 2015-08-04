@@ -98,10 +98,11 @@ class ListObject(Object, list_module.ListObject):
         Object.__init__(self)
 
     def get_contents( self, **kw ):
-        elements, eof = self.fetch_elements(sort_by_column=default_sort_by_column)
+        elements, bof, eof = self.fetch_elements(sort_by_column=default_sort_by_column)
         return Object.get_contents(self,
             sorted_by_column=default_sort_by_column,
             elements=elements,
+            bof=bof,
             eof=eof,
             **kw)
 
@@ -111,14 +112,14 @@ class ListObject(Object, list_module.ListObject):
     def process_request( self, request ):
         if request.command_id == 'fetch_elements':
             params = request.params
-            elements, eof = self.fetch_elements(params.sort_by_column, params.key, params.desc_count, params.asc_count)
-            return request.make_response_result(elements=elements, eof=eof))
+            elements, bof, eof = self.fetch_elements(params.sort_by_column, params.key, params.desc_count, params.asc_count)
+            return request.make_response_result(elements=elements, bof=bof,eof=eof)
         elif request.command_id == 'run_element_command':
             return self.run_element_command(request, request.command_id, request.params.element_key)
         else:
             return Object.process_request(self, request)
 
-    # must return tuple (self.iface.Element list, eof:bool)
+    # must return tuple (self.iface.Element list, bof:bool, eof:bool)
     def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 
@@ -137,8 +138,9 @@ class SmallListObject(ListObject):
         else:
             idx = len(sorted_elements)
         elements = sorted_elements[idx - desc_count : idx + asc_count]
+        bof = idx - desc_count > 0
         eof = idx + asc_count >= len(sorted_elements)
-        return (elements, eof)
+        return (elements, bof, eof)
 
     # must return self.iface.Element list
     def get_all_elements( self ):
