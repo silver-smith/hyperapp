@@ -70,7 +70,18 @@ class TestList(ListObject):
 
     def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         assert key is None or isinstance(key, (int, long)), repr(key)
-        ## elements = []
+        if key is None:
+            start = 0
+        else:
+            start = key + 1
+        stop = start + 10
+        elements = []
+        for idx in xrange(start, stop):
+            row = self.Row(idx, 'field1#%d' % idx, 'field2#%d' % idx, 'field3#%d' % idx)
+            elements.append(self.Element(row))
+        bof = True
+        eof = False
+        return (elements, bof, eof)
         ## start = min(self.size, from_key or 0)
         ## stop = min(self.size, start + max(count or 10, 10))
         ## print '--- fetch_elements', `self.size`, `count`, `from_key`, `start`, `stop`
@@ -79,7 +90,6 @@ class TestList(ListObject):
         ##     elements.append(element)
         ## has_more = stop < self.size
         ## return (elements, has_more)
-        return ([self.Element(self.Row(idx, 'field1#%d' % idx, 'field2', 'field3')) for idx in range(10)], True, True)
 
     
 class TestListModule(Module):

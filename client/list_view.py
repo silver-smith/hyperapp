@@ -128,8 +128,15 @@ class Model(QtCore.QAbstractTableModel):
         wanted_last_row = first_visible_row + visible_row_count + 1
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row - len(ordered.keys)
-        if wanted_rows > 0:
+        if wanted_rows > 0 and not ordered.eof:
             self._object.fetch_elements(self._current_order, ordered.keys[-1], 0, wanted_rows)
+
+    def process_fetch_result( self, result ):
+        ordered = self._current_ordered()
+        old_len = len(ordered.keys)
+        self._update_elements(result.elements)
+        ordered.keys.extend([self._element2key(element) for element in result.elements])
+        self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
 
     def _update_elements( self, elements ):
         for element in elements:
@@ -183,23 +190,26 @@ class View(view.View, QtGui.QTableView):
         return self._object
 
     def object_changed( self ):
-        old_key = self._selected_elt.key if self._selected_elt else None
-        self.model().reset()
-        ## self.reset()  # selection etc must be cleared
-        row = self.model().key2row(old_key)
-        if row is None and self._object.element_count() > 0:
-            # find next or any nearby row
-            for row, element in enumerate(self._object.get_fetched_elements()):
-                if element.key >= old_key:
-                    break  # use this row
-            # else: just use last row
-        if row is not None:
-            self.set_current_row(row)
-        view.View.object_changed(self)
-        self.check_if_elements_must_be_fetched()
+        pass
+        ## old_key = self._selected_elt.key if self._selected_elt else None
+        ## self.model().reset()
+        ## ## self.reset()  # selection etc must be cleared
+        ## row = self.model().key2row(old_key)
+        ## if row is None and self._object.element_count() > 0:
+        ##     # find next or any nearby row
+        ##     for row, element in enumerate(self._object.get_fetched_elements()):
+        ##         if element.key >= old_key:
+        ##             break  # use this row
+        ##     # else: just use last row
+        ## if row is not None:
+        ##     self.set_current_row(row)
+        ## view.View.object_changed(self)
+        ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result( self, result ):
-        print 'process_fetch_result', result
+        print '-- process_fetch_result', result.bof, result.eof, result.elements
+        self.model().process_fetch_result(result)
+        self.resizeColumnsToContents()
 
     def diff_applied( self, diff ):
         #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update record
