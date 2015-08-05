@@ -10,6 +10,7 @@ import view
 
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
+APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling 
 
 
 class Handle(view.Handle):
@@ -124,10 +125,11 @@ class Model(QtCore.QAbstractTableModel):
             object.bof, object.eof, [self._element2key(element) for element in object.elements])
         self.reset()
 
-    def visible_rows_changed( self, first_visible_row, visible_row_count ):
-        wanted_last_row = first_visible_row + visible_row_count + 1
+    def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
+        wanted_last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row - len(ordered.keys)
+        print '-- fetch_elements_if_required', first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), wanted_rows
         if wanted_rows > 0 and not ordered.eof:
             self._object.fetch_elements(self._current_order, ordered.keys[-1], 0, wanted_rows)
 
@@ -210,6 +212,7 @@ class View(view.View, QtGui.QTableView):
         print '-- process_fetch_result', result.bof, result.eof, result.elements
         self.model().process_fetch_result(result)
         self.resizeColumnsToContents()
+        self.fetch_elements_if_required()
 
     def diff_applied( self, diff ):
         #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update record
@@ -281,12 +284,11 @@ class View(view.View, QtGui.QTableView):
         QtGui.QTableView.keyPressEvent(self, evt)
 
     def vscrollValueChanged( self, value ):
-        self.check_if_elements_must_be_fetched()
+        self.fetch_elements_if_required()
 
     def resizeEvent( self, evt ):
         result = QtGui.QTableView.resizeEvent(self, evt)
-        first_visible_row, visible_row_count = self._get_visible_rows()
-        self.model().visible_rows_changed(first_visible_row, visible_row_count)
+        self.fetch_elements_if_required()
         return result
 
     def currentChanged( self, idx, prev_idx ):
@@ -307,6 +309,10 @@ class View(view.View, QtGui.QTableView):
         row_height = self.verticalHeader().defaultSectionSize()
         visible_row_count = self.viewport().height() / row_height
         return (first_visible_row, visible_row_count)
+
+    def fetch_elements_if_required( self ):
+        first_visible_row, visible_row_count = self._get_visible_rows()
+        self.model().fetch_elements_if_required(first_visible_row, visible_row_count)
 
     ## def check_if_elements_must_be_fetched( self ):
     ##     last_visible_row = self.get_last_visible_row()
