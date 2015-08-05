@@ -13,7 +13,7 @@ from client import Client
 
 # self-registering modules:
 import ponyorm_module
-## import fs
+import fs
 ## import article
 ## import blog
 import server_management

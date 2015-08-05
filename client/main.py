@@ -10,7 +10,7 @@ sys.path.append('..')
 
 # self-registering ifaces:
 import common.interface.server_management
-## import common.interface.fs
+import common.interface.fs
 ## import common.interface.blog
 ## import common.interface.article
 import common.interface.test_list

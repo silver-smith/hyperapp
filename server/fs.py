@@ -3,17 +3,17 @@ import os.path
 import stat
 from common.interface import Command, Column
 from common.interface.fs import file_iface, dir_iface
-from object import ListObject
+from object import SmallListObject
 from module import Module, ModuleCommand
 
 
 MODULE_NAME = 'file'
 
 
-class FsObject(ListObject):
+class FsObject(SmallListObject):
 
     def __init__( self, fspath ):
-        ListObject.__init__(self)
+        SmallListObject.__init__(self)
         self.fspath = os.path.abspath(fspath)
 
     def get_path( self ):
@@ -25,16 +25,11 @@ class File(FsObject):
     iface = file_iface
     proxy_id = 'list'
 
-    columns = [
-        Column('key', 'idx'),
-        Column('line', 'line'),
-        ]
-
     def get_commands( self ):
         return []
 
-    def get_all_elements( self ):
-        return [self.Element(idx, [idx, line]) for idx, line in enumerate(self._load_lines())]
+    def fetch_all_elements( self ):
+        return [self.Element(self.Row(idx, line)) for idx, line in enumerate(self._load_lines())]
 
     def _load_lines( self, ofs=0 ):
         with file(self.fspath) as f:
@@ -48,14 +43,7 @@ class Dir(FsObject):
     iface = dir_iface
     proxy_id = 'list'
 
-    columns = [
-        Column('key', 'File Name'),
-        Column('ftype', 'File type'),
-        Column('ftime', 'Modification time'),
-        Column('fsize', 'File size'),
-        ]
-
-    def get_all_elements( self ):
+    def fetch_all_elements( self ):
         dirs  = []
         files = []
         try:
@@ -92,8 +80,8 @@ class Dir(FsObject):
             )
  
     def make_elt( self, finfo ):
-        row = [finfo[column.id] for column in self.columns]
-        return self.Element(finfo['key'], row, commands=self.elt_commands(finfo))
+        row = self.Row(key=finfo['key'], ftype=finfo['ftype'], ftime=finfo['ftime'], fsize=finfo['fsize'])
+        return self.Element(row, commands=self.elt_commands(finfo))
 
     def elt_commands( self, finfo ):
         if finfo['ftype'] == 'dir':
@@ -113,7 +101,7 @@ class Dir(FsObject):
             fspath = self.get_parent_dir()
             if fspath is not None:
                 return request.make_response_handle(module.open(fspath))
-        return ListObject.process_request(self, request)
+        return SmallListObject.process_request(self, request)
 
     def get_parent_dir( self ):
         dir = os.path.dirname(self.fspath)
