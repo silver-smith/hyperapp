@@ -95,20 +95,21 @@ class ProxyObject(Object, interface_module.Object):
         self.send_notification('unsubscribe')
 
     # prepare request which does not require/expect response
-    def prepare_notification( self, command_id, **kw ):
-        return ClientNotification(self.server, self.iface, self.path, command_id, params=kw)
+    def prepare_notification( self, command_id, *args, **kw ):
+        params = self.iface.make_params(command_id, *args, **kw)
+        return ClientNotification(self.server, self.iface, self.path, command_id, params=params)
 
-    def prepare_request( self, command_id, **kw ):
+    def prepare_request( self, command_id, *args, **kw ):
         request_id = str(uuid.uuid4())
-        params = self.iface.make_params(command_id, **kw)
+        params = self.iface.make_params(command_id, *args, **kw)
         return Request(self.server, self.iface, self.path, command_id, request_id, params=params)
 
-    def send_notification( self, command_id, **kw ):
-        request = self.prepare_notification(command_id, **kw)
+    def send_notification( self, command_id, *args, **kw ):
+        request = self.prepare_notification(command_id, *args, **kw)
         self.server.send_notification(request)
 
-    def execute_request( self, command_id, initiator_view=None, **kw ):
-        request = self.prepare_request(command_id, **kw)
+    def execute_request( self, command_id, initiator_view=None, *args, **kw ):
+        request = self.prepare_request(command_id, *args, **kw)
         resp_handler = RespHandler(self, command_id, initiator_view)
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
