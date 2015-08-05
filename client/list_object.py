@@ -33,24 +33,16 @@ class ListObject(Object):
     def get_columns( self ):
         raise NotImplementedError(self.__class__)
 
-    def element_count( self ):
+    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
-
-    def get_fetched_elements( self ):
-        raise NotImplementedError(self.__class__)
-    
-    def need_elements_count( self, elements_count, force_load ):
-        raise NotImplementedError(self.__class__)
-
-    @staticmethod
-    def _find_key_column( columns ):
-        for idx, col in enumerate(columns):
-            if col.id == 'key':
-                return idx
-        assert False, 'No "key" column'
 
     def run_element_command( self, command_id, element_key, initiator_view ):
         return self.run_command(command_id, initiator_view, element_key=element_key)
+
+    def _notify_fetch_result( self, result ):
+        #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update Record
+        for observer in self._observers:
+            observer.process_fetch_result(result)
 
     def _notify_diff_applied( self, diff ):
         #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update Record

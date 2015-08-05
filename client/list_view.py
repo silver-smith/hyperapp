@@ -165,6 +165,9 @@ class View(view.View, QtGui.QTableView):
         view.View.object_changed(self)
         self.check_if_elements_must_be_fetched()
 
+    def process_fetch_result( self, result ):
+        print 'process_fetch_result', result
+
     def diff_applied( self, diff ):
         #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update record
         self.model().diff_applied(diff)

@@ -144,68 +144,48 @@ class ProxyListObject(ProxyObject, ListObject):
     def __init__( self, server, path, iface ):
         ProxyObject.__init__(self, server, path, iface)
         ListObject.__init__(self)
-        self.columns = []
-        self.key_column_idx = None
-        self.elements = []
-        self.all_elements_fetched = False
         self.fetch_pending = False  # has pending element fetch request
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self.columns = contents.columns
-        self.key_column_idx = self._find_key_column(self.columns)
+        self.sorted_by_column = contents.sorted_by_column
+        ## self.key_column_idx = self._find_key_column(self.columns)
         self.elements = contents.elements
-        self.all_elements_fetched = not contents.has_more
+        self.bof = contents.bof
+        self.eof = contents.eof
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
-        if self.elements and self.elements[0].key < self.elements[-1].key:  # ascending keys
-            assert diff.start_key <= diff.end_key, (diff.start_key, diff.end_key)
-            self.elements = \
-              [elt for elt in self.elements if elt.key < diff.start_key] \
-              + diff.elements \
-              + [elt for elt in self.elements if elt.key > diff.end_key]
-        else:  # descending keys or single element (todo)
-            assert diff.start_key >= diff.end_key, (diff.start_key, diff.end_key)
-            self.elements = \
-              [elt for elt in self.elements if elt.key > diff.start_key] \
-              + diff.elements \
-              + [elt for elt in self.elements if elt.key < diff.end_key]
+        ## if self.elements and self.elements[0].key < self.elements[-1].key:  # ascending keys
+        ##     assert diff.start_key <= diff.end_key, (diff.start_key, diff.end_key)
+        ##     self.elements = \
+        ##       [elt for elt in self.elements if elt.key < diff.start_key] \
+        ##       + diff.elements \
+        ##       + [elt for elt in self.elements if elt.key > diff.end_key]
+        ## else:  # descending keys or single element (todo)
+        ##     assert diff.start_key >= diff.end_key, (diff.start_key, diff.end_key)
+        ##     self.elements = \
+        ##       [elt for elt in self.elements if elt.key > diff.start_key] \
+        ##       + diff.elements \
+        ##       + [elt for elt in self.elements if elt.key < diff.end_key]
         self._notify_diff_applied(diff)
 
     def get_columns( self ):
-        return self.columns
+        return self.iface.columns
 
-    def element_count( self ):
-        return len(self.elements)
-
-    def get_fetched_elements( self ):
-        return self.elements
-
-    def need_elements_count( self, elements_count, force_load ):
-        if self.all_elements_fetched: return
+    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         if self.fetch_pending: return
-        if len(self.elements) >= elements_count and not force_load: return
-        if self.elements:
-            last_key = self.elements[-1].key
-        else:
-            last_key = None
-        request_count = max(0, elements_count - len(self.elements))  # may be 0 in case of force_load, it is ok
-        self.execute_request('get_elements', key=last_key, count=request_count)
+        self.execute_request('fetch_elements', None, sort_by_column, key, desc_count, asc_count)
         self.fetch_pending = True
 
     def process_response_result( self, command_id, result ):
-        if command_id == 'get_elements':
-            self.process_get_elements_result(result)
+        if command_id == 'fetch_elements':
+            self.process_fetch_elements_result(result)
         ProxyObject.process_response_result(self, command_id, result)
 
-    def process_get_elements_result( self, result ):
+    def process_fetch_elements_result( self, result ):
         self.fetch_pending = False
-        result_elts = result.fetched_elements
-        new_elements = result_elts.elements
-        self.elements += new_elements
-        self.all_elements_fetched = not result_elts.has_more
-        self._notify_diff_applied(ListDiff.append_many(new_elements))
+        self._notify_fetch_result(result)
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path
