@@ -74,13 +74,13 @@ class TestList(ListObject):
             start = 0
         else:
             start = key + 1
-        stop = start + 10
+        stop = min(self.size, start + 10)
         elements = []
         for idx in xrange(start, stop):
             row = self.Row(idx, 'field1#%d' % idx, 'field2#%d' % idx, 'field3#%d' % idx)
             elements.append(self.Element(row))
         bof = True
-        eof = False
+        eof = stop >= self.size
         return (elements, bof, eof)
         ## start = min(self.size, from_key or 0)
         ## stop = min(self.size, start + max(count or 10, 10))
