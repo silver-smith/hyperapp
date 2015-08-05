@@ -142,6 +142,7 @@ class Model(QtCore.QAbstractTableModel):
         old_len = len(ordered.keys)
         self._update_elements(result.elements)
         ordered.keys.extend([self.element2key(element) for element in result.elements])
+        ordered.eof = result.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
 
     def get_key_row( self, key ):

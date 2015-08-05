@@ -133,10 +133,12 @@ class SmallListObject(ListObject):
         elt2sort_key = attrgetter('row.%s' % self.iface.key_column)
         sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
         for idx, element in enumerate(sorted_elements):
-            if elt2sort_key(element) >= key:
+            if elt2sort_key(element) > key:
                 break
         else:
             idx = len(sorted_elements)
+        if asc_count + desc_count < MIN_ROWS_RETURNED:
+            asc_count = MIN_ROWS_RETURNED - desc_count
         elements = sorted_elements[idx - desc_count : idx + asc_count]
         bof = idx - desc_count > 0
         eof = idx + asc_count >= len(sorted_elements)
