@@ -69,7 +69,7 @@ class TestList(ListObject):
         return request.make_response(ParamsForm().make_handle(size=self.size))
 
     def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
-        assert isinstance(key, (int, long)), repr(key)
+        assert key is None or isinstance(key, (int, long)), repr(key)
         ## elements = []
         ## start = min(self.size, from_key or 0)
         ## stop = min(self.size, start + max(count or 10, 10))

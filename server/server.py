@@ -16,7 +16,7 @@ import ponyorm_module
 ## import fs
 ## import article
 ## import blog
-## import server_management
+import server_management
 import test_list
 
 

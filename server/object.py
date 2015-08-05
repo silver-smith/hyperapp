@@ -98,9 +98,9 @@ class ListObject(Object, list_module.ListObject):
         Object.__init__(self)
 
     def get_contents( self, **kw ):
-        elements, bof, eof = self.fetch_elements(sort_by_column=default_sort_by_column)
+        elements, bof, eof = self.fetch_elements(self.default_sort_by_column, None, 0, MIN_ROWS_RETURNED)
         return Object.get_contents(self,
-            sorted_by_column=default_sort_by_column,
+            sorted_by_column=self.default_sort_by_column,
             elements=elements,
             bof=bof,
             eof=eof,
