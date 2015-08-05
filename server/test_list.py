@@ -79,7 +79,7 @@ class TestList(ListObject):
         ##     elements.append(element)
         ## has_more = stop < self.size
         ## return (elements, has_more)
-        return ([self.Element(self.Row(idx, 'field1#%d' % idx, 'field2', 'field3')) for idx in range(100)], True, True)
+        return ([self.Element(self.Row(idx, 'field1#%d' % idx, 'field2', 'field3')) for idx in range(10)], True, True)
 
     
 class TestListModule(Module):

@@ -142,14 +142,14 @@ class Interface(object):
         assert command_id in self.id2command, repr(command_id)  # Unknown command
         return self.id2command[command_id].get_params_type(self)
 
-    def make_params( self, command_id, **kw ):
-        return self.get_request_params_type(command_id).instantiate(**kw)
+    def make_params( self, command_id, *args, **kw ):
+        return self.get_request_params_type(command_id).instantiate(*args, **kw)
 
     def get_command_result_type( self, command_id ):
         return self.id2command[command_id].get_result_type(self)
 
-    def make_result( self, command_id, **kw ):
-        return self.get_command_result_type(command_id).instantiate(**kw)
+    def make_result( self, command_id, *args, **kw ):
+        return self.get_command_result_type(command_id).instantiate(*args, **kw)
 
     def validate_request( self, command_id, params=None ):
         cmd = self.id2command.get(command_id)

@@ -124,6 +124,13 @@ class Model(QtCore.QAbstractTableModel):
             object.bof, object.eof, [self._element2key(element) for element in object.elements])
         self.reset()
 
+    def visible_rows_changed( self, first_visible_row, visible_row_count ):
+        wanted_last_row = first_visible_row + visible_row_count + 1
+        ordered = self._current_ordered()
+        wanted_rows = wanted_last_row - len(ordered.keys)
+        if wanted_rows > 0:
+            self._object.fetch_elements(self._current_order, ordered.keys[-1], 0, wanted_rows)
+
     def _update_elements( self, elements ):
         for element in elements:
             self._key2element[self._element2key(element)] = element
@@ -268,33 +275,34 @@ class View(view.View, QtGui.QTableView):
 
     def resizeEvent( self, evt ):
         result = QtGui.QTableView.resizeEvent(self, evt)
-        self.check_if_elements_must_be_fetched()
+        first_visible_row, visible_row_count = self._get_visible_rows()
+        self.model().visible_rows_changed(first_visible_row, visible_row_count)
         return result
 
     def currentChanged( self, idx, prev_idx ):
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
-        if idx.row() != -1:
-            self._selected_elt = self._object.get_fetched_elements()[idx.row()]
-        else:
-            self._selected_elt = None
-        self._selected_elements_changed()
+        ## if idx.row() != -1:
+        ##     self._selected_elt = self._object.get_fetched_elements()[idx.row()]
+        ## else:
+        ##     self._selected_elt = None
+        ## self._selected_elements_changed()
 
     def setVisible( self, visible ):
         QtGui.QTableView.setVisible(self, visible)
         if visible:
             self.selected_elements_changed(self.get_selected_elts())
 
-    def get_last_visible_row( self ):
+    def _get_visible_rows( self ):
         first_visible_row = self.verticalHeader().visualIndexAt(0)
         row_height = self.verticalHeader().defaultSectionSize()
         visible_row_count = self.viewport().height() / row_height
-        return max(first_visible_row, 0) + visible_row_count + 1
+        return (first_visible_row, visible_row_count)
 
-    def check_if_elements_must_be_fetched( self ):
-        last_visible_row = self.get_last_visible_row()
-        want_element_count = last_visible_row + 1
-        force_load = self.want_current_key is not None
-        self._object.need_elements_count(last_visible_row + 1, force_load)
+    ## def check_if_elements_must_be_fetched( self ):
+    ##     last_visible_row = self.get_last_visible_row()
+    ##     want_element_count = last_visible_row + 1
+    ##     force_load = self.want_current_key is not None
+    ##     self._object.need_elements_count(last_visible_row + 1, force_load)
 
     def _on_activated( self, index ):
         elt = self._object.get_fetched_elements()[index.row()]
