@@ -129,9 +129,9 @@ class ListObject(Object, list_module.ListObject):
 
 class SmallListObject(ListObject):
 
-    def get_elements( self, sort_by_column, key, desc_count, asc_count ):
+    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         elt2sort_key = attrgetter('row.%s' % self.iface.key_column)
-        sorted_elements = sorted(self.get_all_elements(), key=elt2sort_key)
+        sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
         for idx, element in enumerate(sorted_elements):
             if elt2sort_key(element) >= key:
                 break
@@ -143,6 +143,6 @@ class SmallListObject(ListObject):
         return (elements, bof, eof)
 
     # must return self.iface.Element list
-    def get_all_elements( self ):
+    def fetch_all_elements( self ):
         raise NotImplementedError(self.__class__)
     

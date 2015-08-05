@@ -4,7 +4,7 @@ from . types import (
     Field,
     )
 from . interface import register_iface, RequestCmd, OpenCommand, Interface
-from . list import Column, ListInterface
+from . list import Column, intColumnType, ListInterface
 from . form import tStringFieldHandle, tIntFieldHandle, tFormHandle
 
 
@@ -13,7 +13,7 @@ params_form_iface = Interface('test_list_params', commands=[
     ])
 
 test_list_iface = ListInterface('test_list', columns=[
-        Column('key'),
+        Column('key', type=intColumnType),
         Column('field_1', 'Field #1'),
         Column('field_2', 'Field #2'),
         Column('field_3', 'Field #3'),

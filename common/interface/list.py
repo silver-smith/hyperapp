@@ -28,12 +28,20 @@ class ColumnType(object):
         raise NotImplementedError(self.__class__)
 
 
-class StrColumnType(ColumnType):
+class StringColumnType(ColumnType):
 
     type = tString
 
     def to_string( self, value ):
         return value
+
+
+class IntColumnType(ColumnType):
+
+    type = tInt
+
+    def to_string( self, value ):
+        return str(value)
 
 
 class DateTimeColumnType(ColumnType):
@@ -44,13 +52,18 @@ class DateTimeColumnType(ColumnType):
         return dt2local_str(value)
 
 
-tColumnType.register('str', cls=StrColumnType)
+tColumnType.register('string', cls=StringColumnType)
+tColumnType.register('int', cls=IntColumnType)
 tColumnType.register('datetime', cls=DateTimeColumnType)
+
+stringColumnType = StringColumnType()
+intColumnType = IntColumnType()
+dateTimeColumnType = DateTimeColumnType()
 
 
 class Column(object):
 
-    def __init__( self, id, title=None, type=StrColumnType() ):
+    def __init__( self, id, title=None, type=StringColumnType() ):
         assert isinstance(id, basestring), repr(id)
         assert title is None or isinstance(title, basestring), repr(title)
         assert isinstance(type, ColumnType), repr(type)

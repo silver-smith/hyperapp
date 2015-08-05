@@ -44,13 +44,6 @@ class TestList(ListObject):
     proxy_id = 'list'
     class_name = 'list'
 
-    columns = [
-        Column('key'),
-        Column('field_1', 'Field #1'),
-        Column('field_2', 'Field #2'),
-        Column('field_3', 'Field #3'),
-        ]
-
     @classmethod
     def resolve( cls, path ):
         size = path.pop_int()
@@ -75,16 +68,18 @@ class TestList(ListObject):
     def run_command_params( self, request ):
         return request.make_response(ParamsForm().make_handle(size=self.size))
 
-    def get_elements( self, count=None, from_key=None ):
-        elements = []
-        start = min(self.size, from_key or 0)
-        stop = min(self.size, start + max(count or 10, 10))
-        print '--- get_elements', `self.size`, `count`, `from_key`, `start`, `stop`
-        for idx in xrange(start, stop):
-            element = self.Element(idx, [str(idx), 'field1#%d' % idx, 'field2', 'field3'])
-            elements.append(element)
-        has_more = stop < self.size
-        return (elements, has_more)
+    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
+        assert isinstance(key, (int, long)), repr(key)
+        ## elements = []
+        ## start = min(self.size, from_key or 0)
+        ## stop = min(self.size, start + max(count or 10, 10))
+        ## print '--- fetch_elements', `self.size`, `count`, `from_key`, `start`, `stop`
+        ## for idx in xrange(start, stop):
+        ##     element = self.Element(idx, [str(idx), 'field1#%d' % idx, 'field2', 'field3'])
+        ##     elements.append(element)
+        ## has_more = stop < self.size
+        ## return (elements, has_more)
+        return ([self.Element(self.Row(idx, 'field1#%d' % idx, 'field2', 'field3')) for idx in range(100)], True, True)
 
     
 class TestListModule(Module):
