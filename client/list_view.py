@@ -15,10 +15,13 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 
 class Handle(view.Handle):
 
-    def __init__( self, object, key=None, selected_keys=None, select_first=True ):
+    def __init__( self, object, key=None, order_column_id=None,
+                  first_visible_row=None, selected_keys=None, select_first=True ):
         view.Handle.__init__(self)
         self.object = object
         self.key = key
+        self.order_column_id = order_column_id
+        self.first_visible_row = first_visible_row
         self.selected_keys = selected_keys  # for multi-select mode only
         self.select_first = select_first  # bool
 
@@ -27,7 +30,8 @@ class Handle(view.Handle):
 
     def construct( self, parent ):
         print 'list_view construct', parent, self.object.get_title(), self.object, repr(self.key)
-        return View(parent, self.object, self.key, self.selected_keys, self.select_first)
+        return View(parent, self.object, self.key, self.order_column_id,
+                    self.first_visible_row, self.selected_keys, self.select_first)
 
     def __repr__( self ):
         return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
@@ -52,9 +56,9 @@ class Model(QtCore.QAbstractTableModel):
         self._current_order = None  # column id
         self._ordered = {}  # order column id -> OrderedElements
 
-    def element_count( self ):
-        return self._object.element_count()
-
+    def get_order_column_id( self ):
+        return self._current_order
+    
     def diff_applied( self, diff ):
         print '--- list_view.Model.diff_applied', diff
         return
@@ -140,6 +144,17 @@ class Model(QtCore.QAbstractTableModel):
         ordered.keys.extend([self._element2key(element) for element in result.elements])
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
 
+    def get_key_row( self, key ):
+        ordered = self._current_ordered()
+        try:
+            return ordered.keys.index(key)
+        except ValueError:
+            return None
+
+    def get_row_key( self, idx ):
+        ordered = self._current_ordered()
+        return ordered.keys[idx]
+
     def _update_elements( self, elements ):
         for element in elements:
             self._key2element[self._element2key(element)] = element
@@ -159,7 +174,7 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, QtGui.QTableView):
 
-    def __init__( self, parent, obj, key, selected_keys, select_first ):
+    def __init__( self, parent, obj, key, order_column_id, first_visible_row, selected_keys, select_first ):
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
         self._select_first = select_first
@@ -179,10 +194,12 @@ class View(view.View, QtGui.QTableView):
         self.want_current_key = None
         self.set_object(obj)
         if not self.set_current_key(key, select_first):
-            self.want_current_key = key  # need to fetch elements until this key is fount
+            self.want_current_key = key  # need to fetch elements until this key is found
 
     def handle( self ):
-        return Handle(self.get_object(), self.get_current_key(), self.selected_keys(), self._select_first)
+        first_visible_row, visible_row_count = self._get_visible_rows()
+        return Handle(self.get_object(), self.get_current_key(), first_visible_row,
+                      self.selected_keys(), self._select_first)
 
     def get_title( self ):
         if self._object:
@@ -226,10 +243,9 @@ class View(view.View, QtGui.QTableView):
             self.want_current_key = None
 
     def get_current_key( self ):
-        if self._selected_elt:
-            return self._selected_elt.key
-        else:
-            return None
+        index = self.currentIndex()
+        if index.row() == -1: return None
+        return self.model().get_row_key(index.row())
 
     def get_current_elt( self ):
         return self._selected_elt
@@ -241,12 +257,14 @@ class View(view.View, QtGui.QTableView):
         return False  # todo
 
     def set_current_row( self, row ):
-        if row is not None:
-            idx = self.model().createIndex(row, 0)
-            self.setCurrentIndex(idx)
-            self.scrollTo(idx)
+        if row is None: return
+        idx = self.model().createIndex(row, 0)
+        self.setCurrentIndex(idx)
+        self.scrollTo(idx)
 
     def set_current_key( self, key, select_first=False, accept_near=False ):
+        row = self.model().get_key_row(key)
+        self.set_current_row(row)
         ## if accept_near:
         ##     row = self._find_nearest_key(key)
         ## else:
