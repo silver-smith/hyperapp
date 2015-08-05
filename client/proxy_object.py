@@ -173,6 +173,9 @@ class ProxyListObject(ProxyObject, ListObject):
     def get_columns( self ):
         return self.iface.columns
 
+    def get_key_column_id( self ):
+        return self.iface.key_column
+
     def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         if self.fetch_pending: return
         self.execute_request('fetch_elements', None, sort_by_column, key, desc_count, asc_count)

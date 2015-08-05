@@ -33,6 +33,9 @@ class ListObject(Object):
     def get_columns( self ):
         raise NotImplementedError(self.__class__)
 
+    def get_key_column_id( self ):
+        raise NotImplementedError(self.__class__)
+
     def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 

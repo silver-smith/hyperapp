@@ -4,7 +4,7 @@ from PySide import QtCore, QtGui
 sys.path.append('..')
 
 from util import uni2str, key_match, key_match_any
-from list_object import ListDiff
+from list_object import ListDiff, ListObject
 from command import run_element_command, make_element_cmd_action
 import view
 
@@ -32,48 +32,63 @@ class Handle(view.Handle):
         return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
 
 
+class OrderedElements(object):
+
+    def __init__( self, bof, eof, keys ):
+        self.bof = bof
+        self.eof = eof
+        self.keys = keys
+
+
 class Model(QtCore.QAbstractTableModel):
 
     def __init__( self ):
         QtCore.QAbstractTableModel.__init__(self)
-        self._list_obj = None
+        self._object = None
+        self._columns = []
         self._visible_columns = []
-        self._key2row = {}
+        self._key2element = {}
+        self._current_order = None  # column id
+        self._ordered = {}  # order column id -> OrderedElements
 
     def element_count( self ):
-        return self._list_obj.element_count()
+        return self._object.element_count()
 
     def diff_applied( self, diff ):
-        self._update_mapping()  # underlying list object elements are already changed
-        if diff.start_key is not None:
-            assert diff.start_key == diff.end_key  # only signle key removal is supported by now
-            elements = self._list_obj.get_fetched_elements()
-            if elements and elements[0].key < elements[-1].key:
-                for row, elt in enumerate(elements):
-                    if elt.key > diff.start_key:
-                        self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
-                        break
-            else:
-                for row, elt in enumerate(elements):
-                    if elt.key < diff.start_key:
-                        self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
-                        break
-            assert diff.end_key is not None
-            start_row = self._key2row[diff.start_key]
-            end_row = self._key2row[diff.end_key]
-            self.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
-        if diff.start_key is not None and diff.elements:
-            start_row = self._key2row[diff.start_key]
-            self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
-        if diff.start_key == None and diff.end_key == None:  # append
-            element_count = self._list_obj.element_count()
-            self.rowsInserted.emit(QtCore.QModelIndex(), element_count - len(diff.elements), element_count - 1)
+        print '--- list_view.Model.diff_applied', diff
+        return
+        ## self._update_mapping()  # underlying list object elements are already changed
+        ## if diff.start_key is not None:
+        ##     assert diff.start_key == diff.end_key  # only signle key removal is supported by now
+        ##     elements = self._object.get_fetched_elements()
+        ##     if elements and elements[0].key < elements[-1].key:
+        ##         for row, elt in enumerate(elements):
+        ##             if elt.key > diff.start_key:
+        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
+        ##                 break
+        ##     else:
+        ##         for row, elt in enumerate(elements):
+        ##             if elt.key < diff.start_key:
+        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
+        ##                 break
+        ##     assert diff.end_key is not None
+        ##     start_row = self._key2row[diff.start_key]
+        ##     end_row = self._key2row[diff.end_key]
+        ##     self.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
+        ## if diff.start_key is not None and diff.elements:
+        ##     start_row = self._key2row[diff.start_key]
+        ##     self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
+        ## if diff.start_key == None and diff.end_key == None:  # append
+        ##     element_count = self._object.element_count()
+        ##     self.rowsInserted.emit(QtCore.QModelIndex(), element_count - len(diff.elements), element_count - 1)
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
-            element = self._list_obj.get_fetched_elements()[index.row()]
             column = self._visible_columns[index.column()]
-            return column.type.to_string(element.row[column.idx])
+            key = self._current_ordered().keys[index.row()]
+            element = self._get_key2element(key)
+            value = getattr(element.row, column.id)
+            return column.type.to_string(value)
         return None
 
     def headerData( self, section, orient, role ):
@@ -83,33 +98,44 @@ class Model(QtCore.QAbstractTableModel):
         return hdata
 
     def rowCount( self, parent ):
-        if parent == QtCore.QModelIndex() and self._list_obj:
-            return self._list_obj.element_count()
+        if parent == QtCore.QModelIndex() and self._object:
+            return len(self._current_ordered().keys)
         else:
             return 0
 
     def columnCount( self, parent ):
-        if parent == QtCore.QModelIndex() and self._list_obj:
+        if parent == QtCore.QModelIndex() and self._object:
             return len(self._visible_columns)
         else:
             return 0
 
     def reset( self ):
-        self._update_mapping()
+        ## self._update_mapping()
         QtCore.QAbstractTableModel.reset(self)
 
-    def set_object( self, list_obj ):
-        self._list_obj = list_obj
-        self._visible_columns = filter(lambda column: column.title is not None, list_obj.get_columns())
+    def set_object( self, object ):
+        self._object = object
+        self._columns = object.get_columns()
+        self._visible_columns = filter(lambda column: column.title is not None, self._columns)
+        self._key_column_id = object.get_key_column_id()
+        self._current_order = object.sorted_by_column
+        self._update_elements(object.elements)
+        self._ordered[self._current_order] = OrderedElements(
+            object.bof, object.eof, [self._element2key(element) for element in object.elements])
         self.reset()
 
-    def key2row( self, key ):
-        return self._key2row.get(key)
+    def _update_elements( self, elements ):
+        for element in elements:
+            self._key2element[self._element2key(element)] = element
 
-    def _update_mapping( self ):
-        self._key2row = {}
-        for row, element in enumerate(self._list_obj.get_fetched_elements()):
-            self._key2row[element.key] = row
+    def _element2key( self, element ):
+        return getattr(element.row, self._key_column_id)
+
+    def _current_ordered( self ):
+        return self._ordered[self._current_order]
+
+    def _get_key2element( self, key ):
+        return self._key2element[key]
 
     def __del__( self ):
         print '~list_view.Model'
@@ -121,7 +147,7 @@ class View(view.View, QtGui.QTableView):
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
         self._select_first = select_first
-        self.list_obj = None
+        self._object = None
         self.setModel(Model())
         self.verticalHeader().hide()
         opts = self.viewOptions()
@@ -143,20 +169,20 @@ class View(view.View, QtGui.QTableView):
         return Handle(self.get_object(), self.get_current_key(), self.selected_keys(), self._select_first)
 
     def get_title( self ):
-        if self.list_obj:
-            return self.list_obj.get_title()
+        if self._object:
+            return self._object.get_title()
 
     def get_object( self ):
-        return self.list_obj
+        return self._object
 
     def object_changed( self ):
         old_key = self._selected_elt.key if self._selected_elt else None
         self.model().reset()
         ## self.reset()  # selection etc must be cleared
         row = self.model().key2row(old_key)
-        if row is None and self.list_obj.element_count() > 0:
+        if row is None and self._object.element_count() > 0:
             # find next or any nearby row
-            for row, element in enumerate(self.list_obj.get_fetched_elements()):
+            for row, element in enumerate(self._object.get_fetched_elements()):
                 if element.key >= old_key:
                     break  # use this row
             # else: just use last row
@@ -201,22 +227,22 @@ class View(view.View, QtGui.QTableView):
             self.scrollTo(idx)
 
     def set_current_key( self, key, select_first=False, accept_near=False ):
-        if accept_near:
-            row = self._find_nearest_key(key)
-        else:
-            row = self.model().key2row(key)
-            if row is None and select_first and self.list_obj.get_fetched_elements():
-                row = 0
-        if row is None:
-            return False
-        self.set_current_row(row)
+        ## if accept_near:
+        ##     row = self._find_nearest_key(key)
+        ## else:
+        ##     row = self.model().key2row(key)
+        ##     if row is None and select_first and self._object.get_fetched_elements():
+        ##         row = 0
+        ## if row is None:
+        ##     return False
+        ## self.set_current_row(row)
         return True
 
     def _find_nearest_key( self, key ):
-        for idx, element in enumerate(self.list_obj.get_fetched_elements()):
+        for idx, element in enumerate(self._object.get_fetched_elements()):
             if element.key >= key:
                 return idx
-        if self.list_obj.get_fetched_elements():
+        if self._object.get_fetched_elements():
             return 0
         else:
             return None  # has no rows
@@ -224,11 +250,12 @@ class View(view.View, QtGui.QTableView):
     def selected_keys( self ):
         return None
 
-    def set_object( self, list_obj ):
-        self.list_obj = list_obj
-        self.model().set_object(list_obj)
+    def set_object( self, object ):
+        assert isinstance(object, ListObject), repr(object)
+        self._object = object
+        self.model().set_object(object)
         self.resizeColumnsToContents()
-        self.list_obj.subscribe(self)
+        self._object.subscribe(self)
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
@@ -247,7 +274,7 @@ class View(view.View, QtGui.QTableView):
     def currentChanged( self, idx, prev_idx ):
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
         if idx.row() != -1:
-            self._selected_elt = self.list_obj.get_fetched_elements()[idx.row()]
+            self._selected_elt = self._object.get_fetched_elements()[idx.row()]
         else:
             self._selected_elt = None
         self._selected_elements_changed()
@@ -267,10 +294,10 @@ class View(view.View, QtGui.QTableView):
         last_visible_row = self.get_last_visible_row()
         want_element_count = last_visible_row + 1
         force_load = self.want_current_key is not None
-        self.list_obj.need_elements_count(last_visible_row + 1, force_load)
+        self._object.need_elements_count(last_visible_row + 1, force_load)
 
     def _on_activated( self, index ):
-        elt = self.list_obj.get_fetched_elements()[index.row()]
+        elt = self._object.get_fetched_elements()[index.row()]
         for cmd in elt.commands:
             if cmd.id == 'open':
                 run_element_command(cmd, self, elt.key)
