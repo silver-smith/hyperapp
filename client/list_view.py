@@ -91,7 +91,7 @@ class Model(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             column = self._visible_columns[index.column()]
             key = self._current_ordered().keys[index.row()]
-            element = self._get_key2element(key)
+            element = self._get_key_element(key)
             value = getattr(element.row, column.id)
             return column.type.to_string(value)
         return None
@@ -126,7 +126,7 @@ class Model(QtCore.QAbstractTableModel):
         self._current_order = object.sorted_by_column
         self._update_elements(object.elements)
         self._ordered[self._current_order] = OrderedElements(
-            object.bof, object.eof, [self._element2key(element) for element in object.elements])
+            object.bof, object.eof, [self.element2key(element) for element in object.elements])
         self.reset()
 
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
@@ -141,7 +141,7 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         old_len = len(ordered.keys)
         self._update_elements(result.elements)
-        ordered.keys.extend([self._element2key(element) for element in result.elements])
+        ordered.keys.extend([self.element2key(element) for element in result.elements])
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
 
     def get_key_row( self, key ):
@@ -151,21 +151,26 @@ class Model(QtCore.QAbstractTableModel):
         except ValueError:
             return None
 
-    def get_row_key( self, idx ):
+    def get_row_key( self, row ):
         ordered = self._current_ordered()
-        return ordered.keys[idx]
+        return ordered.keys[row]
+
+    def get_row_element( self, row ):
+        ordered = self._current_ordered()
+        key = ordered.keys[row]
+        return self._get_key_element(key)
 
     def _update_elements( self, elements ):
         for element in elements:
-            self._key2element[self._element2key(element)] = element
+            self._key2element[self.element2key(element)] = element
 
-    def _element2key( self, element ):
+    def element2key( self, element ):
         return getattr(element.row, self._key_column_id)
 
     def _current_ordered( self ):
         return self._ordered[self._current_order]
 
-    def _get_key2element( self, key ):
+    def _get_key_element( self, key ):
         return self._key2element[key]
 
     def __del__( self ):
@@ -339,10 +344,11 @@ class View(view.View, QtGui.QTableView):
     ##     self._object.need_elements_count(last_visible_row + 1, force_load)
 
     def _on_activated( self, index ):
-        elt = self._object.get_fetched_elements()[index.row()]
-        for cmd in elt.commands:
+        element = self.model().get_row_element(index.row())
+        element_key = self.model().element2key(element)
+        for cmd in element.commands:
             if cmd.id == 'open':
-                run_element_command(cmd, self, elt.key)
+                run_element_command(cmd, self, element_key)
                 return
 
     def _selected_elements_changed( self ):
