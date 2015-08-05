@@ -89,6 +89,10 @@ class ElementOpenCommand(ElementCommand, OpenCommand):
 class ListObject(Object):
 
     @classmethod
+    def Row( cls, *args, **kw ):
+        return cls.iface.Row(*args, **kw)
+
+    @classmethod
     def Element( cls, *args, **kw ):
         return cls.iface.Element(*args, **kw)
 
