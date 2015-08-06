@@ -61,7 +61,7 @@ class TcpServer(object):
     def on_client_closed( self, client ):
         self.finished_threads.append(self.client2thread[client])
         del self.client2thread[client]
-        print 'client %s:%d is finished' % client.addr
+        print 'client %s:%d is gone' % client.addr
 
 
 def main():
