@@ -31,7 +31,7 @@ class View(view.View, QtGui.QTextEdit):
         self.notify_on_text_changed = True
         self.setPlainText(object.text)
         self.textChanged.connect(self._on_text_changed)
-        self.object.subscribe_remote(self)
+        self.object.subscribe(self)
 
     def handle( self ):
         return Handle(self.object, self.toPlainText())

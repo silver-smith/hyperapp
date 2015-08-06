@@ -78,8 +78,11 @@ class ProxyObject(Object, interface_module.Object):
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
 
-    def subscribe_remote( self, observer ):
-        this_is_first_observer = self.subscribe(observer)
+    def subscribe_local( self, observer ):
+        return Object.subscribe(self, observer)
+
+    def subscribe( self, observer ):
+        this_is_first_observer = Object.subscribe(self, observer)
         if this_is_first_observer:
             self.execute_request('subscribe')
 
@@ -157,7 +160,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self.elements = ListElements(contents.elements, contents.bof, contents.eof)
 
     def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
-        this_is_first_observer = self.subscribe(observer)
+        this_is_first_observer = self.subscribe_local(observer)
         if not this_is_first_observer: return
         self.execute_request('subscribe_and_fetch_elements', None, sort_by_column, key, desc_count, asc_count)
         self.fetch_pending = True
