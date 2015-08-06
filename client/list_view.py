@@ -133,9 +133,19 @@ class Model(QtCore.QAbstractTableModel):
         wanted_last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row - len(ordered.keys)
+        key = ordered.keys[-1] if ordered.keys else None
         print '-- fetch_elements_if_required', first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), wanted_rows
         if wanted_rows > 0 and not ordered.eof:
-            self._object.fetch_elements(self._current_order, ordered.keys[-1], 0, wanted_rows)
+            self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
+
+    def subscribe_and_fetch_elements( self, observer, first_visible_row, visible_row_count ):
+        wanted_last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
+        ordered = self._current_ordered()
+        ordered.keys = []
+        wanted_rows = wanted_last_row
+        key = None
+        print '-- subscribe_and_fetch_elements', first_visible_row, visible_row_count, wanted_rows
+        self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 0, wanted_rows)
 
     def process_fetch_result( self, result ):
         ordered = self._current_ordered()
@@ -299,7 +309,8 @@ class View(view.View, QtGui.QTableView):
         self._object = object
         self.model().set_object(object)
         self.resizeColumnsToContents()
-        self._object.subscribe_remote(self)
+        first_visible_row, visible_row_count = self._get_visible_rows()
+        self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):

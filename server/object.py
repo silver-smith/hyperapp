@@ -111,13 +111,19 @@ class ListObject(Object, list_module.ListObject):
 
     def process_request( self, request ):
         if request.command_id == 'fetch_elements':
-            params = request.params
-            elements, bof, eof = self.fetch_elements(params.sort_by_column, params.key, params.desc_count, params.asc_count)
-            return request.make_response_result(elements=elements, bof=bof,eof=eof)
+            return self.process_request_fetch_elements(request)
+        if request.command_id == 'subscribe_and_fetch_elements':
+            self.subscribe(request)
+            return self.process_request_fetch_elements(request)
         elif request.command_id == 'run_element_command':
             return self.run_element_command(request, request.command_id, request.params.element_key)
         else:
             return Object.process_request(self, request)
+
+    def process_request_fetch_elements( self, request ):
+        params = request.params
+        elements, bof, eof = self.fetch_elements(params.sort_by_column, params.key, params.desc_count, params.asc_count)
+        return request.make_response_result(elements=elements, bof=bof, eof=eof)
 
     # must return tuple (self.iface.Element list, bof:bool, eof:bool)
     def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):

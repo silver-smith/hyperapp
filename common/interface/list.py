@@ -159,15 +159,20 @@ class ListInterface(Interface):
             ]
 
     def get_basic_commands( self ):
+        fetch_params_fields = [
+            Field('sort_by_column', tString),
+            Field('key', TOptional(self.key_type)),
+            Field('desc_count', tInt),
+            Field('asc_count', tInt),
+            ]
+        fetch_result_fields = [
+            Field('elements', TList(self.tElement())),
+            Field('bof', tBool),
+            Field('eof', tBool),
+            ]
         return Interface.get_basic_commands(self) \
-            + [RequestCmd('fetch_elements',
-                          [Field('sort_by_column', tString),
-                           Field('key', self.key_type),
-                           Field('desc_count', tInt),
-                           Field('asc_count', tInt)],
-                          [Field('elements', TList(self.tElement())),
-                           Field('bof', tBool),
-                           Field('eof', tBool)])]
+            + [RequestCmd('fetch_elements', fetch_params_fields, fetch_result_fields),
+               RequestCmd('subscribe_and_fetch_elements', fetch_params_fields, fetch_result_fields)]
 
     def Row( self, *args, **kw ):
         return self.tRowRecord.instantiate(*args, **kw)
