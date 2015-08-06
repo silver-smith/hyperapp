@@ -42,6 +42,7 @@ article_iface = Interface('article',
                           commands=[
                               RequestCmd('save', [Field('text', tString)], [Field('new_path', tPath)]),
                               OpenCommand('refs'),
+                              OpenCommand('open_ref', [Field('ref_id', tString)]),
                               ],
                           diff_type=tString)
 

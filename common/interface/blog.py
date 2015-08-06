@@ -14,7 +14,6 @@ from . article import article_iface
 blog_entry_iface = Interface('blog_entry', base=article_iface,
                              commands=[
                                  OpenCommand('parent'),
-                                 OpenCommand('open_ref', [Field('ref_id', tString)]),
                                  ])
 
 blog_iface = ListInterface(
