@@ -299,7 +299,7 @@ class View(view.View, QtGui.QTableView):
         self._object = object
         self.model().set_object(object)
         self.resizeColumnsToContents()
-        self._object.subscribe(self)
+        self._object.subscribe_remote(self)
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):

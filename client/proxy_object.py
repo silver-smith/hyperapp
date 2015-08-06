@@ -77,7 +77,11 @@ class ProxyObject(Object, interface_module.Object):
         self.iface = resolve_iface(state['iface_id'])
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
-        self.execute_request('subscribe')
+
+    def subscribe_remote( self, observer ):
+        this_is_first_observer = self.subscribe(observer)
+        if this_is_first_observer:
+            self.execute_request('subscribe')
 
     def set_contents( self, contents ):
         self.commands = contents.commands

@@ -34,7 +34,9 @@ class Object(object):
 
     def subscribe( self, observer ):
         assert isinstance(observer, ObjectObserver), repr(observer)
+        this_is_first_observer = len(self._observers) == 0
         self._observers.add(observer)
+        return this_is_first_observer
 
     def observers_gone( self ):
         pass

@@ -32,7 +32,7 @@ class View(view.View, QtGui.QTextBrowser):
         self.object = object
         self.setHtml(self.text2html(object.text or ''))
         self.anchorClicked.connect(self.on_anchor_clicked)
-        self.object.subscribe(self)
+        self.object.subscribe_remote(self)
 
     def handle( self ):
         return Handle(self.object, self.toPlainText())
