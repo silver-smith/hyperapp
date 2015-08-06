@@ -253,7 +253,7 @@ class View(view.View, QtGui.QTableView):
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result( self, result ):
-        print '-- process_fetch_result', result.bof, result.eof, result.elements
+        print '-- process_fetch_result', result.bof, result.eof, len(result.elements)
         self.model().process_fetch_result(result)
         self.resizeColumnsToContents()
         self.fetch_elements_if_required()
