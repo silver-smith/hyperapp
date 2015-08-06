@@ -90,7 +90,6 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(layout)
 
     def _construct_field( self, layout, name, field_handle, focus_it ):
-        print '*** construct', name, focus_it
         field_view = field_handle.construct(self)
         self.fields.append((name, field_view))
         label = QtGui.QLabel(name)
