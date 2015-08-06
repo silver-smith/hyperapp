@@ -100,7 +100,9 @@ class Dir(FsObject):
         if request.command_id == 'parent':
             fspath = self.get_parent_dir()
             if fspath is not None:
-                return request.make_response_handle(module.open(fspath))
+                key = os.path.basename(self.fspath)
+                handle = self.ListNarrowerHandle(module.open(fspath), key)
+                return request.make_response(handle)
         return SmallListObject.process_request(self, request)
 
     def get_parent_dir( self ):
