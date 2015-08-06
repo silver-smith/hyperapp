@@ -5,7 +5,7 @@ sys.path.append('..')
 
 from common.interface import tListHandleBase
 from util import uni2str, key_match, key_match_any
-from list_object import ListDiff, ListObject
+from list_object import ListDiff, ListElements, ListObject
 from command import run_element_command, make_element_cmd_action
 import view
 
@@ -17,13 +17,14 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 class Handle(view.Handle):
 
     def __init__( self, object, key=None, order_column_id=None,
-                  first_visible_row=None, selected_keys=None, select_first=True ):
+                  first_visible_row=None, elements=None, select_first=True ):
+        assert elements is None or isinstance(elements, ListElements), repr(elements)
         view.Handle.__init__(self)
         self.object = object
         self.key = key
         self.order_column_id = order_column_id
         self.first_visible_row = first_visible_row
-        self.selected_keys = selected_keys  # for multi-select mode only
+        self.elements = elements  # cached elements
         self.select_first = select_first  # bool
 
     def get_object( self ):
@@ -32,7 +33,7 @@ class Handle(view.Handle):
     def construct( self, parent ):
         print 'list_view construct', parent, self.object.get_title(), self.object, repr(self.key)
         return View(parent, self.object, self.key, self.order_column_id,
-                    self.first_visible_row, self.selected_keys, self.select_first)
+                    self.first_visible_row, self.elements, self.select_first)
 
     def __repr__( self ):
         return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
@@ -40,10 +41,10 @@ class Handle(view.Handle):
 
 class OrderedElements(object):
 
-    def __init__( self, bof, eof, keys ):
+    def __init__( self, keys, bof, eof ):
+        self.keys = keys
         self.bof = bof
         self.eof = eof
-        self.keys = keys
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -119,15 +120,15 @@ class Model(QtCore.QAbstractTableModel):
         ## self._update_mapping()
         QtCore.QAbstractTableModel.reset(self)
 
-    def set_object( self, object ):
+    def set_object( self, object, order_column_id, elements ):
         self._object = object
         self._columns = object.get_columns()
         self._visible_columns = filter(lambda column: column.title is not None, self._columns)
         self._key_column_id = object.get_key_column_id()
-        self._current_order = object.sorted_by_column
-        self._update_elements(object.elements)
+        self._current_order = order_column_id
+        self._update_elements(elements.elements)
         self._ordered[self._current_order] = OrderedElements(
-            object.bof, object.eof, [self.element2key(element) for element in object.elements])
+            [self.element2key(element) for element in elements.elements]. elements.bof, elements.eof)
         self.reset()
 
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
@@ -172,6 +173,14 @@ class Model(QtCore.QAbstractTableModel):
         key = ordered.keys[row]
         return self._get_key_element(key)
 
+    def get_visible_elements( self, first_visible_row, visible_row_count ):
+        last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
+        ordered = self._current_ordered()
+        elements = [self._get_key_element(key) for key in ordered.keys[first_visible_row:last_row]]
+        bof = ordered.bof and first_visible_row == 0
+        eof = ordered.eof and last_row == len(ordered.keys)
+        return ListElements(elements, bof, eof)
+
     def _update_elements( self, elements ):
         for element in elements:
             self._key2element[self.element2key(element)] = element
@@ -191,7 +200,7 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, QtGui.QTableView):
 
-    def __init__( self, parent, obj, key, order_column_id, first_visible_row, selected_keys, select_first ):
+    def __init__( self, parent, obj, key, order_column_id, first_visible_row, elements, select_first ):
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
         self._select_first = select_first
@@ -209,14 +218,15 @@ class View(view.View, QtGui.QTableView):
         self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self.want_current_key = None
-        self.set_object(obj)
+        self.set_object(obj, order_column_id or object.sorted_by_column, elements or object.elements)
         if not self.set_current_key(key, select_first):
             self.want_current_key = key  # need to fetch elements until this key is found
 
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
+        elements = self.model().get_visible_elements(first_visible_row, visible_row_count)
         return Handle(self.get_object(), self.get_current_key(), first_visible_row,
-                      self.selected_keys(), self._select_first)
+                      elements, self._select_first)
 
     def get_title( self ):
         if self._object:
@@ -305,10 +315,10 @@ class View(view.View, QtGui.QTableView):
     def selected_keys( self ):
         return None
 
-    def set_object( self, object ):
+    def set_object( self, object, order_column_id, elements ):
         assert isinstance(object, ListObject), repr(object)
         self._object = object
-        self.model().set_object(object)
+        self.model().set_object(object, order_column_id, elements)
         self.resizeColumnsToContents()
         first_visible_row, visible_row_count = self._get_visible_rows()
         self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)

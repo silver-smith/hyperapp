@@ -28,6 +28,14 @@ class ListDiff(object):
         self.elements = elements    # with these elemenents
 
 
+class ListElements(object):
+
+    def __init__( self, elements, bof, eof ):
+        self.elements = elements
+        self.bof = bof
+        self.eof = eof
+
+
 class ListObject(Object):
 
     def get_columns( self ):

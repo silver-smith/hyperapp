@@ -154,9 +154,7 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.set_contents(self, contents)
         self.sorted_by_column = contents.sorted_by_column
         ## self.key_column_idx = self._find_key_column(self.columns)
-        self.elements = contents.elements
-        self.bof = contents.bof
-        self.eof = contents.eof
+        self.elements = ListElements(contents.elements, contents.bof, contents.eof)
 
     def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
         this_is_first_observer = self.subscribe(observer)
