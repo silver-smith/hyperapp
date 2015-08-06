@@ -128,7 +128,7 @@ class Model(QtCore.QAbstractTableModel):
         self._current_order = order_column_id
         self._update_elements(elements.elements)
         self._ordered[self._current_order] = OrderedElements(
-            [self.element2key(element) for element in elements.elements]. elements.bof, elements.eof)
+            [self.element2key(element) for element in elements.elements], elements.bof, elements.eof)
         self.reset()
 
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
@@ -200,7 +200,7 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, QtGui.QTableView):
 
-    def __init__( self, parent, obj, key, order_column_id, first_visible_row, elements, select_first ):
+    def __init__( self, parent, object, key, order_column_id, first_visible_row, elements, select_first ):
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
         self._select_first = select_first
@@ -218,15 +218,15 @@ class View(view.View, QtGui.QTableView):
         self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self.want_current_key = None
-        self.set_object(obj, order_column_id or object.sorted_by_column, elements or object.elements)
+        self.set_object(object, order_column_id or object.sorted_by_column, elements or object.elements)
         if not self.set_current_key(key, select_first):
             self.want_current_key = key  # need to fetch elements until this key is found
 
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
         elements = self.model().get_visible_elements(first_visible_row, visible_row_count)
-        return Handle(self.get_object(), self.get_current_key(), first_visible_row,
-                      elements, self._select_first)
+        return Handle(self.get_object(), self.get_current_key(), self.model().get_order_column_id,
+                      first_visible_row, elements, self._select_first)
 
     def get_title( self ):
         if self._object:

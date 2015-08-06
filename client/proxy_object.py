@@ -12,7 +12,7 @@ import common.interface as interface_module
 from common.request import ClientNotification, Request
 from object import Object
 from command import Command
-from list_object import ListDiff, ListObject
+from list_object import ListDiff, ListElements, ListObject
 import proxy_registry
 import view
 
