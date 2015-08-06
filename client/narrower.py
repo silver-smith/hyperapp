@@ -10,14 +10,16 @@ import list_view
 
 class Handle(list_view.Handle):
 
-    def __init__( self, object, key=None, selected_keys=None, select_first=True, prefix=None ):
+    def __init__( self, object, key=None, order_column_id=None,
+                  first_visible_row=None, elements=None, select_first=True, prefix=None ):
         assert prefix is None or isinstance(prefix, basestring), repr(prefix)
-        list_view.Handle.__init__(self, object, key, selected_keys, select_first)
+        list_view.Handle.__init__(self, object, key, order_column_id, first_visible_row, elements, select_first)
         self.prefix = prefix
 
     def construct( self, parent ):
         print 'narrower construct', parent, self.object.get_title(), self.object, repr(self.key), repr(self.prefix)
-        return View(parent, self.object, self.key, self.selected_keys, self.select_first, self.prefix)
+        return View(parent, self.object, self.key, self.order_column_id,
+                    self.first_visible_row, self.elements, self.select_first, self.prefix)
 
     def __repr__( self ):
         return 'narrower.Handle(%s/%r/%r)' % (uni2str(self.object.get_title()), uni2str(self.key), self.prefix)
@@ -60,9 +62,9 @@ class FilteredListObj(ListObject):
 
 class View(LineListPanel):
 
-    def __init__( self, parent, obj, key, selected_keys, select_first, prefix ):
+    def __init__( self, parent, obj, key, order_column_id, first_visible_row, elements, select_first, prefix ):
         line_edit_handle = line_edit.Handle(prefix)
-        list_handle = list_view.Handle(obj, key, selected_keys, select_first)
+        list_handle = list_view.Handle(obj, key, order_column_id, first_visible_row, elements, select_first)
         LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._base_obj = self._list_view.get_object()
         self._update_prefix(prefix or '')

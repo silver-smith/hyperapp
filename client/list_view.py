@@ -315,7 +315,7 @@ class View(view.View, QtGui.QTableView):
     def selected_keys( self ):
         return None
 
-    def set_object( self, object, order_column_id, elements ):
+    def set_object( self, object, order_column_id=None, elements=None ):
         assert isinstance(object, ListObject), repr(object)
         self._object = object
         self.model().set_object(object, order_column_id, elements)
