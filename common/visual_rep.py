@@ -94,7 +94,7 @@ class VisualRepEncoder(object):
         if t is tPath:
             return self.encode_path(value)
         children = [self.dispatch(t.element_type, elt) for elt in value]
-        return RepNode('list', children)
+        return RepNode('list (with %d elements)' % len(value), children)
 
     @dispatch.register(TRow)
     def encode_row( self, t, value ):
