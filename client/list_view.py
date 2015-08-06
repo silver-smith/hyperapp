@@ -225,7 +225,7 @@ class View(view.View, QtGui.QTableView):
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
         elements = self.model().get_visible_elements(first_visible_row, visible_row_count)
-        return Handle(self.get_object(), self.get_current_key(), self.model().get_order_column_id,
+        return Handle(self.get_object(), self.get_current_key(), self.model().get_order_column_id(),
                       first_visible_row, elements, self._select_first)
 
     def get_title( self ):
