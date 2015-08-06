@@ -7,6 +7,7 @@ from module import Module, ModuleCommand
 
 MODULE_NAME = 'test_list'
 DEFAULT_SIZE = 10000
+MAX_ROWS_RETURNED = 100
 
 
 class ParamsForm(Object):
@@ -74,7 +75,7 @@ class TestList(ListObject):
             start = 0
         else:
             start = key + 1
-        stop = min(self.size, start + 10)
+        stop = min(self.size, start + min(asc_count, MAX_ROWS_RETURNED))
         elements = []
         for idx in xrange(start, stop):
             row = self.Row(idx, 'field1#%d' % idx, 'field2#%d' % idx, 'field3#%d' % idx)

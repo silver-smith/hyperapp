@@ -7,7 +7,7 @@ from . types import (
     Field,
     )
 from . interface import RequestCmd, OpenCommand, Interface, register_iface
-from . list import ElementCommand, ElementOpenCommand, ListInterface
+from . list import intColumnType, dateTimeColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 from . article import article_iface
 
 
@@ -17,14 +17,18 @@ blog_entry_iface = Interface('blog_entry', base=article_iface,
                                  OpenCommand('open_ref', [Field('ref_id', tString)]),
                                  ])
 
-blog_iface = ListInterface('blog',
-                           columns=[tInt, tDateTime],
-                           commands=[
-                               ElementOpenCommand('open'),
-                               ElementCommand('delete'),
-                               OpenCommand('add'),
-                               ],
-                            key_type=tInt)
+blog_iface = ListInterface(
+    'blog',
+    columns=[
+        Column('id', 'Article id', intColumnType),
+        Column('created_at', 'Creation date', dateTimeColumnType),
+        ],
+    commands=[
+        ElementOpenCommand('open'),
+        ElementCommand('delete'),
+        OpenCommand('add'),
+    ],
+    key_column='id')
 
 register_iface(blog_entry_iface)
 register_iface(blog_iface)

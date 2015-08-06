@@ -11,13 +11,13 @@ sys.path.append('..')
 # self-registering ifaces:
 import common.interface.server_management
 import common.interface.fs
-## import common.interface.blog
-## import common.interface.article
+import common.interface.blog
+import common.interface.article
 import common.interface.test_list
 
 from common.util import str2path
 from common.interface import tListHandleBase, tListNarrowerHandleBase, iface_registry
-## from common.interface.article import tTextViewHandle, tTextEditHandle
+from common.interface.article import tTextViewHandle, tTextEditHandle
 from common.request import Request
 from util import pickle_dumps, pickle_loads
 from server import Server
@@ -36,8 +36,8 @@ import text_object
 import proxy_text_object
 import text_edit
 import text_view
-## import object_selector
-## import ref_list
+import object_selector
+import ref_list
 import form
 
 
@@ -115,8 +115,8 @@ class OpenRespHandler(proxy_registry.RespHandler):
 def register_handles():
     tListHandleBase.register_class(list_view.Handle)
     tListNarrowerHandleBase.register_class(narrower.Handle)
-    ## tTextViewHandle.register_class(text_view.Handle)
-    ## tTextEditHandle.register_class(text_edit.Handle)
+    tTextViewHandle.register_class(text_view.Handle)
+    tTextEditHandle.register_class(text_edit.Handle)
 
 def main():
     register_handles()

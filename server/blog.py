@@ -4,7 +4,7 @@ from ponyorm_module import PonyOrmModule
 from util import utcnow, path_part_to_str
 from common.interface import Command, Column, DateTimeColumnType
 from common.interface.blog import blog_entry_iface, blog_iface
-from object import ListObject, subscription
+from object import SmallListObject, subscription
 from module import ModuleCommand
 import article
 
@@ -51,23 +51,18 @@ class BlogEntry(article.Article):
         return request.make_response_result(new_path=self.get_path())
 
 
-class Blog(ListObject):
+class Blog(SmallListObject):
 
     iface = blog_iface
     proxy_id = 'list'
     class_name = 'blog'
-
-    columns = [
-        Column('key', 'Article id'),
-        Column('created_at', 'Creation date', type=DateTimeColumnType()),
-        ]
 
     @classmethod
     def resolve( cls, path ):
         return cls()
 
     def __init__( self ):
-        ListObject.__init__(self)
+        SmallListObject.__init__(self)
 
     @classmethod
     def get_path( cls ):
@@ -84,13 +79,13 @@ class Blog(ListObject):
             return request.make_response_handle(BlogEntry(article_id))
         if request.command_id == 'delete':
             return self.run_element_command_delete(request)
-        return ListObject.process_request(self, request)
+        return SmallListObject.process_request(self, request)
 
     def run_command_add( self, request ):
         return request.make_response_handle(BlogEntry(mode=BlogEntry.mode_edit))
 
     @db_session
-    def get_all_elements( self ):
+    def fetch_all_elements( self ):
         return map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at)))
 
     @classmethod
@@ -98,7 +93,7 @@ class Blog(ListObject):
         commands = [Command('open', 'Open', 'Open blog entry'),
                     Command('delete', 'Delete', 'Delete blog entry', 'Del'),
                     ]
-        return cls.Element(rec.id, [rec.id, rec.created_at], commands)
+        return cls.Element(cls.Row(rec.id, rec.created_at), commands)
 
     @db_session
     def run_element_command_delete( self, request ):

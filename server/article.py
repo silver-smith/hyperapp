@@ -12,7 +12,7 @@ from common.interface.article import (
     object_selector_iface,
     onwrap_object_selector_iface,
     )
-from object import Object, ListObject, subscription
+from object import Object, SmallListObject, subscription
 from module import ModuleCommand
 from ponyorm_module import PonyOrmModule
 
@@ -116,16 +116,11 @@ class Article(Object):
         return request.make_response_result(new_path=self.get_path())
 
 
-class ArticleRefList(ListObject):
+class ArticleRefList(SmallListObject):
 
     iface = ref_list_iface
     proxy_id = 'ref_list'
     class_name = 'ref_list'
-
-    columns = [
-        Column('key', 'Ref id'),
-        Column('path', 'Path'),
-        ]
 
     @classmethod
     def resolve( cls, path ):
@@ -133,7 +128,7 @@ class ArticleRefList(ListObject):
         return cls(article_id)
 
     def __init__( self, article_id ):
-        ListObject.__init__(self)
+        SmallListObject.__init__(self)
         self.article_id = article_id
 
     def get_path( self ):
@@ -154,7 +149,7 @@ class ArticleRefList(ListObject):
             return self.run_command_open(request)
         if request.command_id == 'delete':
             return self.run_element_command_delete(request)
-        return ListObject.process_request(self, request)
+        return SmallListObject.process_request(self, request)
 
     @db_session
     def run_command_parent( self, request ):
@@ -179,7 +174,7 @@ class ArticleRefList(ListObject):
         return request.make_response_update(self.iface, self.get_path(), diff)
 
     @db_session
-    def get_all_elements( self ):
+    def fetch_all_elements( self ):
         return map(self.rec2element, select(ref for ref in module.ArticleRef
             if ref.article==module.Article[self.article_id]) \
             .order_by(module.ArticleRef.id))
@@ -189,7 +184,7 @@ class ArticleRefList(ListObject):
             Command('open', 'Open', 'Open reference selector'),
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
-        return self.Element(rec.id, [rec.id, rec.path], commands)
+        return self.Element(self.Row(rec.id, rec.path), commands)
 
 
 class RefSelector(Object):

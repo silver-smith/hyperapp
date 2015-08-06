@@ -4,7 +4,7 @@ from . types import (
     Field,
     )
 from . interface import register_iface, RequestCmd, OpenCommand, Interface
-from . list import Column, intColumnType, ListInterface
+from . list import intColumnType, Column, ListInterface
 from . form import tStringFieldHandle, tIntFieldHandle, tFormHandle
 
 

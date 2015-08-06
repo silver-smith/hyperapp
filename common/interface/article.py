@@ -16,7 +16,7 @@ from . interface import (
     Interface,
     register_iface,
     )
-from . list import ElementCommand, ElementOpenCommand, ListInterface
+from . list import intColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 
 
 tTextViewHandle = tHandle.register('text_view', base=tObjHandle)
@@ -45,15 +45,19 @@ article_iface = Interface('article',
                               ],
                           diff_type=tString)
 
-ref_list_iface = ListInterface('article_ref_list',
-                               columns=[tInt, tString],
-                               commands=[
-                                   OpenCommand('parent'),
-                                   OpenCommand('add', [Field('target_path', tPath)]),
-                                   ElementOpenCommand('open'),
-                                   ElementCommand('delete'),
-                                   ],
-                                key_type=tInt)
+ref_list_iface = ListInterface(
+    'article_ref_list',
+    columns=[
+        Column('ref_id', 'Id', intColumnType),
+        Column('path', 'Path'),
+    ],
+    commands=[
+        OpenCommand('parent'),
+        OpenCommand('add', [Field('target_path', tPath)]),
+        ElementOpenCommand('open'),
+        ElementCommand('delete'),
+    ],
+    key_column='ref_id')
 
 object_selector_iface = Interface('article_object_selector',
                                   commands=[
