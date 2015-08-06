@@ -3,6 +3,7 @@ from PySide import QtCore, QtGui
 
 sys.path.append('..')
 
+from common.interface import tListHandleBase
 from util import uni2str, key_match, key_match_any
 from list_object import ListDiff, ListObject
 from command import run_element_command, make_element_cmd_action
@@ -388,3 +389,6 @@ class View(view.View, QtGui.QTableView):
 
     def __del__( self ):
         print '~list_view.View', self
+
+
+tListHandleBase.register_class(Handle)

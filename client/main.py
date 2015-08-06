@@ -16,7 +16,7 @@ import common.interface.article
 import common.interface.test_list
 
 from common.util import str2path
-from common.interface import tListHandleBase, tListNarrowerHandleBase, iface_registry
+from common.interface import tListNarrowerHandleBase, iface_registry
 from common.interface.article import tTextViewHandle, tTextEditHandle
 from common.request import Request
 from util import pickle_dumps, pickle_loads
@@ -113,7 +113,6 @@ class OpenRespHandler(proxy_registry.RespHandler):
 # list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,
 # and vice versa, so we need to bind them in another, independent place
 def register_handles():
-    tListHandleBase.register_class(list_view.Handle)
     tListNarrowerHandleBase.register_class(narrower.Handle)
     tTextViewHandle.register_class(text_view.Handle)
     tTextEditHandle.register_class(text_edit.Handle)
