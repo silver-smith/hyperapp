@@ -107,7 +107,7 @@ class ListObject(Object, list_module.ListObject):
             **kw)
 
     def get_handle( self ):
-        return self.ListHandle(self)
+        return self.ListHandle(self.get())
 
     def process_request( self, request ):
         if request.command_id == 'fetch_elements':

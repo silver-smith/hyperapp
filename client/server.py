@@ -114,7 +114,7 @@ class Server(object):
 
     def process_packet( self, packet ):
         print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
-        response = packet_coders.decode(packet, tServerPacket, self, iface_registry, resolve_object)
+        response = packet_coders.decode(packet, tServerPacket, self, iface_registry)
         if isinstance(response, Response):
             print '   response for request', response.command_id, response.request_id
             proxy_registry.process_received_response(response)

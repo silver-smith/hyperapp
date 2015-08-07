@@ -45,7 +45,7 @@ class TObject(TDynamicRec):
 
     def validate( self, path, value ):
         if value is None: return  # missing objects are allowed
-        self.expect(path, value, 'Object', isinstance(value, Object))
+        TDynamicRec.validate(self, path, value)
 
 
 tObject = TObject()

@@ -28,10 +28,9 @@ class DecodeError(Exception): pass
 
 class CdrDecoder(object):
 
-    def __init__( self, peer, iface_registry, object_resolver=None ):
+    def __init__( self, peer, iface_registry ):
         self.peer = peer
         self.iface_registry = iface_registry  # IfaceRegistry
-        self.object_resolver = object_resolver  # obj info -> handle
 
     def decode( self, t, value, path='root' ):
         assert isinstance(value, str), repr(value)
@@ -157,12 +156,6 @@ class CdrDecoder(object):
             elt = self.dispatch(tcol, join_path(path, '#%d' % idx))
             elements.append(elt)
         return elements
-
-    @dispatch.register(TObject)
-    def decode_object( self, t, path ):
-        assert self.object_resolver  # object decoding is not supported
-        objinfo = self.decode_record(t, path)
-        return self.object_resolver(self.peer, objinfo)
 
     @dispatch.register(TIface)
     def decode_iface( self, t, path ):

@@ -103,12 +103,6 @@ class VisualRepEncoder(object):
             children.append(self.dispatch(t, value[idx]))
         return RepNode('row: %s' % ', '.join(child.text for child in children))
 
-    @dispatch.register(TObject)
-    def encode_object( self, t, obj ):
-        assert isinstance(obj, Object), repr(obj)
-        rep = self.encode_record(t, obj.get())
-        return RepNode('object', rep.children)
-
     @dispatch.register(TIface)
     def encode_iface( self, t, obj ):
         assert isinstance(obj, Interface), repr(obj)

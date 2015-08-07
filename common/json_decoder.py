@@ -28,10 +28,9 @@ class DecodeError(Exception): pass
 
 class JsonDecoder(object):
 
-    def __init__( self, peer, iface_registry, object_resolver=None ):
+    def __init__( self, peer, iface_registry ):
         self.peer = peer
         self.iface_registry = iface_registry  # IfaceRegistry
-        self.object_resolver = object_resolver  # obj info -> handle
 
     def decode( self, t, value, path='root' ):
         return self.dispatch(t, json.loads(value), path)
@@ -133,12 +132,6 @@ class JsonDecoder(object):
         for idx, t in enumerate(t.columns):
             result.append(self.dispatch(t, value[idx], join_path(path, '#%d' % idx)))
         return result
-
-    @dispatch.register(TObject)
-    def decode_object( self, t, value, path ):
-        assert self.object_resolver  # object decoding is not supported
-        objinfo = self.decode_record(t, value, path)
-        return self.object_resolver(self.peer, objinfo)
 
     @dispatch.register(TIface)
     def decode_iface( self, t, value, path ):

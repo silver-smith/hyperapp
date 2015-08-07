@@ -77,11 +77,6 @@ class JsonEncoder(object):
             result.append(self.dispatch(t, value[idx]))
         return result
 
-    @dispatch.register(TObject)
-    def encode_object( self, t, obj ):
-        assert isinstance(obj, Object), repr(obj)
-        return self.encode_record(t, obj.get())
-
     @dispatch.register(TIface)
     def encode_iface( self, t, obj ):
         assert isinstance(obj, Interface), repr(obj)

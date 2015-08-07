@@ -25,9 +25,9 @@ class PacketCoders(object):
         assert encoding in self.encodings, repr(encoding)  # Unknown encoding
         return self.encodings[encoding]
 
-    def decode( self, packet, t, peer, iface_registry, object_resolver=None ):
+    def decode( self, packet, t, peer, iface_registry ):
         coders = self.resolve(packet.encoding)
-        decoder = coders.decoder(peer, iface_registry, object_resolver)
+        decoder = coders.decoder(peer, iface_registry)
         return decoder.decode(t, packet.contents)
 
     def encode( self, encoding, object, t ):
