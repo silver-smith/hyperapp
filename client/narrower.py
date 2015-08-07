@@ -80,12 +80,12 @@ class View(LineListPanel):
 
     def __init__( self, parent, object, field_id, key, order_column_id,
                   first_visible_row, elements, select_first, prefix ):
-        line_edit_handle = line_edit.Handle(prefix)
-        list_handle = list_view.Handle(object, key, order_column_id, first_visible_row, elements, select_first)
-        LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._base_obj = object
         self._field_id = field_id
-        self._update_prefix(prefix or '')
+        list_object = self._object4prefix(prefix)
+        line_edit_handle = line_edit.Handle(prefix)
+        list_handle = list_view.Handle(list_object, key, order_column_id, first_visible_row, elements, select_first)
+        LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._line_edit.textEdited.connect(self._on_text_edited)
 
     def handle( self ):
@@ -104,12 +104,15 @@ class View(LineListPanel):
         self._line_edit.setText('')
         self._update_prefix('')
 
+    def _object4prefix( self, prefix ):
+        if prefix:
+            return FilteredListObj(self._base_obj, self._field_id, prefix)
+        else:
+            return self._base_obj
+
     def _update_prefix( self, text ):
         key = self._list_view.get_current_key()
-        if text:
-            object = FilteredListObj(self._base_obj, self._field_id, text)
-        else:
-            object = self._base_obj
+        object = self._object4prefix(text)
         if self._list_view.get_object() is not object:
             self._list_view.set_object(object)
         self._list_view.set_current_key(key, select_first=True)
