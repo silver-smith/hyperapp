@@ -85,7 +85,7 @@ class NotificationCmd(IfaceCommand):
 class OpenCommand(RequestCmd):
 
     def get_result_type( self, iface ):
-        return tHandle
+        return TOptional(tHandle)
 
 
 class SubscribeCommand(RequestCmd):
