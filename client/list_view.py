@@ -149,8 +149,7 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
-        print '-- subscribe_and_fetch_elements', first_visible_row, visible_row_count, wanted_rows
-        print '   subscribe_and_fetch_elements', self._object, `key`, wanted_rows
+        print '-- subscribe_and_fetch_elements', self._object, first_visible_row, visible_row_count, wanted_rows
         self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 0, wanted_rows)
 
     def process_fetch_result( self, result ):

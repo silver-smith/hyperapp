@@ -68,7 +68,6 @@ class ListObject(Object):
     def _notify_fetch_result( self, result ):
         #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update Record
         for observer in self._observers:
-            print '-- observer.process_fetch_result', self, observer, len(result.elements)
             observer.process_fetch_result(result)
 
     def _notify_diff_applied( self, diff ):
