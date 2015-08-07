@@ -97,13 +97,13 @@ class Server(object):
 
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
-        print 'send_notification', notification
+        print 'send_notification', notification.command_id, notification
         self._send(notification)
 
     def execute_request( self, request, resp_handler ):
         assert isinstance(request, Request), repr(request)
         request_id = request.request_id
-        print 'execute_request', request_id, request
+        print 'execute_request', request.command_id, request_id
         proxy_registry.register_resp_handler(request_id, resp_handler)
         self._send(request)
 
@@ -116,6 +116,7 @@ class Server(object):
         print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
         response = packet_coders.decode(packet, tServerPacket, self, iface_registry, resolve_object)
         if isinstance(response, Response):
+            print '   response for request', response.command_id, response.request_id
             proxy_registry.process_received_response(response)
         else:
             assert isinstance(response, ServerNotification), repr(response)
