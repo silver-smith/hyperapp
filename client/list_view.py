@@ -60,7 +60,7 @@ class Model(QtCore.QAbstractTableModel):
         return self._current_order
     
     def diff_applied( self, diff ):
-        print '--- list_view.Model.diff_applied', diff
+        print '-- list_view.Model.diff_applied', diff
         return
         ## self._update_mapping()  # underlying list object elements are already changed
         ## if diff.start_key is not None:
@@ -215,6 +215,7 @@ class View(view.View, QtGui.QTableView):
         self.activated.connect(self._on_activated)
         self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
+        self._subscribed = False
         self.set_object(object, order_column_id or object.sorted_by_column, elements or object.elements)
         self.set_current_key(key, select_first)
 
@@ -307,13 +308,17 @@ class View(view.View, QtGui.QTableView):
         return None
 
     def set_object( self, object, order_column_id=None, elements=None ):
-        print '-- set_object', self.isVisible()
+        print '-- set_object', self.isVisible(), len(elements.elements) if elements else None
         assert isinstance(object, ListObject), repr(object)
         self._object = object
         self.model().set_object(object, order_column_id, elements)
         self.resizeColumnsToContents()
-        first_visible_row, visible_row_count = self._get_visible_rows()
-        self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
+        if self.isVisible():
+            first_visible_row, visible_row_count = self._get_visible_rows()
+            self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
+            self._subscribed = True
+        else:
+            self._subscribed = False
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
@@ -325,8 +330,15 @@ class View(view.View, QtGui.QTableView):
         self.fetch_elements_if_required()
 
     def resizeEvent( self, evt ):
+        print '-- resizeEvent', self.isVisible()
         result = QtGui.QTableView.resizeEvent(self, evt)
-        self.fetch_elements_if_required()
+        if self._subscribed:
+            self.fetch_elements_if_required()
+        else:
+            # we need proper visible row/count for subscribe_and_fetch_elements, got them only in resizeEvent
+            first_visible_row, visible_row_count = self._get_visible_rows()
+            self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
+            self._subscribed = True
         return result
 
     def currentChanged( self, idx, prev_idx ):
