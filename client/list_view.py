@@ -215,10 +215,8 @@ class View(view.View, QtGui.QTableView):
         self.activated.connect(self._on_activated)
         self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
-        self.want_current_key = None
         self.set_object(object, order_column_id or object.sorted_by_column, elements or object.elements)
-        if not self.set_current_key(key, select_first):
-            self.want_current_key = key  # need to fetch elements until this key is found
+        self.set_current_key(key, select_first)
 
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
@@ -259,13 +257,8 @@ class View(view.View, QtGui.QTableView):
     def diff_applied( self, diff ):
         #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update record
         self.model().diff_applied(diff)
-        self._find_wanted_current_key()
         # may be this was response from elements fetching, but we may need more elements
         self.check_if_elements_must_be_fetched()
-
-    def _find_wanted_current_key( self ):
-        if self.set_current_key(self.want_current_key):
-            self.want_current_key = None
 
     def get_current_key( self ):
         index = self.currentIndex()
@@ -314,6 +307,7 @@ class View(view.View, QtGui.QTableView):
         return None
 
     def set_object( self, object, order_column_id=None, elements=None ):
+        print '-- set_object', self.isVisible()
         assert isinstance(object, ListObject), repr(object)
         self._object = object
         self.model().set_object(object, order_column_id, elements)
