@@ -14,3 +14,8 @@ class TDynamicRec(TRecord):
         fixed_rec = self.instantiate_impl(args, kw, check_unexpected=False)
         t = self.resolve_dynamic(fixed_rec)
         return t.instantiate(*args, **kw)
+
+    def validate( self, path, value ):
+        TRecord.validate(self, path, value)
+        t = self.resolve_dynamic(value)
+        t.validate(path, value)
