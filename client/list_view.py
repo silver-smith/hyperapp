@@ -289,6 +289,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def set_current_key( self, key, select_first=False, accept_near=False ):
         row = self.model().get_key_row(key)
+        print '-- set_current_key', `key`, select_first, `row`
+        if row is None and select_first:
+            row = 0
         self.set_current_row(row)
         ## if accept_near:
         ##     row = self._find_nearest_key(key)
