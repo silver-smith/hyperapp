@@ -144,11 +144,13 @@ class ListInterface(Interface):
         assert False, repr((self.key_column, [column.id for column in self.columns]))  # unknown key column
 
     def _register_types( self ):
-        fields = [Field('key', TOptional(self.key_type))]
+        list_fields = [Field('key', TOptional(self.key_type))]
+        narrower_fields = [Field('field_id', tString),
+                           Field('key', TOptional(self.key_type))]
         self._tListHandle = tHandle.register(
-            '%s.list' % self.iface_id, fields, base=tListHandleBase)
+            '%s.list' % self.iface_id, list_fields, base=tListHandleBase)
         self._tListNarrowerHandle = tHandle.register(
-            '%s.list_narrower' % self.iface_id, fields, base=tListNarrowerHandleBase)
+            '%s.list_narrower' % self.iface_id, narrower_fields, base=tListNarrowerHandleBase)
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [

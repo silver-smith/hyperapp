@@ -1,8 +1,17 @@
 from PySide import QtCore, QtGui
 from common.util import dt2local_str
-from object import Object
+from object import ObjectObserver, Object
 
 
+class ListObserver(ObjectObserver):
+
+    def process_fetch_result( self, result ):
+        pass
+
+    def diff_applied( self, diff ):
+        pass
+
+    
 class ListDiff(object):
 
     @classmethod
@@ -44,6 +53,12 @@ class ListObject(Object):
     def get_key_column_id( self ):
         raise NotImplementedError(self.__class__)
 
+    def get_default_order_column_id( self ):
+        raise NotImplementedError(self.__class__)
+
+    def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
+        raise NotImplementedError(self.__class__)
+
     def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 
@@ -53,6 +68,7 @@ class ListObject(Object):
     def _notify_fetch_result( self, result ):
         #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update Record
         for observer in self._observers:
+            print '-- observer.process_fetch_result', self, observer, len(result.elements)
             observer.process_fetch_result(result)
 
     def _notify_diff_applied( self, diff ):

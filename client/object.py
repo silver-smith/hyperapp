@@ -33,10 +33,16 @@ class Object(object):
         raise NotImplementedError(self.__class__)
 
     def subscribe( self, observer ):
+        return self.subscribe_local(observer)
+
+    def subscribe_local( self, observer ):
         assert isinstance(observer, ObjectObserver), repr(observer)
         this_is_first_observer = len(self._observers) == 0
         self._observers.add(observer)
         return this_is_first_observer
+
+    def unsubscribe_local( self, observer ):
+        self._observers.remove(observer)
 
     def observers_gone( self ):
         pass

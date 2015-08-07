@@ -3,7 +3,7 @@ import bisect
 from PySide import QtCore, QtGui
 from common.interface import tListHandleBase
 from util import uni2str, key_match, key_match_any
-from list_object import ListDiff, ListElements, ListObject
+from list_object import ListObserver, ListDiff, ListElements, ListObject
 from command import run_element_command, make_element_cmd_action
 import view
 
@@ -16,6 +16,7 @@ class Handle(view.Handle):
 
     def __init__( self, object, key=None, order_column_id=None,
                   first_visible_row=None, elements=None, select_first=True ):
+        assert isinstance(object, ListObject), repr(object)
         assert elements is None or isinstance(elements, ListElements), repr(elements)
         view.Handle.__init__(self)
         self.object = object
@@ -39,10 +40,10 @@ class Handle(view.Handle):
 
 class OrderedElements(object):
 
-    def __init__( self, keys, bof, eof ):
-        self.keys = keys
-        self.bof = bof
-        self.eof = eof
+    def __init__( self ):
+        self.keys = []
+        self.bof = False
+        self.eof = False
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -123,10 +124,14 @@ class Model(QtCore.QAbstractTableModel):
         self._columns = object.get_columns()
         self._visible_columns = filter(lambda column: column.title is not None, self._columns)
         self._key_column_id = object.get_key_column_id()
-        self._current_order = order_column_id
-        self._update_elements(elements.elements)
-        self._ordered[self._current_order] = OrderedElements(
-            [self.element2key(element) for element in elements.elements], elements.bof, elements.eof)
+        self._current_order = order_column_id or self._current_order
+        ordered = OrderedElements()
+        self._ordered = {self._current_order: ordered}
+        if elements:
+            self._update_elements(elements.elements)
+            ordered.keys = [self.element2key(element) for element in elements.elements]
+            ordered.bof = elements.bof
+            ordered.eof = elements.eof
         self.reset()
 
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
@@ -136,6 +141,7 @@ class Model(QtCore.QAbstractTableModel):
         key = ordered.keys[-1] if ordered.keys else None
         print '-- fetch_elements_if_required', first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), wanted_rows
         if wanted_rows > 0 and not ordered.eof:
+            print '   fetch_elements', self._object, `key`, wanted_rows
             self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
 
     def subscribe_and_fetch_elements( self, observer, first_visible_row, visible_row_count ):
@@ -144,6 +150,7 @@ class Model(QtCore.QAbstractTableModel):
         wanted_rows = wanted_last_row
         key = None
         print '-- subscribe_and_fetch_elements', first_visible_row, visible_row_count, wanted_rows
+        print '   subscribe_and_fetch_elements', self._object, `key`, wanted_rows
         self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 0, wanted_rows)
 
     def process_fetch_result( self, result ):
@@ -196,7 +203,7 @@ class Model(QtCore.QAbstractTableModel):
         print '~list_view.Model'
 
 
-class View(view.View, QtGui.QTableView):
+class View(view.View, ListObserver, QtGui.QTableView):
 
     def __init__( self, parent, object, key, order_column_id, first_visible_row, elements, select_first ):
         QtGui.QTableView.__init__(self)
@@ -216,7 +223,7 @@ class View(view.View, QtGui.QTableView):
         self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._subscribed = False
-        self.set_object(object, order_column_id or object.sorted_by_column, elements or object.elements)
+        self.set_object(object, order_column_id or object.get_default_order_column_id(), elements or object.elements)
         self.set_current_key(key, select_first)
 
     def handle( self ):
@@ -308,8 +315,11 @@ class View(view.View, QtGui.QTableView):
         return None
 
     def set_object( self, object, order_column_id=None, elements=None ):
-        print '-- set_object', self.isVisible(), len(elements.elements) if elements else None
+        print '-- set_object', self, object, self.isVisible(), len(elements.elements) if elements else None
+        assert order_column_id is not None or self.model().get_order_column_id() is not None
         assert isinstance(object, ListObject), repr(object)
+        if self._object and self._subscribed:
+            self._object.unsubscribe_local(self)
         self._object = object
         self.model().set_object(object, order_column_id, elements)
         self.resizeColumnsToContents()

@@ -90,7 +90,7 @@ class Dir(FsObject):
             return [Command('open', 'Open', 'Open file')]
 
     def get_handle( self ):
-        return self.ListNarrowerHandle(self)
+        return self.ListNarrowerHandle(self, 'key')
 
     def process_request( self, request ):
         if request.command_id == 'open':
@@ -101,7 +101,7 @@ class Dir(FsObject):
             fspath = self.get_parent_dir()
             if fspath is not None:
                 key = os.path.basename(self.fspath)
-                handle = self.ListNarrowerHandle(module.open(fspath), key)
+                handle = self.ListNarrowerHandle(module.open(fspath), 'key', key)
                 return request.make_response(handle)
         return SmallListObject.process_request(self, request)
 

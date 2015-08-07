@@ -78,9 +78,6 @@ class ProxyObject(Object, interface_module.Object):
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
 
-    def subscribe_local( self, observer ):
-        return Object.subscribe(self, observer)
-
     def subscribe( self, observer ):
         this_is_first_observer = Object.subscribe(self, observer)
         if this_is_first_observer:
@@ -158,6 +155,9 @@ class ProxyListObject(ProxyObject, ListObject):
         self.sorted_by_column = contents.sorted_by_column
         ## self.key_column_idx = self._find_key_column(self.columns)
         self.elements = ListElements(contents.elements, contents.bof, contents.eof)
+
+    def get_default_order_column_id( self ):
+        return self.sorted_by_column
 
     def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
         this_is_first_observer = self.subscribe_local(observer)

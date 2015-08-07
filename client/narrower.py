@@ -1,6 +1,7 @@
 from PySide import QtCore, QtGui
+from common.interface import tListNarrowerHandleBase
 from util import uni2str, key_match, key_match_any
-from list_object import ListObject
+from list_object import ListObserver, ListElements, ListObject
 from view_command import command
 import view
 from line_list_panel import LineListPanel
@@ -10,27 +11,30 @@ import list_view
 
 class Handle(list_view.Handle):
 
-    def __init__( self, object, key=None, order_column_id=None,
+    def __init__( self, object, field_id, key=None, order_column_id=None,
                   first_visible_row=None, elements=None, select_first=True, prefix=None ):
         assert prefix is None or isinstance(prefix, basestring), repr(prefix)
         list_view.Handle.__init__(self, object, key, order_column_id, first_visible_row, elements, select_first)
+        self.field_id = field_id
         self.prefix = prefix
 
     def construct( self, parent ):
         print 'narrower construct', parent, self.object.get_title(), self.object, repr(self.key), repr(self.prefix)
-        return View(parent, self.object, self.key, self.order_column_id,
+        return View(parent, self.object, self.field_id, self.key, self.order_column_id,
                     self.first_visible_row, self.elements, self.select_first, self.prefix)
 
     def __repr__( self ):
-        return 'narrower.Handle(%s/%r/%r)' % (uni2str(self.object.get_title()), uni2str(self.key), self.prefix)
+        return 'narrower.Handle(%s/%r/%r/%r)' \
+          % (uni2str(self.object.get_title()), uni2str(self.key), self.field_id, self.prefix)
 
 
 # todo: subscription
-class FilteredListObj(ListObject):
+class FilteredListObj(ListObject, ListObserver):
 
-    def __init__( self, base, prefix ):
+    def __init__( self, base, field_id, prefix ):
         ListObject.__init__(self)
         self._base = base
+        self._field_id = field_id  # filter by this field
         self._prefix = prefix
 
     def get_title( self ):
@@ -42,39 +46,53 @@ class FilteredListObj(ListObject):
     def get_columns( self ):
         return self._base.get_columns()
 
-    def element_count( self ):
-        return len(self.get_fetched_elements())
+    def get_key_column_id( self ):
+        return self._base.get_key_column_id()
 
-    def get_fetched_elements( self ):
-        elements = []
-        for elt in self._base.get_fetched_elements():
-            if isinstance(elt.key, basestring) and elt.key.lower().startswith(self._prefix.lower()):
-                elements.append(elt)
-        return elements
+    def get_default_order_column_id( self ):
+        return self._base.get_default_order_column_id()
+    
+    def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
+        ListObject.subscribe_local(self, observer)
+        self._base.subscribe_and_fetch_elements(self, sort_by_column, key, desc_count, asc_count)
 
-    def need_elements_count( self, elements_count, force_load ):
-        # base may need more elements, but we do not know how much until they are loaded
-        return self._base.need_elements_count(elements_count, force_load)
+    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
+        self._base.fetch_elements(sort_by_column, key, desc_count, asc_count)
+
+    def process_fetch_result( self, result ):
+        print '-- narrower.process_fetch_result', result.bof, result.eof, len(result.elements)
+        filtered = ListElements(filter(self._element_matched, result.elements), result.bof, result.eof)
+        if filtered.elements:
+            self._notify_fetch_result(filtered)
+
+    def _element_matched( self, element ):
+        value = getattr(element.row, self._field_id)
+        return value.lower().startswith(self._prefix.lower())
 
     def run_command( self, command_id, initiator_view, **kw ):
         return self._base.run_command(command_id, initiator_view, **kw)
 
+    def __del__( self ):
+        print '~FilteredListObj', repr(self._prefix)
+
 
 class View(LineListPanel):
 
-    def __init__( self, parent, obj, key, order_column_id, first_visible_row, elements, select_first, prefix ):
+    def __init__( self, parent, object, field_id, key, order_column_id,
+                  first_visible_row, elements, select_first, prefix ):
         line_edit_handle = line_edit.Handle(prefix)
-        list_handle = list_view.Handle(obj, key, order_column_id, first_visible_row, elements, select_first)
+        list_handle = list_view.Handle(object, key, order_column_id, first_visible_row, elements, select_first)
         LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
-        self._base_obj = self._list_view.get_object()
+        self._base_obj = object
+        self._field_id = field_id
         self._update_prefix(prefix or '')
         self._line_edit.textEdited.connect(self._on_text_edited)
 
     def handle( self ):
         list_handle = self._list_view.handle()
-        return Handle(self._base_obj,
-                      list_handle.key, list_handle.selected_keys, list_handle.select_first,
-                      self._line_edit.text())
+        return Handle(self._base_obj, self._field_id, list_handle.key, list_handle.order_column_id,
+                       list_handle.first_visible_row, list_handle.elements, list_handle.select_first,
+                       self._line_edit.text())
 
     def get_title( self ):
         return self._base_obj.get_title()
@@ -89,9 +107,11 @@ class View(LineListPanel):
     def _update_prefix( self, text ):
         key = self._list_view.get_current_key()
         if text:
-            self._list_view.set_object(FilteredListObj(self._base_obj, text))
+            object = FilteredListObj(self._base_obj, self._field_id, text)
         else:
-            self._list_view.set_object(self._base_obj)
+            object = self._base_obj
+        if self._list_view.get_object() is not object:
+            self._list_view.set_object(object)
         self._list_view.set_current_key(key, select_first=True)
         self.cancel_narrowing.setEnabled(text != '')
 
@@ -132,3 +152,6 @@ class View(LineListPanel):
 
     def __del__( self ):
         print '~narrower', self._base_obj.get_title(), self
+
+
+tListNarrowerHandleBase.register_class(Handle)
