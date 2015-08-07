@@ -1,8 +1,6 @@
 import sys
+import bisect
 from PySide import QtCore, QtGui
-
-sys.path.append('..')
-
 from common.interface import tListHandleBase
 from util import uni2str, key_match, key_match_any
 from list_object import ListDiff, ListElements, ListObject
@@ -143,7 +141,6 @@ class Model(QtCore.QAbstractTableModel):
     def subscribe_and_fetch_elements( self, observer, first_visible_row, visible_row_count ):
         wanted_last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
         ordered = self._current_ordered()
-        ordered.keys = []
         wanted_rows = wanted_last_row
         key = None
         print '-- subscribe_and_fetch_elements', first_visible_row, visible_row_count, wanted_rows
@@ -153,7 +150,8 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         old_len = len(ordered.keys)
         self._update_elements(result.elements)
-        ordered.keys.extend([self.element2key(element) for element in result.elements])
+        idx = bisect.bisect_left(ordered.keys, self.element2key(result.elements[0]))
+        ordered.keys = ordered.keys[:idx] + [self.element2key(element) for element in result.elements]
         ordered.eof = result.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
 
