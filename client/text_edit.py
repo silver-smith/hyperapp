@@ -8,8 +8,8 @@ from text_object import TextObject
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, contents ):
-        return cls(contents.object)
+    def from_resp( cls, server, contents ):
+        return cls(server.resolve_object(contents.object))
 
     def __init__( self, object, text=None ):
         view.Handle.__init__(self)

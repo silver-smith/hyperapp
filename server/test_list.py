@@ -27,7 +27,7 @@ class ParamsForm(Object):
         return module.make_path(self.class_name)
 
     def make_handle( self, key=0, size=DEFAULT_SIZE ):
-        return FormHandle('form', self, [
+        return FormHandle('form', self.get(), [
             FormField('key', intFieldHandle(key)),
             FormField('size', intFieldHandle(size))])
 
@@ -42,7 +42,7 @@ class ParamsForm(Object):
     def run_command_submit( self, request ):
         print 'submitted: ', `request.params.key`, `request.params.size`
         object = TestList(request.params.size)
-        handle = TestList.ListHandle(object, request.params.key)
+        handle = TestList.ListHandle(object.get(), request.params.key)
         return request.make_response(handle)
 
 

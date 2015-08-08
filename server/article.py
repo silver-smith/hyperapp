@@ -63,9 +63,9 @@ class Article(Object):
 
     def get_handle( self ):
         if self.mode == self.mode_view:
-            return ObjHandle('text_view', self)
+            return ObjHandle('text_view', self.get())
         else:
-            return ObjHandle('text_edit', self)
+            return ObjHandle('text_edit', self.get())
 
     def get_commands( self ):
         return [
@@ -222,7 +222,7 @@ class RefSelector(Object):
         commit()
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
         ref_list_obj = ArticleRefList(self.article_id)
-        list_elt = ArticleRefList.ListHandle(ref_list_obj, rec.id)
+        list_elt = ArticleRefList.ListHandle(ref_list_obj.get(), rec.id)
         handle = ObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
         return request.make_response(handle)
 
@@ -234,7 +234,7 @@ class RefSelector(Object):
             rec = module.ArticleRef[self.ref_id]
             target_path = str2path(rec.path)
             target_obj = module.run_resolver(target_path)
-        return ObjSelectorHandle('object_selector', self, target_obj.get_handle())
+        return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
 
 
 class ArticleModule(PonyOrmModule):

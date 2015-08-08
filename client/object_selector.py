@@ -10,8 +10,8 @@ from command import Command
 class ObjSelectorUnwrap(view.Handle):
 
     @classmethod
-    def from_resp( cls, contents ):
-        base_handle = view_registry.resolve(contents.base_handle)
+    def from_resp( cls, server, contents ):
+        base_handle = view_registry.resolve(server, contents.base_handle)
         return cls(base_handle)
 
     def __init__( self, base_handle ):
@@ -27,9 +27,10 @@ class ObjSelectorUnwrap(view.Handle):
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, contents ):
-        target_handle = view_registry.resolve(contents.target)
-        return cls(contents.ref, target_handle)
+    def from_resp( cls, server, contents ):
+        ref = server.resolve_object(contents.ref)
+        target_handle = view_registry.resolve(server, contents.target)
+        return cls(ref, target_handle)
 
     def __init__( self, ref, target ):
         assert isinstance(ref, ProxyObject), repr(ref)

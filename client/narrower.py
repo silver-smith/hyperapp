@@ -12,8 +12,9 @@ import list_view
 class Handle(list_view.Handle):
 
     @classmethod
-    def from_resp( cls, contents ):
-        return cls(contents.object, contents.field_id, contents.key)
+    def from_resp( cls, server, contents ):
+        object = server.resolve_object(contents.object)
+        return cls(object, contents.field_id, contents.key)
 
     def __init__( self, object, field_id, key=None, order_column_id=None,
                   first_visible_row=None, elements=None, select_first=True, prefix=None ):

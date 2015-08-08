@@ -78,9 +78,10 @@ class Field(object):
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, contents ):
+    def from_resp( cls, server, contents ):
+        object = server.resolve_object(contents.object)
         fields = [Field(rec.name, field_registry.resolve(rec.field_handle)) for rec in contents.fields] 
-        return cls(contents.object, fields, contents.current_field)
+        return cls(object, fields, contents.current_field)
 
     def __init__( self, object, fields, current_field=0 ):
         assert is_list_inst(fields, Field), repr(fields)
