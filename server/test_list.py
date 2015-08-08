@@ -20,7 +20,7 @@ class ParamsForm(Object):
         return module.make_path(self.class_name)
 
     def make_handle( self, key=0, size=DEFAULT_SIZE ):
-        return FormHandle(self, [
+        return FormHandle('form', self, [
             FormField('key', IntFieldHandle(key)),
             FormField('size', IntFieldHandle(size))])
 
@@ -35,7 +35,7 @@ class ParamsForm(Object):
     def run_command_submit( self, request ):
         print 'submitted: ', `request.params.key`, `request.params.size`
         object = TestList(request.params.size)
-        handle = TestList.iface.ListHandle(object, request.params.key)
+        handle = TestList.ListHandle(object, request.params.key)
         return request.make_response(handle)
 
 

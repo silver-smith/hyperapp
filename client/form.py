@@ -1,6 +1,7 @@
 from PySide import QtCore, QtGui
-from common.interface import tStringFieldHandle, tIntFieldHandle, tFormHandle, FormField
+from common.interface import tStringFieldHandle, tIntFieldHandle, FormField
 from util import uni2str, call_after
+from view_registry import view_registry
 import view
 
 
@@ -60,6 +61,10 @@ class IntField(view.View, QtGui.QLineEdit):
 
 
 class Handle(view.Handle):
+
+    @classmethod
+    def from_resp( cls, contents ):
+        return cls(contents.object, contents.fields, contents.current_field)
 
     def __init__( self, object, fields, current_field=0 ):
         self.object = object
@@ -133,4 +138,4 @@ class View(view.View, QtGui.QWidget):
 
 tStringFieldHandle.register_class(StringFieldHandle)
 tIntFieldHandle.register_class(IntFieldHandle)
-tFormHandle.register_class(Handle)
+view_registry.register('form', Handle.from_resp)

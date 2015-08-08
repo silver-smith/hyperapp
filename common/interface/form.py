@@ -30,5 +30,5 @@ tFormHandle = tHandle.register('form', base=tObjHandle, fields=[
 
 class FormHandle(tFormHandle.make_class()):
 
-    def __init__( self, object, fields, current_field=0 ):
-        super(FormHandle, self).__init__(object, fields, current_field)
+    def __init__( self, view_id, object, fields, current_field=0 ):
+        super(FormHandle, self).__init__(view_id, object, fields, current_field)
