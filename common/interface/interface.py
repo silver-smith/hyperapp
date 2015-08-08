@@ -51,7 +51,8 @@ class TObject(TDynamicRec):
 tObject = TObject()
 
 tHandle = THierarchy()
-tObjHandle = tHandle.register('obj_handle', fields=[Field('object', tObject)])
+tSimpleHandle = tHandle.register('handle', fields=[Field('view_id', tString)])
+tObjHandle = tHandle.register('obj_handle', base=tSimpleHandle, fields=[Field('object', tObject)])
 ObjHandle = tObjHandle.instantiate
 
 

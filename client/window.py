@@ -148,9 +148,9 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._app.server.execute_request(request, resp_handler)
         self.resp_handlers.add(resp_handler)
 
-    def process_open_command_response( self, resp_handler, handle ):
+    def process_open_command_response( self, resp_handler, result ):
         self.resp_handlers.remove(resp_handler)
-        self.get_current_view().open(handle)
+        self.get_current_view().process_handle_open(result)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):

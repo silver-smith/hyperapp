@@ -2,10 +2,12 @@
 
 import weakref
 from PySide import QtCore, QtGui
+from common.interface import tHandle
 from qt_keys import print_key_event
 from util import DEBUG_FOCUS, make_action, focused_index
 from object import ObjectObserver
 from view_command import BoundViewCommand, UnboundViewCommand
+from view_registry import view_registry
 
 
 class Handle(object):
@@ -112,6 +114,13 @@ class View(ObjectObserver):
 
     def object_selected( self, obj ):
         return self._parent().object_selected(obj)
+
+    def process_handle_open( self, result ):
+        if result is None: return  # no new view opening is requested
+        tHandle.validate('Handle', result)
+        handle = view_registry.resolve(result)
+        assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
+        self.open(handle)
 
     def open( self, handle ):
         self._parent().open(handle)

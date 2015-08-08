@@ -77,8 +77,9 @@ class Application(QtGui.QApplication, view.View):
         if not self._windows:
             self.save_state([view.handle()])
 
-    def open_in_any_window( self, handle ):
-        self._windows[0].get_current_view().open(handle)
+    def process_open_in_any_window( self, result ):
+        view = self._windows[0].get_current_view()
+        view.process_handle_open(result)
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
@@ -106,8 +107,7 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app = app
 
     def process_response( self, response ):
-        handle = response.result
-        self.app.open_in_any_window(handle)
+        self.app.process_open_in_any_window(response.result)
 
 
 # list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,

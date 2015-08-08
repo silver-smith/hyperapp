@@ -1,8 +1,8 @@
 from PySide import QtCore, QtGui
-from common.interface import tListNarrowerHandleBase
 from util import uni2str, key_match, key_match_any
 from list_object import ListObserver, ListElements, ListObject
 from view_command import command
+from view_registry import view_registry
 import view
 from line_list_panel import LineListPanel
 import line_edit
@@ -10,6 +10,10 @@ import list_view
 
 
 class Handle(list_view.Handle):
+
+    @classmethod
+    def from_resp( cls, contents ):
+        return cls(contents.object, contents.field_id, contents.key)
 
     def __init__( self, object, field_id, key=None, order_column_id=None,
                   first_visible_row=None, elements=None, select_first=True, prefix=None ):
@@ -157,4 +161,4 @@ class View(LineListPanel):
         print '~narrower', self._base_obj.get_title(), self
 
 
-tListNarrowerHandleBase.register_class(Handle)
+view_registry.register('list_narrower', Handle.from_resp)

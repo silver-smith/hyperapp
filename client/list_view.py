@@ -1,10 +1,10 @@
 import sys
 import bisect
 from PySide import QtCore, QtGui
-from common.interface import tListHandleBase
 from util import uni2str, key_match, key_match_any
 from list_object import ListObserver, ListDiff, ListElements, ListObject
 from command import run_element_command, make_element_cmd_action
+from view_registry import view_registry
 import view
 
 
@@ -13,6 +13,10 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 
 
 class Handle(view.Handle):
+
+    @classmethod
+    def from_resp( cls, contents ):
+        return cls(contents.object, contents.key)
 
     def __init__( self, object, key=None, order_column_id=None,
                   first_visible_row=None, elements=None, select_first=True ):
@@ -417,4 +421,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
         print '~list_view.View', self
 
 
-tListHandleBase.register_class(Handle)
+view_registry.register('list', Handle.from_resp)

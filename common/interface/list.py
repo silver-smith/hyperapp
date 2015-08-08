@@ -118,11 +118,11 @@ class ListObject(Object):
 
     @classmethod
     def ListHandle( cls, *args, **kw ):
-        return cls.iface.ListHandle(*args, **kw)
+        return cls.iface.ListHandle('list', *args, **kw)
 
     @classmethod
     def ListNarrowerHandle( cls, *args, **kw ):
-        return cls.iface.ListNarrowerHandle(*args, **kw)
+        return cls.iface.ListNarrowerHandle('list_narrower', *args, **kw)
 
 
 class ListInterface(Interface):

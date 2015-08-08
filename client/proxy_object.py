@@ -122,11 +122,9 @@ class ProxyObject(Object, interface_module.Object):
         result = response.result
         self.process_response_result(command_id, result)
         self.resp_handlers.remove(resp_handler)
-        if not self.iface.is_open_command(command_id): return
-        if result is None: return  # no new view opening is requested
-        assert isinstance(result, view.Handle), repr(result)
-        if not initiator_view: return  # view may already be gone (closed, navigated away) or be missing at all
-        initiator_view.open(result)
+        # initiator_view may already be gone (closed, navigated away) or be missing at all - so is None
+        if self.iface.is_open_command(command_id) and initiator_view:
+            initiator_view.process_handle_open(result)
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':
