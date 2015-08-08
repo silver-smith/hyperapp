@@ -9,28 +9,33 @@ import line_edit
 import list_view
 
 
-class Handle(list_view.Handle):
+class Handle(view.Handle):
 
     @classmethod
     def from_resp( cls, server, contents ):
         object = server.resolve_object(contents.object)
-        return cls(object, contents.field_id, contents.key)
+        list_handle = list_view.Handle(object, contents.key)
+        return cls(object, list_handle, contents.field_id)
 
-    def __init__( self, object, field_id, key=None, order_column_id=None,
-                  first_visible_row=None, elements=None, select_first=True, prefix=None ):
+    def __init__( self, object, list_handle, field_id, prefix=None ):
         assert prefix is None or isinstance(prefix, basestring), repr(prefix)
-        list_view.Handle.__init__(self, object, key, order_column_id, first_visible_row, elements, select_first)
+        view.Handle.__init__(self)
+        self.object = object
+        self.list_handle = list_handle
         self.field_id = field_id
         self.prefix = prefix
 
+    def get_object( self ):
+        return self.object
+
     def construct( self, parent ):
-        print 'narrower construct', parent, self.object.get_title(), self.object, repr(self.key), repr(self.prefix)
-        return View(parent, self.object, self.field_id, self.key, self.order_column_id,
-                    self.first_visible_row, self.elements, self.select_first, self.prefix)
+        print 'narrower construct', parent, self.object.get_title(), \
+          repr(self.list_handle), self.field_id, repr(self.prefix)
+        return View(parent, self.object, self.list_handle, self.field_id, self.prefix)
 
     def __repr__( self ):
-        return 'narrower.Handle(%s/%r/%r/%r)' \
-          % (uni2str(self.object.get_title()), uni2str(self.key), self.field_id, self.prefix)
+        return 'narrower.Handle(%r/%r/%r/%r)' \
+          % (uni2str(self.object.get_title()), self.list_handle, self.field_id, self.prefix)
 
 
 # todo: subscription
@@ -83,21 +88,17 @@ class FilteredListObj(ListObject, ListObserver):
 
 class View(LineListPanel):
 
-    def __init__( self, parent, object, field_id, key, order_column_id,
-                  first_visible_row, elements, select_first, prefix ):
+    def __init__( self, parent, object, list_handle, field_id, prefix ):
         self._base_obj = object
         self._field_id = field_id
         list_object = self._object4prefix(prefix)
         line_edit_handle = line_edit.Handle(prefix)
-        list_handle = list_view.Handle(list_object, key, order_column_id, first_visible_row, elements, select_first)
         LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._line_edit.textEdited.connect(self._on_text_edited)
 
     def handle( self ):
         list_handle = self._list_view.handle()
-        return Handle(self._base_obj, self._field_id, list_handle.key, list_handle.order_column_id,
-                       list_handle.first_visible_row, list_handle.elements, list_handle.select_first,
-                       self._line_edit.text())
+        return Handle(self.get_object(), list_handle, self._field_id, self._line_edit.text())
 
     def get_title( self ):
         return self._base_obj.get_title()
