@@ -16,9 +16,6 @@ from . hierarchy import THierarchy
 from . interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Object, Interface
 
 
-tListHandleBase = tHandle.register('list_base', base=tObjHandle)
-tListNarrowerHandleBase = tHandle.register('list_narrower_base', base=tObjHandle)
-
 tColumnType = THierarchy()
 
 
@@ -148,9 +145,9 @@ class ListInterface(Interface):
         narrower_fields = [Field('field_id', tString),
                            Field('key', TOptional(self.key_type))]
         self._tListHandle = tHandle.register(
-            '%s.list' % self.iface_id, list_fields, base=tListHandleBase)
+            '%s.list' % self.iface_id, list_fields, base=tObjHandle)
         self._tListNarrowerHandle = tHandle.register(
-            '%s.list_narrower' % self.iface_id, narrower_fields, base=tListNarrowerHandleBase)
+            '%s.list_narrower' % self.iface_id, narrower_fields, base=tObjHandle)
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
