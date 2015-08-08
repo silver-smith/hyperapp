@@ -1,10 +1,15 @@
 from PySide import QtCore, QtGui
 from util import uni2str
+from view_registry import view_registry
 import view
 from text_object import TextObject
 
 
 class Handle(view.Handle):
+
+    @classmethod
+    def from_resp( cls, contents ):
+        return cls(contents.object)
 
     def __init__( self, object, text=None ):
         view.Handle.__init__(self)
@@ -63,3 +68,4 @@ class View(view.View, QtGui.QTextEdit):
 
 
 TextObject.set_edit_handle_ctr(Handle)
+view_registry.register('text_edit', Handle.from_resp)

@@ -17,7 +17,6 @@ import common.interface.test_list
 
 from common.util import str2path
 from common.interface import iface_registry
-from common.interface.article import tTextViewHandle, tTextEditHandle
 from common.request import Request
 from util import pickle_dumps, pickle_loads
 from server import Server
@@ -110,15 +109,7 @@ class OpenRespHandler(proxy_registry.RespHandler):
         self.app.process_open_in_any_window(response.result)
 
 
-# list_view, narrower, text_view and text_edit do not know about (depend on) common.interface,
-# and vice versa, so we need to bind them in another, independent place
-def register_handles():
-    tTextViewHandle.register_class(text_view.Handle)
-    tTextEditHandle.register_class(text_edit.Handle)
-
 def main():
-    register_handles()
-
     if len(sys.argv) > 1:
         iface_id, path_str = sys.argv[1].split(':')
         path = str2path(path_str)

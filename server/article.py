@@ -1,10 +1,8 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from common.util import path2str, str2path
 from util import path_part_to_str
-from common.interface import Command, Column
+from common.interface import Command, Column, ObjHandle
 from common.interface.article import (
-    TextViewHandle,
-    TextEditHandle,
     ObjSelectorHandle,
     ObjSelectorUnwrapHandle,
     article_iface,
@@ -65,9 +63,9 @@ class Article(Object):
 
     def get_handle( self ):
         if self.mode == self.mode_view:
-            return TextViewHandle(self)
+            return ObjHandle('text_view', self)
         else:
-            return TextEditHandle(self)
+            return ObjHandle('text_edit', self)
 
     def get_commands( self ):
         return [
