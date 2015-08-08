@@ -1,14 +1,21 @@
 from PySide import QtCore, QtGui
-import common.interface as common_iface
-import common.interface.article as article_iface
 from util import uni2str
 from proxy_object import ProxyObject
 import proxy_registry
+from view_registry import view_registry
 import view
 from command import Command
 
 
-class ObjSelectorUnwrap(article_iface.tObjSelectorUnwrapHandle.make_class(), view.Handle):
+class ObjSelectorUnwrap(view.Handle):
+
+    @classmethod
+    def from_resp( cls, contents ):
+        base_handle = view_registry.resolve(contents.base_handle)
+        return cls(base_handle)
+
+    def __init__( self, base_handle ):
+        self.base_handle = base_handle
 
     def get_object( self ):
         return self.base_handle.get_object()
@@ -18,6 +25,11 @@ class ObjSelectorUnwrap(article_iface.tObjSelectorUnwrapHandle.make_class(), vie
 
 
 class Handle(view.Handle):
+
+    @classmethod
+    def from_resp( cls, contents ):
+        target_handle = view_registry.resolve(contents.target)
+        return cls(contents.ref, target_handle)
 
     def __init__( self, ref, target ):
         assert isinstance(ref, ProxyObject), repr(ref)
@@ -89,5 +101,5 @@ class View(view.View, QtGui.QWidget):
 
 
 proxy_registry.register_iface('object_selector', ProxyObject.from_response)
-article_iface.tObjSelectorHandle.register_class(Handle)
-article_iface.tObjSelectorUnwrapHandle.register_class(ObjSelectorUnwrap)
+view_registry.register('object_selector', Handle.from_resp)
+view_registry.register('object_selector_unwrap', ObjSelectorUnwrap.from_resp)

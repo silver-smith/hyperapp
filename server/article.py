@@ -223,7 +223,7 @@ class RefSelector(Object):
         print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
         ref_list_obj = ArticleRefList(self.article_id)
         list_elt = ArticleRefList.ListHandle(ref_list_obj, rec.id)
-        handle = ObjSelectorUnwrapHandle(list_elt)
+        handle = ObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
         return request.make_response(handle)
 
     @db_session
@@ -234,7 +234,7 @@ class RefSelector(Object):
             rec = module.ArticleRef[self.ref_id]
             target_path = str2path(rec.path)
             target_obj = module.run_resolver(target_path)
-        return ObjSelectorHandle(self, target_obj.get_handle())
+        return ObjSelectorHandle('object_selector', self, target_obj.get_handle())
 
 
 class ArticleModule(PonyOrmModule):

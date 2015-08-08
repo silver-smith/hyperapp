@@ -8,7 +8,7 @@ from . types import (
     )
 from . interface import (
     tHandle,
-    tObjHandle,
+    tSimpleHandle,
     tObject,
     Object,
     RequestCmd,
@@ -19,19 +19,13 @@ from . interface import (
 from . list import intColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 
 
-tTextViewHandle = tHandle.register('text_view', base=tObjHandle)
-TextViewHandle = tTextViewHandle.instantiate
-
-tTextEditHandle = tHandle.register('text_edit', base=tObjHandle)
-TextEditHandle = tTextEditHandle.instantiate
-
-tObjSelectorHandle = tHandle.register('object_selector', fields=[
+tObjSelectorHandle = tHandle.register('object_selector', base=tSimpleHandle, fields=[
         Field('ref', tObject),
         Field('target', tHandle),
         ])
 ObjSelectorHandle = tObjSelectorHandle.instantiate
 
-tObjSelectorUnwrapHandle = tHandle.register('object_selector_unwrap', fields=[
+tObjSelectorUnwrapHandle = tHandle.register('object_selector_unwrap', base=tSimpleHandle, fields=[
         Field('base_handle', tHandle),
         ])
 ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
