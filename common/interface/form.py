@@ -5,20 +5,19 @@ from . types import (
     TRecord,
     TList,
     )
+from hierarchy import THierarchy
 from . interface import tHandle, tObjHandle
 
 
-tFieldHandle = tHandle.register('field')
+tFieldHandle = THierarchy()
+tBaseFieldHandle = tFieldHandle.register('field', fields=[Field('field_view_id', tString)])
 
-tStringFieldHandle = tHandle.register('string_field', base=tFieldHandle, fields=[Field('value', tString)])
-StringFieldHandle = tStringFieldHandle.instantiate
-
-tIntFieldHandle = tHandle.register('int_field', base=tFieldHandle, fields=[Field('value', tInt)])
-IntFieldHandle = tIntFieldHandle.instantiate
+tStringFieldHandle = tFieldHandle.register('string_field', base=tBaseFieldHandle, fields=[Field('value', tString)])
+tIntFieldHandle = tFieldHandle.register('int_field', base=tBaseFieldHandle, fields=[Field('value', tInt)])
 
 tFormField = TRecord([
     Field('name', tString),
-    Field('handle', tHandle),
+    Field('field_handle', tFieldHandle),
     ])
 FormField = tFormField.instantiate
 

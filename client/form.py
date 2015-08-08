@@ -1,11 +1,18 @@
 from PySide import QtCore, QtGui
-from common.interface import tStringFieldHandle, tIntFieldHandle, FormField
+from common.util import is_list_inst
 from util import uni2str, call_after
 from view_registry import view_registry
 import view
 
 
-class StringFieldHandle(view.Handle):
+class FieldHandle(object):
+
+    @classmethod
+    def from_resp( cls, contents ):
+        return cls(contents.value)
+
+
+class StringFieldHandle(FieldHandle):
 
     def __init__( self, value ):
         assert isinstance(value, basestring), repr(value)
@@ -15,7 +22,7 @@ class StringFieldHandle(view.Handle):
         return StringField(parent, self.value)
 
 
-class IntFieldHandle(view.Handle):
+class IntFieldHandle(FieldHandle):
 
     def __init__( self, value ):
         assert isinstance(value, (int, long)), repr(value)
@@ -60,13 +67,23 @@ class IntField(view.View, QtGui.QLineEdit):
         print '~int_field'
 
 
+class Field(object):
+
+    def __init__( self, name, field_handle ):
+        assert isinstance(field_handle, FieldHandle), repr(field_handle)  # invalid value resolved from registry 
+        self.name = name
+        self.handle = field_handle
+
+
 class Handle(view.Handle):
 
     @classmethod
     def from_resp( cls, contents ):
-        return cls(contents.object, contents.fields, contents.current_field)
+        fields = [Field(rec.name, field_registry.resolve(rec.field_handle)) for rec in contents.fields] 
+        return cls(contents.object, fields, contents.current_field)
 
     def __init__( self, object, fields, current_field=0 ):
+        assert is_list_inst(fields, Field), repr(fields)
         self.object = object
         self.fields = fields
         self.current_field = current_field
@@ -117,7 +134,7 @@ class View(view.View, QtGui.QWidget):
         for idx, (name, field) in enumerate(self.fields):
             if field.has_focus():
                 focused_idx = idx
-            fields.append(FormField(name, field.handle()))
+            fields.append(Field(name, field.handle()))
         return Handle(self.object, fields, focused_idx)
 
     def run_object_command( self, command_id ):
@@ -136,6 +153,21 @@ class View(view.View, QtGui.QWidget):
 
 
 
-tStringFieldHandle.register_class(StringFieldHandle)
-tIntFieldHandle.register_class(IntFieldHandle)
+class FieldRegistry(object):
+
+    def __init__( self ):
+        self.registry = {}  # field view id -> Handle ctr
+
+    def register( self, field_view_id, handle_ctr ):
+        assert field_view_id not in self.registry, repr(field_view_id)  # Duplicate id
+        self.registry[field_view_id] = handle_ctr
+
+    def resolve( self, contents ):
+        return self.registry[contents.field_view_id](contents)
+
+
+field_registry = FieldRegistry()
+
+field_registry.register('string_field', StringFieldHandle.from_resp)
+field_registry.register('int_field', IntFieldHandle.from_resp)
 view_registry.register('form', Handle.from_resp)

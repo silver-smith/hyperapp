@@ -1,4 +1,4 @@
-from common.interface import Command, Column, StringFieldHandle, IntFieldHandle, FormField, FormHandle
+from common.interface import Command, Column, tStringFieldHandle, tIntFieldHandle, FormField, FormHandle
 from common.interface.test_list import params_form_iface, test_list_iface
 from util import path_part_to_str
 from object import Object, ListObject
@@ -8,6 +8,13 @@ from module import Module, ModuleCommand
 MODULE_NAME = 'test_list'
 DEFAULT_SIZE = 10000
 MAX_ROWS_RETURNED = 100
+
+
+def stringFieldHandle( value ):
+    return tStringFieldHandle.instantiate('string_field', value)
+
+def intFieldHandle( value ):
+    return tIntFieldHandle.instantiate('int_field', value)
 
 
 class ParamsForm(Object):
@@ -21,8 +28,8 @@ class ParamsForm(Object):
 
     def make_handle( self, key=0, size=DEFAULT_SIZE ):
         return FormHandle('form', self, [
-            FormField('key', IntFieldHandle(key)),
-            FormField('size', IntFieldHandle(size))])
+            FormField('key', intFieldHandle(key)),
+            FormField('size', intFieldHandle(size))])
 
     def get_commands( self ):
         return [Command('submit', 'Submit', 'Submit form', 'Return')]
