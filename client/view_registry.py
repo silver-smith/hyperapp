@@ -8,8 +8,8 @@ class ViewRegistry(object):
         assert view_id not in self.registry, repr(view_id)  # Duplicate id
         self.registry[view_id] = handle_ctr
 
-    def resolve( self, contents ):
-        return self.registry[contents.view_id](contents)
+    def resolve( self, server, contents ):
+        return self.registry[contents.view_id](server, contents)
 
 
 view_registry = ViewRegistry()

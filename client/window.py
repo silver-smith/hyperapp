@@ -24,10 +24,10 @@ class OpenRespHandler(proxy_registry.RespHandler):
         proxy_registry.RespHandler.__init__(self, iface, command_id)
         self.window_wref = weakref.ref(window)
 
-    def process_response( self, response ):
+    def process_response( self, server, response ):
         window = self.window_wref()
         if not window: return
-        window.process_open_command_response(self, response.result)
+        window.process_open_command_response(self, server, response.result)
 
 
 class OpenCommand(ViewCommandBase):
@@ -148,9 +148,9 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._app.server.execute_request(request, resp_handler)
         self.resp_handlers.add(resp_handler)
 
-    def process_open_command_response( self, resp_handler, result ):
+    def process_open_command_response( self, resp_handler, server, result ):
         self.resp_handlers.remove(resp_handler)
-        self.get_current_view().process_handle_open(result)
+        self.get_current_view().process_handle_open(server, result)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):

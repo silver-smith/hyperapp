@@ -76,9 +76,9 @@ class Application(QtGui.QApplication, view.View):
         if not self._windows:
             self.save_state([view.handle()])
 
-    def process_open_in_any_window( self, result ):
+    def process_open_in_any_window( self, server, result ):
         view = self._windows[0].get_current_view()
-        view.process_handle_open(result)
+        view.process_handle_open(server, result)
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
@@ -105,8 +105,8 @@ class OpenRespHandler(proxy_registry.RespHandler):
         proxy_registry.RespHandler.__init__(self, iface, command_id)
         self.app = app
 
-    def process_response( self, response ):
-        self.app.process_open_in_any_window(response.result)
+    def process_response( self, server, response ):
+        self.app.process_open_in_any_window(server, response.result)
 
 
 def main():

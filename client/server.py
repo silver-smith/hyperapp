@@ -10,11 +10,6 @@ from proxy_object import ProxyListObject
 PACKET_ENCODING = 'cdr'
 
 
-def resolve_object( server, objinfo ):
-    obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
-    return obj_ctr(server, objinfo.path, objinfo.iface, objinfo.contents)
-
-
 class Connection(object):
 
     addr2connection = {}
@@ -95,6 +90,10 @@ class Server(object):
     def __init__( self, addr ):
         self.addr = addr
 
+    def resolve_object( self, objinfo ):
+        obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
+        return obj_ctr(self, objinfo.path, objinfo.iface, objinfo.contents)
+
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
         print 'send_notification', notification.command_id, notification
@@ -117,7 +116,7 @@ class Server(object):
         response = packet_coders.decode(packet, tServerPacket, self, iface_registry)
         if isinstance(response, Response):
             print '   response for request', response.command_id, response.request_id
-            proxy_registry.process_received_response(response)
+            proxy_registry.process_received_response(self, response)
         else:
             assert isinstance(response, ServerNotification), repr(response)
             proxy_registry.process_received_notification(response)

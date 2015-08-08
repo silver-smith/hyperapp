@@ -13,7 +13,7 @@ class RespHandler(object):
         self.iface = iface
         self.command_id = command_id
 
-    def process_response( self, response ):
+    def process_response( self, server, response ):
         raise NotImplementedError(self.__class__)
 
 
@@ -51,13 +51,13 @@ def process_updates( updates ):
 def process_received_notification( notification ):
     process_updates(notification.updates)
 
-def process_received_response( response ):
+def process_received_response( server, response ):
     process_received_notification(response)
     resp_handler = pending_requests.get(response.request_id)
     if not resp_handler:
         print 'Received response #%s for a missing (already closed) object, ignoring' % response.request_id
         return
-    resp_handler.process_response(response)
+    resp_handler.process_response(server, response)
 
 
 def register_resp_handler( request_id, resp_handler ):

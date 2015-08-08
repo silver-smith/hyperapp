@@ -115,10 +115,10 @@ class View(ObjectObserver):
     def object_selected( self, obj ):
         return self._parent().object_selected(obj)
 
-    def process_handle_open( self, result ):
+    def process_handle_open( self, server, result ):
         if result is None: return  # no new view opening is requested
         tHandle.validate('Handle', result)
-        handle = view_registry.resolve(result)
+        handle = view_registry.resolve(server, result)
         assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
         self.open(handle)
 

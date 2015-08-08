@@ -15,8 +15,8 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, contents ):
-        return cls(contents.object, contents.key)
+    def from_resp( cls, server, contents ):
+        return cls(server.resolve_object(contents.object), contents.key)
 
     def __init__( self, object, key=None, order_column_id=None,
                   first_visible_row=None, elements=None, select_first=True ):
