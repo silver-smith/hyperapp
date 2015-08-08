@@ -160,7 +160,10 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         old_len = len(ordered.keys)
         self._update_elements(result.elements)
-        idx = bisect.bisect_left(ordered.keys, self.element2key(result.elements[0]))
+        if result.elements:
+            idx = bisect.bisect_left(ordered.keys, self.element2key(result.elements[0]))
+        else:
+            idx = 0
         ordered.keys = ordered.keys[:idx] + [self.element2key(element) for element in result.elements]
         ordered.eof = result.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
@@ -174,6 +177,8 @@ class Model(QtCore.QAbstractTableModel):
 
     def get_row_key( self, row ):
         ordered = self._current_ordered()
+        if row == 0 and not ordered.keys:
+            return None
         return ordered.keys[row]
 
     def get_row_element( self, row ):
