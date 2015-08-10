@@ -133,7 +133,7 @@ class Model(QtCore.QAbstractTableModel):
         self._ordered = {self._current_order: ordered}
         if elements:
             self._update_elements(elements.elements)
-            ordered.keys = [self.element2key(element) for element in elements.elements]
+            ordered.keys = [element.key for element in elements.elements]
             ordered.bof = elements.bof
             ordered.eof = elements.eof
         self.reset()
@@ -168,10 +168,10 @@ class Model(QtCore.QAbstractTableModel):
         old_len = len(ordered.keys)
         self._update_elements(result.elements)
         if result.elements:
-            idx = bisect.bisect_left(ordered.keys, self.element2key(result.elements[0]))
+            idx = bisect.bisect_left(ordered.keys, result.elements[0].key)
         else:
             idx = 0
-        ordered.keys = ordered.keys[:idx] + [self.element2key(element) for element in result.elements]
+        ordered.keys = ordered.keys[:idx] + [element.key for element in result.elements]
         ordered.eof = result.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
 
@@ -203,10 +203,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def _update_elements( self, elements ):
         for element in elements:
-            self._key2element[self.element2key(element)] = element
-
-    def element2key( self, element ):
-        return getattr(element.row, self._key_column_id)
+            self._key2element[element.key] = element
 
     def _current_ordered( self ):
         return self._ordered[self._current_order]
@@ -397,10 +394,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def _on_activated( self, index ):
         element = self.model().get_row_element(index.row())
-        element_key = self.model().element2key(element)
         for cmd in element.commands:
             if cmd.id == 'open':
-                run_element_command(cmd, self, element_key)
+                run_element_command(cmd, self, element.key)
                 return
 
     def _selected_elements_changed( self ):
@@ -415,13 +411,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
             action_widget.removeAction(action)
         self._elt_actions = []
         # pick selection and commands
-        elt = self.get_current_elt()
-        if not elt: return
-        element_key = self.model().element2key(elt)
-        commands = elt.commands
+        element = self.get_current_elt()
+        if not element: return
         # create actions
-        for cmd in commands:
-            action = make_element_cmd_action(cmd, action_widget, self, element_key)
+        for cmd in element.commands:
+            action = make_element_cmd_action(cmd, action_widget, self, element.key)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
