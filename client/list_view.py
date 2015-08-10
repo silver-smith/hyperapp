@@ -156,7 +156,10 @@ class Model(QtCore.QAbstractTableModel):
             del self._key2element[key]
         self._update_elements(diff.elements)
         ordered.keys[start_idx:end_idx] = [element.key for element in diff.elements]
-        self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
+        if end_idx > start_idx:
+            self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
+        if len(diff.elements):
+            self.rowsInserted.emit(QtCore.QModelIndex(), start_idx, start_idx + len(diff.elements))
 
         ## self._update_mapping()  # underlying list object elements are already changed
         ## if diff.start_key is not None:
