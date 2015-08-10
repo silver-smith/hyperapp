@@ -8,7 +8,11 @@ class ServerNotification(object):
 
     packet_type = 'notification'
 
-    def __init__( self, peer, updates=None, packet_type=None ):
+    @classmethod
+    def decode( cls, rec ):
+        return cls(rec.peer, rec.updates)
+
+    def __init__( self, peer, updates=None ):
         self.peer = peer
         self.updates = updates or []  # Update list
 
@@ -20,7 +24,11 @@ class Response(ServerNotification):
 
     packet_type = 'response'
 
-    def __init__( self, peer, iface, command_id, request_id, result=None, updates=None, packet_type=None ):
+    @classmethod
+    def decode( cls, rec ):
+        return cls(rec.peer, rec.iface, rec.command_id, rec.request_id, rec.result, rec.updates)
+
+    def __init__( self, peer, iface, command_id, request_id, result=None, updates=None ):
         ServerNotification.__init__(self, peer, updates)
         self.packet_type = 'response'
         self.iface = iface
@@ -31,9 +39,9 @@ class Response(ServerNotification):
 
 class ClientNotification(object):
 
-    @staticmethod
-    def decode( rec ):
-        return ClientNotification(rec.peer, rec.iface, rec.path, rec.command_id, rec.params)
+    @classmethod
+    def decode( cls, rec ):
+        return cls(rec.peer, rec.iface, rec.path, rec.command_id, rec.params)
 
     def __init__( self, peer, iface, path, command_id, params=None ):
         self.peer = peer
@@ -45,9 +53,9 @@ class ClientNotification(object):
 
 class Request(ClientNotification):
 
-    @staticmethod
-    def decode( rec ):
-        return Request(rec.peer, rec.iface, rec.path, rec.command_id, rec.request_id, rec.params)
+    @classmethod
+    def decode( cls, rec ):
+        return cls(rec.peer, rec.iface, rec.path, rec.command_id, rec.request_id, rec.params)
 
     def __init__( self, peer, iface, path, command_id, request_id, params=None ):
         ClientNotification.__init__(self, peer, iface, path, command_id, params)
@@ -86,7 +94,7 @@ class TServerPacket(TDynamicRec):
         if rec.packet_type == Response.packet_type:
             return TResponse(self)
         if rec.packet_type == ServerNotification.packet_type:
-            return TRecord(base=self, cls=ServerNotification, want_peer_arg=True)
+            return TRecord(base=self, want_peer_arg=True)
         assert False, repr(rec.packet_type)  # unknown packet type
 
 
@@ -102,7 +110,7 @@ class TResponse(TDynamicRec):
 
     def resolve_dynamic( self, rec ):
         fields = [Field('result', rec.iface.get_command_result_type(rec.command_id))]
-        return TRecord(fields, cls=Response, base=self, want_peer_arg=True)
+        return TRecord(fields, base=self, want_peer_arg=True)
 
 
 class TClientPacket(TDynamicRec):
@@ -133,10 +141,19 @@ tServerPacket = TServerPacket()
 tClientPacket = TClientPacket()
 
 
+def decode_server_packet( peer, iface_registry, packet ):
+    rec = packet_coders.decode(packet, tServerPacket, peer, iface_registry)
+    if rec.packet_type == Response.packet_type:
+        return Response.decode(rec)
+    if rec.packet_type == ServerNotification.packet_type:
+        return ServerNotification.decode(rec)
+    assert False, repr(rec.packet_type)  # unknown packet type
+    
 def decode_client_packet( peer, iface_registry, packet ):
     rec = packet_coders.decode(packet, tClientPacket, peer, iface_registry)
     request_type = rec.iface.get_request_type(rec.command_id)
     if request_type == Interface.rt_request:
         return Request.decode(rec)
-    else:
+    if request_type == Interface.rt_notification:
         return ClientNotification.decode(rec)
+    assert False, repr(request_type)  # Unexpected request type

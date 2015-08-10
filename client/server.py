@@ -3,7 +3,15 @@ from common.packet import Packet
 from common.packet_coders import packet_coders
 from common.visual_rep import pprint
 from common.interface import Interface, iface_registry
-from common.request import tServerPacket, tClientPacket, ClientNotification, Request, ServerNotification, Response
+from common.request import (
+    tServerPacket,
+    tClientPacket,
+    ClientNotification,
+    Request,
+    ServerNotification,
+    Response,
+    decode_server_packet,
+    )
 import proxy_registry
 from proxy_object import ProxyListObject
 
@@ -116,7 +124,7 @@ class Server(object):
 
     def process_packet( self, packet ):
         print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
-        response = packet_coders.decode(packet, tServerPacket, self, iface_registry)
+        response = decode_server_packet(self, iface_registry, packet)
         print '%s packet from %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
         ## pprint(tServerPacket, response)
         if isinstance(response, Response):
