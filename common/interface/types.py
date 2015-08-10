@@ -101,22 +101,15 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__( self, fields=None, cls=None, base=None ):
+    def __init__( self, fields=None, base=None ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
         self.fields = fields or []
-        self.cls = cls
         if base:
             self.fields = base.fields + self.fields
 
     def get_fields( self ):
         return self.fields
-
-    def get_class( self ):
-        return self.cls
-
-    def use_class( self, cls ):
-        self.cls = cls
 
     def validate( self, path, rec ):
         ## print '*** trecord validate', path, rec, self, [field.name for field in self.fields]
@@ -159,27 +152,14 @@ class TRecord(Type):
 
     def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
         fields = self.adopt_args(args, kw or {}, check_unexpected)
-        ## print '*** instantiate', self, self.cls, sorted(fields.keys()), sorted(f.name for f in self.fields)
-        cls = self.get_class()
-        if cls:
-            return cls(**fields)
-        else:
-            rec = self.make_object()
-            for name, val in fields.items():
-                setattr(rec, name, val)
-            return rec
+        ## print '*** instantiate', self, sorted(fields.keys()), sorted(f.name for f in self.fields)
+        rec = self.make_object()
+        for name, val in fields.items():
+            setattr(rec, name, val)
+        return rec
 
     def make_object( self ):
         return Record()
-
-    # base for usual classes
-    def make_class( self ):
-        class Record(object):
-            type = self
-            def __init__( self, *args, **kw ):
-                for name, val in self.type.adopt_args(args, kw).items():
-                    setattr(self, name, val)
-        return Record
 
     def instantiate( self, *args, **kw ):
         return self.instantiate_impl(args, kw)
