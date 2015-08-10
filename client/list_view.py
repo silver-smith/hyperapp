@@ -154,7 +154,8 @@ class Model(QtCore.QAbstractTableModel):
         print '-- list_view.Model.diff_applied', diff, start_idx, end_idx, len(ordered.keys), ordered.keys
         for key in ordered.keys[start_idx:end_idx]:
             del self._key2element[key]
-        del ordered.keys[start_idx:end_idx]
+        self._update_elements(diff.elements)
+        ordered.keys[start_idx:end_idx] = [element.key for element in diff.elements]
         self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
 
         ## self._update_mapping()  # underlying list object elements are already changed

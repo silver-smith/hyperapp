@@ -169,7 +169,8 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
-        self._notify_diff_applied(ListDiff.decode(diff))
+        key_column_id = self.get_key_column_id()
+        self._notify_diff_applied(ListDiff.decode(key_column_id, diff))
 
     def get_columns( self ):
         return self.iface.columns

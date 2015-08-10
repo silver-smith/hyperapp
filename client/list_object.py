@@ -31,8 +31,8 @@ class ListDiff(object):
         return cls(key, key, [])
 
     @classmethod
-    def decode( cls, rec ):
-        return cls(rec.start_key, rec.end_key, rec.elements)
+    def decode( cls, key_column_id, rec ):
+        return cls(rec.start_key, rec.end_key, [Element.decode(key_column_id, elt) for elt in rec.elements])
 
     def __init__( self, start_key, end_key, elements ):
         # keys == None means append
