@@ -37,4 +37,4 @@ class ProxyTextObject(ProxyObject, TextObject):
             self._notify_object_changed()
 
 
-proxy_registry.register_iface('text', ProxyTextObject.from_response)
+proxy_registry.register_iface('text', ProxyTextObject.decode)

@@ -101,6 +101,6 @@ class View(view.View, QtGui.QWidget):
         print '~object_selector.View'
 
 
-proxy_registry.register_iface('object_selector', ProxyObject.from_response)
+proxy_registry.register_iface('object_selector', ProxyObject.decode)
 view_registry.register('object_selector', Handle.from_resp)
 view_registry.register('object_selector_unwrap', ObjSelectorUnwrap.from_resp)

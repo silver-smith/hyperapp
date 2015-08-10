@@ -36,7 +36,7 @@ class RespHandler(proxy_registry.RespHandler):
 class ProxyObject(Object, interface_module.Object):
 
     @classmethod
-    def from_response( cls, server, path, iface, contents ):
+    def decode( cls, server, path, iface, contents ):
         object = cls(server, path, iface)
         object.set_contents(contents)
         return object
@@ -197,5 +197,5 @@ class ProxyListObject(ProxyObject, ListObject):
         print '~ProxyListObject', self, self.path
 
 
-proxy_registry.register_iface('object', ProxyObject.from_response)
-proxy_registry.register_iface('list', ProxyListObject.from_response)
+proxy_registry.register_iface('object', ProxyObject.decode)
+proxy_registry.register_iface('list', ProxyListObject.decode)

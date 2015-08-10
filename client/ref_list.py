@@ -18,4 +18,4 @@ class RefList(ProxyListObject):
         return ['file'] + os.path.expanduser('~').split('/')
 
 
-proxy_registry.register_iface('ref_list', RefList.from_response)
+proxy_registry.register_iface('ref_list', RefList.decode)
