@@ -24,10 +24,6 @@ FormField = tFormField.instantiate
 
 tFormHandle = tHandle.register('form', base=tObjHandle, fields=[
     Field('fields', TList(tFormField)),
-    Field('current_field', tInt),
+    Field('current_field', tInt, default=0),
     ])
-
-class FormHandle(tFormHandle.make_class()):
-
-    def __init__( self, view_id, object, fields, current_field=0 ):
-        super(FormHandle, self).__init__(view_id, object, fields, current_field)
+FormHandle = tFormHandle.instantiate

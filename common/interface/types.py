@@ -71,11 +71,14 @@ class TOptional(Type):
 
 class Field(object):
 
-    def __init__( self, name, type ):
+    def __init__( self, name, type, default=None ):
         assert isinstance(name, str), repr(name)
         assert isinstance(type, Type), repr(type)
+        if default is not None:
+            type.validate('default', default)
         self.name = name
         self.type = type
+        self.default = default
 
     def validate( self, path, value ):
         if self.type:
@@ -147,6 +150,8 @@ class TRecord(Type):
             else:
                 if isinstance(field.type, TOptional):
                     value = None
+                elif field.default is not None:
+                    value = field.default
                 else:
                     raise TypeError('Record field is missing: %r' % field.name)
             field.type.validate(join_path(path, field.name), value)
