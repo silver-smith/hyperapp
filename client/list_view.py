@@ -138,8 +138,15 @@ class Model(QtCore.QAbstractTableModel):
             ordered.eof = elements.eof
         self.reset()
 
+    def _wanted_last_row( self, first_visible_row, visible_row_count ):
+        ordered = self._current_ordered()
+        wanted_last_row = first_visible_row + visible_row_count
+        if not ordered.eof:
+            wanted_last_row += APPEND_PHONY_REC_COUNT
+        return wanted_last_row
+
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
-        wanted_last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
+        wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row - len(ordered.keys)
         key = ordered.keys[-1] if ordered.keys else None
@@ -149,7 +156,7 @@ class Model(QtCore.QAbstractTableModel):
             self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
 
     def subscribe_and_fetch_elements( self, observer, first_visible_row, visible_row_count ):
-        wanted_last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
+        wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
@@ -187,11 +194,11 @@ class Model(QtCore.QAbstractTableModel):
         return self._get_key_element(key)
 
     def get_visible_elements( self, first_visible_row, visible_row_count ):
-        last_row = first_visible_row + visible_row_count + APPEND_PHONY_REC_COUNT
+        last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
         elements = [self._get_key_element(key) for key in ordered.keys[first_visible_row:last_row]]
         bof = ordered.bof and first_visible_row == 0
-        eof = ordered.eof and last_row == len(ordered.keys)
+        eof = ordered.eof and last_row >= len(ordered.keys)
         return ListElements(elements, bof, eof)
 
     def _update_elements( self, elements ):
@@ -326,7 +333,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return None
 
     def set_object( self, object, order_column_id=None, elements=None ):
-        print '-- set_object', self, object, self.isVisible(), len(elements.elements) if elements else None
+        print '-- set_object', self, object, self.isVisible(), (len(elements.elements), elements.eof) if elements else None
         assert order_column_id is not None or self.model().get_order_column_id() is not None
         assert isinstance(object, ListObject), repr(object)
         if self._object and self._subscribed:
