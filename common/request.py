@@ -142,7 +142,7 @@ tClientPacket = TClientPacket()
 
 
 def decode_server_packet( peer, iface_registry, packet ):
-    rec = packet_coders.decode(packet, tServerPacket, peer, iface_registry)
+    rec = packet_coders.decode(packet, tServerPacket, iface_registry)
     if rec.packet_type == Response.packet_type:
         return Response.decode(peer, rec)
     if rec.packet_type == ServerNotification.packet_type:
@@ -150,7 +150,7 @@ def decode_server_packet( peer, iface_registry, packet ):
     assert False, repr(rec.packet_type)  # unknown packet type
     
 def decode_client_packet( peer, iface_registry, packet ):
-    rec = packet_coders.decode(packet, tClientPacket, peer, iface_registry)
+    rec = packet_coders.decode(packet, tClientPacket, iface_registry)
     request_type = rec.iface.get_request_type(rec.command_id)
     if request_type == Interface.rt_request:
         return Request.decode(peer, rec)

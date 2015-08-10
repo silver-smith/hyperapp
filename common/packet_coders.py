@@ -9,7 +9,7 @@ class Coders(object):
 
     def __init__( self, encoder, decoder ):
         self.encoder = encoder  # constructor, no args
-        self.decoder = decoder  # constructor, args: peer, iface_registry, object_resolver (opt)
+        self.decoder = decoder  # constructor, args: iface_registry, object_resolver (opt)
 
 
 class PacketCoders(object):
@@ -25,9 +25,9 @@ class PacketCoders(object):
         assert encoding in self.encodings, repr(encoding)  # Unknown encoding
         return self.encodings[encoding]
 
-    def decode( self, packet, t, peer, iface_registry ):
+    def decode( self, packet, t, iface_registry ):
         coders = self.resolve(packet.encoding)
-        decoder = coders.decoder(peer, iface_registry)
+        decoder = coders.decoder(iface_registry)
         return decoder.decode(t, packet.contents)
 
     def encode( self, encoding, object, t ):

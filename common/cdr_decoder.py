@@ -28,8 +28,7 @@ class DecodeError(Exception): pass
 
 class CdrDecoder(object):
 
-    def __init__( self, peer, iface_registry ):
-        self.peer = peer
+    def __init__( self, iface_registry ):
         self.iface_registry = iface_registry  # IfaceRegistry
 
     def decode( self, t, value, path='root' ):
@@ -105,8 +104,6 @@ class CdrDecoder(object):
         while True:
             new_fields = [field for field in t.get_fields() if field.name not in base_fields]
             decoded_fields.update(self.decode_record_fields(new_fields, path))
-            if t.want_peer_arg:
-                decoded_fields.update(peer=self.peer)
             rec = t.instantiate_fixed(**decoded_fields)
             if not isinstance(t, TDynamicRec):
                 return rec
