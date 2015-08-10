@@ -1,6 +1,7 @@
 from . util import is_list_inst
 from . interface import TPrimitive, tString, Field, TRecord, TIface, tPath, tUpdateList, Interface
 from . interface.dynamic_record import TDynamicRec
+from . packet_coders import packet_coders
 
 
 class ServerNotification(object):
@@ -30,6 +31,10 @@ class Response(ServerNotification):
 
 class ClientNotification(object):
 
+    @staticmethod
+    def decode( rec ):
+        return ClientNotification(rec.peer, rec.iface, rec.path, rec.command_id, rec.params)
+
     def __init__( self, peer, iface, path, command_id, params=None ):
         self.peer = peer
         self.iface = iface
@@ -39,6 +44,10 @@ class ClientNotification(object):
         
 
 class Request(ClientNotification):
+
+    @staticmethod
+    def decode( rec ):
+        return Request(rec.peer, rec.iface, rec.path, rec.command_id, rec.request_id, rec.params)
 
     def __init__( self, peer, iface, path, command_id, request_id, params=None ):
         ClientNotification.__init__(self, peer, iface, path, command_id, params)
@@ -111,14 +120,23 @@ class TClientPacket(TDynamicRec):
         params_type = rec.iface.get_request_params_type(rec.command_id)
         params_field = Field('params', params_type)
         if request_type == Interface.rt_request:
-            return TRecord(base=self, cls=Request, want_peer_arg=True, fields=[
+            return TRecord(base=self, want_peer_arg=True, fields=[
                 params_field,
                 Field('request_id', tString),
                 ])
         if request_type == Interface.rt_notification:
-            return TRecord(fields=[params_field], base=self, cls=ClientNotification, want_peer_arg=True)
+            return TRecord(fields=[params_field], base=self, want_peer_arg=True)
         assert False, repr(request_type)  # Unexpected request type
 
 
 tServerPacket = TServerPacket()
 tClientPacket = TClientPacket()
+
+
+def decode_client_packet( peer, iface_registry, packet ):
+    rec = packet_coders.decode(packet, tClientPacket, peer, iface_registry)
+    request_type = rec.iface.get_request_type(rec.command_id)
+    if request_type == Interface.rt_request:
+        return Request.decode(rec)
+    else:
+        return ClientNotification.decode(rec)

@@ -4,7 +4,7 @@ from Queue import Queue
 from common.packet import Packet
 from common.packet_coders import packet_coders
 from common.interface import iface_registry
-from common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response
+from common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response, decode_client_packet
 from common.visual_rep import pprint
 from util import XPathNotFound
 from module import Module
@@ -97,7 +97,7 @@ class Client(object):
         self.conn.send(packet)
 
     def _process_packet( self, packet ):
-        request = packet_coders.decode(packet, tClientPacket, self, iface_registry)
+        request = decode_client_packet(self, iface_registry, packet)
         print '%s packet from %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
         pprint(tClientPacket, request)
         path = request.path
