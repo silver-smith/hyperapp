@@ -8,7 +8,7 @@ from text_object import TextObject
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, server, contents ):
+    def decode( cls, server, contents ):
         return cls(server.resolve_object(contents.object))
 
     def __init__( self, object, text=None ):
@@ -68,4 +68,4 @@ class View(view.View, QtGui.QTextEdit):
 
 
 TextObject.set_edit_handle_ctr(Handle)
-view_registry.register('text_edit', Handle.from_resp)
+view_registry.register('text_edit', Handle.decode)

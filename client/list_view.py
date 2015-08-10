@@ -15,7 +15,7 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, server, contents ):
+    def decode( cls, server, contents ):
         return cls(server.resolve_object(contents.object), contents.key)
 
     def __init__( self, object, key=None, order_column_id=None,
@@ -432,4 +432,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
         print '~list_view.View', self
 
 
-view_registry.register('list', Handle.from_resp)
+view_registry.register('list', Handle.decode)

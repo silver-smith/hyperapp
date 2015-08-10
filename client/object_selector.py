@@ -10,7 +10,7 @@ from command import Command
 class ObjSelectorUnwrap(view.Handle):
 
     @classmethod
-    def from_resp( cls, server, contents ):
+    def decode( cls, server, contents ):
         base_handle = view_registry.resolve(server, contents.base_handle)
         return cls(base_handle)
 
@@ -27,7 +27,7 @@ class ObjSelectorUnwrap(view.Handle):
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, server, contents ):
+    def decode( cls, server, contents ):
         ref = server.resolve_object(contents.ref)
         target_handle = view_registry.resolve(server, contents.target)
         return cls(ref, target_handle)
@@ -102,5 +102,5 @@ class View(view.View, QtGui.QWidget):
 
 
 proxy_registry.register_iface('object_selector', ProxyObject.decode)
-view_registry.register('object_selector', Handle.from_resp)
-view_registry.register('object_selector_unwrap', ObjSelectorUnwrap.from_resp)
+view_registry.register('object_selector', Handle.decode)
+view_registry.register('object_selector_unwrap', ObjSelectorUnwrap.decode)

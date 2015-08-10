@@ -8,7 +8,7 @@ import view
 class FieldHandle(object):
 
     @classmethod
-    def from_resp( cls, contents ):
+    def decode( cls, contents ):
         return cls(contents.value)
 
 
@@ -78,7 +78,7 @@ class Field(object):
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, server, contents ):
+    def decode( cls, server, contents ):
         object = server.resolve_object(contents.object)
         fields = [Field(rec.name, field_registry.resolve(rec.field_handle)) for rec in contents.fields] 
         return cls(object, fields, contents.current_field)
@@ -169,6 +169,6 @@ class FieldRegistry(object):
 
 field_registry = FieldRegistry()
 
-field_registry.register('string_field', StringFieldHandle.from_resp)
-field_registry.register('int_field', IntFieldHandle.from_resp)
-view_registry.register('form', Handle.from_resp)
+field_registry.register('string_field', StringFieldHandle.decode)
+field_registry.register('int_field', IntFieldHandle.decode)
+view_registry.register('form', Handle.decode)

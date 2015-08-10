@@ -12,7 +12,7 @@ import list_view
 class Handle(view.Handle):
 
     @classmethod
-    def from_resp( cls, server, contents ):
+    def decode( cls, server, contents ):
         object = server.resolve_object(contents.object)
         list_handle = list_view.Handle(object, contents.key)
         return cls(object, list_handle, contents.field_id)
@@ -163,4 +163,4 @@ class View(LineListPanel):
         print '~narrower', self._base_obj.get_title(), self
 
 
-view_registry.register('list_narrower', Handle.from_resp)
+view_registry.register('list_narrower', Handle.decode)
