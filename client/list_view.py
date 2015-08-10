@@ -235,7 +235,6 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.setSelectionMode(self.SingleSelection)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
-        self._selected_elt = None  # must keep own reference because it may change/disappear independently
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._subscribed = False
         self.set_object(object, order_column_id or object.get_default_order_column_id(), elements or object.elements)
@@ -289,7 +288,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self.model().get_row_key(index.row())
 
     def get_current_elt( self ):
-        return self._selected_elt
+        index = self.currentIndex()
+        if index.row() == -1: return None
+        return self.model().get_row_element(index.row())
 
     def get_selected_elts( self ):
         return filter(None, [self.get_current_elt()])  # [] if no selection
@@ -371,11 +372,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def currentChanged( self, idx, prev_idx ):
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
-        ## if idx.row() != -1:
-        ##     self._selected_elt = self._object.get_fetched_elements()[idx.row()]
-        ## else:
-        ##     self._selected_elt = None
-        ## self._selected_elements_changed()
+        self._selected_elements_changed()
 
     def setVisible( self, visible ):
         QtGui.QTableView.setVisible(self, visible)
@@ -420,7 +417,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         # pick selection and commands
         elt = self.get_current_elt()
         if not elt: return
-        element_key = elt.key
+        element_key = self.model().element2key(elt)
         commands = elt.commands
         # create actions
         for cmd in commands:
