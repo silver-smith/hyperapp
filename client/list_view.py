@@ -2,7 +2,7 @@ import sys
 import bisect
 from PySide import QtCore, QtGui
 from util import uni2str, key_match, key_match_any
-from list_object import ListObserver, ListDiff, ListElements, ListObject
+from list_object import ListObserver, ListDiff, Slice, ListObject
 from command import run_element_command, make_element_cmd_action
 from view_registry import view_registry
 import view
@@ -21,7 +21,7 @@ class Handle(view.Handle):
     def __init__( self, object, key=None, order_column_id=None,
                   first_visible_row=None, elements=None, select_first=True ):
         assert isinstance(object, ListObject), repr(object)
-        assert elements is None or isinstance(elements, ListElements), repr(elements)
+        assert elements is None or isinstance(elements, Slice), repr(elements)
         view.Handle.__init__(self)
         self.object = object
         self.key = key
@@ -199,7 +199,7 @@ class Model(QtCore.QAbstractTableModel):
         elements = [self._get_key_element(key) for key in ordered.keys[first_visible_row:last_row]]
         bof = ordered.bof and first_visible_row == 0
         eof = ordered.eof and last_row >= len(ordered.keys)
-        return ListElements(elements, bof, eof)
+        return Slice(elements, bof, eof)
 
     def _update_elements( self, elements ):
         for element in elements:
@@ -272,15 +272,14 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def process_fetch_result( self, result ):
         print '-- process_fetch_result', result.bof, result.eof, len(result.elements)
+        assert isinstance(result, Slice), repr(result)
         self.model().process_fetch_result(result)
         self.resizeColumnsToContents()
         self.fetch_elements_if_required()
 
     def diff_applied( self, diff ):
-        #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update record
+        assert isinstance(diff, ListDiff), repr(diff)
         self.model().diff_applied(diff)
-        # may be this was response from elements fetching, but we may need more elements
-        self.check_if_elements_must_be_fetched()
 
     def get_current_key( self ):
         index = self.currentIndex()
@@ -335,8 +334,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def set_object( self, object, order_column_id=None, elements=None ):
         print '-- set_object', self, object, self.isVisible(), (len(elements.elements), elements.eof) if elements else None
-        assert order_column_id is not None or self.model().get_order_column_id() is not None
         assert isinstance(object, ListObject), repr(object)
+        assert order_column_id is not None or self.model().get_order_column_id() is not None
+        assert isinstance
         if self._object and self._subscribed:
             self._object.unsubscribe_local(self)
         self._object = object

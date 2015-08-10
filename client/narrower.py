@@ -1,6 +1,6 @@
 from PySide import QtCore, QtGui
 from util import uni2str, key_match, key_match_any
-from list_object import ListObserver, ListElements, ListObject
+from list_object import ListObserver, Slice, ListObject
 from view_command import command
 from view_registry import view_registry
 import view
@@ -71,7 +71,7 @@ class FilteredListObj(ListObject, ListObserver):
 
     def process_fetch_result( self, result ):
         print '-- narrower.process_fetch_result', result.bof, result.eof, len(result.elements)
-        filtered = ListElements(filter(self._element_matched, result.elements), result.bof, result.eof)
+        filtered = Slice(filter(self._element_matched, result.elements), result.bof, result.eof)
         if filtered.elements:
             self._notify_fetch_result(filtered)
 

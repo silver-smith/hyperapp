@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from common.util import dt2local_str
+from common.util import is_list_inst, dt2local_str
 from object import ObjectObserver, Object
 
 
@@ -37,9 +37,23 @@ class ListDiff(object):
         self.elements = elements    # with these elemenents
 
 
-class ListElements(object):
+class Element(object):
+
+    @classmethod
+    def decode( cls, key_column_id, rec ):
+        key = getattr(rec.row, key_column_id)
+        return cls(key, rec.row, rec.commands)
+
+    def __init__( self, key, row, commands ):
+        self.key = key
+        self.row = row
+        self.commands = commands
+
+
+class Slice(object):
 
     def __init__( self, elements, bof, eof ):
+        assert is_list_inst(elements, Element), repr(elements)
         self.elements = elements
         self.bof = bof
         self.eof = eof

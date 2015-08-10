@@ -12,7 +12,7 @@ import common.interface as interface_module
 from common.request import ClientNotification, Request
 from object import Object
 from command import Command
-from list_object import ListDiff, ListElements, ListObject
+from list_object import ListDiff, Element, Slice, ListObject
 import proxy_registry
 import view
 
@@ -151,8 +151,12 @@ class ProxyListObject(ProxyObject, ListObject):
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
         self.sorted_by_column = contents.sorted_by_column
-        ## self.key_column_idx = self._find_key_column(self.columns)
-        self.elements = ListElements(contents.elements, contents.bof, contents.eof)
+        self.elements = self._decode_slice(contents)
+
+    def _decode_slice( self, rec ):
+        key_column_id = self.get_key_column_id()
+        elements = [Element.decode(key_column_id, elt_rec) for elt_rec in rec.elements]
+        return Slice(elements, rec.bof, rec.eof)
 
     def get_default_order_column_id( self ):
         return self.sorted_by_column
@@ -197,7 +201,8 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_fetch_elements_result( self, result ):
         self.fetch_pending = False
-        self._notify_fetch_result(result)
+        slice = self._decode_slice(result)
+        self._notify_fetch_result(slice)
 
     def __del__( self ):
         print '~ProxyListObject', self, self.path
