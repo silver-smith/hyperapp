@@ -63,34 +63,6 @@ class Model(QtCore.QAbstractTableModel):
 
     def get_order_column_id( self ):
         return self._current_order
-    
-    def diff_applied( self, diff ):
-        print '-- list_view.Model.diff_applied', diff
-        return
-        ## self._update_mapping()  # underlying list object elements are already changed
-        ## if diff.start_key is not None:
-        ##     assert diff.start_key == diff.end_key  # only signle key removal is supported by now
-        ##     elements = self._object.get_fetched_elements()
-        ##     if elements and elements[0].key < elements[-1].key:
-        ##         for row, elt in enumerate(elements):
-        ##             if elt.key > diff.start_key:
-        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
-        ##                 break
-        ##     else:
-        ##         for row, elt in enumerate(elements):
-        ##             if elt.key < diff.start_key:
-        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
-        ##                 break
-        ##     assert diff.end_key is not None
-        ##     start_row = self._key2row[diff.start_key]
-        ##     end_row = self._key2row[diff.end_key]
-        ##     self.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
-        ## if diff.start_key is not None and diff.elements:
-        ##     start_row = self._key2row[diff.start_key]
-        ##     self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
-        ## if diff.start_key == None and diff.end_key == None:  # append
-        ##     element_count = self._object.element_count()
-        ##     self.rowsInserted.emit(QtCore.QModelIndex(), element_count - len(diff.elements), element_count - 1)
 
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
@@ -174,6 +146,41 @@ class Model(QtCore.QAbstractTableModel):
         ordered.keys = ordered.keys[:idx] + [element.key for element in result.elements]
         ordered.eof = result.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
+    
+    def diff_applied( self, diff ):
+        ordered = self._current_ordered()
+        start_idx = bisect.bisect_left(ordered.keys, diff.start_key)
+        end_idx = bisect.bisect_right(ordered.keys, diff.end_key)
+        print '-- list_view.Model.diff_applied', diff, start_idx, end_idx, len(ordered.keys), ordered.keys
+        for key in ordered.keys[start_idx:end_idx]:
+            del self._key2element[key]
+        del ordered.keys[start_idx:end_idx]
+        self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
+
+        ## self._update_mapping()  # underlying list object elements are already changed
+        ## if diff.start_key is not None:
+        ##     assert diff.start_key == diff.end_key  # only signle key removal is supported by now
+        ##     elements = self._object.get_fetched_elements()
+        ##     if elements and elements[0].key < elements[-1].key:
+        ##         for row, elt in enumerate(elements):
+        ##             if elt.key > diff.start_key:
+        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
+        ##                 break
+        ##     else:
+        ##         for row, elt in enumerate(elements):
+        ##             if elt.key < diff.start_key:
+        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
+        ##                 break
+        ##     assert diff.end_key is not None
+        ##     start_row = self._key2row[diff.start_key]
+        ##     end_row = self._key2row[diff.end_key]
+        ##     self.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
+        ## if diff.start_key is not None and diff.elements:
+        ##     start_row = self._key2row[diff.start_key]
+        ##     self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
+        ## if diff.start_key == None and diff.end_key == None:  # append
+        ##     element_count = self._object.element_count()
+        ##     self.rowsInserted.emit(QtCore.QModelIndex(), element_count - len(diff.elements), element_count - 1)
 
     def get_key_row( self, key ):
         ordered = self._current_ordered()

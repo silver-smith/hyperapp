@@ -30,11 +30,18 @@ class ListDiff(object):
     def delete( cls, key ):
         return cls(key, key, [])
 
+    @classmethod
+    def decode( cls, rec ):
+        return cls(rec.start_key, rec.end_key, rec.elements)
+
     def __init__( self, start_key, end_key, elements ):
         # keys == None means append
         self.start_key = start_key  # replace elements from this one
         self.end_key = end_key      # up to (and including) this one
         self.elements = elements    # with these elemenents
+
+    def __repr__( self ):
+        return 'ListDiff(%r-%r>%r)' % (self.start_key, self.end_key, self.elements)
 
 
 class Element(object):

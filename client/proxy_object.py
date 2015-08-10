@@ -169,19 +169,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
-        ## if self.elements and self.elements[0].key < self.elements[-1].key:  # ascending keys
-        ##     assert diff.start_key <= diff.end_key, (diff.start_key, diff.end_key)
-        ##     self.elements = \
-        ##       [elt for elt in self.elements if elt.key < diff.start_key] \
-        ##       + diff.elements \
-        ##       + [elt for elt in self.elements if elt.key > diff.end_key]
-        ## else:  # descending keys or single element (todo)
-        ##     assert diff.start_key >= diff.end_key, (diff.start_key, diff.end_key)
-        ##     self.elements = \
-        ##       [elt for elt in self.elements if elt.key > diff.start_key] \
-        ##       + diff.elements \
-        ##       + [elt for elt in self.elements if elt.key < diff.end_key]
-        self._notify_diff_applied(diff)
+        self._notify_diff_applied(ListDiff.decode(diff))
 
     def get_columns( self ):
         return self.iface.columns
