@@ -205,4 +205,3 @@ class ProxyListObject(ProxyObject, ListObject):
 
 proxy_registry.register_iface('object', ProxyObject.from_response)
 proxy_registry.register_iface('list', ProxyListObject.from_response)
-tCommand.use_class(Command)
