@@ -12,7 +12,6 @@ from . interface import (
     TRecord,
     TDynamicRec,
     TList,
-    TRow,
     THierarchy,
     Object,
     TObject,
@@ -95,13 +94,6 @@ class VisualRepEncoder(object):
             return self.encode_path(value)
         children = [self.dispatch(t.element_type, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
-
-    @dispatch.register(TRow)
-    def encode_row( self, t, value ):
-        children = []
-        for idx, t in enumerate(t.columns):
-            children.append(self.dispatch(t, value[idx]))
-        return RepNode('row: %s' % ', '.join(child.text for child in children))
 
     @dispatch.register(TIface)
     def encode_iface( self, t, obj ):

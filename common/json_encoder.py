@@ -10,7 +10,6 @@ from . interface import (
     TRecord,
     TDynamicRec,
     TList,
-    TRow,
     THierarchy,
     Object,
     TObject,
@@ -69,13 +68,6 @@ class JsonEncoder(object):
     @dispatch.register(TList)
     def encode_list( self, t, value ):
         return [self.dispatch(t.element_type, elt) for elt in value]
-
-    @dispatch.register(TRow)
-    def encode_row( self, t, value ):
-        result = []
-        for idx, t in enumerate(t.columns):
-            result.append(self.dispatch(t, value[idx]))
-        return result
 
     @dispatch.register(TIface)
     def encode_iface( self, t, obj ):

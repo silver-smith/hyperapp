@@ -10,7 +10,6 @@ from . interface import (
     TRecord,
     TDynamicRec,
     TList,
-    TRow,
     THierarchy,
     Object,
     TObject,
@@ -89,13 +88,6 @@ class CdrEncoder(object):
         self.write_int(len(value))
         for elt in value:
             self.dispatch(t.element_type, elt)
-
-    @dispatch.register(TRow)
-    def encode_row( self, t, value ):
-        assert len(value) == len(t.columns), repr(value)
-        self.write_int(len(value))
-        for t, elt in zip(t.columns, value):
-            self.dispatch(t, elt)
 
     @dispatch.register(TIface)
     def encode_iface( self, t, obj ):

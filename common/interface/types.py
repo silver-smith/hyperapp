@@ -185,20 +185,6 @@ class TIndexedList(TList):
     pass
 
 
-class TRow(Type):
-
-    def __init__( self, columns ):
-        assert is_list_inst(columns, Type), repr(columns)
-        self.columns = columns
-
-    def validate( self, path, value ):
-        self.expect(path, value, 'list', isinstance(value, list))
-        if len(value) != len(self.columns):
-            self.failure(path, 'Wrong row length: %d; required length: %d' % (len(value), len(self.columns)))
-        for idx, (item, type) in enumerate(zip(value, self.columns)):
-            type.validate(join_path(path, '#%d' % idx), item)
-
-
 tPath = TList(tString)
 
 tCommand = TRecord([

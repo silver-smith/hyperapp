@@ -12,7 +12,6 @@ from . interface import (
     TDynamicRec,
     TList,
     TIndexedList,
-    TRow,
     THierarchy,
     TObject,
     TIface,
@@ -140,17 +139,6 @@ class CdrDecoder(object):
         for idx in range(size):
             elt = self.dispatch(t.element_type, join_path(path, '#%d' % idx))
             setattr(elt, 'idx', idx)
-            elements.append(elt)
-        return elements
-
-    @dispatch.register(TRow)
-    def decode_row( self, t, path ):
-        size = self.read_int(path)
-        self.expect(path, size == len(t.columns),
-                    'Row size mismatch: got %d elements, expected %d' % (size, len(t.columns)))
-        elements = []
-        for idx, tcol in enumerate(t.columns):
-            elt = self.dispatch(tcol, join_path(path, '#%d' % idx))
             elements.append(elt)
         return elements
 

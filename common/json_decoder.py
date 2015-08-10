@@ -12,7 +12,6 @@ from . interface import (
     TDynamicRec,
     TList,
     TIndexedList,
-    TRow,
     THierarchy,
     TObject,
     TIface,
@@ -121,14 +120,6 @@ class JsonDecoder(object):
             setattr(decoded_elt, 'idx', idx)
             decoded_elts.append(decoded_elt)
         return decoded_elts
-
-    @dispatch.register(TRow)
-    def decode_row( self, t, value, path ):
-        self.expect_type(path, isinstance(value, list), value, 'row (list)')
-        result = []
-        for idx, t in enumerate(t.columns):
-            result.append(self.dispatch(t, value[idx], join_path(path, '#%d' % idx)))
-        return result
 
     @dispatch.register(TIface)
     def decode_iface( self, t, value, path ):
