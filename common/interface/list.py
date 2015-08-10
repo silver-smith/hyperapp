@@ -16,9 +16,6 @@ from . hierarchy import THierarchy
 from . interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Object, Interface
 
 
-tColumnType = THierarchy()
-
-
 class ColumnType(object):
 
     def to_string( self, value ):
@@ -48,10 +45,6 @@ class DateTimeColumnType(ColumnType):
     def to_string( self, value ):
         return dt2local_str(value)
 
-
-tColumnType.register('string', cls=StringColumnType)
-tColumnType.register('int', cls=IntColumnType)
-tColumnType.register('datetime', cls=DateTimeColumnType)
 
 stringColumnType = StringColumnType()
 intColumnType = IntColumnType()
