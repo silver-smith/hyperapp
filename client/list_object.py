@@ -76,9 +76,9 @@ class ListObject(Object):
     def get_key_column_id( self ):
         raise NotImplementedError(self.__class__)
 
-    def get_default_order_column_id( self ):
-        raise NotImplementedError(self.__class__)
-
+    def get_initial_slice( self ):
+        return None
+    
     def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 

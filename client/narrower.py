@@ -58,9 +58,6 @@ class FilteredListObj(ListObject, ListObserver):
 
     def get_key_column_id( self ):
         return self._base.get_key_column_id()
-
-    def get_default_order_column_id( self ):
-        return self._base.get_default_order_column_id()
     
     def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         ListObject.subscribe_local(self, observer)

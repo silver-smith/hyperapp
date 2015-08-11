@@ -18,16 +18,16 @@ class Handle(view.Handle):
     def decode( cls, server, contents ):
         return cls(server.resolve_object(contents.object), contents.key)
 
-    def __init__( self, object, key=None, order_column_id=None,
-                  first_visible_row=None, elements=None, select_first=True ):
+    def __init__( self, object, key=None, sort_column_id=None,
+                  first_visible_row=None, slice=None, select_first=True ):
         assert isinstance(object, ListObject), repr(object)
-        assert elements is None or isinstance(elements, Slice), repr(elements)
+        assert slice is None or isinstance(slice, Slice), repr(slice)
         view.Handle.__init__(self)
         self.object = object
         self.key = key
-        self.order_column_id = order_column_id
+        self.sort_column_id = sort_column_id
         self.first_visible_row = first_visible_row
-        self.elements = elements  # cached elements
+        self.slice = slice  # cached elements slice
         self.select_first = select_first  # bool
 
     def get_object( self ):
@@ -35,8 +35,8 @@ class Handle(view.Handle):
 
     def construct( self, parent ):
         print 'list_view construct', parent, self.object.get_title(), self.object, repr(self.key)
-        return View(parent, self.object, self.key, self.order_column_id,
-                    self.first_visible_row, self.elements, self.select_first)
+        return View(parent, self.object, self.key, self.sort_column_id,
+                    self.first_visible_row, self.slice, self.select_first)
 
     def __repr__( self ):
         return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
@@ -61,7 +61,7 @@ class Model(QtCore.QAbstractTableModel):
         self._current_order = None  # column id
         self._ordered = {}  # order column id -> OrderedElements
 
-    def get_order_column_id( self ):
+    def get_sort_column_id( self ):
         return self._current_order
 
     def data( self, index, role ):
@@ -95,19 +95,19 @@ class Model(QtCore.QAbstractTableModel):
         ## self._update_mapping()
         QtCore.QAbstractTableModel.reset(self)
 
-    def set_object( self, object, order_column_id, elements ):
+    def set_object( self, object, sort_column_id, slice ):
         self._object = object
         self._columns = object.get_columns()
         self._visible_columns = filter(lambda column: column.title is not None, self._columns)
         self._key_column_id = object.get_key_column_id()
-        self._current_order = order_column_id or self._current_order
+        self._current_order = sort_column_id or self._current_order
         ordered = OrderedElements()
         self._ordered = {self._current_order: ordered}
-        if elements:
-            self._update_elements(elements.elements)
-            ordered.keys = [element.key for element in elements.elements]
-            ordered.bof = elements.bof
-            ordered.eof = elements.eof
+        if slice and slice.sort_column_id == self._current_order:
+            self._update_elements(slice.elements)
+            ordered.keys = [element.key for element in slice.elements]
+            ordered.bof = slice.bof
+            ordered.eof = slice.eof
         self.reset()
 
     def _wanted_last_row( self, first_visible_row, visible_row_count ):
@@ -204,7 +204,7 @@ class Model(QtCore.QAbstractTableModel):
         key = ordered.keys[row]
         return self._get_key_element(key)
 
-    def get_visible_elements( self, first_visible_row, visible_row_count ):
+    def get_visible_slice( self, first_visible_row, visible_row_count ):
         last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
         elements = [self._get_key_element(key) for key in ordered.keys[first_visible_row:last_row]]
@@ -228,7 +228,7 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, ListObserver, QtGui.QTableView):
 
-    def __init__( self, parent, object, key, order_column_id, first_visible_row, elements, select_first ):
+    def __init__( self, parent, object, key, sort_column_id, first_visible_row, slice, select_first ):
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
         self._select_first = select_first
@@ -245,14 +245,18 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.activated.connect(self._on_activated)
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._subscribed = False
-        self.set_object(object, order_column_id or object.get_default_order_column_id(), elements or object.elements)
+        if not slice:
+            slice = object.get_initial_slice()
+        if not sort_column_id and slice:
+            sort_column_id = slice.sort_column_id
+        self.set_object(object, sort_column_id, slice)
         self.set_current_key(key, select_first)
 
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        elements = self.model().get_visible_elements(first_visible_row, visible_row_count)
-        return Handle(self.get_object(), self.get_current_key(), self.model().get_order_column_id(),
-                      first_visible_row, elements, self._select_first)
+        slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
+        return Handle(self.get_object(), self.get_current_key(), self.model().get_sort_column_id(),
+                      first_visible_row, slice, self._select_first)
 
     def get_title( self ):
         if self._object:
@@ -340,15 +344,15 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def selected_keys( self ):
         return None
 
-    def set_object( self, object, order_column_id=None, elements=None ):
-        print '-- set_object', self, object, self.isVisible(), (len(elements.elements), elements.eof) if elements else None
+    def set_object( self, object, sort_column_id=None, slice=None ):
+        print '-- set_object', self, object, self.isVisible(), (len(slice.elements), slice.eof) if slice else None
         assert isinstance(object, ListObject), repr(object)
-        assert order_column_id is not None or self.model().get_order_column_id() is not None
+        assert sort_column_id is not None or self.model().get_sort_column_id() is not None
         assert isinstance
         if self._object and self._subscribed:
             self._object.unsubscribe_local(self)
         self._object = object
-        self.model().set_object(object, order_column_id, elements)
+        self.model().set_object(object, sort_column_id, slice)
         self.resizeColumnsToContents()
         if self.isVisible():
             first_visible_row, visible_row_count = self._get_visible_rows()
