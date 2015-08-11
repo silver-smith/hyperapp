@@ -122,7 +122,7 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row - len(ordered.keys)
         key = ordered.keys[-1] if ordered.keys else None
-        print '-- fetch_elements_if_required', first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), wanted_rows
+        print '-- fetch_elements_if_required', id(self), first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), ordered.eof, wanted_rows
         if wanted_rows > 0 and not ordered.eof:
             print '   fetch_elements', self._object, `key`, wanted_rows
             self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
@@ -132,7 +132,7 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
-        print '-- subscribe_and_fetch_elements', self._object, first_visible_row, visible_row_count, wanted_rows
+        print '-- subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
         self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 0, wanted_rows)
 
     def process_fetch_result( self, result ):
@@ -151,7 +151,7 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         start_idx = bisect.bisect_left(ordered.keys, diff.start_key)
         end_idx = bisect.bisect_right(ordered.keys, diff.end_key)
-        print '-- list_view.Model.diff_applied', diff, start_idx, end_idx, len(ordered.keys), ordered.keys
+        print '-- list_view.Model.diff_applied', id(self), diff, start_idx, end_idx, len(ordered.keys), ordered.keys
         for key in ordered.keys[start_idx:end_idx]:
             del self._key2element[key]
         self._update_elements(diff.elements)
@@ -225,7 +225,7 @@ class Model(QtCore.QAbstractTableModel):
         return self._key2element[key]
 
     def __del__( self ):
-        print '~list_view.Model'
+        print '~list_view.Model', self
 
 
 class View(view.View, ListObserver, QtGui.QTableView):
@@ -268,7 +268,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self._object
 
     def object_changed( self ):
-        pass
+        print '-- list_view.object_changed', self
         ## old_key = self._selected_elt.key if self._selected_elt else None
         ## self.model().reset()
         ## ## self.reset()  # selection etc must be cleared
@@ -285,7 +285,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result( self, result ):
-        print '-- process_fetch_result', result.sort_column_id, result.bof, result.eof, len(result.elements)
+        print '-- process_fetch_result', self, id(self.model()), result.sort_column_id, result.bof, result.eof, len(result.elements)
         assert isinstance(result, Slice), repr(result)
         self.model().process_fetch_result(result)
         self.resizeColumnsToContents()
@@ -352,7 +352,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return None
 
     def set_object( self, object, sort_column_id=None, slice=None ):
-        print '-- set_object', self, object, self.isVisible(), (len(slice.elements), slice.eof) if slice else None
+        print '-- set_object', self, id(self.model()), object, self.isVisible(), (len(slice.elements), slice.eof) if slice else None
         assert isinstance(object, ListObject), repr(object)
         assert sort_column_id is not None or self.model().get_sort_column_id() is not None
         assert isinstance
@@ -378,7 +378,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.fetch_elements_if_required()
 
     def resizeEvent( self, evt ):
-        print '-- resizeEvent', self.isVisible()
+        print '-- resizeEvent', self, id(self.model()), self.isVisible(), self._get_visible_rows()
         result = QtGui.QTableView.resizeEvent(self, evt)
         if self._subscribed:
             self.fetch_elements_if_required()
