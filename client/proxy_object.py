@@ -150,7 +150,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self.sorted_by_column = contents.sorted_by_column
+        self.sort_column_id = contents.sort_column_id
         self.elements = self._decode_slice(contents)
 
     def _decode_slice( self, rec ):
@@ -161,10 +161,10 @@ class ProxyListObject(ProxyObject, ListObject):
     def get_default_order_column_id( self ):
         return self.sorted_by_column
 
-    def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
+    def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         this_is_first_observer = self.subscribe_local(observer)
         if not this_is_first_observer: return
-        self.execute_request('subscribe_and_fetch_elements', None, sort_by_column, key, desc_count, asc_count)
+        self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, key, desc_count, asc_count)
         self.fetch_pending = True
 
     def process_update( self, diff ):
@@ -178,9 +178,9 @@ class ProxyListObject(ProxyObject, ListObject):
     def get_key_column_id( self ):
         return self.iface.key_column
 
-    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
+    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         if self.fetch_pending: return
-        self.execute_request('fetch_elements', None, sort_by_column, key, desc_count, asc_count)
+        self.execute_request('fetch_elements', None, sort_column_id, key, desc_count, asc_count)
         self.fetch_pending = True
 
     def process_response_result( self, command_id, result ):

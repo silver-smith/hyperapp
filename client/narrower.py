@@ -62,12 +62,12 @@ class FilteredListObj(ListObject, ListObserver):
     def get_default_order_column_id( self ):
         return self._base.get_default_order_column_id()
     
-    def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
+    def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         ListObject.subscribe_local(self, observer)
-        self._base.subscribe_and_fetch_elements(self, sort_by_column, key, desc_count, asc_count)
+        self._base.subscribe_and_fetch_elements(self, sort_column_id, key, desc_count, asc_count)
 
-    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
-        self._base.fetch_elements(sort_by_column, key, desc_count, asc_count)
+    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
+        self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
 
     def process_fetch_result( self, result ):
         print '-- narrower.process_fetch_result', result.bof, result.eof, len(result.elements)

@@ -59,8 +59,10 @@ class Element(object):
 
 class Slice(object):
 
-    def __init__( self, elements, bof, eof ):
+    def __init__( self, sort_column_id, elements, bof, eof ):
+        assert isinstance(sort_column_id, basestring), repr(sort_column_id)
         assert is_list_inst(elements, Element), repr(elements)
+        self.sort_column_id = sort_column_id
         self.elements = elements
         self.bof = bof
         self.eof = eof
@@ -77,10 +79,10 @@ class ListObject(Object):
     def get_default_order_column_id( self ):
         raise NotImplementedError(self.__class__)
 
-    def subscribe_and_fetch_elements( self, observer, sort_by_column, key, desc_count, asc_count ):
+    def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 
-    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
+    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 
     def run_element_command( self, command_id, element_key, initiator_view ):

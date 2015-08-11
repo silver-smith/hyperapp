@@ -56,6 +56,7 @@ class Blog(SmallListObject):
     iface = blog_iface
     proxy_id = 'list'
     class_name = 'blog'
+    default_sort_column_id = 'id'
 
     @classmethod
     def resolve( cls, path ):

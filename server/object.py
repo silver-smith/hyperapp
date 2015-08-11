@@ -90,20 +90,30 @@ class Object(interface_module.Object):
         subscription.remove(self.get_path(), request.peer)
 
 
+class Slice(object):
+
+    def __init__( self, sort_column_id, elements, bof, eof ):
+        self.sort_column_id = sort_column_id
+        self.elements = elements
+        self.bof = bof
+        self.eof = eof
+
+
 class ListObject(Object, list_module.ListObject):
 
-    default_sort_by_column = 'key'
+    default_sort_column_id = 'key'
 
     def __init__( self ):
         Object.__init__(self)
 
     def get_contents( self, **kw ):
-        elements, bof, eof = self.fetch_elements(self.default_sort_by_column, None, 0, MIN_ROWS_RETURNED)
+        slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
+        assert isinstance(slice, Slice), repr(slice)  # invalid result from fetch_elements, use: return self.Slice(...)
         return Object.get_contents(self,
-            sorted_by_column=self.default_sort_by_column,
-            elements=elements,
-            bof=bof,
-            eof=eof,
+            sort_column=slice.sort_column_id,
+            elements=slice.elements,
+            bof=slice.bof,
+            eof=slice.eof,
             **kw)
 
     def get_handle( self ):
@@ -122,20 +132,41 @@ class ListObject(Object, list_module.ListObject):
 
     def process_request_fetch_elements( self, request ):
         params = request.params
-        elements, bof, eof = self.fetch_elements(params.sort_by_column, params.key, params.desc_count, params.asc_count)
-        return request.make_response_result(elements=elements, bof=bof, eof=eof)
+        slice = self.fetch_elements(params.sort_column_id, params.key, params.desc_count, params.asc_count)
+        assert isinstance(slice, Slice), repr(slice)  # invalid result from fetch_elements, use: return self.Slice(...)
+        return request.make_response_result(
+            sort_column=slice.sort_column_id,
+            elements=slice.elements,
+            bof=slice.bof,
+            eof=slice.eof,
+            )
 
-    # must return tuple (self.iface.Element list, bof:bool, eof:bool)
-    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
+    # must return Slice, construct using self.Slice(...)
+    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 
     def run_element_command( self, request, command_id, element_key ):
         assert False, repr(command_id)  # Unexpected command_id
 
+    def Slice( self, sort_column_id, elements, bof, eof ):
+        assert isinstance(sort_column_id, basestring), repr(sort_column_id)
+        column = self._pick_column(sort_column_id)
+        assert column, 'Unknown column: %r; known are: %r'\
+           % (sort_column_id, [column.id for column in self.iface.columns])
+        assert isinstance(bof, bool), repr(bof)
+        assert isinstance(eof, bool), repr(eof)
+        return Slice(sort_column_id, elements, bof, eof)
+            
+    def _pick_column( self, column_id ):
+        for column in self.iface.columns:
+            if column.id == column_id:
+                return column
+        return None
+
 
 class SmallListObject(ListObject):
 
-    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
+    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         elt2sort_key = attrgetter('row.%s' % self.iface.key_column)
         sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
         if key is None:
@@ -151,7 +182,7 @@ class SmallListObject(ListObject):
         elements = sorted_elements[idx - desc_count : idx + asc_count]
         bof = idx - desc_count <= 0
         eof = idx + asc_count >= len(sorted_elements)
-        return (elements, bof, eof)
+        return self.Slice(sort_column_id, elements, bof, eof)
 
     # must return self.iface.Element list
     def fetch_all_elements( self ):

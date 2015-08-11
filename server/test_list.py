@@ -76,7 +76,7 @@ class TestList(ListObject):
     def run_command_params( self, request ):
         return request.make_response(ParamsForm().make_handle(size=self.size))
 
-    def fetch_elements( self, sort_by_column, key, desc_count, asc_count ):
+    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         assert key is None or isinstance(key, (int, long)), repr(key)
         if key is None:
             start = 0

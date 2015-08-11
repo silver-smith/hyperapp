@@ -210,7 +210,7 @@ class Model(QtCore.QAbstractTableModel):
         elements = [self._get_key_element(key) for key in ordered.keys[first_visible_row:last_row]]
         bof = ordered.bof and first_visible_row == 0
         eof = ordered.eof and last_row >= len(ordered.keys)
-        return Slice(elements, bof, eof)
+        return Slice(self._current_order, elements, bof, eof)
 
     def _update_elements( self, elements ):
         for element in elements:
