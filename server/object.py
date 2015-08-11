@@ -12,7 +12,7 @@ from util import WeakValueMultiDict
 from common.interface import Interface
 
 
-MIN_ROWS_RETURNED = 10
+MIN_ROWS_RETURNED = 100
 
 
 class Subscription(object):

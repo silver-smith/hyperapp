@@ -9,7 +9,7 @@ import line_edit
 import list_view
 
 
-FETCH_ELEMENT_COUNT = 20  # how many rows to request when request is originating from narrower itself
+FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
 
 
 class Handle(view.Handle):
