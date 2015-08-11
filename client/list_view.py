@@ -201,6 +201,8 @@ class Model(QtCore.QAbstractTableModel):
 
     def get_row_element( self, row ):
         ordered = self._current_ordered()
+        if row == 0 and not ordered.keys:
+            return None
         key = ordered.keys[row]
         return self._get_key_element(key)
 
@@ -294,9 +296,10 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.model().diff_applied(diff)
 
     def get_current_key( self ):
-        index = self.currentIndex()
-        if index.row() == -1: return None
-        return self.model().get_row_key(index.row())
+        current_elt = self.get_current_elt()
+        if not current_elt:
+            return None
+        return current_elt.key
 
     def get_current_elt( self ):
         index = self.currentIndex()
@@ -304,7 +307,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self.model().get_row_element(index.row())
 
     def get_selected_elts( self ):
-        return filter(None, [self.get_current_elt()])  # [] if no selection
+        element = self.get_current_elt()
+        if element:
+            return [element]
+        else:
+            return []  # no selection
 
     def is_in_multi_selection_mode( self ):
         return False  # todo
@@ -417,7 +424,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def _selected_elements_changed( self ):
         self._update_selected_actions()
         if self.isVisible():  # we may being destructed now
-            self.selected_elements_changed([self.get_current_elt()])
+            self.selected_elements_changed(self.get_selected_elts())
 
     def _update_selected_actions( self ):
         # remove previous actions
