@@ -49,6 +49,7 @@ class FilteredListObj(ListObject, ListObserver):
         self._base = base
         self._field_id = field_id  # filter by this field
         self._prefix = prefix
+        self._cached_elements = []
 
     def get_title( self ):
         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
@@ -79,13 +80,29 @@ class FilteredListObj(ListObject, ListObserver):
             self._base.fetch_elements(result.sort_column_id, result.elements[-1].key, 0, FETCH_ELEMENT_COUNT)
         else:
             self._notify_fetch_result(filtered)
+        self._cached_elements.extend(elements)  # may has duplicates now, it's ok
 
     def _element_matched( self, element ):
-        value = getattr(element.row, self._field_id)
+        value = self._get_filter_field(element)
         return value.lower().startswith(self._prefix.lower())
 
     def run_command( self, command_id, initiator_view, **kw ):
         return self._base.run_command(command_id, initiator_view, **kw)
+
+    # we find only in cached elements, that is elements we have seen; do not issue additional fetch command
+    def find_common_prefix( self ):
+        elements = self._cached_elements
+        if not elements:
+            return None
+        common = self._get_filter_field(elements[0])
+        for element in elements[1:]:
+            field = self._get_filter_field(element)
+            while not field.startswith(common):
+                common = common[:-1]
+        return common
+
+    def _get_filter_field( self, element ):
+        return getattr(element.row, self._field_id)
 
     def __del__( self ):
         print '~FilteredListObj', repr(self._prefix)
@@ -151,14 +168,10 @@ class View(LineListPanel):
         return LineListPanel.eventFilter(self, obj, evt)
 
     def _fill_common_prefix( self ):
-        dir = self._list_view.get_object()
-        elements = dir.get_fetched_elements()
-        if not elements: return
-        common = elements[0].key
-        for elt in elements[1:]:
-            while not elt.key.startswith(common):
-                common = common[:-1]
-        self._line_edit.setText(common)
+        common_prefix = self._list_view.get_object().find_common_prefix()
+        if not common_prefix:
+            return
+        self._line_edit.setText(common_prefix)
 
     def __del__( self ):
         print '~narrower', self._base_obj.get_title(), self
