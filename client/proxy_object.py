@@ -152,6 +152,8 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.set_contents(self, contents)
         self._initial_slice = self._decode_slice(contents)
 
+    # We can use initial slice only once, immediately after receiving object contents.
+    # After that contents may change
     def get_initial_slice( self ):
         slice = self._initial_slice
         self._initial_slice = None
@@ -160,7 +162,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def _decode_slice( self, rec ):
         key_column_id = self.get_key_column_id()
         elements = [Element.decode(key_column_id, elt_rec) for elt_rec in rec.elements]
-        return Slice(rec.sort_column, elements, rec.bof, rec.eof)
+        return Slice(rec.sort_column_id, elements, rec.bof, rec.eof)
 
     def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         this_is_first_observer = self.subscribe_local(observer)

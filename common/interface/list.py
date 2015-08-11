@@ -144,7 +144,7 @@ class ListInterface(Interface):
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
-            Field('sort_column', tString),
+            Field('sort_column_id', tString),
             Field('elements', TList(self.tElement())),
             Field('bof', tBool),
             Field('eof', tBool),
@@ -158,7 +158,7 @@ class ListInterface(Interface):
             Field('asc_count', tInt),
             ]
         fetch_result_fields = [
-            Field('sort_column', tString),
+            Field('sort_column_id', tString),
             Field('elements', TList(self.tElement())),
             Field('bof', tBool),
             Field('eof', tBool),

@@ -110,7 +110,7 @@ class ListObject(Object, list_module.ListObject):
         slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
         assert isinstance(slice, Slice), repr(slice)  # invalid result from fetch_elements, use: return self.Slice(...)
         return Object.get_contents(self,
-            sort_column=slice.sort_column_id,
+            sort_column_id=slice.sort_column_id,
             elements=slice.elements,
             bof=slice.bof,
             eof=slice.eof,
@@ -135,7 +135,7 @@ class ListObject(Object, list_module.ListObject):
         slice = self.fetch_elements(params.sort_column_id, params.key, params.desc_count, params.asc_count)
         assert isinstance(slice, Slice), repr(slice)  # invalid result from fetch_elements, use: return self.Slice(...)
         return request.make_response_result(
-            sort_column=slice.sort_column_id,
+            sort_column_id=slice.sort_column_id,
             elements=slice.elements,
             bof=slice.bof,
             eof=slice.eof,
