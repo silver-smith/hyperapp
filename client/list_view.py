@@ -142,7 +142,7 @@ class Model(QtCore.QAbstractTableModel):
         if result.elements:
             idx = bisect.bisect_left(ordered.keys, result.elements[0].key)
         else:
-            idx = 0
+            idx = len(ordered.keys)
         ordered.keys = ordered.keys[:idx] + [element.key for element in result.elements]
         ordered.eof = result.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
@@ -285,7 +285,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result( self, result ):
-        print '-- process_fetch_result', result.bof, result.eof, len(result.elements)
+        print '-- process_fetch_result', result.sort_column_id, result.bof, result.eof, len(result.elements)
         assert isinstance(result, Slice), repr(result)
         self.model().process_fetch_result(result)
         self.resizeColumnsToContents()
