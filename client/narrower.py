@@ -96,7 +96,7 @@ class View(LineListPanel):
     def __init__( self, parent, object, list_handle, field_id, prefix ):
         self._base_obj = object
         self._field_id = field_id
-        list_object = self._object4prefix(prefix)
+        list_object = self._filtered_obj(prefix)
         line_edit_handle = line_edit.Handle(prefix)
         LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._line_edit.textEdited.connect(self._on_text_edited)
@@ -115,17 +115,13 @@ class View(LineListPanel):
         self._line_edit.setText('')
         self._update_prefix('')
 
-    def _object4prefix( self, prefix ):
-        if prefix:
-            return FilteredListObj(self._base_obj, self._field_id, prefix)
-        else:
-            return self._base_obj
+    def _filtered_obj( self, prefix ):
+        return FilteredListObj(self._base_obj, self._field_id, prefix)
 
     def _update_prefix( self, text ):
         key = self._list_view.get_current_key()
-        object = self._object4prefix(text)
-        if self._list_view.get_object() is not object:
-            self._list_view.set_object(object)
+        object = self._filtered_obj(text)
+        self._list_view.set_object(object)
         self._list_view.set_current_key(key, select_first=True)
         self.cancel_narrowing.setEnabled(text != '')
 
