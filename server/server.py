@@ -1,26 +1,10 @@
-#!/usr/bin/env python
-
 import sys
 import time
 import threading
 import socket
 import select
-
-sys.path.append('..')
-
-from module import Module
-from client import Client
-
-# self-registering modules:
-import ponyorm_module
-import fs
-import article
-import blog
-import server_management
-import test_list
-
-
-LISTEN_PORT = 8888
+from .module import Module
+from .client import Client
           
 
 class TcpServer(object):
@@ -36,6 +20,16 @@ class TcpServer(object):
         print 'listening on port %d' % self.port
 
     def run( self ):
+        Module.init_phases()
+        try:
+            self.accept_loop()
+        except KeyboardInterrupt:
+            print
+            print 'Stopping...'
+            self.stop()
+        print 'Stopped'
+
+    def accept_loop( self ):
         while True:
             select.select([self.socket], [], [self.socket])
             cln_socket, cln_addr = self.socket.accept()
@@ -62,18 +56,3 @@ class TcpServer(object):
         self.finished_threads.append(self.client2thread[client])
         del self.client2thread[client]
         print 'client %s:%d is gone' % client.addr
-
-
-def main():
-    Module.init_phases()
-    server = TcpServer(LISTEN_PORT)
-    try:
-        server.run()
-    except KeyboardInterrupt:
-        print
-        print 'Stopping...'
-        server.stop()
-    print 'Stopped'
-
-
-main()
