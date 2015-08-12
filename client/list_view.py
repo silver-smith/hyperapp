@@ -167,31 +167,6 @@ class Model(QtCore.QAbstractTableModel):
         if len(diff.elements):
             self.rowsInserted.emit(QtCore.QModelIndex(), start_idx, start_idx + len(diff.elements))
 
-        ## self._update_mapping()  # underlying list object elements are already changed
-        ## if diff.start_key is not None:
-        ##     assert diff.start_key == diff.end_key  # only signle key removal is supported by now
-        ##     elements = self._object.get_fetched_elements()
-        ##     if elements and elements[0].key < elements[-1].key:
-        ##         for row, elt in enumerate(elements):
-        ##             if elt.key > diff.start_key:
-        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
-        ##                 break
-        ##     else:
-        ##         for row, elt in enumerate(elements):
-        ##             if elt.key < diff.start_key:
-        ##                 self.rowsRemoved.emit(QtCore.QModelIndex(), row, row)
-        ##                 break
-        ##     assert diff.end_key is not None
-        ##     start_row = self._key2row[diff.start_key]
-        ##     end_row = self._key2row[diff.end_key]
-        ##     self.rowsRemoved.emit(QtCore.QModelIndex(), start_row, end_row)
-        ## if diff.start_key is not None and diff.elements:
-        ##     start_row = self._key2row[diff.start_key]
-        ##     self.rowsInserted.emit(QtCore.QModelIndex(), start_row + 1, start_row + len(diff.elements))
-        ## if diff.start_key == None and diff.end_key == None:  # append
-        ##     element_count = self._object.element_count()
-        ##     self.rowsInserted.emit(QtCore.QModelIndex(), element_count - len(diff.elements), element_count - 1)
-
     def get_key_row( self, key ):
         ordered = self._current_ordered()
         try:
