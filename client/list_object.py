@@ -54,6 +54,7 @@ class Element(object):
         return cls(key, rec.row, commands)
 
     def __init__( self, key, row, commands ):
+        assert is_list_inst(commands, Command), repr(commands)
         self.key = key
         self.row = row
         self.commands = commands
