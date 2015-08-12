@@ -30,7 +30,7 @@ class Object(object):
         raise NotImplementedError(self.__class__)
 
     def run_command( self, command_id, initiator_view=None, **kw ):
-        raise NotImplementedError(self.__class__)
+        assert False, repr(command_id)  # Unknown command
 
     def subscribe( self, observer ):
         return self.subscribe_local(observer)

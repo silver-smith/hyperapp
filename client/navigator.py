@@ -6,6 +6,7 @@ from .view_command import command
 from . import view
 from . import composite
 from . import list_view
+from .history_list import HistoryRow, HistoryList
 
 
 MAX_HISTORY_SIZE = 100
@@ -53,7 +54,6 @@ class View(composite.Composite):
     def set_child( self, handle ):
         #print 'history open', self._back_history, self._forward_history, handle
         self._forward_history = []
-        ## if not isinstance(self._child.get_object(), HistoryList):
         self._add2history(self._back_history, self._child.handle())
         if len(self._back_history) > MAX_HISTORY_SIZE:
             self._back_history = self._back_history[-MAX_HISTORY_SIZE:]
@@ -80,7 +80,6 @@ class View(composite.Composite):
     def _go_back( self ):
         if not self._back_history:
             return False
-        ## if not isinstance(self._child.get_object(), HistoryList):
         self._add2history(self._forward_history, self._child.handle())
         self._open(self._pop_history(self._back_history))
 
@@ -89,12 +88,12 @@ class View(composite.Composite):
         print '   history forward', len(self._back_history), len(self._forward_history)
         if not self._forward_history:
             return False
-        ## if not isinstance(self._child.get_object(), HistoryList):
         self._add2history(self._back_history, self._child.handle())
         self._open(self._pop_history(self._forward_history))
 
     def _add2history( self, history, handle ):
-        history.append(self._handle2item(handle))
+        if not isinstance(handle.get_object(), HistoryList):
+            history.append(self._handle2item(handle))
 
     def _pop_history( self, history ):
         item = history.pop()
@@ -103,13 +102,14 @@ class View(composite.Composite):
     def _handle2item( self, handle ):
         return Item(handle.get_title(), pickle_dumps(handle))
 
-
-    ## @command('History', 'Open history', 'Ctrl+H')
-    ## def open_history( self ):
-    ##     idx = len(self._back_history)
-    ##     current_handle = self._child.handle()
-    ##     history = HistoryList(self._back_history + [current_handle] + list(reversed(self._forward_history)))
-    ##     return list_view.Handle(history, idx)
+    @command('History', 'Open history', 'Ctrl+H')
+    def open_history( self ):
+        idx = len(self._back_history)
+        current_handle = self._child.handle()
+        items = self._back_history + [self._handle2item(current_handle)] + list(reversed(self._forward_history))
+        rows = [HistoryRow(idx, item.title, item.pickled_handle) for idx, item in enumerate(items)]
+        object = HistoryList(rows)
+        self.open(list_view.Handle(object, key=idx))
 
     def __del__( self ):
         print '~navigator'
