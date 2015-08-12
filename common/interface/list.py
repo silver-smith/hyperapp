@@ -53,7 +53,7 @@ dateTimeColumnType = DateTimeColumnType()
 
 class Column(object):
 
-    def __init__( self, id, title=None, type=StringColumnType() ):
+    def __init__( self, id, title=None, type=stringColumnType ):
         assert isinstance(id, basestring), repr(id)
         assert title is None or isinstance(title, basestring), repr(title)
         assert isinstance(type, ColumnType), repr(type)
