@@ -118,6 +118,7 @@ class ArticleRefList(SmallListObject):
 
     iface = ref_list_iface
     proxy_id = 'ref_list'
+    default_sort_column_id = 'ref_id'
     class_name = 'ref_list'
 
     @classmethod

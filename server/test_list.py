@@ -89,15 +89,7 @@ class TestList(ListObject):
             elements.append(self.Element(row))
         bof = True
         eof = stop >= self.size
-        return (elements, bof, eof)
-        ## start = min(self.size, from_key or 0)
-        ## stop = min(self.size, start + max(count or 10, 10))
-        ## print '--- fetch_elements', `self.size`, `count`, `from_key`, `start`, `stop`
-        ## for idx in xrange(start, stop):
-        ##     element = self.Element(idx, [str(idx), 'field1#%d' % idx, 'field2', 'field3'])
-        ##     elements.append(element)
-        ## has_more = stop < self.size
-        ## return (elements, has_more)
+        return self.Slice(sort_column_id, elements, bof, eof)
 
     
 class TestListModule(Module):
