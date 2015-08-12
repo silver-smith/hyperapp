@@ -58,7 +58,7 @@ class ProxyObject(Object, interface_module.Object):
         self.path = path
         self.iface = iface
         self.commands = []
-        self.resp_handlers = set()  # explicit refs to ObjectRespHandler to keep them alive until object is alive
+        self.resp_handlers = set()  # explicit refs to ObjectRespHandlers to keep them alive until object is alive
         proxy_registry.register_proxy(self.path, self)
 
     def __getnewargs__( self ):
