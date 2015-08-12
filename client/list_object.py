@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 from common.util import is_list_inst, dt2local_str
+from command import Command
 from object import ObjectObserver, Object
 
 
@@ -49,7 +50,8 @@ class Element(object):
     @classmethod
     def decode( cls, key_column_id, rec ):
         key = getattr(rec.row, key_column_id)
-        return cls(key, rec.row, rec.commands)
+        commands = map(Command.decode, rec.commands)
+        return cls(key, rec.row, commands)
 
     def __init__( self, key, row, commands ):
         self.key = key

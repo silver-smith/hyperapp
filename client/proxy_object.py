@@ -84,7 +84,7 @@ class ProxyObject(Object, interface_module.Object):
             self.execute_request('subscribe')
 
     def set_contents( self, contents ):
-        self.commands = contents.commands
+        self.commands = map(Command.decode, contents.commands)
 
     def get_title( self ):
         return '/' + '/'.join(self.path)

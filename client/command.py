@@ -1,9 +1,18 @@
 import weakref
-from common.interface import tCommand
 from util import make_action
 
 
-Command = tCommand.instantiate
+class Command(object):
+
+    @classmethod
+    def decode( cls, rec ):
+        return cls(rec.id, rec.text, rec.desc, rec.shortcut)
+
+    def __init__( self, id, text, desc, shortcut ):
+        self.id = id
+        self.text = text
+        self.desc = desc
+        self.shortcut = shortcut
 
 
 def make_cmd_action( cmd, widget, run, *args ):
