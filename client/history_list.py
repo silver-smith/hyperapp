@@ -32,7 +32,6 @@ class HistoryList(ListObject):
         return ListObject.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_open( self, initiator_view, element_key ):
-        print '-- open', `element_key`
         handle = pickle_loads(self._rows[element_key].pickled_handle)
         initiator_view.open(handle)
 
