@@ -39,6 +39,9 @@ class Handle(view.Handle):
         self.ref = ref
         self.target = target
 
+    def get_title( self ):
+        return '%s: %s' % (self.ref.get_title(), self.target.get_title())
+
     def get_object( self ):
         return self.ref
 
