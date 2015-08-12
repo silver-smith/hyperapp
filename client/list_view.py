@@ -67,7 +67,10 @@ class Model(QtCore.QAbstractTableModel):
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
             column = self._visible_columns[index.column()]
-            key = self._current_ordered().keys[index.row()]
+            ordered = self._current_ordered()
+            if index.row() >= len(ordered.keys):
+                return None  # phony row
+            key = ordered.keys[index.row()]
             element = self._get_key_element(key)
             value = getattr(element.row, column.id)
             return column.type.to_string(value)
@@ -76,12 +79,15 @@ class Model(QtCore.QAbstractTableModel):
     def headerData( self, section, orient, role ):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
             return self._visible_columns[section].title
-        hdata = QtCore.QAbstractTableModel.headerData(self, section, orient, role)
-        return hdata
+        return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def rowCount( self, parent ):
         if parent == QtCore.QModelIndex() and self._object:
-            return len(self._current_ordered().keys)
+            ordered = self._current_ordered()
+            count = len(ordered.keys)
+            if not ordered.eof:
+                count += APPEND_PHONY_REC_COUNT
+            return count
         else:
             return 0
 
@@ -201,8 +207,8 @@ class Model(QtCore.QAbstractTableModel):
 
     def get_row_element( self, row ):
         ordered = self._current_ordered()
-        if row == 0 and not ordered.keys:
-            return None
+        if row >= len(ordered.keys):
+            return None  # no elements or phony row
         key = ordered.keys[row]
         return self._get_key_element(key)
 
