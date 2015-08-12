@@ -36,5 +36,8 @@ class ProxyTextObject(ProxyObject, TextObject):
             self.path = result.new_path
             self._notify_object_changed()
 
+    def process_update( self, new_text ):
+        self.text_changed(new_text)
+
 
 proxy_registry.register_iface('text', ProxyTextObject.decode)

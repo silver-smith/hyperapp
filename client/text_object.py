@@ -28,9 +28,9 @@ class TextObject(Object):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
         return []
 
-    def text_changed( self, emitter, new_text ):
+    def text_changed( self, new_text, emitter_view=None ):
         self.text = new_text
-        self._notify_object_changed(emitter)
+        self._notify_object_changed(emitter_view)
 
     def run_command( self, command_id, initiator_view=None, **kw ):
         # todo: handle 'open_ref' command by client-only object after multi-server support is added
