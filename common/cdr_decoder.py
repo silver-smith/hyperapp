@@ -1,6 +1,6 @@
 import struct
 import dateutil.parser
-from method_dispatch import method_dispatch
+from .method_dispatch import method_dispatch
 from . interface import (
     TString,
     TInt,

@@ -8,7 +8,7 @@ from common.interface import (
     )
 import common.interface.interface as interface_module
 import common.interface.list as list_module
-from util import WeakValueMultiDict
+from .util import WeakValueMultiDict
 from common.interface import Interface
 
 

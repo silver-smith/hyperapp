@@ -3,8 +3,8 @@ import os.path
 import stat
 from common.interface import Command, Column
 from common.interface.fs import file_iface, dir_iface
-from object import SmallListObject
-from module import Module, ModuleCommand
+from .object import SmallListObject
+from .module import Module, ModuleCommand
 
 
 MODULE_NAME = 'file'

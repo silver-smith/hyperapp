@@ -1,8 +1,8 @@
 # base for panels containing line edit with list view
 
 from PySide import QtCore, QtGui
-from util import DEBUG_FOCUS, call_after, key_match, key_match_any
-from composite import Composite
+from .util import DEBUG_FOCUS, call_after, key_match, key_match_any
+from .composite import Composite
 
 
 class LineListPanel(Composite, QtGui.QWidget):

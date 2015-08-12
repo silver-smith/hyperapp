@@ -1,9 +1,9 @@
 import weakref
 from PySide import QtCore, QtGui
 from common.interface.types import tCommand
-from util import make_action
-from command import Command, make_object_cmd_action
-from view_command import ViewCommandBase, BoundViewCommand
+from .util import make_action
+from .command import Command, make_object_cmd_action
+from .view_command import ViewCommandBase, BoundViewCommand
 
 
 class MenuBar(object):

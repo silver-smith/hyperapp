@@ -1,7 +1,7 @@
 from PySide import QtCore, QtGui
-from util import DEBUG_FOCUS, call_after, focused_index, key_match
-import view
-import composite
+from .util import DEBUG_FOCUS, call_after, focused_index, key_match
+from . import view
+from . import composite
 
 
 # orientation constants

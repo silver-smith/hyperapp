@@ -3,11 +3,11 @@
 import weakref
 from PySide import QtCore, QtGui
 from common.interface import tHandle
-from qt_keys import print_key_event
-from util import DEBUG_FOCUS, make_action, focused_index
-from object import ObjectObserver
-from view_command import BoundViewCommand, UnboundViewCommand
-from view_registry import view_registry
+from .qt_keys import print_key_event
+from .util import DEBUG_FOCUS, make_action, focused_index
+from .object import ObjectObserver
+from .view_command import BoundViewCommand, UnboundViewCommand
+from .view_registry import view_registry
 
 
 class Handle(object):

@@ -1,6 +1,6 @@
 import os.path
 from pony.orm import *
-from module import Module
+from .module import Module
 
 
 SQLITE_DB_PATH = os.path.expanduser('~/.hyperapp-server-db.sqlite')

@@ -1,5 +1,5 @@
 import json
-from method_dispatch import method_dispatch
+from .method_dispatch import method_dispatch
 from common.util import path2str
 from . interface import (
     TPrimitive,

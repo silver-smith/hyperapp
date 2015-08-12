@@ -1,5 +1,5 @@
 import weakref
-from util import make_action
+from .util import make_action
 
 
 class Command(object):

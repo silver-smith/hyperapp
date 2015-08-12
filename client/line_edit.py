@@ -2,7 +2,7 @@
 
 from PySide import QtCore, QtGui
 ## from util import key_match
-import view
+from . import view
 ## from text_obj import TextObj
 
 

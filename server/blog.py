@@ -1,12 +1,12 @@
 from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
-from ponyorm_module import PonyOrmModule
-from util import utcnow, path_part_to_str
+from .ponyorm_module import PonyOrmModule
+from .util import utcnow, path_part_to_str
 from common.interface import Command, Column, DateTimeColumnType
 from common.interface.blog import blog_entry_iface, blog_iface
-from object import SmallListObject, subscription
-from module import ModuleCommand
-import article
+from .object import SmallListObject, subscription
+from .module import ModuleCommand
+from . import article
 
 
 MODULE_NAME = 'blog'

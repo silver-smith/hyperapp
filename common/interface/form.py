@@ -5,7 +5,7 @@ from . types import (
     TRecord,
     TList,
     )
-from hierarchy import THierarchy
+from .hierarchy import THierarchy
 from . interface import tHandle, tObjHandle
 
 

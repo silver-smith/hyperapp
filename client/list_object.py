@@ -1,7 +1,7 @@
 from PySide import QtCore, QtGui
 from common.util import is_list_inst, dt2local_str
-from command import Command
-from object import ObjectObserver, Object
+from .command import Command
+from .object import ObjectObserver, Object
 
 
 class ListObserver(ObjectObserver):

@@ -1,6 +1,6 @@
 import weakref
 from common.util import is_list_inst
-from util import make_action
+from .util import make_action
 
 
 class ViewCommandBase(object):

@@ -1,11 +1,11 @@
 import sys
 import bisect
 from PySide import QtCore, QtGui
-from util import uni2str, key_match, key_match_any
-from list_object import ListObserver, ListDiff, Slice, ListObject
-from command import run_element_command, make_element_cmd_action
-from view_registry import view_registry
-import view
+from .util import uni2str, key_match, key_match_any
+from .list_object import ListObserver, ListDiff, Slice, ListObject
+from .command import run_element_command, make_element_cmd_action
+from .view_registry import view_registry
+from . import view
 
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding

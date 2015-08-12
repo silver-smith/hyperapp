@@ -1,12 +1,12 @@
 from PySide import QtCore, QtGui
-from util import uni2str, key_match, key_match_any
-from list_object import ListObserver, Slice, ListObject
-from view_command import command
-from view_registry import view_registry
-import view
-from line_list_panel import LineListPanel
-import line_edit
-import list_view
+from .util import uni2str, key_match, key_match_any
+from .list_object import ListObserver, Slice, ListObject
+from .view_command import command
+from .view_registry import view_registry
+from . import view
+from .line_list_panel import LineListPanel
+from . import line_edit
+from . import list_view
 
 
 FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself

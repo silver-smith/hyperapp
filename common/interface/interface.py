@@ -11,7 +11,7 @@ from . types import (
     tPath,
     tCommand,
     )
-from dynamic_record import TDynamicRec
+from .dynamic_record import TDynamicRec
 from . hierarchy import THierarchy
 
 

@@ -2,8 +2,8 @@
 
 from common.interface import Command, Column
 from common.interface.server_management import server_management_iface
-from object import SmallListObject
-from module import Module
+from .object import SmallListObject
+from .module import Module
 
 
 MODULE_NAME = 'management'

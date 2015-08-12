@@ -6,8 +6,8 @@ from common.packet_coders import packet_coders
 from common.interface import iface_registry
 from common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response, decode_client_packet
 from common.visual_rep import pprint
-from util import XPathNotFound
-from module import Module
+from .util import XPathNotFound
+from .module import Module
 
 
 PACKET_ENCODING = 'cdr'

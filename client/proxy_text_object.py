@@ -1,8 +1,8 @@
 # text object representing server text object
 
-from text_object import TextObject
-from proxy_object import ProxyObject
-import proxy_registry
+from .text_object import TextObject
+from .proxy_object import ProxyObject
+from . import proxy_registry
 
 
 class ProxyTextObject(ProxyObject, TextObject):

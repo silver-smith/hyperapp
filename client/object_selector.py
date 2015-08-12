@@ -1,10 +1,10 @@
 from PySide import QtCore, QtGui
-from util import uni2str
-from proxy_object import ProxyObject
-import proxy_registry
-from view_registry import view_registry
-import view
-from command import Command
+from .util import uni2str
+from .proxy_object import ProxyObject
+from . import proxy_registry
+from .view_registry import view_registry
+from . import view
+from .command import Command
 
 
 class ObjSelectorUnwrap(view.Handle):

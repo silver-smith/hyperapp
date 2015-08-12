@@ -1,5 +1,5 @@
 from common.interface import Command
-from util import Path
+from .util import Path
 
 
 class ModuleCommand(object):

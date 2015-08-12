@@ -2,7 +2,7 @@
 
 import weakref
 from PySide import QtCore, QtGui
-from command import run_object_command, run_element_command
+from .command import run_object_command, run_element_command
 
 
 class View(QtGui.QDockWidget):

@@ -1,6 +1,6 @@
 # composite component - base class
 
-import view
+from . import view
 
 
 class Handle(view.Handle):

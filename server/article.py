@@ -1,6 +1,6 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from common.util import path2str, str2path
-from util import path_part_to_str
+from .util import path_part_to_str
 from common.interface import Command, Column, ObjHandle
 from common.interface.article import (
     ObjSelectorHandle,
@@ -10,9 +10,9 @@ from common.interface.article import (
     object_selector_iface,
     onwrap_object_selector_iface,
     )
-from object import Object, SmallListObject, subscription
-from module import ModuleCommand
-from ponyorm_module import PonyOrmModule
+from .object import Object, SmallListObject, subscription
+from .module import ModuleCommand
+from .ponyorm_module import PonyOrmModule
 
 
 MODULE_NAME = 'article'

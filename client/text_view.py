@@ -1,9 +1,9 @@
 import re
 from PySide import QtCore, QtGui
-from util import uni2str
-from view_registry import view_registry
-import view
-from text_object import TextObject
+from .util import uni2str
+from .view_registry import view_registry
+from . import view
+from .text_object import TextObject
 
 
 class Handle(view.Handle):

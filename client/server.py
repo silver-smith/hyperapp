@@ -12,8 +12,8 @@ from common.request import (
     Response,
     decode_server_packet,
     )
-import proxy_registry
-from proxy_object import ProxyListObject
+from . import proxy_registry
+from .proxy_object import ProxyListObject
 
 
 PACKET_ENCODING = 'cdr'

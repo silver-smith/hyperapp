@@ -1,6 +1,6 @@
 import weakref
 import traceback
-from util import WeakSetWithCallback
+from .util import WeakSetWithCallback
 
 
 class ObjectObserver(object):

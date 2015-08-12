@@ -1,11 +1,11 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
-from util import key_match, key_match_any, pickle_dumps, pickle_loads
-from view_command import command
-import view
-import composite
-import list_view
+from .util import key_match, key_match_any, pickle_dumps, pickle_loads
+from .view_command import command
+from . import view
+from . import composite
+from . import list_view
 
 
 MAX_HISTORY_SIZE = 100

@@ -10,11 +10,11 @@ import uuid
 from common.interface import Interface, Field, tString, tPath, resolve_iface
 import common.interface as interface_module
 from common.request import ClientNotification, Request
-from object import Object
-from command import Command
-from list_object import ListDiff, Element, Slice, ListObject
-import proxy_registry
-import view
+from .object import Object
+from .command import Command
+from .list_object import ListDiff, Element, Slice, ListObject
+from . import proxy_registry
+from . import view
 
 
 class RespHandler(proxy_registry.RespHandler):

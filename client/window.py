@@ -2,15 +2,15 @@ import weakref
 import uuid
 from PySide import QtCore, QtGui
 from common.util import is_list_inst
-from util import DEBUG_FOCUS, call_after, make_action
+from .util import DEBUG_FOCUS, call_after, make_action
 from common.interface import Interface
 from common.request import Request
-import proxy_registry
-from view_command import ViewCommandBase, command
-import view
-import composite
-from menu_bar import MenuBar
-import cmd_pane
+from . import proxy_registry
+from .view_command import ViewCommandBase, command
+from . import view
+from . import composite
+from .menu_bar import MenuBar
+from . import cmd_pane
 #import filter_pane
 
 

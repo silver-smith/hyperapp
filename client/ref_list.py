@@ -1,6 +1,6 @@
 import os.path
-import proxy_registry
-from proxy_object import ProxyListObject
+from . import proxy_registry
+from .proxy_object import ProxyListObject
 
 
 class RefList(ProxyListObject):
