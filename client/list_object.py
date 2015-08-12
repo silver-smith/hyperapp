@@ -92,11 +92,11 @@ class ListObject(Object):
         return self.run_command(command_id, initiator_view, element_key=element_key)
 
     def _notify_fetch_result( self, result ):
-        #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update Record
+        assert isinstance(result, Slice), repr(result)
         for observer in self._observers:
             observer.process_fetch_result(result)
 
     def _notify_diff_applied( self, diff ):
-        #assert isinstance(diff, ListDiff), repr(diff)  # may also be interface update Record
+        assert isinstance(diff, ListDiff), repr(diff)
         for observer in self._observers:
             observer.diff_applied(diff)
