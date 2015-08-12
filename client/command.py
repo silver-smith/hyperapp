@@ -8,7 +8,7 @@ class Command(object):
     def decode( cls, rec ):
         return cls(rec.id, rec.text, rec.desc, rec.shortcut)
 
-    def __init__( self, id, text, desc, shortcut ):
+    def __init__( self, id, text, desc, shortcut=None ):
         self.id = id
         self.text = text
         self.desc = desc
