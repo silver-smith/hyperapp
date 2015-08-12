@@ -11,13 +11,20 @@ from . import list_view
 MAX_HISTORY_SIZE = 100
 
 
+class Item(object):
+
+    def __init__( self, title, pickled_handle ):
+        self.title = title
+        self.pickled_handle = pickled_handle
+
+
 class Handle(composite.Handle):
 
     def __init__( self, child_handle, backward_history=None, forward_history=None ):
         composite.Handle.__init__(self)
         self.child = child_handle
-        self.backward_history = backward_history or []
-        self.forward_history = forward_history or []
+        self.backward_history = backward_history or []   # Item list
+        self.forward_history = forward_history or []     # Item list
 
     def get_child_handle( self ):
         return self.child
@@ -31,8 +38,8 @@ class View(composite.Composite):
 
     def __init__( self, parent, child_handle, backward_history=None, forward_history=None ):
         composite.Composite.__init__(self, parent)
-        self._back_history = backward_history or []
-        self._forward_history = forward_history or []
+        self._back_history = backward_history or []     # Item list
+        self._forward_history = forward_history or []   # Item list
         self._child = None  # get_widget may be called from next line
         self._child = child_handle.construct(self)
 
@@ -87,11 +94,15 @@ class View(composite.Composite):
         self._open(self._pop_history(self._forward_history))
 
     def _add2history( self, history, handle ):
-        history.append(pickle_dumps(handle))
+        history.append(self._handle2item(handle))
 
     def _pop_history( self, history ):
-        data = history.pop()
-        return pickle_loads(data)
+        item = history.pop()
+        return pickle_loads(item.pickled_handle)
+
+    def _handle2item( self, handle ):
+        return Item(handle.get_title(), pickle_dumps(handle))
+
 
     ## @command('History', 'Open history', 'Ctrl+H')
     ## def open_history( self ):
