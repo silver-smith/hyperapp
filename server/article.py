@@ -189,7 +189,7 @@ class ArticleRefList(SmallListObject):
 class RefSelector(Object):
 
     iface = object_selector_iface
-    proxy_id = 'object_selector'
+    proxy_id = 'object'
     class_name = 'object_selector'
 
     @classmethod
