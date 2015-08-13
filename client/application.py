@@ -3,7 +3,7 @@ import uuid
 from PySide import QtCore, QtGui
 from common.interface import iface_registry
 from common.request import Request
-from .util import pickle_dumps, pickle_loads
+from .pickler import pickler
 from .server import Server
 from .view_command import command
 from . import text_object
@@ -76,12 +76,12 @@ class Application(QtGui.QApplication, view.View):
 
     def save_state( self, state ):
         with file(STATE_FILE_PATH, 'wb') as f:
-            f.write(pickle_dumps(state))
+            f.write(pickler.dumps(state))
 
     def load_state( self ):
         try:
             with file(STATE_FILE_PATH, 'rb') as f:
-                return pickle_loads(f.read())
+                return pickler.loads(f.read())
         except (EOFError, IOError, IndexError) as x:
             print 'Error loading state:', x
             return None

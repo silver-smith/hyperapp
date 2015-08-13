@@ -171,13 +171,3 @@ def focused_index( parent, children, default=None ):
             if w is trg: return idx
         w = w.parent()
     return default
-
-
-def pickle_dumps( val ):
-    string_io = StringIO()
-    pickler = pickle.Pickler(string_io, protocol=2)  # use protocol 2 for __getnewargs__ to work
-    pickler.dump(val)
-    return string_io.getvalue()
-
-def pickle_loads( data ):
-    return pickle.loads(data)

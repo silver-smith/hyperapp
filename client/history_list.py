@@ -1,6 +1,6 @@
 from common.util import is_list_inst
 from common.interface import intColumnType, Column
-from .util import pickle_loads
+from .pickler import pickler
 from .command import Command
 from .list_object import Element, Slice, ListObject
 
@@ -32,7 +32,7 @@ class HistoryList(ListObject):
         return ListObject.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_open( self, initiator_view, element_key ):
-        handle = pickle_loads(self._rows[element_key].pickled_handle)
+        handle = pickler.loads(self._rows[element_key].pickled_handle)
         initiator_view.open(handle)
 
     def get_columns( self ):

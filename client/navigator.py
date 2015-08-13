@@ -1,7 +1,8 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
-from .util import key_match, key_match_any, pickle_dumps, pickle_loads
+from .util import key_match, key_match_any
+from .pickler import pickler
 from .view_command import command
 from . import view
 from . import composite
@@ -97,10 +98,10 @@ class View(composite.Composite):
 
     def _pop_history( self, history ):
         item = history.pop()
-        return pickle_loads(item.pickled_handle)
+        return pickler.loads(item.pickled_handle)
 
     def _handle2item( self, handle ):
-        return Item(handle.get_title(), pickle_dumps(handle))
+        return Item(handle.get_title(), pickler.dumps(handle))
 
     @command('History', 'Open history', 'Ctrl+H')
     def open_history( self ):

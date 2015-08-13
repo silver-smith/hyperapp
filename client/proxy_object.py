@@ -118,6 +118,7 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.__init__(self, server, path, iface)
         ListObject.__init__(self)
         self.fetch_pending = False  # has pending element fetch request
+        self._initial_slice = None
 
     @staticmethod
     def get_proxy_id():
