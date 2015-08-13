@@ -78,6 +78,10 @@ class ProxyObject(Object, interface_module.Object):
         self.resp_handlers = set()
         proxy_registry.register_proxy(self.path, self)
 
+    @staticmethod
+    def get_proxy_id():
+        return 'object'
+
     def subscribe( self, observer ):
         this_is_first_observer = Object.subscribe(self, observer)
         if this_is_first_observer:
@@ -148,6 +152,10 @@ class ProxyListObject(ProxyObject, ListObject):
         ListObject.__init__(self)
         self.fetch_pending = False  # has pending element fetch request
 
+    @staticmethod
+    def get_proxy_id():
+        return 'list'
+
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
         self._initial_slice = self._decode_slice(contents)
@@ -200,5 +208,5 @@ class ProxyListObject(ProxyObject, ListObject):
         print '~ProxyListObject', self, self.path
 
 
-proxy_registry.register_iface('object', ProxyObject.decode)
-proxy_registry.register_iface('list', ProxyListObject.decode)
+proxy_registry.register_iface(ProxyObject)
+proxy_registry.register_iface(ProxyListObject)

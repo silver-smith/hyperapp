@@ -23,8 +23,8 @@ proxy_registry = weakref.WeakValueDictionary()  # path -> ProxyObject
 pending_requests = weakref.WeakValueDictionary()  # request_id -> RespHandler
 
 
-def register_iface( id, obj_ctr ):
-    iface_registry[id] = obj_ctr
+def register_iface( cls ):
+    iface_registry[cls.get_proxy_id()] = cls
 
 def resolve_iface( id ):
     return iface_registry[id]

@@ -11,6 +11,10 @@ class ProxyTextObject(ProxyObject, TextObject):
         TextObject.__init__(self, text='')
         ProxyObject.__init__(self, server, path, iface)
 
+    @staticmethod
+    def get_proxy_id():
+        return 'text'
+
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
         self.text = contents.text
@@ -40,4 +44,4 @@ class ProxyTextObject(ProxyObject, TextObject):
         self.text_changed(new_text)
 
 
-proxy_registry.register_iface('text', ProxyTextObject.decode)
+proxy_registry.register_iface(ProxyTextObject)

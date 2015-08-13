@@ -100,8 +100,8 @@ class Server(object):
         self.addr = addr
 
     def resolve_object( self, objinfo ):
-        obj_ctr = proxy_registry.resolve_iface(objinfo.proxy_id)
-        return obj_ctr(self, objinfo.path, objinfo.iface, objinfo.contents)
+        proxy_cls = proxy_registry.resolve_iface(objinfo.proxy_id)
+        return proxy_cls.decode(self, objinfo.path, objinfo.iface, objinfo.contents)
 
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)

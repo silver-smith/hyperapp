@@ -5,6 +5,10 @@ from .proxy_object import ProxyListObject
 
 class RefList(ProxyListObject):
 
+    @staticmethod
+    def get_proxy_id():
+        return 'ref_list'
+
     def run_command( self, command_id, initiator_view=None, **kw ):
         if command_id == 'add':
             return self.run_command_add(initiator_view)
@@ -18,4 +22,4 @@ class RefList(ProxyListObject):
         return ['file'] + os.path.expanduser('~').split('/')
 
 
-proxy_registry.register_iface('ref_list', RefList.decode)
+proxy_registry.register_iface(RefList)
