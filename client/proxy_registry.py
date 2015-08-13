@@ -32,17 +32,19 @@ class ProxyRegistry(object):
         id = '%s %s' % (obj.server.get_locator(), path2str(obj.path))
         assert id not in self.proxy_classes, repr(id)
         self.proxy_instances[id] = obj
-        print '< registered in registry:', id, obj
+        print '< registered in registry:', repr(id), obj
 
     def resolve( self, server, path, proxy_id, iface ):
         id = '%s %s' % (server.get_locator(), path2str(path))
         obj = self.proxy_instances.get(id)
         if obj:
+            print '> resolved from registry:', repr(id), obj
             return obj
         cls = self.proxy_classes.get(proxy_id)
         assert cls, repr(proxy_id)  # Unknown proxy id
         obj = cls(server, path, iface)
         self.proxy_instances[id] = obj
+        print '< registered in registry:', repr(id), obj
         return obj
 
     def _resolve_instance( self, server, path ):
