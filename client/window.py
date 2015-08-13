@@ -5,7 +5,7 @@ from common.util import is_list_inst
 from .util import DEBUG_FOCUS, call_after, make_action
 from common.interface import Interface
 from common.request import Request
-from . import proxy_registry
+from .proxy_registry import RespHandler
 from .view_command import ViewCommandBase, command
 from . import view
 from . import composite
@@ -18,10 +18,10 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-class OpenRespHandler(proxy_registry.RespHandler):
+class OpenRespHandler(RespHandler):
 
     def __init__( self, iface, command_id, window ):
-        proxy_registry.RespHandler.__init__(self, iface, command_id)
+        RespHandler.__init__(self, iface, command_id)
         self.window_wref = weakref.ref(window)
 
     def process_response( self, server, response ):

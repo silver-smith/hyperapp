@@ -1,27 +1,21 @@
-# Rationale for using __new__ to resolve  proxies from registry:
-# I need to keep single proxy object per path for subscription/notification to work.
-# This must work even when unpickling objects. Another solution for pickling/unpickling could be
-# persistent_id/persistend_load mechanism, but in that case class and state information
-# stored in pickle would be lost. I would need to construct proxy objects by myself then if unpickled
-# instance is first with this 'path'.
-
 import weakref
 import uuid
+from common.util import path2str
 from common.interface import Interface, Field, tString, tPath, resolve_iface
 import common.interface as interface_module
 from common.request import ClientNotification, Request
 from .object import Object
 from .command import Command
 from .list_object import ListDiff, Element, Slice, ListObject
-from . import proxy_registry
+from .proxy_registry import RespHandler, proxy_registry
 from . import view
 
 
-class RespHandler(proxy_registry.RespHandler):
+class ObjRespHandler(RespHandler):
 
     def __init__( self, object, command_id, initiator_view ):
         assert isinstance(object, Object), repr(object)
-        proxy_registry.RespHandler.__init__(self, object.iface, command_id)
+        RespHandler.__init__(self, object.iface, command_id)
         assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
         self.object = weakref.ref(object)
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
@@ -35,22 +29,7 @@ class RespHandler(proxy_registry.RespHandler):
 
 class ProxyObject(Object, interface_module.Object):
 
-    @classmethod
-    def decode( cls, server, path, iface, contents ):
-        object = cls(server, path, iface)
-        object.set_contents(contents)
-        return object
-
-    # this schema allows resolving/deduplicating objects while unpickling
-    def __new__( cls, server, path, *args, **kw ):
-        obj = proxy_registry.resolve_proxy(path)
-        if obj:
-            return obj
-        else:
-            return object.__new__(cls, server, path, *args, **kw)
-
     def __init__( self, server, path, iface ):
-        if hasattr(self, 'init_flag'): return   # after __new__ returns resolved object __init__ is called anyway
         Object.__init__(self)
         interface_module.Object.__init__(self)
         self.init_flag = None
@@ -58,25 +37,13 @@ class ProxyObject(Object, interface_module.Object):
         self.path = path
         self.iface = iface
         self.commands = []
-        self.resp_handlers = set()  # explicit refs to ObjectRespHandlers to keep them alive until object is alive
-        proxy_registry.register_proxy(self.path, self)
+        self.resp_handlers = set()  # explicit refs to ObjRespHandlers to keep them alive until object is alive
 
-    def __getnewargs__( self ):
-        return (self.server, self.path)
-
-    def __getstate__( self ):
-        state = Object.__getstate__(self)
-        del state['resp_handlers']
-        del state['iface']
-        state['iface_id'] = self.iface.iface_id
-        return state
-
-    def __setstate__( self, state ):
-        if hasattr(self, 'init_flag'): return  # after __new__ returns resolved object __setstate__ is called anyway too
-        Object.__setstate__(self, state)
-        self.iface = resolve_iface(state['iface_id'])
-        self.resp_handlers = set()
-        proxy_registry.register_proxy(self.path, self)
+    def get_persistent_id( self ):
+        return ' '.join([self.get_proxy_id(),
+                         self.iface.iface_id,
+                         self.server.get_locator(),
+                         path2str(self.path)])
 
     @staticmethod
     def get_proxy_id():
@@ -118,7 +85,7 @@ class ProxyObject(Object, interface_module.Object):
 
     def execute_request( self, command_id, initiator_view=None, *args, **kw ):
         request = self.prepare_request(command_id, *args, **kw)
-        resp_handler = RespHandler(self, command_id, initiator_view)
+        resp_handler = ObjRespHandler(self, command_id, initiator_view)
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
 
@@ -208,5 +175,5 @@ class ProxyListObject(ProxyObject, ListObject):
         print '~ProxyListObject', self, self.path
 
 
-proxy_registry.register_iface(ProxyObject)
-proxy_registry.register_iface(ProxyListObject)
+proxy_registry.register_class(ProxyObject)
+proxy_registry.register_class(ProxyListObject)

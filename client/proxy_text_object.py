@@ -2,7 +2,7 @@
 
 from .text_object import TextObject
 from .proxy_object import ProxyObject
-from . import proxy_registry
+from .proxy_registry import proxy_registry
 
 
 class ProxyTextObject(ProxyObject, TextObject):
@@ -44,4 +44,4 @@ class ProxyTextObject(ProxyObject, TextObject):
         self.text_changed(new_text)
 
 
-proxy_registry.register_iface(ProxyTextObject)
+proxy_registry.register_class(ProxyTextObject)

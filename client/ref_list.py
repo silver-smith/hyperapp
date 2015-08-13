@@ -1,5 +1,5 @@
 import os.path
-from . import proxy_registry
+from .proxy_registry import proxy_registry
 from .proxy_object import ProxyListObject
 
 
@@ -22,4 +22,4 @@ class RefList(ProxyListObject):
         return ['file'] + os.path.expanduser('~').split('/')
 
 
-proxy_registry.register_iface(RefList)
+proxy_registry.register_class(RefList)

@@ -12,8 +12,7 @@ from common.request import (
     Response,
     decode_server_packet,
     )
-from . import proxy_registry
-from .proxy_object import ProxyListObject
+from .proxy_registry import proxy_registry
 
 
 PACKET_ENCODING = 'cdr'
@@ -96,12 +95,23 @@ class Connection(object):
 
 class Server(object):
 
+    @classmethod
+    def resolve_locator( cls, locator ):
+        host, port_str = locator.split(':')
+        addr = (host, int(port_str))
+        return cls(addr)
+
     def __init__( self, addr ):
         self.addr = addr
 
+    def get_locator( self ):
+        host, port = self.addr
+        return '%s:%r' % (host, port)
+
     def resolve_object( self, objinfo ):
-        proxy_cls = proxy_registry.resolve_iface(objinfo.proxy_id)
-        return proxy_cls.decode(self, objinfo.path, objinfo.iface, objinfo.contents)
+        proxy_obj = proxy_registry.resolve(self, objinfo.path, objinfo.proxy_id, objinfo.iface)
+        proxy_obj.set_contents(objinfo.contents)
+        return proxy_obj
 
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
@@ -132,4 +142,4 @@ class Server(object):
             proxy_registry.process_received_response(self, response)
         else:
             assert isinstance(response, ServerNotification), repr(response)
-            proxy_registry.process_received_notification(response)
+            proxy_registry.process_received_notification(self, response)
