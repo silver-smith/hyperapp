@@ -73,11 +73,12 @@ class FilteredListObj(ListObject, ListObserver):
     def process_fetch_result( self, result ):
         print '-- narrower.process_fetch_result', result.sort_column_id, result.bof, result.eof, len(result.elements)
         elements = filter(self._element_matched, result.elements)
-        filtered = Slice(result.sort_column_id, elements, result.bof, result.eof)
+        filtered = Slice(result.sort_column_id, result.from_key, result.direction, elements, result.bof, result.eof)
         # When there is no filtered elements list view can not fetch more elements - it does not have element key
         # to start from. So we issue fetch request ourselves. Yet we have to notify list view about eof.
         if not filtered.elements and result.elements and not result.eof:
-            self._base.fetch_elements(result.sort_column_id, result.elements[-1].key, 0, FETCH_ELEMENT_COUNT)
+            self._base.fetch_elements(
+                result.sort_column_id, result.elements[-1].key, result.direction, FETCH_ELEMENT_COUNT)
         else:
             self._notify_fetch_result(filtered)
         self._cached_elements.extend(elements)  # may has duplicates now, it's ok

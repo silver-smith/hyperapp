@@ -173,6 +173,8 @@ class ListInterface(Interface):
     def tSlice( self ):
         return TRecord([
             Field('sort_column_id', tString),
+            Field('from_key', TOptional(self.key_type)),
+            Field('direction', tString),  # asc/desc; todo: enum
             Field('elements', TList(self.tElement())),
             Field('bof', tBool),
             Field('eof', tBool),

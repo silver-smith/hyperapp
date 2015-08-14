@@ -138,7 +138,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def _decode_slice( self, rec ):
         key_column_id = self.get_key_column_id()
         elements = [Element.decode(key_column_id, elt_rec) for elt_rec in rec.elements]
-        return Slice(rec.sort_column_id, elements, rec.bof, rec.eof)
+        return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
     def subscribe_and_fetch_elements( self, observer, sort_column_id, from_key, direction, count ):
         this_is_first_observer = self.subscribe_local(observer)

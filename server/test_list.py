@@ -90,7 +90,7 @@ class TestList(ListObject):
             elements.append(self.Element(row))
         bof = True
         eof = stop >= self.size
-        return self.Slice(sort_column_id, elements, bof, eof)
+        return self.Slice(sort_column_id, from_key, direction, elements, bof, eof)
 
     
 class TestListModule(Module):

@@ -194,10 +194,14 @@ class Model(QtCore.QAbstractTableModel):
     def get_visible_slice( self, first_visible_row, visible_row_count ):
         last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
+        if first_visible_row > 0:
+            from_key = ordered.keys[first_visible_row - 1]
+        else:
+            from_key = None
         elements = [self._get_key_element(key) for key in ordered.keys[first_visible_row:last_row]]
         bof = ordered.bof and first_visible_row == 0
         eof = ordered.eof and last_row >= len(ordered.keys)
-        return Slice(self._current_order, elements, bof, eof)
+        return Slice(self._current_order, from_key, 'asc', elements, bof, eof)
 
     def _update_elements( self, elements ):
         for element in elements:

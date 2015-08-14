@@ -62,10 +62,13 @@ class Element(object):
 
 class Slice(object):
 
-    def __init__( self, sort_column_id, elements, bof, eof ):
+    def __init__( self, sort_column_id, from_key, direction, elements, bof, eof ):
         assert isinstance(sort_column_id, basestring), repr(sort_column_id)
+        assert direction in ['asc', 'desc'], repr(direction)
         assert is_list_inst(elements, Element), repr(elements)
         self.sort_column_id = sort_column_id
+        self.from_key = from_key
+        self.direction = direction
         self.elements = elements
         self.bof = bof
         self.eof = eof

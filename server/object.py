@@ -130,12 +130,13 @@ class ListObject(Object, list_module.ListObject):
     def run_element_command( self, request, command_id, element_key ):
         assert False, repr(command_id)  # Unexpected command_id
 
-    def Slice( self, sort_column_id, elements, bof, eof ):
+    def Slice( self, sort_column_id, from_key, direction, elements, bof, eof ):
         assert isinstance(sort_column_id, basestring), repr(sort_column_id)
         column = self._pick_column(sort_column_id)
         assert column, 'Unknown column: %r; known are: %r'\
            % (sort_column_id, [column.id for column in self.iface.columns])
-        return self.iface.Slice(sort_column_id, elements, bof, eof)
+        assert direction in ['asc', 'desc'], repr(direction)
+        return self.iface.Slice(sort_column_id, from_key, direction, elements, bof, eof)
             
     def _pick_column( self, column_id ):
         for column in self.iface.columns:
@@ -163,7 +164,7 @@ class SmallListObject(ListObject):
         elements = sorted_elements[idx : idx+count]
         bof = idx == 0
         eof = idx + count >= len(sorted_elements)
-        return self.Slice(sort_column_id, elements, bof, eof)
+        return self.Slice(sort_column_id, from_key, direction, elements, bof, eof)
 
     # must return self.iface.Element list
     def fetch_all_elements( self ):
