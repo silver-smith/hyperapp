@@ -93,12 +93,13 @@ class Object(interface_module.Object):
 class ListObject(Object, list_module.ListObject):
 
     default_sort_column_id = 'key'
+    default_direction = 'asc'
 
     def __init__( self ):
         Object.__init__(self)
 
     def get_contents( self, **kw ):
-        slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
+        slice = self.fetch_elements(self.default_sort_column_id, None, self.default_direction, MIN_ROWS_RETURNED)
         self.iface.tSlice().validate('Slice', slice)  # invalid result from fetch_elements, use: return self.Slice(...)
         return Object.get_contents(self, slice=slice, **kw)
 
@@ -118,7 +119,7 @@ class ListObject(Object, list_module.ListObject):
 
     def process_request_fetch_elements( self, request ):
         params = request.params
-        slice = self.fetch_elements(params.sort_column_id, params.key, params.desc_count, params.asc_count)
+        slice = self.fetch_elements(params.sort_column_id, params.from_key, params.direction, params.count)
         self.iface.tSlice().validate('Slice', slice)  # invalid result from fetch_elements, use: return self.Slice(...)
         return request.make_response(Object.get_contents(self, slice=slice))
 
@@ -145,22 +146,23 @@ class ListObject(Object, list_module.ListObject):
 
 class SmallListObject(ListObject):
 
-    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
+    def fetch_elements( self, sort_column_id, from_key, direction, count ):
+        assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
         elt2sort_key = attrgetter('row.%s' % self.iface.key_column)
         sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
-        if key is None:
+        if from_key is None:
             idx = 0
         else:
             for idx, element in enumerate(sorted_elements):
-                if elt2sort_key(element) > key:
+                if elt2sort_key(element) > from_key:
                     break
             else:
                 idx = len(sorted_elements)
-        if asc_count + desc_count < MIN_ROWS_RETURNED:
-            asc_count = MIN_ROWS_RETURNED - desc_count
-        elements = sorted_elements[idx - desc_count : idx + asc_count]
-        bof = idx - desc_count <= 0
-        eof = idx + asc_count >= len(sorted_elements)
+        if count < MIN_ROWS_RETURNED:
+            count = MIN_ROWS_RETURNED
+        elements = sorted_elements[idx : idx+count]
+        bof = idx == 0
+        eof = idx + count >= len(sorted_elements)
         return self.Slice(sort_column_id, elements, bof, eof)
 
     # must return self.iface.Element list

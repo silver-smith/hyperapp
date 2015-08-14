@@ -150,9 +150,9 @@ class ListInterface(Interface):
     def get_basic_commands( self ):
         fetch_params_fields = [
             Field('sort_column_id', tString),
-            Field('key', TOptional(self.key_type)),
-            Field('desc_count', tInt),
-            Field('asc_count', tInt),
+            Field('from_key', TOptional(self.key_type)),
+            Field('direction', tString),  # asc/desc; todo: enum
+            Field('count', tInt),
             ]
         return Interface.get_basic_commands(self) \
             + [RequestCmd('fetch_elements', fetch_params_fields, [Field('slice', self.tSlice())]),

@@ -140,11 +140,11 @@ class ProxyListObject(ProxyObject, ListObject):
         elements = [Element.decode(key_column_id, elt_rec) for elt_rec in rec.elements]
         return Slice(rec.sort_column_id, elements, rec.bof, rec.eof)
 
-    def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
+    def subscribe_and_fetch_elements( self, observer, sort_column_id, from_key, direction, count ):
         this_is_first_observer = self.subscribe_local(observer)
         if not this_is_first_observer:
             return False
-        self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, key, desc_count, asc_count)
+        self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, from_key, direction, count)
         self.fetch_pending = True
         return True
 
@@ -159,9 +159,9 @@ class ProxyListObject(ProxyObject, ListObject):
     def get_key_column_id( self ):
         return self.iface.key_column
 
-    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
+    def fetch_elements( self, sort_column_id, from_key, direction, count ):
         if self.fetch_pending: return
-        self.execute_request('fetch_elements', None, sort_column_id, key, desc_count, asc_count)
+        self.execute_request('fetch_elements', None, sort_column_id, from_key, direction, count)
         self.fetch_pending = True
 
     def process_response_result( self, command_id, result ):

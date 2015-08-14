@@ -76,13 +76,14 @@ class TestList(ListObject):
     def run_command_params( self, request ):
         return request.make_response(ParamsForm().make_handle(size=self.size))
 
-    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
-        assert key is None or isinstance(key, (int, long)), repr(key)
-        if key is None:
+    def fetch_elements( self, sort_column_id, from_key, direction, count ):
+        assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
+        assert from_key is None or isinstance(from_key, (int, long)), repr(from_key)
+        if from_key is None:
             start = 0
         else:
-            start = key + 1
-        stop = min(self.size, start + min(asc_count, MAX_ROWS_RETURNED))
+            start = from_key + 1
+        stop = min(self.size, start + min(count, MAX_ROWS_RETURNED))
         elements = []
         for idx in xrange(start, stop):
             row = self.Row(idx, 'field1#%d' % idx, 'field2#%d' % idx, 'field3#%d' % idx)
