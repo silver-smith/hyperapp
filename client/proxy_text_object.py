@@ -39,6 +39,8 @@ class ProxyTextObject(ProxyObject, TextObject):
         if command_id == 'save':
             self.path = result.new_path
             self._notify_object_changed()
+        else:
+            ProxyObject.process_response_result(self, command_id, result)
 
     def process_update( self, new_text ):
         self.text_changed(new_text)
