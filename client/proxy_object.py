@@ -117,7 +117,6 @@ class ProxyListObject(ProxyObject, ListObject):
     def __init__( self, server, path, iface ):
         ProxyObject.__init__(self, server, path, iface)
         ListObject.__init__(self)
-        self.fetch_pending = False  # has pending element fetch request
         self._initial_slice = None
 
     @staticmethod
@@ -145,7 +144,6 @@ class ProxyListObject(ProxyObject, ListObject):
         if not this_is_first_observer:
             return False
         self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, from_key, direction, count)
-        self.fetch_pending = True
         return True
 
     def process_update( self, diff ):
@@ -160,9 +158,7 @@ class ProxyListObject(ProxyObject, ListObject):
         return self.iface.key_column
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
-        if self.fetch_pending: return
         self.execute_request('fetch_elements', None, sort_column_id, from_key, direction, count)
-        self.fetch_pending = True
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe_and_fetch_elements':
@@ -173,14 +169,12 @@ class ProxyListObject(ProxyObject, ListObject):
             ProxyObject.process_response_result(self, command_id, result)
 
     def process_subscribe_and_fetch_elements_result( self, result ):
-        self.fetch_pending = False
         ProxyObject.set_contents(self, result)
         slice = self._decode_slice(result.slice)
         self._notify_object_changed()
         self._notify_fetch_result(slice)
 
     def process_fetch_elements_result( self, result ):
-        self.fetch_pending = False
         slice = self._decode_slice(result.slice)
         self._notify_fetch_result(slice)
 

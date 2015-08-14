@@ -54,6 +54,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def __init__( self ):
         QtCore.QAbstractTableModel.__init__(self)
+        self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._object = None
         self._columns = []
         self._visible_columns = []
@@ -115,6 +116,7 @@ class Model(QtCore.QAbstractTableModel):
             ordered.bof = slice.bof
             ordered.eof = slice.eof
         self.reset()
+        self._fetch_pending = False
 
     def _wanted_last_row( self, first_visible_row, visible_row_count ):
         ordered = self._current_ordered()
@@ -124,6 +126,7 @@ class Model(QtCore.QAbstractTableModel):
         return wanted_last_row
 
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
+        if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row - len(ordered.keys)
@@ -132,20 +135,26 @@ class Model(QtCore.QAbstractTableModel):
         if wanted_rows > 0 and not ordered.eof:
             print '   fetch_elements', self._object, `key`, wanted_rows
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
+            self._fetch_pending = True
 
     def subscribe_and_fetch_elements( self, need_refetch, observer, first_visible_row, visible_row_count ):
+        if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
         print '-- subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
         requested = self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 'asc', wanted_rows)
-        if need_refetch and not requested:
+        if requested:
+            self._fetch_pending = True
+        elif need_refetch:
             # subscribe_and_fetch_elements does not fetch if we are not first subscriber, must force it
             print '   need_refetch: fetch_elements'
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
+            self._fetch_pending = True
 
     def process_fetch_result( self, result ):
+        self._fetch_pending = False
         ordered = self._current_ordered()
         old_len = len(ordered.keys)
         self._update_elements(result.elements)
