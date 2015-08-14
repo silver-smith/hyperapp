@@ -142,9 +142,11 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         this_is_first_observer = self.subscribe_local(observer)
-        if not this_is_first_observer: return
+        if not this_is_first_observer:
+            return False
         self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, key, desc_count, asc_count)
         self.fetch_pending = True
+        return True
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
@@ -165,7 +167,8 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_response_result( self, command_id, result ):
         if command_id in ['fetch_elements', 'subscribe_and_fetch_elements']:
             self.process_fetch_elements_result(result)
-        ProxyObject.process_response_result(self, command_id, result)
+        else:
+            ProxyObject.process_response_result(self, command_id, result)
 
     def process_fetch_elements_result( self, result ):
         self.fetch_pending = False

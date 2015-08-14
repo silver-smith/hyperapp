@@ -138,14 +138,12 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
-        if need_refetch:
+        print '-- subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
+        requested = self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 0, wanted_rows)
+        if need_refetch and not requested:
             # subscribe_and_fetch_elements does not fetch if we are not first subscriber, must force it
-            print '-- subscribe_local, fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
-            self._object.subscribe_local(observer)
+            print '   need_refetch: fetch_elements'
             self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
-        else:
-            print '-- subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
-            self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 0, wanted_rows)
 
     def process_fetch_result( self, result ):
         ordered = self._current_ordered()
