@@ -144,7 +144,7 @@ class ListInterface(Interface):
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
-            Field('initial_slice', self.tSlice()),
+            Field('slice', self.tSlice()),
             ]
 
     def get_basic_commands( self ):
@@ -154,12 +154,9 @@ class ListInterface(Interface):
             Field('desc_count', tInt),
             Field('asc_count', tInt),
             ]
-        fetch_result_fields = [
-            Field('slice', self.tSlice()),
-            ]
         return Interface.get_basic_commands(self) \
-            + [RequestCmd('fetch_elements', fetch_params_fields, fetch_result_fields),
-               RequestCmd('subscribe_and_fetch_elements', fetch_params_fields, fetch_result_fields)]
+            + [RequestCmd('fetch_elements', fetch_params_fields, [Field('slice', self.tSlice())]),
+               RequestCmd('subscribe_and_fetch_elements', fetch_params_fields, self.tContents().get_fields())]
 
     def Row( self, *args, **kw ):
         return self.tRowRecord.instantiate(*args, **kw)

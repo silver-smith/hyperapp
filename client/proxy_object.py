@@ -126,7 +126,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self._initial_slice = self._decode_slice(contents.initial_slice)
+        self._initial_slice = self._decode_slice(contents.slice)
 
     # We can use initial slice only once, immediately after receiving object contents.
     # After that contents may change
@@ -165,10 +165,19 @@ class ProxyListObject(ProxyObject, ListObject):
         self.fetch_pending = True
 
     def process_response_result( self, command_id, result ):
-        if command_id in ['fetch_elements', 'subscribe_and_fetch_elements']:
+        if command_id == 'subscribe_and_fetch_elements':
+            self.process_subscribe_and_fetch_elements_result(result)
+        elif command_id == 'fetch_elements':
             self.process_fetch_elements_result(result)
         else:
             ProxyObject.process_response_result(self, command_id, result)
+
+    def process_subscribe_and_fetch_elements_result( self, result ):
+        self.fetch_pending = False
+        ProxyObject.set_contents(self, result)
+        slice = self._decode_slice(result.slice)
+        self._notify_object_changed()
+        self._notify_fetch_result(slice)
 
     def process_fetch_elements_result( self, result ):
         self.fetch_pending = False

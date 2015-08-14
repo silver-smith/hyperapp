@@ -98,9 +98,9 @@ class ListObject(Object, list_module.ListObject):
         Object.__init__(self)
 
     def get_contents( self, **kw ):
-        initial_slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
-        self.iface.tSlice().validate('Slice', initial_slice)  # invalid result from fetch_elements, use: return self.Slice(...)
-        return Object.get_contents(self, initial_slice=initial_slice, **kw)
+        slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
+        self.iface.tSlice().validate('Slice', slice)  # invalid result from fetch_elements, use: return self.Slice(...)
+        return Object.get_contents(self, slice=slice, **kw)
 
     def get_handle( self ):
         return self.ListHandle(self.get())
@@ -120,7 +120,7 @@ class ListObject(Object, list_module.ListObject):
         params = request.params
         slice = self.fetch_elements(params.sort_column_id, params.key, params.desc_count, params.asc_count)
         self.iface.tSlice().validate('Slice', slice)  # invalid result from fetch_elements, use: return self.Slice(...)
-        return request.make_response_result(slice=slice)
+        return request.make_response(Object.get_contents(self, slice=slice))
 
     # must return Slice, construct using self.Slice(...)
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
