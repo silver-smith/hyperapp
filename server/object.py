@@ -90,15 +90,6 @@ class Object(interface_module.Object):
         subscription.remove(self.get_path(), request.peer)
 
 
-class Slice(object):
-
-    def __init__( self, sort_column_id, elements, bof, eof ):
-        self.sort_column_id = sort_column_id
-        self.elements = elements
-        self.bof = bof
-        self.eof = eof
-
-
 class ListObject(Object, list_module.ListObject):
 
     default_sort_column_id = 'key'
@@ -107,14 +98,9 @@ class ListObject(Object, list_module.ListObject):
         Object.__init__(self)
 
     def get_contents( self, **kw ):
-        slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
-        assert isinstance(slice, Slice), repr(slice)  # invalid result from fetch_elements, use: return self.Slice(...)
-        return Object.get_contents(self,
-            sort_column_id=slice.sort_column_id,
-            elements=slice.elements,
-            bof=slice.bof,
-            eof=slice.eof,
-            **kw)
+        initial_slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
+        self.iface.tSlice().validate('Slice', initial_slice)  # invalid result from fetch_elements, use: return self.Slice(...)
+        return Object.get_contents(self, initial_slice=initial_slice, **kw)
 
     def get_handle( self ):
         return self.ListHandle(self.get())
@@ -133,13 +119,8 @@ class ListObject(Object, list_module.ListObject):
     def process_request_fetch_elements( self, request ):
         params = request.params
         slice = self.fetch_elements(params.sort_column_id, params.key, params.desc_count, params.asc_count)
-        assert isinstance(slice, Slice), repr(slice)  # invalid result from fetch_elements, use: return self.Slice(...)
-        return request.make_response_result(
-            sort_column_id=slice.sort_column_id,
-            elements=slice.elements,
-            bof=slice.bof,
-            eof=slice.eof,
-            )
+        self.iface.tSlice().validate('Slice', slice)  # invalid result from fetch_elements, use: return self.Slice(...)
+        return request.make_response_result(slice=slice)
 
     # must return Slice, construct using self.Slice(...)
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
@@ -153,9 +134,7 @@ class ListObject(Object, list_module.ListObject):
         column = self._pick_column(sort_column_id)
         assert column, 'Unknown column: %r; known are: %r'\
            % (sort_column_id, [column.id for column in self.iface.columns])
-        assert isinstance(bof, bool), repr(bof)
-        assert isinstance(eof, bool), repr(eof)
-        return Slice(sort_column_id, elements, bof, eof)
+        return self.iface.Slice(sort_column_id, elements, bof, eof)
             
     def _pick_column( self, column_id ):
         for column in self.iface.columns:

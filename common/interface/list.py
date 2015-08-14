@@ -144,10 +144,7 @@ class ListInterface(Interface):
 
     def get_default_content_fields( self ):
         return Interface.get_default_content_fields(self) + [
-            Field('sort_column_id', tString),
-            Field('elements', TList(self.tElement())),
-            Field('bof', tBool),
-            Field('eof', tBool),
+            Field('initial_slice', self.tSlice()),
             ]
 
     def get_basic_commands( self ):
@@ -158,10 +155,7 @@ class ListInterface(Interface):
             Field('asc_count', tInt),
             ]
         fetch_result_fields = [
-            Field('sort_column_id', tString),
-            Field('elements', TList(self.tElement())),
-            Field('bof', tBool),
-            Field('eof', tBool),
+            Field('slice', self.tSlice()),
             ]
         return Interface.get_basic_commands(self) \
             + [RequestCmd('fetch_elements', fetch_params_fields, fetch_result_fields),
@@ -178,6 +172,17 @@ class ListInterface(Interface):
 
     def Element( self, row, commands=None ):
         return self.tElement().instantiate(row, commands or [])
+
+    def tSlice( self ):
+        return TRecord([
+            Field('sort_column_id', tString),
+            Field('elements', TList(self.tElement())),
+            Field('bof', tBool),
+            Field('eof', tBool),
+            ])
+
+    def Slice( self, *args, **kw ):
+        return self.tSlice().instantiate(*args, **kw)
 
     def tDiff( self ):
         return TRecord([

@@ -126,7 +126,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self._initial_slice = self._decode_slice(contents)
+        self._initial_slice = self._decode_slice(contents.initial_slice)
 
     # We can use initial slice only once, immediately after receiving object contents.
     # After that contents may change
@@ -172,7 +172,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_fetch_elements_result( self, result ):
         self.fetch_pending = False
-        slice = self._decode_slice(result)
+        slice = self._decode_slice(result.slice)
         self._notify_fetch_result(slice)
 
     def __del__( self ):
