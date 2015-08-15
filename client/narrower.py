@@ -50,6 +50,7 @@ class FilteredListObj(ListObject, ListObserver):
         self._field_id = field_id  # filter by this field
         self._prefix = prefix
         self._cached_elements = []
+        self._base.subscribe_local(self)
 
     def __repr__( self ):
         return 'FilteredListObj(%r/%r/%r)' % (self._field_id, self._prefix, len(self._cached_elements))
