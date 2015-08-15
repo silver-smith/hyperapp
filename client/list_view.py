@@ -134,24 +134,20 @@ class Model(QtCore.QAbstractTableModel):
         print '-- list_view.Model.fetch_elements_if_required', id(self), first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), ordered.eof, wanted_rows
         if wanted_rows > 0 and not ordered.eof:
             print '   fetch_elements', self._object, `key`, wanted_rows
+            self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
-            self._fetch_pending = True
 
-    def subscribe_and_fetch_elements( self, need_refetch, observer, first_visible_row, visible_row_count ):
+    def subscribe_and_fetch_elements( self, observer, first_visible_row, visible_row_count ):
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
         print '-- list_view.Model.subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
+        self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
         requested = self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 'asc', wanted_rows)
-        if requested:
-            self._fetch_pending = True
-        elif need_refetch:
-            # subscribe_and_fetch_elements does not fetch if we are not first subscriber, must force it
-            print '   not requested, but need_refetch: fetch_elements'
-            self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
-            self._fetch_pending = True
+        if not requested:
+            self._fetch_pending = False
 
     def process_fetch_result( self, result ):
         print '-- list_view.Model.process_fetch_result', id(self), self._object, len(result.elements)
@@ -246,15 +242,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.activated.connect(self._on_activated)
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._subscribed = False
-        slice = object.get_initial_slice()
-        if slice:
-            self._need_refetch = False
-        else:
-            slice = handle_slice
-            self._need_refetch = True  # slice from handle may be outdated
-        if not sort_column_id and slice:
-            sort_column_id = slice.sort_column_id
-        self.set_object(object, sort_column_id, slice)
+        if not sort_column_id:
+            sort_column_id = object.get_default_sort_column_id()
+        self.set_object(object, sort_column_id, handle_slice)
         self.set_current_key(key, select_first)
 
     def handle( self ):
@@ -367,7 +357,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.resizeColumnsToContents()
         if self.isVisible():
             first_visible_row, visible_row_count = self._get_visible_rows()
-            self.model().subscribe_and_fetch_elements(self._need_refetch, self, first_visible_row, visible_row_count)
+            self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
             self._subscribed = True
         else:
             self._subscribed = False
@@ -389,7 +379,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         else:
             # we need proper visible row/count for subscribe_and_fetch_elements, got them only in resizeEvent
             first_visible_row, visible_row_count = self._get_visible_rows()
-            self.model().subscribe_and_fetch_elements(self._need_refetch, self, first_visible_row, visible_row_count)
+            self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
             self._subscribed = True
         return result
 

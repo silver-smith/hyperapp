@@ -119,7 +119,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def __init__( self, server, path, iface ):
         ProxyObject.__init__(self, server, path, iface)
         ListObject.__init__(self)
-        self._initial_slice = None
+        self._default_sort_column_id = None
         self._slices = []  # all slices are stored in ascending order
 
     @staticmethod
@@ -128,15 +128,13 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        self._initial_slice = self._decode_slice(contents.slice)
-        self._slices.append(self._initial_slice)
+        slice = self._decode_slice(contents.slice)
+        self._default_sort_column_id = slice.sort_column_id
+        self._merge_in_slice(slice)
 
-    # We can use initial slice only once, immediately after receiving object contents.
-    # After that contents may change
-    def get_initial_slice( self ):
-        slice = self._initial_slice
-        self._initial_slice = None
-        return slice
+    def get_default_sort_column_id( self ):
+        assert self._default_sort_column_id  # there were no set_contents calls
+        return self._default_sort_column_id
 
     def _decode_slice( self, rec ):
         key_column_id = self.get_key_column_id()

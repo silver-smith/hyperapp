@@ -44,8 +44,8 @@ class HistoryList(ListObject):
     def get_key_column_id( self ):
         return 'idx'
 
-    def get_initial_slice( self ):
-        return self._get_slice()
+    def get_default_sort_column_id( self ):
+        return 'idx'
 
     def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
         self.subscribe(observer)
