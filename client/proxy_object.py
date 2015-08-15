@@ -1,5 +1,6 @@
 import weakref
 import uuid
+import bisect
 from common.util import path2str
 from common.interface import Interface, Field, tString, tPath, resolve_iface
 import common.interface as interface_module
@@ -118,6 +119,7 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.__init__(self, server, path, iface)
         ListObject.__init__(self)
         self._initial_slice = None
+        self._slices = []  # all slices are stored in ascending order
 
     @staticmethod
     def get_proxy_id():
@@ -126,6 +128,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
         self._initial_slice = self._decode_slice(contents.slice)
+        self._slices.append(self._initial_slice)
 
     # We can use initial slice only once, immediately after receiving object contents.
     # After that contents may change
@@ -136,9 +139,48 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _decode_slice( self, rec ):
         key_column_id = self.get_key_column_id()
-        elements = [Element.decode(key_column_id, elt_rec) for elt_rec in rec.elements]
+        elements = [Element.decode(key_column_id, rec.sort_column_id, elt_rec) for elt_rec in rec.elements]
         return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
+    def _merge_in_slice( self, new_slice ):
+        print '-- merge_in_slice', id(self), len(new_slice.elements), new_slice.bof, repr(new_slice.elements[0].key), repr(new_slice.elements[-1].key)
+        assert new_slice.elements
+        for slice in self._slices:
+            if slice.sort_column_id != new_slice.sort_column_id: continue
+            assert new_slice.direction == 'asc'  # todo: desc direction
+            if new_slice.from_key == slice.elements[-1].key:
+                assert not new_slice.bof  # this is continuation for existing slice, bof is not possible
+                slice.elements.extend(new_slice.elements)
+                slice.eof = new_slice.eof
+                print '   > merged', len(slice.elements), repr(slice.elements[0].key), repr(slice.elements[-1].key)
+                break
+        else:
+            self._slices.append(new_slice)
+            print '  > added'
+
+    def _pick_slice( self, sort_column_id, from_key, direction ):
+        print '-- pick_slice', id(self), repr(sort_column_id), repr(from_key), direction
+        assert direction == 'asc'  # todo: desc direction
+        for slice in self._slices:
+            if slice.sort_column_id != sort_column_id: continue
+            if from_key == None and slice.bof:
+                print '   > bof found', len(slice.elements)
+                return slice
+            print '     - checking', len(slice.elements), repr(slice.elements[0].order_key), repr(slice.elements[-1].order_key)
+            # here we assume sort_column_id == key_column_id:
+            if slice.elements[0].order_key <= from_key and from_key <= slice.elements[-1].order_key:
+                idx = bisect.bisect_left(slice.elements, from_key)  # must be from_order_key
+                print '     - bisecting', idx
+                while slice.elements[idx].order_key <= from_key:  # from_order_key
+                    idx += 1
+                    if slice.elements[idx-1].key == from_key: break  # from_order_key
+                print '     - exact key', idx
+                if idx < len(slice.elements):
+                    print '   > middle found', idx, len(slice.elements), len(slice.elements[idx:])
+                    return slice.clone_with_elements(slice.elements[idx:])
+        print '   > none found'
+        return None  # none found
+            
     def subscribe_and_fetch_elements( self, observer, sort_column_id, from_key, direction, count ):
         this_is_first_observer = self.subscribe_local(observer)
         if not this_is_first_observer:
@@ -158,7 +200,11 @@ class ProxyListObject(ProxyObject, ListObject):
         return self.iface.key_column
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
-        self.execute_request('fetch_elements', None, sort_column_id, from_key, direction, count)
+        slice = self._pick_slice(sort_column_id, from_key, direction)
+        if slice:
+            self._notify_fetch_result(slice)
+        else:
+            self.execute_request('fetch_elements', None, sort_column_id, from_key, direction, count)
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe_and_fetch_elements':
@@ -171,11 +217,13 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_subscribe_and_fetch_elements_result( self, result ):
         ProxyObject.set_contents(self, result)
         slice = self._decode_slice(result.slice)
+        self._merge_in_slice(slice)
         self._notify_object_changed()
         self._notify_fetch_result(slice)
 
     def process_fetch_elements_result( self, result ):
         slice = self._decode_slice(result.slice)
+        self._merge_in_slice(slice)
         self._notify_fetch_result(slice)
 
     def __del__( self ):

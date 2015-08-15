@@ -1,3 +1,4 @@
+from functools import total_ordering
 from PySide import QtCore, QtGui
 from common.util import is_list_inst, dt2local_str
 from .command import Command
@@ -45,20 +46,37 @@ class ListDiff(object):
         return 'ListDiff(%r-%r>%r)' % (self.start_key, self.end_key, self.elements)
 
 
+@total_ordering
 class Element(object):
 
     @classmethod
-    def decode( cls, key_column_id, rec ):
+    def decode( cls, key_column_id, sort_column_id, rec ):
         key = getattr(rec.row, key_column_id)
+        order_key = getattr(rec.row, sort_column_id)
         commands = map(Command.decode, rec.commands)
-        return cls(key, rec.row, commands)
+        return cls(key, rec.row, commands, order_key)
 
-    def __init__( self, key, row, commands ):
+    def __init__( self, key, row, commands, order_key=None ):
         assert is_list_inst(commands, Command), repr(commands)
         self.key = key
         self.row = row
         self.commands = commands
+        self.order_key = order_key or key
 
+    def __eq__( self, other ):
+        if isinstance(other, Element):
+            return self.order_key == other.order_key
+        else:
+            return self.order_key == other
+
+    def __lt__( self, other ):
+        if isinstance(other, Element):
+            return self.order_key < other.order_key
+        else:
+            return self.order_key < other
+
+    ## def clone_with_order_key( self, order_key ):
+    ##     return Element(self.key, self.row, self.commands, order_key)
 
 class Slice(object):
 
@@ -72,6 +90,17 @@ class Slice(object):
         self.elements = elements
         self.bof = bof
         self.eof = eof
+
+    def clone_with_elements( self, elements ):
+        return Slice(self.sort_column_id, self.from_key, self.direction, elements, self.bof, self.eof)
+
+    ## def _elements_with_order_key( self ):
+    ##     sort_column_id = self.sort_column_id
+    ##     return [element.clone_with_order_key(getattr(element, sort_column_id)) for element in self.elements]
+
+    ## def clone_with_order_key( self ):
+    ##     return Slice(self.sort_column_id, self.from_key, self.direction,
+    ##                   self._elements_with_order_key(), self.bof, self.eof)
 
 
 class ListObject(Object):
