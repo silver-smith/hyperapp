@@ -144,8 +144,8 @@ class ProxyListObject(ProxyObject, ListObject):
         return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
     def _merge_in_slice( self, new_slice ):
-        print '  -- merge_in_slice', id(self), repr(new_slice.from_key), len(new_slice.elements), new_slice.bof, repr(new_slice.elements[0].key), repr(new_slice.elements[-1].key)
-        assert new_slice.elements
+        print '  -- merge_in_slice', id(self), repr(new_slice.from_key), len(new_slice.elements), new_slice.bof
+        if new_slice.elements: print '      ', repr(new_slice.elements[0].key), repr(new_slice.elements[-1].key)
         for slice in self._slices:
             if slice.sort_column_id != new_slice.sort_column_id: continue
             assert new_slice.direction == 'asc'  # todo: desc direction
