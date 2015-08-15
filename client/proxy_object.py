@@ -156,7 +156,7 @@ class ProxyListObject(ProxyObject, ListObject):
                 break
         else:
             self._slices.append(new_slice)
-            print '  > added'
+            print '   > added'
 
     def _pick_slice( self, sort_column_id, from_key, direction ):
         print '-- pick_slice', id(self), repr(sort_column_id), repr(from_key), direction
@@ -183,10 +183,11 @@ class ProxyListObject(ProxyObject, ListObject):
             
     def subscribe_and_fetch_elements( self, observer, sort_column_id, from_key, direction, count ):
         this_is_first_observer = self.subscribe_local(observer)
-        if not this_is_first_observer:
+        if this_is_first_observer:
+            self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, from_key, direction, count)
+            return True
+        else:
             return False
-        self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, from_key, direction, count)
-        return True
 
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements

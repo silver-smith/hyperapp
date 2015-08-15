@@ -149,7 +149,7 @@ class Model(QtCore.QAbstractTableModel):
             self._fetch_pending = True
         elif need_refetch:
             # subscribe_and_fetch_elements does not fetch if we are not first subscriber, must force it
-            print '   need_refetch: fetch_elements'
+            print '   not requested, but need_refetch: fetch_elements'
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
             self._fetch_pending = True
 
