@@ -131,7 +131,7 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row - len(ordered.keys)
         key = ordered.keys[-1] if ordered.keys else None
-        print '-- fetch_elements_if_required', id(self), first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), ordered.eof, wanted_rows
+        print '-- list_view.Model.fetch_elements_if_required', id(self), first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), ordered.eof, wanted_rows
         if wanted_rows > 0 and not ordered.eof:
             print '   fetch_elements', self._object, `key`, wanted_rows
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
@@ -143,7 +143,7 @@ class Model(QtCore.QAbstractTableModel):
         ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
-        print '-- subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
+        print '-- list_view.Model.subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
         requested = self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 'asc', wanted_rows)
         if requested:
             self._fetch_pending = True
@@ -154,6 +154,7 @@ class Model(QtCore.QAbstractTableModel):
             self._fetch_pending = True
 
     def process_fetch_result( self, result ):
+        print '-- list_view.Model.process_fetch_result', id(self), self._object, len(result.elements)
         self._fetch_pending = False
         ordered = self._current_ordered()
         old_len = len(ordered.keys)
