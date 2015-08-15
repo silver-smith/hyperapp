@@ -68,6 +68,7 @@ class ProxyObject(Object, interface_module.Object):
         self.execute_request(command_id, initiator_view, **kw)
 
     def observers_gone( self ):
+        print '-- observers_gone', self
         self.send_notification('unsubscribe')
 
     # prepare request which does not require/expect response

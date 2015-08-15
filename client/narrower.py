@@ -51,6 +51,9 @@ class FilteredListObj(ListObject, ListObserver):
         self._prefix = prefix
         self._cached_elements = []
 
+    def __repr__( self ):
+        return 'FilteredListObj(%r/%r/%r)' % (self._field_id, self._prefix, len(self._cached_elements))
+
     def get_title( self ):
         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
 
@@ -108,7 +111,7 @@ class FilteredListObj(ListObject, ListObserver):
         return getattr(element.row, self._field_id)
 
     def __del__( self ):
-        print '~FilteredListObj', repr(self._prefix)
+        print '~FilteredListObj', repr(self._field_id), repr(self._prefix)
 
 
 class View(LineListPanel):
