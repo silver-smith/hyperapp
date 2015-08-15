@@ -88,7 +88,7 @@ class TestList(ListObject):
         for idx in xrange(start, stop):
             row = self.Row(idx, 'field1#%d' % idx, 'field2#%d' % idx, 'field3#%d' % idx)
             elements.append(self.Element(row))
-        bof = True
+        bof = start == 0
         eof = stop >= self.size
         return self.Slice(sort_column_id, from_key, direction, elements, bof, eof)
 
