@@ -124,6 +124,7 @@ class View(LineListPanel):
         line_edit_handle = line_edit.Handle(prefix)
         LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._line_edit.textEdited.connect(self._on_text_edited)
+        self.cancel_narrowing.setEnabled(bool(prefix))
 
     def handle( self ):
         list_handle = self._list_view.handle()
