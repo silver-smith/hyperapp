@@ -74,12 +74,12 @@ class Connection(object):
 
     def on_ready_read( self ):
         data = str(self.socket.readAll())
-        self.trace('%d bytes is received: %r' % (len(data), data))
+        self.trace('%d bytes is received' % len(data))
         self.recv_buf += data
         while Packet.is_full(self.recv_buf):
             packet, self.recv_buf = Packet.decode(self.recv_buf)
-            self.trace('received %s packet (%d bytes remainder): [%d] %r'
-                       % (packet.encoding, len(self.recv_buf), len(packet.contents), packet.contents))
+            self.trace('received %s packet (%d bytes remainder): size=%d'
+                       % (packet.encoding, len(self.recv_buf), len(packet.contents)))
             Server(self.addr).process_packet(packet)
 
     def send_packet( self, packet ):
