@@ -52,7 +52,7 @@ class View(view.View, QtGui.QTextBrowser):
         return (self, self.object.get_commands(TextObject.mode_view))
 
     def text2html( self, text ):
-        return re.sub(r'\[([^\]]+)\]', r'<a href="\1">\1</a>', text)
+        return re.sub(r'\[([^\]]+)\]', r'<a href="\1">\1</a>', text or '')
 
     def on_anchor_clicked( self, url ):
         print 'on_anchor_clicked', repr(url.path())
