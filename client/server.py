@@ -49,7 +49,7 @@ class Connection(object):
 
     def trace( self, msg ):
         host, port = self.addr
-        print 'Network, connection to %s:%d: %s' % (host, port, msg)
+        print 'Network, connection to %s:%d %s' % (host, port, msg)
 
     def on_error( self, msg ):
         self.trace('Error: %s' % msg)
@@ -127,7 +127,7 @@ class Server(object):
 
     def _send( self, request ):
         encoding = PACKET_ENCODING
-        print '%s packet to %s:%d:' % (encoding, self.addr[0], self.addr[1])
+        print '%s packet to %s:%d' % (encoding, self.addr[0], self.addr[1])
         pprint(tClientPacket, request)
         packet = packet_coders.encode(encoding, request, tClientPacket)
         Connection.get_connection(self.addr).send_packet(packet)
@@ -135,7 +135,7 @@ class Server(object):
     def process_packet( self, packet ):
         print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
         response = decode_server_packet(self, iface_registry, packet)
-        print '%s packet from %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
+        print '%s packet from %s:%d' % (packet.encoding, self.addr[0], self.addr[1])
         ## pprint(tServerPacket, response)
         if isinstance(response, Response):
             print '   response for request', response.command_id, response.request_id
