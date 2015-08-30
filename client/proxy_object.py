@@ -157,6 +157,36 @@ class ProxyListObject(ProxyObject, ListObject):
             self._slices.append(new_slice)
             print '     > added'
 
+    def _update_slices( self, diff ):
+        for slice in self._slices:
+            for idx in reversed(range(len(slice.elements))):
+                element = slice.elements[idx]
+                if diff.start_key <= element.key and element.key <= diff.end_key:
+                    del slice.elements[idx]
+                    print '-- slice with sort %r: element is deleted at %d' % (slice.sort_column_id, idx)
+            for new_elt in diff.elements:
+                new_elt = new_elt.clone_with_sort_column(slice.sort_column_id)
+                for idx in range(len(slice.elements)):
+                    assert len(diff.elements) <= 1, len(diff.elements)  # inserting more than one elements at once is not yet supported
+                    order_key = slice.elements[idx].order_key
+                    if idx == 0:
+                        if new_elt.order_key <= order_key and slice.bof:
+                            slice.elements.insert(0, new_elt)
+                            print '-- slice with sort %r: element is inserted to begin of slice' % slice.sort_column_id
+                            break
+                    else:
+                        prev_order_key = slice.elements[idx - 1].order_key
+                        if prev_order_key <= new_elt.order_key and new_elt.order_key <= order_key:
+                            slice.elements.insert(idx, new_elt)
+                            print '-- slice with sort %r: element is inserted at idx %d' % (slice.sort_column_id, idx)
+                            break
+                if slice.elements:
+                    order_key = slice.elements[-1].order_key
+                    if new_elt.order_key > order_key and slice.eof:
+                        slice.elements.append(new_elt)
+                        print '-- slice with sort %r: element is appended to the end of slice' % slice.sort_column_id
+                    
+
     def _pick_slice( self, sort_column_id, from_key, direction ):
         print '  -- pick_slice', id(self), repr(sort_column_id), repr(from_key), direction
         assert direction == 'asc'  # todo: desc direction
@@ -197,7 +227,9 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
         key_column_id = self.get_key_column_id()
-        self._notify_diff_applied(ListDiff.decode(key_column_id, diff))
+        diff = ListDiff.decode(key_column_id, diff)
+        self._update_slices(diff)
+        self._notify_diff_applied(diff)
 
     def get_columns( self ):
         return self.iface.columns

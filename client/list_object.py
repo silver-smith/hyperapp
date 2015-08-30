@@ -34,7 +34,7 @@ class ListDiff(object):
 
     @classmethod
     def decode( cls, key_column_id, rec ):
-        return cls(rec.start_key, rec.end_key, [Element.decode(key_column_id, elt) for elt in rec.elements])
+        return cls(rec.start_key, rec.end_key, [Element.decode(key_column_id, None, elt) for elt in rec.elements])
 
     def __init__( self, start_key, end_key, elements ):
         # keys == None means append
@@ -52,7 +52,10 @@ class Element(object):
     @classmethod
     def decode( cls, key_column_id, sort_column_id, rec ):
         key = getattr(rec.row, key_column_id)
-        order_key = getattr(rec.row, sort_column_id)
+        if sort_column_id is None:
+            order_key = None
+        else:
+            order_key = getattr(rec.row, sort_column_id)
         commands = map(Command.decode, rec.commands)
         return cls(key, rec.row, commands, order_key)
 
@@ -61,7 +64,8 @@ class Element(object):
         self.key = key
         self.row = row
         self.commands = commands
-        self.order_key = order_key or key
+        if order_key is not None:
+            self.order_key = order_key
 
     def __eq__( self, other ):
         if isinstance(other, Element):
@@ -75,8 +79,10 @@ class Element(object):
         else:
             return self.order_key < other
 
-    ## def clone_with_order_key( self, order_key ):
-    ##     return Element(self.key, self.row, self.commands, order_key)
+    def clone_with_sort_column( self, sort_column_id ):
+        order_key = getattr(self.row, sort_column_id)
+        return Element(self.key, self.row, self.commands, order_key)
+ 
 
 class Slice(object):
 
@@ -93,14 +99,6 @@ class Slice(object):
 
     def clone_with_elements( self, elements ):
         return Slice(self.sort_column_id, self.from_key, self.direction, elements, self.bof, self.eof)
-
-    ## def _elements_with_order_key( self ):
-    ##     sort_column_id = self.sort_column_id
-    ##     return [element.clone_with_order_key(getattr(element, sort_column_id)) for element in self.elements]
-
-    ## def clone_with_order_key( self ):
-    ##     return Slice(self.sort_column_id, self.from_key, self.direction,
-    ##                   self._elements_with_order_key(), self.bof, self.eof)
 
 
 class ListObject(Object):
