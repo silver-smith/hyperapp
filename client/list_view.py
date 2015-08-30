@@ -176,6 +176,7 @@ class Model(QtCore.QAbstractTableModel):
             self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
         if len(diff.elements):
             self.rowsInserted.emit(QtCore.QModelIndex(), start_idx, start_idx + len(diff.elements))
+        print '  > ', len(ordered.keys), ordered.keys
 
     def get_key_row( self, key ):
         ordered = self._current_ordered()
@@ -288,6 +289,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
         self.model().diff_applied(diff)
+        self._selected_elements_changed()
 
     def get_current_key( self ):
         current_elt = self.get_current_elt()
