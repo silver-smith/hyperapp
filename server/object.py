@@ -1,5 +1,5 @@
 from operator import attrgetter
-from common.util import path2str
+from common.util import path2str, is_list_inst
 from common.interface import (
     tString,
     Field,
@@ -47,10 +47,12 @@ class Object(interface_module.Object):
         return []
 
     def get( self ):
+        path = self.get_path()
+        assert is_list_inst(path, basestring), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
         return self.iface.Object(
             iface=self.iface,
             proxy_id=self.proxy_id,
-            path=self.get_path(),
+            path=path,
             contents=self.get_contents(),
             )
 
