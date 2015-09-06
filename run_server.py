@@ -8,6 +8,7 @@ import server.fs
 import server.article
 import server.blog
 import server.server_management
+import server.code_repository
 import server.test_list
 
 

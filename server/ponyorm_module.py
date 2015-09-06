@@ -14,11 +14,11 @@ class PonyOrmModule(Module):
         Module.__init__(self, name)
         self.db = module.db
 
-    def make_entity( self, name, **fields ):
-        return self.make_inherited_entity(name, self.db.Entity, **fields)
+    def make_entity( self, entity_name, **fields ):
+        return self.make_inherited_entity(entity_name, self.db.Entity, **fields)
 
-    def make_inherited_entity( self, name, base, **fields ):
-        return type(name, (base,), fields)
+    def make_inherited_entity( self, entity_name, base, **fields ):
+        return type(entity_name, (base,), fields)
 
 
 class ThisModule(Module):
