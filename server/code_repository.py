@@ -1,3 +1,4 @@
+import uuid
 from pony.orm import db_session, commit, desc, PrimaryKey, Required, Set
 from .ponyorm_module import PonyOrmModule
 from common.interface import Command, FormField, FormHandle
@@ -35,16 +36,24 @@ class ModuleList(SmallListObject):
         commands = [Command('open', 'Open', 'Open module', 'Return')]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
+    def get_commands( self ):
+        return [Command('add', 'Add', 'Create new module', 'Ins')]
+
     def process_request( self, request ):
+        if request.command_id == 'add':
+            return self.run_command_add(request)
         if request.command_id == 'open':
             return self.run_command_open(request)
         return SmallListObject.process_request(self, request)
+
+    def run_command_add( self, request ):
+        return request.make_response_handle(ModuleForm())
 
     @db_session
     def run_command_open( self, request ):
         id = request.params.element_key
         rec = module.Module[id]
-        return request.make_response(ModuleForm(rec.id).make_handle(name=rec.name))
+        return request.make_response(ModuleForm(rec.id).get_handle(name=rec.name))
 
 
 class ModuleForm(Object):
@@ -59,14 +68,14 @@ class ModuleForm(Object):
         path.check_empty()
         return cls(id)
 
-    def __init__( self, id ):
+    def __init__( self, id=None ):
         Object.__init__(self)
-        self.id = id
+        self.id = id or None
 
     def get_path( self ):
-        return module.make_path(self.class_name, self.id)
+        return module.make_path(self.class_name, self.id or '')
 
-    def make_handle( self, name=None ):
+    def get_handle( self, name=None ):
         return FormHandle('form', self.get(), [
             FormField('name', stringFieldHandle(name)),
             ])
@@ -81,8 +90,13 @@ class ModuleForm(Object):
 
     @db_session
     def run_command_submit( self, request ):
-        rec = module.Module[self.id]
-        rec.name = request.params.name
+        if self.id:
+            rec = module.Module[self.id]
+            rec.name = request.params.name
+        else:
+            id = str(uuid.uuid4())
+            rec = module.Module(id=id,
+                                name=request.params.name)
         commit()
         object = ModuleList()
         handle = ModuleList.ListHandle(object.get(), rec.id)

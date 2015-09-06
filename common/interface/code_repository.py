@@ -3,7 +3,7 @@ from . types import (
     Field,
     )
 from . interface import OpenCommand, Interface, register_iface
-from . list import stringColumnType, Column, ElementOpenCommand, ListInterface
+from . list import stringColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 
 
 module_list_iface = ListInterface(
@@ -13,6 +13,8 @@ module_list_iface = ListInterface(
         Column('id', 'Module id', stringColumnType),
         ],
     commands=[
+        OpenCommand('add'),
+        ElementCommand('delete'),
         ElementOpenCommand('open'),
     ],
     key_column='id')
