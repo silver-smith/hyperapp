@@ -10,6 +10,7 @@ import common.interface.server_management
 import common.interface.fs
 import common.interface.blog
 import common.interface.article
+import common.interface.code_repository
 import common.interface.test_list
 # self-registering views:
 import client.window
