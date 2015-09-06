@@ -42,14 +42,6 @@ class Handle(view.Handle):
         return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
 
 
-class OrderedElements(object):
-
-    def __init__( self ):
-        self.keys = []
-        self.bof = False
-        self.eof = False
-
-
 class Model(QtCore.QAbstractTableModel):
 
     def __init__( self ):
@@ -60,7 +52,9 @@ class Model(QtCore.QAbstractTableModel):
         self._visible_columns = []
         self._key2element = {}
         self._current_order = None  # column id
-        self._ordered = {}  # order column id -> OrderedElements
+        self.keys = []  #  ordered elements keys
+        self.bof = False
+        self.eof = False
 
     def get_sort_column_id( self ):
         return self._current_order
@@ -68,10 +62,9 @@ class Model(QtCore.QAbstractTableModel):
     def data( self, index, role ):
         if role == QtCore.Qt.DisplayRole:
             column = self._visible_columns[index.column()]
-            ordered = self._current_ordered()
-            if index.row() >= len(ordered.keys):
+            if index.row() >= len(self.keys):
                 return None  # phony row
-            key = ordered.keys[index.row()]
+            key = self.keys[index.row()]
             element = self._get_key_element(key)
             value = getattr(element.row, column.id)
             return column.type.to_string(value)
@@ -84,9 +77,8 @@ class Model(QtCore.QAbstractTableModel):
 
     def rowCount( self, parent ):
         if parent == QtCore.QModelIndex() and self._object:
-            ordered = self._current_ordered()
-            count = len(ordered.keys)
-            if not ordered.eof:
+            count = len(self.keys)
+            if not self.eof:
                 count += APPEND_PHONY_REC_COUNT
             return count
         else:
@@ -108,31 +100,30 @@ class Model(QtCore.QAbstractTableModel):
         self._visible_columns = filter(lambda column: column.title is not None, self._columns)
         self._key_column_id = object.get_key_column_id()
         self._current_order = sort_column_id or self._current_order
-        ordered = OrderedElements()
-        self._ordered = {self._current_order: ordered}
+        self.keys = []
+        self.eof = False
+        self.eof = False
         if slice and slice.sort_column_id == self._current_order:
             self._update_elements(slice.elements)
-            ordered.keys = [element.key for element in slice.elements]
-            ordered.bof = slice.bof
-            ordered.eof = slice.eof
+            self.keys = [element.key for element in slice.elements]
+            self.bof = slice.bof
+            self.eof = slice.eof
         self.reset()
         self._fetch_pending = False
 
     def _wanted_last_row( self, first_visible_row, visible_row_count ):
-        ordered = self._current_ordered()
         wanted_last_row = first_visible_row + visible_row_count
-        if not ordered.eof:
+        if not self.eof:
             wanted_last_row += APPEND_PHONY_REC_COUNT
         return wanted_last_row
 
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
-        ordered = self._current_ordered()
-        wanted_rows = wanted_last_row - len(ordered.keys)
-        key = ordered.keys[-1] if ordered.keys else None
-        print '-- list_view.Model.fetch_elements_if_required', id(self), first_visible_row, visible_row_count, wanted_last_row, len(ordered.keys), ordered.eof, wanted_rows
-        if wanted_rows > 0 and not ordered.eof:
+        wanted_rows = wanted_last_row - len(self.keys)
+        key = self.keys[-1] if self.keys else None
+        print '-- list_view.Model.fetch_elements_if_required', id(self), first_visible_row, visible_row_count, wanted_last_row, len(self.keys), self.eof, wanted_rows
+        if wanted_rows > 0 and not self.eof:
             print '   fetch_elements', self._object, `key`, wanted_rows
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
@@ -140,7 +131,6 @@ class Model(QtCore.QAbstractTableModel):
     def subscribe_and_fetch_elements( self, observer, first_visible_row, visible_row_count ):
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
-        ordered = self._current_ordered()
         wanted_rows = wanted_last_row
         key = None
         print '-- list_view.Model.subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
@@ -152,70 +142,61 @@ class Model(QtCore.QAbstractTableModel):
     def process_fetch_result( self, result ):
         print '-- list_view.Model.process_fetch_result', id(self), self._object, len(result.elements)
         self._fetch_pending = False
-        ordered = self._current_ordered()
-        old_len = len(ordered.keys)
+        old_len = len(self.keys)
         self._update_elements(result.elements)
         if result.elements:
-            idx = bisect.bisect_left(ordered.keys, result.elements[0].key)
+            idx = bisect.bisect_left(self.keys, result.elements[0].key)
         else:
-            idx = len(ordered.keys)
-        ordered.keys = ordered.keys[:idx] + [element.key for element in result.elements]
-        ordered.eof = result.eof
+            idx = len(self.keys)
+        self.keys = self.keys[:idx] + [element.key for element in result.elements]
+        self.eof = result.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
     
     def diff_applied( self, diff ):
-        ordered = self._current_ordered()
-        start_idx = bisect.bisect_left(ordered.keys, diff.start_key)
-        end_idx = bisect.bisect_right(ordered.keys, diff.end_key)
-        print '-- list_view.Model.diff_applied', id(self), diff, start_idx, end_idx, len(ordered.keys), ordered.keys
-        for key in ordered.keys[start_idx:end_idx]:
+        start_idx = bisect.bisect_left(self.keys, diff.start_key)
+        end_idx = bisect.bisect_right(self.keys, diff.end_key)
+        print '-- list_view.Model.diff_applied', id(self), diff, start_idx, end_idx, len(self.keys), self.keys
+        for key in self.keys[start_idx:end_idx]:
             del self._key2element[key]
         self._update_elements(diff.elements)
-        ordered.keys[start_idx:end_idx] = [element.key for element in diff.elements]
+        self.keys[start_idx:end_idx] = [element.key for element in diff.elements]
         if end_idx > start_idx:
             self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
         if len(diff.elements):
             self.rowsInserted.emit(QtCore.QModelIndex(), start_idx, start_idx + len(diff.elements))
-        print '  > ', len(ordered.keys), ordered.keys
+        print '  > ', len(self.keys), self.keys
 
     def get_key_row( self, key ):
-        ordered = self._current_ordered()
         try:
-            return ordered.keys.index(key)
+            return self.keys.index(key)
         except ValueError:
             return None
 
     def get_row_key( self, row ):
-        ordered = self._current_ordered()
-        if row == 0 and not ordered.keys:
+        if row == 0 and not self.keys:
             return None
-        return ordered.keys[row]
+        return self.keys[row]
 
     def get_row_element( self, row ):
-        ordered = self._current_ordered()
-        if row >= len(ordered.keys):
+        if row >= len(self.keys):
             return None  # no elements or phony row
-        key = ordered.keys[row]
+        key = self.keys[row]
         return self._get_key_element(key)
 
     def get_visible_slice( self, first_visible_row, visible_row_count ):
         last_row = self._wanted_last_row(first_visible_row, visible_row_count)
-        ordered = self._current_ordered()
         if first_visible_row > 0:
-            from_key = ordered.keys[first_visible_row - 1]
+            from_key = self.keys[first_visible_row - 1]
         else:
             from_key = None
-        elements = [self._get_key_element(key) for key in ordered.keys[first_visible_row:last_row]]
-        bof = ordered.bof and first_visible_row == 0
-        eof = ordered.eof and last_row >= len(ordered.keys)
+        elements = [self._get_key_element(key) for key in self.keys[first_visible_row:last_row]]
+        bof = self.bof and first_visible_row == 0
+        eof = self.eof and last_row >= len(self.keys)
         return Slice(self._current_order, from_key, 'asc', elements, bof, eof)
 
     def _update_elements( self, elements ):
         for element in elements:
             self._key2element[element.key] = element
-
-    def _current_ordered( self ):
-        return self._ordered[self._current_order]
 
     def _get_key_element( self, key ):
         return self._key2element[key]
