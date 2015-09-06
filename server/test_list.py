@@ -3,18 +3,12 @@ from common.interface.test_list import params_form_iface, test_list_iface
 from .util import path_part_to_str
 from .object import Object, ListObject
 from .module import Module, ModuleCommand
+from .form import stringFieldHandle, intFieldHandle
 
 
 MODULE_NAME = 'test_list'
 DEFAULT_SIZE = 10000
 MAX_ROWS_RETURNED = 100
-
-
-def stringFieldHandle( value ):
-    return tStringFieldHandle.instantiate('string_field', value)
-
-def intFieldHandle( value ):
-    return tIntFieldHandle.instantiate('int_field', value)
 
 
 class ParamsForm(Object):
