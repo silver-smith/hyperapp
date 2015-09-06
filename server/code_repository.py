@@ -33,7 +33,8 @@ class ModuleList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [Command('open', 'Open', 'Open module', 'Return')]
+        commands = [Command('open', 'Open', 'Open module', 'Return'),
+                    Command('delete', 'Delete', 'Delete module', 'Del')]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
     def get_commands( self ):
@@ -42,15 +43,24 @@ class ModuleList(SmallListObject):
     def process_request( self, request ):
         if request.command_id == 'add':
             return self.run_command_add(request)
+        if request.command_id == 'delete':
+            return self.run_element_command_delete(request)
         if request.command_id == 'open':
-            return self.run_command_open(request)
+            return self.run_element_command_open(request)
         return SmallListObject.process_request(self, request)
 
     def run_command_add( self, request ):
         return request.make_response_handle(ModuleForm())
 
     @db_session
-    def run_command_open( self, request ):
+    def run_element_command_delete( self, request ):
+        id = request.params.element_key
+        module.Module[id].delete()
+        diff = self.Diff_delete(id)
+        return request.make_response_update(self.iface, self.get_path(), diff)
+
+    @db_session
+    def run_element_command_open( self, request ):
         id = request.params.element_key
         rec = module.Module[id]
         return request.make_response(ModuleForm(rec.id).get_handle(name=rec.name))
@@ -97,7 +107,6 @@ class ModuleForm(Object):
             id = str(uuid.uuid4())
             rec = module.Module(id=id,
                                 name=request.params.name)
-        commit()
         object = ModuleList()
         handle = ModuleList.ListHandle(object.get(), rec.id)
         return request.make_response(handle)
