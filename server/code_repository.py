@@ -71,6 +71,23 @@ class ModuleForm(Object):
             FormField('name', stringFieldHandle(name)),
             ])
 
+    def get_commands( self ):
+        return [Command('submit', 'Submit', 'Submit form', 'Return')]
+
+    def process_request( self, request ):
+        if request.command_id == 'submit':
+            return self.run_command_submit(request)
+        return Object.process_request(self, request)
+
+    @db_session
+    def run_command_submit( self, request ):
+        rec = module.Module[self.id]
+        rec.name = request.params.name
+        commit()
+        object = ModuleList()
+        handle = ModuleList.ListHandle(object.get(), rec.id)
+        return request.make_response(handle)
+
     
 
 class CodeRepositoryModule(PonyOrmModule):
@@ -88,6 +105,8 @@ class CodeRepositoryModule(PonyOrmModule):
         objname = path.pop_str()
         if objname == ModuleList.class_name:
             return ModuleList.resolve(path)
+        if objname == ModuleForm.class_name:
+            return ModuleForm.resolve(path)
         path.raise_not_found()
 
     def get_commands( self ):

@@ -19,7 +19,7 @@ module_list_iface = ListInterface(
 
 
 module_form_iface = Interface('module_form', commands=[
-    OpenCommand('submit', [Field('name', tString), Field('id', tString)]),
+    OpenCommand('submit', [Field('name', tString)]),
     ])
 
 
