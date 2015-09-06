@@ -106,7 +106,7 @@ class ProxyListObject(ProxyObject, ListObject):
             return False
         slice = self._pick_slice(sort_column_id, from_key, direction)
         if slice:
-            print '   > cached', len(slice.elements)
+            print '   > cached', len(slice.elements), [element.key for element in slice.elements]
             self._notify_fetch_result(slice)
         else:
             print '   > no cached, requesting'

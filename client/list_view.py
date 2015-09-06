@@ -227,7 +227,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         if not sort_column_id:
             sort_column_id = object.get_default_sort_column_id()
         self.set_object(object, sort_column_id, handle_slice)
-        self.set_current_key(key, select_first)
+        self.wanted_current_key = key  # will set it to current when rows are loaded
 
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
@@ -266,6 +266,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.model().process_fetch_result(result)
         self.resizeColumnsToContents()
         self.fetch_elements_if_required()
+        if self.wanted_current_key is not None:
+            self.set_current_key(self.wanted_current_key, select_first=True)
+            self.wanted_current_key = None
+        elif self.currentIndex().row() == -1:
+            self.set_current_key(None, select_first=True)
 
     def diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -301,7 +306,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def set_current_key( self, key, select_first=False, accept_near=False ):
         row = self.model().get_key_row(key)
-        print '-- set_current_key', `key`, select_first, `row`
+        print '-- set_current_key', `key`, select_first, `row`, self.model().keys
         if row is None and select_first:
             row = 0
         self.set_current_row(row)
