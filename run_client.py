@@ -19,6 +19,7 @@ import client.list_view
 import client.navigator
 import client.narrower
 import client.text_object
+import client.proxy_list_object
 import client.proxy_text_object
 import client.text_edit
 import client.text_view
