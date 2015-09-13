@@ -27,12 +27,6 @@ def qt2orient( orient ):
 
 class Handle(composite.Handle):
 
-    @classmethod
-    def decode_horizontal( cls, server, contents ):
-        x = view_registry.resolve(server, contents.x)
-        y = view_registry.resolve(server, contents.y)
-        return cls(x, y, horizontal)
-
     def __init__( self, x, y, orient, focused=0, sizes=None ):
         composite.Handle.__init__(self)
         assert focused in [0, 1]
@@ -61,6 +55,19 @@ class Handle(composite.Handle):
             assert False, repr(self.focused)  # 0 or 1 is expected
 
 
+class MonolithHandle(Handle):
+
+    @classmethod
+    def decode_horizontal( cls, server, contents ):
+        x = view_registry.resolve(server, contents.x)
+        y = view_registry.resolve(server, contents.y)
+        return cls(x, y, horizontal)
+
+    def construct( self, parent ):
+        print 'splitter monolith construct', parent, self.orient, 'focused =', self.focused
+        return MonolithView(parent, self.x, self.y, self.orient, self.focused, self.sizes)
+
+
 class View(QtGui.QSplitter, view.View):
 
     def __init__( self, parent, x, y, orient, focused, sizes ):
@@ -87,8 +94,11 @@ class View(QtGui.QSplitter, view.View):
     def handle( self ):
         if DEBUG_FOCUS: print '*** splitter.handle', self, 'focused =', self._focused, \
               self._get_view(self._focused).get_widget() if self._focused is not None else None
-        return Handle(self._x.handle(), self._y.handle(), qt2orient(self.orientation()),
-                      self._focused or 0, self.sizes())
+        return self._handle_class()(self._x.handle(), self._y.handle(), qt2orient(self.orientation()),
+                                    self._focused or 0, self.sizes())
+
+    def _handle_class( self ):
+        return Handle
 
     def get_current_child( self ):
         if DEBUG_FOCUS: print '  * splitter.get_current_child', self, self._focused
@@ -173,6 +183,15 @@ class View(QtGui.QSplitter, view.View):
         QtGui.QSplitter.focusOutEvent(self, evt)
 
 
+class MonolithView(View):
+
+    def _handle_class( self ):
+        return MonolithHandle
+
+    def open( self, handle ):
+        return view.View.open(self, handle)
+
+
 def split( orient ):
     def mapper( handle ):
         if isinstance(handle, Handle):
@@ -190,4 +209,4 @@ def unsplit( handle ):
             return h
 
 
-view_registry.register('horizontal_splitter', Handle.decode_horizontal)
+view_registry.register('horizontal_splitter', MonolithHandle.decode_horizontal)
