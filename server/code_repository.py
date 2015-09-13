@@ -72,6 +72,8 @@ class ModuleList(SmallListObject):
         module_id = request.params.element_key
         dep_list = ModuleDepList(module_id)
         available_list = AvailableDepList(module_id)
+        dep_list.subscribe(request)
+        available_list.subscribe(request)
         return request.make_response(
             SplitterHandle('horizontal_splitter', dep_list.get_handle(), available_list.get_handle()))
 
