@@ -105,16 +105,17 @@ class Client(object):
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
         response = object.process_request(request)
-        return self.prepare_response(request, response)
+        return self.prepare_response(object.__class__, request, response)
 
-    def prepare_response( self, request, response ):
+    def prepare_response( self, obj_class, request, response ):
         if response is None and isinstance(request, Request):
             response = request.make_response()  # client need a response to cleanup waiting response handler
         if response is None and not self.updates_queue.empty():
             response = ServerNotification()
         while not self.updates_queue.empty():
             response.add_update(self.updates_queue.get())
-        assert response is None or isinstance(response, Response), repr(response)
+        assert response is None or isinstance(response, Response), \
+          'Server commands must return a response, but %s.%s command returned %r' % (obj_class.__name__, request.command_id, response)
         return response
 
     def _send_notification( self ):
