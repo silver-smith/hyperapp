@@ -1,5 +1,5 @@
 import uuid
-from pony.orm import db_session, commit, desc, PrimaryKey, Required, Set
+from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
 from .ponyorm_module import PonyOrmModule
 from common.interface import Command, FormField, FormHandle, SplitterHandle
 from common.interface.code_repository import (
@@ -8,7 +8,7 @@ from common.interface.code_repository import (
     module_dep_list_iface,
     available_dep_list_iface,
     )
-from .object import Object, SmallListObject
+from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
 from .form import stringFieldHandle
 
@@ -167,9 +167,14 @@ class ModuleDepList(SmallListObject):
     @db_session
     def run_element_command_remove( self, request ):
         rec_id = request.params.element_key
-        module.ModuleDep[rec_id].delete()
-        diff = self.Diff_delete(rec_id)
-        return request.make_response_update(self.iface, self.get_path(), diff)
+        rec = module.ModuleDep[rec_id]
+        dep_module_rec = rec.dep
+        rec.delete()
+        available_list = AvailableDepList(self.module_id)
+        add_diff = available_list.Diff_insert_one(dep_module_rec.id, available_list.rec2element(dep_module_rec))
+        subscription.distribute_update(available_list.iface, available_list.get_path(), add_diff)
+        remove_diff = self.Diff_delete(rec_id)
+        return request.make_response_update(self.iface, self.get_path(), remove_diff)
 
 
 class AvailableDepList(SmallListObject):
@@ -195,7 +200,10 @@ class AvailableDepList(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        return map(self.rec2element, module.Module.select().order_by(module.Module.id))
+        dep_ids = [dep.dep.id for dep in module.Module[self.module_id].deps]
+        return map(self.rec2element,
+                   select(rec for rec in module.Module if rec.id not in dep_ids)
+                   .order_by(module.Module.id))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -215,8 +223,10 @@ class AvailableDepList(SmallListObject):
         rec = module.ModuleDep(module=module_rec, dep=dep_module, visible_as=dep_module.name)
         commit()  # generate rec.id
         dep_list = ModuleDepList(self.module_id)
-        diff = dep_list.Diff_insert_one(rec.id, ModuleDepList.rec2element(rec))
-        return request.make_response_update(ModuleDepList.iface, dep_list.get_path(), diff)
+        add_diff = dep_list.Diff_insert_one(rec.id, dep_list.rec2element(rec))
+        subscription.distribute_update(dep_list.iface, dep_list.get_path(), add_diff)
+        remove_diff = self.Diff_delete(module_id)
+        return request.make_response_update(self.iface, self.get_path(), remove_diff)
     
 
 class CodeRepositoryModule(PonyOrmModule):
