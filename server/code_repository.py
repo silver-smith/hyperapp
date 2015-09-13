@@ -156,8 +156,20 @@ class ModuleDepList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = []
-        return cls.Element(cls.Row(rec.visible_as, rec.dep.id), commands)
+        commands = [Command('remove', 'Remove', 'Remove module from dependency list', 'Del')]
+        return cls.Element(cls.Row(rec.id, rec.visible_as, rec.dep.id), commands)
+
+    def process_request( self, request ):
+        if request.command_id == 'remove':
+            return self.run_element_command_remove(request)
+        return SmallListObject.process_request(self, request)
+
+    @db_session
+    def run_element_command_remove( self, request ):
+        rec_id = request.params.element_key
+        module.ModuleDep[rec_id].delete()
+        diff = self.Diff_delete(rec_id)
+        return request.make_response_update(self.iface, self.get_path(), diff)
 
 
 class AvailableDepList(SmallListObject):
@@ -203,7 +215,7 @@ class AvailableDepList(SmallListObject):
         rec = module.ModuleDep(module=module_rec, dep=dep_module, visible_as=dep_module.name)
         commit()  # generate rec.id
         dep_list = ModuleDepList(self.module_id)
-        diff = dep_list.Diff_insert_one(dep_module.id, ModuleDepList.rec2element(rec))
+        diff = dep_list.Diff_insert_one(rec.id, ModuleDepList.rec2element(rec))
         return request.make_response_update(ModuleDepList.iface, dep_list.get_path(), diff)
     
 
