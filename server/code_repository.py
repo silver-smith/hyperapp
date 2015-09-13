@@ -200,10 +200,12 @@ class AvailableDepList(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        dep_ids = [dep.dep.id for dep in module.Module[self.module_id].deps]
-        return map(self.rec2element,
-                   select(rec for rec in module.Module if rec.id not in dep_ids)
-                   .order_by(module.Module.id))
+        dep_ids = set([dep.dep.id for dep in module.Module[self.module_id].deps])
+        if dep_ids:
+            query = select(rec for rec in module.Module if rec.id not in dep_ids)
+        else:
+            query = select(rec for rec in module.Module)
+        return map(self.rec2element, query.order_by(module.Module.id))
 
     @classmethod
     def rec2element( cls, rec ):

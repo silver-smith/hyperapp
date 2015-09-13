@@ -25,7 +25,7 @@ class ThisModule(Module):
 
     def __init__( self ):
         Module.__init__(self, MODULE_NAME)
-        sql_debug(True)
+        #sql_debug(True)
         self.db = Database('sqlite', SQLITE_DB_PATH, create_db=True)
 
     def init_phase3( self ):
