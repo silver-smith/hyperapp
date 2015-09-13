@@ -4,3 +4,4 @@ from .hierarchy import *
 from .interface import *
 from .list import *
 from .form import *
+from .splitter import *

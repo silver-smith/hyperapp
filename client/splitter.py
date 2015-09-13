@@ -2,6 +2,7 @@ from PySide import QtCore, QtGui
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
 from . import view
 from . import composite
+from .view_registry import view_registry
 
 
 # orientation constants
@@ -25,6 +26,12 @@ def qt2orient( orient ):
 
 
 class Handle(composite.Handle):
+
+    @classmethod
+    def decode_horizontal( cls, server, contents ):
+        x = view_registry.resolve(server, contents.x)
+        y = view_registry.resolve(server, contents.y)
+        return cls(x, y, horizontal)
 
     def __init__( self, x, y, orient, focused=0, sizes=None ):
         composite.Handle.__init__(self)
@@ -181,3 +188,6 @@ def unsplit( handle ):
             return handle.map_current(unsplit)
         else:
             return h
+
+
+view_registry.register('horizontal_splitter', Handle.decode_horizontal)

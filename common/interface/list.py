@@ -193,8 +193,11 @@ class ListInterface(Interface):
     def Diff( self, *args, **kw ):
         return self.tDiff().instantiate(*args, **kw)
 
+    def tListHandle( self ):
+        return self._tListHandle
+
     def ListHandle( self, *args, **kw ):
-        return self._tListHandle.instantiate(*args, **kw)
+        return self.tListHandle().instantiate(*args, **kw)
 
     def ListNarrowerHandle( self, *args, **kw ):
         return self._tListNarrowerHandle.instantiate(*args, **kw)

@@ -1,8 +1,13 @@
 import uuid
 from pony.orm import db_session, commit, desc, PrimaryKey, Required, Set
 from .ponyorm_module import PonyOrmModule
-from common.interface import Command, FormField, FormHandle
-from common.interface.code_repository import module_list_iface, module_form_iface
+from common.interface import Command, FormField, FormHandle, SplitterHandle
+from common.interface.code_repository import (
+    module_list_iface,
+    module_form_iface,
+    module_dep_list_iface,
+    available_dep_list_iface,
+    )
 from .object import Object, SmallListObject
 from .module import ModuleCommand
 from .form import stringFieldHandle
@@ -34,6 +39,7 @@ class ModuleList(SmallListObject):
     @classmethod
     def rec2element( cls, rec ):
         commands = [Command('open', 'Open', 'Open module', 'Return'),
+                    Command('deps', 'Dependencies', 'Open dependency selector', 'Ctrl+D'),
                     Command('delete', 'Delete', 'Delete module', 'Del')]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
@@ -45,6 +51,8 @@ class ModuleList(SmallListObject):
             return self.run_command_add(request)
         if request.command_id == 'delete':
             return self.run_element_command_delete(request)
+        if request.command_id == 'deps':
+            return self.run_element_command_deps(request)
         if request.command_id == 'open':
             return self.run_element_command_open(request)
         return SmallListObject.process_request(self, request)
@@ -58,6 +66,14 @@ class ModuleList(SmallListObject):
         module.Module[id].delete()
         diff = self.Diff_delete(id)
         return request.make_response_update(self.iface, self.get_path(), diff)
+
+    @db_session
+    def run_element_command_deps( self, request ):
+        module_id = request.params.element_key
+        dep_list = ModuleDepList(module_id)
+        available_list = AvailableDepList(module_id)
+        return request.make_response(
+            SplitterHandle('horizontal_splitter', dep_list.get_handle(), available_list.get_handle()))
 
     @db_session
     def run_element_command_open( self, request ):
@@ -111,6 +127,68 @@ class ModuleForm(Object):
         handle = ModuleList.ListHandle(object.get(), rec.id)
         return request.make_response(handle)
 
+
+class ModuleDepList(SmallListObject):
+
+    iface = module_dep_list_iface
+    proxy_id = 'list'
+    class_name = 'module_dep_list'
+    default_sort_column_id = 'id'
+
+    @classmethod
+    def resolve( cls, path ):
+        module_id = path.pop_str()
+        assert module_id, repr(module_id)
+        path.check_empty()
+        return cls(module_id)
+
+    def __init__( self, module_id=None ):
+        Object.__init__(self)
+        self.module_id = module_id or None
+
+    def get_path( self ):
+        return module.make_path(self.class_name, self.module_id)
+
+    @db_session
+    def fetch_all_elements( self ):
+        return map(self.rec2element, module.Module.select().order_by(module.Module.id))
+
+    @classmethod
+    def rec2element( cls, rec ):
+        commands = []
+        return cls.Element(cls.Row(rec.name, rec.id), commands)
+
+
+class AvailableDepList(SmallListObject):
+
+    iface = available_dep_list_iface
+    proxy_id = 'list'
+    class_name = 'available_dep_list'
+    default_sort_column_id = 'id'
+
+    @classmethod
+    def resolve( cls, path ):
+        module_id = path.pop_str()
+        assert module_id, repr(module_id)
+        path.check_empty()
+        return cls(module_id)
+
+    def __init__( self, module_id=None ):
+        Object.__init__(self)
+        self.module_id = module_id or None
+
+    def get_path( self ):
+        return module.make_path(self.class_name, self.module_id)
+
+    @db_session
+    def fetch_all_elements( self ):
+        return map(self.rec2element, module.Module.select().order_by(module.Module.id))
+
+    @classmethod
+    def rec2element( cls, rec ):
+        commands = []
+        return cls.Element(cls.Row(rec.name, rec.id), commands)
+
     
 
 class CodeRepositoryModule(PonyOrmModule):
@@ -122,7 +200,14 @@ class CodeRepositoryModule(PonyOrmModule):
         self.Module = self.make_entity('Module',
                                        id=PrimaryKey(unicode),
                                        name=Required(unicode),
+                                       deps=Set('ModuleDep', reverse='used_by'),
+                                       dep_of=Set('ModuleDep', reverse='dep'),
                                        )
+        self.ModuleDep = self.make_entity('ModuleDep',
+                                          used_by=Required(self.Module),
+                                          dep=Required(self.Module),
+                                          visible_as=Required(unicode),
+                                          )
 
     def resolve( self, path ):
         objname = path.pop_str()
