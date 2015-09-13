@@ -151,12 +151,13 @@ class ModuleDepList(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        return map(self.rec2element, module.Module.select().order_by(module.Module.id))
+        rec = module.Module[self.module_id]
+        return map(self.rec2element, rec.deps)
 
     @classmethod
     def rec2element( cls, rec ):
         commands = []
-        return cls.Element(cls.Row(rec.name, rec.id), commands)
+        return cls.Element(cls.Row(rec.visible_as, rec.dep.id), commands)
 
 
 class AvailableDepList(SmallListObject):
@@ -186,9 +187,24 @@ class AvailableDepList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = []
+        commands = [Command('add', 'Add', 'Add module to dependency list', 'Ins')]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
+    def process_request( self, request ):
+        if request.command_id == 'add':
+            return self.run_element_command_add(request)
+        return SmallListObject.process_request(self, request)
+
+    @db_session
+    def run_element_command_add( self, request ):
+        module_id = request.params.element_key
+        dep_module = module.Module[module_id]
+        module_rec = module.Module[self.module_id]
+        rec = module.ModuleDep(module=module_rec, dep=dep_module, visible_as=dep_module.name)
+        commit()  # generate rec.id
+        dep_list = ModuleDepList(self.module_id)
+        diff = dep_list.Diff_insert_one(dep_module.id, ModuleDepList.rec2element(rec))
+        return request.make_response_update(ModuleDepList.iface, dep_list.get_path(), diff)
     
 
 class CodeRepositoryModule(PonyOrmModule):
@@ -200,11 +216,11 @@ class CodeRepositoryModule(PonyOrmModule):
         self.Module = self.make_entity('Module',
                                        id=PrimaryKey(unicode),
                                        name=Required(unicode),
-                                       deps=Set('ModuleDep', reverse='used_by'),
+                                       deps=Set('ModuleDep', reverse='module'),
                                        dep_of=Set('ModuleDep', reverse='dep'),
                                        )
         self.ModuleDep = self.make_entity('ModuleDep',
-                                          used_by=Required(self.Module),
+                                          module=Required(self.Module),
                                           dep=Required(self.Module),
                                           visible_as=Required(unicode),
                                           )
@@ -215,6 +231,10 @@ class CodeRepositoryModule(PonyOrmModule):
             return ModuleList.resolve(path)
         if objname == ModuleForm.class_name:
             return ModuleForm.resolve(path)
+        if objname == ModuleDepList.class_name:
+            return ModuleDepList.resolve(path)
+        if objname == AvailableDepList.class_name:
+            return AvailableDepList.resolve(path)
         path.raise_not_found()
 
     def get_commands( self ):
