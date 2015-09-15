@@ -25,7 +25,9 @@ import client.text_edit
 import client.text_view
 import client.object_selector
 import client.ref_list
-import client.form
+#import client.form
+
+import client.module_loader
 
 
 def main():
