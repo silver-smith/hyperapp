@@ -1,6 +1,5 @@
 import weakref
 import uuid
-import bisect
 from ..common.util import path2str
 from ..common.interface import Interface, Field, tString, tPath, resolve_iface
 from ..common import interface as interface_module

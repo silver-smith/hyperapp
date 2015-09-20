@@ -1,3 +1,4 @@
+import bisect
 from .list_object import ListDiff, Element, Slice, ListObject
 from .proxy_object import ProxyObject
 from .proxy_registry import proxy_registry
