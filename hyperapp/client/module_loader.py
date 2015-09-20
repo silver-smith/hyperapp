@@ -37,16 +37,14 @@ class Module(object):
         return module
 
 
-def load_src( fpath ):
+def load_client_module( module_id, name, fname ):
+    fpath = os.path.join(MODULES_DIR, fname)
     with open(fpath) as f:
-        return f.read()
+        src = f.read()
+    module = Module(module_id, fpath, src)
+    module.load(name)
 
-def test():
-    root = Module('dynamic_module_root', '', '')
-    root.load(None)
-    sys.modules[CLIENT_PACKAGE] = root
-    fpath = os.path.join(MODULES_DIR, 'form.py')
-    form = Module('form_module_id', fpath, load_src(fpath))
-    form.load('form')
 
-test()
+root = Module('dynamic_module_root', '', '')
+root.load(None)
+sys.modules[CLIENT_PACKAGE] = root
