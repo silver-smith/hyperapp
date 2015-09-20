@@ -116,6 +116,7 @@ class View(view.View, QtGui.QWidget):
             self._construct_field(layout, field.name, field.handle, focus_it=idx == current_field)
         layout.addStretch()
         self.setLayout(layout)
+        self.object.subscribe(self)
 
     def _construct_field( self, layout, name, field_handle, focus_it ):
         field_view = field_handle.construct(self)
