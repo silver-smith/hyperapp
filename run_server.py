@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
-from server.server import TcpServer
+from hyperapp.server.server import TcpServer
 
 # self-registering modules:
-import server.ponyorm_module
-import server.fs
-import server.article
-import server.blog
-import server.server_management
-import server.code_repository
-import server.test_list
+import hyperapp.server.ponyorm_module
+import hyperapp.server.fs
+import hyperapp.server.article
+import hyperapp.server.blog
+import hyperapp.server.server_management
+import hyperapp.server.code_repository
+import hyperapp.server.test_list
 
 
 LISTEN_PORT = 8888
