@@ -18,10 +18,10 @@ class ModuleDep(object):
 
 class Module(object):
 
-    def __init__( self, id, fname, src, deps=None ):
+    def __init__( self, id, fpath, src, deps=None ):
         assert deps is None or is_list_inst(deps, ModuleDep), repr(deps)
         self.id = id
-        self.fname = fname
+        self.fpath = fpath
         self.src = src  # unicode
         self.deps = deps or []
 
@@ -32,20 +32,21 @@ class Module(object):
             full_name = CLIENT_PACKAGE
         module = ModuleType(full_name, 'dynamic hyperapp module %r loaded as %r' % (self.id, name))
         sys.modules[full_name] = module
-        ast = compile(self.src, os.path.join(MODULES_DIR, self.fname), 'exec')
+        ast = compile(self.src, self.fpath, 'exec')
         exec(ast, module.__dict__)
         return module
 
 
-def load_src( fname ):
-    with open(os.path.join(MODULES_DIR, fname)) as f:
+def load_src( fpath ):
+    with open(fpath) as f:
         return f.read()
 
 def test():
     root = Module('dynamic_module_root', '', '')
     root.load(None)
     sys.modules[CLIENT_PACKAGE] = root
-    form = Module('form_module_id', 'form.py', load_src('form.py'))
+    fpath = os.path.join(MODULES_DIR, 'form.py')
+    form = Module('form_module_id', fpath, load_src(fpath))
     form.load('form')
 
 test()
