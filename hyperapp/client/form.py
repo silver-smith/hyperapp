@@ -32,12 +32,18 @@ class IntFieldHandle(FieldHandle):
         return IntField(parent, self.value)
 
 
-class StringField(view.View, QtGui.QLineEdit):
+class LineEditField(view.View, QtGui.QLineEdit):
 
     def __init__( self, parent, value ):
         QtGui.QLineEdit.__init__(self, value)
         view.View.__init__(self, parent)
+
+    def ensure_has_focus( self ):
+        view.View.ensure_has_focus(self)
         self.selectAll()
+
+
+class StringField(LineEditField):
 
     def handle( self ):
         return StringFieldHandle(self.get_value())
@@ -49,13 +55,11 @@ class StringField(view.View, QtGui.QLineEdit):
         print '~string_field'
 
 
-class IntField(view.View, QtGui.QLineEdit):
+class IntField(LineEditField):
 
     def __init__( self, parent, value ):
         # todo: input mask
-        QtGui.QLineEdit.__init__(self, str(value))
-        view.View.__init__(self, parent)
-        self.selectAll()
+        LineEditField.__init__(self, parent, str(value))
 
     def handle( self ):
         return IntFieldHandle(self.get_value())
@@ -93,6 +97,7 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
+        print 'form construct', parent, self.object.get_title(), self.current_field, self.fields
         return View(parent, self.object, self.fields, self.current_field)
 
     def __repr__( self ):
