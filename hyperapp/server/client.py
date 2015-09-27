@@ -102,16 +102,17 @@ class Client(object):
         self.conn.send(encoded_container)
 
     def _prepare_container( self, response_or_notification, encoded_packet ):
-        fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '../client/form.py'))
+        test_list_iface_module = self._load_module('0df259a7-ca1c-43d5-b9fa-f787a7271db9', 'common/interface/test_list.py')
+        form_module = self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'client/form.py')
+        return PacketContainer(
+            modules=[form_module, test_list_iface_module],
+            packet=encoded_packet)
+
+    def _load_module( self, id, fpath ):
+        fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
         with open(fpath) as f:
             source = f.read()
-        form_module = Module(id='7e947453-84f3-44e9-961c-3e18fcdc37f0',
-                             deps=[],
-                             source=source,
-                             fpath=fpath)
-        return PacketContainer(
-            modules=[form_module],
-            packet=encoded_packet)
+        return Module(id=id, deps=[], source=source, fpath=fpath)
 
     def _process_packet( self, packet ):
         request = decode_client_packet(self, iface_registry, packet)

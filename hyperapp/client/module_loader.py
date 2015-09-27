@@ -11,7 +11,7 @@ CLIENT_PACKAGE = 'hyperapp.client.dynamic'
 def load_client_module( module, name=None ):
     if name is None:
         name = CLIENT_PACKAGE + '.' + module.id.replace('-', '_')
-    name = str(name)  # python expects name to be a string, assume it is
+    name = str(name)  # python expects name to be a an str, assume it is
     if name in sys.modules:
         return  # already loaded
     module_inst = ModuleType(name, 'dynamic hyperapp module %r loaded as %r' % (module.id, name))

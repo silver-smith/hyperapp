@@ -1,11 +1,11 @@
-from .types import (
+from hyperapp.common.interface.types import (
     tString,
     tInt,
     Field,
     )
-from .interface import register_iface, RequestCmd, OpenCommand, Interface
-from .list import intColumnType, Column, ListInterface
-from .form import tStringFieldHandle, tIntFieldHandle, tFormHandle
+from hyperapp.common.interface.interface import register_iface, RequestCmd, OpenCommand, Interface
+from hyperapp.common.interface.list import intColumnType, Column, ListInterface
+from hyperapp.common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormHandle
 
 
 params_form_iface = Interface('test_list_params', commands=[
