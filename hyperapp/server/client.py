@@ -1,3 +1,4 @@
+import os.path
 import traceback
 import select
 from Queue import Queue
@@ -5,10 +6,10 @@ from ..common.packet import Packet
 from ..common.packet_coders import packet_coders
 from ..common.interface import iface_registry
 from ..common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response, decode_client_packet
-from ..common.packet_container import tModuleDep, tModule, tPacketContainer
+from ..common.packet_container import ModuleDep, Module, PacketContainer, tPacketContainer
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
-from .module import Module
+from . import module
 
 
 PACKET_ENCODING = 'cdr'
@@ -93,14 +94,24 @@ class Client(object):
 
     def _wrap_and_send( self, encoding, response_or_notification ):
         encoded_packet = packet_coders.encode(encoding, response_or_notification, tServerPacket)
-        container = tPacketContainer.instantiate(
-            modules=[],
-            packet=encoded_packet)
+        container = self._prepare_container(response_or_notification, encoded_packet)
         encoded_container = packet_coders.encode_packet(encoding, container, tPacketContainer)
         print '%s packet to %s:%d:' % (encoding, self.addr[0], self.addr[1])
         pprint(tServerPacket, response_or_notification)
         pprint(tPacketContainer, container)
         self.conn.send(encoded_container)
+
+    def _prepare_container( self, response_or_notification, encoded_packet ):
+        fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '../client/form.py'))
+        with open(fpath) as f:
+            source = f.read()
+        form_module = Module(id='7e947453-84f3-44e9-961c-3e18fcdc37f0',
+                             deps=[],
+                             source=source,
+                             fpath=fpath)
+        return PacketContainer(
+            modules=[form_module],
+            packet=encoded_packet)
 
     def _process_packet( self, packet ):
         request = decode_client_packet(self, iface_registry, packet)
@@ -131,4 +142,4 @@ class Client(object):
         self._send(PACKET_ENCODING, notification)
         
     def _resolve( self, path ):
-        return Module.run_resolver(path)
+        return module.Module.run_resolver(path)

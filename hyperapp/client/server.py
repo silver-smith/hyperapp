@@ -13,6 +13,7 @@ from ..common.request import (
     Response,
     decode_server_packet,
     )
+from .module_loader import load_client_module
 from .proxy_registry import proxy_registry
 
 
@@ -136,6 +137,7 @@ class Server(object):
     def process_packet( self, packet ):
         print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
         container = packet_coders.decode_packet(packet, tPacketContainer, iface_registry)
+        self._process_aux_packet(container)
         response = decode_server_packet(self, iface_registry, packet.encoding, container.packet)
         print '%s packet from %s:%d' % (packet.encoding, self.addr[0], self.addr[1])
         ## pprint(tServerPacket, response)
@@ -145,3 +147,9 @@ class Server(object):
         else:
             assert isinstance(response, ServerNotification), repr(response)
             proxy_registry.process_received_notification(self, response)
+
+    def _process_aux_packet( self, container ):
+        pprint(tPacketContainer, container)
+        for module in container.modules:
+            print '-- loading module %r fpath=%r' % (module.id, module.fpath)
+            load_client_module(module)

@@ -9,14 +9,22 @@ tModuleDep = TRecord([
     Field('visible_as', tString),
     ])
 
+ModuleDep = tModuleDep.instantiate
+
+
 tModule = TRecord([
-    Field('id', tString),  # 'hyperapp.client.dynamic.name'
+    Field('id', tString),  # uuid
     Field('deps', TList(tModuleDep)),
     Field('source', tString),
     Field('fpath', tString),
     ])
 
+Module = tModule.instantiate
+
+
 tPacketContainer = TRecord([
     Field('modules', TList(tModule)),
     Field('packet', tBinary),
     ])
+
+PacketContainer = tPacketContainer.instantiate

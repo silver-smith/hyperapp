@@ -25,14 +25,9 @@ import hyperapp.client.text_edit
 import hyperapp.client.text_view
 import hyperapp.client.object_selector
 import hyperapp.client.ref_list
-#import hyperapp.client.form
-
-from hyperapp.client.module_loader import load_client_module
 
 
 def main():
-    load_client_module('form_module_id', 'form', 'form.py')
-
     app = Application(sys.argv)
 
     if len(sys.argv) > 1:
