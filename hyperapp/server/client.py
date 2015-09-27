@@ -5,6 +5,7 @@ from ..common.packet import Packet
 from ..common.packet_coders import packet_coders
 from ..common.interface import iface_registry
 from ..common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response, decode_client_packet
+from ..common.packet_container import tModuleDep, tModule, tPacketContainer
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
 from .module import Module
@@ -80,7 +81,7 @@ class Client(object):
                     continue
                 response = self._process_packet(packet)
                 if response is not None:
-                    self._send(packet.encoding, response)
+                    self._wrap_and_send(packet.encoding, response)
                 else:
                     print 'no response'
         except Error as x:
@@ -90,11 +91,16 @@ class Client(object):
         self.conn.close()
         self.on_close(self)
 
-    def _send( self, encoding, response_or_notification ):
-        packet = packet_coders.encode(encoding, response_or_notification, tServerPacket)
-        print '%s packet to %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
+    def _wrap_and_send( self, encoding, response_or_notification ):
+        encoded_packet = packet_coders.encode(encoding, response_or_notification, tServerPacket)
+        container = tPacketContainer.instantiate(
+            modules=[],
+            packet=encoded_packet)
+        encoded_container = packet_coders.encode_packet(encoding, container, tPacketContainer)
+        print '%s packet to %s:%d:' % (encoding, self.addr[0], self.addr[1])
         pprint(tServerPacket, response_or_notification)
-        self.conn.send(packet)
+        pprint(tPacketContainer, container)
+        self.conn.send(encoded_container)
 
     def _process_packet( self, packet ):
         request = decode_client_packet(self, iface_registry, packet)

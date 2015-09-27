@@ -3,6 +3,7 @@ from ..common.packet import Packet
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from ..common.interface import Interface, iface_registry
+from ..common.packet_container import tPacketContainer
 from ..common.request import (
     tServerPacket,
     tClientPacket,
@@ -129,12 +130,13 @@ class Server(object):
         encoding = PACKET_ENCODING
         print '%s packet to %s:%d' % (encoding, self.addr[0], self.addr[1])
         pprint(tClientPacket, request)
-        packet = packet_coders.encode(encoding, request, tClientPacket)
+        packet = packet_coders.encode_packet(encoding, request, tClientPacket)
         Connection.get_connection(self.addr).send_packet(packet)
 
     def process_packet( self, packet ):
         print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
-        response = decode_server_packet(self, iface_registry, packet)
+        container = packet_coders.decode_packet(packet, tPacketContainer, iface_registry)
+        response = decode_server_packet(self, iface_registry, packet.encoding, container.packet)
         print '%s packet from %s:%d' % (packet.encoding, self.addr[0], self.addr[1])
         ## pprint(tServerPacket, response)
         if isinstance(response, Response):

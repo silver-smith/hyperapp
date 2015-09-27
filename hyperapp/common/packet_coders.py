@@ -25,15 +25,21 @@ class PacketCoders(object):
         assert encoding in self.encodings, repr(encoding)  # Unknown encoding
         return self.encodings[encoding]
 
-    def decode( self, packet, t, iface_registry ):
-        coders = self.resolve(packet.encoding)
+    def decode( self, encoding, data, t, iface_registry ):
+        coders = self.resolve(encoding)
         decoder = coders.decoder(iface_registry)
-        return decoder.decode(t, packet.contents)
+        return decoder.decode(t, data)
+
+    def decode_packet( self, packet, t, iface_registry ):
+        return self.decode(packet.encoding, packet.contents, t, iface_registry)
 
     def encode( self, encoding, object, t ):
         coders = self.resolve(encoding)
         encoder = coders.encoder()
-        return Packet(encoding, encoder.encode(t, object))
+        return encoder.encode(t, object)
+
+    def encode_packet( self, encoding, object, t ):
+        return Packet(encoding, self.encode(encoding, object, t))
 
 
 packet_coders = PacketCoders()
