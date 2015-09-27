@@ -149,7 +149,7 @@ class Server(object):
             proxy_registry.process_received_notification(self, response)
 
     def _process_aux_packet( self, container ):
-        pprint(tPacketContainer, container)
+        #pprint(tPacketContainer, container)
         for module in container.modules:
             print '-- loading module %r fpath=%r' % (module.id, module.fpath)
             load_client_module(module)

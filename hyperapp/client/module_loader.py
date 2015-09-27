@@ -11,9 +11,10 @@ CLIENT_PACKAGE = 'hyperapp.client.dynamic'
 def load_client_module( module, name=None ):
     if name is None:
         name = CLIENT_PACKAGE + '.' + module.id.replace('-', '_')
+    name = str(name)  # python expects name to be a string, assume it is
     if name in sys.modules:
         return  # already loaded
-    module_inst = ModuleType(str(name), 'dynamic hyperapp module %r loaded as %r' % (module.id, name))
+    module_inst = ModuleType(name, 'dynamic hyperapp module %r loaded as %r' % (module.id, name))
     sys.modules[name] = module_inst
     ast = compile(module.source, module.fpath, 'exec')  # compile allows to associate file path with loaded module
     exec(ast, module_inst.__dict__)
