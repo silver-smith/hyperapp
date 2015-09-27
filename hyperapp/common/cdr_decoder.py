@@ -3,6 +3,7 @@ import dateutil.parser
 from .method_dispatch import method_dispatch
 from .interface import (
     TString,
+    TBinary,
     TInt,
     TBool,
     TDateTime,
@@ -67,14 +68,23 @@ class CdrDecoder(object):
     def read_bool( self, path ):
         return self.unpack('?', path)
 
-    def read_str( self, path ):
+    def read_binary( self, path ):
+        size = self.read_int(path)
+        data = self.read(size, path)
+        return data
+
+    def read_unicode( self, path ):
         size = self.read_int(path)
         data = self.read(size, path)
         return data.decode('utf-8')
 
+    @dispatch.register(TBinary)
+    def decode_primitive( self, t, path ):
+        return self.read_binary(path)
+
     @dispatch.register(TString)
     def decode_primitive( self, t, path ):
-        return self.read_str(path)
+        return self.read_unicode(path)
 
     @dispatch.register(TInt)
     def decode_primitive( self, t, path ):
@@ -86,7 +96,7 @@ class CdrDecoder(object):
 
     @dispatch.register(TDateTime)
     def decode_datetime( self, t, path ):
-        return dateutil.parser.parse(self.read_str(path))
+        return dateutil.parser.parse(self.read_unicode(path))
 
     @dispatch.register(TOptional)
     def decode_optional( self, t, path ):
@@ -111,7 +121,7 @@ class CdrDecoder(object):
 
     @dispatch.register(THierarchy)
     def decode_hierarchy_obj( self, t, path ):
-        class_id = self.read_str(path)
+        class_id = self.read_unicode(path)
         tclass = t.resolve(class_id)
         fields = self.decode_record_fields(tclass.get_fields(), path)
         return tclass.instantiate(**fields)
@@ -144,5 +154,5 @@ class CdrDecoder(object):
 
     @dispatch.register(TIface)
     def decode_iface( self, t, path ):
-        iface_id = self.read_str(path)
+        iface_id = self.read_unicode(path)
         return self.iface_registry.resolve(iface_id)

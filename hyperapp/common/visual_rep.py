@@ -4,6 +4,7 @@ from .util import path2str
 from .interface import (
     TPrimitive,
     TString,
+    TBinary,
     TInt,
     TBool,
     TDateTime,
@@ -48,6 +49,10 @@ class VisualRepEncoder(object):
     @dispatch.register(TBool)
     def encode_primitive( self, t, value ):
         return RepNode(repr(value))
+
+    @dispatch.register(TBinary)
+    def encode_binary( self, t, value ):
+        return RepNode('binary, len=%d' % len(value))
 
     @dispatch.register(TDateTime)
     def encode_datetime( self, t, value ):

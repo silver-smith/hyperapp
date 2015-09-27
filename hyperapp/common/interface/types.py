@@ -39,6 +39,10 @@ class TString(TPrimitive):
     type_name = 'string'
     type = basestring
 
+class TBinary(TPrimitive):
+    type_name = 'string'
+    type = basestring
+
 class TInt(TPrimitive):
     type_name = 'int'
     type = (int, long)
@@ -53,6 +57,7 @@ class TDateTime(TPrimitive):
 
 
 tString = TString()
+tBinary = TBinary()
 tInt = TInt()
 tBool = TBool()
 tDateTime = TDateTime()

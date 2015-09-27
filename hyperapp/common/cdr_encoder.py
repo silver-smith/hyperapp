@@ -2,6 +2,7 @@ import struct
 from .method_dispatch import method_dispatch
 from .interface import (
     TString,
+    TBinary,
     TInt,
     TBool,
     TDateTime,
@@ -35,7 +36,12 @@ class CdrEncoder(object):
     def write_bool( self, value ):
         self.data += struct.pack('!?', value)
 
-    def write_str( self, value ):
+    def write_binary( self, value ):
+        assert isinstance(value, str), repr(value)
+        self.write_int(len(value))
+        self.data += value
+
+    def write_unicode( self, value ):
         if isinstance(value, unicode):
             value = value.encode('utf-8')
         self.write_int(len(value))
@@ -49,13 +55,17 @@ class CdrEncoder(object):
     def encode_primitive( self, t, value ):
         self.write_bool(value)
 
+    @dispatch.register(TBinary)
+    def encode_primitive( self, t, value ):
+        self.write_binary(value)
+
     @dispatch.register(TString)
     def encode_primitive( self, t, value ):
-        self.write_str(value)
+        self.write_unicode(value)
 
     @dispatch.register(TDateTime)
     def encode_datetime( self, t, value ):
-        self.write_str(value.isoformat())
+        self.write_unicode(value.isoformat())
 
     @dispatch.register(TOptional)
     def encode_optional( self, t, value ):
@@ -79,7 +89,7 @@ class CdrEncoder(object):
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj( self, t, value ):
         tclass = t.resolve_obj(value)
-        self.write_str(tclass.id)
+        self.write_unicode(tclass.id)
         for field in tclass.get_fields():
             self.dispatch(field.type, getattr(value, field.name))
 
@@ -92,4 +102,4 @@ class CdrEncoder(object):
     @dispatch.register(TIface)
     def encode_iface( self, t, obj ):
         assert isinstance(obj, Interface), repr(obj)
-        self.write_str(obj.iface_id)
+        self.write_unicode(obj.iface_id)
