@@ -7,6 +7,7 @@ from ..common.packet_coders import packet_coders
 from ..common.interface import iface_registry
 from ..common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response, decode_client_packet
 from ..common.packet_container import ModuleDep, Module, PacketContainer, tPacketContainer
+from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
 from . import module
@@ -102,10 +103,12 @@ class Client(object):
         self.conn.send(encoded_container)
 
     def _prepare_container( self, response_or_notification, encoded_packet ):
+        requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
         test_list_iface_module = self._load_module(
             '0df259a7-ca1c-43d5-b9fa-f787a7271db9', 'hyperapp.common.interface', 'common/interface/test_list.py')
         form_module = self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py')
         return PacketContainer(
+            requirements=requirements,
             modules=[form_module, test_list_iface_module],
             packet=encoded_packet)
 

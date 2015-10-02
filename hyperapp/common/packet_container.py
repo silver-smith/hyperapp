@@ -23,7 +23,10 @@ tModule = TRecord([
 Module = tModule.instantiate
 
 
+tRequirement = TList(tString)  # [hierarchy id, class id]
+
 tPacketContainer = TRecord([
+    Field('requirements', TList(tRequirement)),
     Field('modules', TList(tModule)),
     Field('packet', tBinary),
     ])
