@@ -1,8 +1,8 @@
 from PySide import QtCore, QtGui
-from hyperapp.common.util import is_list_inst
-from ..util import uni2str, call_after
-from ..view_registry import view_registry
-from .. import view
+from ..common.util import is_list_inst
+from .util import uni2str, call_after
+from .view_registry import view_registry
+from . import view
 
 
 class FieldHandle(object):

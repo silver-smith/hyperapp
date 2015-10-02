@@ -14,6 +14,7 @@ ModuleDep = tModuleDep.instantiate
 
 tModule = TRecord([
     Field('id', tString),  # uuid
+    Field('package', tString),  # like 'hyperapp.client'
     Field('deps', TList(tModuleDep)),
     Field('source', tString),
     Field('fpath', tString),
