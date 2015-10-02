@@ -34,8 +34,9 @@ class TClass(TRecord):
 
 class THierarchy(Type):
 
-    def __init__( self ):
+    def __init__( self, hierarchy_id ):
         Type.__init__(self)
+        self.hierarchy_id = hierarchy_id
         self.registry = {}  # id -> TClass
 
     def register( self, id, fields=None, base=None ):

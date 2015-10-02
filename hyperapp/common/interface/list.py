@@ -12,7 +12,6 @@ from .types import (
     TIndexedList,
     tCommand,
     )
-from .hierarchy import THierarchy
 from .interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Object, Interface
 
 

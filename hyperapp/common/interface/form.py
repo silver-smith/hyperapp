@@ -9,7 +9,7 @@ from .hierarchy import THierarchy
 from .interface import tHandle, tObjHandle
 
 
-tFieldHandle = THierarchy()
+tFieldHandle = THierarchy('form_field')
 tBaseFieldHandle = tFieldHandle.register('field', fields=[Field('field_view_id', tString)])
 
 tStringFieldHandle = tFieldHandle.register('string_field', base=tBaseFieldHandle, fields=[Field('value', tString)])
