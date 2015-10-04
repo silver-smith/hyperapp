@@ -21,6 +21,7 @@ from .interface import (
     tPath,
     tCommand,
     )
+from .packet import tModule, tRequirement
 
 
 class RepNode(object):
@@ -77,6 +78,8 @@ class VisualRepEncoder(object):
                 break
             base_fields = set(field.name for field in t.get_fields())
             t = t.resolve_dynamic(value)
+        if t is tModule:
+            return RepNode('module: id=%s, package=%s' % (value.id, value.package))
         if t is tCommand:
             return RepNode('command: %s' % ', '.join(child.text for child in children))
         return RepNode('record', children)
@@ -97,6 +100,8 @@ class VisualRepEncoder(object):
     def encode_list( self, t, value ):
         if t is tPath:
             return self.encode_path(value)
+        if t is tRequirement:
+            return RepNode('requirement: %s' % '/'.join(value))
         children = [self.dispatch(t.element_type, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
 
