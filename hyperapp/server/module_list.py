@@ -1,6 +1,5 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
-from .ponyorm_module import PonyOrmModule
 from ..common.interface import Command, FormField, FormHandle, SplitterHandle
 from ..common.interface.module_list import (
     module_list_iface,
@@ -8,6 +7,7 @@ from ..common.interface.module_list import (
     module_dep_list_iface,
     available_dep_list_iface,
     )
+from .ponyorm_module import PonyOrmModule
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
 from .form import stringFieldHandle
