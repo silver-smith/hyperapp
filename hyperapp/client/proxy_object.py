@@ -12,7 +12,7 @@ from . import view
 
 class ObjRespHandler(RespHandler):
 
-    def __init__( self, object, command_id, initiator_view ):
+    def __init__( self, object, command_id, initiator_view=None ):
         assert isinstance(object, Object), repr(object)
         RespHandler.__init__(self, object.iface, command_id)
         assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
@@ -23,7 +23,7 @@ class ObjRespHandler(RespHandler):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
         if object:
-            object.process_response(server, response, self, self.command_id, initiator_view)
+            object.process_response(server, response, self, initiator_view)
 
 
 class ProxyObject(Object, interface_module.Object):
@@ -92,13 +92,12 @@ class ProxyObject(Object, interface_module.Object):
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
 
-    def process_response( self, server, response, resp_handler, command_id, initiator_view ):
-        result = response.result
-        self.process_response_result(command_id, result)
+    def process_response( self, server, response, resp_handler, initiator_view=None ):
+        self.process_response_result(resp_handler.command_id, response.result)
         self.resp_handlers.remove(resp_handler)
         # initiator_view may already be gone (closed, navigated away) or be missing at all - so is None
-        if self.iface.is_open_command(command_id) and initiator_view:
-            initiator_view.process_handle_open(server, result)
+        if self.iface.is_open_command(resp_handler.command_id) and initiator_view:
+            initiator_view.process_handle_open(server, response.result)
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':
