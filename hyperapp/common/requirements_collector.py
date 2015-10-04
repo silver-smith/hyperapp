@@ -6,14 +6,16 @@ from .interface import (
     TDynamicRec,
     THierarchy,
     TList,
+    TObject,
+    tHandle,
     )
 
 class RequirementsCollector(object):
 
     def collect( self, t, value ):
-        self.collected_requirements = []
+        self.collected_requirements = set()
         self.dispatch(t, value)
-        return self.collected_requirements
+        return list([registry, key] for registry, key in self.collected_requirements)
 
     @method_dispatch
     def dispatch( self, t, value ):
@@ -40,10 +42,17 @@ class RequirementsCollector(object):
             base_fields = set(field.name for field in t.get_fields())
             t = t.resolve_dynamic(value)
 
+    @dispatch.register(TObject)
+    def process_object( self, t, value ):
+        self.collected_requirements.add(('object', value.proxy_id))
+        self.process_record(t, value)
+            
     @dispatch.register(THierarchy)
     def process_hierarchy_obj( self, t, value ):
+        if t is tHandle:
+            self.collected_requirements.add(('handle', value.view_id))
         tclass = t.resolve_obj(value)
-        self.collected_requirements.append([t.hierarchy_id, tclass.id])
+#        self.collected_requirements.add((t.hierarchy_id, tclass.id))
         for field in tclass.get_fields():
             self.process_field(field, value)
 
