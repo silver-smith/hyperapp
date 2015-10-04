@@ -23,7 +23,7 @@ class Item(object):
 class Handle(composite.Handle):
 
     def __init__( self, child_handle, backward_history=None, forward_history=None ):
-        composite.Handle.__init__(self)
+        composite.Handle.__init__(self, [child_handle])
         self.child = child_handle
         self.backward_history = backward_history or []   # Item list
         self.forward_history = forward_history or []     # Item list

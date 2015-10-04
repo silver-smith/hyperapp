@@ -26,6 +26,9 @@ class Object(object):
     def get_title( self ):
         raise NotImplementedError(self.__class__)
 
+    def get_module_ids( self ):
+        return []
+
     def get_commands( self ):
         raise NotImplementedError(self.__class__)
 

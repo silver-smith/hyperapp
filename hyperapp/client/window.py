@@ -52,7 +52,7 @@ class OpenCommand(ViewCommandBase):
 class Handle(composite.Handle):
 
     def __init__( self, child_handle, size=None, pos=None ):
-        composite.Handle.__init__(self)
+        composite.Handle.__init__(self, [child_handle])
         self.child_handle = child_handle
         self.size = size
         self.pos = pos

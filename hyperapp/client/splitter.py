@@ -28,7 +28,7 @@ def qt2orient( orient ):
 class Handle(composite.Handle):
 
     def __init__( self, x, y, orient, focused=0, sizes=None ):
-        composite.Handle.__init__(self)
+        composite.Handle.__init__(self, [x, y])
         assert focused in [0, 1]
         self.x = x  # handle of first child
         self.y = y  # handle of second child

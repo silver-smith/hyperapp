@@ -3,6 +3,7 @@ import uuid
 from PySide import QtCore, QtGui
 from ..common.interface import iface_registry
 from ..common.request import Request
+from .util import flatten
 from .pickler import pickler
 from .server import Server
 from .view_command import command
@@ -71,7 +72,10 @@ class Application(QtGui.QApplication, view.View):
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
         ## module.set_shutdown_flag()
-        self.save_state(self.get_windows_handles())
+        handles = self.get_windows_handles()
+        module_ids = list(flatten(handle.get_module_ids() for handle in handles))
+        print '*'*20, `module_ids`
+        self.save_state(handles)
         QtGui.QApplication.quit()
 
     def save_state( self, state ):

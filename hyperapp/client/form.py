@@ -96,6 +96,9 @@ class Handle(view.Handle):
     def get_object( self ):
         return self.object
 
+    def get_module_ids( self ):
+        return [this_module_id]
+
     def construct( self, parent ):
         print 'form construct', parent, self.object.get_title(), self.current_field, self.fields
         return View(parent, self.object, self.fields, self.current_field)
