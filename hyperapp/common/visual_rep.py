@@ -20,8 +20,9 @@ from .interface import (
     TIface,
     tPath,
     tCommand,
+    tModule,
+    tRequirement,
     )
-from .packet import tModule, tRequirement
 
 
 class RepNode(object):

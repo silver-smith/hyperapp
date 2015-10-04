@@ -1,29 +1,8 @@
 import struct
-from .interface import tString, Field, TRecord, TList
+from .interface import tString, Field, TRecord, TList, tModule, tRequirement
 from .packet_coders import packet_coders
 from .request import decode_server_packet, decode_client_packet
 
-
-tModuleDep = TRecord([
-    Field('module_id', tString),
-    Field('visible_as', tString),
-    ])
-
-ModuleDep = tModuleDep.instantiate
-
-
-tModule = TRecord([
-    Field('id', tString),  # uuid
-    Field('package', tString),  # like 'hyperapp.client'
-    Field('deps', TList(tModuleDep)),
-    Field('source', tString),
-    Field('fpath', tString),
-    ])
-
-Module = tModule.instantiate
-
-
-tRequirement = TList(tString)  # [hierarchy id, class id]
 
 tAuxInfo = TRecord([
     Field('requirements', TList(tRequirement)),

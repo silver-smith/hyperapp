@@ -233,7 +233,7 @@ class AvailableDepList(SmallListObject):
         return request.make_response_update(self.iface, self.get_path(), remove_diff)
     
 
-class CodeRepositoryModule(PonyOrmModule):
+class ModuleListModule(PonyOrmModule):
 
     def __init__( self ):
         PonyOrmModule.__init__(self, MODULE_NAME)
@@ -274,4 +274,4 @@ class CodeRepositoryModule(PonyOrmModule):
         return PonyOrmModule.run_command(self, request, command_id)
 
 
-module = CodeRepositoryModule()
+module = ModuleListModule()

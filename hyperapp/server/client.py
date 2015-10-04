@@ -2,7 +2,8 @@ import os.path
 import traceback
 import select
 from Queue import Queue
-from ..common.packet import ModuleDep, Module, tAuxInfo, AuxInfo, Packet
+from ..common.interface import ModuleDep, Module
+from ..common.packet import tAuxInfo, AuxInfo, Packet
 from ..common.interface import iface_registry
 from ..common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response, decode_client_packet
 from ..common.requirements_collector import RequirementsCollector
