@@ -14,6 +14,7 @@ from . import tab_view
 from . import text_view
 from . import navigator
 from .proxy_registry import RespHandler
+from .module_loader import module_cache, load_client_module
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -73,16 +74,30 @@ class Application(QtGui.QApplication, view.View):
     def quit( self ):
         ## module.set_shutdown_flag()
         handles = self.get_windows_handles()
-        module_ids = list(flatten(handle.get_module_ids() for handle in handles))
-        print '*'*20, `module_ids`
         self.save_state(handles)
         QtGui.QApplication.quit()
 
-    def save_state( self, state ):
+    def save_state( self, handles ):
+        module_ids = list(flatten(handle.get_module_ids() for handle in handles))
+        print 'modules required for state: %s' % module_ids
+        modules = module_cache.resolve_ids(module_ids)
+        state = (module_ids, modules, pickler.dumps(handles))
         with file(STATE_FILE_PATH, 'wb') as f:
             f.write(pickler.dumps(state))
 
-    def load_state( self ):
+    def load_state_and_modules( self ):
+        state = self.load_state_file()
+        if not state:
+            return state
+        module_ids, modules, pickled_handles = state
+        for module in modules:
+            module_cache.add_module(module)
+        for module in module_cache.resolve_ids(module_ids):
+            print 'loading cached module required for state: %r' % module.id
+            load_client_module(module)
+        return pickler.loads(pickled_handles)
+
+    def load_state_file( self ):
         try:
             with file(STATE_FILE_PATH, 'rb') as f:
                 return pickler.loads(f.read())
@@ -107,7 +122,7 @@ class Application(QtGui.QApplication, view.View):
         self._resp_handlers.add(resp_handler)
 
     def exec_( self ):
-        whandles = self.load_state()
+        whandles = self.load_state_and_modules()
         print 'loaded state: ', whandles
         if not whandles:
             whandles = self.get_default_state()

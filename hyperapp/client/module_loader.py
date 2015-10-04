@@ -7,6 +7,24 @@ from ..common.util import is_list_inst
 DYNAMIC_MODULE_ID_ATTR = 'this_module_id'
 
 
+class ModuleCache(object):
+
+    def __init__( self ):
+        self.id2module = {}
+
+    def add_module( self, module ):
+        self.id2module[module.id] = module
+
+    def resolve_ids( self, module_ids ):
+        modules = []
+        for id in module_ids:
+            modules.append(self.id2module[id])
+        return modules
+
+
+module_cache = ModuleCache()
+
+
 def load_client_module( module, name=None ):
     if name is None:
         name = module.package + '.' + module.id.replace('-', '_')
