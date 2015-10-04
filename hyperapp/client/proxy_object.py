@@ -38,6 +38,9 @@ class ProxyObject(Object, interface_module.Object):
         self.commands = []
         self.resp_handlers = set()  # explicit refs to ObjRespHandlers to keep them alive until object is alive
 
+    def get_module_ids( self ):
+        return self.iface.get_module_ids()
+
     def get_persistent_id( self ):
         return ' '.join([self.get_proxy_id(),
                          self.iface.iface_id,

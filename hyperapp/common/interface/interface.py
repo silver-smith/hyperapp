@@ -104,7 +104,7 @@ class Interface(object):
     rt_request = 1
     rt_notification =2
 
-    def __init__( self, iface_id, base=None, content_fields=None, diff_type=None, commands=None ):
+    def __init__( self, iface_id, base=None, content_fields=None, diff_type=None, commands=None, required_module_id=None ):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(content_fields or [], Field), repr(content_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
@@ -113,12 +113,19 @@ class Interface(object):
         self.content_fields = content_fields or []
         self.diff_type = diff_type
         self.commands = commands or []
+        self.required_module_id = required_module_id
         if base:
             self.content_fields = base.content_fields + self.content_fields
             self.commands = base.commands + self.commands
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
         self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
+
+    def get_module_ids( self ):
+        if self.required_module_id:
+            return [self.required_module_id]
+        else:
+            return []
 
     def get_basic_commands( self ):
         return [

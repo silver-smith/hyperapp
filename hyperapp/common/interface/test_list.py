@@ -19,7 +19,8 @@ test_list_iface = ListInterface('test_list', columns=[
         Column('field_3', 'Field #3'),
     ], commands=[
         OpenCommand('params'),
-    ])
+    ],
+    required_module_id=globals().get('this_module_id'))
 
 register_iface(params_form_iface)
 register_iface(test_list_iface)

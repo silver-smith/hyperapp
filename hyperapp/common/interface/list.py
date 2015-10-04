@@ -116,14 +116,14 @@ class ListObject(Object):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, base=None, content_fields=None, commands=None, columns=None, key_column='key' ):
+    def __init__( self, iface_id, base=None, content_fields=None, commands=None, columns=None, key_column='key', required_module_id=None ):
         assert is_list_inst(columns, Column), repr(columns)
         assert isinstance(key_column, basestring), repr(key_column)
         self.columns = columns
         self.key_column = key_column
         self.key_type = self._pick_key_column().type.type  # used by parent __init__
         self.tRowRecord = TRecord([Field(column.id, column.type.type) for column in columns])  # --//--
-        Interface.__init__(self, iface_id, base, content_fields, self.tDiff(), commands)
+        Interface.__init__(self, iface_id, base, content_fields, self.tDiff(), commands, required_module_id)
         self._register_types()
 
     def _pick_key_column( self ):
