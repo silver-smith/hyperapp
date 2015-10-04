@@ -10,7 +10,7 @@ import hyperapp.common.interface.server_management
 import hyperapp.common.interface.fs
 import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
-import hyperapp.common.interface.code_repository
+import hyperapp.common.interface.module_list
 #import hyperapp.common.interface.test_list
 # self-registering views:
 import hyperapp.client.window

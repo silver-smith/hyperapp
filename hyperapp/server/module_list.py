@@ -2,7 +2,7 @@ import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
 from .ponyorm_module import PonyOrmModule
 from ..common.interface import Command, FormField, FormHandle, SplitterHandle
-from ..common.interface.code_repository import (
+from ..common.interface.module_list import (
     module_list_iface,
     module_form_iface,
     module_dep_list_iface,
@@ -13,7 +13,7 @@ from .module import ModuleCommand
 from .form import stringFieldHandle
 
 
-MODULE_NAME = 'code_repository'
+MODULE_NAME = 'module_list'
 
 
 class ModuleList(SmallListObject):
