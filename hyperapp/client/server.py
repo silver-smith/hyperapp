@@ -1,9 +1,7 @@
 from PySide import QtNetwork
 from ..common.packet import Packet
-from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from ..common.interface import Interface, iface_registry
-from ..common.packet_container import tPacketContainer
 from ..common.request import (
     tServerPacket,
     tClientPacket,
@@ -81,7 +79,7 @@ class Connection(object):
         while Packet.is_full(self.recv_buf):
             packet, self.recv_buf = Packet.decode(self.recv_buf)
             self.trace('received %s packet (%d bytes remainder): size=%d'
-                       % (packet.encoding, len(self.recv_buf), len(packet.contents)))
+                       % (packet.encoding, len(self.recv_buf), len(packet.data)))
             Server(self.addr).process_packet(packet)
 
     def send_packet( self, packet ):
@@ -131,15 +129,13 @@ class Server(object):
         encoding = PACKET_ENCODING
         print '%s packet to %s:%d' % (encoding, self.addr[0], self.addr[1])
         pprint(tClientPacket, request)
-        packet = packet_coders.encode_packet(encoding, request, tClientPacket)
+        packet = Packet.from_contents(encoding, request, tClientPacket)
         Connection.get_connection(self.addr).send_packet(packet)
 
     def process_packet( self, packet ):
-        print 'processing %s packet: %d bytes' % (packet.encoding, len(packet.contents))
-        container = packet_coders.decode_packet(packet, tPacketContainer, iface_registry)
-        self._process_aux_packet(container)
-        response = decode_server_packet(self, iface_registry, packet.encoding, container.packet)
-        print '%s packet from %s:%d' % (packet.encoding, self.addr[0], self.addr[1])
+        print '%r from %s:%d' % (packet, self.addr[0], self.addr[1])
+        self._process_aux_packet(packet.aux)
+        response = packet.decode_server_packet(self, iface_registry)
         ## pprint(tServerPacket, response)
         if isinstance(response, Response):
             print '   response for request', response.command_id, response.request_id
@@ -148,8 +144,8 @@ class Server(object):
             assert isinstance(response, ServerNotification), repr(response)
             proxy_registry.process_received_notification(self, response)
 
-    def _process_aux_packet( self, container ):
-        #pprint(tPacketContainer, container)
-        for module in container.modules:
+    def _process_aux_packet( self, aux ):
+        #pprint(tAuxInfo, aux)
+        for module in aux.modules:
             print '-- loading module %r fpath=%r' % (module.id, module.fpath)
             load_client_module(module)

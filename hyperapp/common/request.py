@@ -149,8 +149,8 @@ def decode_server_packet( peer, iface_registry, encoding, data ):
         return ServerNotification.decode(peer, rec)
     assert False, repr(rec.packet_type)  # unknown packet type
     
-def decode_client_packet( peer, iface_registry, packet ):
-    rec = packet_coders.decode_packet(packet, tClientPacket, iface_registry)
+def decode_client_packet( peer, iface_registry, encoding, data ):
+    rec = packet_coders.decode(encoding, data, tClientPacket, iface_registry)
     request_type = rec.iface.get_request_type(rec.command_id)
     if request_type == Interface.rt_request:
         return Request.decode(peer, rec)

@@ -2,7 +2,6 @@ import os.path
 import sys
 from types import ModuleType
 from ..common.util import is_list_inst
-from ..common.packet_container import Module
 
 
 DYNAMIC_MODULE_ID_ATTR = 'this_module_id'

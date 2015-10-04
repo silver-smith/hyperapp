@@ -2,11 +2,9 @@ import os.path
 import traceback
 import select
 from Queue import Queue
-from ..common.packet import Packet
-from ..common.packet_coders import packet_coders
+from ..common.packet import ModuleDep, Module, tAuxInfo, AuxInfo, Packet
 from ..common.interface import iface_registry
 from ..common.request import tServerPacket, tClientPacket, ServerNotification, Request, Response, decode_client_packet
-from ..common.packet_container import ModuleDep, Module, PacketContainer, tPacketContainer
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
@@ -94,23 +92,21 @@ class Client(object):
         self.on_close(self)
 
     def _wrap_and_send( self, encoding, response_or_notification ):
-        encoded_packet = packet_coders.encode(encoding, response_or_notification, tServerPacket)
-        container = self._prepare_container(response_or_notification, encoded_packet)
-        encoded_container = packet_coders.encode_packet(encoding, container, tPacketContainer)
-        print '%s packet to %s:%d:' % (encoding, self.addr[0], self.addr[1])
+        aux = self._prepare_aux_info(response_or_notification)
+        packet = Packet.from_contents(encoding, response_or_notification, tServerPacket, aux)
+        print '%r to %s:%d:' % (packet, self.addr[0], self.addr[1])
+        pprint(tAuxInfo, aux)
         pprint(tServerPacket, response_or_notification)
-        pprint(tPacketContainer, container)
-        self.conn.send(encoded_container)
+        self.conn.send(packet)
 
-    def _prepare_container( self, response_or_notification, encoded_packet ):
+    def _prepare_aux_info( self, response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
         test_list_iface_module = self._load_module(
             '0df259a7-ca1c-43d5-b9fa-f787a7271db9', 'hyperapp.common.interface', 'common/interface/test_list.py')
         form_module = self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py')
-        return PacketContainer(
+        return AuxInfo(
             requirements=requirements,
-            modules=[form_module, test_list_iface_module],
-            packet=encoded_packet)
+            modules=[form_module, test_list_iface_module])
 
     def _load_module( self, id, package, fpath ):
         fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
@@ -119,8 +115,8 @@ class Client(object):
         return Module(id=id, package=package, deps=[], source=source, fpath=fpath)
 
     def _process_packet( self, packet ):
-        request = decode_client_packet(self, iface_registry, packet)
-        print '%s packet from %s:%d:' % (packet.encoding, self.addr[0], self.addr[1])
+        request = packet.decode_client_packet(self, iface_registry)
+        print '%r from %s:%d:' % (packet, self.addr[0], self.addr[1])
         pprint(tClientPacket, request)
         path = request.path
         object = self._resolve(path)

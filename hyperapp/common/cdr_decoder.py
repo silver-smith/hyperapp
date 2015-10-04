@@ -29,7 +29,7 @@ class DecodeError(Exception): pass
 class CdrDecoder(object):
 
     def __init__( self, iface_registry ):
-        self.iface_registry = iface_registry  # IfaceRegistry
+        self.iface_registry = iface_registry  # IfaceRegistry or None
 
     def decode( self, t, value, path='root' ):
         assert isinstance(value, str), repr(value)
