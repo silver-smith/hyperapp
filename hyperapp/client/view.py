@@ -19,7 +19,7 @@ class Handle(object):
         return self.get_object().get_title()
 
     def get_module_ids( self ):
-        return self.get_object.get_module_ids()
+        return self.get_object().get_module_ids()
 
     def construct( self, parent ):
         raise NotImplementedError(self.__class__)
