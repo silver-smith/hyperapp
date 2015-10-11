@@ -1,0 +1,6 @@
+id: 5142abef-6cb4-4093-8e5e-d6443deffb79
+name: text_proxy
+package: hyperapp.client
+source_path: ../hyperapp/client/proxy_text_object.py
+satisfies:
+ - object/text

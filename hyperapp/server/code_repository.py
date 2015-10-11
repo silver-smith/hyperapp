@@ -1,4 +1,5 @@
 import os.path
+import yaml
 from ..common.interface.code_repository import (
     ModuleDep,
     Module,
@@ -9,7 +10,8 @@ from .object import Object
 
 
 MODULE_NAME = 'code_repository'
-
+DYNAMIC_MODULES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
+DYNAMIC_MODULE_INFO_EXT = '.module.yaml'
 
 
 class CodeRepository(Object):
@@ -20,6 +22,11 @@ class CodeRepository(Object):
     @classmethod
     def get_path( cls ):
         return module.make_path(cls.class_name)
+
+    def __init__( self ):
+        Object.__init__(self)
+        self._requirement2module = {}  # (registry, key) -> Module
+        self._find_dynamic_modules()
 
     def resolve( self, path ):
         path.check_empty()
@@ -38,16 +45,26 @@ class CodeRepository(Object):
     def get_required_modules( self, requirements ):
         modules = []
         for registry, key in requirements:
-            if (registry, key) == ('interface', 'test_list'):
-                modules.append(self._load_module(
-                    '0df259a7-ca1c-43d5-b9fa-f787a7271db9', 'hyperapp.common.interface', 'common/interface/test_list.py'))
-            elif (registry, key) == ('object', 'text'):
-                modules.append(self._load_module('5142abef-6cb4-4093-8e5e-d6443deffb79', 'hyperapp.client', 'client/proxy_text_object.py'))
-            elif (registry, key) == ('handle', 'form'):
-                modules.append(self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py'))
+            module = self._requirement2module.get((registry, key))
+            if module:
+                modules.append(module)
             else:
                 print 'Unknown requirement: %s/%s' % (registry, key)  # May be statically loaded, ignore
         return modules
+
+    def _find_dynamic_modules( self ):
+        for fname in os.listdir(DYNAMIC_MODULES_DIR):
+            if fname.endswith(DYNAMIC_MODULE_INFO_EXT):
+                self._load_dynamic_module(os.path.join(DYNAMIC_MODULES_DIR, fname))
+
+    def _load_dynamic_module( self, info_path ):
+        with open(info_path) as f:
+            info = yaml.load(f.read())
+        print 'loaded yaml info:', info
+        module = self._load_module(info['id'], info['package'], info['source_path'])
+        for requirement_path in info['satisfies']:
+            registry, key = requirement_path.split('/')
+            self._requirement2module[(registry, key)] = module
 
     def _load_module( self, id, package, fpath ):
         fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
