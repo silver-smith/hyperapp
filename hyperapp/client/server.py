@@ -1,4 +1,4 @@
-from PySide import QtNetwork
+from PySide import QtCore, QtNetwork
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
 from ..common.interface import Interface, iface_registry
@@ -11,7 +11,7 @@ from ..common.request import (
     Response,
     decode_server_packet,
     )
-from .module_loader import module_cache, load_client_module
+from .module_loader import load_client_module
 from .proxy_registry import proxy_registry
 
 
@@ -149,4 +149,4 @@ class Server(object):
         for module in aux.modules:
             print '-- loading module %r fpath=%r' % (module.id, module.fpath)
             load_client_module(module)
-            module_cache.add_module(module)
+            QtCore.QCoreApplication.instance().add_module(module)

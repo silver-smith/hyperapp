@@ -22,9 +22,6 @@ class ModuleCache(object):
         return modules
 
 
-module_cache = ModuleCache()
-
-
 def load_client_module( module, name=None ):
     if name is None:
         name = module.package + '.' + module.id.replace('-', '_')

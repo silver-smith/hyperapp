@@ -14,7 +14,7 @@ from . import tab_view
 from . import text_view
 from . import navigator
 from .proxy_registry import RespHandler
-from .module_loader import module_cache, load_client_module
+from .module_loader import ModuleCache, load_client_module
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -35,9 +35,13 @@ class Application(QtGui.QApplication, view.View):
     def __init__( self, sys_argv ):
         QtGui.QApplication.__init__(self, sys_argv)
         view.View.__init__(self)
+        self._module_cache = ModuleCache()
         self.server = Server(('localhost', 8888))
         self._windows = []
         self._resp_handlers = set()  # explicit refs to OpenRespHandlers to keep them alive until object is alive
+
+    def add_module( self, module ):
+        self._module_cache.add_module(module)
 
     def get_windows_handles( self ):
         return [view.handle() for view in self._windows]
@@ -80,7 +84,7 @@ class Application(QtGui.QApplication, view.View):
     def save_state( self, handles ):
         module_ids = list(flatten(handle.get_module_ids() for handle in handles))
         print 'modules required for state: %s' % module_ids
-        modules = module_cache.resolve_ids(module_ids)
+        modules = self._module_cache.resolve_ids(module_ids)
         state = (module_ids, modules, pickler.dumps(handles))
         with file(STATE_FILE_PATH, 'wb') as f:
             f.write(pickler.dumps(state))
@@ -91,8 +95,8 @@ class Application(QtGui.QApplication, view.View):
             return state
         module_ids, modules, pickled_handles = state
         for module in modules:
-            module_cache.add_module(module)
-        for module in module_cache.resolve_ids(module_ids):
+            self._module_cache.add_module(module)
+        for module in self._module_cache.resolve_ids(module_ids):
             print 'loading cached module required for state: %r' % module.id
             load_client_module(module)
         return pickler.loads(pickled_handles)
