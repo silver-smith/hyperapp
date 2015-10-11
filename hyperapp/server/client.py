@@ -107,7 +107,8 @@ class Client(object):
         form_module = self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py')
         return AuxInfo(
             requirements=requirements,
-            modules=[form_module, test_list_iface_module])
+            modules=[])
+#            modules=[form_module, test_list_iface_module])
 
     def _load_module( self, id, package, fpath ):
         fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))

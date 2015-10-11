@@ -43,12 +43,19 @@ class Application(QtGui.QApplication, view.View):
         self._windows = []
         self._resp_handlers = set()  # explicit refs to OpenRespHandlers to keep them alive until object is alive
 
+    def add_modules( self, modules ):
+        for module in modules:
+            print '-- loading module %r fpath=%r' % (module.id, module.fpath)
+            self._module_cache.add_module(module)
+            load_client_module(module)
+
     def process_packet( self, server, packet ):
+        self.add_modules(packet.aux.modules)
         unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
+        print '--- requirements:', packet.aux.requirements, ', unfulfilled:', unfilfilled_requirements
         if unfilfilled_requirements:
             self._code_repository.get_required_modules_and_process_packet(unfilfilled_requirements, packet)
             return
-        self._process_aux_packet(packet.aux)
         response = packet.decode_server_packet(server, iface_registry)
         ## pprint(tServerPacket, response)
         if isinstance(response, Response):
@@ -58,19 +65,12 @@ class Application(QtGui.QApplication, view.View):
             assert isinstance(response, ServerNotification), repr(response)
             proxy_registry.process_received_notification(server, response)
 
-    def _process_aux_packet( self, aux ):
-        #pprint(tAuxInfo, aux)
-        for module in aux.modules:
-            print '-- loading module %r fpath=%r' % (module.id, module.fpath)
-            load_client_module(module)
-            self._module_cache.add_module(module)
-
     def _is_unfulfilled_requirement( self, requirement ):
         registry, key = requirement
         if registry == 'object':
-            return proxy_registry.is_class_registered(key)
+            return not proxy_registry.is_class_registered(key)
         if registry == 'handle':
-            return view_registry.is_view_registered(key)
+            return not view_registry.is_view_registered(key)
         assert False, repr(registry)  # Unknown registry
 
     def get_windows_handles( self ):

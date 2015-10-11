@@ -1,5 +1,6 @@
 # code repository proxy
 
+from PySide import QtCore
 from ..common.interface.code_repository import code_repository_iface
 from .server import Server
 from .proxy_object import ObjRespHandler, ProxyObject
@@ -36,4 +37,6 @@ class CodeRepositoryProxy(ProxyObject):
         ProxyObject.process_response(self, server, response, resp_handler, initiator_view)
 
     def process_get_required_modules_response( self, packet, result ):
-        print '*** process_get_required_modules_response', packet, result.modules
+        app = QtCore.QCoreApplication.instance()
+        app.add_modules(result.modules)
+        app.process_packet(self.server, packet)
