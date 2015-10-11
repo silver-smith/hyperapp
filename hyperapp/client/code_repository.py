@@ -41,4 +41,4 @@ class CodeRepositoryProxy(ProxyObject):
         app = QtCore.QCoreApplication.instance()
         app.add_modules(result.modules)
         print '-- reprocessing %r from %r' % (packet, server)
-        app.process_packet(server, packet)
+        app.reprocess_packet(server, packet)
