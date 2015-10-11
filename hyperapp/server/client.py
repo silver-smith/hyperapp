@@ -10,6 +10,7 @@ from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
 from . import module
+from .code_repository import code_repository
 
 
 PACKET_ENCODING = 'cdr'
@@ -102,19 +103,10 @@ class Client(object):
 
     def _prepare_aux_info( self, response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
-        test_list_iface_module = self._load_module(
-            '0df259a7-ca1c-43d5-b9fa-f787a7271db9', 'hyperapp.common.interface', 'common/interface/test_list.py')
-        form_module = self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py')
+        modules = code_repository.get_required_modules(requirements)
         return AuxInfo(
             requirements=requirements,
-            modules=[])
-#            modules=[form_module, test_list_iface_module])
-
-    def _load_module( self, id, package, fpath ):
-        fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
-        with open(fpath) as f:
-            source = f.read()
-        return Module(id=id, package=package, deps=[], source=source, fpath=fpath)
+            modules=modules)
 
     def _process_packet( self, packet ):
         request = packet.decode_client_packet(self, iface_registry)

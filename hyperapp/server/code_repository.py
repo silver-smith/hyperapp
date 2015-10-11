@@ -46,7 +46,7 @@ class CodeRepository(Object):
             elif (registry, key) == ('handle', 'form'):
                 modules.append(self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py'))
             else:
-                assert False, (registry, key)  # Unknown requirements
+                print 'Unknown requirement: %s/%s' % (registry, key)  # May be statically loaded, ignore
         return modules
 
     def _load_module( self, id, package, fpath ):
