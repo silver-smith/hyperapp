@@ -60,7 +60,7 @@ class CodeRepository(Object):
     def _load_dynamic_module( self, info_path ):
         with open(info_path) as f:
             info = yaml.load(f.read())
-        print 'loaded yaml info:', info
+        print 'loaded module info:', info
         source_path = os.path.abspath(os.path.join(DYNAMIC_MODULES_DIR, info['source_path']))
         module = self._load_module(info['id'], info['package'], source_path)
         for requirement_path in info['satisfies']:
