@@ -52,9 +52,9 @@ class Application(QtGui.QApplication, view.View):
     def process_packet( self, server, packet ):
         self.add_modules(packet.aux.modules)
         unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
-        print '--- requirements:', packet.aux.requirements, ', unfulfilled:', unfilfilled_requirements
+        print '-- requirements:', packet.aux.requirements, ', unfulfilled:', unfilfilled_requirements
         if unfilfilled_requirements:
-            self._code_repository.get_required_modules_and_process_packet(unfilfilled_requirements, packet)
+            self._code_repository.get_required_modules_and_process_packet(unfilfilled_requirements, server, packet)
             return
         response = packet.decode_server_packet(server, iface_registry)
         ## pprint(tServerPacket, response)

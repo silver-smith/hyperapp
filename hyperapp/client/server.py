@@ -105,6 +105,9 @@ class Server(object):
         host, port = self.addr
         return '%s:%r' % (host, port)
 
+    def __repr__( self ):
+        return self.get_locator()
+
     def resolve_object( self, objinfo ):
         proxy_obj = proxy_registry.resolve(self, objinfo.path, objinfo.proxy_id, objinfo.iface)
         proxy_obj.set_contents(objinfo.contents)
