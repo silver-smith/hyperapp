@@ -19,6 +19,9 @@ class ProxyTextObject(ProxyObject, TextObject):
         ProxyObject.set_contents(self, contents)
         self.text = contents.text
 
+    def get_module_ids( self ):
+        return [this_module_id]
+
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
         commands = []
