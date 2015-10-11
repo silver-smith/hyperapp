@@ -104,6 +104,7 @@ class Client(object):
     def _prepare_aux_info( self, response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
         modules = code_repository.get_required_modules(requirements)
+        modules = []  # force separate request to code repository
         return AuxInfo(
             requirements=requirements,
             modules=modules)
