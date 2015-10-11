@@ -20,7 +20,7 @@ import hyperapp.client.navigator
 import hyperapp.client.narrower
 import hyperapp.client.text_object
 import hyperapp.client.proxy_list_object
-import hyperapp.client.proxy_text_object
+#import hyperapp.client.proxy_text_object
 import hyperapp.client.text_edit
 import hyperapp.client.text_view
 import hyperapp.client.object_selector
