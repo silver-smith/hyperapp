@@ -32,12 +32,22 @@ class CodeRepository(Object):
 
     def run_command_get_required_modules( self, request ):
         print 'run_command_get_required_modules', request.params.requirements
-        test_list_iface_module = self._load_module(
-            '0df259a7-ca1c-43d5-b9fa-f787a7271db9', 'hyperapp.common.interface', 'common/interface/test_list.py')
-        proxy_text_module = self._load_module('5142abef-6cb4-4093-8e5e-d6443deffb79', 'hyperapp.client', 'client/proxy_text_object.py')
-        form_module = self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py')
         return request.make_response_result(
-            modules=[form_module, proxy_text_module, test_list_iface_module])
+            modules=self.get_required_modules(request.params.requirements))
+
+    def get_required_modules( self, requirements ):
+        modules = []
+        for registry, key in requirements:
+            if (registry, key) == ('interface', 'test_list'):
+                modules.append(self._load_module(
+                    '0df259a7-ca1c-43d5-b9fa-f787a7271db9', 'hyperapp.common.interface', 'common/interface/test_list.py'))
+            elif (registry, key) == ('object', 'text'):
+                modules.append(self._load_module('5142abef-6cb4-4093-8e5e-d6443deffb79', 'hyperapp.client', 'client/proxy_text_object.py'))
+            elif (registry, key) == ('handle', 'form'):
+                modules.append(self._load_module('7e947453-84f3-44e9-961c-3e18fcdc37f0', 'hyperapp.client', 'client/form.py'))
+            else:
+                assert False, (registry, key)  # Unknown requirements
+        return modules
 
     def _load_module( self, id, package, fpath ):
         fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
