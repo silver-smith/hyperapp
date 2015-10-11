@@ -14,6 +14,8 @@ from . import tab_view
 from . import text_view
 from . import navigator
 from .proxy_registry import RespHandler, proxy_registry
+from .view_registry import view_registry
+from .code_repository import CodeRepositoryProxy
 from .module_loader import ModuleCache, load_client_module
 
 
@@ -37,10 +39,15 @@ class Application(QtGui.QApplication, view.View):
         view.View.__init__(self)
         self._module_cache = ModuleCache()
         self.server = Server(('localhost', 8888))
+        self._code_repository = CodeRepositoryProxy(self.server)
         self._windows = []
         self._resp_handlers = set()  # explicit refs to OpenRespHandlers to keep them alive until object is alive
 
     def process_packet( self, server, packet ):
+        unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
+        if unfilfilled_requirements:
+            self._code_repository.get_required_modules_and_process_packet(unfilfilled_requirements, packet)
+            return
         self._process_aux_packet(packet.aux)
         response = packet.decode_server_packet(server, iface_registry)
         ## pprint(tServerPacket, response)
@@ -57,6 +64,14 @@ class Application(QtGui.QApplication, view.View):
             print '-- loading module %r fpath=%r' % (module.id, module.fpath)
             load_client_module(module)
             self._module_cache.add_module(module)
+
+    def _is_unfulfilled_requirement( self, requirement ):
+        registry, key = requirement
+        if registry == 'object':
+            return proxy_registry.is_class_registered(key)
+        if registry == 'handle':
+            return view_registry.is_view_registered(key)
+        assert False, repr(registry)  # Unknown registry
 
     def get_windows_handles( self ):
         return [view.handle() for view in self._windows]

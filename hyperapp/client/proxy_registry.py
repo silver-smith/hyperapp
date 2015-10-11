@@ -27,6 +27,9 @@ class ProxyRegistry(object):
     def register_class( self, cls ):
         self.proxy_classes[cls.get_proxy_id()] = cls
 
+    def is_class_registered( self, proxy_id ):
+        return proxy_id in self.proxy_classes
+
     # we want only one object per server+path, otherwise subscription/notification won't work
     def register_instance( self, obj ):
         id = '%s %s' % (obj.server.get_locator(), path2str(obj.path))
