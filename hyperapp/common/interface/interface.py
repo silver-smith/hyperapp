@@ -214,6 +214,9 @@ class IfaceRegistry(object):
         assert isinstance(iface, Interface), repr(iface)
         self.registry[iface.iface_id] = iface
 
+    def is_registered( self, iface_id ):
+        return iface_id in self.registry
+
     def resolve( self, iface_id ):
         return self.registry[iface_id]
 

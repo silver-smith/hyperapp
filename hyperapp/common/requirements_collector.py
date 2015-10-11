@@ -45,6 +45,7 @@ class RequirementsCollector(object):
     @dispatch.register(TObject)
     def process_object( self, t, value ):
         self.collected_requirements.add(('object', value.proxy_id))
+        self.collected_requirements.add(('interface', value.iface.iface_id))
         self.process_record(t, value)
             
     @dispatch.register(THierarchy)

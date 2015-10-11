@@ -81,6 +81,8 @@ class Application(QtGui.QApplication, view.View):
             return not proxy_registry.is_class_registered(key)
         if registry == 'handle':
             return not view_registry.is_view_registered(key)
+        if registry == 'interface':
+            return not iface_registry.is_registered(key)
         assert False, repr(registry)  # Unknown registry
 
     def get_windows_handles( self ):
