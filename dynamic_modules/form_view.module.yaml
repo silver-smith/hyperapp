@@ -1,7 +1,7 @@
 id: 7e947453-84f3-44e9-961c-3e18fcdc37f0
 name: form
 package: hyperapp.client
-source_path:  ../hyperapp/client/form.py
+source_path: form_view.py
 satisfies:
  - handle/form
 

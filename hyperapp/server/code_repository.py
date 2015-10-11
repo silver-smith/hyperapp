@@ -61,7 +61,8 @@ class CodeRepository(Object):
         with open(info_path) as f:
             info = yaml.load(f.read())
         print 'loaded yaml info:', info
-        module = self._load_module(info['id'], info['package'], info['source_path'])
+        source_path = os.path.abspath(os.path.join(DYNAMIC_MODULES_DIR, info['source_path']))
+        module = self._load_module(info['id'], info['package'], source_path)
         for requirement_path in info['satisfies']:
             registry, key = requirement_path.split('/')
             self._requirement2module[(registry, key)] = module
