@@ -2,7 +2,7 @@ import os.path
 import uuid
 from PySide import QtCore, QtGui
 from ..common.interface import iface_registry
-from ..common.request import Request
+from ..common.request import Request, Response, ServerNotification
 from .util import flatten
 from .pickler import pickler
 from .server import Server
@@ -13,7 +13,7 @@ from . import window
 from . import tab_view
 from . import text_view
 from . import navigator
-from .proxy_registry import RespHandler
+from .proxy_registry import RespHandler, proxy_registry
 from .module_loader import ModuleCache, load_client_module
 
 
@@ -40,8 +40,23 @@ class Application(QtGui.QApplication, view.View):
         self._windows = []
         self._resp_handlers = set()  # explicit refs to OpenRespHandlers to keep them alive until object is alive
 
-    def add_module( self, module ):
-        self._module_cache.add_module(module)
+    def process_packet( self, server, packet ):
+        self._process_aux_packet(packet.aux)
+        response = packet.decode_server_packet(server, iface_registry)
+        ## pprint(tServerPacket, response)
+        if isinstance(response, Response):
+            print '   response for request', response.command_id, response.request_id
+            proxy_registry.process_received_response(server, response)
+        else:
+            assert isinstance(response, ServerNotification), repr(response)
+            proxy_registry.process_received_notification(server, response)
+
+    def _process_aux_packet( self, aux ):
+        #pprint(tAuxInfo, aux)
+        for module in aux.modules:
+            print '-- loading module %r fpath=%r' % (module.id, module.fpath)
+            load_client_module(module)
+            self._module_cache.add_module(module)
 
     def get_windows_handles( self ):
         return [view.handle() for view in self._windows]

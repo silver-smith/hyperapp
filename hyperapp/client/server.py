@@ -7,11 +7,8 @@ from ..common.request import (
     tClientPacket,
     ClientNotification,
     Request,
-    ServerNotification,
-    Response,
     decode_server_packet,
     )
-from .module_loader import load_client_module
 from .proxy_registry import proxy_registry
 
 
@@ -134,19 +131,4 @@ class Server(object):
 
     def process_packet( self, packet ):
         print '%r from %s:%d' % (packet, self.addr[0], self.addr[1])
-        self._process_aux_packet(packet.aux)
-        response = packet.decode_server_packet(self, iface_registry)
-        ## pprint(tServerPacket, response)
-        if isinstance(response, Response):
-            print '   response for request', response.command_id, response.request_id
-            proxy_registry.process_received_response(self, response)
-        else:
-            assert isinstance(response, ServerNotification), repr(response)
-            proxy_registry.process_received_notification(self, response)
-
-    def _process_aux_packet( self, aux ):
-        #pprint(tAuxInfo, aux)
-        for module in aux.modules:
-            print '-- loading module %r fpath=%r' % (module.id, module.fpath)
-            load_client_module(module)
-            QtCore.QCoreApplication.instance().add_module(module)
+        QtCore.QCoreApplication.instance().process_packet(self, packet)
