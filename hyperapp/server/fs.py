@@ -23,7 +23,7 @@ class FsObject(SmallListObject):
 class File(FsObject):
 
     iface = file_iface
-    proxy_id = 'list'
+    objimpl_id = 'list'
 
     def get_commands( self ):
         return []
@@ -41,7 +41,7 @@ class File(FsObject):
 class Dir(FsObject):
 
     iface = dir_iface
-    proxy_id = 'list'
+    objimpl_id = 'list'
 
     def fetch_all_elements( self ):
         dirs  = []

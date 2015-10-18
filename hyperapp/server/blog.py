@@ -15,7 +15,7 @@ MODULE_NAME = 'blog'
 class BlogEntry(article.Article):
 
     iface = blog_entry_iface
-    proxy_id = 'text'
+    objimpl_id = 'text'
 
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
@@ -54,7 +54,7 @@ class BlogEntry(article.Article):
 class Blog(SmallListObject):
 
     iface = blog_iface
-    proxy_id = 'list'
+    objimpl_id = 'list'
     class_name = 'blog'
     default_sort_column_id = 'id'
 

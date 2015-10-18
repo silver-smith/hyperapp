@@ -19,7 +19,7 @@ MODULE_NAME = 'module_list'
 class ModuleList(SmallListObject):
 
     iface = module_list_iface
-    proxy_id = 'list'
+    objimpl_id = 'list'
     class_name = 'module_list'
     default_sort_column_id = 'id'
 
@@ -87,7 +87,7 @@ class ModuleList(SmallListObject):
 class ModuleForm(Object):
 
     iface = module_form_iface
-    proxy_id = 'object'
+    objimpl_id = 'object'
     class_name = 'module_form'
 
     @classmethod
@@ -133,7 +133,7 @@ class ModuleForm(Object):
 class ModuleDepList(SmallListObject):
 
     iface = module_dep_list_iface
-    proxy_id = 'list'
+    objimpl_id = 'list'
     class_name = 'module_dep_list'
     default_sort_column_id = 'id'
 
@@ -182,7 +182,7 @@ class ModuleDepList(SmallListObject):
 class AvailableDepList(SmallListObject):
 
     iface = available_dep_list_iface
-    proxy_id = 'list'
+    objimpl_id = 'list'
     class_name = 'available_dep_list'
     default_sort_column_id = 'id'
 

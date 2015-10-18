@@ -24,7 +24,7 @@ class Article(Object):
     mode_edit = object()
 
     iface = article_iface
-    proxy_id = 'text'
+    objimpl_id = 'text'
     class_name = 'article'
 
     class_registry = {}  # ponyorm entity class -> class
@@ -117,7 +117,7 @@ class Article(Object):
 class ArticleRefList(SmallListObject):
 
     iface = ref_list_iface
-    proxy_id = 'ref_list'
+    objimpl_id = 'ref_list'
     default_sort_column_id = 'ref_id'
     class_name = 'ref_list'
 
@@ -189,7 +189,7 @@ class ArticleRefList(SmallListObject):
 class RefSelector(Object):
 
     iface = object_selector_iface
-    proxy_id = 'object'
+    objimpl_id = 'object'
     class_name = 'object_selector'
 
     @classmethod

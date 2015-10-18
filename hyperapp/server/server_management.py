@@ -12,7 +12,7 @@ MODULE_NAME = 'management'
 class CommandList(SmallListObject):
 
     iface = server_management_iface
-    proxy_id = 'list'
+    objimpl_id = 'list'
 
     columns = [
         Column('key'),
