@@ -7,6 +7,9 @@ from .types import (
 from .interface import RequestCmd, Interface, register_iface
 
 
+tRequirement = TList(tString)  # [hierarchy id, class id]
+
+
 tModuleDep = TRecord([
     Field('module_id', tString),
     Field('visible_as', tString),
@@ -19,14 +22,12 @@ tModule = TRecord([
     Field('id', tString),  # uuid
     Field('package', tString),  # like 'hyperapp.client'
     Field('deps', TList(tModuleDep)),
+    Field('satisfies', TList(tRequirement)),
     Field('source', tString),
     Field('fpath', tString),
     ])
 
 Module = tModule.instantiate
-
-
-tRequirement = TList(tString)  # [hierarchy id, class id]
 
 
 code_repository_iface = Interface('code_repository', commands=[

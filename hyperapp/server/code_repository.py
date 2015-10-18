@@ -62,16 +62,16 @@ class CodeRepository(Object):
             info = yaml.load(f.read())
         print 'loaded module info:', info
         source_path = os.path.abspath(os.path.join(DYNAMIC_MODULES_DIR, info['source_path']))
-        module = self._load_module(info['id'], info['package'], source_path)
-        for requirement_path in info['satisfies']:
-            registry, key = requirement_path.split('/')
+        satisfies = [path.split('/') for path in info['satisfies']]
+        module = self._load_module(info['id'], info['package'], satisfies, source_path)
+        for registry, key in satisfies:
             self._requirement2module[(registry, key)] = module
 
-    def _load_module( self, id, package, fpath ):
+    def _load_module( self, id, package, satisfies, fpath ):
         fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
         with open(fpath) as f:
             source = f.read()
-        return Module(id=id, package=package, deps=[], source=source, fpath=fpath)
+        return Module(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
 
 
 class CodeRepositoryModule(module_mod.Module):

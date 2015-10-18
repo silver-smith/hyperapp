@@ -80,7 +80,7 @@ class VisualRepEncoder(object):
             base_fields = set(field.name for field in t.get_fields())
             t = t.resolve_dynamic(value)
         if t is tModule:
-            return RepNode('module: id=%s, package=%s' % (value.id, value.package))
+            return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
         if t is tCommand:
             return RepNode('command: %s' % ', '.join(child.text for child in children))
         return RepNode('record', children)
