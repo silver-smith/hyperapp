@@ -7,7 +7,6 @@ from ..common.interface import (
     Interface,
     iface_registry,
     )
-from ..common.interface import interface as interface_module
 from ..common.interface import list as list_module
 from .util import WeakValueMultiDict
 
@@ -35,7 +34,7 @@ class Subscription(object):
 subscription = Subscription()
 
 
-class Object(interface_module.Object):
+class Object(object):
 
     def __init__( self ):
         pass

@@ -23,13 +23,6 @@ class TIface(TPrimitive):
         return Interface
 
 
-# base class for server objects
-class Object(object):
-
-    def get( self ):
-        raise NotImplementedError(self.__class__)
-
-
 class TObject(TDynamicRec):
 
     def __init__( self ):

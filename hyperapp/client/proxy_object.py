@@ -2,7 +2,6 @@ import weakref
 import uuid
 from ..common.util import path2str
 from ..common.interface import Interface, Field, tString, tPath, resolve_iface
-from ..common import interface as interface_module
 from ..common.request import ClientNotification, Request
 from .object import Object
 from .command import Command
@@ -26,11 +25,10 @@ class ObjRespHandler(RespHandler):
             object.process_response(server, response, self, initiator_view)
 
 
-class ProxyObject(Object, interface_module.Object):
+class ProxyObject(Object):
 
     def __init__( self, server, path, iface ):
         Object.__init__(self)
-        interface_module.Object.__init__(self)
         self.init_flag = None
         self.server = server
         self.path = path

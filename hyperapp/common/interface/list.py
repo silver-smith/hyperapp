@@ -12,7 +12,7 @@ from .types import (
     TIndexedList,
     tCommand,
     )
-from .interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Object, Interface
+from .interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Interface
 
 
 class ColumnType(object):
@@ -75,7 +75,7 @@ class ElementOpenCommand(ElementCommand, OpenCommand):
     get_result_type = OpenCommand.get_result_type
 
 
-class ListObject(Object):
+class ListObject(object):
 
     @classmethod
     def Row( cls, *args, **kw ):
