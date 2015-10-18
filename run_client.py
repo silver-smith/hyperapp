@@ -23,7 +23,7 @@ import hyperapp.client.proxy_list_object
 #import hyperapp.client.proxy_text_object
 import hyperapp.client.text_edit
 import hyperapp.client.text_view
-import hyperapp.client.object_selector
+#import hyperapp.client.object_selector
 #import hyperapp.client.ref_list
 
 

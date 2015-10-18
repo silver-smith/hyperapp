@@ -1,0 +1,7 @@
+id: c7f4c31e-172d-4953-a418-3a1987d0d247
+name: object_selector
+package: hyperapp.client
+source_path: object_selector.py
+satisfies:
+ - handle/object_selector
+ - handle/object_selector_unwrap
