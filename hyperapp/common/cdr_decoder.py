@@ -14,7 +14,6 @@ from .interface import (
     TList,
     TIndexedList,
     THierarchy,
-    TObject,
     TIface,
     )
 

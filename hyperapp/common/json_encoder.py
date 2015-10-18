@@ -12,7 +12,6 @@ from .interface import (
     TList,
     THierarchy,
     Object,
-    TObject,
     Interface,
     TIface,
     )
