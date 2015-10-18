@@ -27,8 +27,8 @@ class ProxyRegistry(object):
     def register_class( self, cls ):
         self.proxy_classes[cls.get_objimpl_id()] = cls
 
-    def is_class_registered( self, proxy_id ):
-        return proxy_id in self.proxy_classes
+    def is_class_registered( self, objimpl_id ):
+        return objimpl_id in self.proxy_classes
 
     # we want only one object per server+path, otherwise subscription/notification won't work
     def register_instance( self, obj ):
@@ -37,14 +37,14 @@ class ProxyRegistry(object):
         self.proxy_instances[id] = obj
         print '< registered in registry:', repr(id), obj
 
-    def resolve( self, server, path, proxy_id, iface ):
+    def resolve( self, server, path, objimpl_id, iface ):
         id = '%s %s' % (server.get_locator(), path2str(path))
         obj = self.proxy_instances.get(id)
         if obj:
             print '> resolved from registry:', repr(id), obj
             return obj
-        cls = self.proxy_classes.get(proxy_id)
-        assert cls, repr(proxy_id)  # Unknown proxy id
+        cls = self.proxy_classes.get(objimpl_id)
+        assert cls, repr(objimpl_id)  # Unknown proxy objimpl_id
         obj = cls(server, path, iface)
         self.proxy_instances[id] = obj
         print '< registered in registry:', repr(id), obj

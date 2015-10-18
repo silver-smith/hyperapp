@@ -1,6 +1,6 @@
 import weakref
 import uuid
-from ..common.util import path2str
+from ..common.util import path2str, str2path
 from ..common.interface import Interface, Field, tString, tPath, resolve_iface, iface_registry
 from ..common.request import ClientNotification, Request
 from .object import Object
@@ -30,11 +30,11 @@ class ProxyObject(Object):
 
     @staticmethod
     def resolve_persistent_id( persistent_id ):
-        proxy_id, iface_id, server_locator, path_str = persistent_id.split(' ', 3)
+        objimpl_id, iface_id, server_locator, path_str = persistent_id.split(' ', 3)
         iface = iface_registry.resolve(iface_id)
         server = Server.resolve_locator(server_locator)
         path = str2path(path_str)
-        return proxy_registry.resolve(server, path, proxy_id, iface)
+        return proxy_registry.resolve(server, path, objimpl_id, iface)
 
     def __init__( self, server, path, iface ):
         Object.__init__(self)
