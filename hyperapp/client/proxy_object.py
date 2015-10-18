@@ -1,11 +1,12 @@
 import weakref
 import uuid
 from ..common.util import path2str
-from ..common.interface import Interface, Field, tString, tPath, resolve_iface
+from ..common.interface import Interface, Field, tString, tPath, resolve_iface, iface_registry
 from ..common.request import ClientNotification, Request
 from .object import Object
 from .command import Command
 from .proxy_registry import RespHandler, proxy_registry
+from .server import Server
 from . import view
 
 
@@ -27,6 +28,14 @@ class ObjRespHandler(RespHandler):
 
 class ProxyObject(Object):
 
+    @staticmethod
+    def resolve_persistent_id( persistent_id ):
+        proxy_id, iface_id, server_locator, path_str = persistent_id.split(' ', 3)
+        iface = iface_registry.resolve(iface_id)
+        server = Server.resolve_locator(server_locator)
+        path = str2path(path_str)
+        return proxy_registry.resolve(server, path, proxy_id, iface)
+
     def __init__( self, server, path, iface ):
         Object.__init__(self)
         self.init_flag = None
@@ -40,13 +49,13 @@ class ProxyObject(Object):
         return self.iface.get_module_ids()
 
     def get_persistent_id( self ):
-        return ' '.join([self.get_proxy_id(),
+        return ' '.join([self.get_objimpl_id(),
                          self.iface.iface_id,
                          self.server.get_locator(),
                          path2str(self.path)])
 
     @staticmethod
-    def get_proxy_id():
+    def get_objimpl_id():
         return 'object'
 
     def subscribe( self, observer ):

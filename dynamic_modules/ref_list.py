@@ -6,7 +6,7 @@ from .proxy_list_object import ProxyListObject
 class RefList(ProxyListObject):
 
     @staticmethod
-    def get_proxy_id():
+    def get_objimpl_id():
         return 'ref_list'
 
     def get_module_ids( self ):

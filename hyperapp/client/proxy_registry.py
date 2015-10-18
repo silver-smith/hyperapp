@@ -25,7 +25,7 @@ class ProxyRegistry(object):
         self.pending_requests = weakref.WeakValueDictionary()  # request_id -> RespHandler
 
     def register_class( self, cls ):
-        self.proxy_classes[cls.get_proxy_id()] = cls
+        self.proxy_classes[cls.get_objimpl_id()] = cls
 
     def is_class_registered( self, proxy_id ):
         return proxy_id in self.proxy_classes

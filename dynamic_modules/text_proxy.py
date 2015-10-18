@@ -12,7 +12,7 @@ class ProxyTextObject(ProxyObject, TextObject):
         ProxyObject.__init__(self, server, path, iface)
 
     @staticmethod
-    def get_proxy_id():
+    def get_objimpl_id():
         return 'text'
 
     def set_contents( self, contents ):

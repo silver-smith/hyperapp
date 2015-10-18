@@ -13,7 +13,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._slices = []  # all slices are stored in ascending order
 
     @staticmethod
-    def get_proxy_id():
+    def get_objimpl_id():
         return 'list'
 
     def set_contents( self, contents ):
