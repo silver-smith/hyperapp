@@ -12,7 +12,6 @@ from .interface import (
     TDynamicRec,
     TList,
     THierarchy,
-    Object,
     Interface,
     TIface,
     )

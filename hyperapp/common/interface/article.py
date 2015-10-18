@@ -10,7 +10,6 @@ from .interface import (
     tHandle,
     tSimpleHandle,
     tObject,
-    Object,
     RequestCmd,
     OpenCommand,
     Interface,
