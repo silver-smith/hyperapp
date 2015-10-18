@@ -63,7 +63,7 @@ class Request(ClientNotification):
 
     def make_response( self, result=None ):
         result_type = self.iface.get_command_result_type(self.command_id)
-        result_type.validate(self.iface.iface_id +  '.Request.result', result)
+        result_type.validate('%s.Request.%s.result' % (self.iface.iface_id, self.command_id), result)
         return Response(self.peer, self.iface, self.command_id, self.request_id, result)
 
     def make_response_object( self, obj ):

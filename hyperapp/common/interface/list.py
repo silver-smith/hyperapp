@@ -85,7 +85,6 @@ class ListInterface(Interface):
         self.key_type = self._pick_key_column().type.type  # used by parent __init__
         self.tRowRecord = TRecord([Field(column.id, column.type.type) for column in columns])  # --//--
         Interface.__init__(self, iface_id, base, content_fields, self.tDiff(), commands, required_module_id)
-        self._register_types()
 
     def _pick_key_column( self ):
         for column in self.columns:
@@ -94,6 +93,7 @@ class ListInterface(Interface):
         assert False, repr((self.key_column, [column.id for column in self.columns]))  # unknown key column
 
     def _register_types( self ):
+        Interface._register_types(self)
         list_fields = [Field('key', TOptional(self.key_type))]
         narrower_fields = [Field('field_id', tString),
                            Field('key', TOptional(self.key_type))]
@@ -102,8 +102,8 @@ class ListInterface(Interface):
         self._tListNarrowerHandle = tHandle.register(
             '%s.list_narrower' % self.iface_id, narrower_fields, base=tObjHandle)
 
-    def get_default_content_fields( self ):
-        return Interface.get_default_content_fields(self) + [
+    def get_default_contents_fields( self ):
+        return Interface.get_default_contents_fields(self) + [
             Field('slice', self.tSlice()),
             ]
 
@@ -116,7 +116,7 @@ class ListInterface(Interface):
             ]
         return Interface.get_basic_commands(self) \
             + [RequestCmd('fetch_elements', fetch_params_fields, [Field('slice', self.tSlice())]),
-               RequestCmd('subscribe_and_fetch_elements', fetch_params_fields, self.tContents().get_fields())]
+               RequestCmd('subscribe_and_fetch_elements', fetch_params_fields, self.get_contents_fields())]
 
     def Row( self, *args, **kw ):
         return self.tRowRecord.instantiate(*args, **kw)

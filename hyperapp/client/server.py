@@ -109,7 +109,7 @@ class Server(object):
         return self.get_locator()
 
     def resolve_object( self, objinfo ):
-        proxy_obj = proxy_registry.resolve(self, objinfo.path, objinfo.proxy_id, objinfo.iface)
+        proxy_obj = proxy_registry.resolve(self, objinfo.path, objinfo.objimpl_id, objinfo.iface)
         proxy_obj.set_contents(objinfo.contents)
         return proxy_obj
 

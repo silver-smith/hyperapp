@@ -23,25 +23,13 @@ class TIface(TPrimitive):
         return Interface
 
 
-class TObject(TDynamicRec):
+tObject = THierarchy('object')
+tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
+tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
+    Field('iface', TIface()),
+    Field('path', tPath),
+    ])
 
-    def __init__( self ):
-        TDynamicRec.__init__(self, [
-            Field('iface', TIface()),
-            Field('path', tPath),
-            Field('proxy_id', tString),
-            ])
-
-    def resolve_dynamic( self, rec ):
-        tContents = rec.iface.tContents()
-        return TRecord([Field('contents', tContents)], base=self)
-
-    def validate( self, path, value ):
-        if value is None: return  # missing objects are allowed
-        TDynamicRec.validate(self, path, value)
-
-
-tObject = TObject()
 
 tHandle = THierarchy('handle')
 tSimpleHandle = tHandle.register('handle', fields=[Field('view_id', tString)])
@@ -88,7 +76,7 @@ class SubscribeCommand(RequestCmd):
         RequestCmd.__init__(self, 'subscribe')
 
     def get_result_type( self, iface ):
-        return iface.tContents()
+        return iface.get_contents_type()
 
 
 class Interface(object):
@@ -113,6 +101,17 @@ class Interface(object):
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
         self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
+        self._register_types()
+
+    def _register_types( self ):
+        self._tContents = TRecord(self.get_contents_fields())
+        self._tObject = tObject.register(self.iface_id, [Field('contents', self._tContents)], base=tProxyObject)
+
+    def get_object_type( self ):
+        return self._tObject
+
+    def get_contents_type( self ):
+        return self._tContents
 
     def get_module_ids( self ):
         if self.required_module_id:
@@ -158,26 +157,26 @@ class Interface(object):
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         cmd.get_params_type(self).validate(join_path(self.iface_id, command_id, 'params'), params)
 
-    def Object( self, **kw ):
-        return tObject.instantiate(**kw)
-
-    def get_default_content_fields( self ):
+    def get_default_contents_fields( self ):
         return [Field('commands', TList(tCommand))]
 
-    def tContents( self ):
-        return TRecord(self.get_default_content_fields() + self.content_fields)
-
-    def Contents( self, **kw ):
-        return self.tContents().instantiate(**kw)
-        
-    def validate_contents( self, path, value ):
-        self.tContents().validate(path, value)
+    def get_contents_fields( self ):
+        return self.get_default_contents_fields() + self.content_fields
 
     def get_diff_type( self ):
         return self.diff_type
 
+    def Object( self, **kw ):
+        return self._tObject.instantiate(**kw)
+
+    def Contents( self, **kw ):
+        return self._tContents.instantiate(**kw)
+
     def Update( self, path, diff ):
         return tUpdate.instantiate(self, path, diff)
+        
+    def validate_contents( self, path, value ):
+        self._tContents.validate(path, value)
 
 
 class TUpdate(TDynamicRec):

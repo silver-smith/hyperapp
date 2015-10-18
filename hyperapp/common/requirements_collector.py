@@ -6,7 +6,7 @@ from .interface import (
     TDynamicRec,
     THierarchy,
     TList,
-    TObject,
+    tObject,
     tHandle,
     )
 
@@ -41,15 +41,12 @@ class RequirementsCollector(object):
                 break
             base_fields = set(field.name for field in t.get_fields())
             t = t.resolve_dynamic(value)
-
-    @dispatch.register(TObject)
-    def process_object( self, t, value ):
-        self.collected_requirements.add(('object', value.proxy_id))
-        self.collected_requirements.add(('interface', value.iface.iface_id))
-        self.process_record(t, value)
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj( self, t, value ):
+        if t is tObject:
+            self.collected_requirements.add(('object', value.objimpl_id))
+            self.collected_requirements.add(('interface', value.iface.iface_id))
         if t is tHandle:
             self.collected_requirements.add(('handle', value.view_id))
         tclass = t.resolve_obj(value)
