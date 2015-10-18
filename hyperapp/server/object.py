@@ -7,7 +7,6 @@ from ..common.interface import (
     Interface,
     iface_registry,
     )
-from ..common.interface import list as list_module
 from .util import WeakValueMultiDict
 
 
@@ -91,10 +90,46 @@ class Object(object):
         subscription.remove(self.get_path(), request.peer)
 
 
-class ListObject(Object, list_module.ListObject):
+class ListObject(Object):
 
     default_sort_column_id = 'key'
     default_direction = 'asc'
+
+    @classmethod
+    def Row( cls, *args, **kw ):
+        return cls.iface.Row(*args, **kw)
+
+    @classmethod
+    def Element( cls, *args, **kw ):
+        return cls.iface.Element(*args, **kw)
+
+    @classmethod
+    def Diff( cls, *args, **kw ):
+        return cls.iface.Diff(*args, **kw)
+
+    @classmethod
+    def Diff_insert_one( cls, key, element ):
+        return cls.Diff_insert_many(key, [element])
+
+    @classmethod
+    def Diff_insert_many( cls, key, elements ):
+        return cls.Diff(key, key, elements)
+
+    @classmethod
+    def Diff_append_many( cls, elements ):
+        return cls.Diff.insert_many(None, elements)
+
+    @classmethod
+    def Diff_delete( cls, key ):
+        return cls.Diff(key, key, [])
+
+    @classmethod
+    def ListHandle( cls, *args, **kw ):
+        return cls.iface.ListHandle('list', *args, **kw)
+
+    @classmethod
+    def ListNarrowerHandle( cls, *args, **kw ):
+        return cls.iface.ListNarrowerHandle('list_narrower', *args, **kw)
 
     def __init__( self ):
         Object.__init__(self)
