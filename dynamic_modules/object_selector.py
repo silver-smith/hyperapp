@@ -19,6 +19,9 @@ class ObjSelectorUnwrap(view.Handle):
     def get_object( self ):
         return self.base_handle.get_object()
 
+    def get_module_ids( self ):
+        return [this_module_id]
+
     def construct( self, parent ):
         return self.base_handle.construct(parent)
 
@@ -43,6 +46,9 @@ class Handle(view.Handle):
 
     def get_object( self ):
         return self.ref
+
+    def get_module_ids( self ):
+        return [this_module_id]
 
     def construct( self, parent ):
         print 'object_selector construct', parent, self.ref.get_title(), self.target.get_object().get_title()
