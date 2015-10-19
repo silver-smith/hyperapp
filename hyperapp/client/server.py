@@ -17,17 +17,8 @@ PACKET_ENCODING = 'cdr'
 
 class Connection(object):
 
-    addr2connection = {}
-
-    @classmethod
-    def get_connection( cls, addr ):
-        connection = cls.addr2connection.get(addr)
-        if not connection:
-            connection = Connection(addr)
-            cls.addr2connection[addr] = connection
-        return connection
-
-    def __init__( self, addr ):
+    def __init__( self, server, addr ):
+        self.server = server
         self.addr = addr
         self.socket = None
         self.connected = False
@@ -77,7 +68,7 @@ class Connection(object):
             packet, self.recv_buf = Packet.decode(self.recv_buf)
             self.trace('received %s packet (%d bytes remainder): size=%d'
                        % (packet.encoding, len(self.recv_buf), len(packet.data)))
-            Server(self.addr).process_packet(packet)
+            self.server.process_packet(packet)
 
     def send_packet( self, packet ):
         data = packet.encode()
@@ -92,14 +83,25 @@ class Connection(object):
 
 class Server(object):
 
+    addr2server = {}  # (host, port) -> Server
+
     @classmethod
     def resolve_locator( cls, locator ):
         host, port_str = locator.split(':')
         addr = (host, int(port_str))
-        return cls(addr)
+        return cls.resolve_addr(addr)
+
+    @classmethod
+    def resolve_addr( cls, addr ):
+        server = cls.addr2server.get(addr)
+        if not server:
+            server = cls(addr)
+            cls.addr2server[addr] = server
+        return server
 
     def __init__( self, addr ):
         self.addr = addr
+        self._connection = None
 
     def get_locator( self ):
         host, port = self.addr
@@ -107,6 +109,11 @@ class Server(object):
 
     def __repr__( self ):
         return self.get_locator()
+
+    def _get_connection( self ):
+        if not self._connection:
+            self._connection = Connection(self, self.addr)
+        return self._connection
 
     def resolve_object( self, objinfo ):
         proxy_obj = proxy_registry.resolve(self, objinfo.path, objinfo.objimpl_id, objinfo.iface)
@@ -130,7 +137,7 @@ class Server(object):
         print '%s packet to %s:%d' % (encoding, self.addr[0], self.addr[1])
         pprint(tClientPacket, request)
         packet = Packet.from_contents(encoding, request, tClientPacket)
-        Connection.get_connection(self.addr).send_packet(packet)
+        self._get_connection().send_packet(packet)
 
     def process_packet( self, packet ):
         print '%r from %s:%d' % (packet, self.addr[0], self.addr[1])
