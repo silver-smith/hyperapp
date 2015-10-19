@@ -1,3 +1,4 @@
+import weakref
 from PySide import QtCore, QtNetwork
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
@@ -9,10 +10,22 @@ from ..common.request import (
     Request,
     decode_server_packet,
     )
-from .proxy_registry import proxy_registry
+from .objimpl_registry import objimpl_registry
 
 
 PACKET_ENCODING = 'cdr'
+
+
+class RespHandler(object):
+
+    def __init__( self, iface, command_id ):
+        assert isinstance(iface, Interface), repr(iface)
+        assert isinstance(command_id, basestring), repr(command_id)
+        self.iface = iface
+        self.command_id = command_id
+
+    def process_response( self, server, response ):
+        raise NotImplementedError(self.__class__)
 
 
 class Connection(object):
@@ -102,6 +115,7 @@ class Server(object):
     def __init__( self, addr ):
         self.addr = addr
         self._connection = None
+        self.pending_requests = weakref.WeakValueDictionary()  # request_id -> RespHandler
 
     def get_locator( self ):
         host, port = self.addr
@@ -116,9 +130,9 @@ class Server(object):
         return self._connection
 
     def resolve_object( self, objinfo ):
-        proxy_obj = proxy_registry.resolve(self, objinfo.path, objinfo.objimpl_id, objinfo.iface)
-        proxy_obj.set_contents(objinfo.contents)
-        return proxy_obj
+        object = objimpl_registry.factory(objinfo)
+        object.set_contents(objinfo.contents)
+        return object
 
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
@@ -127,9 +141,11 @@ class Server(object):
 
     def execute_request( self, request, resp_handler ):
         assert isinstance(request, Request), repr(request)
+        assert isinstance(resp_handler, RespHandler), repr(resp_handler)
         request_id = request.request_id
+        assert request_id not in self.pending_requests, repr(request_id)
         print 'execute_request', request.command_id, request_id
-        proxy_registry.register_resp_handler(request_id, resp_handler)
+        self.pending_requests[request_id] = resp_handler
         self._send(request)
 
     def _send( self, request ):
@@ -141,4 +157,19 @@ class Server(object):
 
     def process_packet( self, packet ):
         print '%r from %s:%d' % (packet, self.addr[0], self.addr[1])
-        QtCore.QCoreApplication.instance().process_packet(self, packet)
+        app = QtCore.QCoreApplication.instance()
+        app.add_modules(packet.aux.modules)
+        if app.has_unfulfilled_requirements(packet.aux.requirements):
+            app.request_required_modules_and_reprocess_packet(packet)
+        else:
+            self._process_packet(packet)
+
+    def _process_packet( self, packet ):
+        response_or_notification = packet.decode_server_packet(self, iface_registry)
+        self._process_updates(response_or_notification.updates)
+
+    def _process_updates( self, updates ):
+        for update in updates:
+            obj = self._resolve_instance(server, update.path)
+            if obj:
+                obj.process_update(update.diff)

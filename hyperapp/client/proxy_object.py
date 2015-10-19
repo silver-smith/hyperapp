@@ -5,8 +5,9 @@ from ..common.interface import Interface, Field, tString, tPath, resolve_iface, 
 from ..common.request import ClientNotification, Request
 from .object import Object
 from .command import Command
-from .proxy_registry import RespHandler, proxy_registry
-from .server import Server
+from .objimpl_registry
+from .proxy_registry import proxy_registry
+from .server import RespHandler, Server
 from . import view
 
 
@@ -32,9 +33,26 @@ class ProxyObject(Object):
     def resolve_persistent_id( persistent_id ):
         objimpl_id, iface_id, server_locator, path_str = persistent_id.split(' ', 3)
         iface = iface_registry.resolve(iface_id)
+        return proxy_registry.resolve(server, path)
         server = Server.resolve_locator(server_locator)
         path = str2path(path_str)
         return proxy_registry.resolve(server, path, objimpl_id, iface)
+
+    @classmethod
+    def obj_factory( cls, server, objinfo ):
+        return cls.factory(server, objinfo.path, objinfo.iface)
+
+    # we avoid making proxy objects with same server+path
+    @classmethod
+    def factory( cls, server, path, iface ):
+        object = proxy_registry.resolve(server, path)
+        if object is not None:
+            print '> proxy object is resolved from registry:', object
+            return object
+        object = cls(server, path, iface)
+        proxy_registry.register(server, path, object)
+        print '< proxy object is registered in registry:', object
+        return object
 
     def __init__( self, server, path, iface ):
         Object.__init__(self)

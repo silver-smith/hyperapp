@@ -10,7 +10,7 @@ class PacketRespHandler(ObjRespHandler):
 
     def __init__( self, object, command_id, server, packet ):
         ObjRespHandler.__init__(self, object, command_id)
-        self.server = server
+        self.server = server  # where original request was sent to
         self.packet = packet
 
     def process_response( self, server, response ):
