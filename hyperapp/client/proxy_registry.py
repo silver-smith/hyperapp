@@ -20,7 +20,7 @@ class RespHandler(object):
 class ProxyRegistry(object):
 
     def __init__( self ):
-        self.proxy_classes = {}  # proxy id -> class
+        self.proxy_classes = {}  # objimpl_id -> class
         self.proxy_instances = weakref.WeakValueDictionary()   # server locator + path str -> proxy class instance
         self.pending_requests = weakref.WeakValueDictionary()  # request_id -> RespHandler
 
