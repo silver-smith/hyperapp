@@ -114,6 +114,8 @@ class Application(QtGui.QApplication, view.View):
         module_ids = list(flatten(handle.get_module_ids() for handle in handles))
         print 'modules required for state: %s' % module_ids
         modules = self._module_cache.resolve_ids(module_ids)
+        for module in modules:
+            print '-- module is stored to state: %r (satisfies %s)' % (module.id, module.satisfies)
         state = (module_ids, modules, pickler.dumps(handles))
         with file(STATE_FILE_PATH, 'wb') as f:
             f.write(pickler.dumps(state))
@@ -125,6 +127,7 @@ class Application(QtGui.QApplication, view.View):
         module_ids, modules, pickled_handles = state
         for module in modules:
             self._module_cache.add_module(module)
+            print '-- module is loaded from state: %r (satisfies %s)' % (module.id, module.satisfies)
         for module in self._module_cache.resolve_ids(module_ids):
             print 'loading cached module required for state: %r' % module.id
             load_client_module(module)
