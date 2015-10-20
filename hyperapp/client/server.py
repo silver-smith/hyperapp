@@ -162,9 +162,16 @@ class Server(object):
         app = QtCore.QCoreApplication.instance()
         app.add_modules(packet.aux.modules)
         if app.has_unfulfilled_requirements(packet.aux.requirements):
-            app.request_required_modules_and_reprocess_packet(packet)
+            app.request_required_modules_and_reprocess_packet(self, packet)
         else:
             self._process_packet(packet)
+
+    def reprocess_packet( self, packet ):
+        print 'reprocessing %r from %s:%d' % (packet, self.addr[0], self.addr[1])
+        app = QtCore.QCoreApplication.instance()
+        app.add_modules(packet.aux.modules)
+        assert not app.has_unfulfilled_requirements(packet.aux.requirements)  # still has unfilfilled requirements
+        self._process_packet(packet)
 
     def _process_packet( self, packet ):
         response_or_notification = packet.decode_server_packet(self, iface_registry)

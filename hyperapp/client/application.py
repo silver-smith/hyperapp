@@ -44,6 +44,7 @@ class Application(QtGui.QApplication, view.View):
         self._windows = []
         self._resp_handlers = set()  # explicit refs to OpenRespHandlers to keep them alive until object is alive
 
+
     def add_modules( self, modules ):
         for module in modules:
             print '-- loading module %r fpath=%r' % (module.id, module.fpath)
@@ -52,33 +53,13 @@ class Application(QtGui.QApplication, view.View):
 
     def has_unfulfilled_requirements( self, requirements ):
         unfilfilled_requirements = filter(self._is_unfulfilled_requirement, requirements)
+        print '-- requirements:', requirements, ', unfulfilled:', unfilfilled_requirements
         return unfilfilled_requirements != []
 
-    def process_packet( self, server, packet ):
-        self.add_modules(packet.aux.modules)
+    def request_required_modules_and_reprocess_packet( self, server, packet ):
         unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
-        print '-- requirements:', packet.aux.requirements, ', unfulfilled:', unfilfilled_requirements
-        if unfilfilled_requirements:
-            self._code_repository.get_required_modules_and_process_packet(unfilfilled_requirements, server, packet)
-            return
-        else:
-            self._process_packet(server, packet)
-
-    def reprocess_packet( self, server, packet ):
-        self.add_modules(packet.aux.modules)
-        unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
-        assert not unfilfilled_requirements, repr(unfilfilled_requirements)  # still has unfilfilled requirements
-        self._process_packet(server, packet)
-
-    def _process_packet( self, server, packet ):
-        response = packet.decode_server_packet(server, iface_registry)
-        ## pprint(tServerPacket, response)
-        if isinstance(response, Response):
-            print '   response for request', response.command_id, response.request_id
-            proxy_registry.process_received_response(server, response)
-        else:
-            assert isinstance(response, ServerNotification), repr(response)
-            proxy_registry.process_received_notification(server, response)
+        assert unfilfilled_requirements
+        self._code_repository.get_required_modules_and_reprocess_packet(unfilfilled_requirements, server, packet)
 
     def _is_unfulfilled_requirement( self, requirement ):
         registry, key = requirement
@@ -89,6 +70,7 @@ class Application(QtGui.QApplication, view.View):
         if registry == 'interface':
             return not iface_registry.is_registered(key)
         assert False, repr(registry)  # Unknown registry
+
 
     def get_windows_handles( self ):
         return [view.handle() for view in self._windows]

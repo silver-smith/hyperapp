@@ -25,7 +25,7 @@ class CodeRepositoryProxy(ProxyObject):
         path = ['code_repository', 'code_repository']
         ProxyObject.__init__(self, server, path, code_repository_iface)
 
-    def get_required_modules_and_process_packet( self, requirements, server, packet ):
+    def get_required_modules_and_reprocess_packet( self, requirements, server, packet ):
         command_id = 'get_required_modules'
         request = self.prepare_request(command_id, requirements=requirements)
         resp_handler = PacketRespHandler(self, command_id, server, packet)
@@ -40,5 +40,4 @@ class CodeRepositoryProxy(ProxyObject):
     def process_get_required_modules_response( self, server, packet, result ):
         app = QtCore.QCoreApplication.instance()
         app.add_modules(result.modules)
-        print '-- reprocessing %r from %r' % (packet, server)
-        app.reprocess_packet(server, packet)
+        server.reprocess_packet(packet)
