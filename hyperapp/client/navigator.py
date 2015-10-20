@@ -15,8 +15,9 @@ MAX_HISTORY_SIZE = 100
 
 class Item(object):
 
-    def __init__( self, title, pickled_handle ):
+    def __init__( self, title, required_module_ids, pickled_handle ):
         self.title = title
+        self.required_module_ids = required_module_ids
         self.pickled_handle = pickled_handle
 
 
@@ -27,13 +28,23 @@ class Handle(composite.Handle):
         self.child = child_handle
         self.backward_history = backward_history or []   # Item list
         self.forward_history = forward_history or []     # Item list
+        self.required_module_ids = self._collect_required_module_ids()
 
     def get_child_handle( self ):
         return self.child
 
+    def get_module_ids( self ):
+        return self.required_module_ids
+
     def construct( self, parent ):
         print 'navigator construct', parent, self.child
         return View(parent, self.child, self.backward_history[:], self.forward_history[:])
+
+    def _collect_required_module_ids( self ):
+        module_ids = set(composite.Handle.get_module_ids(self))
+        for item in self.backward_history + self.forward_history:
+            module_ids.update(set(item.required_module_ids))
+        return list(module_ids)
 
 
 class View(composite.Composite):
@@ -101,7 +112,7 @@ class View(composite.Composite):
         return pickler.loads(item.pickled_handle)
 
     def _handle2item( self, handle ):
-        return Item(handle.get_title(), pickler.dumps(handle))
+        return Item(handle.get_title(), handle.get_module_ids(), pickler.dumps(handle))
 
     @command('History', 'Open history', 'Ctrl+H')
     def open_history( self ):
