@@ -1,7 +1,7 @@
 import bisect
 from .list_object import ListDiff, Element, Slice, ListObject
 from .proxy_object import ProxyObject
-from .proxy_registry import proxy_registry
+from .proxy_registry import proxy_class_registry
 
 
 class ProxyListObject(ProxyObject, ListObject):
@@ -163,4 +163,4 @@ class ProxyListObject(ProxyObject, ListObject):
         print '~ProxyListObject', self, self.path
 
 
-proxy_registry.register_class(ProxyListObject)
+proxy_class_registry.register(ProxyListObject)

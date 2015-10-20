@@ -8,9 +8,11 @@ from ..common.request import (
     tClientPacket,
     ClientNotification,
     Request,
+    Response,
     decode_server_packet,
     )
 from .objimpl_registry import objimpl_registry
+from .proxy_registry import proxy_registry
 
 
 PACKET_ENCODING = 'cdr'
@@ -130,7 +132,7 @@ class Server(object):
         return self._connection
 
     def resolve_object( self, objinfo ):
-        object = objimpl_registry.factory(objinfo)
+        object = objimpl_registry.produce_obj(self, objinfo)
         object.set_contents(objinfo.contents)
         return object
 
@@ -167,9 +169,18 @@ class Server(object):
     def _process_packet( self, packet ):
         response_or_notification = packet.decode_server_packet(self, iface_registry)
         self._process_updates(response_or_notification.updates)
+        if isinstance(response_or_notification, Response):
+            response = response_or_notification
+            print '   response for request', response.command_id, response.request_id
+            resp_handler = self.pending_requests.get(response.request_id)
+            if not resp_handler:
+                print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
+                return
+            resp_handler.process_response(self, response)
 
     def _process_updates( self, updates ):
         for update in updates:
-            obj = self._resolve_instance(server, update.path)
+            obj = proxy_registry.resolve(server, update.path)
             if obj:
                 obj.process_update(update.diff)
+            # otherwize object is already gone and updates must be discarded

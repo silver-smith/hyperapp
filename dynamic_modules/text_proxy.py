@@ -2,7 +2,7 @@
 
 from .text_object import TextObject
 from .proxy_object import ProxyObject
-from .proxy_registry import proxy_registry
+from .proxy_registry import proxy_class_registry
 
 
 class ProxyTextObject(ProxyObject, TextObject):
@@ -49,4 +49,4 @@ class ProxyTextObject(ProxyObject, TextObject):
         self.text_changed(new_text)
 
 
-proxy_registry.register_class(ProxyTextObject)
+proxy_class_registry.register(ProxyTextObject)

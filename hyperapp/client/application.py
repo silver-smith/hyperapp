@@ -13,7 +13,8 @@ from . import window
 from . import tab_view
 from . import text_view
 from . import navigator
-from .proxy_registry import RespHandler, proxy_registry
+from .objimpl_registry import objimpl_registry
+from .server import RespHandler
 from .view_registry import view_registry
 from .code_repository import CodeRepositoryProxy
 from .module_loader import ModuleCache, load_client_module
@@ -49,6 +50,10 @@ class Application(QtGui.QApplication, view.View):
             self._module_cache.add_module(module)
             load_client_module(module)
 
+    def has_unfulfilled_requirements( self, requirements ):
+        unfilfilled_requirements = filter(self._is_unfulfilled_requirement, requirements)
+        return unfilfilled_requirements != []
+
     def process_packet( self, server, packet ):
         self.add_modules(packet.aux.modules)
         unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
@@ -78,7 +83,7 @@ class Application(QtGui.QApplication, view.View):
     def _is_unfulfilled_requirement( self, requirement ):
         registry, key = requirement
         if registry == 'object':
-            return not proxy_registry.is_class_registered(key)
+            return not objimpl_registry.is_registered(key)
         if registry == 'handle':
             return not view_registry.is_view_registered(key)
         if registry == 'interface':
