@@ -15,7 +15,7 @@ MODULE_NAME = 'blog'
 class BlogEntry(article.Article):
 
     iface = blog_entry_iface
-    objimpl_id = 'text'
+    objimpl_id = 'proxy.text'
 
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))

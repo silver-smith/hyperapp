@@ -30,6 +30,10 @@ class TClass(TRecord):
 
     def make_object( self ):
         return Class(self.id)
+
+    def issubclass( self, tclass ):
+        return self is tclass \
+          or self.base and self.base.issubclass(tclass)
             
 
 class THierarchy(Type):
@@ -60,3 +64,6 @@ class THierarchy(Type):
         assert hasattr(obj, '_class_id'), repr(obj)  # not a TClass instance
         id = obj._class_id
         return self.resolve(id)
+
+    def isinstance( self, obj, tclass ):
+        return self.resolve_obj(obj).issubclass(tclass)

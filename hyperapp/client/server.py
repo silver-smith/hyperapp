@@ -132,9 +132,7 @@ class Server(object):
         return self._connection
 
     def resolve_object( self, objinfo ):
-        object = objimpl_registry.produce_obj(self, objinfo)
-        object.set_contents(objinfo.contents)
-        return object
+        return objimpl_registry.produce_obj(self, objinfo)
 
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)

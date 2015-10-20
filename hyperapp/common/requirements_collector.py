@@ -7,6 +7,7 @@ from .interface import (
     THierarchy,
     TList,
     tObject,
+    tProxyObject,
     tHandle,
     )
 
@@ -46,7 +47,8 @@ class RequirementsCollector(object):
     def process_hierarchy_obj( self, t, value ):
         if t is tObject:
             self.collected_requirements.add(('object', value.objimpl_id))
-            self.collected_requirements.add(('interface', value.iface.iface_id))
+            if tObject.isinstance(value, tProxyObject):
+                self.collected_requirements.add(('interface', value.iface.iface_id))
         if t is tHandle:
             self.collected_requirements.add(('handle', value.view_id))
         tclass = t.resolve_obj(value)

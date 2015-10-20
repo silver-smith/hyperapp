@@ -24,7 +24,7 @@ class Article(Object):
     mode_edit = object()
 
     iface = article_iface
-    objimpl_id = 'text'
+    objimpl_id = 'proxy.text'
     class_name = 'article'
 
     class_registry = {}  # ponyorm entity class -> class

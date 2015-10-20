@@ -1,4 +1,6 @@
+from .. common.interface import text_object
 from .object import Object
+from .objimpl_registry import objimpl_registry
 
 
 class TextObject(Object):
@@ -16,6 +18,10 @@ class TextObject(Object):
     @classmethod
     def set_edit_handle_ctr( cls, ctr ):
         cls.edit_handle_ctr = ctr
+
+    @classmethod
+    def factory( cls, server, objinfo ):
+        return cls(objinfo.text)
 
     def __init__( self, text ):
         Object.__init__(self)
@@ -51,3 +57,6 @@ class TextObject(Object):
 
     def __del__( self ):
         print '~text_object', self
+
+
+objimpl_registry.register('text', TextObject.factory)

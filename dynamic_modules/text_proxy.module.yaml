@@ -3,4 +3,4 @@ name: text_proxy
 package: hyperapp.client
 source_path: text_proxy.py
 satisfies:
- - object/text
+ - object/proxy.text

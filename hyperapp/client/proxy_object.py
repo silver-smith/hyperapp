@@ -39,7 +39,9 @@ class ProxyObject(Object):
 
     @classmethod
     def produce_obj_by_objinfo( cls, server, objinfo ):
-        return cls.produce_obj(server, objinfo.path, objinfo.iface)
+        object = cls.produce_obj(server, objinfo.path, objinfo.iface)
+        object.set_contents(objinfo.contents)
+        return object
 
     # we avoid making proxy objects with same server+path
     @classmethod

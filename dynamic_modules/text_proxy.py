@@ -13,7 +13,7 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     @staticmethod
     def get_objimpl_id():
-        return 'text'
+        return 'proxy.text'
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
