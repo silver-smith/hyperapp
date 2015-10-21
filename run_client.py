@@ -11,7 +11,6 @@ import hyperapp.common.interface.fs
 import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
 import hyperapp.common.interface.module_list
-#import hyperapp.common.interface.test_list
 # self-registering views:
 import hyperapp.client.window
 import hyperapp.client.tab_view
@@ -20,11 +19,9 @@ import hyperapp.client.navigator
 import hyperapp.client.narrower
 import hyperapp.client.text_object
 import hyperapp.client.proxy_list_object
-#import hyperapp.client.proxy_text_object
 import hyperapp.client.text_edit
 import hyperapp.client.text_view
-#import hyperapp.client.object_selector
-#import hyperapp.client.ref_list
+import hyperapp.client.form_view
 
 
 def main():
