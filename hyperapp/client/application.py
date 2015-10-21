@@ -97,12 +97,6 @@ class Application(QtGui.QApplication, view.View):
         if not self._windows:
             self.save_state([view.handle()])
 
-    def process_open_response( self, server, result, resp_handler ):
-        # open in any window
-        view = self._windows[0].get_current_view()
-        view.process_handle_open(server, result)
-        self._resp_handlers.remove(resp_handler)
-
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
         ## module.set_shutdown_flag()
@@ -156,6 +150,12 @@ class Application(QtGui.QApplication, view.View):
         request = Request(self.server, iface, path, command_id, request_id)
         self.server.execute_request(request, resp_handler)
         self._resp_handlers.add(resp_handler)
+
+    def process_open_response( self, server, result, resp_handler ):
+        # open in any window
+        view = self._windows[0].get_current_view()
+        view.process_handle_open(server, result)
+        self._resp_handlers.remove(resp_handler)
 
     def exec_( self ):
         whandles = self.load_state_and_modules()
