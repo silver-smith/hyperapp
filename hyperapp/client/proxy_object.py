@@ -3,6 +3,7 @@ import uuid
 from ..common.util import path2str, str2path
 from ..common.interface import Interface, Field, tString, tPath, resolve_iface, iface_registry
 from ..common.request import ClientNotification, Request
+from .util import make_url
 from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
@@ -90,6 +91,9 @@ class ProxyObject(Object):
 
     def get_commands( self ):
         return self.commands
+
+    def get_url( self ):
+        return make_url(self.server, self.path)
 
     def run_command( self, command_id, initiator_view=None, **kw ):
         self.execute_request(command_id, initiator_view, **kw)

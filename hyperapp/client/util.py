@@ -5,6 +5,7 @@ import itertools
 from datetime import datetime
 from dateutil.tz import tzutc
 from PySide import QtCore, QtGui
+from ..common.util import path2str, str2path
 
 
 DEBUG_FOCUS = False
@@ -171,3 +172,7 @@ def focused_index( parent, children, default=None ):
             if w is trg: return idx
         w = w.parent()
     return default
+
+def make_url( server, path ):
+    return '%s/%s' % (server.get_locator(), path2str(path))
+   
