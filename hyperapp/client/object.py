@@ -13,6 +13,7 @@ class Object(object):
 
     def __init__( self ):
         self._init_observers()
+        self._phony = True  # force calling __setstate__, it won't be called for empty __dict__
 
     def __getstate__( self ):
         state = dict(self.__dict__)
