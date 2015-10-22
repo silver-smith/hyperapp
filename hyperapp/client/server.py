@@ -1,5 +1,5 @@
-import weakref
 from PySide import QtCore, QtNetwork
+from ..common.util import path2str, str2path
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
 from ..common.interface import Interface, iface_registry
@@ -102,7 +102,7 @@ class Server(object):
 
     @classmethod
     def resolve_locator( cls, locator ):
-        host, port_str = locator.split(':')
+        host, port_str = locator.split(':', 1)
         addr = (host, int(port_str))
         return cls.resolve_addr(addr)
 
@@ -114,10 +114,20 @@ class Server(object):
             cls.addr2server[addr] = server
         return server
 
+    @classmethod
+    def decode_url( cls, url ):
+        locator, path_str = url.split('/', 1)
+        server = cls.resolve_locator(locator)
+        path = str2path(path_str)
+        return (server, path)
+
     def __init__( self, addr ):
         self.addr = addr
         self._connection = None
-        self.pending_requests = weakref.WeakValueDictionary()  # request_id -> RespHandler
+        self.pending_requests = {}  # request_id -> RespHandler
+
+    def encode_url( self, iface, path ):
+        return '%s/%s' % (self.get_locator(), path2str(path))
 
     def get_locator( self ):
         host, port = self.addr
@@ -181,6 +191,7 @@ class Server(object):
             if not resp_handler:
                 print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
                 return
+            del self.pending_requests[response.request_id]
             resp_handler.process_response(self, response)
 
     def _process_updates( self, updates ):

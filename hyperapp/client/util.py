@@ -172,7 +172,4 @@ def focused_index( parent, children, default=None ):
             if w is trg: return idx
         w = w.parent()
     return default
-
-def make_url( server, path ):
-    return '%s/%s' % (server.get_locator(), path2str(path))
-   
+    

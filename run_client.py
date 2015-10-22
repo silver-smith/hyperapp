@@ -28,7 +28,7 @@ def main():
     app = Application(sys.argv)
 
     if len(sys.argv) > 1:
-        iface_id, path_str = sys.argv[1].split(':')
+        iface_id, path_str = sys.argv[1].split(':', 1)
         path = str2path(path_str)
         iface = iface_registry.resolve(iface_id)
         app.execute_get_request(iface, path)

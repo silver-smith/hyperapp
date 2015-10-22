@@ -4,8 +4,10 @@ import weakref
 from .util import make_action
 from .command import Command
 from .object import Object
+from .server import Server
 from .proxy_object import ProxyObject
 from . import form_view as form
+from .get_request import run_get_request
 
 
 class UrlFormObject(Object):
@@ -14,17 +16,17 @@ class UrlFormObject(Object):
         return 'Url form'
 
     def get_commands( self ):
-        return [Command('open', 'Open', 'Open entered url', 'Return')]
+        return [Command('submit', 'Open', 'Open entered url', 'Return')]
 
     def run_command( self, command_id, initiator_view, **kw ):
-        if command_id == 'open':
-            self.run_command_open(initiator_view, **kw)
+        if command_id == 'submit':
+            self.run_command_submit(initiator_view, **kw)
         else:
             Object.run_command(self, command_id, initiator_view, **kw)
 
-    def run_command_open( self, initiator_view, url ):
-        print '***** open url', `url`
-
+    def run_command_submit( self, initiator_view, url ):
+        server, path = Server.decode_url(url)
+        run_get_request(initiator_view, server, path)
 
 
 def make_open_url_action( widget, window ):
@@ -36,7 +38,7 @@ def make_open_url_action( widget, window ):
         object = view.get_object()
         if isinstance(object, ProxyObject):
             handle = form.Handle(UrlFormObject(),
-                                  [form.Field('url', form.StringFieldHandle(object.get_url()))])
+                                 [form.Field('url', form.StringFieldHandle(object.get_url()))])
             view.open(handle)
 
     return make_action(widget, 'Open current url', 'Ctrl+U', run, weakref.ref(window))

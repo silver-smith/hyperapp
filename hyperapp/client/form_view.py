@@ -148,7 +148,7 @@ class View(view.View, QtGui.QWidget):
         if command_id == 'submit':
             self.run_object_command_submit(command_id)
         else:
-            view.View.run_object_command(command_id)
+            view.View.run_object_command(self, command_id)
 
     def run_object_command_submit( self, command_id ):
         field_values = {}

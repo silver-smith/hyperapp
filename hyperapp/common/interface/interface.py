@@ -220,3 +220,11 @@ def register_iface( iface ):
 
 def resolve_iface( iface_id ):
     return iface_registry.resolve(iface_id)
+
+
+# all interfaces support this one too:        
+get_iface = Interface('base_get', commands=[
+    OpenCommand('get'),
+    ])
+
+register_iface(get_iface)
