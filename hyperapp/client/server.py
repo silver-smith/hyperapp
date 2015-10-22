@@ -103,7 +103,7 @@ class Server(object):
     @classmethod
     def resolve_locator( cls, locator ):
         host, port_str = locator.split(':', 1)
-        addr = (host, int(port_str))
+        addr = (str(host), int(port_str))
         return cls.resolve_addr(addr)
 
     @classmethod
