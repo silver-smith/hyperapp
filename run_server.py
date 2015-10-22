@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 from hyperapp.server.server import TcpServer
 
 # self-registering modules:
@@ -14,11 +15,16 @@ import hyperapp.server.test_text_object
 import hyperapp.server.code_repository
 
 
-LISTEN_PORT = 8888
+DEFAULT_ADDR = 'localhost:8888'
 
 
 def main():
-    server = TcpServer(LISTEN_PORT)
+    parser = argparse.ArgumentParser(description='Hyperapp server')
+    parser.add_argument('addr', nargs='?', help='address to listen at', default=DEFAULT_ADDR)
+    args = parser.parse_args()
+
+    host, port = args.addr.split(':')
+    server = TcpServer(host, int(port))
     server.run()
 
 

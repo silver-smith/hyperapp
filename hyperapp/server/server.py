@@ -9,15 +9,14 @@ from .client import Client
 
 class TcpServer(object):
 
-    def __init__( self, port ):
-        self.port = port
+    def __init__( self, host, port ):
         self.client2thread = {}  # client -> thread
         self.finished_threads = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind(('', self.port))
+        self.socket.bind((host, port))
         self.socket.listen(5)
-        print 'listening on port %d' % self.port
+        print 'listening on port %s:%d' % (host, port)
 
     def run( self ):
         Module.init_phases()
