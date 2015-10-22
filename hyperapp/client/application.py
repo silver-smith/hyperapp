@@ -83,10 +83,8 @@ class Application(QtGui.QApplication, view.View):
         return None
 
     def get_global_commands( self ):
-        management_iface = iface_registry.resolve('server_management')
         management_cmd = window.OpenCommand(
-            'open_server', 'Server', 'Open server global commands', 'Alt+G',
-            management_iface, path=['management'])
+            'open_server', 'Server', 'Open server global commands', 'Alt+G', path=['management'])
         return [management_cmd]  + self._commands
 
     def window_created( self, view ):

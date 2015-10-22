@@ -11,39 +11,25 @@ from . import view
 from . import composite
 from .menu_bar import MenuBar
 from . import cmd_pane
-#import filter_pane
+from .get_request import run_get_request
 
 
 DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-class OpenRespHandler(RespHandler):
-
-    def __init__( self, iface, command_id, window ):
-        RespHandler.__init__(self, iface, command_id)
-        self.window_wref = weakref.ref(window)
-
-    def process_response( self, server, response ):
-        window = self.window_wref()
-        if not window: return
-        window.process_open_command_response(self, server, response.result)
-
-
 class OpenCommand(ViewCommandBase):
 
-    def __init__( self, id, text, desc, shortcut, iface, path ):
-        assert isinstance(iface, Interface), repr(iface)
+    def __init__( self, id, text, desc, shortcut, path ):
         ViewCommandBase.__init__(self, text, desc, shortcut)
         self.id = id
-        self.iface = iface
         self.path = path
 
     def run( self, window_wr ):
-        print 'OpenCommand.run', self.id, self.iface, self.path, window_wr
+        print 'OpenCommand.run', self.id, self.path, window_wr
         window = window_wr()
         if window:
-            window.run_open_command(self.iface, self.path)
+            window.run_open_command(self.path)
 
     def make_action( self, widget, window ):
         return make_action(widget, self.text, self.shortcut, self.run, weakref.ref(window))
@@ -139,18 +125,8 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
-    def run_open_command( self, iface, path ):
-        command_id = 'get'
-        iface.validate_request(command_id)
-        resp_handler = OpenRespHandler(iface, command_id, self)
-        request_id = str(uuid.uuid4())
-        request = Request(self._app.server, iface, path, command_id, request_id)
-        self._app.server.execute_request(request, resp_handler)
-        self.resp_handlers.add(resp_handler)
-
-    def process_open_command_response( self, resp_handler, server, result ):
-        self.resp_handlers.remove(resp_handler)
-        self.get_current_view().process_handle_open(server, result)
+    def run_open_command( self, path ):
+        run_get_request(self.get_current_view(), self._app.server, path)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):
