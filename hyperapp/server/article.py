@@ -96,10 +96,12 @@ class Article(Object):
     def run_command_open_ref( self, request ):
         ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
-        target_url = decode_url(rec.path)
-        target_path = target_url[1:]
-        target = module.run_resolver(target_path)
-        return request.make_response_handle(target)
+        url = decode_url(rec.url)
+        if rec.is_local:
+            target = module.run_resolver(url)
+            return request.make_response_handle(target)
+        else:
+            assert False  # todo
 
     @db_session
     def do_save( self, request, text ):
@@ -158,13 +160,20 @@ class ArticleRefList(SmallListObject):
 
     def run_command_add( self, request ):
         with db_session:
+            url = request.params.target_url
+            if request.me.is_mine_url(url):
+                is_local = True
+                _, url = request.me.split_url(url)
+            else:
+                is_local = False
             rec = module.ArticleRef(article=module.Article[self.article_id],
-                                    path=encode_url(request.params.target_url))
-        return request.make_response(RefSelector(self.article_id, ref_id=rec.id).make_handle())
+                                    url=encode_url(url),
+                                    is_local=is_local)
+        return request.make_response(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
 
     def run_command_open( self, request ):
         return request.make_response(
-            RefSelector(self.article_id, ref_id=request.params.element_key).make_handle())
+            RefSelector(self.article_id, ref_id=request.params.element_key).make_handle(request))
 
     @db_session
     def run_element_command_delete( self, request ):
@@ -184,7 +193,11 @@ class ArticleRefList(SmallListObject):
             Command('open', 'Open', 'Open reference selector'),
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
-        return self.Element(self.Row(rec.id, rec.path), commands)
+        if rec.is_local:
+            url = '<local>:' + rec.url
+        else:
+            url = rec.url
+        return self.Element(self.Row(rec.id, url), commands)
 
 
 class RefSelector(Object):
@@ -214,30 +227,38 @@ class RefSelector(Object):
 
     @db_session
     def run_command_choose( self, request ):
-        target_path_str = encode_url(request.params.target_url)
+        url = request.params.target_url
+        if request.me.is_mine_url(url):
+            is_local = True
+            _, url = request.me.split_url(url)
+        else:
+            is_local = False
+        url_str = encode_url(url)
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
-                                    path=target_path_str)
+                                    url=url_str,
+                                    is_local=is_local)
         else:
             rec = module.ArticleRef[self.ref_id]
-            rec.path = target_path_str
+            rec.url = url_str
+            rec.is_local = is_local
         commit()
-        print 'Saved article#%d reference#%d path: %r' % (rec.article.id, rec.id, rec.path)
+        print 'Saved article#%d reference#%d path: %r, is_local=%r' % (rec.article.id, rec.id, rec.url, rec.is_local)
         ref_list_obj = ArticleRefList(self.article_id)
         list_elt = ArticleRefList.ListHandle(ref_list_obj.get(), rec.id)
         handle = ObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
         return request.make_response(handle)
 
     @db_session
-    def make_handle( self ):
-        if self.ref_id is None:
-            target = None
+    def make_handle( self, request ):
+        assert self.ref_id is not None  # why can it be?
+        rec = module.ArticleRef[self.ref_id]
+        target_url = decode_url(rec.url)
+        if rec.is_local:
+            target_obj = module.run_resolver(target_url)
+            return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
         else:
-            rec = module.ArticleRef[self.ref_id]
-            target_url = decode_url(rec.path)
-            path = target_url[1:]
-            target_obj = module.run_resolver(path)
-        return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
+            assert False  # todo
 
 
 class ArticleModule(PonyOrmModule):
@@ -251,7 +272,7 @@ class ArticleModule(PonyOrmModule):
         self.Article = self.make_entity('Article', **self.article_fields)
         self.ArticleRef = self.make_entity('ArticleRef',
                                            article=Required(self.Article),
-                                           url=Required(str),
+                                           url=Required(str),  # only local path if is_local=True
                                            is_local=Required(bool),
                                            )
         Article.register_class(self.Article)
