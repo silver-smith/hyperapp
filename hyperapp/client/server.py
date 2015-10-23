@@ -194,7 +194,7 @@ class Server(object):
 
     def _process_updates( self, updates ):
         for update in updates:
-            obj = proxy_registry.resolve(server, update.path)
+            obj = proxy_registry.resolve(self, update.path)
             if obj:
                 obj.process_update(update.diff)
             # otherwize object is already gone and updates must be discarded
