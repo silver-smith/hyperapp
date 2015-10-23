@@ -65,3 +65,6 @@ class TcpServer(object):
     # split into transport/server and local path parts
     def split_url( self, url ):
         return (url[:1], url[1:])
+
+    def make_url( self, path ):
+        return [self.addr] + path
