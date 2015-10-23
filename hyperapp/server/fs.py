@@ -17,7 +17,7 @@ class FsObject(SmallListObject):
         self.fspath = os.path.abspath(fspath)
 
     def get_path( self ):
-        return module.make_path(*self.fspath.split('/'))
+        return module.make_path(self.fspath)
 
 
 class File(FsObject):
@@ -121,7 +121,7 @@ class FileModule(Module):
         Module.__init__(self, MODULE_NAME)
 
     def resolve( self, path ):
-        fspath = path.pop_tail_as_str()
+        fspath = path.pop_str()
         return self.open(fspath)
 
     def get_commands( self ):

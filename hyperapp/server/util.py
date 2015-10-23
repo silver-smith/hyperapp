@@ -44,11 +44,6 @@ class Path(object):
             self.raise_not_found()
         return v
 
-    def pop_tail_as_str( self ):
-        tail = '/'.join(self.path)
-        self.path = []
-        return tail
-
 
 def path_part_to_str( val, none_str='' ):
     if val is None:
