@@ -24,6 +24,7 @@ class File(FsObject):
 
     iface = file_iface
     objimpl_id = 'list'
+    default_sort_column_id = 'idx'
 
     def get_commands( self ):
         return []
