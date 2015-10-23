@@ -1,4 +1,4 @@
-from pony.orm import db_session, commit, Required, Optional, Set, select
+from pony.orm import db_session, commit, Required, Set, select
 from ..common.util import encode_url, decode_url
 from ..common.interface import Command, Column, ObjHandle
 from ..common.interface.article import (
@@ -251,7 +251,8 @@ class ArticleModule(PonyOrmModule):
         self.Article = self.make_entity('Article', **self.article_fields)
         self.ArticleRef = self.make_entity('ArticleRef',
                                            article=Required(self.Article),
-                                           path=Optional(str),
+                                           url=Required(str),
+                                           is_local=Required(bool),
                                            )
         Article.register_class(self.Article)
 
