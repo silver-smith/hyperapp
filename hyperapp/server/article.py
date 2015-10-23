@@ -96,7 +96,8 @@ class Article(Object):
     def run_command_open_ref( self, request ):
         ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
-        target_path = str2path(rec.path)
+        target_url = decode_url(rec.path)
+        target_path = target_url[1:]
         target = module.run_resolver(target_path)
         return request.make_response_handle(target)
 
@@ -158,7 +159,7 @@ class ArticleRefList(SmallListObject):
     def run_command_add( self, request ):
         with db_session:
             rec = module.ArticleRef(article=module.Article[self.article_id],
-                                    path=path2str(request.params.target_path))
+                                    path=encode_url(request.params.target_url))
         return request.make_response(RefSelector(self.article_id, ref_id=rec.id).make_handle())
 
     def run_command_open( self, request ):
@@ -213,7 +214,7 @@ class RefSelector(Object):
 
     @db_session
     def run_command_choose( self, request ):
-        target_path_str = path2str(request.params.target_path)
+        target_path_str = encode_url(request.params.target_url)
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     path=target_path_str)
@@ -233,8 +234,9 @@ class RefSelector(Object):
             target = None
         else:
             rec = module.ArticleRef[self.ref_id]
-            target_path = str2path(rec.path)
-            target_obj = module.run_resolver(target_path)
+            target_url = decode_url(rec.path)
+            path = target_url[1:]
+            target_obj = module.run_resolver(path)
         return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
 
 

@@ -22,7 +22,7 @@ class RefList(ProxyListObject):
 
     # todo
     def get_default_url( self ):
-        return self.server.encode_url('file|/home')
+        return self.server.make_url(['file', os.path.expanduser('~')])
 
 
 proxy_class_registry.register(RefList)

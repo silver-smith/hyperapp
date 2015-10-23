@@ -43,11 +43,11 @@ ref_list_iface = ListInterface(
     'article_ref_list',
     columns=[
         Column('ref_id', 'Id', intColumnType),
-        Column('path', 'Path'),
+        Column('url', 'Url'),
     ],
     commands=[
         OpenCommand('parent'),
-        OpenCommand('add', [Field('target_url', tString)]),
+        OpenCommand('add', [Field('target_url', tUrl)]),
         ElementOpenCommand('open'),
         ElementCommand('delete'),
     ],
@@ -55,7 +55,7 @@ ref_list_iface = ListInterface(
 
 object_selector_iface = Interface('article_object_selector',
                                   commands=[
-                                      OpenCommand('choose', [Field('target_url', tString)]),
+                                      OpenCommand('choose', [Field('target_url', tUrl)]),
                                   ])
 
 onwrap_object_selector_iface = Interface('article_unwrap_object_selector',

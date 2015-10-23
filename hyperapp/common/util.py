@@ -12,6 +12,7 @@ def is_list_inst( val, cls ):
             return False
     return True
 
+# todo: quote/unquote '|' chars
 # used also for persistent id, which requires binary str, not unicode
 def encode_url( path ):
     return '|'.join(path).encode('utf-8')
