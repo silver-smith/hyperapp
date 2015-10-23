@@ -8,7 +8,7 @@ from .types import (
     Field,
     TRecord,
     TList,
-    tPath,
+    tUrl,
     tCommand,
     )
 from .dynamic_record import TDynamicRec
@@ -27,7 +27,7 @@ tObject = THierarchy('object')
 tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
 tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
     Field('iface', TIface()),
-    Field('path', tPath),
+    Field('path', tUrl),
     ])
 
 
@@ -184,7 +184,7 @@ class TUpdate(TDynamicRec):
     def __init__( self ):
         fields = [
             Field('iface', TIface()),
-            Field('path', tPath),
+            Field('path', tUrl),
             ]
         TDynamicRec.__init__(self, fields)
 

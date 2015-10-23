@@ -1,7 +1,7 @@
 import weakref
 import uuid
-from ..common.util import path2str, str2path
-from ..common.interface import Interface, Field, tString, tPath, resolve_iface, iface_registry
+from ..common.util import encode_url, decode_url
+from ..common.interface import Interface, Field, tString, resolve_iface, iface_registry
 from ..common.request import ClientNotification, Request
 from .object import Object
 from .command import Command
@@ -30,9 +30,10 @@ class ProxyObject(Object):
 
     @staticmethod
     def resolve_persistent_id( persistent_id ):
-        objimpl_id, iface_id, server_locator, path_str = persistent_id.split(' ', 3)
-        server = Server.resolve_locator(server_locator)
-        path = str2path(path_str)
+        parts = decode_url(persistent_id)
+        objimpl_id, iface_id = parts[:2]
+        url = parts[2:]
+        server, path = Server.resolve_url(url)
         iface = iface_registry.resolve(iface_id)
         proxy_cls = proxy_class_registry.resolve(objimpl_id)
         return proxy_cls.produce_obj(server, path, iface)
@@ -64,14 +65,15 @@ class ProxyObject(Object):
         self.commands = []
         self.resp_handlers = set()  # explicit refs to ObjRespHandlers to keep them alive until object is alive
 
+    def get_url( self ):
+        return self.server.make_url(self.path)
+
     def get_module_ids( self ):
         return self.iface.get_module_ids()
 
     def get_persistent_id( self ):
-        return ' '.join([self.get_objimpl_id(),
-                         self.iface.iface_id,
-                         self.server.get_locator(),
-                         path2str(self.path)])
+        return encode_url([self.get_objimpl_id(),
+                           self.iface.iface_id] + self.server.make_url(self.path))
 
     @staticmethod
     def get_objimpl_id():
@@ -90,9 +92,6 @@ class ProxyObject(Object):
 
     def get_commands( self ):
         return self.commands
-
-    def get_url( self ):
-        return self.server.encode_url(self.iface, self.path)
 
     def run_command( self, command_id, initiator_view=None, **kw ):
         self.execute_request(command_id, initiator_view, **kw)

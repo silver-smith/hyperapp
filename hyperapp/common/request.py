@@ -1,5 +1,5 @@
 from .util import is_list_inst
-from .interface import TPrimitive, tString, Field, TRecord, TIface, tPath, tUpdateList, Interface
+from .interface import TPrimitive, tString, Field, TRecord, TIface, tUrl, tUpdateList, Interface
 from .interface.dynamic_record import TDynamicRec
 from .packet_coders import packet_coders
 
@@ -118,7 +118,7 @@ class TClientPacket(TDynamicRec):
     def __init__( self ):
         fields = [
             Field('iface', TIface()),
-            Field('path', tPath),
+            Field('path', tUrl),
             Field('command_id', tString),
             ]
         TDynamicRec.__init__(self, fields)

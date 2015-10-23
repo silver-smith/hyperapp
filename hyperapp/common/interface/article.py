@@ -2,7 +2,7 @@ from .types import (
     tString,
     tInt,
     TOptional,
-    tPath,
+    tUrl,
     Field,
     TRecord,
     )
@@ -33,7 +33,7 @@ ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
 article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(tString))],
                           commands=[
-                              RequestCmd('save', [Field('text', tString)], [Field('new_path', tPath)]),
+                              RequestCmd('save', [Field('text', tString)], [Field('new_path', tUrl)]),
                               OpenCommand('refs'),
                               OpenCommand('open_ref', [Field('ref_id', tString)]),
                               ],
@@ -47,7 +47,7 @@ ref_list_iface = ListInterface(
     ],
     commands=[
         OpenCommand('parent'),
-        OpenCommand('add', [Field('target_path', tPath)]),
+        OpenCommand('add', [Field('target_url', tString)]),
         ElementOpenCommand('open'),
         ElementCommand('delete'),
     ],
@@ -55,7 +55,7 @@ ref_list_iface = ListInterface(
 
 object_selector_iface = Interface('article_object_selector',
                                   commands=[
-                                      OpenCommand('choose', [Field('target_path', tPath)]),
+                                      OpenCommand('choose', [Field('target_url', tString)]),
                                   ])
 
 onwrap_object_selector_iface = Interface('article_unwrap_object_selector',

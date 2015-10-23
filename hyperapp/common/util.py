@@ -12,12 +12,12 @@ def is_list_inst( val, cls ):
             return False
     return True
 
-# stringified path is included into persistent id, which requires binary str, not unicode
-def path2str( path ):
-    return '/'.join(path).encode('utf-8')
+# used also for persistent id, which requires binary str, not unicode
+def encode_url( path ):
+    return '|'.join(path).encode('utf-8')
 
-def str2path( path_str ):
-    return path_str.decode('utf-8').split('/')
+def decode_url( path_str ):
+    return path_str.decode('utf-8').split('|')
 
 def dt2local_str( dt ):
     if dt is None: return ''

@@ -190,7 +190,7 @@ class TIndexedList(TList):
     pass
 
 
-tPath = TList(tString)
+tUrl = TList(tString)
 
 tCommand = TRecord([
             Field('id', tString),

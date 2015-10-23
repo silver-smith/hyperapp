@@ -3,7 +3,6 @@ from .types import (
     tInt,
     tDateTime,
     TOptional,
-    tPath,
     Field,
     )
 from .interface import RequestCmd, OpenCommand, Interface, register_iface

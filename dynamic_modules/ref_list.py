@@ -18,11 +18,11 @@ class RefList(ProxyListObject):
         return ProxyListObject.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_add( self, initiator_view ):
-        self.execute_request('add', initiator_view, target_path=self.get_default_ref())
+        self.execute_request('add', initiator_view, target_url=self.get_default_url())
 
     # todo
-    def get_default_ref( self ):
-        return ['file'] + os.path.expanduser('~').split('/')
+    def get_default_url( self ):
+        return self.server.encode_url('file|/home')
 
 
 proxy_class_registry.register(RefList)

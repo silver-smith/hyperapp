@@ -20,16 +20,16 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class OpenCommand(ViewCommandBase):
 
-    def __init__( self, id, text, desc, shortcut, path ):
+    def __init__( self, id, text, desc, shortcut, url ):
         ViewCommandBase.__init__(self, text, desc, shortcut)
         self.id = id
-        self.path = path
+        self.url = url
 
     def run( self, window_wr ):
-        print 'OpenCommand.run', self.id, self.path, window_wr
+        print 'OpenCommand.run', self.id, self.url, window_wr
         window = window_wr()
         if window:
-            window.run_open_command(self.path)
+            window.run_open_command(self.url)
 
     def make_action( self, widget, window ):
         return make_action(widget, self.text, self.shortcut, self.run, weakref.ref(window))
@@ -125,8 +125,8 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
-    def run_open_command( self, path ):
-        run_get_request(self.get_current_view(), self._app.server, path)
+    def run_open_command( self, url ):
+        run_get_request(self.get_current_view(), url)
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):

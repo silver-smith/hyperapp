@@ -1,5 +1,5 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
-from ..common.util import path2str, str2path
+from ..common.util import encode_url, decode_url
 from ..common.interface import Command, Column, ObjHandle
 from ..common.interface.article import (
     ObjSelectorHandle,

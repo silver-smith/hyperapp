@@ -58,6 +58,9 @@ class FilteredListObj(ListObject, ListObserver):
     def get_title( self ):
         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
 
+    def get_url( self ):
+        return self._base.get_url()
+
     def get_commands( self ):
         return self._base.get_commands()
 

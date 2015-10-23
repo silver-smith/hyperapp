@@ -5,7 +5,6 @@ import itertools
 from datetime import datetime
 from dateutil.tz import tzutc
 from PySide import QtCore, QtGui
-from ..common.util import path2str, str2path
 
 
 DEBUG_FOCUS = False

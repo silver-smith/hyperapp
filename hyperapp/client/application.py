@@ -1,7 +1,7 @@
 import os.path
 import uuid
 from PySide import QtCore, QtGui
-from ..common.interface import iface_registry
+from ..common.interface import get_iface, iface_registry
 from ..common.request import Request, Response, ServerNotification
 from .util import flatten
 from .pickler import pickler
@@ -84,7 +84,7 @@ class Application(QtGui.QApplication, view.View):
 
     def get_global_commands( self ):
         management_cmd = window.OpenCommand(
-            'open_server', 'Server', 'Open server global commands', 'Alt+G', path=['management'])
+            'open_server', 'Server', 'Open server global commands', 'Alt+G', self.server.make_url(['management']))
         return [management_cmd]  + self._commands
 
     def window_created( self, view ):
@@ -141,11 +141,12 @@ class Application(QtGui.QApplication, view.View):
                     text_handle)]))
         return [window_handle]
 
-    def execute_get_request( self, iface, path ):
+    def execute_get_request( self, url ):
+        server, path = Server.resolve_url(url)
         command_id = 'get'
-        resp_handler = OpenRespHandler(iface, command_id, self)  # must keep explicit reference to it
+        resp_handler = OpenRespHandler(get_iface, command_id, self)  # must keep explicit reference to it
         request_id = str(uuid.uuid4())
-        request = Request(self.server, iface, path, command_id, request_id)
+        request = Request(self.server, get_iface, path, command_id, request_id)
         self.server.execute_request(request, resp_handler)
         self._resp_handlers.add(resp_handler)
 

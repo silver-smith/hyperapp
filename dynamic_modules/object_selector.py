@@ -95,8 +95,9 @@ class View(view.View, QtGui.QWidget):
 
     def run_object_command_choose( self, command_id ):
         target_obj = self.target_view.get_object()
-        if not isinstance(target_obj, ProxyObject): return  # not a proxy - can not choose it
-        handle = self.ref.run_command(command_id, self, target_path=target_obj.path)
+        url = target_obj.get_url()
+        if not url: return  # not a proxy - can not choose it
+        handle = self.ref.run_command(command_id, self, target_url=url)
         if handle:  # command is handled by client-side
             self.open(handle)
 

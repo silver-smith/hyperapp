@@ -2,7 +2,7 @@ import weakref
 import uuid
 from ..common.interface import get_iface
 from ..common.request import Request
-from .server import RespHandler
+from .server import RespHandler, Server
 
 
 class GetRespHandler(RespHandler):
@@ -17,7 +17,8 @@ class GetRespHandler(RespHandler):
             view.process_handle_open(server, response.result)
 
 
-def run_get_request( view, server, path ):
+def run_get_request( view, url ):
+    server, path = Server.resolve_url(url)
     command_id = 'get'
     resp_handler = GetRespHandler(view)
     request_id = str(uuid.uuid4())

@@ -1,5 +1,5 @@
 from PySide import QtCore, QtNetwork
-from ..common.util import path2str, str2path
+from ..common.util import encode_url, decode_url
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
 from ..common.interface import Interface, iface_registry
@@ -115,19 +115,17 @@ class Server(object):
         return server
 
     @classmethod
-    def decode_url( cls, url ):
-        locator, path_str = url.split('/', 1)
-        server = cls.resolve_locator(locator)
-        path = str2path(path_str)
-        return (server, path)
+    def resolve_url( cls, url ):
+        server = cls.resolve_locator(url[0])
+        return (server, url[1:])
 
     def __init__( self, addr ):
         self.addr = addr
         self._connection = None
         self.pending_requests = {}  # request_id -> RespHandler
 
-    def encode_url( self, iface, path ):
-        return '%s/%s' % (self.get_locator(), path2str(path))
+    def make_url( self, url ):
+        return [self.get_locator()] + url
 
     def get_locator( self ):
         host, port = self.addr

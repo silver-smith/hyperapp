@@ -1,5 +1,5 @@
 from operator import attrgetter
-from ..common.util import path2str, is_list_inst
+from ..common.util import encode_url, is_list_inst
 from ..common.interface import (
     tString,
     Field,
@@ -19,14 +19,14 @@ class Subscription(object):
         self.path2client = WeakValueMultiDict()  # path -> client
 
     def add( self, path, client ):
-        self.path2client.add(path2str(path), client)
+        self.path2client.add(encode_url(path), client)
 
     def remove( self, path, client ):
-        self.path2client.remove(path2str(path), client)
+        self.path2client.remove(encode_url(path), client)
 
     def distribute_update( self, iface, path, diff ):
         update = iface.Update(path, diff)
-        for client in self.path2client.get(path2str(path)):
+        for client in self.path2client.get(encode_url(path)):
             client.send_update(update)
 
 

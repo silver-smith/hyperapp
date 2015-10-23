@@ -1,6 +1,6 @@
 import json
 from .method_dispatch import method_dispatch
-from .util import path2str
+from .util import encode_url
 from .interface import (
     TPrimitive,
     TString,
@@ -16,7 +16,7 @@ from .interface import (
     THierarchy,
     Interface,
     TIface,
-    tPath,
+    tUrl,
     tCommand,
     tModule,
     tRequirement,
@@ -97,8 +97,8 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TList)
     def encode_list( self, t, value ):
-        if t is tPath:
-            return self.encode_path(value)
+        if t is tUrl:
+            return self.encode_url(value)
         if t is tRequirement:
             return RepNode('requirement: %s' % '/'.join(value))
         children = [self.dispatch(t.element_type, elt) for elt in value]
@@ -109,8 +109,8 @@ class VisualRepEncoder(object):
         assert isinstance(obj, Interface), repr(obj)
         return RepNode('iface %r' % obj.iface_id)
 
-    def encode_path( self, obj ):
-        return RepNode(path2str(obj))
+    def encode_url( self, obj ):
+        return RepNode(encode_url(obj))
 
 
 def pprint( t, value ):

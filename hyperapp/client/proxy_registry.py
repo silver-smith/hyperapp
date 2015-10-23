@@ -1,7 +1,7 @@
 # registries for proxy objects and requests
 
 import weakref
-from ..common.util import path2str
+from ..common.util import encode_url
 from .objimpl_registry import objimpl_registry
 
 
@@ -36,7 +36,7 @@ class ProxyRegistry(object):
         return self.instances.get(key)
 
     def _make_key( self, server, path ):
-        return (server.get_locator(), path2str(path))
+        return encode_url(server.make_url(path))
 
 
 proxy_class_registry = ProxyClassRegistry()
