@@ -61,7 +61,8 @@ class Connection(object):
 
 class Client(object):
 
-    def __init__( self, socket, addr, on_close ):
+    def __init__( self, server, socket, addr, on_close ):
+        self.server = server
         self.conn = Connection(socket)
         self.addr = addr
         self.on_close = on_close
@@ -114,7 +115,7 @@ class Client(object):
         request_rec = packet.decode_client_packet(self, iface_registry)
         print '%r from %s:%d:' % (packet, self.addr[0], self.addr[1])
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_request_rec(request_rec)
+        request = RequestBase.from_request_rec(self.server, request_rec)
         path = request.path
         object = self._resolve(path)
         print 'Object:', object

@@ -9,7 +9,10 @@ from .client import Client
 
 class TcpServer(object):
 
-    def __init__( self, host, port ):
+    def __init__( self, addr ):
+        self.addr = addr
+        host, port_str = addr.split(':')
+        port = int(port_str)
         self.client2thread = {}  # client -> thread
         self.finished_threads = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -33,7 +36,7 @@ class TcpServer(object):
             select.select([self.socket], [], [self.socket])
             cln_socket, cln_addr = self.socket.accept()
             print 'accepted connection from %s:%d' % cln_addr
-            client = Client(cln_socket, cln_addr, on_close=self.on_client_closed)
+            client = Client(self, cln_socket, cln_addr, on_close=self.on_client_closed)
             thread = threading.Thread(target=client.serve)
             thread.start()
             self.client2thread[client] = thread
@@ -55,3 +58,10 @@ class TcpServer(object):
         self.finished_threads.append(self.client2thread[client])
         del self.client2thread[client]
         print 'client %s:%d is gone' % client.addr
+
+    def is_mine_url( self, url ):
+        return url[0] == self.addr
+
+    # split into transport/server and local path parts
+    def split_url( self, url ):
+        return (url[:1], url[1:])

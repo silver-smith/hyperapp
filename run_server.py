@@ -23,8 +23,7 @@ def main():
     parser.add_argument('addr', nargs='?', help='address to listen at', default=DEFAULT_ADDR)
     args = parser.parse_args()
 
-    host, port = args.addr.split(':')
-    server = TcpServer(host, int(port))
+    server = TcpServer(args.addr)
     server.run()
 
 

@@ -5,14 +5,15 @@ from ..common.request import Response
 class RequestBase(object):
 
     @classmethod
-    def from_request_rec( cls, rec ):
+    def from_request_rec( cls, me, rec ):
         assert isinstance(rec, common_request.ClientNotification), repr(rec)
         if isinstance(rec, common_request.Request):
-            return Request(rec.peer, rec.iface, rec.path, rec.command_id, rec.request_id, rec.params)
+            return Request(me, rec.peer, rec.iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
-            return ClientNotification(rec.peer, rec.iface, rec.path, rec.command_id, rec.params)
+            return ClientNotification(me, rec.peer, rec.iface, rec.path, rec.command_id, rec.params)
 
-    def __init__( self, peer, iface, path, command_id, params ):
+    def __init__( self, me, peer, iface, path, command_id, params ):
+        self.me = me
         self.peer = peer
         self.iface = iface
         self.path = path
@@ -26,8 +27,8 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__( self, peer, iface, path, command_id, request_id, params ):
-        RequestBase.__init__(self, peer, iface, path, command_id, params)
+    def __init__( self, me, peer, iface, path, command_id, request_id, params ):
+        RequestBase.__init__(self, me, peer, iface, path, command_id, params)
         self.request_id = request_id
 
     def make_response( self, result=None ):
