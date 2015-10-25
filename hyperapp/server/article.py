@@ -101,7 +101,7 @@ class Article(Object):
             target = module.run_resolver(url)
             return request.make_response_handle(target)
         else:
-            assert False  # todo
+            return request.make_response(RedirectHandle(redirect_to=url))
 
     @db_session
     def do_save( self, request, text ):
