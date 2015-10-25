@@ -5,6 +5,7 @@ from ..common.interface import get_iface, iface_registry
 #from ..common.request import Request, Response, ServerNotification
 from .util import flatten
 from .pickler import pickler
+from .request import Request
 from .server import Server
 from .view_command import command
 from . import text_object

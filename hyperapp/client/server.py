@@ -2,7 +2,8 @@ from PySide import QtCore, QtNetwork
 from ..common.util import encode_url, decode_url
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
-from ..common.interface import Interface, iface_registry
+from ..common.interface import tClientPacket, Interface, iface_registry
+from .request import Request
 #from ..common.request import (
 #    tServerPacket,
 #    tClientPacket,
@@ -153,10 +154,11 @@ class Server(object):
         self._send(request)
 
     def _send( self, request ):
+        request_rec = request.encode()
         encoding = PACKET_ENCODING
         print '%s packet to %s:%d' % (encoding, self.addr[0], self.addr[1])
-        pprint(tClientPacket, request)
-        packet = Packet.from_contents(encoding, request, tClientPacket)
+        pprint(tClientPacket, request_rec)
+        packet = Packet.from_contents(encoding, request_rec, tClientPacket)
         self._get_connection().send_packet(packet)
 
     def process_packet( self, packet ):
