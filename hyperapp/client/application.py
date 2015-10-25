@@ -146,8 +146,8 @@ class Application(QtGui.QApplication, view.View):
         command_id = 'get'
         resp_handler = OpenRespHandler(get_iface, command_id, self)  # must keep explicit reference to it
         request_id = str(uuid.uuid4())
-        request = Request(self.server, get_iface, path, command_id, request_id)
-        self.server.execute_request(request, resp_handler)
+        request = Request(server, get_iface, path, command_id, request_id)
+        server.execute_request(request, resp_handler)
         self._resp_handlers.add(resp_handler)
 
     def process_open_response( self, server, result, resp_handler ):
