@@ -89,7 +89,7 @@ class ProxyObject(Object):
         self.commands = map(Command.decode, contents.commands)
 
     def get_title( self ):
-        return '/' + '/'.join(self.path)
+        return encode_url(self.server.make_url(self.path))
 
     def get_commands( self ):
         return self.commands
