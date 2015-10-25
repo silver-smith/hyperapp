@@ -1,6 +1,6 @@
 from pony.orm import db_session, commit, Required, Set, select
 from ..common.util import encode_url, decode_url
-from ..common.interface import Command, Column, ObjHandle
+from ..common.interface import Command, Column, ObjHandle, RedirectHandle
 from ..common.interface.article import (
     ObjSelectorHandle,
     ObjSelectorUnwrapHandle,
@@ -258,7 +258,7 @@ class RefSelector(Object):
             target_obj = module.run_resolver(target_url)
             return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
         else:
-            assert False  # todo
+            return RedirectHandle(target_url)
 
 
 class ArticleModule(PonyOrmModule):

@@ -1,8 +1,8 @@
 from .types import Field
-from .interface import tHandle, tSimpleHandle
+from .interface import tHandle, tViewHandle
 
 
-tSplitterHandle = tHandle.register('two_side_selector', base=tSimpleHandle, fields=[
+tSplitterHandle = tHandle.register('two_side_selector', base=tViewHandle, fields=[
     Field('x', tHandle),
     Field('y', tHandle),
     ])

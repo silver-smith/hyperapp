@@ -101,13 +101,9 @@ class Server(object):
     addr2server = {}  # (host, port) -> Server
 
     @classmethod
-    def resolve_locator( cls, locator ):
+    def _resolve_locator( cls, locator ):
         host, port_str = locator.split(':', 1)
         addr = (str(host), int(port_str))
-        return cls.resolve_addr(addr)
-
-    @classmethod
-    def resolve_addr( cls, addr ):
         server = cls.addr2server.get(addr)
         if not server:
             server = cls(addr)
@@ -116,7 +112,7 @@ class Server(object):
 
     @classmethod
     def resolve_url( cls, url ):
-        server = cls.resolve_locator(url[0])
+        server = cls._resolve_locator(url[0])
         return (server, url[1:])
 
     def __init__( self, addr ):

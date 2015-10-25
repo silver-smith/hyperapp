@@ -9,7 +9,9 @@ from .interface import (
     tObject,
     tProxyObject,
     tHandle,
+    tViewHandle,
     )
+
 
 class RequirementsCollector(object):
 
@@ -49,7 +51,7 @@ class RequirementsCollector(object):
             self.collected_requirements.add(('object', value.objimpl_id))
             if tObject.isinstance(value, tProxyObject):
                 self.collected_requirements.add(('interface', value.iface.iface_id))
-        if t is tHandle:
+        if t is tHandle and tHandle.isinstance(value, tViewHandle):
             self.collected_requirements.add(('handle', value.view_id))
         tclass = t.resolve_obj(value)
 #        self.collected_requirements.add((t.hierarchy_id, tclass.id))

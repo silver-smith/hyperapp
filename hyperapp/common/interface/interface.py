@@ -32,9 +32,12 @@ tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
 
 
 tHandle = THierarchy('handle')
-tSimpleHandle = tHandle.register('handle', fields=[Field('view_id', tString)])
-tObjHandle = tHandle.register('obj_handle', base=tSimpleHandle, fields=[Field('object', tObject)])
+tViewHandle = tHandle.register('handle', fields=[Field('view_id', tString)])
+tObjHandle = tHandle.register('obj_handle', base=tViewHandle, fields=[Field('object', tObject)])
 ObjHandle = tObjHandle.instantiate
+
+tRedirectHandle = tHandle.register('redirect', fields=[Field('redirect_to', tUrl)])
+RedirectHandle = tRedirectHandle.instantiate
 
 
 class IfaceCommand(object):
