@@ -1,4 +1,4 @@
-from .types import tString
+from .iface_types import tString
 from .interface import register_iface
 from .list import Column, ElementOpenCommand, ListInterface
 

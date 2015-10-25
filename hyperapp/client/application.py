@@ -2,7 +2,7 @@ import os.path
 import uuid
 from PySide import QtCore, QtGui
 from ..common.interface import get_iface, iface_registry
-from ..common.request import Request, Response, ServerNotification
+#from ..common.request import Request, Response, ServerNotification
 from .util import flatten
 from .pickler import pickler
 from .server import Server

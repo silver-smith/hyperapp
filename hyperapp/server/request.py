@@ -1,5 +1,3 @@
-from ..common import request as common_request
-from ..common.request import Response
 
 
 class RequestBase(object):

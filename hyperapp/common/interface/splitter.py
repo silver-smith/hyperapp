@@ -1,4 +1,4 @@
-from .types import Field
+from .iface_types import Field
 from .interface import tHandle, tViewHandle
 
 

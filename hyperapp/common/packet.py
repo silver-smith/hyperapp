@@ -1,7 +1,6 @@
 import struct
-from .interface import tString, Field, TRecord, TList, tModule, tRequirement
+from .interface import tString, Field, TRecord, TList, tModule, tRequirement, tClientPacket, tServerPacket
 from .packet_coders import packet_coders
-from .request import decode_server_packet, decode_client_packet
 
 
 tAuxInfo = TRecord([
@@ -90,7 +89,7 @@ class Packet(object):
         return Header(encoding_size, aux_size, contents_size).encode() + self.encoding + aux_data + self.data
 
     def decode_server_packet( self, peer ):
-        return decode_server_packet(peer, self.encoding, self.data)
+        return packet_coders.decode(self.encoding, self.data, tServerPacket)
 
     def decode_client_packet( self, peer ):
-        return decode_client_packet(peer, self.encoding, self.data)
+        return packet_coders.decode(self.encoding, self.data, tClientPacket)

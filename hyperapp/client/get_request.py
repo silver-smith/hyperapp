@@ -1,7 +1,7 @@
 import weakref
 import uuid
 from ..common.interface import get_iface
-from ..common.request import Request
+#from ..common.request import Request
 from .server import RespHandler, Server
 
 

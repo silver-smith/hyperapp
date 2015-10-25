@@ -1,4 +1,4 @@
-from .types import tString, Field
+from .iface_types import tString, Field
 from .interface import tObject, tBaseObject
 
 

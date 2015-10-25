@@ -2,7 +2,7 @@ import weakref
 import uuid
 from ..common.util import encode_url, decode_url
 from ..common.interface import Interface, Field, tString, tHandle, tViewHandle, tRedirectHandle, resolve_iface, iface_registry
-from ..common.request import ClientNotification, Request
+#from ..common.request import ClientNotification, Request
 from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry

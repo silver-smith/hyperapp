@@ -3,7 +3,7 @@ import uuid
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.interface import Interface
-from ..common.request import Request
+#from ..common.request import Request
 from .util import DEBUG_FOCUS, call_after, make_action
 from .server import RespHandler
 from .view_command import ViewCommandBase, command

@@ -1,5 +1,5 @@
 from ..util import is_list_inst
-from .types import join_path, Type, Field, TRecord
+from .iface_types import join_path, Type, Field, TRecord
 
 
 class Class(object):

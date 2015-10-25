@@ -1,5 +1,5 @@
 from ..util import is_list_inst, dt2local_str
-from .types import (
+from .iface_types import (
     Type,
     tString,
     tInt,
@@ -92,8 +92,8 @@ class ListInterface(Interface):
                 return column
         assert False, repr((self.key_column, [column.id for column in self.columns]))  # unknown key column
 
-    def _register_types( self ):
-        Interface._register_types(self)
+    def _register_types( self, commands ):
+        Interface._register_types(self, commands)
         list_fields = [Field('key', TOptional(self.key_type))]
         narrower_fields = [Field('field_id', tString),
                            Field('key', TOptional(self.key_type))]

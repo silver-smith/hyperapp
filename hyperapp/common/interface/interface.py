@@ -1,23 +1,22 @@
 from ..util import is_list_inst
-from .types import (
+from .iface_types import (
     join_path,
     Type,
-    TPrimitive,
+    tNone,
     tString,
     TOptional,
     Field,
     TRecord,
     TList,
     tUrl,
+    tIfaceId,
     tCommand,
     )
 from .dynamic_record import TDynamicRec
 from .hierarchy import THierarchy
+from .request import tParams, register_response_type, register_diff
 
 
-
-
-tIfaceId = tString
 
 tObject = THierarchy('object')
 tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
@@ -42,9 +41,6 @@ class IfaceCommand(object):
         self.command_id = command_id
         self.params_fields = params_fields or []
         self.result_fields = result_fields or []
-
-    def get_params_type( self, iface ):
-        return TRecord(self.get_params_fields(iface))
 
     def get_result_type( self, iface ):
         return TRecord(self.get_result_fields(iface))
@@ -84,7 +80,7 @@ class Interface(object):
     rt_request = 1
     rt_notification =2
 
-    def __init__( self, iface_id, base=None, content_fields=None, diff_type=None, commands=None, required_module_id=None ):
+    def __init__( self, iface_id, base=None, content_fields=None, diff_type=tNone, commands=None, required_module_id=None ):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(content_fields or [], Field), repr(content_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
@@ -97,14 +93,23 @@ class Interface(object):
         if base:
             self.content_fields = base.content_fields + self.content_fields
             self.commands = base.commands + self.commands
-            assert diff_type is None, repr(diff_type)  # Inherited from base
+            assert diff_type is tNone, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
         self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
-        self._register_types()
+        self._cmd2param_type = {}
+        self._cmd2result_type = {}
+        self._register_types(commands or [])  # do not include base commands
 
-    def _register_types( self ):
+    def _register_types( self, commands ):
         self._tContents = TRecord(self.get_contents_fields())
         self._tObject = tObject.register(self.iface_id, [Field('contents', self._tContents)], base=tProxyObject)
+        self._tUpdate = register_diff('%s.update' % self.iface_id, self.diff_type)
+        for command in commands:
+            cmd_id = command.command_id
+            self._cmd2param_type[cmd_id] = tParams.register(
+                '%s.%s.params' % (self.iface_id, cmd_id), fields=command.get_params_fields(self))
+            self._cmd2result_type[cmd_id] = register_response_type(
+                '%s.%s.result' % (self.iface_id, cmd_id), command.get_result_type(self))
 
     def get_object_type( self ):
         return self._tObject
@@ -138,32 +143,28 @@ class Interface(object):
         return isinstance(self.id2command[command_id], OpenCommand)
 
     def get_request_params_type( self, command_id ):
-        assert command_id in self.id2command, repr(command_id)  # Unknown command
-        return self.id2command[command_id].get_params_type(self)
+        if not command_id in self._cmd2param_type:
+            raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
+        return self._cmd2param_type[command_id]
 
     def make_params( self, command_id, *args, **kw ):
         return self.get_request_params_type(command_id).instantiate(*args, **kw)
 
     def get_command_result_type( self, command_id ):
-        return self.id2command[command_id].get_result_type(self)
+        return self._cmd2result_type[command_id]  # Unknown command_id on key error
 
     def make_result( self, command_id, *args, **kw ):
         return self.get_command_result_type(command_id).instantiate(*args, **kw)
 
     def validate_request( self, command_id, params=None ):
-        cmd = self.id2command.get(command_id)
-        if not cmd:
-            raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        cmd.get_params_type(self).validate(join_path(self.iface_id, command_id, 'params'), params)
+        type = self.get_request_params_type(command_id)
+        type.validate(join_path(self.iface_id, command_id, 'params'), params)
 
     def get_default_contents_fields( self ):
         return [Field('commands', TList(tCommand))]
 
     def get_contents_fields( self ):
         return self.get_default_contents_fields() + self.content_fields
-
-    def get_diff_type( self ):
-        return self.diff_type
 
     def Object( self, **kw ):
         return self._tObject.instantiate(**kw)
@@ -177,23 +178,6 @@ class Interface(object):
     def validate_contents( self, path, value ):
         self._tContents.validate(path, value)
 
-
-class TUpdate(TDynamicRec):
-
-    def __init__( self ):
-        fields = [
-            Field('iface', tIfaceId),
-            Field('path', tUrl),
-            ]
-        TDynamicRec.__init__(self, fields)
-
-    def resolve_dynamic( self, rec ):
-        diff_type = rec.iface.get_diff_type()
-        return TRecord([Field('diff', diff_type)], base=self)
-
-
-tUpdate = TUpdate()
-tUpdateList = TList(tUpdate)
 
 
 class IfaceRegistry(object):

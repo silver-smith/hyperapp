@@ -1,3 +1,4 @@
+from types import NoneType
 import datetime
 from ..util import is_list_inst
 
@@ -35,6 +36,10 @@ class TPrimitive(Type):
         return self.type
         
 
+class TNone(TPrimitive):
+    type_name = 'none'
+    type = NoneType
+
 class TString(TPrimitive):
     type_name = 'string'
     type = basestring
@@ -56,6 +61,7 @@ class TDateTime(TPrimitive):
     type = datetime.datetime
 
 
+tNone = TNone()
 tString = TString()
 tBinary = TBinary()
 tInt = TInt()
@@ -191,6 +197,7 @@ class TIndexedList(TList):
 
 
 tUrl = TList(tString)
+tIfaceId = tString
 
 tCommand = TRecord([
             Field('id', tString),

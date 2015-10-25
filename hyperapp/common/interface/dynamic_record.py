@@ -1,4 +1,4 @@
-from .types import join_path, Type, tString, Field, TRecord
+from .iface_types import join_path, Type, tString, Field, TRecord
 
 
 class TDynamicRec(TRecord):

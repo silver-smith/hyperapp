@@ -5,11 +5,11 @@ from Queue import Queue
 from ..common.interface import ModuleDep, Module
 from ..common.packet import tAuxInfo, AuxInfo, Packet
 from ..common.interface import iface_registry
-from ..common.request import tServerPacket, tClientPacket, ServerNotification, Response
+#from ..common.request import tServerPacket, tClientPacket, ServerNotification, Response
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
-from .request import RequestBase, Request
+#from .request import RequestBase, Request
 from . import module
 from .code_repository import code_repository
 
