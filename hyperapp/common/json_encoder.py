@@ -12,7 +12,6 @@ from .interface import (
     TList,
     THierarchy,
     Interface,
-    TIface,
     )
 
 
@@ -66,8 +65,3 @@ class JsonEncoder(object):
     @dispatch.register(TList)
     def encode_list( self, t, value ):
         return [self.dispatch(t.element_type, elt) for elt in value]
-
-    @dispatch.register(TIface)
-    def encode_iface( self, t, obj ):
-        assert isinstance(obj, Interface), repr(obj)
-        return obj.iface_id

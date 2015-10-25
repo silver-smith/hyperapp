@@ -15,7 +15,6 @@ from .interface import (
     TList,
     THierarchy,
     Interface,
-    TIface,
     tUrl,
     tCommand,
     tModule,
@@ -103,11 +102,6 @@ class VisualRepEncoder(object):
             return RepNode('requirement: %s' % '/'.join(value))
         children = [self.dispatch(t.element_type, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
-
-    @dispatch.register(TIface)
-    def encode_iface( self, t, obj ):
-        assert isinstance(obj, Interface), repr(obj)
-        return RepNode('iface %r' % obj.iface_id)
 
     def encode_url( self, obj ):
         return RepNode(encode_url(obj))

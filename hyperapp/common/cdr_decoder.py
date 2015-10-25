@@ -14,7 +14,6 @@ from .interface import (
     TList,
     TIndexedList,
     THierarchy,
-    TIface,
     )
 
 
@@ -26,9 +25,6 @@ class DecodeError(Exception): pass
 
 
 class CdrDecoder(object):
-
-    def __init__( self, iface_registry ):
-        self.iface_registry = iface_registry  # IfaceRegistry or None
 
     def decode( self, t, value, path='root' ):
         assert isinstance(value, str), repr(value)
@@ -150,8 +146,3 @@ class CdrDecoder(object):
             setattr(elt, 'idx', idx)
             elements.append(elt)
         return elements
-
-    @dispatch.register(TIface)
-    def decode_iface( self, t, path ):
-        iface_id = self.read_unicode(path)
-        return self.iface_registry.resolve(iface_id)

@@ -13,7 +13,6 @@ from .interface import (
     TList,
     THierarchy,
     Interface,
-    TIface,
     )
 
 
@@ -96,8 +95,3 @@ class CdrEncoder(object):
         self.write_int(len(value))
         for elt in value:
             self.dispatch(t.element_type, elt)
-
-    @dispatch.register(TIface)
-    def encode_iface( self, t, obj ):
-        assert isinstance(obj, Interface), repr(obj)
-        self.write_unicode(obj.iface_id)

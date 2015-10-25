@@ -13,7 +13,6 @@ from .interface import (
     TList,
     TIndexedList,
     THierarchy,
-    TIface,
     )
 
 
@@ -119,9 +118,3 @@ class JsonDecoder(object):
             setattr(decoded_elt, 'idx', idx)
             decoded_elts.append(decoded_elt)
         return decoded_elts
-
-    @dispatch.register(TIface)
-    def decode_iface( self, t, value, path ):
-        self.expect_type(path, isinstance(value, basestring), value, 'iface id (str)')
-        iface_id = value
-        return self.iface_registry.resolve(iface_id)

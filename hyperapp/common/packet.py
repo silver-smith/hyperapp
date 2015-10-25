@@ -89,8 +89,8 @@ class Packet(object):
         contents_size = len(self.data)
         return Header(encoding_size, aux_size, contents_size).encode() + self.encoding + aux_data + self.data
 
-    def decode_server_packet( self, peer, iface_registry ):
-        return decode_server_packet(peer, iface_registry, self.encoding, self.data)
+    def decode_server_packet( self, peer ):
+        return decode_server_packet(peer, self.encoding, self.data)
 
-    def decode_client_packet( self, peer, iface_registry ):
-        return decode_client_packet(peer, iface_registry, self.encoding, self.data)
+    def decode_client_packet( self, peer ):
+        return decode_client_packet(peer, self.encoding, self.data)

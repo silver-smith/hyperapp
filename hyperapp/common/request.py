@@ -1,5 +1,5 @@
 from .util import is_list_inst
-from .interface import TPrimitive, tString, Field, TRecord, TIface, tUrl, tUpdateList, Interface
+from .interface import TPrimitive, tString, Field, TRecord, tIfaceId, tUrl, tUpdateList, Interface
 from .interface.dynamic_record import TDynamicRec
 from .packet_coders import packet_coders
 
@@ -45,7 +45,7 @@ class ClientNotification(object):
 
     def __init__( self, peer, iface, path, command_id, params=None ):
         self.peer = peer
-        self.iface = iface
+        self.iface = iface.iface_id
         self.path = path
         self.command_id = command_id
         self.params = params
@@ -83,7 +83,7 @@ class TResponse(TDynamicRec):
 
     def __init__( self, base ):
         fields = [
-            Field('iface', TIface()),
+            Field('iface', tIfaceId),
             Field('command_id', tString),
             Field('request_id', tString),
             ]
@@ -98,7 +98,7 @@ class TClientPacket(TDynamicRec):
 
     def __init__( self ):
         fields = [
-            Field('iface', TIface()),
+            Field('iface', tIfaceId),
             Field('path', tUrl),
             Field('command_id', tString),
             ]
@@ -122,16 +122,16 @@ tServerPacket = TServerPacket()
 tClientPacket = TClientPacket()
 
 
-def decode_server_packet( peer, iface_registry, encoding, data ):
-    rec = packet_coders.decode(encoding, data, tServerPacket, iface_registry)
+def decode_server_packet( peer, encoding, data ):
+    rec = packet_coders.decode(encoding, data, tServerPacket)
     if rec.packet_type == Response.packet_type:
         return Response.decode(peer, rec)
     if rec.packet_type == ServerNotification.packet_type:
         return ServerNotification.decode(peer, rec)
     assert False, repr(rec.packet_type)  # unknown packet type
     
-def decode_client_packet( peer, iface_registry, encoding, data ):
-    rec = packet_coders.decode(encoding, data, tClientPacket, iface_registry)
+def decode_client_packet( peer, encoding, data ):
+    rec = packet_coders.decode(encoding, data, tClientPacket)
     request_type = rec.iface.get_request_type(rec.command_id)
     if request_type == Interface.rt_request:
         return Request.decode(peer, rec)

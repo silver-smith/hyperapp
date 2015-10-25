@@ -15,18 +15,14 @@ from .dynamic_record import TDynamicRec
 from .hierarchy import THierarchy
 
 
-class TIface(TPrimitive):
 
-    type_name = 'interface'
 
-    def get_type( self ):
-        return Interface
-
+tIfaceId = tString
 
 tObject = THierarchy('object')
 tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
 tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
-    Field('iface', TIface()),
+    Field('iface', tIfaceId),
     Field('path', tUrl),
     ])
 
@@ -186,7 +182,7 @@ class TUpdate(TDynamicRec):
 
     def __init__( self ):
         fields = [
-            Field('iface', TIface()),
+            Field('iface', tIfaceId),
             Field('path', tUrl),
             ]
         TDynamicRec.__init__(self, fields)
