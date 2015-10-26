@@ -14,6 +14,7 @@ from .interface import (
     TList,
     TIndexedList,
     THierarchy,
+    TSwitched,
     )
 
 
@@ -114,6 +115,12 @@ class CdrDecoder(object):
             base_fields = set(field.name for field in t.get_fields())
             t = t.resolve_dynamic(rec)
 
+    @dispatch.register(TSwitched)
+    def decode_switched( self, t, path ):
+        static_fields = self.decode_record_fields(t.get_static_fields())
+        dynamic_fields = self.decode_record_fields([t.get_dynamic_field(static_fields)])
+        return t.instantiate(**dict(static_fields, **dynamic_fields))
+        
     @dispatch.register(THierarchy)
     def decode_hierarchy_obj( self, t, path ):
         class_id = self.read_unicode(path)

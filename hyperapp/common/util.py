@@ -12,6 +12,14 @@ def is_list_inst( val, cls ):
             return False
     return True
 
+def is_tuple_inst( val, cls ):
+    if not isinstance(val, tuple):
+        return False
+    for elt in val:
+        if not isinstance(elt, cls):
+            return False
+    return True
+
 # todo: quote/unquote '|' chars
 # used also for persistent id, which requires binary str, not unicode
 def encode_url( path ):

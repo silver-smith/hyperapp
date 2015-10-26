@@ -12,7 +12,7 @@ from .interface import (
     TDynamicRec,
     TList,
     THierarchy,
-    Interface,
+    TSwitched,
     )
 
 
@@ -82,6 +82,16 @@ class CdrEncoder(object):
                 break
             base_fields = set(field.name for field in t.get_fields())
             t = t.resolve_dynamic(value)
+
+    @dispatch.register(TSwitched)
+    def encode_switched( self, t, value ):
+        static_dict = {}
+        for field in t.get_static_fields():
+            value = getattr(value, field.name)
+            self.dispatch(field.type, value)
+            static_dict[field.name] = value
+        field = t.get_dynamic_field(static_dict)
+        self.dispatch(field.name, getattr(value, field.name))
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj( self, t, value ):
