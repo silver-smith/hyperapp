@@ -4,22 +4,22 @@ from ..util import is_list_inst, is_tuple_inst
 from .iface_types import join_path, Type, Field, TRecord
 
 
-class TSwitchedField(Type):
+class TSwitched(Type):
 
     def validate( self, path, value ):
         pass
 
 
-tSwitchedField = TSwitchedField()
+tSwitched = TSwitched()
 
 
-class TSwitched(TRecord):
+class TSwitchedRec(TRecord):
 
-    def __init__( self, dynamic_field, switches, fields ):
+    def __init__( self, dynamic_field, switches, fields=None, base=None ):
         assert isinstance(dynamic_field, str), repr(dynamic_field)  # field name is expected
         assert is_list_inst(switches, str), repr(switches)  # field name list is expected
-        TRecord.__init__(self, fields)
-        assert self._pick_field(dynamic_field).type is tSwitchedField  # dynamic field's type must be tSwitchedField
+        TRecord.__init__(self, fields, base)
+        assert self._pick_field(dynamic_field).type is tSwitched  # dynamic field's type must be tSwitched
         self.dynamic_field = self._pick_field(dynamic_field)
         self.switches = []  # switch field name list
         self.registry = {}  # switch values tuple -> type
