@@ -114,7 +114,7 @@ class Client(object):
         request_rec = packet.decode_client_packet()
         print '%r from %s:%d:' % (packet, self.addr[0], self.addr[1])
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_request_rec(self.server, request_rec)
+        request = RequestBase.from_request_rec(self.server, self, request_rec)
         path = request.path
         object = self._resolve(path)
         print 'Object:', object

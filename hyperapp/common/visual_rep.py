@@ -91,7 +91,7 @@ class VisualRepEncoder(object):
     def encode_hierarchy_obj( self, t, value ):
         tclass = t.resolve_obj(value)
         children = self.encode_record_fields(tclass.get_trecord(), value)
-        return RepNode('class %r' % tclass.id, children)
+        return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
 
     def field_rep( self, field, value ):
         rep = self.dispatch(field.type, getattr(value, field.name))

@@ -28,7 +28,7 @@ class TClass(TRecord):
         return rec
 
     def issubclass( self, trec ):
-        return self.trec.issubclass(trec)
+        return self is trec or self.trec.issubclass(trec)
             
 
 class THierarchy(Type):
