@@ -16,19 +16,19 @@ tSwitched = TSwitched()
 class TSwitchedRec(TRecord):
 
     def __init__( self, switches=None, fields=None, base=None ):
-        assert isinstance(dynamic_field, str), repr(dynamic_field)  # field name is expected
         if switches is None:
             assert isinstance(base, TSwitchedRec)  # either switches must be defined, or base must be a TSwitchedRec
-            self.switches = base.switches  # switch field name list
+            self.switches = base.switches  # inherit them
+            self.registry = base.registry  # share it with base
         else:
             assert is_list_inst(switches, str), repr(switches)  # field name list is expected
-            self.switches = switches
+            self.switches = switches  # switch field name list
+            self.registry = {}  # switch values tuple -> type
         TRecord.__init__(self, fields, base)
         self.dynamic_field = self._pick_dynamic_field()
-        self.registry = {}  # switch values tuple -> type
 
     def get_static_fields( self ):
-        return [field for self.get_fields() if field is not self.dynamic_field]
+        return [field for field in self.get_fields() if field is not self.dynamic_field]
 
     # get Field with actual dynamic type
     def get_dynamic_field( self, static_fields_dict ):
@@ -46,7 +46,7 @@ class TSwitchedRec(TRecord):
         return dynamic_field
 
     def _pick_switch( self, fields_dict ):
-        return tuple(fields_dict[name] for name in selt.switches)
+        return tuple(fields_dict[name] for name in self.switches)
 
     def register( self, switches, type ):
         assert is_tuple_inst(switches, str), repr(switches)  # field
@@ -63,5 +63,5 @@ class TSwitchedRec(TRecord):
         switch = self._pick_switch(adopted_args)
         type = self._resolve(switch)
         dyn_name = self.dynamic_field.name
-        type.validate(join_path('<TSwitched>', dyn_name), adopted_args[dyn_name])
+        type.validate(join_path('<TSwitchedRec>', dyn_name), adopted_args[dyn_name])
         return adopted_args

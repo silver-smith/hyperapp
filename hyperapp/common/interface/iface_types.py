@@ -118,6 +118,7 @@ class TRecord(Type):
         self.fields = fields or []
         if base:
             self.fields = base.fields + self.fields
+        self.base = base
 
     def issubclass( self, trec ):
         assert isinstance(trec, TRecord), repr(trec)
@@ -125,6 +126,9 @@ class TRecord(Type):
           or self.base and self.base.issubclass(trec)
 
     def get_fields( self ):
+        return self.fields
+
+    def get_static_fields( self ):
         return self.fields
 
     def validate( self, path, rec ):

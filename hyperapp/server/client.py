@@ -4,12 +4,11 @@ import select
 from Queue import Queue
 from ..common.interface import ModuleDep, Module
 from ..common.packet import tAuxInfo, AuxInfo, Packet
-from ..common.interface import iface_registry
-#from ..common.request import tServerPacket, tClientPacket, ServerNotification, Response
+from ..common.interface import tClientPacket, iface_registry
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
-#from .request import RequestBase, Request
+from .request import RequestBase, Request
 from . import module
 from .code_repository import code_repository
 
@@ -112,7 +111,7 @@ class Client(object):
             modules=modules)
 
     def _process_packet( self, packet ):
-        request_rec = packet.decode_client_packet(self, iface_registry)
+        request_rec = packet.decode_client_packet()
         print '%r from %s:%d:' % (packet, self.addr[0], self.addr[1])
         pprint(tClientPacket, request_rec)
         request = RequestBase.from_request_rec(self.server, request_rec)

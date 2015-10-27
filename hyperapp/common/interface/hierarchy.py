@@ -42,7 +42,7 @@ class THierarchy(Type):
         assert isinstance(id, basestring), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         if trec is not None:
-            assert isintance(trec, TRecord), repr(trec)
+            assert isinstance(trec, TRecord), repr(trec)
         else:
             assert fields is None or is_list_inst(fields, Field), repr(fields)
             assert base is None or isinstance(base, TClass), repr(base)
@@ -52,7 +52,7 @@ class THierarchy(Type):
         return tclass
 
     def validate( self, path, obj ):
-        self.resolve_obj(obj)._validate(path, obj)
+        self.resolve_obj(obj).validate(path, obj)
 
     def resolve( self, id ):
         assert isinstance(id, basestring), repr(id)

@@ -88,8 +88,8 @@ class Packet(object):
         contents_size = len(self.data)
         return Header(encoding_size, aux_size, contents_size).encode() + self.encoding + aux_data + self.data
 
-    def decode_server_packet( self, peer ):
+    def decode_server_packet( self ):
         return packet_coders.decode(self.encoding, self.data, tServerPacket)
 
-    def decode_client_packet( self, peer ):
+    def decode_client_packet( self ):
         return packet_coders.decode(self.encoding, self.data, tClientPacket)

@@ -1,13 +1,15 @@
+from ..common.interface import tClientPacket, tClientNotification, tRequest
 
 
 class RequestBase(object):
 
     @classmethod
     def from_request_rec( cls, me, rec ):
-        assert isinstance(rec, common_request.ClientNotification), repr(rec)
-        if isinstance(rec, common_request.Request):
+        tClientPacket.validate('<ClientNotification>', rec)
+        if tClientPacket.isinstance(rec, tRequest):
             return Request(me, rec.peer, rec.iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
+            assert tClientPacket.isinstance(rec, tClientNotification), repr(rec)
             return ClientNotification(me, rec.peer, rec.iface, rec.path, rec.command_id, rec.params)
 
     def __init__( self, me, peer, iface, path, command_id, params ):

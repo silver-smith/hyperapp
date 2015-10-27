@@ -13,7 +13,7 @@ from .iface_types import (
     tCommand,
     )
 from .hierarchy import THierarchy
-from .request import tParams, register_response_type, register_diff
+from .request import tUpdate, tClientNotificationRec, tResponseRec
 
 
 
@@ -40,6 +40,9 @@ class IfaceCommand(object):
         self.command_id = command_id
         self.params_fields = params_fields or []
         self.result_fields = result_fields or []
+
+    def get_params_type( self, iface ):
+        return TRecord(self.get_params_fields(iface))
 
     def get_result_type( self, iface ):
         return TRecord(self.get_result_fields(iface))
@@ -95,20 +98,16 @@ class Interface(object):
             assert diff_type is tNone, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
         self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
-        self._cmd2param_type = {}
-        self._cmd2result_type = {}
         self._register_types(commands or [])  # do not include base commands
 
     def _register_types( self, commands ):
         self._tContents = TRecord(self.get_contents_fields())
-        self._tObject = tObject.register(self.iface_id, [Field('contents', self._tContents)], base=tProxyObject)
-        self._tUpdate = register_diff('%s.update' % self.iface_id, self.diff_type)
+        self._tObject = tObject.register(self.iface_id, base=tProxyObject, fields=[Field('contents', self._tContents)])
+        tUpdate.register((self.iface_id,), self.diff_type)
         for command in commands:
             cmd_id = command.command_id
-            self._cmd2param_type[cmd_id] = tParams.register(
-                '%s.%s.params' % (self.iface_id, cmd_id), fields=command.get_params_fields(self))
-            self._cmd2result_type[cmd_id] = register_response_type(
-                '%s.%s.result' % (self.iface_id, cmd_id), command.get_result_type(self))
+            tClientNotificationRec.register((self.iface_id, cmd_id), command.get_params_type(self))
+            tResponseRec.register((self.iface_id, cmd_id), command.get_result_type(self))
 
     def get_object_type( self ):
         return self._tObject
@@ -141,16 +140,20 @@ class Interface(object):
     def is_open_command( self, command_id ):
         return isinstance(self.id2command[command_id], OpenCommand)
 
-    def get_request_params_type( self, command_id ):
-        if not command_id in self._cmd2param_type:
+    def _get_command( self, command_id ):
+        cmd = self.id2command.get(command_id)
+        if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        return self._cmd2param_type[command_id]
+        return cmd
+
+    def get_request_params_type( self, command_id ):
+        return self._get_command(command_id).get_params_type(self)
 
     def make_params( self, command_id, *args, **kw ):
         return self.get_request_params_type(command_id).instantiate(*args, **kw)
 
     def get_command_result_type( self, command_id ):
-        return self._cmd2result_type[command_id]  # Unknown command_id on key error
+        return self._get_command(command_id).get_result_type(self)
 
     def make_result( self, command_id, *args, **kw ):
         return self.get_command_result_type(command_id).instantiate(*args, **kw)

@@ -178,7 +178,7 @@ class Server(object):
         self._process_packet(packet)
 
     def _process_packet( self, packet ):
-        response_or_notification = packet.decode_server_packet(self, iface_registry)
+        response_or_notification = packet.decode_server_packet()
         self._process_updates(response_or_notification.updates)
         if isinstance(response_or_notification, Response):
             response = response_or_notification

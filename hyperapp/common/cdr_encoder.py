@@ -11,7 +11,7 @@ from .interface import (
     TRecord,
     TList,
     THierarchy,
-    TSwitched,
+    TSwitchedRec,
     )
 
 
@@ -72,32 +72,24 @@ class CdrEncoder(object):
     @dispatch.register(TRecord)
     def encode_record( self, t, value ):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
-        base_fields = set()
-        while True:
-            new_fields = [field for field in t.get_fields() if field.name not in base_fields]
-            for field in new_fields:
-                self.dispatch(field.type, getattr(value, field.name))
-            if not isinstance(t, TDynamicRec):
-                break
-            base_fields = set(field.name for field in t.get_fields())
-            t = t.resolve_dynamic(value)
+        for field in t.get_fields():
+            self.dispatch(field.type, getattr(value, field.name))
 
-    @dispatch.register(TSwitched)
+    @dispatch.register(TSwitchedRec)
     def encode_switched( self, t, value ):
         static_dict = {}
         for field in t.get_static_fields():
-            value = getattr(value, field.name)
-            self.dispatch(field.type, value)
-            static_dict[field.name] = value
+            field_val = getattr(value, field.name)
+            self.dispatch(field.type, field_val)
+            static_dict[field.name] = field_val
         field = t.get_dynamic_field(static_dict)
-        self.dispatch(field.name, getattr(value, field.name))
+        self.dispatch(field.type, getattr(value, field.name))
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj( self, t, value ):
         tclass = t.resolve_obj(value)
         self.write_unicode(tclass.id)
-        for field in tclass.get_fields():
-            self.dispatch(field.type, getattr(value, field.name))
+        self.dispatch(tclass.get_trecord(), value)
 
     @dispatch.register(TList)
     def encode_list( self, t, value ):

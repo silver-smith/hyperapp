@@ -98,9 +98,9 @@ class ListInterface(Interface):
         narrower_fields = [Field('field_id', tString),
                            Field('key', TOptional(self.key_type))]
         self._tListHandle = tHandle.register(
-            '%s.list' % self.iface_id, list_fields, base=tObjHandle)
+            '%s.list' % self.iface_id, base=tObjHandle, fields=list_fields)
         self._tListNarrowerHandle = tHandle.register(
-            '%s.list_narrower' % self.iface_id, narrower_fields, base=tObjHandle)
+            '%s.list_narrower' % self.iface_id, base=tObjHandle, fields=narrower_fields)
 
     def get_default_contents_fields( self ):
         return Interface.get_default_contents_fields(self) + [

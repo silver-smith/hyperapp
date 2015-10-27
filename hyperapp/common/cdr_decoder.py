@@ -13,7 +13,7 @@ from .interface import (
     TList,
     TIndexedList,
     THierarchy,
-    TSwitched,
+    TSwitchedRec,
     )
 
 
@@ -103,36 +103,28 @@ class CdrDecoder(object):
 
     @dispatch.register(TRecord)
     def decode_record( self, t, path ):
-        base_fields = set()
-        decoded_fields = {}
-        while True:
-            new_fields = [field for field in t.get_fields() if field.name not in base_fields]
-            decoded_fields.update(self.decode_record_fields(new_fields, path))
-            rec = t.instantiate_fixed(**decoded_fields)
-            if not isinstance(t, TDynamicRec):
-                return rec
-            base_fields = set(field.name for field in t.get_fields())
-            t = t.resolve_dynamic(rec)
+        fields = self.decode_record_fields(t, path)
+        return t.instantiate(**fields)
 
-    @dispatch.register(TSwitched)
-    def decode_switched( self, t, path ):
-        static_fields = self.decode_record_fields(t.get_static_fields())
-        dynamic_fields = self.decode_record_fields([t.get_dynamic_field(static_fields)])
-        return t.instantiate(**dict(static_fields, **dynamic_fields))
-        
-    @dispatch.register(THierarchy)
-    def decode_hierarchy_obj( self, t, path ):
-        class_id = self.read_unicode(path)
-        tclass = t.resolve(class_id)
-        fields = self.decode_record_fields(tclass.get_fields(), path)
-        return tclass.instantiate(**fields)
+    def decode_record_fields( self, t, path ):
+        fields = self.decode_record_fields_impl(t.get_static_fields(), path)
+        if isinstance(t, TSwitchedRec):
+            fields.update(self.decode_record_fields_impl([t.get_dynamic_field(fields)], path))
+        return fields
 
-    def decode_record_fields( self, tfields, path ):
+    def decode_record_fields_impl( self, tfields, path ):
         fields = {}
         for field in tfields:
             elt = self.dispatch(field.type, join_path(path, field.name))
             fields[field.name] = elt
         return fields
+        
+    @dispatch.register(THierarchy)
+    def decode_hierarchy_obj( self, t, path ):
+        class_id = self.read_unicode(path)
+        tclass = t.resolve(class_id)
+        fields = self.decode_record_fields(tclass.get_trecord(), path)
+        return tclass.instantiate(**fields)
 
     @dispatch.register(TList)
     def decode_list( self, t, path ):
