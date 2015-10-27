@@ -16,8 +16,8 @@ class TClass(TRecord):
     def get_trecord( self ):
         return self.trec
 
-#    def get_fields( self ):
-#        return self.trec.get_fields()
+    def get_fields( self ):
+        assert False  # must not be called
 
     def validate( self, path, obj ):
         return self.trec.validate(path, obj)
