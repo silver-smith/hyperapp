@@ -11,7 +11,6 @@ from .interface import (
     tString,
     TOptional,
     TRecord,
-    TDynamicRec,
     TList,
     THierarchy,
     Interface,

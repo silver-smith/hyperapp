@@ -7,20 +7,18 @@ from .iface_types import (
     tIfaceId,
     )
 from .hierarchy import THierarchy
+from .switched import tSwitched, TSwitchedRec
 
 
 tParams = THierarchy('params')
 tResult = THierarchy('result')
 
 
-tUpdate = THierarchy('update')
-tUpdateBase = tUpdate.register('base', fields=[
+tUpdate = TSwitchedRec(['iface'], fields=[
     Field('iface', tIfaceId),
     Field('path', tUrl),
+    Field('diff', tSwitched),
     ])
-
-def register_diff( id, diff_type ):
-    tUpdate.register(id, base=tUpdateBase, fields=[Field('diff', diff_type)])
 
 
 tServerPacket = THierarchy('server_packet')
@@ -29,26 +27,27 @@ tServerNotification = tServerPacket.register('notification', fields=[
     Field('updates', TList(tUpdate)),
     ])
 
-tResponseBase = tServerPacket.register('response', base=tServerNotification, fields=[
-    Field('iface', tIfaceId),
-    Field('command_id', tString),
-    Field('request_id', tString),
-    Field('result', tResult),
-    ])
-
-def register_response_type( id, type ):
-    return tServerPacket.register(id, base=tResponseBase, fields=[Field('result', type)])
+tResponseRec = TSwitchedRec(['iface', 'command_id'],
+                            base=tServerNotification, fields=[
+                                Field('iface', tIfaceId),
+                                Field('command_id', tString),
+                                Field('request_id', tString),
+                                Field('result', tSwitched),
+                                ])
+tResponse = tServerPacket.register('response', tResponseRec)
 
 
 tClientPacket = THierarchy('client_packet')
 
-tClientNotification = tClientPacket.register('notification', fields=[
+tClientNotificationRec = TSwitchedRec(['iface', 'command_id'], fileds=[
     Field('iface', tIfaceId),
     Field('path', tUrl),
     Field('command_id', tString),
     Field('params', tParams),
     ])
 
-tRequest = tClientPacket.register('request', base=tClientNotification, fields=[
+tClientNotification = tClientPacket.register('notification', tClientNotificationRec)
+
+tRequest = tClientPacket.register('request', TSwitchedRec(base=tClientNotificationRec, fields=[
     Field('request_id', tString),
-    ])
+    ]))

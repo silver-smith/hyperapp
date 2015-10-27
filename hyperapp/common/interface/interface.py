@@ -12,7 +12,6 @@ from .iface_types import (
     tIfaceId,
     tCommand,
     )
-from .dynamic_record import TDynamicRec
 from .hierarchy import THierarchy
 from .request import tParams, register_response_type, register_diff
 

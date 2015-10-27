@@ -119,6 +119,11 @@ class TRecord(Type):
         if base:
             self.fields = base.fields + self.fields
 
+    def issubclass( self, trec ):
+        assert isinstance(trec, TRecord), repr(trec)
+        return self is trec \
+          or self.base and self.base.issubclass(trec)
+
     def get_fields( self ):
         return self.fields
 
@@ -173,10 +178,6 @@ class TRecord(Type):
         return Record()
 
     def instantiate( self, *args, **kw ):
-        return self.instantiate_impl(args, kw)
-
-    # this is not overriden by TDynamicRec, need for decoder
-    def instantiate_fixed( self, *args, **kw ):
         return self.instantiate_impl(args, kw)
         
 

@@ -3,7 +3,6 @@ from .interface import (
     TPrimitive,
     TOptional,
     TRecord,
-    TDynamicRec,
     THierarchy,
     TList,
     tObject,

@@ -10,7 +10,6 @@ from .interface import (
     tString,
     TOptional,
     TRecord,
-    TDynamicRec,
     TList,
     TIndexedList,
     THierarchy,

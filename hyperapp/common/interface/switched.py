@@ -15,13 +15,16 @@ tSwitched = TSwitched()
 
 class TSwitchedRec(TRecord):
 
-    def __init__( self, dynamic_field, switches, fields=None, base=None ):
+    def __init__( self, switches=None, fields=None, base=None ):
         assert isinstance(dynamic_field, str), repr(dynamic_field)  # field name is expected
-        assert is_list_inst(switches, str), repr(switches)  # field name list is expected
+        if switches is None:
+            assert isinstance(base, TSwitchedRec)  # either switches must be defined, or base must be a TSwitchedRec
+            self.switches = base.switches  # switch field name list
+        else:
+            assert is_list_inst(switches, str), repr(switches)  # field name list is expected
+            self.switches = switches
         TRecord.__init__(self, fields, base)
-        assert self._pick_field(dynamic_field).type is tSwitched  # dynamic field's type must be tSwitched
-        self.dynamic_field = self._pick_field(dynamic_field)
-        self.switches = []  # switch field name list
+        self.dynamic_field = self._pick_dynamic_field()
         self.registry = {}  # switch values tuple -> type
 
     def get_static_fields( self ):
@@ -33,11 +36,14 @@ class TSwitchedRec(TRecord):
         type = self._resolve(switch)
         return Field(self.dynamic_field.name, type)
 
-    def _pick_field( self, name ):
+    def _pick_dynamic_field( self ):
+        dynamic_field = None
         for field in self.fields:
-            if field.name == name:
-                return field
-        assert False, repr(name)  # Field is missing
+            if field.type is tSwitched:
+                assert dynamic_field is None, repr((dynamic_field.name, field.name))  # only one dynamic field is supported
+                dynamic_field = field
+        assert dynamic_field is not None  # one field with type=tSwitched is expected
+        return dynamic_field
 
     def _pick_switch( self, fields_dict ):
         return tuple(fields_dict[name] for name in selt.switches)
