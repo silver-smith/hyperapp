@@ -42,6 +42,7 @@ class THierarchy(Type):
         assert isinstance(id, basestring), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         if trec is not None:
+            assert fields is None and base is None
             assert isinstance(trec, TRecord), repr(trec)
         else:
             assert fields is None or is_list_inst(fields, Field), repr(fields)
@@ -68,5 +69,6 @@ class THierarchy(Type):
         assert id is not None, repr(obj)  # not a TClass instance
         return self.resolve(id)
 
-    def isinstance( self, obj, trec ):
-        return self.resolve_obj(obj).issubclass(trec)
+    def isinstance( self, obj, tclass ):
+        assert isinstance(tclass, TClass), repr(tclass)
+        return self.resolve_obj(obj).issubclass(tclass.get_trecord())
