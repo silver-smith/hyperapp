@@ -104,7 +104,7 @@ class Interface(object):
         self._tContents = TRecord(self.get_contents_fields())
         self._tObject = tObject.register(self.iface_id, base=tProxyObject, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
-        for command in commands:
+        for command in commands + self.get_basic_commands():
             cmd_id = command.command_id
             tClientNotificationRec.register((self.iface_id, cmd_id), command.get_params_type(self))
             tResponseRec.register((self.iface_id, cmd_id), command.get_result_type(self))
@@ -208,8 +208,6 @@ def resolve_iface( iface_id ):
 
 
 # all interfaces support this one too:        
-get_iface = Interface('base_get', commands=[
-    OpenCommand('get'),
-    ])
+get_iface = Interface('base_get')
 
 register_iface(get_iface)

@@ -2,10 +2,10 @@ import weakref
 import uuid
 from ..common.util import encode_url, decode_url
 from ..common.interface import Interface, Field, tString, tHandle, tViewHandle, tRedirectHandle, resolve_iface, iface_registry
-#from ..common.request import ClientNotification, Request
 from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
+from .request import Request
 from .server import RespHandler, Server
 from .get_request import run_get_request
 from . import view
@@ -133,7 +133,7 @@ class ProxyObject(Object):
             elif tHandle.isinstance(handle, tRedirectHandle):
                 run_get_request(initiator_view, handle.redirect_to)
             else:
-                assert False, repr(handle)  # Unknown handle class
+                assert False, repr(tHandle.resolve_obj(handle).id)  # Unknown handle class
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':
