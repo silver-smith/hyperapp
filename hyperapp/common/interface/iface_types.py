@@ -117,7 +117,7 @@ class TRecord(Type):
         assert base is None or isinstance(base, TRecord), repr(base)
         self.fields = fields or []
         if base:
-            self.fields = base.fields + self.fields
+            self.fields = base.get_fields() + self.fields
         self.base = base
 
     def issubclass( self, trec ):

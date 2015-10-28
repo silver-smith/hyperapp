@@ -3,7 +3,7 @@ from ..common.util import encode_url, decode_url
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
 from ..common.interface import tClientPacket, Interface, iface_registry
-from .request import Request
+from .request import Request, ResponseBase, Response
 #from ..common.request import (
 #    tServerPacket,
 #    tClientPacket,
@@ -178,7 +178,7 @@ class Server(object):
         self._process_packet(packet)
 
     def _process_packet( self, packet ):
-        response_or_notification = packet.decode_server_packet()
+        response_or_notification = ResponseBase.from_response_rec(self, iface_registry, packet.decode_server_packet())
         self._process_updates(response_or_notification.updates)
         if isinstance(response_or_notification, Response):
             response = response_or_notification

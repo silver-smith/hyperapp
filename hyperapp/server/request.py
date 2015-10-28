@@ -1,11 +1,11 @@
-from ..common.interface import tClientPacket, tClientNotification, tRequest, tResponse
+from ..common.interface import tUpdate, tClientPacket, tClientNotification, tRequest, tResponse
 
 
 class RequestBase(object):
 
     @classmethod
     def from_request_rec( cls, me, peer, iface_registry, rec ):
-        tClientPacket.validate('<ClientNotification>', rec)
+        tClientPacket.validate('<ClientPacket>', rec)
         iface = iface_registry.resolve(rec.iface)
         if tClientPacket.isinstance(rec, tRequest):
             return Request(me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
@@ -52,9 +52,25 @@ class Request(RequestBase):
         return response
 
 
-class Response(object):
+
+class ResponseBase(object):
+
+    def __init__( self ):
+        self.updates = []
+
+    def add_update( self, update ):
+        tUpdate.validate(update)
+        self.updates.append(update)
+
+
+class ServerNotification(ResponseBase):
+    pass
+
+
+class Response(ResponseBase):
 
     def __init__( self, peer, iface, command_id, request_id, result ):
+        ResponseBase.__init__(self)
         self.peer = peer
         self.iface = iface
         self.command_id = command_id
@@ -62,4 +78,4 @@ class Response(object):
         self.result = result
 
     def encode( self ):
-        return tResponse.instantiate(self.iface.iface_id, self.command_id, self.request_id, self.result)
+        return tResponse.instantiate(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)

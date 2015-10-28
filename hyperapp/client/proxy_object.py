@@ -41,7 +41,8 @@ class ProxyObject(Object):
 
     @classmethod
     def produce_obj_by_objinfo( cls, server, objinfo ):
-        object = cls.produce_obj(server, objinfo.path, objinfo.iface)
+        iface = iface_registry.resolve(objinfo.iface)
+        object = cls.produce_obj(server, objinfo.path, iface)
         object.set_contents(objinfo.contents)
         return object
 
