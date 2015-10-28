@@ -49,7 +49,7 @@ class Object(object):
         assert is_list_inst(path, basestring), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
         return self.iface.Object(
             objimpl_id=self.objimpl_id,
-            iface=self.iface,
+            iface=self.iface.iface_id,
             path=path,
             contents=self.get_contents(),
             )

@@ -3,6 +3,7 @@ from .interface import (
     TPrimitive,
     TOptional,
     TRecord,
+    TSwitchedRec,
     THierarchy,
     TList,
     tObject,
@@ -34,15 +35,14 @@ class RequirementsCollector(object):
 
     @dispatch.register(TRecord)
     def process_record( self, t, value ):
-        base_fields = set()
-        while True:
-            new_fields = [field for field in t.get_fields() if field.name not in base_fields]
-            for field in new_fields:
-                self.process_field(field, value)
-            if not isinstance(t, TDynamicRec):
-                break
-            base_fields = set(field.name for field in t.get_fields())
-            t = t.resolve_dynamic(value)
+        fields = {}
+        for field in t.get_static_fields():
+            field_val = getattr(value, field.name)
+            self.dispatch(field.type, field_val)
+            fields[field.name] = field_val
+        if isinstance(t, TSwitchedRec):
+            field = t.get_dynamic_field(fields)
+            self.dispatch(field.type, getattr(value, field.name))
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj( self, t, value ):
@@ -54,8 +54,7 @@ class RequirementsCollector(object):
             self.collected_requirements.add(('handle', value.view_id))
         tclass = t.resolve_obj(value)
 #        self.collected_requirements.add((t.hierarchy_id, tclass.id))
-        for field in tclass.get_fields():
-            self.process_field(field, value)
+        self.dispatch(tclass.get_trecord(), value)
 
     def process_field( self, field, value ):
         self.dispatch(field.type, getattr(value, field.name))

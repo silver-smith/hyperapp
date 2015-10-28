@@ -2,13 +2,13 @@ import os.path
 import traceback
 import select
 from Queue import Queue
-from ..common.interface import ModuleDep, Module
+from ..common.interface import tServerPacket, ModuleDep, Module
 from ..common.packet import tAuxInfo, AuxInfo, Packet
 from ..common.interface import tClientPacket, iface_registry
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
-from .request import RequestBase, Request
+from .request import RequestBase, Request, Response
 from . import module
 from .code_repository import code_repository
 
@@ -84,7 +84,7 @@ class Client(object):
                     continue
                 response = self._process_packet(packet)
                 if response is not None:
-                    self._wrap_and_send(packet.encoding, response)
+                    self._wrap_and_send(packet.encoding, response.encode())
                 else:
                     print 'no response'
         except Error as x:
@@ -114,7 +114,7 @@ class Client(object):
         request_rec = packet.decode_client_packet()
         print '%r from %s:%d:' % (packet, self.addr[0], self.addr[1])
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_request_rec(self.server, self, request_rec)
+        request = RequestBase.from_request_rec(self.server, self, iface_registry, request_rec)
         path = request.path
         object = self._resolve(path)
         print 'Object:', object

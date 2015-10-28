@@ -46,7 +46,11 @@ class THierarchy(Type):
         else:
             assert fields is None or is_list_inst(fields, Field), repr(fields)
             assert base is None or isinstance(base, TClass), repr(base)
-            trec = TRecord(fields, base)
+            if base:
+                base_rec = base.get_trecord()
+            else:
+                base_rec = None
+            trec = TRecord(fields, base_rec)
         tclass = TClass(self, id, trec)
         self.registry[id] = tclass
         return tclass

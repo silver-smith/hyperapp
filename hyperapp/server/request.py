@@ -1,16 +1,17 @@
-from ..common.interface import tClientPacket, tClientNotification, tRequest
+from ..common.interface import tClientPacket, tClientNotification, tRequest, tResponse
 
 
 class RequestBase(object):
 
     @classmethod
-    def from_request_rec( cls, me, peer, rec ):
+    def from_request_rec( cls, me, peer, iface_registry, rec ):
         tClientPacket.validate('<ClientNotification>', rec)
+        iface = iface_registry.resolve(rec.iface)
         if tClientPacket.isinstance(rec, tRequest):
-            return Request(me, peer, rec.iface, rec.path, rec.command_id, rec.request_id, rec.params)
+            return Request(me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
             assert tClientPacket.isinstance(rec, tClientNotification), repr(rec)
-            return ClientNotification(me, peer, rec.iface, rec.path, rec.command_id, rec.params)
+            return ClientNotification(me, peer, iface, rec.path, rec.command_id, rec.params)
 
     def __init__( self, me, peer, iface, path, command_id, params ):
         self.me = me
@@ -49,3 +50,16 @@ class Request(RequestBase):
         response = self.make_response()
         response.add_update(iface.Update(path, diff))
         return response
+
+
+class Response(object):
+
+    def __init__( self, peer, iface, command_id, request_id, result ):
+        self.peer = peer
+        self.iface = iface
+        self.command_id = command_id
+        self.request_id = request_id
+        self.result = result
+
+    def encode( self ):
+        return tResponse.instantiate(self.iface.iface_id, self.command_id, self.request_id, self.result)
