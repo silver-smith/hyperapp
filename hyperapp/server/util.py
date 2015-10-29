@@ -93,6 +93,13 @@ class WeakValueMultiDict(object):
             if value is not None:
                 l.append(value)
         return l
+
+    def __iter__( self ):
+        for key, value in self.data.items():
+            for wr in value:
+                item = wr()
+                if item:
+                    yield (key, item)
             
     @staticmethod
     def _remove( self_wr, wr ):
