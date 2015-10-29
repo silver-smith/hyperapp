@@ -9,6 +9,7 @@ from .interface import (
     TOptional,
     TRecord,
     TList,
+    TSwitchedRec,
     THierarchy,
     Interface,
     )
@@ -41,25 +42,28 @@ class JsonEncoder(object):
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value ):
-        ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
-        result = {}
-        base_fields = set()
-        while True:
-            new_fields = [field for field in t.get_fields() if field.name not in base_fields]
-            for field in new_fields:
-                result[field.name] = self.dispatch(field.type, getattr(value, field.name))
-            if not isinstance(t, TDynamicRec):
-                return result
-            base_fields = set(field.name for field in t.get_fields())
-            t = t.resolve_dynamic(value)
+        fields = {}
+        for field in t.get_fields():
+            attr = getattr(value, field.name)
+            fields[field.name] = self.dispatch(field.type, attr)
+        return fields
+
+    @dispatch.register(TSwitchedRec)
+    def encode_switched_record( self, t, value ):
+        fields = {}
+        for field in t.get_static_fields():
+            attr = getattr(value, field.name)
+            fields[field.name] = self.dispatch(field.type, attr)
+        dyn_field = t.get_dynamic_field(fields)
+        attr = getattr(value, dyn_field.name)
+        fields[dyn_field.name] = self.dispatch(dyn_field.type, attr)
+        return fields
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj( self, t, value ):
         tclass = t.resolve_obj(value)
-        result = dict(_class_id=self.dispatch(tString, tclass.id))
-        for field in tclass.get_fields():
-            result[field.name] = self.dispatch(field.type, getattr(value, field.name))
-        return result
+        return dict(self.dispatch(tclass.get_trecord(), value),
+                    _class_id=self.dispatch(tString, tclass.id))
 
     @dispatch.register(TList)
     def encode_list( self, t, value ):

@@ -11,6 +11,7 @@ from .interface import (
     TRecord,
     TList,
     TIndexedList,
+    TSwitchedRec,
     THierarchy,
     )
 
@@ -23,9 +24,6 @@ class DecodeError(Exception): pass
 
 
 class JsonDecoder(object):
-
-    def __init__( self, iface_registry ):
-        self.iface_registry = iface_registry  # IfaceRegistry or None
 
     def decode( self, t, value, path='root' ):
         return self.dispatch(t, json.loads(value), path)
@@ -74,16 +72,8 @@ class JsonDecoder(object):
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
-        base_fields = set()
-        decoded_fields = {}
-        while True:
-            new_fields = [field for field in t.get_fields() if field.name not in base_fields]
-            decoded_fields.update(self.decode_record_fields(new_fields, value, path))
-            rec = t.instantiate_fixed(**decoded_fields)
-            if not isinstance(t, TDynamicRec):
-                return rec
-            base_fields = set(field.name for field in t.get_fields())
-            t = t.resolve_dynamic(rec)
+        fields = self.decode_record_fields(t, value, path)
+        return t.instantiate(**fields)
 
     @dispatch.register(THierarchy)
     def decode_hierarchy_obj( self, t, value, path ):
@@ -91,10 +81,16 @@ class JsonDecoder(object):
         self.expect(path, '_class_id' in value, '_class_id field is missing')
         id = self.dispatch(tString, value['_class_id'], join_path(path, '_class_id'))
         tclass = t.resolve(id)
-        fields = self.decode_record_fields(tclass.get_fields(), value, path)
+        fields = self.decode_record_fields(tclass.get_trecord(), value, path)
         return tclass.instantiate(**fields)
 
-    def decode_record_fields( self, tfields, value, path ):
+    def decode_record_fields( self, t, value, path ):
+        fields = self.decode_record_fields_impl(t.get_static_fields(), value, path)
+        if isinstance(t, TSwitchedRec):
+            fields.update(self.decode_record_fields_impl([t.get_dynamic_field(fields)], value, path))
+        return fields
+
+    def decode_record_fields_impl( self, tfields, value, path ):
         fields = {}
         for field in tfields:
             self.expect(path, field.name in value, 'field %r is missing' % field.name)
