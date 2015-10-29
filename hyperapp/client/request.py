@@ -41,8 +41,8 @@ class ResponseBase(object):
     @classmethod
     def from_response_rec( cls, server, iface_registry, rec ):
         tServerPacket.validate('<ServerPacket>', rec)
-        iface = iface_registry.resolve(rec.iface)
         if tServerPacket.isinstance(rec, tResponse):
+            iface = iface_registry.resolve(rec.iface)
             return Response(server, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
         else:
             assert tServerPacket.isinstance(rec, tServerNotification), repr(rec)

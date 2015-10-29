@@ -1,4 +1,4 @@
-from ..common.interface import tUpdate, tClientPacket, tClientNotification, tRequest, tResponse
+from ..common.interface import tUpdate, tClientPacket, tClientNotification, tRequest, tServerNotification, tResponse
 
 
 class RequestBase(object):
@@ -64,7 +64,9 @@ class ResponseBase(object):
 
 
 class ServerNotification(ResponseBase):
-    pass
+
+    def encode( self ):
+        return tServerNotification.instantiate(self.updates)
 
 
 class Response(ResponseBase):

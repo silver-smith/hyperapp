@@ -8,7 +8,7 @@ from ..common.interface import tClientPacket, iface_registry
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
-from .request import RequestBase, Request, Response
+from .request import RequestBase, Request, ServerNotification, Response
 from . import module
 from .code_repository import code_repository
 
@@ -134,10 +134,10 @@ class Client(object):
         return response
 
     def _send_notification( self ):
-        notification = ServerNotification(self)
+        notification = ServerNotification()
         while not self.updates_queue.empty():
             notification.add_update(self.updates_queue.get())
-        self._send(PACKET_ENCODING, notification)
+        self._wrap_and_send(PACKET_ENCODING, notification.encode())
         
     def _resolve( self, path ):
         return module.Module.run_resolver(path)
