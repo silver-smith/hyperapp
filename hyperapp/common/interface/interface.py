@@ -98,13 +98,13 @@ class Interface(object):
             assert diff_type is tNone, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
         self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
-        self._register_types(commands or [])  # do not include base commands
+        self._register_types()
 
-    def _register_types( self, commands ):
+    def _register_types( self ):
         self._tContents = TRecord(self.get_contents_fields())
         self._tObject = tObject.register(self.iface_id, base=tProxyObject, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
-        for command in commands + self.get_basic_commands():
+        for command in self.commands + self.get_basic_commands():
             cmd_id = command.command_id
             tClientNotificationRec.register((self.iface_id, cmd_id), command.get_params_type(self))
             tResponseRec.register((self.iface_id, cmd_id), command.get_result_type(self))
@@ -175,7 +175,7 @@ class Interface(object):
         return self._tContents.instantiate(**kw)
 
     def Update( self, path, diff ):
-        return tUpdate.instantiate(self, path, diff)
+        return tUpdate.instantiate(self.iface_id, path, diff)
         
     def validate_contents( self, path, value ):
         self._tContents.validate(path, value)

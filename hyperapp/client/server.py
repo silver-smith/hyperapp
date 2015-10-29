@@ -3,15 +3,7 @@ from ..common.util import encode_url, decode_url
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
 from ..common.interface import tClientPacket, Interface, iface_registry
-from .request import Request, ResponseBase, Response
-#from ..common.request import (
-#    tServerPacket,
-#    tClientPacket,
-#    ClientNotification,
-#    Request,
-#    Response,
-#    decode_server_packet,
-#    )
+from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
 

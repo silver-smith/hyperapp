@@ -59,7 +59,7 @@ class ResponseBase(object):
         self.updates = []
 
     def add_update( self, update ):
-        tUpdate.validate(update)
+        tUpdate.validate('<Update>', update)
         self.updates.append(update)
 
 

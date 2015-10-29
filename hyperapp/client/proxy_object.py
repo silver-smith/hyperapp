@@ -5,7 +5,7 @@ from ..common.interface import Interface, Field, tString, tHandle, tViewHandle, 
 from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
-from .request import Request
+from .request import ClientNotification, Request
 from .server import RespHandler, Server
 from .get_request import run_get_request
 from . import view

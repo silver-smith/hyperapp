@@ -92,8 +92,8 @@ class ListInterface(Interface):
                 return column
         assert False, repr((self.key_column, [column.id for column in self.columns]))  # unknown key column
 
-    def _register_types( self, commands ):
-        Interface._register_types(self, commands)
+    def _register_types( self ):
+        Interface._register_types(self)
         list_fields = [Field('key', TOptional(self.key_type))]
         narrower_fields = [Field('field_id', tString),
                            Field('key', TOptional(self.key_type))]
