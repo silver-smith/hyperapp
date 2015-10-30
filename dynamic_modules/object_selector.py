@@ -3,7 +3,7 @@ from .util import uni2str
 from .proxy_object import ProxyObject
 from .view_registry import view_registry
 from . import view
-from .command import Command
+from .command import ObjectCommand
 
 
 class ObjSelectorUnwrap(view.Handle):
@@ -83,9 +83,9 @@ class View(view.View, QtGui.QWidget):
         return self.ref
 
     def get_object_commands( self ):
-        view, commands = self.target_view.get_object_commands()
-        choose_cmd = Command('choose', 'Choose', 'Choose current object', 'Ctrl+Return')
-        return (self, [choose_cmd] + commands)
+        commands = self.target_view.get_object_commands()
+        choose_cmd = ObjectCommand(self, 'choose', 'Choose', 'Choose current object', 'Ctrl+Return')
+        return [choose_cmd] + commands
 
     def run_object_command( self, command_id ):
         if command_id == 'choose':

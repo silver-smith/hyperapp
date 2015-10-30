@@ -6,7 +6,7 @@ from ..common.interface import Interface
 #from ..common.request import Request
 from .util import DEBUG_FOCUS, call_after, make_action
 from .server import RespHandler
-from .view_command import ViewCommandBase, command
+from .view_command import WindowCommand, command
 from . import view
 from . import composite
 from .menu_bar import MenuBar
@@ -18,10 +18,10 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-class OpenCommand(ViewCommandBase):
+class OpenCommand(WindowCommand):
 
     def __init__( self, id, text, desc, shortcut, url ):
-        ViewCommandBase.__init__(self, text, desc, shortcut)
+        WindowCommand.__init__(self, text, desc, shortcut)
         self.id = id
         self.url = url
 

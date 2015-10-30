@@ -48,7 +48,7 @@ class View(view.View, QtGui.QTextEdit):
         return self.object
 
     def get_object_commands( self ):
-        return (self, self.object.get_commands(TextObject.mode_edit))
+        return view.View.get_object_commands(self, TextObject.mode_edit)
 
     def _on_text_changed( self ):
         if self.notify_on_text_changed:

@@ -83,15 +83,15 @@ class View(ObjectObserver):
         else:
             return None
 
-    def get_object_commands( self ):
+    def get_object_commands( self, *args, **kw ):
         child = self.get_current_child()
         if child:
-            return child.get_object_commands()
+            return child.get_object_commands(*args, **kw)
         object = self.get_object()
         if object:
-            return (self, object.get_commands())
+            return [cmd.as_object_command(self) for cmd in object.get_commands(*args, **kw)]
         else:
-            return (self, [])
+            return []
 
     def run_object_command( self, command_id ):
         handle = self.get_object().run_command(command_id, self)

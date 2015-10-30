@@ -2,8 +2,8 @@ import sys
 import bisect
 from PySide import QtCore, QtGui
 from .util import uni2str, key_match, key_match_any
+from .command import ElementCommand
 from .list_object import ListObserver, ListDiff, Slice, ListObject
-from .command import run_element_command, make_element_cmd_action
 from .view_registry import view_registry
 from . import view
 
@@ -400,7 +400,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         element = self.model().get_row_element(index.row())
         for cmd in element.commands:
             if cmd.id == 'open':
-                run_element_command(cmd, self, element.key)
+                self.run_object_element_command(cmd.id, element.key)
                 return
 
     def _selected_elements_changed( self ):
@@ -419,7 +419,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
         if not element: return
         # create actions
         for cmd in element.commands:
-            action = make_element_cmd_action(cmd, action_widget, self, element.key)
+            assert isinstance(cmd, ElementCommand), repr(cmd)
+            action = cmd.make_action(action_widget, self, element.key)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)

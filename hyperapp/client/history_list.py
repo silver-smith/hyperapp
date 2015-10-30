@@ -1,7 +1,7 @@
 from ..common.util import is_list_inst
 from ..common.interface import intColumnType, Column
 from .pickler import pickler
-from .command import Command
+from .command import ElementCommand
 from .list_object import Element, Slice, ListObject
 
 
@@ -58,5 +58,5 @@ class HistoryList(ListObject):
         return Slice('idx', None, 'asc', map(self._row2element, self._rows), bof=True, eof=True)
 
     def _row2element( self, row ):
-        commands = [Command('open', 'Open', 'Open selected item')]
+        commands = [ElementCommand('open', 'Open', 'Open selected item')]
         return Element(row.idx, row, commands)

@@ -1,9 +1,10 @@
 import weakref
 from ..common.util import is_list_inst
 from .util import make_action
+from .command import CommandBase
 
 
-class ViewCommandBase(object):
+class WindowCommand(CommandBase):
 
     def __init__( self, text, desc, shortcut ):
         assert shortcut is None or isinstance(shortcut, basestring) or is_list_inst(shortcut, basestring), repr(shortcut)
@@ -14,11 +15,14 @@ class ViewCommandBase(object):
     def make_action( self, widget, window ):
         raise NotImplementedError(self.__class__)
 
+    def clone_without_shortcuts( self, shortcut_set ):
+        raise NotImplementedError(self.__class__)
 
-class BoundViewCommand(ViewCommandBase):
+
+class BoundViewCommand(WindowCommand):
 
     def __init__( self, text, desc, shortcut, enabled, class_method, inst_wr ):
-        ViewCommandBase.__init__(self, text, desc, shortcut)
+        WindowCommand.__init__(self, text, desc, shortcut)
         self.class_method = class_method
         self.inst_wr = inst_wr  # weak ref to class instance
         self.enabled = enabled

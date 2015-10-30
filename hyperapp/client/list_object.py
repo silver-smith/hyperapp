@@ -1,7 +1,7 @@
 from functools import total_ordering
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
-from .command import Command
+from .command import ElementCommand
 from .object import ObjectObserver, Object
 
 
@@ -56,11 +56,11 @@ class Element(object):
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = map(Command.decode, rec.commands)
+        commands = map(ElementCommand.decode, rec.commands)
         return cls(key, rec.row, commands, order_key)
 
     def __init__( self, key, row, commands, order_key=None ):
-        assert is_list_inst(commands, Command), repr(commands)
+        assert is_list_inst(commands, ElementCommand), repr(commands)
         self.key = key
         self.row = row
         self.commands = commands

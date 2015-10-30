@@ -2,7 +2,7 @@
 
 import weakref
 from PySide import QtCore, QtGui
-from .command import run_object_command, run_element_command
+from .command import ObjectCommand, ElementCommand
 
 
 class View(QtGui.QDockWidget):
@@ -35,10 +35,10 @@ class View(QtGui.QDockWidget):
             btn.deleteLater()
         self.dir_buttons = []
         idx = 0
-        view, commands = window.get_object_commands()
-        for cmd in commands:
+        for cmd in window.get_object_commands():
+            assert isinstance(cmd, ObjectCommand), repr(cmd)
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: run_object_command(cmd, view))
+            button.pressed.connect(lambda cmd=cmd: cmd.view.run_object_command(cmd.id))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
             self.dir_buttons.append(button)
             idx += 1
@@ -51,8 +51,9 @@ class View(QtGui.QDockWidget):
         assert len(elts) == 1  # no multi-select support yet
         elt = elts[0]
         for cmd in elt.commands:
+            assert isinstance(cmd, ElementCommand), repr(cmd)
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: run_element_command(cmd, view, elt.key))
+            button.pressed.connect(lambda cmd=cmd: view.run_object_element_command(cmd.id, elt.key))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 
