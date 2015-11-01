@@ -38,16 +38,19 @@ class BlogEntry(article.Article):
         if self.article_id is not None:
             entry_rec = module.BlogEntry[self.article_id]
             entry_rec.text = text
+            is_insertion = False
         else:
             entry_rec = module.BlogEntry(
                 text=text,
                 created_at=utcnow())
+            is_insertion = True
         commit()
         self.article_id = entry_rec.id  # now may have new get_path()
         print 'Blog entry is saved, blog entry id =', self.article_id
         subscription.distribute_update(self.iface, self.get_path(), text)
-        diff = Blog.Diff_insert_one(entry_rec.id, Blog.rec2element(entry_rec))
-        subscription.distribute_update(blog_iface, Blog.get_path(), diff)
+        if is_insertion:
+            diff = Blog.Diff_insert_one(entry_rec.id, Blog.rec2element(entry_rec))
+            subscription.distribute_update(blog_iface, Blog.get_path(), diff)
         return request.make_response_result(new_path=self.get_path())
 
 
