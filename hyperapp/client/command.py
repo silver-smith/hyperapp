@@ -10,6 +10,7 @@ class CommandBase(object):
         self.shortcut = shortcut
 
 
+# returned from Object.get_commands
 class Command(CommandBase):
 
     @classmethod
@@ -26,6 +27,7 @@ class Command(CommandBase):
         return ObjectCommand(view, self.id, self.text, self.desc, self.shortcut)
 
 
+# returned from View.get_object_commands
 class ObjectCommand(Command):
 
     def __init__( self, view, id, text, desc, shortcut=None ):
@@ -41,6 +43,7 @@ class ObjectCommand(Command):
             view.run_object_command(self.id)
 
 
+# stored in Element.commands            
 class ElementCommand(Command):
 
     def make_action( self, widget, view, element_key ):
