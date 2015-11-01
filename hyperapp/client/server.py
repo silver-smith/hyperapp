@@ -3,12 +3,14 @@ from ..common.util import encode_url, decode_url
 from ..common.packet import Packet
 from ..common.visual_rep import pprint
 from ..common.interface import tClientPacket, Interface, iface_registry
+from .util import call_in_future
 from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
 
 
 PACKET_ENCODING = 'cdr'
+RECONNECT_INTERVAL_MS = 2000
 
 
 class RespHandler(object):
@@ -39,16 +41,23 @@ class Connection(object):
         self.socket.stateChanged.connect(self.on_state_changed)
         self.socket.hostFound.connect(self.on_host_found)
         self.socket.connected.connect(self.on_connected)
+        self.socket.disconnected.connect(self.on_disconnected)
         self.socket.bytesWritten.connect(self.on_bytes_written)
         self.socket.readyRead.connect(self.on_ready_read)
+        self._connect()
+
+    def _connect( self ):
+        host, port = self.addr
         self.socket.connectToHost(host, port)
 
     def trace( self, msg ):
         host, port = self.addr
         print 'Network, connection to %s:%d %s' % (host, port, msg)
 
-    def on_error( self, msg ):
-        self.trace('Error: %s' % msg)
+    def on_error( self, error ):
+        self.trace('Error: %s' % error)
+        if error == QtNetwork.QAbstractSocket.ConnectionRefusedError:
+            call_in_future(RECONNECT_INTERVAL_MS, self._connect)
 
     def on_state_changed( self, state ):
         self.trace('State changed: %r' % state)
@@ -61,6 +70,12 @@ class Connection(object):
         self.connected = True
         if self.send_buf:
             self.socket.write(self.send_buf)
+
+    def on_disconnected( self ):
+        self.trace('Disconnected')
+        self.connected = False
+        self.recv_buf = ''
+        self._connect()
 
     def on_bytes_written( self, size ):
         self.send_buf = self.send_buf[size:]
