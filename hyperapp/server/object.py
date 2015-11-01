@@ -76,7 +76,6 @@ class Object(object):
             assert False, repr(command_id)  # Unknown command
 
     def process_request_get( self, request ):
-        self.subscribe(request)
         return request.make_response(self.get_handle())
 
     def process_request_subscribe( self, request ):

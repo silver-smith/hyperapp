@@ -6,9 +6,11 @@ from ..common.interface import tServerPacket, ModuleDep, Module
 from ..common.packet import tAuxInfo, AuxInfo, Packet
 from ..common.interface import tClientPacket, iface_registry
 from ..common.requirements_collector import RequirementsCollector
+from ..common.object_path_collector import ObjectPathCollector
 from ..common.visual_rep import pprint
 from .util import XPathNotFound
 from .request import RequestBase, Request, ServerNotification, Response
+from .object import subscription
 from . import module
 from .code_repository import code_repository
 
@@ -120,9 +122,17 @@ class Client(object):
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
         response = object.process_request(request)
-        return self.prepare_response(object.__class__, request, response)
+        if response:
+            self._subscribe_objects(response)
+        return self._prepare_response(object.__class__, request, response)
 
-    def prepare_response( self, obj_class, request, response ):
+    def _subscribe_objects( self, response ):
+        collector = ObjectPathCollector()
+        object_paths = collector.collect(tServerPacket, response.encode())
+        for path in object_paths:
+            subscription.add(path, self)
+
+    def _prepare_response( self, obj_class, request, response ):
         if response is None and isinstance(request, Request):
             response = request.make_response()  # client need a response to cleanup waiting response handler
         if response is None and not self.updates_queue.empty():
