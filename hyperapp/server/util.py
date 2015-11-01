@@ -94,7 +94,7 @@ class WeakValueMultiDict(object):
                 l.append(value)
         return l
 
-    def __iter__( self ):
+    def items( self ):
         for key, value in self.data.items():
             for wr in value:
                 item = wr()
