@@ -158,17 +158,20 @@ class ArticleRefList(SmallListObject):
         rec = module.Article[self.article_id]
         return request.make_response_handle(Article.from_rec(rec))
 
+    @db_session
     def run_command_add( self, request ):
-        with db_session:
-            url = request.params.target_url
-            if request.me.is_mine_url(url):
-                is_local = True
-                _, url = request.me.split_url(url)
-            else:
-                is_local = False
-            rec = module.ArticleRef(article=module.Article[self.article_id],
-                                    url=encode_url(url),
-                                    is_local=is_local)
+        url = request.params.target_url
+        if request.me.is_mine_url(url):
+            is_local = True
+            _, url = request.me.split_url(url)
+        else:
+            is_local = False
+        rec = module.ArticleRef(article=module.Article[self.article_id],
+                                url=encode_url(url),
+                                is_local=is_local)
+        commit()
+        diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
+        subscription.distribute_update(self.iface, self.get_path(), diff)
         return request.make_response(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
 
     def run_command_open( self, request ):
@@ -180,7 +183,7 @@ class ArticleRefList(SmallListObject):
         ref_id = request.params.element_key
         module.ArticleRef[ref_id].delete()
         diff = self.Diff_delete(ref_id)
-        return request.make_response_update(self.iface, self.get_path(), diff)
+        subscription.distribute_update(self.iface, self.get_path(), diff)
 
     @db_session
     def fetch_all_elements( self ):
