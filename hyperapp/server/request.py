@@ -14,8 +14,8 @@ class RequestBase(object):
             return ClientNotification(me, peer, iface, rec.path, rec.command_id, rec.params)
 
     def __init__( self, me, peer, iface, path, command_id, params ):
-        self.me = me
-        self.peer = peer
+        self.me = me      # Server instance
+        self.peer = peer  # Client instance
         self.iface = iface
         self.path = path
         self.command_id = command_id
