@@ -104,7 +104,7 @@ class Blog(SmallListObject):
         article_id = request.params.element_key
         module.BlogEntry[article_id].delete()
         diff = self.Diff_delete(article_id)
-        return request.make_response_update(self.iface, self.get_path(), diff)
+        subscription.distribute_update(self.iface, self.get_path(), diff)
 
 
 class BlogModule(PonyOrmModule):
