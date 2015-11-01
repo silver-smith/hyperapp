@@ -108,6 +108,10 @@ class ListObject(Object):
         return cls.iface.Diff(*args, **kw)
 
     @classmethod
+    def Diff_replace( cls, key, element ):
+        return cls.Diff(key, key, [element])
+
+    @classmethod
     def Diff_insert_one( cls, key, element ):
         return cls.Diff_insert_many(key, [element])
 
