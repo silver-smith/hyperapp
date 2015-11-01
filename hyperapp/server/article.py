@@ -191,7 +191,8 @@ class ArticleRefList(SmallListObject):
             if ref.article==module.Article[self.article_id]) \
             .order_by(module.ArticleRef.id))
 
-    def rec2element( self, rec ):
+    @classmethod
+    def rec2element( cls, rec ):
         commands = [
             Command('open', 'Open', 'Open reference selector'),
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
@@ -200,7 +201,7 @@ class ArticleRefList(SmallListObject):
             url = '<local>:' + rec.url
         else:
             url = rec.url
-        return self.Element(self.Row(rec.id, url), commands)
+        return cls.Element(cls.Row(rec.id, url), commands)
 
 
 class RefSelector(Object):
@@ -248,6 +249,8 @@ class RefSelector(Object):
         commit()
         print 'Saved article#%d reference#%d path: %r, is_local=%r' % (rec.article.id, rec.id, rec.url, rec.is_local)
         ref_list_obj = ArticleRefList(self.article_id)
+        diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
+        subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
         list_elt = ArticleRefList.ListHandle(ref_list_obj.get(), rec.id)
         handle = ObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
         return request.make_response(handle)
