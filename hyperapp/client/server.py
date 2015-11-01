@@ -87,7 +87,7 @@ class Connection(object):
         data = str(self.socket.readAll())
         self.trace('%d bytes is received' % len(data))
         self.recv_buf += data
-        while Packet.is_full(self.recv_buf):
+        while Packet.has_full_packet(self.recv_buf):
             packet, self.recv_buf = Packet.decode(self.recv_buf)
             self.trace('received %s packet (%d bytes remainder): size=%d'
                        % (packet.encoding, len(self.recv_buf), len(packet.data)))

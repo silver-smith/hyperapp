@@ -42,7 +42,7 @@ class Connection(object):
 
     def receive( self, timeout ):
         while True:
-            if Packet.is_full(self.recv_buf): break
+            if Packet.has_full_packet(self.recv_buf): break
             ## print '  receiving...'
             rd, wr, xc = select.select([self.socket], [], [self.socket], timeout)
             if not rd and not xc:

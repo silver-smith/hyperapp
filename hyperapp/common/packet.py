@@ -36,7 +36,7 @@ class Header(object):
 class Packet(object):
 
     @staticmethod
-    def is_full( data ):
+    def has_full_packet( data ):
         hsize = Header.size()
         if len(data) < hsize:
             return False
@@ -45,7 +45,7 @@ class Packet(object):
 
     @classmethod
     def decode( cls, data ):
-        assert cls.is_full(data)
+        assert cls.has_full_packet(data)
         hsize = Header.size()
         header = Header.decode(data[:hsize])
         aux_ofs = hsize + header.encoding_size
