@@ -25,6 +25,7 @@ class CodeRepository(Object):
 
     def __init__( self ):
         Object.__init__(self)
+        self._id2module = {}           # module id -> Module
         self._requirement2module = {}  # (registry, key) -> Module
         self._find_dynamic_modules()
 
@@ -33,14 +34,24 @@ class CodeRepository(Object):
         return self
 
     def process_request( self, request ):
+        if request.command_id == 'get_modules':
+            return self.run_command_get_modules(request)
         if request.command_id == 'get_required_modules':
             return self.run_command_get_required_modules(request)
         return Object.process_request(self, request)
+
+    def run_command_get_modules( self, request ):
+        print 'run_command_get_modules', request.params.module_ids
+        return request.make_response_result(
+            modules=self.get_modules(request.params.module_ids))
 
     def run_command_get_required_modules( self, request ):
         print 'run_command_get_required_modules', request.params.requirements
         return request.make_response_result(
             modules=self.get_required_modules(request.params.requirements))
+
+    def get_modules( self, module_ids ):
+        return [self._id2module[id] for id in module_ids]
 
     def get_required_modules( self, requirements ):
         modules = []
@@ -65,6 +76,7 @@ class CodeRepository(Object):
         satisfies = [path.split('/') for path in info['satisfies']]
         module = self._load_module(info['id'], info['package'], satisfies, source_path)
         for registry, key in satisfies:
+            self._id2module[module.id] = module
             self._requirement2module[(registry, key)] = module
 
     def _load_module( self, id, package, satisfies, fpath ):

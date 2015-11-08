@@ -31,6 +31,7 @@ Module = tModule.instantiate
 
 
 code_repository_iface = Interface('code_repository', commands=[
+    RequestCmd('get_modules', [Field('module_ids', TList(tString))], [Field('modules', TList(tModule))]),
     RequestCmd('get_required_modules', [Field('requirements', TList(tRequirement))], [Field('modules', TList(tModule))]),
     ])
 
