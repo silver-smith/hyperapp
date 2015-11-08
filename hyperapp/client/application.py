@@ -2,7 +2,6 @@ import os.path
 import uuid
 from PySide import QtCore, QtGui
 from ..common.interface import get_iface, iface_registry
-#from ..common.request import Request, Response, ServerNotification
 from .util import flatten
 from .pickler import pickler
 from .request import Request
@@ -61,9 +60,9 @@ class Application(QtGui.QApplication, view.View):
         unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
         assert unfilfilled_requirements
         self._code_repository.get_required_modules_and_continue(
-            unfilfilled_requirements, lambda modules: self.add_modules_and_reprocess_packet(server, packet, modules))
+            unfilfilled_requirements, lambda modules: self._add_modules_and_reprocess_packet(server, packet, modules))
 
-    def add_modules_and_reprocess_packet( self, server, packet, modules ):
+    def _add_modules_and_reprocess_packet( self, server, packet, modules ):
         self.add_modules(modules)
         server.reprocess_packet(packet)
 
@@ -118,18 +117,18 @@ class Application(QtGui.QApplication, view.View):
         with file(STATE_FILE_PATH, 'wb') as f:
             f.write(pickler.dumps(state))
 
-    def load_state_and_modules( self ):
-        state = self.load_state_file()
-        if not state:
-            return state
-        module_ids, modules, pickled_handles = state
-        for module in modules:
-            self._module_cache.add_module(module)
-            print '-- module is loaded from state: %r (satisfies %s)' % (module.id, module.satisfies)
-        for module in self._module_cache.resolve_ids(module_ids):
-            print 'loading cached module required for state: %r' % module.id
-            load_client_module(module)
-        return pickler.loads(pickled_handles)
+    ## def load_state_and_modules( self ):
+    ##     state = self.load_state_file()
+    ##     if not state:
+    ##         return state
+    ##     module_ids, modules, pickled_handles = state
+    ##     for module in modules:
+    ##         self._module_cache.add_module(module)
+    ##         print '-- module is loaded from state: %r (satisfies %s)' % (module.id, module.satisfies)
+    ##     for module in self._module_cache.resolve_ids(module_ids):
+    ##         print 'loading cached module required for state: %r' % module.id
+    ##         load_client_module(module)
+    ##     return pickler.loads(pickled_handles)
 
     def load_state_file( self ):
         try:
@@ -162,11 +161,19 @@ class Application(QtGui.QApplication, view.View):
         view.process_handle_open(server, result)
         self._resp_handlers.remove(resp_handler)
 
-    def exec_( self ):
-        whandles = self.load_state_and_modules()
-        print 'loaded state: ', whandles
-        if not whandles:
-            whandles = self.get_default_state()
+    def _add_modules_and_open_state( self, pickled_whandles, modules ):
+        self.add_modules(modules)
+        whandles = pickler.loads(pickled_whandles)
         self.open_windows(whandles)
-        del whandles  # or objects will be kept alive
+
+    def exec_( self ):
+        state = self.load_state_file()
+        if state:
+            module_ids, modules, pickled_whandles = state
+            self._code_repository.get_modules_and_continue(
+                module_ids, lambda modules: self._add_modules_and_open_state(pickled_whandles, modules))
+        else:
+            whandles = self.get_default_state()
+            self.open_windows(whandles)
+            del whandles  # or objects will be kept alive
         QtGui.QApplication.exec_()
