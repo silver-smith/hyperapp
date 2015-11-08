@@ -60,7 +60,12 @@ class Application(QtGui.QApplication, view.View):
     def request_required_modules_and_reprocess_packet( self, server, packet ):
         unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
         assert unfilfilled_requirements
-        self._code_repository.get_required_modules_and_reprocess_packet(unfilfilled_requirements, server, packet)
+        self._code_repository.get_required_modules_and_continue(
+            unfilfilled_requirements, lambda modules: self.add_modules_and_reprocess_packet(server, packet, modules))
+
+    def add_modules_and_reprocess_packet( self, server, packet, modules ):
+        self.add_modules(modules)
+        server.reprocess_packet(packet)
 
     def _is_unfulfilled_requirement( self, requirement ):
         registry, key = requirement
