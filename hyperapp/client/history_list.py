@@ -5,9 +5,23 @@ from .command import ElementCommand
 from .list_object import Element, Slice, ListObject
 
 
+class PickledHandle(object):
+
+    @classmethod
+    def from_handle( cls, handle ):
+        return cls(pickler.dumps(handle))
+
+    def __init__( self, pickled_handle ):
+        self.pickled_handle = pickled_handle
+
+    def load( self ):
+        return pickler.loads(self.pickled_handle)
+
+
 class HistoryRow(object):
 
     def __init__( self, idx, title, pickled_handle ):
+        assert isinstance(pickled_handle, PickledHandle), repr(pickled_handle)
         self.idx = idx
         self.title = title
         self.pickled_handle = pickled_handle
@@ -32,7 +46,7 @@ class HistoryList(ListObject):
         return ListObject.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_open( self, initiator_view, element_key ):
-        handle = pickler.loads(self._rows[element_key].pickled_handle)
+        handle = self._rows[element_key].pickled_handle.load()
         initiator_view.open(handle)
 
     def get_columns( self ):

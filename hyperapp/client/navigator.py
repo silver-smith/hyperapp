@@ -2,12 +2,11 @@
 
 from PySide import QtCore, QtGui
 from .util import key_match, key_match_any
-from .pickler import pickler
 from .view_command import command
 from . import view
 from . import composite
 from . import list_view
-from .history_list import HistoryRow, HistoryList
+from .history_list import PickledHandle, HistoryRow, HistoryList
 
 
 MAX_HISTORY_SIZE = 100
@@ -16,6 +15,7 @@ MAX_HISTORY_SIZE = 100
 class Item(object):
 
     def __init__( self, title, required_module_ids, pickled_handle ):
+        assert isinstance(pickled_handle, PickledHandle), repr(pickled_handle)
         self.title = title
         self.required_module_ids = required_module_ids
         self.pickled_handle = pickled_handle
@@ -109,10 +109,10 @@ class View(composite.Composite):
 
     def _pop_history( self, history ):
         item = history.pop()
-        return pickler.loads(item.pickled_handle)
+        return item.pickled_handle.load()
 
     def _handle2item( self, handle ):
-        return Item(handle.get_title(), handle.get_module_ids(), pickler.dumps(handle))
+        return Item(handle.get_title(), handle.get_module_ids(), PickledHandle.from_handle(handle))
 
     @command('History', 'Open history', 'Ctrl+H')
     def open_history( self ):
