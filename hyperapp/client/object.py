@@ -51,6 +51,9 @@ class Object(object):
     def unsubscribe_local( self, observer ):
         self._observers.remove(observer)
 
+    def server_subscribe( self ):
+        pass
+
     def observers_gone( self ):
         pass
 

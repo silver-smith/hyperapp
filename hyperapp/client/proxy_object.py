@@ -81,10 +81,8 @@ class ProxyObject(Object):
     def get_objimpl_id():
         return 'object'
 
-    def subscribe( self, observer ):
-        this_is_first_observer = Object.subscribe(self, observer)
-        if this_is_first_observer:
-            self.execute_request('subscribe')
+    def server_subscribe( self ):
+        self.execute_request('subscribe')
 
     def set_contents( self, contents ):
         self.commands = map(Command.decode, contents.commands)

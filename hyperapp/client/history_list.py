@@ -15,7 +15,11 @@ class PickledHandle(object):
         self.pickled_handle = pickled_handle
 
     def load( self ):
-        return pickler.loads(self.pickled_handle)
+        handle = pickler.loads(self.pickled_handle)
+        object = handle.get_object()
+        if object:
+            object.server_subscribe()
+        return handle
 
 
 class HistoryRow(object):
