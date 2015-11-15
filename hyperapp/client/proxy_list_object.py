@@ -106,9 +106,14 @@ class ProxyListObject(ProxyObject, ListObject):
                     return slice.clone_with_elements(slice.elements[idx:])
         print '     > none found'
         return None  # none found
-            
+
+    def put_back_slice( self, slice ):
+        print '-- proxy put_back_slice', self, len(slice.elements)
+        assert isinstance(slice, Slice), repr(slice)
+        self._merge_in_slice(slice)
+
     def process_update( self, diff ):
-        print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
+        print '-- proxy process_update', self, diff, diff.start_key, diff.end_key, diff.elements
         key_column_id = self.get_key_column_id()
         diff = ListDiff.decode(key_column_id, diff)
         self._update_slices(diff)
@@ -121,21 +126,23 @@ class ProxyListObject(ProxyObject, ListObject):
         return self.iface.key_column
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
-        print '-- proxy fetch_elements', self, repr(from_key), count
+        print '-- proxy fetch_elements', self, self._subscribed, repr(from_key), count
         slice = self._pick_slice(sort_column_id, from_key, direction)
         if slice:
             print '   > cached', len(slice.elements)
+            # return result even if it is stale, for faster gui response, will refresh when server response will be available
             self._notify_fetch_result(slice)
-        else:
-            print '   > no cached, requesting'
             if self._subscribed:
-                command_id = 'fetch_elements'
-            else:
-                command_id = 'subscribe_and_fetch_elements'
-                # several views can call fetch_elements before response is received, and we do not want several subscribe_and... calls
-                # yet a subscribe_... call can fail... todo
-                self._subscribed = True
-            self.execute_request(command_id, None, sort_column_id, from_key, direction, count)
+                return  # otherwise our cache may already be invalid, need to subscribe and refetch anyway
+        print '   > not cached or not subscribed, requesting'
+        if self._subscribed:
+            command_id = 'fetch_elements'
+        else:
+            command_id = 'subscribe_and_fetch_elements'
+            # several views can call fetch_elements before response is received, and we do not want several subscribe_and... calls
+            # yet a subscribe_... call can fail... todo
+            self._subscribed = True
+        self.execute_request(command_id, None, sort_column_id, from_key, direction, count)
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe_and_fetch_elements':

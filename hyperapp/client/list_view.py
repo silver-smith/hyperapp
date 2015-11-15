@@ -94,7 +94,7 @@ class Model(QtCore.QAbstractTableModel):
         ## self._update_mapping()
         QtCore.QAbstractTableModel.reset(self)
 
-    def set_object( self, object, sort_column_id, slice ):
+    def set_object( self, object, sort_column_id ):
         self._object = object
         self._columns = object.get_columns()
         self._visible_columns = filter(lambda column: column.title is not None, self._columns)
@@ -103,11 +103,6 @@ class Model(QtCore.QAbstractTableModel):
         self.keys = []
         self.eof = False
         self.eof = False
-        if slice and slice.sort_column_id == self._current_order:
-            self._update_elements(slice.elements)
-            self.keys = [element.key for element in slice.elements]
-            self.bof = slice.bof
-            self.eof = slice.eof
         self.reset()
         self._fetch_pending = False
 
@@ -214,7 +209,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         if not sort_column_id:
             sort_column_id = object.get_default_sort_column_id()
-        self.set_object(object, sort_column_id, handle_slice)
+#        print (len(slice.elements), slice.eof) if slice else None
+        object.put_back_slice(handle_slice)
+        self.set_object(object, sort_column_id)
         self.wanted_current_key = key  # will set it to current when rows are loaded
 
     def handle( self ):
@@ -321,15 +318,15 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def selected_keys( self ):
         return None
 
-    def set_object( self, object, sort_column_id=None, slice=None ):
-        print '-- set_object', self, id(self.model()), object, self.isVisible(), (len(slice.elements), slice.eof) if slice else None
+    def set_object( self, object, sort_column_id=None ):
+        print '-- set_object', self, id(self.model()), object, self.isVisible()
         assert isinstance(object, ListObject), repr(object)
         assert sort_column_id is not None or self.model().get_sort_column_id() is not None
         assert isinstance
         if self._object:
             self._object.unsubscribe(self)
         self._object = object
-        self.model().set_object(object, sort_column_id, slice)
+        self.model().set_object(object, sort_column_id)
         self.resizeColumnsToContents()
         if self.isVisible():
             self.fetch_elements_if_required()
