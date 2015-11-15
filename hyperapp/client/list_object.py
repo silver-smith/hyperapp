@@ -112,9 +112,6 @@ class ListObject(Object):
     def get_default_sort_column_id( self ):
         raise NotImplementedError(self.__class__)
     
-    def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
-        raise NotImplementedError(self.__class__)
-
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 

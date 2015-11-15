@@ -50,7 +50,7 @@ class FilteredListObj(ListObject, ListObserver):
         self._field_id = field_id  # filter by this field
         self._prefix = prefix
         self._cached_elements = []
-        self._base.subscribe_local(self)
+        self._base.subscribe(self)
 
     def __repr__( self ):
         return 'FilteredListObj(%r/%r/%r)' % (self._field_id, self._prefix, len(self._cached_elements))
@@ -70,10 +70,6 @@ class FilteredListObj(ListObject, ListObserver):
     def get_key_column_id( self ):
         return self._base.get_key_column_id()
     
-    def subscribe_and_fetch_elements( self, observer, sort_column_id, key, desc_count, asc_count ):
-        ListObject.subscribe_local(self, observer)
-        return self._base.subscribe_and_fetch_elements(self, sort_column_id, key, desc_count, asc_count)
-
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
 

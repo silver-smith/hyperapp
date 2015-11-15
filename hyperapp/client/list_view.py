@@ -128,17 +128,6 @@ class Model(QtCore.QAbstractTableModel):
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
 
-    def subscribe_and_fetch_elements( self, observer, first_visible_row, visible_row_count ):
-        if self._fetch_pending: return
-        wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
-        wanted_rows = wanted_last_row
-        key = None
-        print '-- list_view.Model.subscribe_and_fetch_elements', id(self), self._object, first_visible_row, visible_row_count, wanted_rows
-        self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
-        requested = self._object.subscribe_and_fetch_elements(observer, self._current_order, key, 'asc', wanted_rows)
-        if not requested:
-            self._fetch_pending = False
-
     def process_fetch_result( self, result ):
         print '-- list_view.Model.process_fetch_result', id(self), self._object, len(result.elements)
         self._fetch_pending = False
@@ -223,7 +212,6 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
-        self._subscribed = False
         if not sort_column_id:
             sort_column_id = object.get_default_sort_column_id()
         self.set_object(object, sort_column_id, handle_slice)
@@ -338,17 +326,14 @@ class View(view.View, ListObserver, QtGui.QTableView):
         assert isinstance(object, ListObject), repr(object)
         assert sort_column_id is not None or self.model().get_sort_column_id() is not None
         assert isinstance
-        if self._object and self._subscribed:
-            self._object.unsubscribe_local(self)
+        if self._object:
+            self._object.unsubscribe(self)
         self._object = object
         self.model().set_object(object, sort_column_id, slice)
         self.resizeColumnsToContents()
         if self.isVisible():
-            first_visible_row, visible_row_count = self._get_visible_rows()
-            self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
-            self._subscribed = True
-        else:
-            self._subscribed = False
+            self.fetch_elements_if_required()
+        self._object.subscribe(self)
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
@@ -362,13 +347,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def resizeEvent( self, evt ):
         print '-- resizeEvent', self, id(self.model()), self.isVisible(), self._get_visible_rows()
         result = QtGui.QTableView.resizeEvent(self, evt)
-        if self._subscribed:
-            self.fetch_elements_if_required()
-        else:
-            # we need proper visible row/count for subscribe_and_fetch_elements, got them only in resizeEvent
-            first_visible_row, visible_row_count = self._get_visible_rows()
-            self.model().subscribe_and_fetch_elements(self, first_visible_row, visible_row_count)
-            self._subscribed = True
+        self.fetch_elements_if_required()
         return result
 
     def currentChanged( self, idx, prev_idx ):

@@ -11,6 +11,7 @@ class ProxyListObject(ProxyObject, ListObject):
         ListObject.__init__(self)
         self._default_sort_column_id = None
         self._slices = []  # all slices are stored in ascending order
+        self._subscribed = True
 
     @staticmethod
     def get_objimpl_id():
@@ -21,6 +22,12 @@ class ProxyListObject(ProxyObject, ListObject):
         slice = self._decode_slice(contents.slice)
         self._default_sort_column_id = slice.sort_column_id
         self._merge_in_slice(slice)
+
+    # by default we assume this object was returned from server, and thus is already subscribed
+    # if this method is called it means that assumption is not true, and we are not actually subscribed yet
+    # and we do not want separate call to server with 'subscribe' request
+    def server_subscribe( self ):
+        self._subscribed = False
 
     def get_default_sort_column_id( self ):
         assert self._default_sort_column_id  # there were no set_contents calls
@@ -100,20 +107,6 @@ class ProxyListObject(ProxyObject, ListObject):
         print '     > none found'
         return None  # none found
             
-    def subscribe_and_fetch_elements( self, observer, sort_column_id, from_key, direction, count ):
-        this_is_first_observer = self.subscribe_local(observer)
-        print '-- proxy subscribe_and_fetch_elements', this_is_first_observer, self, observer
-        if not this_is_first_observer:
-            return False
-        slice = self._pick_slice(sort_column_id, from_key, direction)
-        if slice:
-            print '   > cached', len(slice.elements), [element.key for element in slice.elements]
-            self._notify_fetch_result(slice)
-        else:
-            print '   > no cached, requesting'
-            self.execute_request('subscribe_and_fetch_elements', None, sort_column_id, from_key, direction, count)
-        return True
-
     def process_update( self, diff ):
         print 'process_update', self, diff, diff.start_key, diff.end_key, diff.elements
         key_column_id = self.get_key_column_id()
@@ -135,7 +128,14 @@ class ProxyListObject(ProxyObject, ListObject):
             self._notify_fetch_result(slice)
         else:
             print '   > no cached, requesting'
-            self.execute_request('fetch_elements', None, sort_column_id, from_key, direction, count)
+            if self._subscribed:
+                command_id = 'fetch_elements'
+            else:
+                command_id = 'subscribe_and_fetch_elements'
+                # several views can call fetch_elements before response is received, and we do not want several subscribe_and... calls
+                # yet a subscribe_... call can fail... todo
+                self._subscribed = True
+            self.execute_request(command_id, None, sort_column_id, from_key, direction, count)
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe_and_fetch_elements':
@@ -148,13 +148,14 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_subscribe_and_fetch_elements_result( self, result ):
         print '-- proxy process_subscribe_and_fetch_elements_result', self, len(result.slice.elements)
         ProxyObject.set_contents(self, result)
-        slice = self._decode_slice(result.slice)
-        self._merge_in_slice(slice)
+        self._process_fetch_elements_result(result)
         self._notify_object_changed()
-        self._notify_fetch_result(slice)
 
     def process_fetch_elements_result( self, result ):
         print '-- proxy process_fetch_elements_result', self, len(result.slice.elements)
+        self._process_fetch_elements_result(result)
+
+    def _process_fetch_elements_result( self, result ):
         slice = self._decode_slice(result.slice)
         self._merge_in_slice(slice)
         self._notify_fetch_result(slice)

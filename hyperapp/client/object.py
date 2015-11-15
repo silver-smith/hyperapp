@@ -40,15 +40,10 @@ class Object(object):
         assert False, repr(command_id)  # Unknown command
 
     def subscribe( self, observer ):
-        return self.subscribe_local(observer)
-
-    # same observer may subscribe several time - every time it must be first one
-    def subscribe_local( self, observer ):
         assert isinstance(observer, ObjectObserver), repr(observer)
         self._observers.add(observer)
-        return len(self._observers) == 1
 
-    def unsubscribe_local( self, observer ):
+    def unsubscribe( self, observer ):
         self._observers.remove(observer)
 
     def server_subscribe( self ):
