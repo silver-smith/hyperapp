@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import sys
+import argparse
 from hyperapp.common.util import decode_url
+from hyperapp.common.endpoint import Endpoint
 from hyperapp.common.interface import iface_registry
 from hyperapp.client.application import Application
 
@@ -25,11 +27,17 @@ import hyperapp.client.form_view
 
 
 def main():
-    app = Application(sys.argv)
+    parser = argparse.ArgumentParser(description='Hyperapp client')
+    parser.add_argument('server_endpoint', help='path to server endpoint file')
+    args = parser.parse_args()
 
-    if len(sys.argv) > 1:
-        url = decode_url(sys.argv[1])
-        app.execute_get_request(url)
+    server_endpoint = Endpoint.load_from_file(args.server_endpoint)
+
+    app = Application(server_endpoint, sys.argv)
+
+    ## if len(sys.argv) > 1:
+    ##     url = decode_url(sys.argv[1])
+    ##     app.execute_get_request(url)
 
     app.exec_()
 

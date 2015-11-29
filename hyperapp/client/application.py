@@ -35,7 +35,7 @@ class OpenRespHandler(RespHandler):
 
 class Application(QtGui.QApplication, view.View):
 
-    def __init__( self, sys_argv ):
+    def __init__( self, server_endpoint, sys_argv ):
         QtGui.QApplication.__init__(self, sys_argv)
         view.View.__init__(self)
         self._module_cache = ModuleCache()

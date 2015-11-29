@@ -6,7 +6,7 @@ class PublicKey(object):
 
     @classmethod
     def from_pem( cls, pem ):
-        public_key = serialization.load_pem_public_key(public_pem, backend=default_backend())
+        public_key = serialization.load_pem_public_key(pem, backend=default_backend())
         return cls('rsa', public_key)
 
     def __init__( self, algorithm, public_key ):

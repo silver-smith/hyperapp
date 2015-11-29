@@ -6,7 +6,7 @@ class Endpoint(object):
 
     @classmethod
     def load_from_file( cls, fpath ):
-        with open(fpath, 'b') as f:
+        with open(fpath, 'rb') as f:
             public_key_pem, routes = pickle.load(f)
         return cls(PublicKey.from_pem(public_key_pem), routes)
 
