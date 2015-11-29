@@ -3,13 +3,17 @@ import time
 import threading
 import socket
 import select
+from ..common.identity import Identity
+from ..common.endpoint import Endpoint
 from .module import Module
 from .client import Client
           
 
 class TcpServer(object):
 
-    def __init__( self, addr ):
+    def __init__( self, identity, addr ):
+        assert isinstance(identity, Identity), repr(identity)
+        self.identity = identity
         self.addr = addr
         host, port_str = addr.split(':')
         port = int(port_str)
@@ -20,6 +24,10 @@ class TcpServer(object):
         self.socket.bind((host, port))
         self.socket.listen(5)
         print 'listening on port %s:%d' % (host, port)
+
+    def get_endpoint( self ):
+        route = ['tcp', self.addr]
+        return Endpoint(self.identity.get_public_key(), [route])
 
     def run( self ):
         Module.init_phases()
