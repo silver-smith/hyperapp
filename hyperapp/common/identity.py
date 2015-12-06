@@ -13,12 +13,13 @@ class PublicKey(object):
         assert isinstance(algorithm, basestring), repr(algorithm)
         self.algorithm = algorithm
         self.public_key = public_key
-
-    def to_pem( self ):
-        return self.public_key.public_bytes(
+        self.public_pem = public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
+
+    def to_pem( self ):
+        return self.public_pem
 
 
 

@@ -20,6 +20,11 @@ DEFAULT_ADDR = 'localhost:8888'
 ENDPOINT_FNAME = 'server.endpoint'
 
 
+def parse_addr( addr ):
+    host, port_str = addr.split(':')
+    port = int(port_str)
+    return (host, port)
+
 def main():
     parser = argparse.ArgumentParser(description='Hyperapp server')
     parser.add_argument('identity_fpath', help='path to identity file')
@@ -27,7 +32,8 @@ def main():
     args = parser.parse_args()
 
     identity = Identity.load_from_file(args.identity_fpath)
-    server = TcpServer(identity, args.addr)
+    host, port = parse_addr(args.addr)
+    server = TcpServer(identity, host, port)
     server.get_endpoint().save_to_file(ENDPOINT_FNAME)
     server.run()
 

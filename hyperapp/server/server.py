@@ -11,22 +11,21 @@ from .client import Client
 
 class TcpServer(object):
 
-    def __init__( self, identity, addr ):
+    def __init__( self, identity, host, port ):
         assert isinstance(identity, Identity), repr(identity)
         self.identity = identity
-        self.addr = addr
-        host, port_str = addr.split(':')
-        port = int(port_str)
+        self.host = host
+        self.port = port
         self.client2thread = {}  # client -> thread
         self.finished_threads = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind((host, port))
+        self.socket.bind((self.host, self.port))
         self.socket.listen(5)
-        print 'listening on port %s:%d' % (host, port)
+        print 'listening on port %s:%d' % (self.host, self.port)
 
     def get_endpoint( self ):
-        route = ['tcp', self.addr]
+        route = ['tcp', self.host, self.port]
         return Endpoint(self.identity.get_public_key(), [route])
 
     def run( self ):

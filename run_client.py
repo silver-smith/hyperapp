@@ -7,6 +7,9 @@ from hyperapp.common.endpoint import Endpoint
 from hyperapp.common.interface import iface_registry
 from hyperapp.client.application import Application
 
+# self-registering transports:
+import hyperapp.client.tcp_transport
+
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
 import hyperapp.common.interface.fs

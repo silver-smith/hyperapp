@@ -18,3 +18,6 @@ class Endpoint(object):
     def save_to_file( self, fpath ):
         with open(fpath, 'wb') as f:
             pickle.dump((self.public_key.to_pem(), self.routes), f)
+
+    def __repr__( self ):
+        return 'Endpoint(%s)' % self.public_key.to_pem().splitlines()[1]
