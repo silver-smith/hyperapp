@@ -39,7 +39,7 @@ class Application(QtGui.QApplication, view.View):
         QtGui.QApplication.__init__(self, sys_argv)
         view.View.__init__(self)
         self._module_cache = ModuleCache()
-        self.server = Server(server_endpoint)
+        self.server = Server.produce(server_endpoint)
         self._code_repository = CodeRepositoryProxy(self.server)
         self._windows = []
         self._resp_handlers = set()  # explicit refs to OpenRespHandlers to keep them alive until object is alive

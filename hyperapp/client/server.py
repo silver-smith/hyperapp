@@ -1,3 +1,4 @@
+from PySide import QtCore
 from ..common.util import encode_url, decode_url
 from ..common.packet import Packet
 from ..common.endpoint import Endpoint
@@ -24,45 +25,33 @@ class RespHandler(object):
     def process_response( self, server, response ):
         raise NotImplementedError(self.__class__)
 
+
 class Server(object):
 
-    addr2server = {}  # (host, port) -> Server
+    _servers = {}  # public key -> Server
 
     @classmethod
-    def _resolve_locator( cls, locator ):
-        host, port_str = locator.split(':', 1)
-        addr = (str(host), int(port_str))
-        server = cls.addr2server.get(addr)
+    def produce( cls, endpoint ):
+        assert isinstance(endpoint, Endpoint), repr(endpoint)
+        server = cls._servers.get(endpoint.public_key)
         if not server:
-            server = cls(addr)
-            cls.addr2server[addr] = server
+            server = Server(endpoint)
+            cls._servers[endpoint.public_key] = server
         return server
-
-    @classmethod
-    def resolve_url( cls, url ):
-        server = cls._resolve_locator(url[0])
-        return (server, url[1:])
 
     def __init__( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.endpoint = endpoint
-        self._connection = None
         self.pending_requests = {}  # request_id -> RespHandler
 
     def make_url( self, url ):
         return [self.get_locator()] + url
 
     def get_locator( self ):
-        host, port = self.addr
-        return '%s:%r' % (host, port)
+        assert False, 'obsolete'
 
     def __repr__( self ):
-        return self.get_locator()
-
-    def _get_connection( self ):
-        if not self._connection:
-            self._connection = Connection(self, self.addr)
-        return self._connection
+        return 'server:%s' % self.endoint
 
     def resolve_object( self, objinfo ):
         return objimpl_registry.produce_obj(self, objinfo)
@@ -87,10 +76,10 @@ class Server(object):
         print '%s packet to %s' % (encoding, self.endpoint)
         pprint(tClientPacket, request_rec)
         packet = Packet.from_contents(encoding, request_rec, tClientPacket)
-        transports.send_packet(self.endpoint, packet)
+        transports.send_packet(self, self.endpoint, packet)
 
     def process_packet( self, packet ):
-        print '%r from %s:%d' % (packet, self.addr[0], self.addr[1])
+        print '%r from %s' % (packet, self.endpoint)
         app = QtCore.QCoreApplication.instance()
         app.add_modules(packet.aux.modules)
         if app.has_unfulfilled_requirements(packet.aux.requirements):

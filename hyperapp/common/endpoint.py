@@ -20,4 +20,4 @@ class Endpoint(object):
             pickle.dump((self.public_key.to_pem(), self.routes), f)
 
     def __repr__( self ):
-        return 'Endpoint(%s)' % self.public_key.to_pem().splitlines()[1]
+        return 'endpoint:%s' % self.public_key.to_pem().splitlines()[1]

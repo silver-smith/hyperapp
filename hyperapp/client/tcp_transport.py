@@ -1,4 +1,5 @@
 from PySide import QtCore, QtNetwork
+from ..common.packet import Packet
 from .transport import Transport, transports
 
 
@@ -7,8 +8,8 @@ RECONNECT_INTERVAL_MS = 2000
 
 class TcpConnection(Transport):
 
-    def __init__( self, server_public_key, host, port ):
-        self.server_public_key = server_public_key
+    def __init__( self, server, host, port ):
+        self.server = server
         self.host = host
         self.port = port
         self.socket = None
@@ -84,20 +85,20 @@ class TcpConnection(Transport):
 
 class TcpTransport(Transport):
 
-    connections = {}  # (server_pk, host, port) -> Connection
+    connections = {}  # (server public key, host, port) -> Connection
 
-    def send_packet( self, server_public_key, route, packet ):
+    def send_packet( self, server, route, packet ):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
-        connection = self.produce_connection(server_public_key, host, port)
+        connection = self.produce_connection(server, host, port)
         connection.send_packet(packet)
 
-    def produce_connection( self, server_public_key, host, port ):
-        key = (server_public_key, host, port)
+    def produce_connection( self, server, host, port ):
+        key = (server.endpoint.public_key, host, port)
         connection = self.connections.get(key)
         if not connection:
-            connection = TcpConnection(server_public_key, host, port)
+            connection = TcpConnection(server, host, port)
             self.connections[key] = connection
         return connection
 
