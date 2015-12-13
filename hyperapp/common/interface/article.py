@@ -3,6 +3,7 @@ from .iface_types import (
     tInt,
     TOptional,
     tUrl,
+    tPath,
     Field,
     TRecord,
     )
@@ -33,7 +34,7 @@ ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
 article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(tString))],
                           commands=[
-                              RequestCmd('save', [Field('text', tString)], [Field('new_path', tUrl)]),
+                              RequestCmd('save', [Field('text', tString)], [Field('new_path', tPath)]),
                               OpenCommand('refs'),
                               OpenCommand('open_ref', [Field('ref_id', tString)]),
                               ],
