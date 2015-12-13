@@ -1,5 +1,5 @@
 from PySide import QtCore
-from ..common.util import encode_url, decode_url
+from ..common.util import is_list_inst, encode_url, decode_url
 from ..common.packet import Packet
 from ..common.endpoint import Endpoint
 from ..common.visual_rep import pprint
@@ -12,6 +12,15 @@ from .transport import transports
 
 
 PACKET_ENCODING = 'cdr'
+
+
+class Url(object):
+
+    def __init__( self, endpoint, path ):
+        assert isinstance(endpoint, Endpoint), repr(endpoint)
+        assert is_list_inst(path, basestring), repr(path)
+        self.endpoint = endpoint
+        self.path = path
 
 
 class RespHandler(object):
@@ -39,16 +48,18 @@ class Server(object):
             cls._servers[endpoint.public_key] = server
         return server
 
+    @classmethod
+    def resolve_url( cls, url ):
+        assert isinstance(url, Url), repr(url)
+        return (cls.produce(url.endpoint), url.path)
+
     def __init__( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.endpoint = endpoint
         self.pending_requests = {}  # request_id -> RespHandler
 
-    def make_url( self, url ):
-        return [self.get_locator()] + url
-
-    def get_locator( self ):
-        assert False, 'obsolete'
+    def make_url( self, path ):
+        return Url(self.endpoint, path)
 
     def __repr__( self ):
         return 'server:%s' % self.endoint
