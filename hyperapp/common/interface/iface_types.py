@@ -202,6 +202,7 @@ class TIndexedList(TList):
 
 
 tUrl = TList(tString)
+tPath = TList(tString)
 tIfaceId = tString
 
 tCommand = TRecord([

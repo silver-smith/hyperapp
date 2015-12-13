@@ -9,6 +9,7 @@ from .iface_types import (
     TRecord,
     TList,
     tUrl,
+    tPath,
     tIfaceId,
     tCommand,
     )
@@ -21,7 +22,7 @@ tObject = THierarchy('object')
 tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
 tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
     Field('iface', tIfaceId),
-    Field('path', tUrl),
+    Field('path', tPath),
     ])
 
 

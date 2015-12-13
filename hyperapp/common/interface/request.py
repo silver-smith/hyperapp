@@ -3,7 +3,7 @@ from .iface_types import (
     Field,
     TRecord,
     TList,
-    tUrl,
+    tPath,
     tIfaceId,
     )
 from .hierarchy import THierarchy
@@ -12,7 +12,7 @@ from .switched import tSwitched, TSwitchedRec
 
 tUpdate = TSwitchedRec(['iface'], fields=[
     Field('iface', tIfaceId),
-    Field('path', tUrl),
+    Field('path', tPath),
     Field('diff', tSwitched),
     ])
 
@@ -21,7 +21,7 @@ tClientPacket = THierarchy('client_packet')
 
 tClientNotificationRec = TSwitchedRec(['iface', 'command_id'], fields=[
     Field('iface', tIfaceId),
-    Field('path', tUrl),
+    Field('path', tPath),
     Field('command_id', tString),
     Field('params', tSwitched),
     ])
