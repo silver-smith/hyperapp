@@ -210,7 +210,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
         if not sort_column_id:
             sort_column_id = object.get_default_sort_column_id()
 #        print (len(slice.elements), slice.eof) if slice else None
-        object.put_back_slice(handle_slice)
+        if handle_slice:
+            object.put_back_slice(handle_slice)
         self.set_object(object, sort_column_id)
         self.wanted_current_key = key  # will set it to current when rows are loaded
 
