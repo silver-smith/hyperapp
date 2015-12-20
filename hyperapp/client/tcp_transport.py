@@ -1,5 +1,6 @@
 from PySide import QtCore, QtNetwork
 from ..common.packet import Packet
+from .util import call_in_future
 from .transport import Transport, transports
 
 

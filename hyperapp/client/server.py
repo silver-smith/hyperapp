@@ -4,7 +4,6 @@ from ..common.packet import Packet
 from ..common.endpoint import Endpoint
 from ..common.visual_rep import pprint
 from ..common.interface import tClientPacket, Interface, iface_registry
-from .util import call_in_future
 from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
@@ -57,6 +56,13 @@ class Server(object):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.endpoint = endpoint
         self.pending_requests = {}  # request_id -> RespHandler
+        self.id = self.endpoint.public_key.make_id().encode('hex')
+
+    def get_endpoint( self ):
+        return self.endpoint
+
+    def get_id( self ):
+        return self.id
 
     def make_url( self, path ):
         return Url(self.endpoint, path)

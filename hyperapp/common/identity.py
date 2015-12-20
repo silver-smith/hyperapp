@@ -1,5 +1,6 @@
 from functools import total_ordering
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
 
 
@@ -20,6 +21,15 @@ class PublicKey(object):
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
 
+    def make_id( self ):
+        pk_der = self.public_key.public_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+        digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+        digest.update(pk_der)
+        return 'sha256:%s' % digest.finalize()
+
     def to_pem( self ):
         return self.public_pem
 
@@ -28,7 +38,6 @@ class PublicKey(object):
 
     def __lt__( self, other ):
         return isinstance(other, PublicKey) and self.public_pem < other.public_pem
-
 
 
 # Contains assymetryc private key

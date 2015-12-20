@@ -88,7 +88,7 @@ class ProxyObject(Object):
         self.commands = map(Command.decode, contents.commands)
 
     def get_title( self ):
-        return encode_url(self.server.make_url(self.path))
+        return '%s:%s' % (self.server.get_id(), '|'.join(self.path))
 
     def get_commands( self ):
         return self.commands

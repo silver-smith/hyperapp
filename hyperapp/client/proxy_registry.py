@@ -36,7 +36,7 @@ class ProxyRegistry(object):
         return self.instances.get(key)
 
     def _make_key( self, server, path ):
-        return encode_url(server.make_url(path))
+        return (server.get_id(),) + tuple(path)
 
 
 proxy_class_registry = ProxyClassRegistry()
