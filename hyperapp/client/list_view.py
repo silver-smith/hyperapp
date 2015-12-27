@@ -1,6 +1,7 @@
 import sys
 import bisect
 from PySide import QtCore, QtGui
+from ..common.interface import Type, tHandle
 from .util import uni2str, key_match, key_match_any
 from .command import ElementCommand
 from .list_object import ListObserver, ListDiff, Slice, ListObject
@@ -15,14 +16,17 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 class Handle(view.Handle):
 
     @classmethod
-    def decode( cls, server, contents ):
-        return cls(server.resolve_object(contents.object), contents.key)
+    def from_data( cls, server, contents ):
+        data_type = tHandle.resolve_obj(contents)
+        return cls(data_type, server.resolve_object(contents.object), contents.key)
 
-    def __init__( self, object, key=None, sort_column_id=None,
+    def __init__( self, data_type, object, key=None, sort_column_id=None,
                   first_visible_row=None, slice=None, select_first=True ):
+        assert isinstance(data_type, Type), repr(data_type)
         assert isinstance(object, ListObject), repr(object)
         assert slice is None or isinstance(slice, Slice), repr(slice)
         view.Handle.__init__(self)
+        self.data_type = data_type
         self.object = object
         self.key = key
         self.sort_column_id = sort_column_id
@@ -30,12 +34,15 @@ class Handle(view.Handle):
         self.slice = slice  # cached elements slice
         self.select_first = select_first  # bool
 
+    def to_data( self ):
+        return self.data_type.instantiate(self.object.to_data(), self.key)
+    
     def get_object( self ):
         return self.object
 
     def construct( self, parent ):
         print 'list_view construct', parent, self.object.get_title(), self.object, repr(self.key)
-        return View(parent, self.object, self.key, self.sort_column_id,
+        return View(parent, self.data_type, self.object, self.key, self.sort_column_id,
                     self.first_visible_row, self.slice, self.select_first)
 
     def __repr__( self ):
@@ -191,9 +198,11 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, ListObserver, QtGui.QTableView):
 
-    def __init__( self, parent, object, key, sort_column_id, first_visible_row, handle_slice, select_first ):
+    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row, handle_slice, select_first ):
+        assert isinstance(data_type, Type), repr(data_type)
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
+        self.data_type = data_type
         self._select_first = select_first
         self._object = None
         self.setModel(Model())
@@ -218,7 +227,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
         slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
-        return Handle(self.get_object(), self.get_current_key(), self.model().get_sort_column_id(),
+        return Handle(self.data_type, self.get_object(), self.get_current_key(), self.model().get_sort_column_id(),
                       first_visible_row, slice, self._select_first)
 
     def get_title( self ):
@@ -406,4 +415,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
         print '~list_view.View', self
 
 
-view_registry.register('list', Handle.decode)
+view_registry.register('list', Handle.from_data)

@@ -18,6 +18,9 @@ class Handle(object):
     def get_title( self ):
         return self.get_object().get_title()
 
+    def to_data( self ):
+        raise NotImplementedError(self.__class__)
+
     def get_module_ids( self ):
         return self.get_object().get_module_ids()
 

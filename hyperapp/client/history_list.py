@@ -1,5 +1,5 @@
 from ..common.util import is_list_inst
-from ..common.interface import intColumnType, Column
+from ..common.interface import intColumnType, Column, tHandle
 from .pickler import pickler
 from .command import ElementCommand
 from .list_object import Element, Slice, ListObject
@@ -9,10 +9,11 @@ class PickledHandle(object):
 
     @classmethod
     def from_handle( cls, handle ):
-        return cls(pickler.dumps(handle))
+        return cls(handle.to_data())
 
-    def __init__( self, pickled_handle ):
-        self.pickled_handle = pickled_handle
+    def __init__( self, handle_data ):
+        tHandle.validate('<Handle>', handle_data)
+        self.handle_data = handle_data
 
     def load( self ):
         handle = pickler.loads(self.pickled_handle)

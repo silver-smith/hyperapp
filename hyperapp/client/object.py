@@ -27,6 +27,9 @@ class Object(object):
     def get_title( self ):
         raise NotImplementedError(self.__class__)
 
+    def to_data( self ):
+        raise NotImplementedError(self.__class__)
+
     def get_url( self ):
         return None
 

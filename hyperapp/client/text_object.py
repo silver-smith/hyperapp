@@ -1,6 +1,9 @@
-from .. common.interface import text_object
+from ..common.interface import tString, tObject, Field, tHandle
 from .object import Object
 from .objimpl_registry import objimpl_registry
+
+
+dataType = tObject.register('text', fields=[Field('text', tString)])
 
 
 class TextObject(Object):
@@ -29,6 +32,9 @@ class TextObject(Object):
 
     def get_title( self ):
         return 'Local text object'
+
+    def to_data( self ):
+        return dataType.instantiate(self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)

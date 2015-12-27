@@ -1,9 +1,14 @@
 import re
 from PySide import QtCore, QtGui
+from ..common.interface import tString, tObject, Field, tHandle
 from .util import uni2str
 from .view_registry import view_registry
 from . import view
 from .text_object import TextObject
+
+
+dataType = tHandle.register('text', fields=[Field('object', tObject),
+                                                Field('text', tString)])
 
 
 class Handle(view.Handle):
@@ -16,6 +21,9 @@ class Handle(view.Handle):
         view.Handle.__init__(self)
         self.object = object
         self.text = text
+
+    def to_data( self ):
+        return dataType.instantiate(self.object.to_data(), self.text)
 
     def get_object( self ):
         return self.object
