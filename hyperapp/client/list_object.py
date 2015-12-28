@@ -103,6 +103,10 @@ class Slice(object):
 
 class ListObject(Object):
 
+    @classmethod
+    def get_objimpl_id( cls ):
+        return 'list'
+
     def get_columns( self ):
         raise NotImplementedError(self.__class__)
 

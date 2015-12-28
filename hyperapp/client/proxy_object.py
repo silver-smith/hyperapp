@@ -6,6 +6,8 @@ from ..common.interface import (
     Field,
     tString,
     TRecord,
+    tObject,
+    tProxyObject,
     tHandle,
     tViewHandle,
     tRedirectHandle,
@@ -23,10 +25,8 @@ from .get_request import run_get_request
 from . import view
 
 
-tProxyObject = TRecord([
+tProxyObjectWithEP = tObject.register('local_proxy', base=tProxyObject, fields=[
     Field('endpoint', tEndpoint),
-    Field('path', tPath),
-    Field('iface_id', tString),
     ])
 
 
@@ -86,10 +86,11 @@ class ProxyObject(Object):
         self.resp_handlers = set()  # explicit refs to ObjRespHandlers to keep them alive until object is alive
 
     def to_data( self ):
-        return tProxyObject.instantiate(
-            self.server.get_endpoint().to_data(),
-            self.path,
+        return tProxyObjectWithEP.instantiate(
+            self.get_objimpl_id(),
             self.iface.iface_id,
+            self.path,
+            self.server.get_endpoint().to_data(),
             )
 
     def get_url( self ):
@@ -102,8 +103,8 @@ class ProxyObject(Object):
         return encode_url([self.get_objimpl_id(),
                            self.iface.iface_id] + self.server.make_url(self.path))
 
-    @staticmethod
-    def get_objimpl_id():
+    @classmethod
+    def get_objimpl_id( cls ):
         return 'object'
 
     def server_subscribe( self ):

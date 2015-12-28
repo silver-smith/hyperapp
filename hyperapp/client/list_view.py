@@ -36,6 +36,7 @@ class Handle(view.Handle):
 
     def to_data( self ):
         return self.data_type.instantiate(
+            'list',
             self.object.to_data(),
             self.key,
             )
