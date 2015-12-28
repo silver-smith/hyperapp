@@ -35,7 +35,10 @@ class Handle(view.Handle):
         self.select_first = select_first  # bool
 
     def to_data( self ):
-        return self.data_type.instantiate(self.object.to_data(), self.key)
+        return self.data_type.instantiate(
+            self.object.to_data(),
+            self.key,
+            )
     
     def get_object( self ):
         return self.object

@@ -35,6 +35,13 @@ tRedirectHandle = tHandle.register('redirect', fields=[Field('redirect_to', tUrl
 RedirectHandle = tRedirectHandle.instantiate
 
 
+tRoute = TList(tString)
+tEndpoint = TRecord([
+    Field('public_key_pem', tString),
+    Field('routes', TList(tRoute)),
+    ])
+
+
 class IfaceCommand(object):
 
     def __init__( self, command_id, params_fields=None, result_fields=None ):

@@ -1,7 +1,19 @@
 import weakref
 import uuid
 from ..common.util import encode_url, decode_url
-from ..common.interface import Interface, Field, tString, tHandle, tViewHandle, tRedirectHandle, resolve_iface, iface_registry
+from ..common.interface import (
+    Interface,
+    Field,
+    tString,
+    TRecord,
+    tHandle,
+    tViewHandle,
+    tRedirectHandle,
+    tPath,
+    tEndpoint,
+    resolve_iface,
+    iface_registry,
+    )
 from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
@@ -9,6 +21,13 @@ from .request import ClientNotification, Request
 from .server import RespHandler, Server
 from .get_request import run_get_request
 from . import view
+
+
+tProxyObject = TRecord([
+    Field('endpoint', tEndpoint),
+    Field('path', tPath),
+    Field('iface_id', tString),
+    ])
 
 
 class ObjRespHandler(RespHandler):
@@ -60,12 +79,18 @@ class ProxyObject(Object):
 
     def __init__( self, server, path, iface ):
         Object.__init__(self)
-        self.init_flag = None
         self.server = server
         self.path = path
         self.iface = iface
         self.commands = []
         self.resp_handlers = set()  # explicit refs to ObjRespHandlers to keep them alive until object is alive
+
+    def to_data( self ):
+        return tProxyObject.instantiate(
+            self.server.get_endpoint().to_data(),
+            self.path,
+            self.iface.iface_id,
+            )
 
     def get_url( self ):
         return self.server.make_url(self.path)

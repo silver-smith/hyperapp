@@ -25,7 +25,7 @@ class TcpServer(object):
         print 'listening on port %s:%d' % (self.host, self.port)
 
     def get_endpoint( self ):
-        route = ['tcp', self.host, self.port]
+        route = ['tcp', self.host, str(self.port)]
         return Endpoint(self.identity.get_public_key(), [route])
 
     def run( self ):
