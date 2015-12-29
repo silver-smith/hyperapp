@@ -15,7 +15,7 @@ from .interface import (
     TSwitchedRec,
     THierarchy,
     Interface,
-    tUrl,
+    tPath,
     tCommand,
     tModule,
     tRequirement,
@@ -99,7 +99,7 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TList)
     def encode_list( self, t, value ):
-        if t is tUrl:
+        if t is tPath:
             return self.encode_url(value)
         if t is tRequirement:
             return RepNode('requirement: %s' % '/'.join(value))
