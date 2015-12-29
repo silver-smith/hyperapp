@@ -11,10 +11,10 @@ class PacketRespHandler(ObjRespHandler):
         ObjRespHandler.__init__(self, object, command_id)
         self.continuation = continuation  # fn(modules)
 
-    def process_response( self, server, response ):
+    def process_response( self, response, server ):
         object = self.object()
         if object:
-            object.process_response(server, response, self)
+            object.process_response(response, server, self)
 
 
 class CodeRepositoryProxy(ProxyObject):
@@ -37,10 +37,10 @@ class CodeRepositoryProxy(ProxyObject):
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
 
-    def process_response( self, server, response, resp_handler, initiator_view=None ):
+    def process_response( self, response, server, resp_handler, initiator_view=None ):
         if resp_handler.command_id in ['get_modules', 'get_required_modules']:
             self.process_get_modules_response(resp_handler.continuation, response.result)
-        ProxyObject.process_response(self, server, response, resp_handler, initiator_view)
+        ProxyObject.process_response(self, response, server, resp_handler, initiator_view)
 
     def process_get_modules_response( self, continuation, result ):
         continuation(result.modules)

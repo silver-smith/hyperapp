@@ -11,8 +11,8 @@ class ViewRegistry(object):
     def is_view_registered( self, view_id ):
         return view_id in self.registry
 
-    def resolve( self, server, contents ):
-        return self.registry[contents.view_id](server, contents)
+    def resolve( self, contents, server=None ):
+        return self.registry[contents.view_id](contents, server)
 
 
 view_registry = ViewRegistry()

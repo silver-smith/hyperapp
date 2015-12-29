@@ -68,7 +68,7 @@ class Server(object):
         return Url(self.endpoint, path)
 
     def __repr__( self ):
-        return 'server:%s' % self.endoint
+        return 'server:%s' % self.endpoint
 
     def resolve_object( self, objinfo ):
         return objimpl_registry.produce_obj(self, objinfo)
@@ -122,7 +122,7 @@ class Server(object):
                 print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
                 return
             del self.pending_requests[response.request_id]
-            resp_handler.process_response(self, response)
+            resp_handler.process_response(response, self)
 
     def _process_updates( self, updates ):
         for update in updates:

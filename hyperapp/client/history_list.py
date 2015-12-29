@@ -2,6 +2,7 @@ from ..common.util import is_list_inst
 from ..common.interface import intColumnType, Column, tHandle
 from .pickler import pickler
 from .command import ElementCommand
+from .view_registry import view_registry
 from .list_object import Element, Slice, ListObject
 
 
@@ -16,7 +17,7 @@ class PickledHandle(object):
         self.handle_data = handle_data
 
     def load( self ):
-        handle = pickler.loads(self.pickled_handle)
+        handle = view_registry.resolve(self.handle_data)
         object = handle.get_object()
         if object:
             object.server_subscribe()

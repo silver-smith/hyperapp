@@ -4,6 +4,7 @@ from PySide import QtCore, QtGui
 from ..common.interface import Type, tHandle
 from .util import uni2str, key_match, key_match_any
 from .command import ElementCommand
+from .objimpl_registry import objimpl_registry
 from .list_object import ListObserver, ListDiff, Slice, ListObject
 from .view_registry import view_registry
 from . import view
@@ -16,9 +17,10 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 class Handle(view.Handle):
 
     @classmethod
-    def from_data( cls, server, contents ):
+    def from_data( cls, contents, server=None ):
         data_type = tHandle.resolve_obj(contents)
-        return cls(data_type, server.resolve_object(contents.object), contents.key)
+        object = objimpl_registry.produce_obj(contents.object, server)
+        return cls(data_type, object, contents.key)
 
     def __init__( self, data_type, object, key=None, sort_column_id=None,
                   first_visible_row=None, slice=None, select_first=True ):

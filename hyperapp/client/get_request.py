@@ -11,10 +11,10 @@ class GetRespHandler(RespHandler):
         RespHandler.__init__(self, iface=get_iface, command_id='get')
         self.view_wr = weakref.ref(view)
 
-    def process_response( self, server, response ):
+    def process_response( self, response, server ):
         view = self.view_wr()
         if view:
-            view.process_handle_open(server, response.result)
+            view.process_handle_open(response.result, server)
 
 
 def run_get_request( view, url ):

@@ -39,11 +39,11 @@ class ObjRespHandler(RespHandler):
         self.object = weakref.ref(object)
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
 
-    def process_response( self, server, response ):
+    def process_response( self, response, server ):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
         if object:
-            object.process_response(server, response, self, initiator_view)
+            object.process_response(response, server, self, initiator_view)
 
 
 class ProxyObject(Object):
@@ -59,7 +59,7 @@ class ProxyObject(Object):
         return proxy_cls.produce_obj(server, path, iface)
 
     @classmethod
-    def produce_obj_by_objinfo( cls, server, objinfo ):
+    def produce_obj_by_objinfo( cls, objinfo, server ):
         iface = iface_registry.resolve(objinfo.iface)
         object = cls.produce_obj(server, objinfo.path, iface)
         object.set_contents(objinfo.contents)
@@ -146,14 +146,14 @@ class ProxyObject(Object):
         self.resp_handlers.add(resp_handler)
         self.server.execute_request(request, resp_handler)
 
-    def process_response( self, server, response, resp_handler, initiator_view=None ):
+    def process_response( self, response, server, resp_handler, initiator_view=None ):
         self.process_response_result(resp_handler.command_id, response.result)
         self.resp_handlers.remove(resp_handler)
         # initiator_view may already be gone (closed, navigated away) or be missing at all - so is None
         if self.iface.is_open_command(resp_handler.command_id) and initiator_view:
             handle = response.result
             if tHandle.isinstance(handle, tViewHandle):
-                initiator_view.process_handle_open(server, handle)
+                initiator_view.process_handle_open(handle, server)
             elif tHandle.isinstance(handle, tRedirectHandle):
                 run_get_request(initiator_view, handle.redirect_to)
             else:
