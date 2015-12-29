@@ -126,7 +126,7 @@ class ModuleForm(Object):
             rec = module.Module(id=id,
                                 name=request.params.name)
         object = ModuleList()
-        handle = ModuleList.ListHandle(object.get(), rec.id)
+        handle = ModuleList.ListHandle(object.get(), key=rec.id)
         return request.make_response(handle)
 
 

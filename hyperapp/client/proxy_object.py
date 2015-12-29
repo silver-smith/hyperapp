@@ -10,6 +10,7 @@ from ..common.interface import (
     tObject,
     tThisProxyObject,
     tProxyObject,
+    tThisProxyObjectWithContents,
     tHandle,
     tViewHandle,
     tRedirectHandle,
@@ -64,7 +65,8 @@ class ProxyObject(Object):
             server = Server.produce(Endpoint.from_data(objinfo.endpoint))
         iface = iface_registry.resolve(objinfo.iface)
         object = cls.produce_obj(server, objinfo.path, iface)
-        object.set_contents(objinfo.contents)
+        if tObject.isinstance(objinfo, tThisProxyObjectWithContents):  # is it a response?
+            object.set_contents(objinfo.contents)
         return object
 
     # we avoid making proxy objects with same server+path

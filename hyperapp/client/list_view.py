@@ -20,9 +20,9 @@ class Handle(view.Handle):
     def from_data( cls, contents, server=None ):
         data_type = tHandle.resolve_obj(contents)
         object = objimpl_registry.produce_obj(contents.object, server)
-        return cls(data_type, object, contents.key)
+        return cls(data_type, object, contents.sort_column_id, contents.key)
 
-    def __init__( self, data_type, object, key=None, sort_column_id=None,
+    def __init__( self, data_type, object, sort_column_id=None, key=None,
                   first_visible_row=None, slice=None, select_first=True ):
         assert isinstance(data_type, Type), repr(data_type)
         assert isinstance(object, ListObject), repr(object)
@@ -40,6 +40,7 @@ class Handle(view.Handle):
         return self.data_type.instantiate(
             'list',
             self.object.to_data(),
+            self.sort_column_id,
             self.key,
             )
     
@@ -233,8 +234,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
         slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
-        return Handle(self.data_type, self.get_object(), self.get_current_key(), self.model().get_sort_column_id(),
-                      first_visible_row, slice, self._select_first)
+        return Handle(self.data_type, self.get_object(), self.model().get_sort_column_id(),
+                      self.get_current_key(), first_visible_row, slice, self._select_first)
 
     def get_title( self ):
         if self._object:

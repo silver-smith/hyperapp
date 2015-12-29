@@ -36,7 +36,7 @@ class ParamsForm(Object):
     def run_command_submit( self, request ):
         print 'submitted: ', `request.params.key`, `request.params.size`
         object = TestList(request.params.size)
-        handle = TestList.ListHandle(object.get(), request.params.key)
+        handle = TestList.ListHandle(object.get(), key=request.params.key)
         return request.make_response(handle)
 
 

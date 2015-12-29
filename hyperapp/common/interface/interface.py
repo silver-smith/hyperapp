@@ -38,6 +38,8 @@ tProxyObject = tObject.register('proxy', base=tThisProxyObject, fields=[
     Field('endpoint', tEndpoint),
     ])
 
+# base for server response objects
+tThisProxyObjectWithContents = tObject.register('this_proxy_with_contents', base=tThisProxyObject)
 
 
 tHandle = THierarchy('handle')
@@ -117,7 +119,7 @@ class Interface(object):
 
     def _register_types( self ):
         self._tContents = TRecord(self.get_contents_fields())
-        self._tObject = tObject.register(self.iface_id, base=tThisProxyObject, fields=[Field('contents', self._tContents)])
+        self._tObject = tObject.register(self.iface_id, base=tThisProxyObjectWithContents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
         for command in self.commands + self.get_basic_commands():
             cmd_id = command.command_id

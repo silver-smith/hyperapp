@@ -127,12 +127,18 @@ class ListObject(Object):
         return cls.Diff(key, key, [])
 
     @classmethod
-    def ListHandle( cls, *args, **kw ):
-        return cls.iface.ListHandle('list', *args, **kw)
+    def ListHandle( cls, object, sort_column_id=None, key=None ):
+        if sort_column_id is None:
+            sort_column_id = cls.default_sort_column_id
+        return cls.iface.ListHandle('list', object, sort_column_id, key)
 
     @classmethod
-    def ListNarrowerHandle( cls, *args, **kw ):
-        return cls.iface.ListNarrowerHandle('list_narrower', *args, **kw)
+    def ListNarrowerHandle( cls, object, sort_column_id=None, key=None, narrow_field_id=None ):
+        if sort_column_id is None:
+            sort_column_id = cls.default_sort_column_id
+        if narrow_field_id is None:
+            narrow_field_id = sort_column_id
+        return cls.iface.ListNarrowerHandle('list_narrower', object, sort_column_id, key, narrow_field_id)
 
     def __init__( self ):
         Object.__init__(self)

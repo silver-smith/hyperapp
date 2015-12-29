@@ -251,7 +251,7 @@ class RefSelector(Object):
         ref_list_obj = ArticleRefList(self.article_id)
         diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
-        list_elt = ArticleRefList.ListHandle(ref_list_obj.get(), rec.id)
+        list_elt = ArticleRefList.ListHandle(ref_list_obj.get(), key=rec.id)
         handle = ObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
         return request.make_response(handle)
 
