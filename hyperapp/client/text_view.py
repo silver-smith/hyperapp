@@ -1,21 +1,24 @@
 import re
 from PySide import QtCore, QtGui
-from ..common.interface import tString, tObject, Field, tHandle
+from ..common.interface import tString, tObject, Field, tHandle, tViewHandle
 from .util import uni2str
+from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
 from .text_object import TextObject
 
 
-dataType = tHandle.register('text', fields=[Field('object', tObject),
-                                                Field('text', tString)])
+dataType = tHandle.register('text', base=tViewHandle,
+                            fields=[Field('object', tObject),
+                                    Field('text', tString)])
 
 
 class Handle(view.Handle):
 
     @classmethod
-    def decode( cls, server, contents ):
-        return cls(server.resolve_object(contents.object))
+    def decode( cls, contents, server=None ):
+        object = objimpl_registry.produce_obj(contents.object, server)
+        return cls(object, contents.text)
 
     def __init__( self, object, text=None ):
         view.Handle.__init__(self)
@@ -23,7 +26,7 @@ class Handle(view.Handle):
         self.text = text
 
     def to_data( self ):
-        return dataType.instantiate(self.object.to_data(), self.text)
+        return dataType.instantiate('text_view', self.object.to_data(), self.text)
 
     def get_object( self ):
         return self.object

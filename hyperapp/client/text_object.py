@@ -1,9 +1,9 @@
-from ..common.interface import tString, tObject, Field, tHandle
+from ..common.interface import tString, tObject, Field, tBaseObject, tHandle
 from .object import Object
 from .objimpl_registry import objimpl_registry
 
 
-dataType = tObject.register('text', fields=[Field('text', tString)])
+dataType = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
 
 
 class TextObject(Object):
@@ -23,7 +23,7 @@ class TextObject(Object):
         cls.edit_handle_ctr = ctr
 
     @classmethod
-    def factory( cls, server, objinfo ):
+    def factory( cls, objinfo, server=None ):
         return cls(objinfo.text)
 
     def __init__( self, text ):
@@ -34,7 +34,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def to_data( self ):
-        return dataType.instantiate(self.text)
+        return dataType.instantiate('text', self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
