@@ -1,6 +1,7 @@
 from .visitor import Visitor
 from .interface import (
     tObject,
+    tThisProxyObject,
     tProxyObject,
     tHandle,
     tViewHandle,
@@ -17,7 +18,7 @@ class RequirementsCollector(Visitor):
     def visit_hierarchy_obj( self, t, value ):
         if t is tObject:
             self.collected_requirements.add(('object', value.objimpl_id))
-            if tObject.isinstance(value, tProxyObject):
+            if tObject.isinstance(value, tThisProxyObject) or tObject.isinstance(value, tProxyObject):
                 self.collected_requirements.add(('interface', value.iface))
         if t is tHandle and tHandle.isinstance(value, tViewHandle):
             self.collected_requirements.add(('handle', value.view_id))

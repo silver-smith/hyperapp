@@ -13,7 +13,7 @@ class Endpoint(object):
         return cls(PublicKey.from_pem(public_key_pem), routes)
 
     @classmethod
-    def from_data( self, rec ):
+    def from_data( cls, rec ):
         return cls(PublicKey.from_pem(rec.public_key_pem), rec.routes)
 
     def __init__( self, public_key, routes ):

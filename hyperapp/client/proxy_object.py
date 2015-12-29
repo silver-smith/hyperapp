@@ -1,12 +1,14 @@
 import weakref
 import uuid
 from ..common.util import encode_url, decode_url
+from ..common.endpoint import Endpoint
 from ..common.interface import (
     Interface,
     Field,
     tString,
     TRecord,
     tObject,
+    tThisProxyObject,
     tProxyObject,
     tHandle,
     tViewHandle,
@@ -24,10 +26,6 @@ from .server import RespHandler, Server
 from .get_request import run_get_request
 from . import view
 
-
-tProxyObjectWithEP = tObject.register('local_proxy', base=tProxyObject, fields=[
-    Field('endpoint', tEndpoint),
-    ])
 
 
 class ObjRespHandler(RespHandler):
@@ -59,7 +57,11 @@ class ProxyObject(Object):
         return proxy_cls.produce_obj(server, path, iface)
 
     @classmethod
-    def produce_obj_by_objinfo( cls, objinfo, server ):
+    def produce_obj_by_objinfo( cls, objinfo, server=None ):
+        assert tObject.isinstance(objinfo, tThisProxyObject) or tObject.isinstance(objinfo, tProxyObject), repr(objinfo)
+        if server is None:
+            assert tObject.isinstance(objinfo, tProxyObject), repr(objinfo)  # we need endpoint somehow
+            server = Server.produce(Endpoint.from_data(objinfo.endpoint))
         iface = iface_registry.resolve(objinfo.iface)
         object = cls.produce_obj(server, objinfo.path, iface)
         object.set_contents(objinfo.contents)
@@ -86,7 +88,7 @@ class ProxyObject(Object):
         self.resp_handlers = set()  # explicit refs to ObjRespHandlers to keep them alive until object is alive
 
     def to_data( self ):
-        return tProxyObjectWithEP.instantiate(
+        return tProxyObject.instantiate(
             self.get_objimpl_id(),
             self.iface.iface_id,
             self.path,

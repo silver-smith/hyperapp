@@ -1,6 +1,7 @@
 from .visitor import Visitor
 from .interface import (
     tObject,
+    tThisProxyObject,
     tProxyObject,
     )
 
@@ -13,5 +14,6 @@ class ObjectPathCollector(Visitor):
         return [list(path) for path in self.collected_paths]
 
     def visit_hierarchy_obj( self, t, value ):
-        if t is tObject and tObject.isinstance(value, tProxyObject):
+        if t is tObject and (tObject.isinstance(value, tThisProxyObject) or
+                             tObject.isinstance(value, tProxyObject)):
             self.collected_paths.add(tuple(value.path))

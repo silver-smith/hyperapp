@@ -17,13 +17,27 @@ from .hierarchy import THierarchy
 from .request import tUpdate, tClientNotificationRec, tResponseRec
 
 
+tRoute = TList(tString)
+tEndpoint = TRecord([
+    Field('public_key_pem', tString),
+    Field('routes', TList(tRoute)),
+    ])
+
 
 tObject = THierarchy('object')
 tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
-tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
+
+# proxy to server returning this object
+tThisProxyObject = tObject.register('this_proxy', base=tBaseObject, fields=[
     Field('iface', tIfaceId),
     Field('path', tPath),
     ])
+
+# proxy to server with this endpoint
+tProxyObject = tObject.register('proxy', base=tThisProxyObject, fields=[
+    Field('endpoint', tEndpoint),
+    ])
+
 
 
 tHandle = THierarchy('handle')
@@ -33,13 +47,6 @@ ObjHandle = tObjHandle.instantiate
 
 tRedirectHandle = tHandle.register('redirect', fields=[Field('redirect_to', tUrl)])
 RedirectHandle = tRedirectHandle.instantiate
-
-
-tRoute = TList(tString)
-tEndpoint = TRecord([
-    Field('public_key_pem', tString),
-    Field('routes', TList(tRoute)),
-    ])
 
 
 class IfaceCommand(object):
@@ -110,7 +117,7 @@ class Interface(object):
 
     def _register_types( self ):
         self._tContents = TRecord(self.get_contents_fields())
-        self._tObject = tObject.register(self.iface_id, base=tProxyObject, fields=[Field('contents', self._tContents)])
+        self._tObject = tObject.register(self.iface_id, base=tThisProxyObject, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
         for command in self.commands + self.get_basic_commands():
             cmd_id = command.command_id
