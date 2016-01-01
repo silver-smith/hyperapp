@@ -1,36 +1,44 @@
 from PySide import QtCore, QtGui
+from ..common.interface import tObjHandle
 from .util import uni2str
+from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
 from .text_object import TextObject
 
 
+data_type = tObjHandle
+
+
 class Handle(view.Handle):
 
     @classmethod
-    def decode( cls, server, contents ):
-        return cls(server.resolve_object(contents.object))
+    def from_data( cls, contents, server=None ):
+        object = objimpl_registry.produce_obj(contents.object, server)
+        return cls(object)
 
-    def __init__( self, object, text=None ):
+    def __init__( self, object ):
         view.Handle.__init__(self)
         self.object = object
-        self.text = text
+
+    def to_data( self ):
+        return data_type.instantiate('text_edit', self.object.to_data())
 
     def get_object( self ):
         return self.object
 
     def construct( self, parent ):
-        print 'text_edit construct', parent, self.object, self.object.get_title(), repr(self.text)
-        return View(parent, self.object, self.text)
+        print 'text_edit construct', parent, self.object, self.object.get_title()
+        return View(parent, self.object)
 
     def __repr__( self ):
-        return 'text_edit.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
+        return 'text_edit.Handle(%s)' % uni2str(self.object.get_title())
 
 
 class View(view.View, QtGui.QTextEdit):
 
-    def __init__( self, parent, object, text ):
-        QtGui.QTextEdit.__init__(self, text)
+    def __init__( self, parent, object ):
+        QtGui.QTextEdit.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
         self.notify_on_text_changed = True
@@ -39,7 +47,7 @@ class View(view.View, QtGui.QTextEdit):
         self.object.subscribe(self)
 
     def handle( self ):
-        return Handle(self.object, self.toPlainText())
+        return Handle(self.object)
 
     def get_title( self ):
         return self.object.get_title()
@@ -68,4 +76,4 @@ class View(view.View, QtGui.QTextEdit):
 
 
 TextObject.set_edit_handle_ctr(Handle)
-view_registry.register('text_edit', Handle.decode)
+view_registry.register('text_edit', Handle.from_data)

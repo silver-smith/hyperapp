@@ -1,6 +1,6 @@
 import re
 from PySide import QtCore, QtGui
-from ..common.interface import tString, tObject, Field, tHandle, tObjHandle
+from ..common.interface import tString, tObject, Field, tObjHandle
 from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
