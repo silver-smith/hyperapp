@@ -1,6 +1,6 @@
 import re
 from PySide import QtCore, QtGui
-from ..common.interface import tString, tObject, Field, tHandle, tViewHandle
+from ..common.interface import tString, tObject, Field, tHandle, tObjHandle
 from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
@@ -8,40 +8,37 @@ from . import view
 from .text_object import TextObject
 
 
-dataType = tHandle.register('text', base=tViewHandle,
-                            fields=[Field('object', tObject),
-                                    Field('text', tString)])
+dataType = tObjHandle
 
 
 class Handle(view.Handle):
 
     @classmethod
-    def decode( cls, contents, server=None ):
+    def from_data( cls, contents, server=None ):
         object = objimpl_registry.produce_obj(contents.object, server)
-        return cls(object, contents.text)
+        return cls(object)
 
-    def __init__( self, object, text=None ):
+    def __init__( self, object ):
         view.Handle.__init__(self)
         self.object = object
-        self.text = text
 
     def to_data( self ):
-        return dataType.instantiate('text_view', self.object.to_data(), self.text)
+        return dataType.instantiate('text_view', self.object.to_data())
 
     def get_object( self ):
         return self.object
 
     def construct( self, parent ):
-        print 'text_view construct', parent, self.object, self.object.get_title(), repr(self.text)
-        return View(parent, self.object, self.text)
+        print 'text_view construct', parent, self.object, self.object.get_title()
+        return View(parent, self.object)
 
     def __repr__( self ):
-        return 'text_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.text))
+        return 'text_view.Handle(%s)' % uni2str(self.object.get_title())
 
 
 class View(view.View, QtGui.QTextBrowser):
 
-    def __init__( self, parent, object, text ):
+    def __init__( self, parent, object ):
         QtGui.QTextBrowser.__init__(self)
         view.View.__init__(self, parent)
         self.setOpenLinks(False)
@@ -51,7 +48,7 @@ class View(view.View, QtGui.QTextBrowser):
         self.object.subscribe(self)
 
     def handle( self ):
-        return Handle(self.object, self.toPlainText())
+        return Handle(self.object)
 
     def get_title( self ):
         return self.object.get_title()
@@ -78,4 +75,4 @@ class View(view.View, QtGui.QTextBrowser):
 
 
 TextObject.set_view_handle_ctr(Handle)
-view_registry.register('text_view', Handle.decode)
+view_registry.register('text_view', Handle.from_data)

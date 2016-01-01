@@ -105,7 +105,7 @@ class Server(object):
             self._process_packet(packet)
 
     def reprocess_packet( self, packet ):
-        print 'reprocessing %r from %s:%d' % (packet, self.addr[0], self.addr[1])
+        print 'reprocessing %r from %s' % (packet, self.endpoint)
         app = QtCore.QCoreApplication.instance()
         app.add_modules(packet.aux.modules)
         assert not app.has_unfulfilled_requirements(packet.aux.requirements)  # still has unfilfilled requirements
