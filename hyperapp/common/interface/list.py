@@ -98,7 +98,9 @@ class ListInterface(Interface):
             Field('sort_column_id', tString),
             Field('key', TOptional(self.key_type)),
             ]
-        narrower_fields = list_fields + [Field('narrow_field_id', tString)]
+        narrower_fields = list_fields + [
+            Field('narrow_field_id', tString),
+            ]
         self._tListHandle = tHandle.register(
             '%s.list' % self.iface_id, base=tObjHandle, fields=list_fields)
         self._tListNarrowerHandle = tHandle.register(

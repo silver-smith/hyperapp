@@ -1,6 +1,8 @@
 from PySide import QtCore, QtGui
+from ..common.interface import tHandle
 from .util import uni2str, key_match, key_match_any
 from .list_object import ListObserver, Slice, ListObject
+from .objimpl_registry import objimpl_registry
 from .view_command import command
 from .view_registry import view_registry
 from . import view
@@ -12,48 +14,57 @@ from . import list_view
 FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
 
 
-class Handle(view.Handle):
+class Handle(list_view.Handle):
 
     @classmethod
-    def decode( cls, server, contents ):
-        object = server.resolve_object(contents.object)
-        list_handle = list_view.Handle(object, contents.key)
-        return cls(object, list_handle, contents.field_id)
+    def from_data( cls, contents, server=None ):
+        data_type = tHandle.resolve_obj(contents)
+        object = objimpl_registry.produce_obj(contents.object, server)
+        return cls(data_type, object, contents.sort_column_id, contents.key,
+                   first_visible_row=None, select_first=True, narrow_field_id=contents.narrow_field_id)
 
-    def __init__( self, object, list_handle, field_id, prefix=None ):
+    def __init__( self, data_type, object, sort_column_id, key,
+                  first_visible_row, select_first, narrow_field_id, prefix=None ):
         assert prefix is None or isinstance(prefix, basestring), repr(prefix)
-        view.Handle.__init__(self)
-        self.object = object
-        self.list_handle = list_handle
-        self.field_id = field_id
+        list_view.Handle.__init__(self, data_type, object, sort_column_id, key, first_visible_row, select_first)
+        self.narrow_field_id = narrow_field_id
         self.prefix = prefix
+
+    def to_data( self ):
+        return self.data_type.instantiate(
+            'list_narrower',
+            self.object.to_data(),
+            self.sort_column_id,
+            self.key,
+            self.narrow_field_id,
+            )
 
     def get_object( self ):
         return self.object
 
     def construct( self, parent ):
-        print 'narrower construct', parent, self.object.get_title(), \
-          repr(self.list_handle), self.field_id, repr(self.prefix)
-        return View(parent, self.object, self.list_handle, self.field_id, self.prefix)
+        print 'narrower construct', parent, self.object.get_title(), self.sort_column_id, self.narrow_field_id, repr(self.prefix)
+        return View(parent, self.data_type, self.object, self.sort_column_id, self.key,
+                    self.first_visible_row, self.select_first, self.narrow_field_id, self.prefix)
 
     def __repr__( self ):
-        return 'narrower.Handle(%r/%r/%r/%r)' \
-          % (uni2str(self.object.get_title()), self.list_handle, self.field_id, self.prefix)
+        return 'narrower.Handle(%r/%r/%r)' \
+          % (uni2str(self.list_handle.get_title()), self.narrow_field_id, self.prefix)
 
 
 # todo: subscription
 class FilteredListObj(ListObject, ListObserver):
 
-    def __init__( self, base, field_id, prefix ):
+    def __init__( self, base, narrow_field_id, prefix ):
         ListObject.__init__(self)
         self._base = base
-        self._field_id = field_id  # filter by this field
+        self._narrow_field_id = narrow_field_id  # filter by this field
         self._prefix = prefix
         self._cached_elements = []
         self._base.subscribe(self)
 
     def __repr__( self ):
-        return 'FilteredListObj(%r/%r/%r)' % (self._field_id, self._prefix, len(self._cached_elements))
+        return 'FilteredListObj(%r/%r/%r)' % (self._narrow_field_id, self._prefix, len(self._cached_elements))
 
     def get_title( self ):
         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
@@ -108,26 +119,29 @@ class FilteredListObj(ListObject, ListObserver):
         return common
 
     def _get_filter_field( self, element ):
-        return getattr(element.row, self._field_id)
+        return getattr(element.row, self._narrow_field_id)
 
     def __del__( self ):
-        print '~FilteredListObj', repr(self._field_id), repr(self._prefix)
+        print '~FilteredListObj', repr(self._narrow_field_id), repr(self._prefix)
 
 
 class View(LineListPanel):
 
-    def __init__( self, parent, object, list_handle, field_id, prefix ):
+    def __init__( self, parent, data_type, object, sort_column_id, key,
+                  first_visible_row, select_first, narrow_field_id, prefix ):
         self._base_obj = object
-        self._field_id = field_id
+        self._narrow_field_id = narrow_field_id
         list_object = self._filtered_obj(prefix)
         line_edit_handle = line_edit.Handle(prefix)
+        list_handle = list_view.Handle(data_type, object, sort_column_id, key, first_visible_row, select_first)
         LineListPanel.__init__(self, parent, line_edit_handle, list_handle)
         self._line_edit.textEdited.connect(self._on_text_edited)
         self.cancel_narrowing.setEnabled(bool(prefix))
 
     def handle( self ):
-        list_handle = self._list_view.handle()
-        return Handle(self.get_object(), list_handle, self._field_id, self._line_edit.text())
+        lh = self._list_view.handle()
+        return Handle(lh.data_type, lh.object, lh.sort_column_id, lh.key, lh.first_visible_row, lh.select_first,
+                      self._narrow_field_id, self._line_edit.text())
 
     def get_title( self ):
         return self._base_obj.get_title()
@@ -140,7 +154,7 @@ class View(LineListPanel):
         self._update_prefix('')
 
     def _filtered_obj( self, prefix ):
-        return FilteredListObj(self._base_obj, self._field_id, prefix)
+        return FilteredListObj(self._base_obj, self._narrow_field_id, prefix)
 
     def _update_prefix( self, text ):
         key = self._list_view.get_current_key()
@@ -184,4 +198,4 @@ class View(LineListPanel):
         print '~narrower', self._base_obj.get_title(), self
 
 
-view_registry.register('list_narrower', Handle.decode)
+view_registry.register('list_narrower', Handle.from_data)

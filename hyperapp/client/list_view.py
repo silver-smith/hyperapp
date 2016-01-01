@@ -22,18 +22,17 @@ class Handle(view.Handle):
         object = objimpl_registry.produce_obj(contents.object, server)
         return cls(data_type, object, contents.sort_column_id, contents.key)
 
-    def __init__( self, data_type, object, sort_column_id=None, key=None,
-                  first_visible_row=None, slice=None, select_first=True ):
+    def __init__( self, data_type, object, sort_column_id, key=None,
+                  first_visible_row=None, select_first=True ):
         assert isinstance(data_type, Type), repr(data_type)
         assert isinstance(object, ListObject), repr(object)
-        assert slice is None or isinstance(slice, Slice), repr(slice)
+        assert sort_column_id, repr(sort_column_id)
         view.Handle.__init__(self)
         self.data_type = data_type
         self.object = object
         self.key = key
         self.sort_column_id = sort_column_id
         self.first_visible_row = first_visible_row
-        self.slice = slice  # cached elements slice
         self.select_first = select_first  # bool
 
     def to_data( self ):
@@ -50,7 +49,7 @@ class Handle(view.Handle):
     def construct( self, parent ):
         print 'list_view construct', parent, self.object.get_title(), self.object, repr(self.key)
         return View(parent, self.data_type, self.object, self.key, self.sort_column_id,
-                    self.first_visible_row, self.slice, self.select_first)
+                    self.first_visible_row, self.select_first)
 
     def __repr__( self ):
         return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
@@ -205,8 +204,9 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, ListObserver, QtGui.QTableView):
 
-    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row, handle_slice, select_first ):
+    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row, select_first ):
         assert isinstance(data_type, Type), repr(data_type)
+        assert sort_column_id, repr(sort_column_id)
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
         self.data_type = data_type
@@ -223,19 +223,19 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
-        if not sort_column_id:
-            sort_column_id = object.get_default_sort_column_id()
+        ## if not sort_column_id:
+        ##     sort_column_id = object.get_default_sort_column_id()
 #        print (len(slice.elements), slice.eof) if slice else None
-        if handle_slice:
-            object.put_back_slice(handle_slice)
+        ## if handle_slice:
+        ##     object.put_back_slice(handle_slice)
         self.set_object(object, sort_column_id)
         self.wanted_current_key = key  # will set it to current when rows are loaded
 
     def handle( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
+        ## slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
         return Handle(self.data_type, self.get_object(), self.model().get_sort_column_id(),
-                      self.get_current_key(), first_visible_row, slice, self._select_first)
+                      self.get_current_key(), first_visible_row, self._select_first)
 
     def get_title( self ):
         if self._object:
