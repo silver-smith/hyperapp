@@ -1,5 +1,7 @@
 from PySide import QtCore, QtGui
+from ..common.interface.article import ObjSelectorHandle, ObjSelectorUnwrapHandle
 from .util import uni2str
+from .objimpl_registry import objimpl_registry
 from .proxy_object import ProxyObject
 from .view_registry import view_registry
 from . import view
@@ -9,12 +11,15 @@ from .command import ObjectCommand
 class ObjSelectorUnwrap(view.Handle):
 
     @classmethod
-    def decode( cls, server, contents ):
-        base_handle = view_registry.resolve(server, contents.base_handle)
+    def from_data( cls, contents, server=None ):
+        base_handle = view_registry.resolve(contents.base_handle, server)
         return cls(base_handle)
 
     def __init__( self, base_handle ):
         self.base_handle = base_handle
+
+    def to_data( self ):
+        return ObjSelectorUnwrapHandle('object_selector_unwrap', self.base_handle.to_data())
 
     def get_object( self ):
         return self.base_handle.get_object()
@@ -29,9 +34,9 @@ class ObjSelectorUnwrap(view.Handle):
 class Handle(view.Handle):
 
     @classmethod
-    def decode( cls, server, contents ):
-        ref = server.resolve_object(contents.ref)
-        target_handle = view_registry.resolve(server, contents.target)
+    def from_data( cls, contents, server=None ):
+        ref = objimpl_registry.produce_obj(contents.ref, server)
+        target_handle = view_registry.resolve(contents.target, server)
         return cls(ref, target_handle)
 
     def __init__( self, ref, target ):
@@ -40,6 +45,9 @@ class Handle(view.Handle):
         view.Handle.__init__(self)
         self.ref = ref
         self.target = target
+
+    def to_data( self ):
+        return ObjSelectorHandle('object_selector', ref=self.ref.to_data(), target=self.target.to_data())
 
     def get_title( self ):
         return '%s: %s' % (self.ref.get_title(), self.target.get_title())
@@ -110,5 +118,5 @@ class View(view.View, QtGui.QWidget):
         print '~object_selector.View'
 
 
-view_registry.register('object_selector', Handle.decode)
-view_registry.register('object_selector_unwrap', ObjSelectorUnwrap.decode)
+view_registry.register('object_selector', Handle.from_data)
+view_registry.register('object_selector_unwrap', ObjSelectorUnwrap.from_data)
