@@ -1,9 +1,17 @@
 from PySide import QtCore, QtGui
+from ..common.interface import tInt, TList, Field, TRecord
 from .util import DEBUG_FOCUS, call_after, key_match
 from .view_command import command
 from . import view
 from . import composite
 from . import splitter
+from . import navigator
+
+
+data_type = TRecord([
+    Field('tabs', TList(navigator.data_type)),
+    Field('current_tab', tInt),
+    ])
 
 
 class Handle(composite.Handle):
@@ -11,6 +19,10 @@ class Handle(composite.Handle):
     def __init__( self, children, current_idx=0 ):
         composite.Handle.__init__(self, children)
         self.current_idx = current_idx  # child index, 0..
+
+    def to_data( self ):
+        tabs = [h.to_data() for h in self.children]
+        return data_type.instantiate(tabs=tabs, current_tab=self.current_idx)
 
     def get_current_child( self ):
         return self.children[self.current_idx]

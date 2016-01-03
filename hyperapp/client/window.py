@@ -11,6 +11,7 @@ from . import view
 from . import composite
 from .menu_bar import MenuBar
 from . import cmd_pane
+from . import tab_view
 from .get_request import run_get_request
 
 
@@ -23,8 +24,14 @@ point_type = TRecord([
     Field('y', tInt),
     ])
 
+size_type = TRecord([
+    Field('w', tInt),
+    Field('h', tInt),
+    ])
+
 data_type = TRecord([
-    Field('size', point_type),
+    Field('navigator', tab_view.data_type),
+    Field('size', size_type),
     Field('pos', point_type),
     ])
 
@@ -53,6 +60,13 @@ class Handle(composite.Handle):
         self.child_handle = child_handle
         self.size = size
         self.pos = pos
+
+    def to_data( self ):
+        return data_type.instantiate(
+            navigator=self.child_handle.to_data(),
+            size=size_type.instantiate(w=self.size.width(), h=self.size.height()),
+            pos=point_type.instantiate(x=self.pos.x(), y=self.pos.y()),
+            )
 
     def get_child_handle( self ):
         return self.child_handle

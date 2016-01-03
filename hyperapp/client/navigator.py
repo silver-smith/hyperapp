@@ -1,7 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
-from ..common.interface import Field, TRecord
+from ..common.interface import tInt, TList, Field, TRecord, tHandle
 from .util import key_match, key_match_any
 from .view_command import command
 from . import view
@@ -14,6 +14,8 @@ MAX_HISTORY_SIZE = 100
 
 
 data_type = TRecord([
+    Field('history', TList(tHandle)),
+    Field('current_pos', tInt),
     ])
 
 
@@ -34,6 +36,12 @@ class Handle(composite.Handle):
         self.backward_history = backward_history or []   # Item list
         self.forward_history = forward_history or []     # Item list
         self.required_module_ids = self._collect_required_module_ids()
+
+    def to_data( self ):
+        history = [item.pickled_handle.handle_data for item in self.backward_history] \
+           + [self.child.to_data()] \
+           + [item.pickled_handle.handle_data for item in self.forward_history]
+        return data_type.instantiate(history, current_pos=len(self.backward_history))
 
     def get_child_handle( self ):
         return self.child

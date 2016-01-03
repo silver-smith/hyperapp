@@ -1,7 +1,8 @@
 import os.path
 import uuid
 from PySide import QtCore, QtGui
-from ..common.interface import get_iface, iface_registry
+from ..common.interface import TList, get_iface, iface_registry
+from ..common.packet_coders import packet_coders
 from .util import flatten
 from .pickler import pickler
 from .request import Request
@@ -13,6 +14,7 @@ from . import window
 from . import tab_view
 from . import text_view
 from . import navigator
+from . import window
 from .objimpl_registry import objimpl_registry
 from .server import RespHandler
 from .view_registry import view_registry
@@ -34,6 +36,8 @@ class OpenRespHandler(RespHandler):
 
 
 class Application(QtGui.QApplication, view.View):
+
+    handles_type = TList(window.data_type)
 
     def __init__( self, server_endpoint, sys_argv ):
         QtGui.QApplication.__init__(self, sys_argv)
@@ -113,7 +117,9 @@ class Application(QtGui.QApplication, view.View):
         modules = self._module_cache.resolve_ids(module_ids)
         for module in modules:
             print '-- module is stored to state: %r (satisfies %s)' % (module.id, module.satisfies)
-        state = (module_ids, modules, pickler.dumps(handles))
+        handles_data = [h.to_data() for h in handles]
+        handles_cdr = packet_coders.encode('cdr', handles_data, self.handles_type)
+        state = (module_ids, modules, handles_cdr)
         with file(STATE_FILE_PATH, 'wb') as f:
             f.write(pickler.dumps(state))
 
