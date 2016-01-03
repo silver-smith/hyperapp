@@ -1,9 +1,9 @@
 from PySide import QtCore
-from ..common.util import is_list_inst, encode_url, decode_url
+from ..common.util import is_list_inst
 from ..common.packet import Packet
 from ..common.endpoint import Endpoint
 from ..common.visual_rep import pprint
-from ..common.interface import tClientPacket, Interface, iface_registry
+from ..common.interface import tUrl, tClientPacket, Interface, iface_registry
 from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
@@ -11,15 +11,6 @@ from .transport import transports
 
 
 PACKET_ENCODING = 'cdr'
-
-
-class Url(object):
-
-    def __init__( self, endpoint, path ):
-        assert isinstance(endpoint, Endpoint), repr(endpoint)
-        assert is_list_inst(path, basestring), repr(path)
-        self.endpoint = endpoint
-        self.path = path
 
 
 class RespHandler(object):
@@ -49,8 +40,8 @@ class Server(object):
 
     @classmethod
     def resolve_url( cls, url ):
-        assert isinstance(url, Url), repr(url)
-        return (cls.produce(url.endpoint), url.path)
+        tUrl.validate('Url', url)
+        return (cls.produce(Endpoint.from_data(url.endpoint)), url.path)
 
     def __init__( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
@@ -65,7 +56,7 @@ class Server(object):
         return self.id
 
     def make_url( self, path ):
-        return Url(self.endpoint, path)
+        return tUrl.instantiate(self.endpoint.to_data(), path)
 
     def __repr__( self ):
         return 'server:%s' % self.endpoint

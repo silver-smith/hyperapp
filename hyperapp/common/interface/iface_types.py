@@ -201,8 +201,19 @@ class TIndexedList(TList):
     pass
 
 
-tUrl = TList(tString)
+tRoute = TList(tString)
+tEndpoint = TRecord([
+    Field('public_key_pem', tString),
+    Field('routes', TList(tRoute)),
+    ])
+
 tPath = TList(tString)
+
+tUrl = TRecord([
+    Field('endpoint', tEndpoint),
+    Field('path', tPath),
+    ])
+
 tIfaceId = tString
 
 tCommand = TRecord([

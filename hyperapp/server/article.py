@@ -1,5 +1,5 @@
-from pony.orm import db_session, commit, Required, Set, select
-from ..common.util import encode_url, decode_url
+from pony.orm import db_session, commit, Required, Optional, Set, select
+from ..common.util import encode_path, decode_path
 from ..common.interface import Command, Column, ObjHandle, RedirectHandle
 from ..common.interface.article import (
     ObjSelectorHandle,
@@ -9,6 +9,7 @@ from ..common.interface.article import (
     object_selector_iface,
     onwrap_object_selector_iface,
     )
+from ..common.endpoint import Url
 from .util import path_part_to_str
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
@@ -96,7 +97,8 @@ class Article(Object):
     def run_command_open_ref( self, request ):
         ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
-        url = decode_url(rec.url)
+        path = decode_path(rec.path)
+        assert False  # todo: endpoint
         if rec.is_local:
             target = module.run_resolver(url)
             return request.make_response_handle(target)
@@ -160,15 +162,14 @@ class ArticleRefList(SmallListObject):
 
     @db_session
     def run_command_add( self, request ):
-        url = request.params.target_url
+        url = Url.from_data(request.params.target_url)
         if request.me.is_mine_url(url):
-            is_local = True
-            _, url = request.me.split_url(url)
+            server_public_key_pem = ''
         else:
-            is_local = False
+            server_public_key_pem = request.me.get_public_key().to_pem()
         rec = module.ArticleRef(article=module.Article[self.article_id],
-                                url=encode_url(url),
-                                is_local=is_local)
+                                server_public_key_pem=server_public_key_pem,
+                                path=encode_path(url.path))
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
@@ -197,10 +198,10 @@ class ArticleRefList(SmallListObject):
             Command('open', 'Open', 'Open reference selector'),
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
-        if rec.is_local:
-            url = '<local>:' + rec.url
+        if rec.server_public_key_pem is None:
+            url = '<local>:' + rec.path
         else:
-            url = rec.url
+            url = rec.server_public_key_pem + ':' + rec.path
         return cls.Element(cls.Row(rec.id, url), commands)
 
 
@@ -231,23 +232,22 @@ class RefSelector(Object):
 
     @db_session
     def run_command_choose( self, request ):
-        url = request.params.target_url
+        url = Url.from_data(request.params.target_url)
         if request.me.is_mine_url(url):
-            is_local = True
-            _, url = request.me.split_url(url)
+            server_public_key_pem = ''
         else:
-            is_local = False
-        url_str = encode_url(url)
+            server_public_key_pem = request.me.get_public_key().to_pem()
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
-                                    url=url_str,
-                                    is_local=is_local)
+                                    server_public_key_pem=server_public_key_pem,
+                                    path=encode_path(url.path))
         else:
             rec = module.ArticleRef[self.ref_id]
-            rec.url = url_str
-            rec.is_local = is_local
+            rec.server_public_key_pem = server_public_key_pem
+            rec.path = encode_path(url.path)
         commit()
-        print 'Saved article#%d reference#%d path: %r, is_local=%r' % (rec.article.id, rec.id, rec.url, rec.is_local)
+        print 'Saved article#%d reference#%d path: %r, server_public_key_pem=%r' \
+          % (rec.article.id, rec.id, rec.path, rec.server_public_key_pem)
         ref_list_obj = ArticleRefList(self.article_id)
         diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
@@ -259,12 +259,12 @@ class RefSelector(Object):
     def make_handle( self, request ):
         assert self.ref_id is not None  # why can it be?
         rec = module.ArticleRef[self.ref_id]
-        target_url = decode_url(rec.url)
-        if rec.is_local:
-            target_obj = module.run_resolver(target_url)
-            return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
-        else:
+        if rec.server_public_key_pem:
+            assert 0  # todo
             return RedirectHandle(target_url)
+        else:
+            target_obj = module.run_resolver(decode_path(rec.path))
+            return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
 
 
 class ArticleModule(PonyOrmModule):
@@ -278,8 +278,8 @@ class ArticleModule(PonyOrmModule):
         self.Article = self.make_entity('Article', **self.article_fields)
         self.ArticleRef = self.make_entity('ArticleRef',
                                            article=Required(self.Article),
-                                           url=Required(str),  # only local path if is_local=True
-                                           is_local=Required(bool),
+                                           server_public_key_pem=Optional(str),  # '' if local
+                                           path=Required(unicode),
                                            )
         Article.register_class(self.Article)
 

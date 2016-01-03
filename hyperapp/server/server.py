@@ -4,7 +4,7 @@ import threading
 import socket
 import select
 from ..common.identity import Identity
-from ..common.endpoint import Endpoint
+from ..common.endpoint import Endpoint, Url
 from .module import Module
 from .client import Client
           
@@ -23,6 +23,9 @@ class TcpServer(object):
         self.socket.bind((self.host, self.port))
         self.socket.listen(5)
         print 'listening on port %s:%d' % (self.host, self.port)
+
+    def get_public_key( self ):
+        return self.identity.get_public_key()
 
     def get_endpoint( self ):
         route = ['tcp', self.host, str(self.port)]
@@ -67,11 +70,10 @@ class TcpServer(object):
         print 'client %s:%d is gone' % client.addr
 
     def is_mine_url( self, url ):
-        return url[0] == self.addr
-
-    # split into transport/server and local path parts
-    def split_url( self, url ):
-        return (url[:1], url[1:])
+        assert isinstance(url, Url), repr(url)
+        return url.endpoint.public_key == self.identity.get_public_key()
 
     def make_url( self, path ):
-        return [self.addr] + path
+        return tUrl.instantiate(
+            endpoint=self.get_endpoint(),
+            path=path)

@@ -29,11 +29,10 @@ def is_tuple_inst( val, cls ):
     return True
 
 # todo: quote/unquote '|' chars
-# used also for persistent id, which requires binary str, not unicode
-def encode_url( path ):
+def encode_path( path ):
     return '|'.join(path).encode('utf-8')
 
-def decode_url( path_str ):
+def decode_path( path_str ):
     return path_str.decode('utf-8').split('|')
 
 def dt2local_str( dt ):

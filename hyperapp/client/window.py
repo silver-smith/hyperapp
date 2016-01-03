@@ -2,7 +2,7 @@ import weakref
 import uuid
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
-from ..common.interface import Interface
+from ..common.interface import tInt, Field, TRecord, Interface
 #from ..common.request import Request
 from .util import DEBUG_FOCUS, call_after, make_action
 from .server import RespHandler
@@ -16,6 +16,17 @@ from .get_request import run_get_request
 
 DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
+
+
+point_type = TRecord([
+    Field('x', tInt),
+    Field('y', tInt),
+    ])
+
+data_type = TRecord([
+    Field('size', point_type),
+    Field('pos', point_type),
+    ])
 
 
 class OpenCommand(WindowCommand):

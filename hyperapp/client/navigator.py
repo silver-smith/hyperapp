@@ -1,6 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
+from ..common.interface import Field, TRecord
 from .util import key_match, key_match_any
 from .view_command import command
 from . import view
@@ -10,6 +11,10 @@ from .history_list import PickledHandle, HistoryRow, HistoryList
 
 
 MAX_HISTORY_SIZE = 100
+
+
+data_type = TRecord([
+    ])
 
 
 class Item(object):

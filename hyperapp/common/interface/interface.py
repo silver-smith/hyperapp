@@ -8,20 +8,14 @@ from .iface_types import (
     Field,
     TRecord,
     TList,
-    tUrl,
+    tEndpoint,
     tPath,
+    tUrl,
     tIfaceId,
     tCommand,
     )
 from .hierarchy import THierarchy
 from .request import tUpdate, tClientNotificationRec, tResponseRec
-
-
-tRoute = TList(tString)
-tEndpoint = TRecord([
-    Field('public_key_pem', tString),
-    Field('routes', TList(tRoute)),
-    ])
 
 
 tObject = THierarchy('object')

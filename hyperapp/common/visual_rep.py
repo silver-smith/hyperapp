@@ -1,6 +1,6 @@
 import json
 from .method_dispatch import method_dispatch
-from .util import encode_url
+from .util import encode_path
 from .interface import (
     TPrimitive,
     TString,
@@ -100,14 +100,14 @@ class VisualRepEncoder(object):
     @dispatch.register(TList)
     def encode_list( self, t, value ):
         if t is tPath:
-            return self.encode_url(value)
+            return self.encode_path(value)
         if t is tRequirement:
             return RepNode('requirement: %s' % '/'.join(value))
         children = [self.dispatch(t.element_type, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
 
-    def encode_url( self, obj ):
-        return RepNode(encode_url(obj))
+    def encode_path( self, obj ):
+        return RepNode(encode_path(obj))
 
 
 def pprint( t, value ):

@@ -1,7 +1,7 @@
 import pickle
-from .util import is_list_list_inst
+from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
-from .interface import tEndpoint
+from .interface import tEndpoint, tUrl
 
 
 class Endpoint(object):
@@ -18,7 +18,7 @@ class Endpoint(object):
 
     def __init__( self, public_key, routes ):
         assert isinstance(public_key, PublicKey), repr(public_key)
-        assert is_list_list_inst(routes, str), repr(routes)
+        assert is_list_list_inst(routes, basestring), repr(routes)
         self.public_key = public_key
         self.routes = routes
 
@@ -33,3 +33,19 @@ class Endpoint(object):
 
     def __repr__( self ):
         return 'endpoint:%s' % self.public_key.to_pem().splitlines()[1]
+
+
+class Url(object):
+
+    @classmethod
+    def from_data( cls, rec ):
+        return cls(Endpoint.from_data(rec.endpoint), rec.path)
+
+    def __init__( self, endpoint, path ):
+        assert isinstance(endpoint, Endpoint), repr(endpoint)
+        assert is_list_inst(path, basestring), path
+        self.endpoint = endpoint
+        self.path = path
+
+    def to_data( self ):
+        return tUrl.instantiate(self.endpoint.to_data(), self.path)

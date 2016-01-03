@@ -2,7 +2,6 @@
 
 import sys
 import argparse
-from hyperapp.common.util import decode_url
 from hyperapp.common.endpoint import Endpoint
 from hyperapp.common.interface import iface_registry
 from hyperapp.client.application import Application

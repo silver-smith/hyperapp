@@ -1,7 +1,6 @@
 # form allowing user to pick current url in stringified form and enter new url to open
 
 import weakref
-from ..common.util import encode_url, decode_url
 from .util import make_action
 from .command import Command
 from .object import Object

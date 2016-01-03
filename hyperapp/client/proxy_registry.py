@@ -1,7 +1,6 @@
 # registries for proxy objects and requests
 
 import weakref
-from ..common.util import encode_url
 from .objimpl_registry import objimpl_registry
 
 

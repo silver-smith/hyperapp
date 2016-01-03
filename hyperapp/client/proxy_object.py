@@ -1,6 +1,5 @@
 import weakref
 import uuid
-from ..common.util import encode_url, decode_url
 from ..common.endpoint import Endpoint
 from ..common.interface import (
     Interface,
