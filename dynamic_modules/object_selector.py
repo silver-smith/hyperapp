@@ -105,7 +105,7 @@ class View(view.View, QtGui.QWidget):
         target_obj = self.target_view.get_object()
         url = target_obj.get_url()
         if not url: return  # not a proxy - can not choose it
-        handle = self.ref.run_command(command_id, self, target_url=url)
+        handle = self.ref.run_command(command_id, self, target_url=url.to_data())
         if handle:  # command is handled by client-side
             self.open(handle)
 

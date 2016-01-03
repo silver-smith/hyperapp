@@ -74,6 +74,4 @@ class TcpServer(object):
         return url.endpoint.public_key == self.identity.get_public_key()
 
     def make_url( self, path ):
-        return tUrl.instantiate(
-            endpoint=self.get_endpoint(),
-            path=path)
+        return Url(self.get_endpoint(), path)

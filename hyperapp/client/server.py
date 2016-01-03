@@ -1,9 +1,9 @@
 from PySide import QtCore
 from ..common.util import is_list_inst
 from ..common.packet import Packet
-from ..common.endpoint import Endpoint
+from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
-from ..common.interface import tUrl, tClientPacket, Interface, iface_registry
+from ..common.interface import tClientPacket, Interface, iface_registry
 from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
@@ -40,8 +40,8 @@ class Server(object):
 
     @classmethod
     def resolve_url( cls, url ):
-        tUrl.validate('Url', url)
-        return (cls.produce(Endpoint.from_data(url.endpoint)), url.path)
+        assert isinstance(url, Url), repr(url)
+        return (cls.produce(url.endpoint), url.path)
 
     def __init__( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
@@ -56,7 +56,7 @@ class Server(object):
         return self.id
 
     def make_url( self, path ):
-        return tUrl.instantiate(self.endpoint.to_data(), path)
+        return Url(self.endpoint, path)
 
     def __repr__( self ):
         return 'server:%s' % self.endpoint

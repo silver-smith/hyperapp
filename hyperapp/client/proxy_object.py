@@ -102,9 +102,9 @@ class ProxyObject(Object):
     def get_module_ids( self ):
         return self.iface.get_module_ids()
 
-    def get_persistent_id( self ):
-        return encode_url([self.get_objimpl_id(),
-                           self.iface.iface_id] + self.server.make_url(self.path))
+    ## def get_persistent_id( self ):
+    ##     return encode_url([self.get_objimpl_id(),
+    ##                        self.iface.iface_id] + self.server.make_url(self.path))
 
     @classmethod
     def get_objimpl_id( cls ):

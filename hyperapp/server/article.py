@@ -98,12 +98,12 @@ class Article(Object):
         ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
         path = decode_path(rec.path)
-        assert False  # todo: endpoint
-        if rec.is_local:
-            target = module.run_resolver(url)
-            return request.make_response_handle(target)
-        else:
+        if rec.server_public_key_pem:
+            assert 0  # todo
             return request.make_response(RedirectHandle(redirect_to=url))
+        else:
+            target = module.run_resolver(path)
+            return request.make_response_handle(target)
 
     @db_session
     def do_save( self, request, text ):
