@@ -30,7 +30,7 @@ size_type = TRecord([
     ])
 
 data_type = TRecord([
-    Field('navigator', tab_view.data_type),
+    Field('tab_view', tab_view.data_type),
     Field('size', size_type),
     Field('pos', point_type),
     ])
@@ -55,6 +55,12 @@ class OpenCommand(WindowCommand):
 
 class Handle(composite.Handle):
 
+    @classmethod
+    def from_data( cls, rec ):
+        return cls(tab_view.Handle.from_data(rec.tab_view),
+                   size=QtCore.QSize(rec.size.w, rec.size.h),
+                   pos=QtCore.QPoint(rec.pos.x, rec.pos.y))
+
     def __init__( self, child_handle, size=None, pos=None ):
         composite.Handle.__init__(self, [child_handle])
         self.child_handle = child_handle
@@ -63,7 +69,7 @@ class Handle(composite.Handle):
 
     def to_data( self ):
         return data_type.instantiate(
-            navigator=self.child_handle.to_data(),
+            tab_view=self.child_handle.to_data(),
             size=size_type.instantiate(w=self.size.width(), h=self.size.height()),
             pos=point_type.instantiate(x=self.pos.x(), y=self.pos.y()),
             )

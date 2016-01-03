@@ -16,6 +16,10 @@ data_type = TRecord([
 
 class Handle(composite.Handle):
 
+    @classmethod
+    def from_data( cls, rec ):
+        return cls([navigator.Handle.from_data(hrec) for hrec in rec.tabs], rec.current_tab)
+
     def __init__( self, children, current_idx=0 ):
         composite.Handle.__init__(self, children)
         self.current_idx = current_idx  # child index, 0..

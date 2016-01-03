@@ -1,7 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
-from ..common.interface import tInt, TList, Field, TRecord, tHandle
+from ..common.interface import tInt, tString, TList, Field, TRecord, tHandle
 from .util import key_match, key_match_any
 from .view_command import command
 from . import view
@@ -13,13 +13,22 @@ from .history_list import PickledHandle, HistoryRow, HistoryList
 MAX_HISTORY_SIZE = 100
 
 
+item_type = TRecord([
+    Field('title', tString),
+    Field('handle', tHandle),
+    ])
+
 data_type = TRecord([
-    Field('history', TList(tHandle)),
+    Field('history', TList(item_type)),
     Field('current_pos', tInt),
     ])
 
 
 class Item(object):
+
+    @classmethod
+    def from_data( cls, rec ):
+        return cls(rec.title, [], PickledHandle(rec.handle))
 
     def __init__( self, title, required_module_ids, pickled_handle ):
         assert isinstance(pickled_handle, PickledHandle), repr(pickled_handle)
@@ -27,8 +36,17 @@ class Item(object):
         self.required_module_ids = required_module_ids
         self.pickled_handle = pickled_handle
 
+    def to_data( self ):
+        return item_type.instantiate(self.title, self.pickled_handle.handle_data)
+
 
 class Handle(composite.Handle):
+
+    @classmethod
+    def from_data( cls, rec ):
+        items = [Item.from_data(item_rec) for item_rec in rec.history]
+        child_handle = items[rec.current_pos].pickled_handle.load()
+        return cls(child_handle, items[rec.current_pos:], items[rec.current_pos + 1:])
 
     def __init__( self, child_handle, backward_history=None, forward_history=None ):
         composite.Handle.__init__(self, [child_handle])
@@ -38,9 +56,9 @@ class Handle(composite.Handle):
         self.required_module_ids = self._collect_required_module_ids()
 
     def to_data( self ):
-        history = [item.pickled_handle.handle_data for item in self.backward_history] \
-           + [self.child.to_data()] \
-           + [item.pickled_handle.handle_data for item in self.forward_history]
+        history = [item.to_data() for item in self.backward_history] \
+           + [item_type.instantiate(self.child.get_title(), self.child.to_data())] \
+           + [item.to_data() for item in self.forward_history]
         return data_type.instantiate(history, current_pos=len(self.backward_history))
 
     def get_child_handle( self ):

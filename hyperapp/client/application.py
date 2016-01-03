@@ -167,17 +167,18 @@ class Application(QtGui.QApplication, view.View):
         view.process_handle_open(server, result)
         self._resp_handlers.remove(resp_handler)
 
-    def _add_modules_and_open_state( self, pickled_whandles, modules ):
+    def _add_modules_and_open_state( self, handles_cdr, modules ):
         self.add_modules(modules)
-        whandles = pickler.loads(pickled_whandles)
-        self.open_windows(whandles)
+        handles_data = packet_coders.decode('cdr', handles_cdr, self.handles_type)
+        handles = [window.Handle.from_data(rec) for rec in handles_data]
+        self.open_windows(handles)
 
     def exec_( self ):
         state = self.load_state_file()
         if state:
-            module_ids, modules, pickled_whandles = state
+            module_ids, modules, handles_cdr = state
             self._code_repository.get_modules_and_continue(
-                module_ids, lambda modules: self._add_modules_and_open_state(pickled_whandles, modules))
+                module_ids, lambda modules: self._add_modules_and_open_state(handles_cdr, modules))
         else:
             whandles = self.get_default_state()
             self.open_windows(whandles)
