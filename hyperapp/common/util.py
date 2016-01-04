@@ -35,6 +35,13 @@ def encode_path( path ):
 def decode_path( path_str ):
     return path_str.decode('utf-8').split('|')
 
+# todo: quote/unquote '|' chars
+def encode_route( route ):
+    return '|'.join(route).encode('utf-8')
+
+def decode_route( route_str ):
+    return route_str.decode('utf-8').split('|')
+
 def dt2local_str( dt ):
     if dt is None: return ''
     if dt.tzinfo is None:
