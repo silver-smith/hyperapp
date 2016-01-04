@@ -1,4 +1,5 @@
 from PySide import QtCore, QtGui
+from ..common.interface import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
 from . import view
 from . import composite
@@ -58,10 +59,13 @@ class Handle(composite.Handle):
 class MonolithHandle(Handle):
 
     @classmethod
-    def decode_horizontal( cls, server, contents ):
-        x = view_registry.resolve(server, contents.x)
-        y = view_registry.resolve(server, contents.y)
+    def from_data_horizontal( cls, contents, server=None ):
+        x = view_registry.resolve(contents.x, server)
+        y = view_registry.resolve(contents.y, server)
         return cls(x, y, horizontal)
+
+    def to_data( self ):
+        return tSplitterHandle.instantiate('horizontal_splitter', self.x.to_data(), self.y.to_data())
 
     def construct( self, parent ):
         print 'splitter monolith construct', parent, self.orient, 'focused =', self.focused
@@ -209,4 +213,4 @@ def unsplit( handle ):
             return h
 
 
-view_registry.register('horizontal_splitter', MonolithHandle.decode_horizontal)
+view_registry.register('horizontal_splitter', MonolithHandle.from_data_horizontal)
