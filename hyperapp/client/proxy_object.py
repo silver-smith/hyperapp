@@ -117,7 +117,7 @@ class ProxyObject(Object):
         self.commands = map(Command.decode, contents.commands)
 
     def get_title( self ):
-        return '%s:%s' % (self.server.get_id(), '|'.join(self.path))
+        return '%s:%s' % (self.server.get_id()[:10], '|'.join(self.path))
 
     def get_commands( self ):
         return self.commands

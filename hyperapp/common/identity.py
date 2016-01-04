@@ -29,7 +29,7 @@ class PublicKey(object):
             )
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(pk_der)
-        return 'sha256:%s' % digest.finalize()
+        return '%s' % digest.finalize()
 
     def to_pem( self ):
         return self.public_pem
