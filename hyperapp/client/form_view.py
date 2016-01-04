@@ -1,6 +1,8 @@
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
+from ..common.interface import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
 from .util import uni2str, call_after
+from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
 
@@ -8,11 +10,17 @@ from . import view
 class FieldHandle(object):
 
     @classmethod
-    def decode( cls, contents ):
+    def from_data( cls, contents ):
         return cls(contents.value)
+
+    def to_data( self ):
+        return self.handle_type.instantiate(self.field_view_id, self.value)
 
 
 class StringFieldHandle(FieldHandle):
+
+    field_view_id = 'string'
+    handle_type = tStringFieldHandle
 
     def __init__( self, value ):
         assert isinstance(value, basestring), repr(value)
@@ -23,6 +31,9 @@ class StringFieldHandle(FieldHandle):
 
 
 class IntFieldHandle(FieldHandle):
+
+    field_view_id = 'int'
+    handle_type = tIntFieldHandle
 
     def __init__( self, value ):
         assert isinstance(value, (int, long)), repr(value)
@@ -73,18 +84,27 @@ class IntField(LineEditField):
 
 class Field(object):
 
+    @classmethod
+    def from_data( cls, rec ):
+        return cls(rec.name, field_registry.resolve(rec.field_handle))
+
     def __init__( self, name, field_handle ):
         assert isinstance(field_handle, FieldHandle), repr(field_handle)  # invalid value resolved from registry 
         self.name = name
         self.handle = field_handle
 
+    def to_data( self ):
+        return tFormField.instantiate(self.name, self.handle.to_data())
+
 
 class Handle(view.Handle):
 
+    view_id = 'form'
+
     @classmethod
-    def decode( cls, server, contents ):
-        object = server.resolve_object(contents.object)
-        fields = [Field(rec.name, field_registry.resolve(rec.field_handle)) for rec in contents.fields] 
+    def from_data( cls, contents, server=None ):
+        object = objimpl_registry.produce_obj(contents.object, server)
+        fields = [Field.from_data(rec) for rec in contents.fields] 
         return cls(object, fields, contents.current_field)
 
     def __init__( self, object, fields, current_field=0 ):
@@ -92,6 +112,10 @@ class Handle(view.Handle):
         self.object = object
         self.fields = fields
         self.current_field = current_field
+
+    def to_data( self ):
+        return tFormHandle.instantiate(
+            self.view_id, self.object.to_data(), [field.to_data() for field in self.fields], self.current_field)
 
     def get_object( self ):
         return self.object
@@ -175,6 +199,6 @@ class FieldRegistry(object):
 
 field_registry = FieldRegistry()
 
-field_registry.register('string_field', StringFieldHandle.decode)
-field_registry.register('int_field', IntFieldHandle.decode)
-view_registry.register('form', Handle.decode)
+field_registry.register(StringFieldHandle.field_view_id, StringFieldHandle.from_data)
+field_registry.register(IntFieldHandle.field_view_id, IntFieldHandle.from_data)
+view_registry.register(Handle.view_id, Handle.from_data)

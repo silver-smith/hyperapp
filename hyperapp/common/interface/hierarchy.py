@@ -57,6 +57,7 @@ class THierarchy(Type):
         return tclass
 
     def validate( self, path, obj ):
+        self.assert_(path, hasattr(obj, REC_CLASS_ID_ATTR), 'Object is not a hierarchy instance')
         self.resolve_obj(obj).validate(path, obj)
 
     def resolve( self, id ):
