@@ -9,6 +9,7 @@ from ..common.interface.article import (
     object_selector_iface,
     onwrap_object_selector_iface,
     )
+from ..common.identity import PublicKey
 from ..common.endpoint import Url
 from .util import path_part_to_str
 from .object import Object, SmallListObject, subscription
@@ -198,10 +199,11 @@ class ArticleRefList(SmallListObject):
             Command('open', 'Open', 'Open reference selector'),
             Command('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
-        if rec.server_public_key_pem is None:
-            url = '<local>:' + rec.path
+        if not rec.server_public_key_pem:
+            url = u'<local>:%s' % rec.path
         else:
-            url = rec.server_public_key_pem + ':' + rec.path
+            pk = PublicKey.from_pem(rec.server_public_key_pem)
+            url = u'%s:%s' % (pk.make_id().encode('hex')[:10], rec.path)
         return cls.Element(cls.Row(rec.id, url), commands)
 
 
