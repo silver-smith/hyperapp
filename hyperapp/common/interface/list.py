@@ -15,6 +15,22 @@ from .iface_types import (
 from .interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Interface
 
 
+def list_handle_type( id, key_type ):
+    fields = [
+        Field('sort_column_id', tString),
+        Field('key', TOptional(key_type)),
+        ]
+    return tHandle.register(id, base=tObjHandle, fields=fields)
+
+def list_narrower_handle_type( id, key_type ):
+    fields = [
+        Field('sort_column_id', tString),
+        Field('key', TOptional(key_type)),
+        Field('narrow_field_id', tString),
+        ]
+    return tHandle.register(id, base=tObjHandle, fields=fields)
+
+
 class ColumnType(object):
 
     def to_string( self, value ):
@@ -94,17 +110,8 @@ class ListInterface(Interface):
 
     def _register_types( self ):
         Interface._register_types(self)
-        list_fields = [
-            Field('sort_column_id', tString),
-            Field('key', TOptional(self.key_type)),
-            ]
-        narrower_fields = list_fields + [
-            Field('narrow_field_id', tString),
-            ]
-        self._tListHandle = tHandle.register(
-            '%s.list' % self.iface_id, base=tObjHandle, fields=list_fields)
-        self._tListNarrowerHandle = tHandle.register(
-            '%s.list_narrower' % self.iface_id, base=tObjHandle, fields=narrower_fields)
+        self._tListHandle = list_handle_type('%s.list' % self.iface_id, self.key_type)
+        self._tListNarrowerHandle = list_narrower_handle_type('%s.list_narrower' % self.iface_id, self.key_type)
 
     def get_default_contents_fields( self ):
         return Interface.get_default_contents_fields(self) + [

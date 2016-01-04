@@ -1,7 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
-from ..common.interface import tInt, tString, TList, Field, TRecord, tHandle
+from ..common.interface import tInt, tString, TList, Field, TRecord, tHandle, list_handle_type
 from .util import key_match, key_match_any
 from .view_registry import view_registry
 from .view_command import command
@@ -91,6 +91,8 @@ class Handle(composite.Handle):
 
 class View(composite.Composite):
 
+    history_handle_type = list_handle_type('navigator_history', tInt)
+
     def __init__( self, parent, child_handle, backward_history=None, forward_history=None ):
         composite.Composite.__init__(self, parent)
         self._back_history = backward_history or []     # Item list
@@ -158,9 +160,9 @@ class View(composite.Composite):
         idx = len(self._back_history)
         current_handle = self._child.handle()
         items = self._back_history + [Item.from_handle(current_handle)] + list(reversed(self._forward_history))
-        rows = [HistoryRow(idx, item.title, item.pickled_handle) for idx, item in enumerate(items)]
+        rows = [HistoryRow(idx, item) for idx, item in enumerate(items)]
         object = HistoryList(rows)
-        self.open(list_view.Handle(object, key=idx))
+        self.open(list_view.Handle(self.history_handle_type, object, sort_column_id='idx', key=idx))
 
     def __del__( self ):
         print '~navigator'
