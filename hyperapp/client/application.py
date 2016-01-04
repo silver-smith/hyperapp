@@ -1,6 +1,7 @@
 import os.path
 import uuid
 from PySide import QtCore, QtGui
+from hyperapp.common.endpoint import Endpoint
 from ..common.interface import TList, get_iface, iface_registry
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
@@ -21,6 +22,7 @@ from .server import RespHandler
 from .view_registry import view_registry
 from .code_repository import CodeRepositoryProxy
 from .module_loader import ModuleCache, load_client_module
+from .get_request import run_get_request
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -104,6 +106,17 @@ class Application(QtGui.QApplication, view.View):
         self._windows.remove(view)
         if not self._windows:
             self.save_state([view.handle()])
+
+    @command('Open server', 'Load server endpoint from file', 'Alt+O')
+    def open_server( self ):
+        # open in any window
+        window = self._windows[0]
+        fpath, ftype = QtGui.QFileDialog.getOpenFileName(
+            window.get_widget(), 'Load endpoint', os.getcwd(), 'Server endpoint (*.endpoint)')
+        endpoint = Endpoint.load_from_file(fpath)
+        server = Server.produce(endpoint)
+        url = server.make_url(['management'])
+        run_get_request(window.get_current_view(), url)
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
