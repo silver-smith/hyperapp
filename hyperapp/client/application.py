@@ -2,6 +2,7 @@ import os.path
 import uuid
 from PySide import QtCore, QtGui
 from ..common.interface import TList, get_iface, iface_registry
+from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .util import flatten
 from .pickler import pickler
@@ -170,6 +171,9 @@ class Application(QtGui.QApplication, view.View):
     def _add_modules_and_open_state( self, handles_cdr, modules ):
         self.add_modules(modules)
         handles_data = packet_coders.decode('cdr', handles_cdr, self.handles_type)
+        print '-->8 -- loaded handles  ------'
+        pprint(self.handles_type, handles_data)
+        print '--- 8<------------------------'
         handles = [window.Handle.from_data(rec) for rec in handles_data]
         self.open_windows(handles)
 

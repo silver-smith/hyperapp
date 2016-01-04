@@ -57,7 +57,7 @@ class Handle(composite.Handle):
     def from_data( cls, rec ):
         items = [Item.from_data(item_rec) for item_rec in rec.history]
         child_handle = items[rec.current_pos].load()
-        return cls(child_handle, items[rec.current_pos:], items[rec.current_pos + 1:])
+        return cls(child_handle, items[:rec.current_pos], items[rec.current_pos + 1:])
 
     def __init__( self, child_handle, backward_history=None, forward_history=None ):
         composite.Handle.__init__(self, [child_handle])
