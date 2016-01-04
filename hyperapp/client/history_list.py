@@ -2,35 +2,15 @@ from ..common.util import is_list_inst
 from ..common.interface import intColumnType, Column, tHandle
 from .pickler import pickler
 from .command import ElementCommand
-from .view_registry import view_registry
 from .list_object import Element, Slice, ListObject
-
-
-class PickledHandle(object):
-
-    @classmethod
-    def from_handle( cls, handle ):
-        return cls(handle.to_data())
-
-    def __init__( self, handle_data ):
-        tHandle.validate('<Handle>', handle_data)
-        self.handle_data = handle_data
-
-    def load( self ):
-        handle = view_registry.resolve(self.handle_data)
-        object = handle.get_object()
-        if object:
-            object.server_subscribe()
-        return handle
 
 
 class HistoryRow(object):
 
-    def __init__( self, idx, title, pickled_handle ):
-        assert isinstance(pickled_handle, PickledHandle), repr(pickled_handle)
+    def __init__( self, idx, item ):
         self.idx = idx
-        self.title = title
-        self.pickled_handle = pickled_handle
+        self.title = item.title
+        self.item = item
 
 
 class HistoryList(ListObject):
@@ -52,7 +32,7 @@ class HistoryList(ListObject):
         return ListObject.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_open( self, initiator_view, element_key ):
-        handle = self._rows[element_key].pickled_handle.load()
+        handle = self._rows[element_key].item.load()
         initiator_view.open(handle)
 
     def get_columns( self ):

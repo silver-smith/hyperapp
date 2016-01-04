@@ -3,11 +3,12 @@
 from PySide import QtCore, QtGui
 from ..common.interface import tInt, tString, TList, Field, TRecord, tHandle
 from .util import key_match, key_match_any
+from .view_registry import view_registry
 from .view_command import command
 from . import view
 from . import composite
 from . import list_view
-from .history_list import PickledHandle, HistoryRow, HistoryList
+from .history_list import HistoryRow, HistoryList
 
 
 MAX_HISTORY_SIZE = 100
@@ -27,17 +28,27 @@ data_type = TRecord([
 class Item(object):
 
     @classmethod
-    def from_data( cls, rec ):
-        return cls(rec.title, [], PickledHandle(rec.handle))
+    def from_handle( cls, handle ):
+        return cls(handle.get_title(), handle.get_module_ids(), handle.to_data())
 
-    def __init__( self, title, required_module_ids, pickled_handle ):
-        assert isinstance(pickled_handle, PickledHandle), repr(pickled_handle)
+    @classmethod
+    def from_data( cls, rec ):
+        return cls(rec.title, [], rec.handle)
+
+    def __init__( self, title, required_module_ids, handle_data ):
         self.title = title
         self.required_module_ids = required_module_ids
-        self.pickled_handle = pickled_handle
+        self.handle_data = handle_data
 
     def to_data( self ):
-        return item_type.instantiate(self.title, self.pickled_handle.handle_data)
+        return item_type.instantiate(self.title, self.handle_data)
+
+    def load( self ):
+        handle = view_registry.resolve(self.handle_data)
+        object = handle.get_object()
+        if object:
+            object.server_subscribe()
+        return handle
 
 
 class Handle(composite.Handle):
@@ -45,7 +56,7 @@ class Handle(composite.Handle):
     @classmethod
     def from_data( cls, rec ):
         items = [Item.from_data(item_rec) for item_rec in rec.history]
-        child_handle = items[rec.current_pos].pickled_handle.load()
+        child_handle = items[rec.current_pos].load()
         return cls(child_handle, items[rec.current_pos:], items[rec.current_pos + 1:])
 
     def __init__( self, child_handle, backward_history=None, forward_history=None ):
@@ -135,21 +146,18 @@ class View(composite.Composite):
         self._open(self._pop_history(self._forward_history))
 
     def _add2history( self, history, handle ):
-        if not isinstance(handle.get_object(), HistoryList):
-            history.append(self._handle2item(handle))
+        if isinstance(handle.get_object(), HistoryList): return  # do not add history list itself to history
+        history.append(Item.from_handle(handle))
 
     def _pop_history( self, history ):
         item = history.pop()
-        return item.pickled_handle.load()
-
-    def _handle2item( self, handle ):
-        return Item(handle.get_title(), handle.get_module_ids(), PickledHandle.from_handle(handle))
+        return item.load()
 
     @command('History', 'Open history', 'Ctrl+H')
     def open_history( self ):
         idx = len(self._back_history)
         current_handle = self._child.handle()
-        items = self._back_history + [self._handle2item(current_handle)] + list(reversed(self._forward_history))
+        items = self._back_history + [Item.from_handle(current_handle)] + list(reversed(self._forward_history))
         rows = [HistoryRow(idx, item.title, item.pickled_handle) for idx, item in enumerate(items)]
         object = HistoryList(rows)
         self.open(list_view.Handle(object, key=idx))
