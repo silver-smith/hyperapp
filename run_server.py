@@ -28,13 +28,14 @@ def parse_addr( addr ):
 def main():
     parser = argparse.ArgumentParser(description='Hyperapp server')
     parser.add_argument('identity_fpath', help='path to identity file')
+    parser.add_argument('endpoint_fpath', default=ENDPOINT_FNAME, help='path to endpoint file, generated on server start')
     parser.add_argument('addr', nargs='?', help='address to listen at', default=DEFAULT_ADDR)
     args = parser.parse_args()
 
     identity = Identity.load_from_file(args.identity_fpath)
     host, port = parse_addr(args.addr)
     server = TcpServer(identity, host, port)
-    server.get_endpoint().save_to_file(ENDPOINT_FNAME)
+    server.get_endpoint().save_to_file(args.endpoint_fpath)
     server.run()
 
 
