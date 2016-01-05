@@ -33,10 +33,14 @@ class ServerInfoModule(PonyOrmModule):
     @db_session
     def store_server_routes( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
+        public_key_pem = endpoint.public_key.to_pem()
+        ## delete(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem)
+        for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
+            rec.delete()
         for route in endpoint.routes:
             print '-- storing route for %s: %r' % (endpoint.public_key.get_short_id_hex(), route)
             self.ServerRoute(
-                public_key_pem=endpoint.public_key.to_pem(),
+                public_key_pem=public_key_pem,
                 route=encode_route(route),
                 )
 
