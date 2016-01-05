@@ -1,4 +1,4 @@
-pony==0.5.3
+pony==0.6.1
 python-dateutil==2.1
 singledispatch
 simpleyaml
