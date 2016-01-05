@@ -25,14 +25,15 @@ class ServerInfoModule(PonyOrmModule):
     def init_phase2( self ):
         self.ServerRoute = self.make_entity(
             'ServerRoute',
-            server_public_key_pem=Required(unicode),
+            public_key_pem=Required(unicode),
             route=Required(unicode),
             )
 
     @db_session
-    def store_server_routes( self, endoint ):
+    def store_server_routes( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         for route in endpoint.routes:
+            print '-- storing route for %s: %r' % (endpoint.public_key.get_short_id_hex(), route)
             self.ServerRoute(
                 public_key_pem=endpoint.public_key.to_pem(),
                 route=encode_route(route),
@@ -45,6 +46,7 @@ class ServerInfoModule(PonyOrmModule):
         routes = []
         for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
             routes.append(decode_route(rec.route))
+        print '-- loaded routes for %s: %r' % (public_key.get_short_id_hex(), routes)
         return Endpoint(public_key, routes)
 
 

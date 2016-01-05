@@ -15,6 +15,7 @@ from .util import path_part_to_str
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
 from .ponyorm_module import PonyOrmModule
+from .server_info import store_server_routes, load_server_routes
 
 
 MODULE_NAME = 'article'
@@ -167,9 +168,10 @@ class ArticleRefList(SmallListObject):
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
-            server_public_key_pem = request.me.get_public_key().to_pem()
+            store_server_routes(url.endpoint)
+            server_public_key_pem = url.endpoint.public_key.to_pem()
         rec = module.ArticleRef(article=module.Article[self.article_id],
-                                server_public_key_pem=server_public_key_pem,
+                                server_public_key_pem=server_public_key_pem.strip(),
                                 path=encode_path(url.path))
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
@@ -203,7 +205,7 @@ class ArticleRefList(SmallListObject):
             url = u'<local>:%s' % rec.path
         else:
             pk = PublicKey.from_pem(rec.server_public_key_pem)
-            url = u'%s:%s' % (pk.make_id().encode('hex')[:10], rec.path)
+            url = u'%s:%s' % (pk.get_short_id_hex(), rec.path)
         return cls.Element(cls.Row(rec.id, url), commands)
 
 
@@ -238,7 +240,8 @@ class RefSelector(Object):
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
-            server_public_key_pem = request.me.get_public_key().to_pem()
+            store_server_routes(url.endpoint)
+            server_public_key_pem = url.endpoint.public_key.to_pem()
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     server_public_key_pem=server_public_key_pem,
