@@ -101,8 +101,10 @@ class Article(Object):
         rec = module.ArticleRef[ref_id]
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
-            assert 0  # todo
-            return request.make_response(RedirectHandle(redirect_to=url))
+            public_key = PublicKey.from_pem(rec.server_public_key_pem)
+            endpoint = load_server_routes(public_key)
+            target_url = Url(endpoint, path)
+            return request.make_response(RedirectHandle(redirect_to=target_url.to_data()))
         else:
             target = module.run_resolver(path)
             return request.make_response_handle(target)
