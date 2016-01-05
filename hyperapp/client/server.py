@@ -47,13 +47,12 @@ class Server(object):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.endpoint = endpoint
         self.pending_requests = {}  # request_id -> RespHandler
-        self.id = self.endpoint.public_key.make_id().encode('hex')
 
     def get_endpoint( self ):
         return self.endpoint
 
     def get_id( self ):
-        return self.id
+        return self.endpoint.public_key.get_id()
 
     def make_url( self, path ):
         return Url(self.endpoint, path)

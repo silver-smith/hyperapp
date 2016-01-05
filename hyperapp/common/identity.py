@@ -21,8 +21,9 @@ class PublicKey(object):
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
+        self._id = self._make_id()
 
-    def make_id( self ):
+    def _make_id( self ):
         pk_der = self.public_key.public_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
@@ -30,6 +31,12 @@ class PublicKey(object):
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(pk_der)
         return '%s' % digest.finalize()
+
+    def get_id( self ):
+        return self._id
+
+    def get_short_id_hex( self ):
+        return self._id[:4].encode('hex')
 
     def to_pem( self ):
         return self.public_pem
