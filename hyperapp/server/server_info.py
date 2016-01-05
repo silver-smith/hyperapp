@@ -38,7 +38,7 @@ class ServerInfoModule(PonyOrmModule):
         for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
             rec.delete()
         for route in endpoint.routes:
-            print '-- storing route for %s: %r' % (endpoint.public_key.get_short_id_hex(), route)
+            print '-- storing route for %s: %r' % (endpoint.public_key.get_short_id_hex(), encode_route(route))
             self.ServerRoute(
                 public_key_pem=public_key_pem,
                 route=encode_route(route),
@@ -51,7 +51,7 @@ class ServerInfoModule(PonyOrmModule):
         routes = []
         for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
             routes.append(decode_route(rec.route))
-        print '-- loaded routes for %s: %r' % (public_key.get_short_id_hex(), routes)
+        print '-- loaded routes for %s: %r' % (public_key.get_short_id_hex(), [encode_route(route) for route in routes])
         return Endpoint(public_key, routes)
 
 
