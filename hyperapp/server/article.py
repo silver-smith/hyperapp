@@ -264,11 +264,14 @@ class RefSelector(Object):
     def make_handle( self, request ):
         assert self.ref_id is not None  # why can it be?
         rec = module.ArticleRef[self.ref_id]
+        path = decode_path(rec.path)
         if rec.server_public_key_pem:
-            assert 0  # todo
-            return RedirectHandle(target_url)
+            public_key = PublicKey.from_pem(rec.server_public_key_pem)
+            endpoint = load_server_routes(public_key)
+            target_url = Url(endpoint, path)
+            return RedirectHandle(target_url.to_data())
         else:
-            target_obj = module.run_resolver(decode_path(rec.path))
+            target_obj = module.run_resolver(path)
             return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
 
 

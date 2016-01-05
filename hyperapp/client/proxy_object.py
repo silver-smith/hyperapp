@@ -1,6 +1,6 @@
 import weakref
 import uuid
-from ..common.endpoint import Endpoint
+from ..common.endpoint import Endpoint, Url
 from ..common.interface import (
     Interface,
     Field,
@@ -158,7 +158,7 @@ class ProxyObject(Object):
             if tHandle.isinstance(handle, tViewHandle):
                 initiator_view.process_handle_open(handle, server)
             elif tHandle.isinstance(handle, tRedirectHandle):
-                run_get_request(initiator_view, handle.redirect_to)
+                run_get_request(initiator_view, Url.from_data(handle.redirect_to))
             else:
                 assert False, repr(tHandle.resolve_obj(handle).id)  # Unknown handle class
 

@@ -1,6 +1,6 @@
 # store known server's endpoints to database
 
-from pony.orm import db_session, Required
+from pony.orm import db_session, Required, select
 from ..common.util import encode_route, decode_route
 from ..common.identity import PublicKey
 from ..common.endpoint import Endpoint
@@ -13,6 +13,7 @@ MODULE_NAME = 'server_info'
 def store_server_routes( endpoint ):
     module.store_server_routes(endpoint)
 
+# returns endpoint    
 def load_server_routes( public_key ):
     return module.load_server_routes(public_key)
 

@@ -1,5 +1,6 @@
 import weakref
 import uuid
+from ..common.endpoint import Url
 from ..common.interface import get_iface
 from .request import Request
 from .server import RespHandler, Server
@@ -18,6 +19,7 @@ class GetRespHandler(RespHandler):
 
 
 def run_get_request( view, url ):
+    assert isinstance(url, Url), repr(url)
     server, path = Server.resolve_url(url)
     command_id = 'get'
     resp_handler = GetRespHandler(view)
