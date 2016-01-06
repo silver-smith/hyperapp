@@ -13,17 +13,6 @@ from .transport import transports
 PACKET_ENCODING = 'cdr'
 
 
-class RespHandler(object):
-
-    def __init__( self, iface, command_id ):
-        assert isinstance(iface, Interface), repr(iface)
-        assert isinstance(command_id, basestring), repr(command_id)
-        self.iface = iface
-        self.command_id = command_id
-
-    def process_response( self, response, server ):
-        raise NotImplementedError(self.__class__)
-
 
 class Server(object):
 
@@ -46,7 +35,7 @@ class Server(object):
     def __init__( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.endpoint = endpoint
-        self.pending_requests = {}  # request_id -> RespHandler
+        self.pending_requests = {}  # request_id -> Request
 
     def get_endpoint( self ):
         return self.endpoint
@@ -68,13 +57,12 @@ class Server(object):
         print 'send_notification', notification.command_id, notification
         self._send(notification)
 
-    def execute_request( self, request, resp_handler ):
+    def execute_request( self, request ):
         assert isinstance(request, Request), repr(request)
-        assert isinstance(resp_handler, RespHandler), repr(resp_handler)
         request_id = request.request_id
         assert request_id not in self.pending_requests, repr(request_id)
         print 'execute_request', request.command_id, request_id
-        self.pending_requests[request_id] = resp_handler
+        self.pending_requests[request_id] = request
         self._send(request)
 
     def _send( self, request ):
@@ -107,12 +95,12 @@ class Server(object):
         if isinstance(response_or_notification, Response):
             response = response_or_notification
             print '   response for request', response.command_id, response.request_id
-            resp_handler = self.pending_requests.get(response.request_id)
-            if not resp_handler:
+            request = self.pending_requests.get(response.request_id)
+            if not request:
                 print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
                 return
             del self.pending_requests[response.request_id]
-            resp_handler.process_response(response, self)
+            request.process_response(self, response)
 
     def _process_updates( self, updates ):
         for update in updates:

@@ -22,27 +22,27 @@ from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
 from .request import ClientNotification, Request
-from .server import RespHandler, Server
+from .server import Server
 from .get_request import run_get_request
 from . import view
 from ..common.redirect_handle_resolver import RedirectHandleCollector
 
 
 
-class ObjRespHandler(RespHandler):
+class ObjRequest(Request):
 
-    def __init__( self, object, command_id, initiator_view=None ):
+    def __init__( self, iface, path, command_id, request_id, params, object, initiator_view ):
         assert isinstance(object, Object), repr(object)
-        RespHandler.__init__(self, object.iface, command_id)
         assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
+        Request.__init__(self, iface, path, command_id, request_id, params)
         self.object = weakref.ref(object)
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
 
-    def process_response( self, response, server ):
+    def process_response( self, server, response ):
         object = self.object()
         initiator_view = self.initiator_view() if self.initiator_view else None
         if object:
-            object.process_response(response, server, self, initiator_view)
+            object.process_response(self, initiator_view, server, response)
 
 
 class ProxyObject(Object):
@@ -87,7 +87,6 @@ class ProxyObject(Object):
         self.path = path
         self.iface = iface
         self.commands = []
-        self.resp_handlers = set()  # explicit refs to ObjRespHandlers to keep them alive until object is alive
 
     def to_data( self ):
         return tProxyObject.instantiate(
@@ -135,33 +134,30 @@ class ProxyObject(Object):
         params = self.iface.make_params(command_id, *args, **kw)
         return ClientNotification(self.iface, self.path, command_id, params=params)
 
-    def prepare_request( self, command_id, *args, **kw ):
+    def prepare_request( self, command_id, initiator_view, *args, **kw ):
         request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
-        return Request(self.iface, self.path, command_id, request_id, params=params)
+        return ObjRequest(self.iface, self.path, command_id, request_id, params, self, initiator_view)
 
     def send_notification( self, command_id, *args, **kw ):
         request = self.prepare_notification(command_id, *args, **kw)
         self.server.send_notification(request)
 
     def execute_request( self, command_id, initiator_view=None, *args, **kw ):
-        request = self.prepare_request(command_id, *args, **kw)
-        resp_handler = ObjRespHandler(self, command_id, initiator_view)
-        self.resp_handlers.add(resp_handler)
-        self.server.execute_request(request, resp_handler)
+        request = self.prepare_request(command_id, initiator_view, *args, **kw)
+        self.server.execute_request(request)
 
-    def process_response( self, response, server, resp_handler, initiator_view=None ):
-        self.resp_handlers.remove(resp_handler)
+    def process_response( self, request, initiator_view, server, response ):
 
-        result_type = resp_handler.iface.get_command_result_type(resp_handler.command_id)
+        result_type = request.iface.get_command_result_type(request.command_id)
         redirect_handles = RedirectHandleCollector.collect(result_type, response.result)
         if redirect_handles:
-            self.run_resolve_redirect_request(resp_handler.command_id, response.result, redirect_handles)
+            self.run_resolve_redirect_request(request.command_id, response.result, redirect_handles)
             return
 
-        self.process_response_result(resp_handler.command_id, response.result)
+        self.process_response_result(request.command_id, response.result)
         # initiator_view may already be gone (closed, navigated away) or be missing at all - so is None
-        if self.iface.is_open_command(resp_handler.command_id) and initiator_view:
+        if self.iface.is_open_command(request.command_id) and initiator_view:
             handle = response.result
             if tHandle.isinstance(handle, tViewHandle):
                 initiator_view.process_handle_open(handle, server)

@@ -18,7 +18,6 @@ from . import text_view
 from . import navigator
 from . import window
 from .objimpl_registry import objimpl_registry
-from .server import RespHandler
 from .view_registry import view_registry
 from .code_repository import CodeRepositoryProxy
 from .module_loader import ModuleCache, load_client_module
@@ -28,14 +27,14 @@ from .get_request import run_get_request
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 
-class OpenRespHandler(RespHandler):
+## class OpenRespHandler(RespHandler):
 
-    def __init__( self, iface, command_id, app ):
-        RespHandler.__init__(self, iface, command_id)
-        self.app = app
+##     def __init__( self, iface, command_id, app ):
+##         RespHandler.__init__(self, iface, command_id)
+##         self.app = app
 
-    def process_response( self, response, server ):
-        self.app.process_open_response(response.result, server, self)
+##     def process_response( self, response, server ):
+##         self.app.process_open_response(response.result, server, self)
 
 
 class Application(QtGui.QApplication, view.View):
@@ -49,7 +48,6 @@ class Application(QtGui.QApplication, view.View):
         self.server = Server.produce(server_endpoint)
         self._code_repository = CodeRepositoryProxy(self.server)
         self._windows = []
-        self._resp_handlers = set()  # explicit refs to OpenRespHandlers to keep them alive until object is alive
 
 
     def add_modules( self, modules ):
@@ -166,20 +164,20 @@ class Application(QtGui.QApplication, view.View):
                     text_handle)]))
         return [window_handle]
 
-    def execute_get_request( self, url ):
-        server, path = Server.resolve_url(url)
-        command_id = 'get'
-        resp_handler = OpenRespHandler(get_iface, command_id, self)  # must keep explicit reference to it
-        request_id = str(uuid.uuid4())
-        request = Request(get_iface, path, command_id, request_id)
-        server.execute_request(request, resp_handler)
-        self._resp_handlers.add(resp_handler)
+    ## def execute_get_request( self, url ):
+    ##     server, path = Server.resolve_url(url)
+    ##     command_id = 'get'
+    ##     resp_handler = OpenRespHandler(get_iface, command_id, self)  # must keep explicit reference to it
+    ##     request_id = str(uuid.uuid4())
+    ##     request = Request(get_iface, path, command_id, request_id)
+    ##     server.execute_request(request, resp_handler)
+    ##     self._resp_handlers.add(resp_handler)
 
-    def process_open_response( self, result, server, resp_handler ):
-        # open in any window
-        view = self._windows[0].get_current_view()
-        view.process_handle_open(result, server)
-        self._resp_handlers.remove(resp_handler)
+    ## def process_open_response( self, result, server, resp_handler ):
+    ##     # open in any window
+    ##     view = self._windows[0].get_current_view()
+    ##     view.process_handle_open(result, server)
+    ##     self._resp_handlers.remove(resp_handler)
 
     def _add_modules_and_open_state( self, handles_cdr, modules ):
         self.add_modules(modules)

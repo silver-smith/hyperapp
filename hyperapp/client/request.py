@@ -12,6 +12,7 @@ class RequestBase(object):
 
     def __init__( self, iface, path, command_id, params ):
         assert isinstance(iface, Interface), repr(iface)
+        assert isinstance(command_id, basestring), repr(command_id)
         iface.validate_request(command_id, params)
         self.iface = iface
         self.path = path
@@ -33,6 +34,9 @@ class Request(RequestBase):
 
     def encode( self ):
         return tRequest.instantiate(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
+
+    def process_response( self, server, response ):
+        raise NotImplementedError(self.__class__)
 
 
 class ResponseBase(object):

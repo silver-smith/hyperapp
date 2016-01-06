@@ -1,20 +1,20 @@
 # code repository proxy
 
+import uuid
 from ..common.interface.code_repository import code_repository_iface
+from .request import Request
 from .server import Server
-from .proxy_object import ObjRespHandler, ProxyObject
+from .proxy_object import ProxyObject
 
 
-class PacketRespHandler(ObjRespHandler):
+class GetModulesRequest(Request):
 
-    def __init__( self, object, command_id, continuation ):
-        ObjRespHandler.__init__(self, object, command_id)
-        self.continuation = continuation  # fn(modules)
+    def __init__( self, iface, path, command_id, request_id, params, continuation ):
+        Request.__init__(self, iface, path, command_id, request_id, params)
+        self.continuation = continuation
 
-    def process_response( self, response, server ):
-        object = self.object()
-        if object:
-            object.process_response(response, server, self)
+    def process_response( self, server, response ):
+        self.continuation(response.result.modules)
 
 
 class CodeRepositoryProxy(ProxyObject):
@@ -25,22 +25,14 @@ class CodeRepositoryProxy(ProxyObject):
 
     def get_modules_and_continue( self, module_ids, continuation ):
         command_id = 'get_modules'
-        request = self.prepare_request(command_id, module_ids=module_ids)
-        resp_handler = PacketRespHandler(self, command_id, continuation)
-        self.resp_handlers.add(resp_handler)
-        self.server.execute_request(request, resp_handler)
+        request_id = str(uuid.uuid4())
+        params = self.iface.make_params(command_id, module_ids=module_ids)
+        request = GetModulesRequest(self.iface, self.path, command_id, request_id, params, continuation)
+        self.server.execute_request(request)
 
     def get_required_modules_and_continue( self, requirements, continuation ):
         command_id = 'get_required_modules'
-        request = self.prepare_request(command_id, requirements=requirements)
-        resp_handler = PacketRespHandler(self, command_id, continuation)
-        self.resp_handlers.add(resp_handler)
-        self.server.execute_request(request, resp_handler)
-
-    def process_response( self, response, server, resp_handler, initiator_view=None ):
-        if resp_handler.command_id in ['get_modules', 'get_required_modules']:
-            self.process_get_modules_response(resp_handler.continuation, response.result)
-        ProxyObject.process_response(self, response, server, resp_handler, initiator_view)
-
-    def process_get_modules_response( self, continuation, result ):
-        continuation(result.modules)
+        request_id = str(uuid.uuid4())
+        params = self.iface.make_params(command_id, requirements=requirements)
+        request = GetModulesRequest(self.iface, self.path, command_id, request_id, params, continuation)
+        self.server.execute_request(request)

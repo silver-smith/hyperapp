@@ -5,7 +5,6 @@ from ..common.util import is_list_inst
 from ..common.interface import tInt, Field, TRecord, Interface
 #from ..common.request import Request
 from .util import DEBUG_FOCUS, call_after, make_action
-from .server import RespHandler
 from .view_command import WindowCommand, command
 from . import view
 from . import composite
@@ -106,7 +105,6 @@ class Window(composite.Composite, QtGui.QMainWindow):
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
-        self.resp_handlers = set()  # explicit refs to OpenRespHandler to keep them alive until window is alive
         self.set_child(child_handle)
         self.show()
         self._parent().window_created(self)
