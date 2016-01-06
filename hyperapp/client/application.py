@@ -34,8 +34,8 @@ class OpenRespHandler(RespHandler):
         RespHandler.__init__(self, iface, command_id)
         self.app = app
 
-    def process_response( self, server, response ):
-        self.app.process_open_response(server, response.result, self)
+    def process_response( self, response, server ):
+        self.app.process_open_response(response.result, server, self)
 
 
 class Application(QtGui.QApplication, view.View):
@@ -175,18 +175,18 @@ class Application(QtGui.QApplication, view.View):
         server.execute_request(request, resp_handler)
         self._resp_handlers.add(resp_handler)
 
-    def process_open_response( self, server, result, resp_handler ):
+    def process_open_response( self, result, server, resp_handler ):
         # open in any window
         view = self._windows[0].get_current_view()
-        view.process_handle_open(server, result)
+        view.process_handle_open(result, server)
         self._resp_handlers.remove(resp_handler)
 
     def _add_modules_and_open_state( self, handles_cdr, modules ):
         self.add_modules(modules)
         handles_data = packet_coders.decode('cdr', handles_cdr, self.handles_type)
-        print '-->8 -- loaded handles  ------'
-        pprint(self.handles_type, handles_data)
-        print '--- 8<------------------------'
+        ## print '-->8 -- loaded handles  ------'
+        ## pprint(self.handles_type, handles_data)
+        ## print '--- 8<------------------------'
         handles = [window.Handle.from_data(rec) for rec in handles_data]
         self.open_windows(handles)
 
