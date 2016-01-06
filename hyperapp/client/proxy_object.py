@@ -25,6 +25,7 @@ from .request import ClientNotification, Request
 from .server import RespHandler, Server
 from .get_request import run_get_request
 from . import view
+from ..common.redirect_handle_resolver import RedirectHandleCollector
 
 
 
@@ -150,8 +151,15 @@ class ProxyObject(Object):
         self.server.execute_request(request, resp_handler)
 
     def process_response( self, response, server, resp_handler, initiator_view=None ):
-        self.process_response_result(resp_handler.command_id, response.result)
         self.resp_handlers.remove(resp_handler)
+
+        result_type = resp_handler.iface.get_command_result_type(resp_handler.command_id)
+        redirect_handles = RedirectHandleCollector.collect(result_type, response.result)
+        if redirect_handles:
+            self.run_resolve_redirect_request(resp_handler.command_id, response.result, redirect_handles)
+            return
+
+        self.process_response_result(resp_handler.command_id, response.result)
         # initiator_view may already be gone (closed, navigated away) or be missing at all - so is None
         if self.iface.is_open_command(resp_handler.command_id) and initiator_view:
             handle = response.result
@@ -169,6 +177,10 @@ class ProxyObject(Object):
     def process_subscribe_response( self, result ):
         self.set_contents(result)
         self._notify_object_changed()
+
+    def run_resolve_redirect_request( self, command_id, result, redirect_handles ):
+        assert len(redirect_handles) == 1  # multiple redirects in one response is not supported (yet?)
+        
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)

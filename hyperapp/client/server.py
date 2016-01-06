@@ -21,7 +21,7 @@ class RespHandler(object):
         self.iface = iface
         self.command_id = command_id
 
-    def process_response( self, server, response ):
+    def process_response( self, response, server ):
         raise NotImplementedError(self.__class__)
 
 
