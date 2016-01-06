@@ -133,12 +133,12 @@ class ProxyObject(Object):
     # prepare request which does not require/expect response
     def prepare_notification( self, command_id, *args, **kw ):
         params = self.iface.make_params(command_id, *args, **kw)
-        return ClientNotification(self.server, self.iface, self.path, command_id, params=params)
+        return ClientNotification(self.iface, self.path, command_id, params=params)
 
     def prepare_request( self, command_id, *args, **kw ):
         request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
-        return Request(self.server, self.iface, self.path, command_id, request_id, params=params)
+        return Request(self.iface, self.path, command_id, request_id, params=params)
 
     def send_notification( self, command_id, *args, **kw ):
         request = self.prepare_notification(command_id, *args, **kw)

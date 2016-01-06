@@ -24,5 +24,5 @@ def run_get_request( view, url ):
     command_id = 'get'
     resp_handler = GetRespHandler(view)
     request_id = str(uuid.uuid4())
-    request = Request(server, get_iface, path, 'get', request_id)
+    request = Request(get_iface, path, 'get', request_id)
     server.execute_request(request, resp_handler)
