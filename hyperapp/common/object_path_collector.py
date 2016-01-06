@@ -10,10 +10,10 @@ class ObjectPathCollector(Visitor):
 
     def collect( self, t, value ):
         self.collected_paths = set()
-        self.dispatch(t, value)
+        self.visit(t, value)
         return [list(path) for path in self.collected_paths]
 
-    def visit_hierarchy_obj( self, t, value ):
+    def visit_hierarchy_obj( self, t, tclass, value ):
         if t is tObject and (tObject.isinstance(value, tThisProxyObject) or
                              tObject.isinstance(value, tProxyObject)):
             self.collected_paths.add(tuple(value.path))

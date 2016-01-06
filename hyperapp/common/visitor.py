@@ -11,7 +11,10 @@ from .interface import (
 
 class Visitor(object):
 
-    def visit_hierarchy_obj( self, t, value ):
+    def visit( self, t, value ):
+        self.dispatch(t, value)
+
+    def visit_hierarchy_obj( self, t, tclass, value ):
         pass
 
     @method_dispatch
@@ -40,8 +43,8 @@ class Visitor(object):
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj( self, t, value ):
-        self.visit_hierarchy_obj(t, value)
         tclass = t.resolve_obj(value)
+        self.visit_hierarchy_obj(t, tclass, value)
         self.dispatch(tclass.get_trecord(), value)
 
     def process_field( self, field, value ):
