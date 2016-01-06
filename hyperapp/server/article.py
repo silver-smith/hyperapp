@@ -271,10 +271,11 @@ class RefSelector(Object):
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             endpoint = load_server_routes(public_key)
             target_url = Url(endpoint, path)
-            return RedirectHandle(target_url.to_data())
+            target_handle = RedirectHandle(target_url.to_data())
         else:
             target_obj = module.run_resolver(path)
-            return ObjSelectorHandle('object_selector', self.get(), target_obj.get_handle())
+            target_handle = target_obj.get_handle()
+        return ObjSelectorHandle('object_selector', self.get(), target_handle)
 
 
 class ArticleModule(PonyOrmModule):
