@@ -27,7 +27,6 @@ from .view import View
 from ..common.redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
 
 
-
 class RequestForResult(Request):
 
     def __init__( self, object, command_id, params ):
