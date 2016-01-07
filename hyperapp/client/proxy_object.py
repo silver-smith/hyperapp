@@ -16,14 +16,14 @@ from ..common.interface import (
     tEndpoint,
     resolve_iface,
     iface_registry,
+    get_iface,
     )
 from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
 from .request import ClientNotification, Request
 from .server import Server
-from .get_request import run_get_request
-from . import view
+from .view import View
 from ..common.redirect_handle_resolver import RedirectHandleCollector
 
 
@@ -46,9 +46,9 @@ class RequestForResult(Request):
 class OpenRequest(Request):
 
     def __init__( self, iface, path, command_id, params, initiator_view ):
-        assert isinstance(initiator_view, view.View), repr(initiator_view)
+        assert isinstance(initiator_view, View), repr(initiator_view)
         Request.__init__(self, iface, path, command_id, params)
-        self.initiator_view = weakref.ref(initiator_view)
+        self.initiator_view_wr = weakref.ref(initiator_view)
 
     def process_response( self, server, response ):
         handle = response.result
@@ -60,7 +60,7 @@ class OpenRequest(Request):
             self.run_resolve_redirect_request(handle, redirect_handles)
             return
 
-        view = self.initiator_view()
+        view = self.initiator_view_wr()
         if not view:
             print 'Received response #%s for a missing (already destroyed) view, ignoring' % response.request_id
             return
@@ -70,6 +70,32 @@ class OpenRequest(Request):
         assert len(redirect_handles) == 1  # multiple redirects in one response is not supported (yet?)
         assert 0  # not implemented yet
         ## run_get_request(initiator_view, Url.from_data(handle.redirect_to))
+
+
+class GetRequest(Request):
+
+    def __init__( self, view, url ):
+        assert isinstance(view, View), repr(view)
+        assert isinstance(url, Url), repr(url)
+        iface = get_iface
+        command_id = 'get'
+        Request.__init__(self, iface, url.path, command_id)
+        self.initiator_view_wr = weakref.ref(view)
+        self.endpoint = url.endpoint
+
+    def execute( self ):
+        server = Server.produce(self.endpoint)
+        server.execute_request(self)
+        
+    def process_response( self, server, response ):
+        handle = response.result
+        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
+
+        view = self.initiator_view_wr()
+        if not view:
+            print 'Received response #%s for a missing (already destroyed) view, ignoring' % response.request_id
+            return
+        view.process_handle_open(handle, server)
 
 
 class ProxyObject(Object):

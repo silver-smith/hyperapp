@@ -6,7 +6,7 @@ from .command import Command
 from .object import Object
 from .proxy_object import ProxyObject
 from . import form_view as form
-from .get_request import run_get_request
+## from .get_request import run_get_request
 
 
 class UrlFormObject(Object):

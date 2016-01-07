@@ -4,13 +4,13 @@ from ..common.util import is_list_inst
 from ..common.interface import tInt, Field, TRecord, Interface
 #from ..common.request import Request
 from .util import DEBUG_FOCUS, call_after, make_action
+from .proxy_object import GetRequest
 from .view_command import WindowCommand, command
 from . import view
 from . import composite
 from .menu_bar import MenuBar
 from . import cmd_pane
 from . import tab_view
-from .get_request import run_get_request
 
 
 DEFAULT_SIZE = QtCore.QSize(800, 800)
@@ -154,7 +154,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         #self._filter_pane.view_changed(self)
 
     def run_open_command( self, url ):
-        run_get_request(self.get_current_view(), url)
+        GetRequest(self.get_current_view(), url).execute()
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):

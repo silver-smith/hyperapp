@@ -8,6 +8,7 @@ from ..common.packet_coders import packet_coders
 from .util import flatten
 from .request import Request
 from .server import Server
+from .proxy_object import GetRequest
 from .view_command import command
 from . import text_object
 from . import view
@@ -20,7 +21,6 @@ from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from .code_repository import CodeRepositoryProxy
 from .module_loader import ModuleCache, load_client_module
-from .get_request import run_get_request
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -113,7 +113,7 @@ class Application(QtGui.QApplication, view.View):
         endpoint = Endpoint.load_from_file(fpath)
         server = Server.produce(endpoint)
         url = server.make_url(['management'])
-        run_get_request(window.get_current_view(), url)
+        GetRequest(window.get_current_view(), url).execute()
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
