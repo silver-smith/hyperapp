@@ -28,11 +28,6 @@ class Server(object):
             cls._servers[endpoint.public_key] = server
         return server
 
-    @classmethod
-    def resolve_url( cls, url ):
-        assert isinstance(url, Url), repr(url)
-        return (cls.produce(url.endpoint), url.path)
-
     def __init__( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.endpoint = endpoint
