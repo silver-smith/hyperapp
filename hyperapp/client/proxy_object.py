@@ -51,12 +51,13 @@ class OpenRequest(Request):
         self.initiator_view_wr = weakref.ref(initiator_view)
 
     def process_response( self, server, response ):
+        tHandle.validate('Handle', response.result)
         handle = response.result
-        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
         redirect_handles = RedirectHandleCollector.collect(handle)
         if redirect_handles:
             self.run_resolve_redirect_request(handle, redirect_handles)
             return
+        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
         self.open_handle(handle, server)
 
     def open_handle( self, handle, server ):
