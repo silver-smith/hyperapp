@@ -28,7 +28,7 @@ from ..common.redirect_handle_resolver import RedirectHandleCollector
 
 
 
-class ObjRequest(Request):
+class RequestForResult(Request):
 
     def __init__( self, object, command_id, params ):
         assert isinstance(object, Object), repr(object)
@@ -43,7 +43,7 @@ class ObjRequest(Request):
         object.process_response_result(self.command_id, response.result)
 
 
-class OpenRequest(ObjRequest):
+class OpenRequest(Request):
 
     def __init__( self, iface, path, command_id, params, initiator_view ):
         assert isinstance(initiator_view, view.View), repr(initiator_view)
@@ -166,7 +166,7 @@ class ProxyObject(Object):
         if self.iface.is_open_command(command_id) and initiator_view:
             return OpenRequest(self.iface, self.path, command_id, params, initiator_view)
         else:
-            return ObjRequest(self, command_id, params)
+            return RequestForResult(self, command_id, params)
 
     def send_notification( self, command_id, *args, **kw ):
         request = self.prepare_notification(command_id, *args, **kw)
