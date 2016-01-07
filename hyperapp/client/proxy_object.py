@@ -24,7 +24,7 @@ from .proxy_registry import proxy_class_registry, proxy_registry
 from .request import ClientNotification, Request
 from .server import Server
 from .view import View
-from ..common.redirect_handle_resolver import RedirectHandleCollector
+from ..common.redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
 
 
 
@@ -53,39 +53,64 @@ class OpenRequest(Request):
     def process_response( self, server, response ):
         handle = response.result
         assert tHandle.isinstance(handle, tViewHandle), repr(handle)
-
-        result_type = self.iface.get_command_result_type(self.command_id)
-        redirect_handles = RedirectHandleCollector.collect(result_type, handle)
+        redirect_handles = RedirectHandleCollector.collect(handle)
         if redirect_handles:
             self.run_resolve_redirect_request(handle, redirect_handles)
             return
+        self.open_handle(handle, server)
 
+    def open_handle( self, handle, server ):
         view = self.initiator_view_wr()
         if not view:
             print 'Received response #%s for a missing (already destroyed) view, ignoring' % response.request_id
             return
         view.process_handle_open(handle, server)
 
-    def run_resolve_redirect_request( self, result, redirect_handles ):
+    def run_resolve_redirect_request( self, handle, redirect_handles ):
         assert len(redirect_handles) == 1  # multiple redirects in one response is not supported (yet?)
-        assert 0  # not implemented yet
-        ## run_get_request(initiator_view, Url.from_data(handle.redirect_to))
+        url = Url.from_data(redirect_handles[0].redirect_to)
+        RedirectResolveRequest(url, orig_request=self, orig_handle=handle).execute()
+
+    def redirect_resolved( self, handle, map_to_handle, server ):
+        resolved_handle = RedirectHandleMapper.map(handle, [map_to_handle])
+        self.open_handle(resolved_handle, server)
 
 
-class GetRequest(Request):
+class GetRequestBase(Request):
 
-    def __init__( self, view, url ):
-        assert isinstance(view, View), repr(view)
+    def __init__( self, url ):
         assert isinstance(url, Url), repr(url)
         iface = get_iface
         command_id = 'get'
         Request.__init__(self, iface, url.path, command_id)
-        self.initiator_view_wr = weakref.ref(view)
         self.endpoint = url.endpoint
 
     def execute( self ):
         server = Server.produce(self.endpoint)
         server.execute_request(self)
+
+        
+class RedirectResolveRequest(GetRequestBase):
+
+    def __init__( self, url, orig_request, orig_handle ):
+        assert isinstance(orig_request, OpenRequest)
+        tHandle.validate('Handle', orig_handle)
+        GetRequestBase.__init__(self, url)
+        self.orig_request = orig_request
+        self.orig_handle = orig_handle
+
+    def process_response( self, server, response ):
+        handle = response.result
+        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
+        self.orig_request.redirect_resolved(self.orig_handle, handle, server)
+
+
+class GetRequest(GetRequestBase):
+
+    def __init__( self, url, view ):
+        assert isinstance(view, View), repr(view)
+        GetRequestBase.__init__(self, url)
+        self.initiator_view_wr = weakref.ref(view)
         
     def process_response( self, server, response ):
         handle = response.result
@@ -144,10 +169,6 @@ class ProxyObject(Object):
 
     def get_module_ids( self ):
         return self.iface.get_module_ids()
-
-    ## def get_persistent_id( self ):
-    ##     return encode_url([self.get_objimpl_id(),
-    ##                        self.iface.iface_id] + self.server.make_url(self.path))
 
     @classmethod
     def get_objimpl_id( cls ):

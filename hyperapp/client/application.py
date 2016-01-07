@@ -113,7 +113,7 @@ class Application(QtGui.QApplication, view.View):
         endpoint = Endpoint.load_from_file(fpath)
         server = Server.produce(endpoint)
         url = server.make_url(['management'])
-        GetRequest(window.get_current_view(), url).execute()
+        GetRequest(url, window.get_current_view()).execute()
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):

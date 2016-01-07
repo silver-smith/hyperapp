@@ -154,7 +154,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         #self._filter_pane.view_changed(self)
 
     def run_open_command( self, url ):
-        GetRequest(self.get_current_view(), url).execute()
+        GetRequest(url, self.get_current_view()).execute()
 
     @command('Duplicate window', 'Duplicate window', 'Alt+W')
     def duplicate_window( self ):
