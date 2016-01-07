@@ -4,7 +4,7 @@ from ..common.interface import tCommand
 from .util import make_action
 from .command import ObjectCommand
 from .view_command import WindowCommand
-from .url_form import make_open_url_action
+## from .url_form import make_open_url_action
 
 
 class MenuBar(object):
@@ -36,7 +36,7 @@ class MenuBar(object):
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
         window = self.window()
-        menu.addAction(make_open_url_action(menu, window))
+        ## menu.addAction(make_open_url_action(menu, window))
         for cmd in self.window().get_global_commands():
             assert isinstance(cmd, WindowCommand), repr(cmd)
             menu.addAction(cmd.make_action(menu, window))

@@ -1,3 +1,4 @@
+# this module is outdated
 # form allowing user to pick current url in stringified form and enter new url to open
 
 import weakref
