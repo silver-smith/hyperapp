@@ -1,5 +1,4 @@
 import weakref
-import uuid
 from ..common.endpoint import Endpoint, Url
 from ..common.interface import (
     Interface,
@@ -31,10 +30,10 @@ from ..common.redirect_handle_resolver import RedirectHandleCollector
 
 class ObjRequest(Request):
 
-    def __init__( self, iface, path, command_id, request_id, params, object, initiator_view ):
+    def __init__( self, iface, path, command_id, params, object, initiator_view ):
         assert isinstance(object, Object), repr(object)
         assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
-        Request.__init__(self, iface, path, command_id, request_id, params)
+        Request.__init__(self, iface, path, command_id, params)
         self.object = weakref.ref(object)
         self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
 
@@ -135,9 +134,8 @@ class ProxyObject(Object):
         return ClientNotification(self.iface, self.path, command_id, params=params)
 
     def prepare_request( self, command_id, initiator_view, *args, **kw ):
-        request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
-        return ObjRequest(self.iface, self.path, command_id, request_id, params, self, initiator_view)
+        return ObjRequest(self.iface, self.path, command_id, params, self, initiator_view)
 
     def send_notification( self, command_id, *args, **kw ):
         request = self.prepare_notification(command_id, *args, **kw)

@@ -28,12 +28,12 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__( self, iface, path, command_id, request_id, params=None ):
+    def __init__( self, iface, path, command_id, params=None ):
         RequestBase.__init__(self, iface, path, command_id, params)
-        self.request_id = request_id
 
-    def encode( self ):
-        return tRequest.instantiate(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
+    def encode( self, request_id ):
+        assert isinstance(request_id, str), repr(request_id)
+        return tRequest.instantiate(self.iface.iface_id, self.path, self.command_id, self.params, request_id)
 
     def process_response( self, server, response ):
         raise NotImplementedError(self.__class__)

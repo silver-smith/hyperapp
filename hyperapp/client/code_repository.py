@@ -1,6 +1,5 @@
 # code repository proxy
 
-import uuid
 from ..common.interface.code_repository import code_repository_iface
 from .request import Request
 from .server import Server
@@ -9,8 +8,8 @@ from .proxy_object import ProxyObject
 
 class GetModulesRequest(Request):
 
-    def __init__( self, iface, path, command_id, request_id, params, continuation ):
-        Request.__init__(self, iface, path, command_id, request_id, params)
+    def __init__( self, iface, path, command_id, params, continuation ):
+        Request.__init__(self, iface, path, command_id, params)
         self.continuation = continuation
 
     def process_response( self, server, response ):
@@ -25,14 +24,12 @@ class CodeRepositoryProxy(ProxyObject):
 
     def get_modules_and_continue( self, module_ids, continuation ):
         command_id = 'get_modules'
-        request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, module_ids=module_ids)
-        request = GetModulesRequest(self.iface, self.path, command_id, request_id, params, continuation)
+        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
         self.server.execute_request(request)
 
     def get_required_modules_and_continue( self, requirements, continuation ):
         command_id = 'get_required_modules'
-        request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, requirements=requirements)
-        request = GetModulesRequest(self.iface, self.path, command_id, request_id, params, continuation)
+        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
         self.server.execute_request(request)

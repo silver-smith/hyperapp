@@ -1,3 +1,4 @@
+import uuid
 from PySide import QtCore
 from ..common.util import is_list_inst
 from ..common.packet import Packet
@@ -55,18 +56,17 @@ class Server(object):
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
         print 'send_notification', notification.command_id, notification
-        self._send(notification)
+        self._send(notification.encode())
 
     def execute_request( self, request ):
         assert isinstance(request, Request), repr(request)
-        request_id = request.request_id
+        request_id = str(uuid.uuid4())
         assert request_id not in self.pending_requests, repr(request_id)
         print 'execute_request', request.command_id, request_id
         self.pending_requests[request_id] = request
-        self._send(request)
+        self._send(request.encode(request_id))
 
-    def _send( self, request ):
-        request_rec = request.encode()
+    def _send( self, request_rec ):
         encoding = PACKET_ENCODING
         print '%s packet to %s' % (encoding, self.endpoint)
         pprint(tClientPacket, request_rec)

@@ -1,5 +1,4 @@
 import weakref
-import uuid
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.interface import tInt, Field, TRecord, Interface
