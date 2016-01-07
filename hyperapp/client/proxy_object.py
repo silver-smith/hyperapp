@@ -30,18 +30,46 @@ from ..common.redirect_handle_resolver import RedirectHandleCollector
 
 class ObjRequest(Request):
 
-    def __init__( self, iface, path, command_id, params, object, initiator_view ):
+    def __init__( self, object, command_id, params ):
         assert isinstance(object, Object), repr(object)
-        assert initiator_view is None or isinstance(initiator_view, view.View), repr(initiator_view)
-        Request.__init__(self, iface, path, command_id, params)
+        Request.__init__(self, object.iface, object.path, command_id, params)
         self.object = weakref.ref(object)
-        self.initiator_view = weakref.ref(initiator_view) if initiator_view else None  # may be initiated not by a view
 
     def process_response( self, server, response ):
         object = self.object()
-        initiator_view = self.initiator_view() if self.initiator_view else None
-        if object:
-            object.process_response(self, initiator_view, server, response)
+        if not object:
+            print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
+            return
+        object.process_response_result(self.command_id, response.result)
+
+
+class OpenRequest(ObjRequest):
+
+    def __init__( self, iface, path, command_id, params, initiator_view ):
+        assert isinstance(initiator_view, view.View), repr(initiator_view)
+        Request.__init__(self, iface, path, command_id, params)
+        self.initiator_view = weakref.ref(initiator_view)
+
+    def process_response( self, server, response ):
+        handle = response.result
+        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
+
+        result_type = self.iface.get_command_result_type(self.command_id)
+        redirect_handles = RedirectHandleCollector.collect(result_type, handle)
+        if redirect_handles:
+            self.run_resolve_redirect_request(handle, redirect_handles)
+            return
+
+        view = self.initiator_view()
+        if not view:
+            print 'Received response #%s for a missing (already destroyed) view, ignoring' % response.request_id
+            return
+        view.process_handle_open(handle, server)
+
+    def run_resolve_redirect_request( self, result, redirect_handles ):
+        assert len(redirect_handles) == 1  # multiple redirects in one response is not supported (yet?)
+        assert 0  # not implemented yet
+        ## run_get_request(initiator_view, Url.from_data(handle.redirect_to))
 
 
 class ProxyObject(Object):
@@ -135,7 +163,10 @@ class ProxyObject(Object):
 
     def prepare_request( self, command_id, initiator_view, *args, **kw ):
         params = self.iface.make_params(command_id, *args, **kw)
-        return ObjRequest(self.iface, self.path, command_id, params, self, initiator_view)
+        if self.iface.is_open_command(command_id) and initiator_view:
+            return OpenRequest(self.iface, self.path, command_id, params, initiator_view)
+        else:
+            return ObjRequest(self, command_id, params)
 
     def send_notification( self, command_id, *args, **kw ):
         request = self.prepare_notification(command_id, *args, **kw)
@@ -145,25 +176,6 @@ class ProxyObject(Object):
         request = self.prepare_request(command_id, initiator_view, *args, **kw)
         self.server.execute_request(request)
 
-    def process_response( self, request, initiator_view, server, response ):
-
-        result_type = request.iface.get_command_result_type(request.command_id)
-        redirect_handles = RedirectHandleCollector.collect(result_type, response.result)
-        if redirect_handles:
-            self.run_resolve_redirect_request(request.command_id, response.result, redirect_handles)
-            return
-
-        self.process_response_result(request.command_id, response.result)
-        # initiator_view may already be gone (closed, navigated away) or be missing at all - so is None
-        if self.iface.is_open_command(request.command_id) and initiator_view:
-            handle = response.result
-            if tHandle.isinstance(handle, tViewHandle):
-                initiator_view.process_handle_open(handle, server)
-            elif tHandle.isinstance(handle, tRedirectHandle):
-                run_get_request(initiator_view, Url.from_data(handle.redirect_to))
-            else:
-                assert False, repr(tHandle.resolve_obj(handle).id)  # Unknown handle class
-
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':
             self.process_subscribe_response(result)
@@ -171,10 +183,6 @@ class ProxyObject(Object):
     def process_subscribe_response( self, result ):
         self.set_contents(result)
         self._notify_object_changed()
-
-    def run_resolve_redirect_request( self, command_id, result, redirect_handles ):
-        assert len(redirect_handles) == 1  # multiple redirects in one response is not supported (yet?)
-        
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
