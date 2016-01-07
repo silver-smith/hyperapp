@@ -1,11 +1,11 @@
 import os.path
+import cPickle as pickle
 from PySide import QtCore, QtGui
 from hyperapp.common.endpoint import Endpoint
 from ..common.interface import TList, get_iface, iface_registry
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .util import flatten
-from .pickler import pickler
 from .request import Request
 from .server import Server
 from .view_command import command
@@ -132,7 +132,7 @@ class Application(QtGui.QApplication, view.View):
         handles_cdr = packet_coders.encode('cdr', handles_data, self.handles_type)
         state = (module_ids, modules, handles_cdr)
         with file(STATE_FILE_PATH, 'wb') as f:
-            f.write(pickler.dumps(state))
+            pickle.dump(state, f)
 
     ## def load_state_and_modules( self ):
     ##     state = self.load_state_file()
@@ -150,7 +150,7 @@ class Application(QtGui.QApplication, view.View):
     def load_state_file( self ):
         try:
             with file(STATE_FILE_PATH, 'rb') as f:
-                return pickler.loads(f.read())
+                return pickle.load(f)
         except (EOFError, IOError, IndexError) as x:
             print 'Error loading state:', x
             return None

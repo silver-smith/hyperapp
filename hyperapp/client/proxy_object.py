@@ -74,16 +74,6 @@ class OpenRequest(Request):
 
 class ProxyObject(Object):
 
-    @staticmethod
-    def resolve_persistent_id( persistent_id ):
-        parts = decode_url(persistent_id)
-        objimpl_id, iface_id = parts[:2]
-        url = parts[2:]
-        server, path = Server.resolve_url(url)
-        iface = iface_registry.resolve(iface_id)
-        proxy_cls = proxy_class_registry.resolve(objimpl_id)
-        return proxy_cls.produce_obj(server, path, iface)
-
     @classmethod
     def produce_obj_by_objinfo( cls, objinfo, server=None ):
         assert tObject.isinstance(objinfo, tThisProxyObject) or tObject.isinstance(objinfo, tProxyObject), repr(objinfo)
