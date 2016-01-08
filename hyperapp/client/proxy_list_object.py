@@ -13,6 +13,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._default_sort_column_id = None
         self._slices = []  # all slices are stored in ascending order
         self._subscribed = True
+        self._slices_loaded_from_cache = set()  # key_column_id (str) set
 
     @staticmethod
     def get_objimpl_id():
@@ -20,8 +21,9 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
-        slice = self._decode_slice(contents.slice)
+        slice = self._slice_from_data(contents.slice)
         self._default_sort_column_id = slice.sort_column_id
+        self._load_slices_from_cache(slice.sort_column_id)
         self._merge_in_slice(slice)
 
     # by default we assume this object was returned from server, and thus is already subscribed
@@ -34,7 +36,7 @@ class ProxyListObject(ProxyObject, ListObject):
         assert self._default_sort_column_id  # there were no set_contents calls
         return self._default_sort_column_id
 
-    def _decode_slice( self, rec ):
+    def _slice_from_data( self, rec ):
         return Slice.from_data(self.get_key_column_id(), rec)
 
     def _merge_in_slice( self, new_slice ):
@@ -52,18 +54,7 @@ class ProxyListObject(ProxyObject, ListObject):
         else:
             self._slices.append(new_slice)
             print '     > added'
-        self._store_slices(new_slice.sort_column_id)
-
-    def _get_slice_cache_key( self, sort_column_id ):
-        return self.make_cache_key('slices-%s' % sort_column_id)
-
-    def _get_slices_cache_type( self ):
-        return TList(self.iface.tSlice())
-
-    def _store_slices( self, sort_column_id ):
-        key = self._get_slice_cache_key(sort_column_id)
-        slices = [slice.to_data(self.iface) for slice in self._slices if slice.sort_column_id == sort_column_id]
-        self.cache.store_value(key, slices, self._get_slices_cache_type())
+        self._store_slices_to_cache(new_slice.sort_column_id)
 
     def _update_slices( self, diff ):
         for slice in self._slices:
@@ -97,6 +88,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _pick_slice( self, sort_column_id, from_key, direction ):
         print '  -- pick_slice', id(self), repr(sort_column_id), repr(from_key), direction
+        self._load_slices_from_cache(sort_column_id)
         assert direction == 'asc'  # todo: desc direction
         for slice in self._slices:
             if slice.sort_column_id != sort_column_id: continue
@@ -117,6 +109,23 @@ class ProxyListObject(ProxyObject, ListObject):
                     return slice.clone_with_elements(slice.elements[idx:])
         print '     > none found'
         return None  # none found
+
+    def _get_slice_cache_key( self, sort_column_id ):
+        return self.make_cache_key('slices-%s' % sort_column_id)
+
+    def _get_slices_cache_type( self ):
+        return TList(self.iface.tSlice())
+
+    def _store_slices_to_cache( self, sort_column_id ):
+        key = self._get_slice_cache_key(sort_column_id)
+        slices = [slice.to_data(self.iface) for slice in self._slices if slice.sort_column_id == sort_column_id]
+        self.cache.store_value(key, slices, self._get_slices_cache_type())
+
+    def _load_slices_from_cache( self, sort_column_id ):
+        if sort_column_id in self._slices_loaded_from_cache: return  # already loaded
+        key = self._get_slice_cache_key(sort_column_id)
+        for slice_rec in self.cache.load_value(key, self._get_slices_cache_type()) or []:
+            self._merge_in_slice(self._slice_from_data(slice_rec))
 
     def put_back_slice( self, slice ):
         print '-- proxy put_back_slice', self, len(slice.elements)
@@ -174,7 +183,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._process_fetch_elements_result(result)
 
     def _process_fetch_elements_result( self, result ):
-        slice = self._decode_slice(result.slice)
+        slice = self._slice_from_data(result.slice)
         self._merge_in_slice(slice)
         self._notify_fetch_result(slice)
 
