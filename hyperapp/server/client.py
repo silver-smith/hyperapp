@@ -1,5 +1,6 @@
 import os.path
 import traceback
+import time
 import select
 from Queue import Queue
 from ..common.interface import tServerPacket, ModuleDep, Module
@@ -62,10 +63,11 @@ class Connection(object):
 
 class Client(object):
 
-    def __init__( self, server, socket, addr, on_close ):
+    def __init__( self, server, socket, addr, test_delay_sec, on_close ):
         self.server = server
         self.conn = Connection(socket)
         self.addr = addr
+        self.test_delay_sec = test_delay_sec  # float
         self.on_close = on_close
         self.stop_flag = False
         self.updates_queue = Queue()  # Update queue
@@ -121,6 +123,9 @@ class Client(object):
         object = self._resolve(path)
         print 'Object:', object
         assert object, repr(path)  # 404: Path not found
+        if self.test_delay_sec:
+            print 'Test delay for %s sec...' % self.test_delay_sec
+            time.sleep(self.test_delay_sec)
         response = object.process_request(request)
         if response:
             self._subscribe_objects(response)

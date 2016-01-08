@@ -11,11 +11,12 @@ from .client import Client
 
 class TcpServer(object):
 
-    def __init__( self, identity, host, port ):
+    def __init__( self, identity, host, port, test_delay_sec ):
         assert isinstance(identity, Identity), repr(identity)
         self.identity = identity
         self.host = host
         self.port = port
+        self.test_delay_sec = test_delay_sec
         self.client2thread = {}  # client -> thread
         self.finished_threads = []
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,7 +47,7 @@ class TcpServer(object):
             select.select([self.socket], [], [self.socket])
             cln_socket, cln_addr = self.socket.accept()
             print 'accepted connection from %s:%d' % cln_addr
-            client = Client(self, cln_socket, cln_addr, on_close=self.on_client_closed)
+            client = Client(self, cln_socket, cln_addr, self.test_delay_sec, on_close=self.on_client_closed)
             thread = threading.Thread(target=client.serve)
             thread.start()
             self.client2thread[client] = thread
@@ -64,6 +65,7 @@ class TcpServer(object):
             thread.join()
         self.finished_threads = []
 
+    # called from client thread
     def on_client_closed( self, client ):
         self.finished_threads.append(self.client2thread[client])
         del self.client2thread[client]

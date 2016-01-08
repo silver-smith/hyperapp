@@ -30,11 +30,12 @@ def main():
     parser.add_argument('identity_fpath', help='path to identity file')
     parser.add_argument('endpoint_fpath', default=ENDPOINT_FNAME, help='path to endpoint file, generated on server start')
     parser.add_argument('addr', nargs='?', help='address to listen at', default=DEFAULT_ADDR)
+    parser.add_argument('--test-delay', type=float, help='artificial delay for handling requests, seconds')
     args = parser.parse_args()
 
     identity = Identity.load_from_file(args.identity_fpath)
     host, port = parse_addr(args.addr)
-    server = TcpServer(identity, host, port)
+    server = TcpServer(identity, host, port, args.test_delay)
     server.get_endpoint().save_to_file(args.endpoint_fpath)
     server.run()
 
