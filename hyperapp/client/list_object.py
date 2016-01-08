@@ -33,8 +33,8 @@ class ListDiff(object):
         return cls(key, key, [])
 
     @classmethod
-    def decode( cls, key_column_id, rec ):
-        return cls(rec.start_key, rec.end_key, [Element.decode(key_column_id, None, elt) for elt in rec.elements])
+    def from_data( cls, key_column_id, rec ):
+        return cls(rec.start_key, rec.end_key, [Element.from_data(key_column_id, None, elt) for elt in rec.elements])
 
     def __init__( self, start_key, end_key, elements ):
         # keys == None means append
@@ -50,7 +50,7 @@ class ListDiff(object):
 class Element(object):
 
     @classmethod
-    def decode( cls, key_column_id, sort_column_id, rec ):
+    def from_data( cls, key_column_id, sort_column_id, rec ):
         key = getattr(rec.row, key_column_id)
         if sort_column_id is None:
             order_key = None

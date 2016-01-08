@@ -35,7 +35,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _decode_slice( self, rec ):
         key_column_id = self.get_key_column_id()
-        elements = [Element.decode(key_column_id, rec.sort_column_id, elt_rec) for elt_rec in rec.elements]
+        elements = [Element.from_data(key_column_id, rec.sort_column_id, elt_rec) for elt_rec in rec.elements]
         return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
     def _merge_in_slice( self, new_slice ):
@@ -115,7 +115,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_update( self, diff ):
         print '-- proxy process_update', self, diff, diff.start_key, diff.end_key, diff.elements
         key_column_id = self.get_key_column_id()
-        diff = ListDiff.decode(key_column_id, diff)
+        diff = ListDiff.from_data(key_column_id, diff)
         self._update_slices(diff)
         self._notify_diff_applied(diff)
 
