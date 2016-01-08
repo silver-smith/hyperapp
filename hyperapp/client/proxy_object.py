@@ -1,10 +1,13 @@
 import weakref
+from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
 from ..common.interface import (
     Interface,
+    TList,
     Field,
     tString,
     TRecord,
+    tCommand,
     tObject,
     tThisProxyObject,
     tProxyObject,
@@ -23,6 +26,7 @@ from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
 from .request import ClientNotification, Request
 from .server import Server
+from .cache_repository import cache_repository
 from .view import View
 from ..common.redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
 
@@ -150,11 +154,13 @@ class ProxyObject(Object):
         return object
 
     def __init__( self, server, path, iface ):
+        assert is_list_inst(path, basestring), repr(path)
         Object.__init__(self)
         self.server = server
         self.path = path
         self.iface = iface
-        self.commands = []
+        cached_commands = cache_repository.load_value(self.get_cache_key(), self.get_cache_value_type())
+        self.commands = map(Command.decode, cached_commands or [])
 
     def to_data( self ):
         return tProxyObject.instantiate(
@@ -179,6 +185,7 @@ class ProxyObject(Object):
 
     def set_contents( self, contents ):
         self.commands = map(Command.decode, contents.commands)
+        cache_repository.store_value(self.get_cache_key(), contents.commands, self.get_cache_value_type())
 
     def get_title( self ):
         return '%s:%s' % (self.server.endpoint.public_key.get_short_id_hex(), '|'.join(self.path))
@@ -223,6 +230,12 @@ class ProxyObject(Object):
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
+
+    def get_cache_key( self ):
+        return ['object', self.server.get_id().encode('hex')] + self.path
+
+    def get_cache_value_type( self ):
+        return TList(tCommand)
 
     def __del__( self ):
         print '~ProxyObject', self, self.path
