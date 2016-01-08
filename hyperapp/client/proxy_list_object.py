@@ -1,4 +1,5 @@
 import bisect
+from ..common.interface import TList
 from .list_object import ListDiff, Element, Slice, ListObject
 from .proxy_object import ProxyObject
 from .proxy_registry import proxy_class_registry
@@ -34,9 +35,7 @@ class ProxyListObject(ProxyObject, ListObject):
         return self._default_sort_column_id
 
     def _decode_slice( self, rec ):
-        key_column_id = self.get_key_column_id()
-        elements = [Element.from_data(key_column_id, rec.sort_column_id, elt_rec) for elt_rec in rec.elements]
-        return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
+        return Slice.from_data(self.get_key_column_id(), rec)
 
     def _merge_in_slice( self, new_slice ):
         print '  -- merge_in_slice', id(self), repr(new_slice.from_key), len(new_slice.elements), new_slice.bof
@@ -53,6 +52,18 @@ class ProxyListObject(ProxyObject, ListObject):
         else:
             self._slices.append(new_slice)
             print '     > added'
+        self._store_slices(new_slice.sort_column_id)
+
+    def _get_slice_cache_key( self, sort_column_id ):
+        return self.make_cache_key('slices-%s' % sort_column_id)
+
+    def _get_slices_cache_type( self ):
+        return TList(self.iface.tSlice())
+
+    def _store_slices( self, sort_column_id ):
+        key = self._get_slice_cache_key(sort_column_id)
+        slices = [slice.to_data(self.iface) for slice in self._slices if slice.sort_column_id == sort_column_id]
+        self.cache.store_value(key, slices, self._get_slices_cache_type())
 
     def _update_slices( self, diff ):
         for slice in self._slices:

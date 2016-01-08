@@ -1,6 +1,7 @@
 from functools import total_ordering
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
+from ..common.interface import ListInterface
 from .command import ElementCommand
 from .object import ObjectObserver, Object
 
@@ -67,6 +68,10 @@ class Element(object):
         if order_key is not None:
             self.order_key = order_key
 
+    def to_data( self, iface ):
+        assert isinstance(iface, ListInterface), repr(iface)
+        return iface.Element(self.row, [cmd.to_data() for cmd in self.commands])
+
     def __eq__( self, other ):
         if isinstance(other, Element):
             return self.order_key == other.order_key
@@ -86,6 +91,11 @@ class Element(object):
 
 class Slice(object):
 
+    @classmethod
+    def from_data( self, key_column_id, rec ):
+        elements = [Element.from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
+        return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
+
     def __init__( self, sort_column_id, from_key, direction, elements, bof, eof ):
         assert isinstance(sort_column_id, basestring), repr(sort_column_id)
         assert direction in ['asc', 'desc'], repr(direction)
@@ -96,6 +106,11 @@ class Slice(object):
         self.elements = elements
         self.bof = bof
         self.eof = eof
+
+    def to_data( self, iface ):
+        assert isinstance(iface, ListInterface), repr(iface)
+        elements = [elt.to_data(iface) for elt in self.elements]
+        return iface.Slice(self.sort_column_id, self.from_key, self.direction, elements, self.bof, self.eof)
 
     def clone_with_elements( self, elements ):
         return Slice(self.sort_column_id, self.from_key, self.direction, elements, self.bof, self.eof)

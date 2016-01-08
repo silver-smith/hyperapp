@@ -1,4 +1,5 @@
 import weakref
+from ..common.interface import tCommand
 from .util import make_action
 
 
@@ -22,6 +23,9 @@ class Command(CommandBase):
         self.text = text
         self.desc = desc
         self.shortcut = shortcut
+
+    def to_data( self ):
+        return tCommand.instantiate(self.id, self.text, self.desc, self.shortcut)
 
     def as_object_command( self, view ):
         return ObjectCommand(view, self.id, self.text, self.desc, self.shortcut)
