@@ -17,8 +17,11 @@ from .interface import (
 
 class JsonEncoder(object):
 
+    def __init__( self, pretty=False ):
+        self.pretty = pretty
+
     def encode( self, t, value ):
-        return json.dumps(self.dispatch(t, value))
+        return json.dumps(self.dispatch(t, value), indent=4 if self.pretty else None)
 
     @method_dispatch
     def dispatch( self, t, value ):

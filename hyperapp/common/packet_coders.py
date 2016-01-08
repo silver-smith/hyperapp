@@ -7,8 +7,8 @@ from .cdr_decoder import CdrDecoder
 class Coders(object):
 
     def __init__( self, encoder, decoder ):
-        self.encoder = encoder  # constructor, no args
-        self.decoder = decoder  # constructor, args: iface_registry, object_resolver (opt)
+        self.encoder = encoder
+        self.decoder = decoder
 
 
 class PacketCoders(object):
@@ -26,15 +26,14 @@ class PacketCoders(object):
 
     def decode( self, encoding, data, t ):
         coders = self.resolve(encoding)
-        decoder = coders.decoder()
-        return decoder.decode(t, data)
+        return coders.decoder.decode(t, data)
 
     def encode( self, encoding, object, t ):
         coders = self.resolve(encoding)
-        encoder = coders.encoder()
-        return encoder.encode(t, object)
+        return coders.encoder.encode(t, object)
 
 
 packet_coders = PacketCoders()
-packet_coders.register('json', JsonEncoder, JsonDecoder)
-packet_coders.register('cdr', CdrEncoder, CdrDecoder)
+packet_coders.register('json', JsonEncoder(pretty=False), JsonDecoder())
+packet_coders.register('json_pretty', JsonEncoder(pretty=True), JsonDecoder())
+packet_coders.register('cdr', CdrEncoder(), CdrDecoder())
