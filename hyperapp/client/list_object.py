@@ -56,7 +56,7 @@ class Element(object):
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = map(ElementCommand.decode, rec.commands)
+        commands = map(ElementCommand.from_data, rec.commands)
         return cls(key, rec.row, commands, order_key)
 
     def __init__( self, key, row, commands, order_key=None ):

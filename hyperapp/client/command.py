@@ -14,7 +14,7 @@ class CommandBase(object):
 class Command(CommandBase):
 
     @classmethod
-    def decode( cls, rec ):
+    def from_data( cls, rec ):
         return cls(rec.id, rec.text, rec.desc, rec.shortcut)
 
     def __init__( self, id, text, desc, shortcut=None ):

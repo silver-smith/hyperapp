@@ -160,7 +160,7 @@ class ProxyObject(Object):
         self.path = path
         self.iface = iface
         cached_commands = cache_repository.load_value(self.get_cache_key(), self.get_cache_value_type())
-        self.commands = map(Command.decode, cached_commands or [])
+        self.commands = map(Command.from_data, cached_commands or [])
 
     def to_data( self ):
         return tProxyObject.instantiate(
@@ -184,7 +184,7 @@ class ProxyObject(Object):
         self.execute_request('subscribe')
 
     def set_contents( self, contents ):
-        self.commands = map(Command.decode, contents.commands)
+        self.commands = map(Command.from_data, contents.commands)
         cache_repository.store_value(self.get_cache_key(), contents.commands, self.get_cache_value_type())
 
     def get_title( self ):
