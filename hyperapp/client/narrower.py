@@ -49,13 +49,14 @@ class Handle(list_view.Handle):
 
     def __repr__( self ):
         return 'narrower.Handle(%r/%r/%r)' \
-          % (uni2str(self.list_handle.get_title()), self.narrow_field_id, self.prefix)
+          % (uni2str(self.get_title()), self.narrow_field_id, self.prefix)
 
 
 # todo: subscription
 class FilteredListObj(ListObject, ListObserver):
 
     def __init__( self, base, narrow_field_id, prefix ):
+        assert isinstance(base, ListObject), repr(base)
         ListObject.__init__(self)
         self._base = base
         self._narrow_field_id = narrow_field_id  # filter by this field
@@ -82,6 +83,7 @@ class FilteredListObj(ListObject, ListObserver):
         return self._base.get_key_column_id()
     
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
+        print '-- narrower.fetch_elements', sort_column_id, `key`, desc_count, asc_count
         self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
 
     def process_fetch_result( self, result ):
