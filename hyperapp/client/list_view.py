@@ -345,9 +345,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self._object = object
         self.model().set_object(object, sort_column_id)
         self.resizeColumnsToContents()
+        self._object.subscribe(self)
         if self.isVisible():
             self.fetch_elements_if_required()
-        self._object.subscribe(self)
 
     def keyPressEvent( self, evt ):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
