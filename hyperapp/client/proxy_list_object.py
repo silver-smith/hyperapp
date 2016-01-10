@@ -11,9 +11,9 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.__init__(self, server, path, iface)
         ListObject.__init__(self)
         self._default_sort_column_id = None
-        self._slices = []  # all slices are stored in ascending order
+        self._slices = []  # all slices are stored in ascending order, actual/up-do-date
+        self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, out-of-date
         self._subscribed = True
-        self._slices_loaded_from_cache = set()  # key_column_id (str) set
 
     @staticmethod
     def get_objimpl_id():
@@ -23,12 +23,12 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.set_contents(self, contents)
         slice = self._slice_from_data(contents.slice)
         self._default_sort_column_id = slice.sort_column_id
-        self._load_slices_from_cache(slice.sort_column_id)
         self._merge_in_slice(slice)
 
-    # by default we assume this object was returned from server, and thus is already subscribed
-    # if this method is called it means that assumption is not true, and we are not actually subscribed yet
-    # and we do not want separate call to server with 'subscribe' request
+    # By default we assume this object was returned from server, and thus is already subscribed,
+    # and we do not want redundant call to server with 'subscribe' request.
+    # If this method is called it means that assumption is not true, and we are not actually subscribed yet;
+    # then 'subscribe' command will be issued on first fetch_elements call.
     def server_subscribe( self ):
         self._subscribed = False
 
@@ -86,11 +86,10 @@ class ProxyListObject(ProxyObject, ListObject):
                         print '-- slice with sort %r: element is appended to the end of slice' % slice.sort_column_id
                     
 
-    def _pick_slice( self, sort_column_id, from_key, direction ):
+    def _pick_slice( self, slices, sort_column_id, from_key, direction ):
         print '  -- pick_slice', id(self), repr(sort_column_id), repr(from_key), direction
-        self._load_slices_from_cache(sort_column_id)
         assert direction == 'asc'  # todo: desc direction
-        for slice in self._slices:
+        for slice in slices:
             if slice.sort_column_id != sort_column_id: continue
             if from_key == None and slice.bof:
                 print '     > bof found', len(slice.elements)
@@ -122,10 +121,10 @@ class ProxyListObject(ProxyObject, ListObject):
         self.cache.store_value(key, slices, self._get_slices_cache_type())
 
     def _load_slices_from_cache( self, sort_column_id ):
-        if sort_column_id in self._slices_loaded_from_cache: return  # already loaded
+        if sort_column_id in self._slices_from_cache: return  # already loaded
         key = self._get_slice_cache_key(sort_column_id)
-        for slice_rec in self.cache.load_value(key, self._get_slices_cache_type()) or []:
-            self._merge_in_slice(self._slice_from_data(slice_rec))
+        slice_recs = self.cache.load_value(key, self._get_slices_cache_type())
+        self._slices_from_cache[sort_column_id] = map(self._slice_from_data, slice_recs or [])
 
     def put_back_slice( self, slice ):
         print '-- proxy put_back_slice', self, len(slice.elements)
@@ -147,13 +146,20 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
         print '-- proxy fetch_elements', self, self._subscribed, repr(from_key), count
-        slice = self._pick_slice(sort_column_id, from_key, direction)
+        slice = self._pick_slice(self._slices, sort_column_id, from_key, direction)
         if slice:
-            print '   > cached', len(slice.elements)
+            print '   > cached actual', len(slice.elements)
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
             self._notify_fetch_result(slice)
             if self._subscribed:
                 return  # otherwise our cache may already be invalid, need to subscribe and refetch anyway
+        self._load_slices_from_cache(sort_column_id)
+        cached_slices = self._slices_from_cache.get(sort_column_id, [])
+        slice = self._pick_slice(cached_slices, sort_column_id, from_key, direction)
+        if slice:
+            print '   > cached outdated', len(slice.elements)
+            self._notify_fetch_result(slice)
+            # and subscribe/fetch anyway
         print '   > not cached or not subscribed, requesting'
         if self._subscribed:
             command_id = 'fetch_elements'
