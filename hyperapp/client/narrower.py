@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from ..common.interface import tHandle
+from ..common.interface import tString, Field, TRecord, tObject, tBaseObject, tHandle
 from .util import uni2str, key_match, key_match_any
 from .list_object import ListObserver, Slice, ListObject
 from .objimpl_registry import objimpl_registry
@@ -55,6 +55,17 @@ class Handle(list_view.Handle):
 # todo: subscription
 class FilteredListObj(ListObject, ListObserver):
 
+    data_type = tObject.register('filtered_list', base=tBaseObject, fields=[
+        Field('base', tObject),
+        Field('narrow_field_id', tString),
+        Field('prefix', tString),
+        ])
+
+    @classmethod
+    def from_data( cls, rec, server=None ):
+        base = objimpl_registry.produce_obj(rec.base, server)
+        return cls(base, rec.narrow_field_id, rec.prefix)
+
     def __init__( self, base, narrow_field_id, prefix ):
         assert isinstance(base, ListObject), repr(base)
         ListObject.__init__(self)
@@ -66,6 +77,14 @@ class FilteredListObj(ListObject, ListObserver):
 
     def __repr__( self ):
         return 'FilteredListObj(%r/%r/%r)' % (self._narrow_field_id, self._prefix, len(self._cached_elements))
+
+    def to_data( self ):
+        return self.data_type.instantiate(
+            'filtered_list',
+            self._base.to_data(),
+            self._narrow_field_id,
+            self._prefix,
+            )
 
     def get_title( self ):
         return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
@@ -200,4 +219,5 @@ class View(LineListPanel):
         print '~narrower', self._base_obj.get_title(), self
 
 
+objimpl_registry.register('filtered_list', FilteredListObj.from_data)
 view_registry.register('list_narrower', Handle.from_data)
