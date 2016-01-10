@@ -1,5 +1,6 @@
 # text object representing server text object
 
+from ..common.interface import tString
 from .text_object import TextObject
 from .proxy_object import ProxyObject
 from .proxy_registry import proxy_class_registry
@@ -10,6 +11,7 @@ class ProxyTextObject(ProxyObject, TextObject):
     def __init__( self, server, path, iface ):
         TextObject.__init__(self, text='')
         ProxyObject.__init__(self, server, path, iface)
+        self.text = self._load_text_from_cache()
 
     @staticmethod
     def get_objimpl_id():
@@ -18,6 +20,7 @@ class ProxyTextObject(ProxyObject, TextObject):
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
         self.text = contents.text
+        self._store_text_to_cache()
 
     def get_module_ids( self ):
         return [this_module_id]
@@ -47,6 +50,20 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     def process_update( self, new_text ):
         self.text_changed(new_text)
+
+    def _get_text_cache_key( self ):
+        return self.make_cache_key('text')
+
+    def _get_text_cache_type( self ):
+        return tString
+
+    def _store_text_to_cache( self ):
+        key = self._get_text_cache_key()
+        self.cache.store_value(key, self.text, self._get_text_cache_type())
+
+    def _load_text_from_cache( self ):
+        key = self._get_text_cache_key()
+        return self.cache.load_value(key, self._get_text_cache_type())
 
 
 proxy_class_registry.register(ProxyTextObject)
