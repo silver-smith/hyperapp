@@ -28,7 +28,7 @@ from .request import ClientNotification, Request
 from .server import Server
 from .cache_repository import cache_repository
 from .view import View
-from ..common.redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
+from .redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
 
 
 class RequestForResult(Request):

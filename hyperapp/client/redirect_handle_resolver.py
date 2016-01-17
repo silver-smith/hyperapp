@@ -1,6 +1,6 @@
-from .interface import TOptional, tHandle, tRedirectHandle
-from .visitor import Visitor
-from .mapper import Mapper
+from ..common.interface import TOptional, tHandle, tRedirectHandle
+from ..common.visitor import Visitor
+from ..common.mapper import Mapper
 
 
 class RedirectHandleCollector(Visitor):
