@@ -28,6 +28,7 @@ from .request import ClientNotification, Request
 from .server import Server
 from .cache_repository import cache_repository
 from .view import View
+from .proxy_object_data_mapper import ProxyObjectMapper
 from .redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
 
 
@@ -56,6 +57,7 @@ class OpenRequest(Request):
     def process_response( self, server, response ):
         tHandle.validate('Handle', response.result)
         handle = response.result
+        handle = ProxyObjectMapper.map(handle, proxy_registry, server)
         redirect_handles = RedirectHandleCollector.collect(handle)
         if redirect_handles:
             self.run_resolve_redirect_request(handle, redirect_handles)

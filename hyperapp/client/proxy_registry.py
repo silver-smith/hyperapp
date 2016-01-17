@@ -16,10 +16,9 @@ class ProxyClassRegistry(object):
         objimpl_registry.register(objimpl_id, cls.produce_obj_by_objinfo)
         self.implid2class[objimpl_id] = cls
 
-    # unused since object pickling is removed
-    ## def resolve( self, objimpl_id ):
-    ##     assert objimpl_id in self.implid2class, repr(objimpl_id)  # Not found
-    ##     return self.implid2class[objimpl_id]
+    def resolve( self, objimpl_id ):
+        assert objimpl_id in self.implid2class, repr(objimpl_id)  # Not found
+        return self.implid2class[objimpl_id]
 
 
 # all proxy objects are registered in this class
