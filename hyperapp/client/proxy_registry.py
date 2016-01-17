@@ -4,6 +4,7 @@ import weakref
 from .objimpl_registry import objimpl_registry
 
 
+# todo: remove - it was required for object unpickling, by persistent id resolver
 class ProxyClassRegistry(object):
 
     def __init__( self ):
@@ -15,11 +16,15 @@ class ProxyClassRegistry(object):
         objimpl_registry.register(objimpl_id, cls.produce_obj_by_objinfo)
         self.implid2class[objimpl_id] = cls
 
-    def resolve( self, objimpl_id ):
-        assert objimpl_id in self.implid2class, repr(objimpl_id)  # Not found
-        return self.implid2class[objimpl_id]
+    # unused since object pickling is removed
+    ## def resolve( self, objimpl_id ):
+    ##     assert objimpl_id in self.implid2class, repr(objimpl_id)  # Not found
+    ##     return self.implid2class[objimpl_id]
 
 
+# all proxy objects are registered in this class
+# in particular, to avoid multiple proxy objects with the same url
+# also used to distribute received updates (by Server class)`
 class ProxyRegistry(object):
 
     def __init__( self ):

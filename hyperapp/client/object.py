@@ -13,16 +13,16 @@ class Object(object):
 
     def __init__( self ):
         self._init_observers()
-        self._phony = True  # force calling __setstate__, it won't be called for empty __dict__
 
-    def __getstate__( self ):
-        state = dict(self.__dict__)
-        del state['_observers']
-        return state
+    # unused since object pickling is removed
+    ## def __getstate__( self ):
+    ##     state = dict(self.__dict__)
+    ##     del state['_observers']
+    ##     return state
 
-    def __setstate__( self, state ):
-        self.__dict__.update(state)
-        self._init_observers()
+    ## def __setstate__( self, state ):
+    ##     self.__dict__.update(state)
+    ##     self._init_observers()
 
     def get_title( self ):
         raise NotImplementedError(self.__class__)

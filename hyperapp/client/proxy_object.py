@@ -109,6 +109,7 @@ class RedirectResolveRequest(GetRequestBase):
         self.orig_request.redirect_resolved(self.orig_handle, handle, server)
 
 
+# todo: must support redirects, same as OpenRequest - get request may be issued for redirecting or having nested redirect ref        
 class GetRequest(GetRequestBase):
 
     def __init__( self, url, view ):
