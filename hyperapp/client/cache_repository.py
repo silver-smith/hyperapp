@@ -39,6 +39,7 @@ class CacheRepository(object):
             return f.read()
 
     def store_value( self, key, value, t ):
+        if value is None: return
         data = packet_coders.encode(CONTENTS_ENCODING, value, t)
         self.store_data(key, data)
 
