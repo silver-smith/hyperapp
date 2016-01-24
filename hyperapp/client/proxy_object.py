@@ -135,9 +135,10 @@ class ProxyObject(Object):
     @classmethod
     def produce_obj_by_objinfo( cls, objinfo, server=None ):
         assert tObject.isinstance(objinfo, tThisProxyObject) or tObject.isinstance(objinfo, tProxyObject), repr(objinfo)
-        if server is None:
-            assert tObject.isinstance(objinfo, tProxyObject), repr(objinfo)  # we need endpoint somehow
+        if tObject.isinstance(objinfo, tProxyObject):
             server = Server.produce(Endpoint.from_data(objinfo.endpoint))
+        else:
+            assert server is not None, repr(objinfo)  # we need endpoint somehow
         iface = iface_registry.resolve(objinfo.iface)
         object = cls.produce_obj(server, objinfo.path, iface)
         if tObject.isinstance(objinfo, tThisProxyObjectWithContents):  # is it a response?
@@ -165,6 +166,9 @@ class ProxyObject(Object):
         self.cache = cache_repository
         cached_commands = self.cache.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
         self.commands = map(Command.from_data, cached_commands or [])
+
+    def __repr__( self ):
+        return 'ProxyObject(%s, %s, %s)' % (self.server.endpoint.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
 
     def to_data( self ):
         return tProxyObject.instantiate(
