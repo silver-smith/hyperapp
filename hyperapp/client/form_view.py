@@ -1,6 +1,6 @@
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
-from ..common.interface import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
+from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
 from .util import uni2str, call_after
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry

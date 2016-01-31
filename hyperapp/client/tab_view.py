@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from ..common.interface import tInt, TList, Field, TRecord
+from ..common.htypes import tInt, TList, Field, TRecord
 from .util import DEBUG_FOCUS, call_after, key_match
 from .view_command import command
 from . import view

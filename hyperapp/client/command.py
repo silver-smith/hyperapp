@@ -1,5 +1,5 @@
 import weakref
-from ..common.interface import tCommand
+from ..common.htypes import tCommand
 from .util import make_action
 
 

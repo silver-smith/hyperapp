@@ -1,7 +1,7 @@
 import pickle
 from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
-from .interface import tEndpoint, tUrl
+from ..common.htypes import tEndpoint, tUrl
 
 
 class Endpoint(object):

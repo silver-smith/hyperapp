@@ -1,4 +1,5 @@
-from ..common.interface import Command, Column, tStringFieldHandle, tIntFieldHandle, FormField, FormHandle
+from ..common.htypes import Command, Column
+from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, FormField, FormHandle
 from ..common.interface.test_list import params_form_iface, test_list_iface
 from .util import path_part_to_str
 from .object import Object, ListObject

@@ -1,9 +1,16 @@
-from .iface_types import (
+from ..htypes import (
     tString,
     Field,
+    OpenCommand,
+    Interface,
+    register_iface,
+    stringColumnType,
+    intColumnType,
+    Column,
+    ElementCommand,
+    ElementOpenCommand,
+    ListInterface,
     )
-from .interface import OpenCommand, Interface, register_iface
-from .list import stringColumnType, intColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 
 
 module_list_iface = ListInterface(

@@ -1,4 +1,4 @@
-from ..common.interface import tStringFieldHandle, tIntFieldHandle
+from ..common.interface.form import tStringFieldHandle, tIntFieldHandle
 
 
 def stringFieldHandle( value=None ):

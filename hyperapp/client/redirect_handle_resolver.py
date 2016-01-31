@@ -1,7 +1,7 @@
 # server response data manipulation:
 #  collect returned redirect handles, replace redirect handles with resolved ones
 
-from ..common.interface import TOptional, tHandle, tRedirectHandle
+from ..common.htypes import TOptional, tHandle, tRedirectHandle
 from ..common.visitor import Visitor
 from ..common.mapper import Mapper
 

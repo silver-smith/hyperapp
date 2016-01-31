@@ -1,7 +1,7 @@
 from functools import total_ordering
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
-from ..common.interface import ListInterface
+from ..common.htypes import ListInterface
 from .command import ElementCommand
 from .object import ObjectObserver, Object
 

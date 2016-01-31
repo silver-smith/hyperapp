@@ -3,9 +3,10 @@ import traceback
 import time
 import select
 from Queue import Queue
-from ..common.interface import tServerPacket, ModuleDep, Module
+from ..common.htypes import tServerPacket
+from ..common.interface.code_repository import ModuleDep
 from ..common.packet import tAuxInfo, AuxInfo, Packet
-from ..common.interface import tClientPacket, iface_registry
+from ..common.htypes import tClientPacket, iface_registry
 from ..common.requirements_collector import RequirementsCollector
 from ..common.object_path_collector import ObjectPathCollector
 from ..common.visual_rep import pprint

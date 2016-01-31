@@ -1,6 +1,6 @@
 import weakref
 from PySide import QtCore, QtGui
-from ..common.interface import tCommand
+from ..common.htypes import tCommand
 from .util import make_action
 from .command import ObjectCommand
 from .view_command import WindowCommand

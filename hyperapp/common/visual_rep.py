@@ -2,7 +2,7 @@ import json
 from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route
 from .endpoint import Endpoint
-from .interface import (
+from .htypes import (
     TPrimitive,
     TString,
     TBinary,
@@ -19,9 +19,8 @@ from .interface import (
     tPath,
     tEndpoint,
     tCommand,
-    tModule,
-    tRequirement,
     )
+from .interface.code_repository import tModule, tRequirement
 
 
 class RepNode(object):

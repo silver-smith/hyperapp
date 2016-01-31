@@ -1,10 +1,15 @@
-from .iface_types import (
+from ..htypes import (
     tString,
     tInt,
     Field,
+    register_iface,
+    RequestCmd,
+    OpenCommand,
+    Interface,
+    intColumnType,
+    Column,
+    ListInterface,
     )
-from .interface import register_iface, RequestCmd, OpenCommand, Interface
-from .list import intColumnType, Column, ListInterface
 from .form import tStringFieldHandle, tIntFieldHandle, tFormHandle
 
 

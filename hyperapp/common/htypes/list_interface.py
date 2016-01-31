@@ -1,5 +1,5 @@
 from ..util import is_list_inst, dt2local_str
-from .iface_types import (
+from .htypes import (
     Type,
     tString,
     tInt,

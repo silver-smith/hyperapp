@@ -1,5 +1,6 @@
 import struct
-from .interface import tString, Field, TRecord, TList, tModule, tRequirement, tClientPacket, tServerPacket
+from .htypes import tString, Field, TRecord, TList, tClientPacket, tServerPacket
+from .interface.code_repository import tModule, tRequirement
 from .packet_coders import packet_coders
 
 

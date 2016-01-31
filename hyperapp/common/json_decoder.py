@@ -1,7 +1,7 @@
 import json
 import dateutil.parser
 from .method_dispatch import method_dispatch
-from .interface import (
+from .htypes import (
     TString,
     TInt,
     TBool,

@@ -1,5 +1,4 @@
-from .iface_types import Field
-from .interface import tHandle, tViewHandle
+from ..htypes import Field, tHandle, tViewHandle
 
 
 tSplitterHandle = tHandle.register('two_side_selector', base=tViewHandle, fields=[

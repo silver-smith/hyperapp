@@ -1,12 +1,13 @@
-from .iface_types import (
+from ..htypes import (
     tString,
     tInt,
     Field,
     TRecord,
     TList,
+    THierarchy,
+    tHandle,
+    tObjHandle,
     )
-from .hierarchy import THierarchy
-from .interface import tHandle, tObjHandle
 
 
 tFieldHandle = THierarchy('form_field')

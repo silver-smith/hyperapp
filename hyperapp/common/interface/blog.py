@@ -1,12 +1,20 @@
-from .iface_types import (
+from ..htypes import (
     tString,
     tInt,
     tDateTime,
     TOptional,
     Field,
+    RequestCmd,
+    OpenCommand,
+    Interface,
+    register_iface,
+    intColumnType,
+    dateTimeColumnType,
+    Column,
+    ElementCommand,
+    ElementOpenCommand,
+    ListInterface,
     )
-from .interface import RequestCmd, OpenCommand, Interface, register_iface
-from .list import intColumnType, dateTimeColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 from .article import article_iface
 
 

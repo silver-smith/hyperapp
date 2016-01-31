@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from ..common.interface import tSplitterHandle
+from ..common.interface.splitter import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
 from . import view
 from . import composite

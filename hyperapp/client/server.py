@@ -4,7 +4,7 @@ from ..common.util import is_list_inst
 from ..common.packet import Packet
 from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
-from ..common.interface import tClientPacket, Interface, iface_registry
+from ..common.htypes import tClientPacket, Interface, iface_registry
 from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry

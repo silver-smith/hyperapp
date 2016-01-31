@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from ..common.interface import tHandle
+from ..common.htypes import tHandle
 from .util import uni2str, key_match, key_match_any
 from .list_object import ListObserver, Slice, ListObject
 from .objimpl_registry import objimpl_registry

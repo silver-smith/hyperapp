@@ -1,4 +1,4 @@
-from .iface_types import (
+from ..htypes import (
     tString,
     tInt,
     TOptional,
@@ -6,8 +6,6 @@ from .iface_types import (
     tPath,
     Field,
     TRecord,
-    )
-from .interface import (
     tHandle,
     tViewHandle,
     tObject,
@@ -15,8 +13,12 @@ from .interface import (
     OpenCommand,
     Interface,
     register_iface,
+    intColumnType,
+    Column,
+    ElementCommand,
+    ElementOpenCommand,
+    ListInterface,
     )
-from .list import intColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 
 
 tObjSelectorHandle = tHandle.register('object_selector', base=tViewHandle, fields=[

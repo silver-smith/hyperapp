@@ -1,4 +1,4 @@
-from ..common.interface import tUpdate, tClientPacket, tClientNotification, tRequest, tServerNotification, tResponse
+from ..common.htypes import tUpdate, tClientPacket, tClientNotification, tRequest, tServerNotification, tResponse
 
 
 class RequestBase(object):

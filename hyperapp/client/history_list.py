@@ -1,5 +1,5 @@
 from ..common.util import is_list_inst
-from ..common.interface import intColumnType, Column, tHandle
+from ..common.htypes import intColumnType, Column, tHandle
 from .command import ElementCommand
 from .list_object import Element, Slice, ListObject
 

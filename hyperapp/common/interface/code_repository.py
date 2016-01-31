@@ -1,10 +1,12 @@
-from .iface_types import (
+from ..htypes import (
     tString,
     Field,
     TRecord,
     TList,
+    RequestCmd,
+    Interface,
+    register_iface,
     )
-from .interface import RequestCmd, Interface, register_iface
 
 
 tRequirement = TList(tString)  # [hierarchy id, class id]

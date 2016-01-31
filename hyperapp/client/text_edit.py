@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from ..common.interface import tObjHandle
+from ..common.htypes import tObjHandle
 from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry

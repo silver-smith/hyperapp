@@ -1,5 +1,5 @@
 from .visitor import Visitor
-from .interface import (
+from .htypes import (
     tObject,
     tThisProxyObject,
     tProxyObject,

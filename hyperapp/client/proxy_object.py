@@ -1,7 +1,7 @@
 import weakref
 from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
-from ..common.interface import (
+from ..common.htypes import (
     Interface,
     TList,
     Field,

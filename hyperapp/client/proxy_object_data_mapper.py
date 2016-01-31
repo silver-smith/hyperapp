@@ -1,7 +1,7 @@
 # server response data manipulation:
 #  create proxy objects using contents, replace tThisProxyObject (without endpoint) with tProxyObject (with endpoint)
 
-from ..common.interface import TOptional, tHandle, tObject, tThisProxyObject, tThisProxyObjectWithContents, tProxyObject, iface_registry
+from ..common.htypes import TOptional, tHandle, tObject, tThisProxyObject, tThisProxyObjectWithContents, tProxyObject, iface_registry
 from ..common.mapper import Mapper
 from ..common.visual_rep import pprint
 from .proxy_registry import ProxyRegistry, proxy_class_registry

@@ -1,5 +1,5 @@
 from ..util import is_list_inst
-from .iface_types import (
+from .htypes import (
     join_path,
     Type,
     tNone,

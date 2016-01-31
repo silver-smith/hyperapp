@@ -1,10 +1,16 @@
-from .iface_types import (
+from ..htypes import (
     tString,
     tInt,
     Field,
+    OpenCommand,
+    Interface,
+    register_iface,
+    intColumnType,
+    Column,
+    ElementCommand,
+    ElementOpenCommand,
+    ListInterface,
     )
-from .interface import OpenCommand, Interface, register_iface
-from .list import intColumnType, Column, ElementCommand, ElementOpenCommand, ListInterface
 
 
 file_iface = ListInterface('fs_file', columns=[

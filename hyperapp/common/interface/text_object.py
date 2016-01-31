@@ -1,5 +1,9 @@
-from .iface_types import tString, Field
-from .interface import tObject, tBaseObject
+from ..htypes import (
+    tString,
+    Field,
+    tObject,
+    tBaseObject,
+    )
 
 
 tTextObject = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])

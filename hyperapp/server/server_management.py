@@ -1,6 +1,6 @@
 # server management module: used to expose module commands in one list
 
-from ..common.interface import Command, Column
+from ..common.htypes import Command, Column
 from ..common.interface.server_management import server_management_iface
 from .object import SmallListObject
 from .module import Module

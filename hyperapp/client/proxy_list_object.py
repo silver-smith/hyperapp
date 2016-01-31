@@ -1,5 +1,5 @@
 import bisect
-from ..common.interface import TList
+from ..common.htypes import TList
 from .list_object import ListDiff, Element, Slice, ListObject
 from .proxy_object import ProxyObject
 from .proxy_registry import proxy_class_registry

@@ -1,7 +1,7 @@
 import weakref
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
-from ..common.interface import tInt, Field, TRecord, Interface
+from ..common.htypes import tInt, Field, TRecord, Interface
 #from ..common.request import Request
 from .util import DEBUG_FOCUS, call_after, make_action
 from .proxy_object import GetRequest

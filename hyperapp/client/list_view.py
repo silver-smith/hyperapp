@@ -1,7 +1,7 @@
 import sys
 import bisect
 from PySide import QtCore, QtGui
-from ..common.interface import Type, tHandle
+from ..common.htypes import Type, tHandle
 from .util import uni2str, key_match, key_match_any
 from .command import ElementCommand
 from .objimpl_registry import objimpl_registry

@@ -2,7 +2,7 @@ import os.path
 import cPickle as pickle
 from PySide import QtCore, QtGui
 from hyperapp.common.endpoint import Endpoint
-from ..common.interface import TList, get_iface, iface_registry
+from ..common.htypes import TList, get_iface, iface_registry
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .util import flatten
@@ -51,7 +51,7 @@ class Application(QtGui.QApplication, view.View):
 
     def add_modules( self, modules ):
         for module in modules:
-            print '-- loading module %r fpath=%r' % (module.id, module.fpath)
+            print '-- loading module %r package=%r fpath=%r' % (module.id, module.package, module.fpath)
             self._module_cache.add_module(module)
             load_client_module(module)
 

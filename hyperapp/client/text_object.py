@@ -1,4 +1,4 @@
-from ..common.interface import tString, tObject, Field, tBaseObject, tHandle
+from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle
 from .object import Object
 from .objimpl_registry import objimpl_registry
 

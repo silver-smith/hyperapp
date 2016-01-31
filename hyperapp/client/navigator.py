@@ -1,7 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
-from ..common.interface import tInt, tString, TList, Field, TRecord, tHandle, list_handle_type
+from ..common.htypes import tInt, tString, TList, Field, TRecord, tHandle, list_handle_type
 from .util import key_match, key_match_any
 from .view_registry import view_registry
 from .view_command import command

@@ -1,6 +1,6 @@
 # test for returning non-proxy object to client, text object
 
-from .. common.interface import ObjHandle
+from .. common.htypes import ObjHandle
 from .. common.interface.text_object import TextObject
 from .module import Module, ModuleCommand
 

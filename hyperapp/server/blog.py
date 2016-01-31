@@ -1,6 +1,6 @@
 from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
-from ..common.interface import Command, Column, DateTimeColumnType
+from ..common.htypes import Command, Column, DateTimeColumnType
 from ..common.interface.blog import blog_entry_iface, blog_iface
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str

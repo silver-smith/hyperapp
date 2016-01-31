@@ -1,6 +1,10 @@
-from .iface_types import tString
-from .interface import register_iface
-from .list import Column, ElementOpenCommand, ListInterface
+from ..htypes import (
+    tString,
+    register_iface,
+    Column,
+    ElementOpenCommand,
+    ListInterface,
+    )
 
 
 server_management_iface = ListInterface(

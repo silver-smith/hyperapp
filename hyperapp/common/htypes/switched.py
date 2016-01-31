@@ -1,7 +1,7 @@
 # record with some field is of variable type, switched by other field values
 
 from ..util import is_list_inst, is_tuple_inst
-from .iface_types import join_path, Type, Field, TRecord
+from .htypes import join_path, Type, Field, TRecord
 
 
 class TSwitched(Type):

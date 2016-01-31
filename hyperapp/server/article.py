@@ -1,6 +1,6 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
-from ..common.interface import Command, Column, ObjHandle, RedirectHandle
+from ..common.htypes import Command, Column, ObjHandle, RedirectHandle
 from ..common.interface.article import (
     ObjSelectorHandle,
     ObjSelectorUnwrapHandle,

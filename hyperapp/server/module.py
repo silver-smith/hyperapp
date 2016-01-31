@@ -1,4 +1,4 @@
-from ..common.interface import Command
+from ..common.htypes import Command
 from .util import Path
 
 

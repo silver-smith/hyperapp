@@ -1,6 +1,8 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
-from ..common.interface import Command, FormField, FormHandle, SplitterHandle
+from ..common.htypes import Command
+from ..common.interface.form import FormField, FormHandle
+from ..common.interface.splitter import SplitterHandle
 from ..common.interface.module_list import (
     module_list_iface,
     module_form_iface,

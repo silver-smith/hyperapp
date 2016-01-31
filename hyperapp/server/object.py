@@ -1,6 +1,6 @@
 from operator import attrgetter
 from ..common.util import is_list_inst, encode_path
-from ..common.interface import (
+from ..common.htypes import (
     tString,
     Field,
     ObjHandle,

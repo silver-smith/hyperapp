@@ -1,5 +1,5 @@
 from ..util import is_list_inst
-from .iface_types import join_path, Type, Field, TRecord
+from .htypes import join_path, Type, Field, TRecord
 
 
 REC_CLASS_ID_ATTR = '_class_id'

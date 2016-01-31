@@ -1,6 +1,6 @@
 # text object representing server text object
 
-from ..common.interface import tString
+from ..common.htypes import tString
 from .text_object import TextObject
 from .proxy_object import ProxyObject
 from .proxy_registry import proxy_class_registry

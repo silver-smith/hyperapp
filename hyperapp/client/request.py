@@ -1,4 +1,4 @@
-from ..common.interface import (
+from ..common.htypes import (
     tClientNotification,
     tRequest,
     tServerPacket,
