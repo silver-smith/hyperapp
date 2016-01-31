@@ -23,9 +23,9 @@ class ProxyObjectMapper(Mapper):
     def map_hierarchy_obj( self, tclass, value ):
         if not tclass.issubclass(tThisProxyObject):
             return value
-        print '======== received proxy object ========'
-        pprint(tObject, value)
-        print '=== =>=>=>============================='
+        ## print '======== received proxy object ========'
+        ## pprint(tObject, value)
+        ## print '=== =>=>=>============================='
         assert tObject.isinstance(value, tThisProxyObjectWithContents)
         iface = iface_registry.resolve(value.iface)
         cls = proxy_class_registry.resolve(value.objimpl_id)
@@ -33,6 +33,6 @@ class ProxyObjectMapper(Mapper):
         obj.set_contents(value.contents)
         resolved_obj = tProxyObject.instantiate(
             value.objimpl_id, value.iface, value.path, self.server.get_endpoint().to_data())
-        pprint(tObject, resolved_obj)
-        print '======================================='
+        ## pprint(tObject, resolved_obj)
+        ## print '======================================='
         return resolved_obj

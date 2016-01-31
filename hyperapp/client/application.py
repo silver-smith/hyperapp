@@ -127,7 +127,7 @@ class Application(QtGui.QApplication, view.View):
         print 'modules required for state: %s' % module_ids
         modules = self._module_cache.resolve_ids(module_ids)
         for module in modules:
-            print '-- module is stored to state: %r (satisfies %s)' % (module.id, module.satisfies)
+            print '-- module is stored to state: %r %r (satisfies %s)' % (module.id, module.fpath, module.satisfies)
         handles_data = [h.to_data() for h in handles]
         handles_cdr = packet_coders.encode('cdr', handles_data, self.handles_type)
         state = (module_ids, modules, handles_cdr)
@@ -190,6 +190,7 @@ class Application(QtGui.QApplication, view.View):
         state = self.load_state_file()
         if state:
             module_ids, modules, handles_cdr = state
+            print '-- modules loaded from state: ids=%r, modules=%r)' % (module_ids, [module.fpath for module in modules])
             self._code_repository.get_modules_and_continue(
                 module_ids, lambda modules: self._add_modules_and_open_state(handles_cdr, modules))
         else:
