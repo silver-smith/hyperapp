@@ -114,8 +114,8 @@ class EncryptedTransport(Transport):
         host, port_str = route[:2]
         port = int(port_str)
         connection = self._produce_connection(server, host, port)
-        epacket = EncryptedPacket.encrypt(server.get_endpoint.public_key, packet.encode())
-        connection.send_data(epacket.encode())
+        encrypted_packet = EncryptedPacket.encrypt(server.get_endpoint.public_key, packet.encode())
+        connection.send_data(encrypted_packet.encode())
 
     def _produce_connection( self, server, host, port ):
         key = (server.endpoint.public_key, host, port)
