@@ -25,10 +25,10 @@ class TcpTransport(Transport):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
-        connection = self.produce_connection(server, host, port)
+        connection = self._produce_connection(server, host, port)
         connection.send_data(packet.encode())
 
-    def produce_connection( self, server, host, port ):
+    def _produce_connection( self, server, host, port ):
         key = (server.endpoint.public_key, host, port)
         connection = self.connections.get(key)
         if not connection:

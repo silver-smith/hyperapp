@@ -2,6 +2,7 @@ from functools import total_ordering
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 
 @total_ordering
@@ -41,6 +42,16 @@ class PublicKey(object):
     def to_pem( self ):
         return self.public_pem
 
+    def encrypt( self, plain_text ):
+        hash_alg = hashes.SHA1()
+        cipher_text = self.public_key.encrypt(
+            plain_text,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hash_alg),
+                algorithm=hash_alg,
+                label=None))
+        return cipher_text
+
     def __eq__( self, other ):
         return isinstance(other, PublicKey) and self.public_pem == other.public_pem
 
@@ -65,3 +76,13 @@ class Identity(object):
 
     def get_public_key( self ):
         return PublicKey(self.algorithm, self.private_key.public_key())
+
+    def decrypt( self, cipher_text ):
+        hash_alg = hashes.SHA1()
+        plain_text = self.private_key.decrypt(
+            cipher_text,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hash_alg),
+                algorithm=hash_alg,
+                label=None))
+        return plain_text
