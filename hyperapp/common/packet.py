@@ -51,16 +51,15 @@ class Packet(object):
         header = Header.decode(data[:hsize])
         aux_ofs = hsize + header.encoding_size
         contents_ofs = aux_ofs + header.aux_size
-        contents_end = contents_ofs + header.contents_size
+        packet_size = contents_ofs + header.contents_size
         encoding = data[hsize:aux_ofs]
         aux_data = data[aux_ofs:contents_ofs]
-        contents = data[contents_ofs:contents_end]
-        remainder = data[contents_end:]
+        contents = data[contents_ofs:packet_size]
         if aux_data:
             aux = packet_coders.decode(encoding, aux_data, tAuxInfo)
         else:
             aux = None
-        return (cls(encoding, aux, contents), remainder)
+        return (cls(encoding, aux, contents), packet_size)
 
     @classmethod
     def from_contents( cls, encoding, contents, t, aux=None ):

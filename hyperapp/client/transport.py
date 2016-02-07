@@ -2,7 +2,7 @@
 
 class Transport(object):
 
-    def send_packet( self, server_public_key, route, packet ):
+    def send_packet( self, server, route, packet ):
         raise NotImplementedError(self.__class__)
 
 

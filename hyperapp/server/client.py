@@ -56,7 +56,8 @@ class Connection(object):
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
-        packet, self.recv_buf = Packet.decode(self.recv_buf)
+        packet, packet_size = Packet.decode(self.recv_buf)
+        self.recv_buf = self.recv_buf[packet_size:]
         ## print 'received:'
         ## pprint.pprint(json_data)
         return packet
