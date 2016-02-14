@@ -89,7 +89,7 @@ class TcpClient(object):
         try:
             while not self.stop_flag:
                 packet_data = self.conn.receive(NOTIFICATION_DELAY_TIME)
-                if not packet_data:
+                if not packet_data:  # receive timed out
                     if not self.updates_queue.empty():
                         self._send_notification()
                     continue
