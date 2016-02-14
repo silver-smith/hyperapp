@@ -29,7 +29,7 @@ class TcpServer(object):
         return self.identity.get_public_key()
 
     def get_endpoint( self ):
-        route = ['tcp', self.host, str(self.port)]
+        route = ['tcp.cdr', self.host, str(self.port)]
         return Endpoint(self.identity.get_public_key(), [route])
 
     def run( self ):

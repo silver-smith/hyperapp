@@ -2,12 +2,44 @@ import os
 import struct
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
+from ..common.htypes import tString, tBinary, Field, TRecord
+from ..common.transport_packet import tTransportPacket
 from .transport import Transport, transports
 from .tcp_connection import TcpConnection
 
 
 class HashMismatchError(Exception): pass
 
+
+TRANSPORT_ID = 'encrypted_tcp'
+
+
+class tEncryptedPacket = TRecord([
+    Field('encrypted_session_key', tBinary),
+    Field('cbc_iv', tBinary),
+    Field('encrypted_contents', tBinary),
+    Field('hash', tBinary),
+    ])
+
+
+def encrypt( public_key, plain_contents ):
+    # generate session key and CBC initialization vector
+    session_key = os.urandom(32)
+    cbc_iv = os.urandom(16)
+    # encrypt session key
+    encrypted_session_key = public_key.encrypt(session_key)
+    # encrypt contents
+    symmetric_cipher = Cipher(algorithms.AES(session_key), modes.CBC(cbc_iv), backend=default_backend())
+    encryptor = symmetric_cipher.encryptor()
+    encrypted_contents = encryptor.update(plain_contents) + encryptor.finalize()
+    # make hash
+    digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
+    digest.update(encrypted_contents)
+    hash = digest.finalize()
+    # done
+    return tEncryptedPacket.instantiate(encrypted_session_key, cbc_iv, encrypted_contents, hash)
+    
+    
 
 class Header(object):
 
@@ -114,8 +146,9 @@ class EncryptedTransport(Transport):
         host, port_str = route[:2]
         port = int(port_str)
         connection = self._produce_connection(server, host, port)
-        encrypted_packet = EncryptedPacket.encrypt(server.get_endpoint.public_key, packet.encode())
-        connection.send_data(encrypted_packet.encode())
+        rec = encrypt(server.get_endpoint.public_key, packet.encode())
+        transport_packet = tTransportPacket.instantiate(transport_id=TRANPORT_ID, data=rec.encode())
+        connection.send_data(transport_packet.encode())
 
     def _produce_connection( self, server, host, port ):
         key = (server.endpoint.public_key, host, port)
@@ -126,4 +159,4 @@ class EncryptedTransport(Transport):
         return connection
 
 
-transports.register('encrypted_tcp', EncryptedTransport())
+transports.register(TRANSPORT_ID, EncryptedTransport())

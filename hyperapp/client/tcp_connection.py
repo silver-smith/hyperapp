@@ -1,4 +1,5 @@
 from PySide import QtCore, QtNetwork
+from ..common.tcp_packet import encode_tcp_packet
 from .util import call_in_future
 
 
@@ -72,8 +73,10 @@ class TcpConnection(object):
             self.recv_buf = self.recv_buf[consumed:]
             self.trace('consumed %d bytes, remained %d' % (consumed, len(self.recv_buf)))
 
-    def send_data( self, data ):
+    def send_data( self, contents ):
+        data = encode_tcp_packet(contents)
         self.trace('sending data, old=%d, write=%d, new=%d' % (len(self.send_buf), len(data), len(self.send_buf) + len(data)))
+        print '***', repr(data)
         if self.connected and not self.send_buf:
             self.socket.write(data)
         self.send_buf += data  # may be sent partially, will send remainder on bytesWritten signal

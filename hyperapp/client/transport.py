@@ -19,12 +19,17 @@ class TransportRegistry(object):
     def resolve( self, id ):
         return self._id2transport[id]
 
-    def send_packet( self, server, endpoint, packet ):
-        for route in endpoint.routes:
+    def send_packet( self, server, payload, payload_type, aux_info=None ):
+        for route in server.get_endpoint().routes:
             transport_id = route[0]
             transport = self._id2transport.get(transport_id)
-            if transport and transport.send_packet(server, route[1:], packet):
-                break
+            if not transport:
+                print 'Warning: unknown transport: %r' % transport_id
+                continue
+            if transport.send_packet(server, route[1:], payload, payload_type, aux_info):
+                return
+        raise RuntimeError('Unable to send packet to %s - no reachable transports'
+                           % server.get_endpoint().public_key.get_short_id_hex())
 
 
 transports = TransportRegistry()

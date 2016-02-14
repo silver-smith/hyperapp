@@ -1,7 +1,6 @@
 import uuid
 from PySide import QtCore
 from ..common.util import is_list_inst
-from ..common.packet import Packet
 from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
 from ..common.htypes import tClientPacket, Interface, iface_registry
@@ -9,10 +8,6 @@ from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
 from .transport import transports
-
-
-PACKET_ENCODING = 'cdr'
-
 
 
 class Server(object):
@@ -62,11 +57,9 @@ class Server(object):
         self._send(request.encode(request_id))
 
     def _send( self, request_rec ):
-        encoding = PACKET_ENCODING
-        print '%s packet to %s' % (encoding, self.endpoint)
+        print 'packet to %s' % self.endpoint
         pprint(tClientPacket, request_rec)
-        packet = Packet.from_contents(encoding, request_rec, tClientPacket)
-        transports.send_packet(self, self.endpoint, packet)
+        transports.send_packet(self, request_rec, tClientPacket)
 
     def process_packet( self, packet ):
         print '%r from %s' % (packet, self.endpoint)
