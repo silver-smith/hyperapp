@@ -12,7 +12,7 @@ AuxInfo = tAuxInfo.instantiate
 
 tPacket = TRecord([
     Field('aux_info', tAuxInfo),
-    Field('data', tBinary),
+    Field('payload', tBinary),
     ])
 
 Packet = tPacket.instantiate

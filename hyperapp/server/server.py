@@ -6,7 +6,7 @@ import select
 from ..common.identity import Identity
 from ..common.endpoint import Endpoint, Url
 from .module import Module
-from .client import Client
+from .tcp_client import TcpClient
           
 
 class TcpServer(object):
@@ -47,7 +47,7 @@ class TcpServer(object):
             select.select([self.socket], [], [self.socket])
             cln_socket, cln_addr = self.socket.accept()
             print 'accepted connection from %s:%d' % cln_addr
-            client = Client(self, cln_socket, cln_addr, self.test_delay_sec, on_close=self.on_client_closed)
+            client = TcpClient(self, cln_socket, cln_addr, self.test_delay_sec, on_close=self.on_client_closed)
             thread = threading.Thread(target=client.serve)
             thread.start()
             self.client2thread[client] = thread

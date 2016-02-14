@@ -5,7 +5,9 @@ import select
 from Queue import Queue
 from ..common.htypes import tServerPacket
 from ..common.interface.code_repository import ModuleDep
-from ..common.packet import tAuxInfo, AuxInfo, Packet
+from ..common.packet import tPacket
+from ..common.transport_packet import decode_transport_packet
+from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet
 from ..common.htypes import tClientPacket, iface_registry
 from ..common.requirements_collector import RequirementsCollector
 from ..common.object_path_collector import ObjectPathCollector
@@ -16,6 +18,9 @@ from .object import subscription
 from . import module
 from .code_repository import code_repository
 
+# todo: remove
+from ..common.packet_coders import packet_coders
+
 
 PACKET_ENCODING = 'cdr'
 NOTIFICATION_DELAY_TIME = 1  # sec
@@ -25,7 +30,7 @@ RECV_SIZE = 4096
 class Error(Exception): pass
 
 
-class Connection(object):
+class TcpConnection(object):
 
     def __init__( self, socket ):
         self.socket = socket
@@ -46,7 +51,7 @@ class Connection(object):
 
     def receive( self, timeout ):
         while True:
-            if Packet.has_full_packet(self.recv_buf): break
+            if has_full_tcp_packet(self.recv_buf): break
             ## print '  receiving...'
             rd, wr, xc = select.select([self.socket], [], [self.socket], timeout)
             if not rd and not xc:
@@ -56,18 +61,18 @@ class Connection(object):
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
-        packet, packet_size = Packet.decode(self.recv_buf)
+        packet_data, packet_size = decode_tcp_packet(self.recv_buf)
         self.recv_buf = self.recv_buf[packet_size:]
         ## print 'received:'
         ## pprint.pprint(json_data)
-        return packet
+        return packet_data
 
 
-class Client(object):
+class TcpClient(object):
 
     def __init__( self, server, socket, addr, test_delay_sec, on_close ):
         self.server = server
-        self.conn = Connection(socket)
+        self.conn = TcpConnection(socket)
         self.addr = addr
         self.test_delay_sec = test_delay_sec  # float
         self.on_close = on_close
@@ -83,12 +88,12 @@ class Client(object):
     def serve( self ):
         try:
             while not self.stop_flag:
-                packet = self.conn.receive(NOTIFICATION_DELAY_TIME)
-                if not packet:
+                packet_data = self.conn.receive(NOTIFICATION_DELAY_TIME)
+                if not packet_data:
                     if not self.updates_queue.empty():
                         self._send_notification()
                     continue
-                response = self._process_packet(packet)
+                response = self._process_packet(packet_data)
                 if response is not None:
                     self._wrap_and_send(packet.encoding, response.encode())
                 else:
@@ -116,9 +121,11 @@ class Client(object):
             requirements=requirements,
             modules=modules)
 
-    def _process_packet( self, packet ):
-        request_rec = packet.decode_client_packet()
-        print '%r from %s:%d:' % (packet, self.addr[0], self.addr[1])
+    def _process_packet( self, data ):
+        transport_packet = decode_transport_packet(data)
+        print '%r from %s:%d:' % (transport_packet.transport_id, self.addr[0], self.addr[1])
+        packet = packet_coders.decode('cdr', transport_packet.data, tPacket)
+        request_rec = packet_coders.decode('cdr', packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
         request = RequestBase.from_request_rec(self.server, self, iface_registry, request_rec)
         path = request.path
