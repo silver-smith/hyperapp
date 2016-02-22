@@ -2,9 +2,11 @@
 
 import argparse
 from hyperapp.common.identity import Identity
-from hyperapp.server.server import TcpServer
+from hyperapp.server.server import Server
+from hyperapp.server.tcp_server import TcpServer
 
 # self-registering modules:
+import hyperapp.server.tcp_transport
 import hyperapp.server.ponyorm_module
 import hyperapp.server.fs
 import hyperapp.server.article
@@ -35,9 +37,10 @@ def main():
 
     identity = Identity.load_from_file(args.identity_fpath)
     host, port = parse_addr(args.addr)
-    server = TcpServer(identity, host, port, args.test_delay)
-    server.get_endpoint().save_to_file(args.endpoint_fpath)
-    server.run()
+    server = Server(args.test_delay)
+    tcp_server = TcpServer(server, identity, host, port)
+    tcp_server.get_endpoint().save_to_file(args.endpoint_fpath)
+    tcp_server.run()
 
 
 main()

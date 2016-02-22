@@ -1,79 +1,78 @@
-import sys
 import time
-import threading
-import socket
-import select
-from ..common.identity import Identity
-from ..common.endpoint import Endpoint, Url
-from .module import Module
-from .tcp_client import TcpClient
-          
+from Queue import Queue
+from ..common.htypes import tServerPacket
+from ..common.packet import AuxInfo
+from ..common.object_path_collector import ObjectPathCollector
+from ..common.visual_rep import pprint
+from ..common.requirements_collector import RequirementsCollector
+from .request import RequestBase, Request, ServerNotification, Response
+from .object import subscription
+from .code_repository import code_repository
+from . import module
 
-class TcpServer(object):
 
-    def __init__( self, identity, host, port, test_delay_sec ):
-        assert isinstance(identity, Identity), repr(identity)
-        self.identity = identity
-        self.host = host
-        self.port = port
-        self.test_delay_sec = test_delay_sec
-        self.client2thread = {}  # client -> thread
-        self.finished_threads = []
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind((self.host, self.port))
-        self.socket.listen(5)
-        print 'listening on port %s:%d' % (self.host, self.port)
+class Server(object):
 
-    def get_public_key( self ):
-        return self.identity.get_public_key()
+    def __init__( self, test_delay_sec ):
+        self.test_delay_sec = test_delay_sec  # float
+        self.updates_queue = Queue()  # Update queue
 
-    def get_endpoint( self ):
-        route = ['tcp.cdr', self.host, str(self.port)]
-        return Endpoint(self.identity.get_public_key(), [route])
+    def process_request( self, request ):
+        assert isinstance(request, RequestBase), repr(request)
+        path = request.path
+        object = self._resolve(path)
+        print 'Object:', object
+        assert object, repr(path)  # 404: Path not found
+        if self.test_delay_sec:
+            print 'Test delay for %s sec...' % self.test_delay_sec
+            time.sleep(self.test_delay_sec)
+        response = object.process_request(request)
+        response = self._prepare_response(object.__class__, request, response)
+        if response is None:
+            return None
+        response_data = response.to_data()
+        self._subscribe_objects(response_data)
+        aux_info = self._prepare_aux_info(response_data)
+        return (aux_info, response_data)
 
-    def run( self ):
-        Module.init_phases()
-        try:
-            self.accept_loop()
-        except KeyboardInterrupt:
-            print
-            print 'Stopping...'
-            self.stop()
-        print 'Stopped'
+    def _resolve( self, path ):
+        return module.Module.run_resolver(path)
 
-    def accept_loop( self ):
-        while True:
-            select.select([self.socket], [], [self.socket])
-            cln_socket, cln_addr = self.socket.accept()
-            print 'accepted connection from %s:%d' % cln_addr
-            client = TcpClient(self, cln_socket, cln_addr, self.test_delay_sec, on_close=self.on_client_closed)
-            thread = threading.Thread(target=client.serve)
-            thread.start()
-            self.client2thread[client] = thread
-            self.join_finished_threads()
+    def _subscribe_objects( self, response_data ):
+        collector = ObjectPathCollector()
+        object_paths = collector.collect(tServerPacket, response_data)
+        for path in object_paths:
+            subscription.add(path, self)
 
-    def stop( self ):
-        for client in self.client2thread.keys():
-            client.stop()
-        while self.client2thread:
-            time.sleep(0.1)  # hacky
-        self.join_finished_threads()
+    def _prepare_response( self, obj_class, request, response ):
+        if response is None and isinstance(request, Request):
+            response = request.make_response()  # client need a response to cleanup waiting response handler
+        if response is None and not self.updates_queue.empty():
+            response = ServerNotification()
+        while not self.updates_queue.empty():
+            response.add_update(self.updates_queue.get())
+        assert response is None or isinstance(response, Response), \
+          'Server commands must return a response, but %s.%s command returned %r' % (obj_class.__name__, request.command_id, response)
+        return response
 
-    def join_finished_threads( self ):
-        for thread in self.finished_threads:
-            thread.join()
-        self.finished_threads = []
+    def _send_notification( self ):
+        notification = ServerNotification()
+        while not self.updates_queue.empty():
+            notification.add_update(self.updates_queue.get())
+        self._wrap_and_send(PACKET_ENCODING, notification.encode())
+    
+    def _wrap_and_send( self, encoding, response_or_notification ):
+        aux = self._prepare_aux_info(response_or_notification)
+        packet = Packet.from_contents(encoding, response_or_notification, tServerPacket, aux)
+        print '%r to %s:%d:' % (packet, self.addr[0], self.addr[1])
+        pprint(tAuxInfo, aux)
+        pprint(tServerPacket, response_or_notification)
+        self.conn.send(packet)
 
-    # called from client thread
-    def on_client_closed( self, client ):
-        self.finished_threads.append(self.client2thread[client])
-        del self.client2thread[client]
-        print 'client %s:%d is gone' % client.addr
-
-    def is_mine_url( self, url ):
-        assert isinstance(url, Url), repr(url)
-        return url.endpoint.public_key == self.identity.get_public_key()
-
-    def make_url( self, path ):
-        return Url(self.get_endpoint(), path)
+    def _prepare_aux_info( self, response_or_notification ):
+        requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
+        modules = code_repository.get_required_modules(requirements)
+        modules = []  # force separate request to code repository
+        return AuxInfo(
+            requirements=requirements,
+            modules=modules)

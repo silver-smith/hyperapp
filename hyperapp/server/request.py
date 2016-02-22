@@ -4,7 +4,7 @@ from ..common.htypes import tUpdate, tClientPacket, tClientNotification, tReques
 class RequestBase(object):
 
     @classmethod
-    def from_request_rec( cls, me, peer, iface_registry, rec ):
+    def from_data( cls, me, peer, iface_registry, rec ):
         tClientPacket.validate('<ClientPacket>', rec)
         iface = iface_registry.resolve(rec.iface)
         if tClientPacket.isinstance(rec, tRequest):
@@ -65,7 +65,7 @@ class ResponseBase(object):
 
 class ServerNotification(ResponseBase):
 
-    def encode( self ):
+    def to_data( self ):
         return tServerNotification.instantiate(self.updates)
 
 
@@ -79,5 +79,5 @@ class Response(ResponseBase):
         self.request_id = request_id
         self.result = result
 
-    def encode( self ):
+    def to_data( self ):
         return tResponse.instantiate(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
