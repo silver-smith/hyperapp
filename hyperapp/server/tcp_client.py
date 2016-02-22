@@ -4,7 +4,7 @@ import time
 import select
 from ..common.interface.code_repository import ModuleDep
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
-from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet
+from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from .transport import transport_registry
 
 
@@ -25,7 +25,8 @@ class TcpConnection(object):
     def close( self ):
         self.socket.close()
 
-    def send( self, data ):
+    def send( self, contents ):
+        data = encode_tcp_packet(contents)
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])

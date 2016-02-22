@@ -1,27 +1,13 @@
-from ..common.packet import Packet
-from ..common.transport_packet import encode_transport_packet
-from ..common.packet_coders import packet_coders
 from ..common.packet import tAuxInfo, AuxInfo, tPacket, Packet
-from .transport import Transport, transports
+from ..common.transport_packet import encode_transport_packet, decode_transport_packet
+from ..common.visual_rep import pprint
+from ..common.packet_coders import packet_coders
+from .transport import Transport, transport_registry
 from .tcp_connection import TcpConnection
 
 
 CDR_TRANSPORT_ID = 'tcp.cdr'
 JSON_TRANSPORT_ID = 'tcp.json'
-
-
-class DataConsumer(object):
-
-    def __init__( self, server ):
-        self.server = server
-
-    def __call__( self, data ):
-        if not Packet.has_full_packet(data):
-            return None
-        packet, packet_size = Packet.decode(data)
-        print 'received %s packet' % packet.encoding
-        self.server.process_packet(packet)
-        return packet_size
 
 
 class TcpTransport(Transport):
@@ -33,7 +19,7 @@ class TcpTransport(Transport):
         self.encoding = encoding
 
     def register( self ):
-        transports.register(self.transport_id, self)
+        transport_registry.register(self.transport_id, self)
 
     def send_packet( self, server, route, payload, payload_type, aux_info ):
         assert len(route) >= 2, repr(route)  # host and port are expected
@@ -43,6 +29,11 @@ class TcpTransport(Transport):
         packet = self._make_packet(payload, payload_type, aux_info)
         connection.send_data(packet)
         return True
+
+    def process_packet( self, data ):
+        packet = packet_coders.decode(self.encoding, data, tPacket)
+        pprint(tPacket, packet)
+        assert 0  # todo
 
     def _make_packet( self, payload, payload_type, aux_info ):
         if aux_info is None:
@@ -56,7 +47,7 @@ class TcpTransport(Transport):
         key = (server.endpoint.public_key, host, port)
         connection = self.connections.get(key)
         if not connection:
-            connection = TcpConnection(host, port, DataConsumer(server))
+            connection = TcpConnection(host, port)
             self.connections[key] = connection
         return connection
 

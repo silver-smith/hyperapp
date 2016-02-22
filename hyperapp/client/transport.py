@@ -1,3 +1,4 @@
+from ..common.transport_packet import tTransportPacket
 
 
 class Transport(object):
@@ -31,5 +32,10 @@ class TransportRegistry(object):
         raise RuntimeError('Unable to send packet to %s - no reachable transports'
                            % server.get_endpoint().public_key.get_short_id_hex())
 
+    def process_packet( self, packet ):
+        tTransportPacket.validate('<TransportPacket>', packet)
+        transport = self.resolve(packet.transport_id)
+        transport.process_packet(packet.data)
+        
 
-transports = TransportRegistry()
+transport_registry = TransportRegistry()

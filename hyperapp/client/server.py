@@ -7,7 +7,7 @@ from ..common.htypes import tClientPacket, Interface, iface_registry
 from .request import ClientNotification, Request, ResponseBase, Response
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
-from .transport import transports
+from .transport import transport_registry
 
 
 class Server(object):
@@ -59,7 +59,7 @@ class Server(object):
     def _send( self, request_rec ):
         print 'packet to %s' % self.endpoint
         pprint(tClientPacket, request_rec)
-        transports.send_packet(self, request_rec, tClientPacket)
+        transport_registry.send_packet(self, request_rec, tClientPacket)
 
     def process_packet( self, packet ):
         print '%r from %s' % (packet, self.endpoint)

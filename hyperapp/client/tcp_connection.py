@@ -1,6 +1,8 @@
 from PySide import QtCore, QtNetwork
-from ..common.tcp_packet import encode_tcp_packet
+from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
+from ..common.transport_packet import decode_transport_packet
 from .util import call_in_future
+from .transport import transport_registry
 
 
 RECONNECT_INTERVAL_MS = 2000
@@ -8,8 +10,7 @@ RECONNECT_INTERVAL_MS = 2000
 
 class TcpConnection(object):
 
-    def __init__( self, host, port, data_consumer ):
-        self.data_consumer = data_consumer
+    def __init__( self, host, port ):
         self.host = host
         self.port = port
         self.socket = None
@@ -66,10 +67,12 @@ class TcpConnection(object):
         data = str(self.socket.readAll())
         self.trace('%d bytes is received' % len(data))
         self.recv_buf += data
-        while True:
-            consumed = self.data_consumer(self.recv_buf)
-            if not consumed: break
-            assert consumed <= len(self.recv_buf), repr(consumed)
+        while self.recv_buf:
+            if not has_full_tcp_packet(self.recv_buf): break
+            packet_data, packet_size = decode_tcp_packet(self.recv_buf)
+            transport_packet = decode_transport_packet(packet_data)
+            transport_registry.process_packet(transport_packet)
+            assert packet_size <= len(self.recv_buf), repr(packet_size)
             self.recv_buf = self.recv_buf[consumed:]
             self.trace('consumed %d bytes, remained %d' % (consumed, len(self.recv_buf)))
 
