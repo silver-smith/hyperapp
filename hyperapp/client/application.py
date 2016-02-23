@@ -18,9 +18,9 @@ from . import text_view
 from . import navigator
 from . import window
 from .objimpl_registry import objimpl_registry
-from .view_registry import view_registry
 from .code_repository import CodeRepositoryProxy
-from .module_loader import ModuleCache, load_client_module
+from .module_manager import ModuleManager
+from .response_manager import ResponseManager
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -42,44 +42,17 @@ class Application(QtGui.QApplication, view.View):
 
     def __init__( self, server_endpoint, sys_argv ):
         QtGui.QApplication.__init__(self, sys_argv)
+        self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
-        self._module_cache = ModuleCache()
+        self._module_mgr = ModuleManager()
         self.server = Server.produce(server_endpoint)
         self._code_repository = CodeRepositoryProxy(self.server)
+        self._response_mgr = ResponseManager(self._module_mgr, self._code_repository)
         self._windows = []
 
-
-    def add_modules( self, modules ):
-        for module in modules:
-            print '-- loading module %r package=%r fpath=%r' % (module.id, module.package, module.fpath)
-            self._module_cache.add_module(module)
-            load_client_module(module)
-
-    def has_unfulfilled_requirements( self, requirements ):
-        unfilfilled_requirements = filter(self._is_unfulfilled_requirement, requirements)
-        print '-- requirements:', requirements, ', unfulfilled:', unfilfilled_requirements
-        return unfilfilled_requirements != []
-
-    def request_required_modules_and_reprocess_packet( self, server, packet ):
-        unfilfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux.requirements)
-        assert unfilfilled_requirements
-        self._code_repository.get_required_modules_and_continue(
-            unfilfilled_requirements, lambda modules: self._add_modules_and_reprocess_packet(server, packet, modules))
-
-    def _add_modules_and_reprocess_packet( self, server, packet, modules ):
-        self.add_modules(modules)
-        server.reprocess_packet(packet)
-
-    def _is_unfulfilled_requirement( self, requirement ):
-        registry, key = requirement
-        if registry == 'object':
-            return not objimpl_registry.is_registered(key)
-        if registry == 'handle':
-            return not view_registry.is_view_registered(key)
-        if registry == 'interface':
-            return not iface_registry.is_registered(key)
-        assert False, repr(registry)  # Unknown registry
-
+    @property
+    def response_mgr( self ):
+        return self._response_mgr
 
     def get_windows_handles( self ):
         return [view.handle() for view in self._windows]
@@ -125,7 +98,7 @@ class Application(QtGui.QApplication, view.View):
     def save_state( self, handles ):
         module_ids = list(flatten(handle.get_module_ids() for handle in handles))
         print 'modules required for state: %s' % module_ids
-        modules = self._module_cache.resolve_ids(module_ids)
+        modules = self._module_mgr.resolve_ids(module_ids)
         for module in modules:
             print '-- module is stored to state: %r %r (satisfies %s)' % (module.id, module.fpath, module.satisfies)
         handles_data = [h.to_data() for h in handles]
@@ -140,9 +113,9 @@ class Application(QtGui.QApplication, view.View):
     ##         return state
     ##     module_ids, modules, pickled_handles = state
     ##     for module in modules:
-    ##         self._module_cache.add_module(module)
+    ##         self._module_mgr.add_module(module)
     ##         print '-- module is loaded from state: %r (satisfies %s)' % (module.id, module.satisfies)
-    ##     for module in self._module_cache.resolve_ids(module_ids):
+    ##     for module in self._module_mgr.resolve_ids(module_ids):
     ##         print 'loading cached module required for state: %r' % module.id
     ##         load_client_module(module)
     ##     return pickler.loads(pickled_handles)

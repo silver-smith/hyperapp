@@ -51,9 +51,9 @@ class Server(object):
     def execute_request( self, request ):
         assert isinstance(request, Request), repr(request)
         request_id = str(uuid.uuid4())
-        assert request_id not in self.pending_requests, repr(request_id)
         print 'execute_request', request.command_id, request_id
-        self.pending_requests[request_id] = request
+        app = QtCore.QCoreApplication.instance()
+        app.response_mgr.register_request(request_id, request)
         self._send(request.encode(request_id))
 
     def _send( self, request_rec ):

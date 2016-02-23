@@ -23,11 +23,11 @@ class ProxyClassRegistry(object):
 
 # all proxy objects are registered in this class
 # in particular, to avoid multiple proxy objects with the same url
-# also used to distribute received updates (by Server class)`
+# also used to distribute received updates (by Server class)
 class ProxyRegistry(object):
 
     def __init__( self ):
-        self.instances = weakref.WeakValueDictionary()   # (server locator, path str) -> ProxyObject
+        self.instances = weakref.WeakValueDictionary()   # (server id, path str) -> ProxyObject
 
     def register( self, server, path, object ):
         key = self._make_key(server, path)

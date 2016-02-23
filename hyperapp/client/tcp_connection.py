@@ -1,4 +1,5 @@
 from PySide import QtCore, QtNetwork
+from ..common.identity import PublicKey
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from ..common.transport_packet import decode_transport_packet
 from .util import call_in_future
@@ -10,7 +11,9 @@ RECONNECT_INTERVAL_MS = 2000
 
 class TcpConnection(object):
 
-    def __init__( self, host, port ):
+    def __init__( self, server_public_key, host, port ):
+        assert isinstance(server_public_key, PublicKey), repr(server_public_key)
+        self.server_public_key = server_public_key
         self.host = host
         self.port = port
         self.socket = None
@@ -71,7 +74,7 @@ class TcpConnection(object):
             if not has_full_tcp_packet(self.recv_buf): break
             packet_data, packet_size = decode_tcp_packet(self.recv_buf)
             transport_packet = decode_transport_packet(packet_data)
-            transport_registry.process_packet(transport_packet)
+            transport_registry.process_packet(self.server_public_key, transport_packet)
             assert packet_size <= len(self.recv_buf), repr(packet_size)
             self.recv_buf = self.recv_buf[consumed:]
             self.trace('consumed %d bytes, remained %d' % (consumed, len(self.recv_buf)))
@@ -79,7 +82,6 @@ class TcpConnection(object):
     def send_data( self, contents ):
         data = encode_tcp_packet(contents)
         self.trace('sending data, old=%d, write=%d, new=%d' % (len(self.send_buf), len(data), len(self.send_buf) + len(data)))
-        print '***', repr(data)
         if self.connected and not self.send_buf:
             self.socket.write(data)
         self.send_buf += data  # may be sent partially, will send remainder on bytesWritten signal

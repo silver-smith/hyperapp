@@ -1,6 +1,6 @@
+from PySide import QtCore
 from ..common.packet import tAuxInfo, AuxInfo, tPacket, Packet
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
-from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .transport import Transport, transport_registry
 from .tcp_connection import TcpConnection
@@ -30,10 +30,10 @@ class TcpTransport(Transport):
         connection.send_data(packet)
         return True
 
-    def process_packet( self, data ):
+    def process_packet( self, server_public_key, data ):
         packet = packet_coders.decode(self.encoding, data, tPacket)
-        pprint(tPacket, packet)
-        assert 0  # todo
+        app = QtCore.QCoreApplication.instance()
+        app.response_mgr.process_packet(server_public_key, packet)
 
     def _make_packet( self, payload, payload_type, aux_info ):
         if aux_info is None:
@@ -47,7 +47,7 @@ class TcpTransport(Transport):
         key = (server.endpoint.public_key, host, port)
         connection = self.connections.get(key)
         if not connection:
-            connection = TcpConnection(host, port)
+            connection = TcpConnection(server.endpoint.public_key, host, port)
             self.connections[key] = connection
         return connection
 
