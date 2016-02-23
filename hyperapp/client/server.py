@@ -4,9 +4,8 @@ from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
 from ..common.htypes import tClientPacket, Interface, iface_registry
-from .request import ClientNotification, Request, ResponseBase, Response
+from .request import ClientNotification, Request
 from .objimpl_registry import objimpl_registry
-from .proxy_registry import proxy_registry
 from .transport import transport_registry
 
 
@@ -46,7 +45,7 @@ class Server(object):
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
         print 'send_notification', notification.command_id, notification
-        self._send(notification.encode())
+        self._send(notification.to_data())
 
     def execute_request( self, request ):
         assert isinstance(request, Request), repr(request)
@@ -54,45 +53,9 @@ class Server(object):
         print 'execute_request', request.command_id, request_id
         app = QtCore.QCoreApplication.instance()
         app.response_mgr.register_request(request_id, request)
-        self._send(request.encode(request_id))
+        self._send(request.to_data(request_id))
 
     def _send( self, request_rec ):
         print 'packet to %s' % self.endpoint
         pprint(tClientPacket, request_rec)
         transport_registry.send_packet(self, request_rec, tClientPacket)
-
-    def process_packet( self, packet ):
-        print '%r from %s' % (packet, self.endpoint)
-        app = QtCore.QCoreApplication.instance()
-        app.add_modules(packet.aux.modules)
-        if app.has_unfulfilled_requirements(packet.aux.requirements):
-            app.request_required_modules_and_reprocess_packet(self, packet)
-        else:
-            self._process_packet(packet)
-
-    def reprocess_packet( self, packet ):
-        print 'reprocessing %r from %s' % (packet, self.endpoint)
-        app = QtCore.QCoreApplication.instance()
-        app.add_modules(packet.aux.modules)
-        assert not app.has_unfulfilled_requirements(packet.aux.requirements)  # still has unfilfilled requirements
-        self._process_packet(packet)
-
-    def _process_packet( self, packet ):
-        response_or_notification = ResponseBase.from_response_rec(self, iface_registry, packet.decode_server_packet())
-        self._process_updates(response_or_notification.updates)
-        if isinstance(response_or_notification, Response):
-            response = response_or_notification
-            print '   response for request', response.command_id, response.request_id
-            request = self.pending_requests.get(response.request_id)
-            if not request:
-                print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
-                return
-            del self.pending_requests[response.request_id]
-            request.process_response(self, response)
-
-    def _process_updates( self, updates ):
-        for update in updates:
-            obj = proxy_registry.resolve(self, update.path)
-            if obj:
-                obj.process_update(update.diff)
-            # otherwize object is already gone and updates must be discarded

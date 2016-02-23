@@ -151,7 +151,7 @@ class Application(QtGui.QApplication, view.View):
     ##     self._resp_handlers.remove(resp_handler)
 
     def _add_modules_and_open_state( self, handles_cdr, modules ):
-        self.add_modules(modules)
+        self._module_mgr.add_modules(modules)
         handles_data = packet_coders.decode('cdr', handles_cdr, self.handles_type)
         ## print '-->8 -- loaded handles  ------'
         ## pprint(self.handles_type, handles_data)

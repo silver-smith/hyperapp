@@ -22,7 +22,7 @@ class RequestBase(object):
 
 class ClientNotification(RequestBase):
 
-    def encode( self ):
+    def to_data( self ):
         return tClientNotification.instantiate(self.iface.iface_id, self.path, self.command_id, self.params)
 
 
@@ -31,7 +31,7 @@ class Request(RequestBase):
     def __init__( self, iface, path, command_id, params=None ):
         RequestBase.__init__(self, iface, path, command_id, params)
 
-    def encode( self, request_id ):
+    def to_data( self, request_id ):
         assert isinstance(request_id, str), repr(request_id)
         return tRequest.instantiate(self.iface.iface_id, self.path, self.command_id, self.params, request_id)
 
@@ -42,17 +42,17 @@ class Request(RequestBase):
 class ResponseBase(object):
 
     @classmethod
-    def from_response_rec( cls, server, iface_registry, rec ):
+    def from_data( cls, server_public_key, iface_registry, rec ):
         tServerPacket.validate('<ServerPacket>', rec)
         if tServerPacket.isinstance(rec, tResponse):
             iface = iface_registry.resolve(rec.iface)
-            return Response(server, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
+            return Response(server_public_key, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
         else:
             assert tServerPacket.isinstance(rec, tServerNotification), repr(rec)
             return ServerNotification(server, rec.updates)
 
-    def __init__( self, server, updates ):
-        self.server = server
+    def __init__( self, server_public_key, updates ):
+        self.server_public_key = server_public_key
         self.updates = updates
 
 
@@ -62,8 +62,8 @@ class ServerNotification(ResponseBase):
 
 class Response(ResponseBase):
 
-    def __init__( self, server, updates, iface, command_id, request_id, result ):
-        ResponseBase.__init__(self, server, updates)
+    def __init__( self, server_public_key, updates, iface, command_id, request_id, result ):
+        ResponseBase.__init__(self, server_public_key, updates)
         self.iface = iface
         self.command_id = command_id
         self.request_id = request_id

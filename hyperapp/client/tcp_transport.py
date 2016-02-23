@@ -1,4 +1,5 @@
 from PySide import QtCore
+from ..common.htypes import tServerPacket
 from ..common.packet import tAuxInfo, AuxInfo, tPacket, Packet
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
 from ..common.packet_coders import packet_coders
@@ -33,7 +34,10 @@ class TcpTransport(Transport):
     def process_packet( self, server_public_key, data ):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         app = QtCore.QCoreApplication.instance()
-        app.response_mgr.process_packet(server_public_key, packet)
+        app.response_mgr.process_packet(server_public_key, packet, self._decode_payload)
+
+    def _decode_payload( self, data ):
+        return packet_coders.decode(self.encoding, data, tServerPacket)
 
     def _make_packet( self, payload, payload_type, aux_info ):
         if aux_info is None:
