@@ -1,21 +1,26 @@
 # manage packats - responses and notifications from servers
 
 from ..common.htypes import iface_registry
+from ..common.endpoint import Endpoint
 from ..common.packet import tPacket
 from ..common.visual_rep import pprint
 from .request import Request, ResponseBase, Response
+from .route_repository import RouteRepository
 from .module_manager import ModuleManager
 from .code_repository import CodeRepositoryProxy
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
 from .view_registry import view_registry
+from .server import Server
 
 
 class ResponseManager(object):
 
-    def __init__( self, module_mgr, code_repository ):
+    def __init__( self, route_repo, module_mgr, code_repository ):
+        assert isinstance(route_repo, RouteRepository), repr(route_repo)
         assert isinstance(module_mgr, ModuleManager), repr(module_mgr)
         assert isinstance(code_repository, CodeRepositoryProxy), repr(code_repository)
+        self._route_repo = route_repo
         self._module_mgr = module_mgr
         self._code_repository = code_repository
         self._pending_requests = {}  # (server id, request id) -> Request
@@ -54,7 +59,8 @@ class ResponseManager(object):
                 print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
                 return
             del self._pending_requests[response.request_id]
-            request.process_response(self, response)
+            server = Server.produce(self._load_endpoint(server_public_key))
+            request.process_response(server, response)
 
     def _process_updates( self, updates ):
         for update in updates:
@@ -72,3 +78,7 @@ class ResponseManager(object):
         if registry == 'interface':
             return not iface_registry.is_registered(key)
         assert False, repr(registry)  # Unknown registry
+
+    def _load_endpoint( self, server_public_key ):
+        routes = self._route_repo.get_routes(server_public_key)
+        return Endpoint(server_public_key, routes)

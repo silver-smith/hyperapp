@@ -25,7 +25,6 @@ class Server(object):
     def __init__( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.endpoint = endpoint
-        self.pending_requests = {}  # request_id -> Request
 
     def get_endpoint( self ):
         return self.endpoint

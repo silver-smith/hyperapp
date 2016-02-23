@@ -76,8 +76,8 @@ class TcpConnection(object):
             transport_packet = decode_transport_packet(packet_data)
             transport_registry.process_packet(self.server_public_key, transport_packet)
             assert packet_size <= len(self.recv_buf), repr(packet_size)
-            self.recv_buf = self.recv_buf[consumed:]
-            self.trace('consumed %d bytes, remained %d' % (consumed, len(self.recv_buf)))
+            self.recv_buf = self.recv_buf[packet_size:]
+            self.trace('consumed %d bytes, remained %d' % (packet_size, len(self.recv_buf)))
 
     def send_data( self, contents ):
         data = encode_tcp_packet(contents)

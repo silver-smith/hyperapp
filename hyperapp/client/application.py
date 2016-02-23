@@ -21,6 +21,7 @@ from .objimpl_registry import objimpl_registry
 from .code_repository import CodeRepositoryProxy
 from .module_manager import ModuleManager
 from .response_manager import ResponseManager
+from .route_repository import RouteRepository
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -44,11 +45,13 @@ class Application(QtGui.QApplication, view.View):
         QtGui.QApplication.__init__(self, sys_argv)
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
+        self._route_repo = RouteRepository()
         self._module_mgr = ModuleManager()
         self.server = Server.produce(server_endpoint)
         self._code_repository = CodeRepositoryProxy(self.server)
-        self._response_mgr = ResponseManager(self._module_mgr, self._code_repository)
+        self._response_mgr = ResponseManager(self._route_repo, self._module_mgr, self._code_repository)
         self._windows = []
+        self._route_repo.add_endpoint_routes(server_endpoint)
 
     @property
     def response_mgr( self ):
