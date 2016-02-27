@@ -5,7 +5,6 @@ from ..common.htypes import (
     Field,
     ObjHandle,
     Interface,
-    iface_registry,
     )
 from .util import WeakValueMultiDict
 

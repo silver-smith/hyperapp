@@ -2,6 +2,7 @@ import os.path
 import traceback
 import time
 import select
+from ..common.htypes import iface_registry
 from ..common.interface.code_repository import ModuleDep
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
@@ -89,7 +90,7 @@ class TcpClient(object):
     def _process_packet( self, request_data ):
         request_packet = decode_transport_packet(request_data)
         print '%r packet from %s:%d:' % (request_packet.transport_id, self.addr[0], self.addr[1])
-        response_packet = transport_registry.process_packet(self.server, self.tcp_server, request_packet)
+        response_packet = transport_registry.process_packet(iface_registry, self.server, self.tcp_server, request_packet)
         if response_packet is None:
             print 'no response'
             return None

@@ -1,4 +1,4 @@
-from ..common.htypes import tUpdate, tClientPacket, tServerPacket, iface_registry
+from ..common.htypes import tUpdate, tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
@@ -21,7 +21,7 @@ class TcpTransport(Transport):
     def __init__( self, encoding ):
         self.encoding = encoding
 
-    def process_packet( self, server, peer, data ):
+    def process_packet( self, iface_registry, server, peer, data ):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         request_rec = packet_coders.decode(self.encoding, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)

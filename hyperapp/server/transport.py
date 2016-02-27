@@ -20,10 +20,10 @@ class TransportRegistry(object):
     def resolve( self, id ):
         return self._id2transport[id]
 
-    def process_packet( self, server, peer, request_packet ):
+    def process_packet( self, iface_registry, server, peer, request_packet ):
         tTransportPacket.validate('<TransportPacket>', request_packet)
         transport = self.resolve(request_packet.transport_id)
-        response_data = transport.process_packet(server, peer, request_packet.data)
+        response_data = transport.process_packet(iface_registry, server, peer, request_packet.data)
         if response_data is None:
             return None
         return tTransportPacket.instantiate(request_packet.transport_id, response_data)
