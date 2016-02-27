@@ -80,6 +80,12 @@ class ServerTest(unittest.TestCase):
         self.assertEqual('hello to you too', response.result.test_result)
 
     def test_tcp_cdr_request( self ):
+        self.check_tcp_request('cdr')
+
+    def test_tcp_json_request( self ):
+        self.check_tcp_request('json')
+
+    def check_tcp_request( self, encoding ):
         request = tRequest.instantiate(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name],
@@ -90,16 +96,16 @@ class ServerTest(unittest.TestCase):
         pprint(tClientPacket, request)
         request_packet = tPacket.instantiate(
             aux_info=tAuxInfo.instantiate(requirements=[], modules=[]),
-            payload=packet_coders.encode('cdr', request, tClientPacket))
+            payload=packet_coders.encode(encoding, request, tClientPacket))
         transport_request = tTransportPacket.instantiate(
-            transport_id='tcp.cdr',
-            data=packet_coders.encode('cdr', request_packet, tPacket))
+            transport_id='tcp.%s' % encoding,
+            data=packet_coders.encode(encoding, request_packet, tPacket))
 
         response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, None, transport_request)
 
-        self.assertEqual('tcp.cdr', response_transport_packet.transport_id)
-        response_packet = packet_coders.decode('cdr', response_transport_packet.data, tPacket)
+        self.assertEqual('tcp.%s' % encoding, response_transport_packet.transport_id)
+        response_packet = packet_coders.decode(encoding, response_transport_packet.data, tPacket)
         pprint(tPacket, response_packet)
-        response = packet_coders.decode('cdr', response_packet.payload, tServerPacket)
+        response = packet_coders.decode(encoding, response_packet.payload, tServerPacket)
         pprint(tServerPacket, response)
         self.assertEqual('hello to you too', response.result.test_result)
