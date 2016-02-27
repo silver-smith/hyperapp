@@ -27,7 +27,7 @@ class CodeRepository(Object):
         Object.__init__(self)
         self._id2module = {}           # module id -> Module
         self._requirement2module = {}  # (registry, key) -> Module
-        self._find_dynamic_modules()
+        self._load_dynamic_modules()
 
     def resolve( self, path ):
         path.check_empty()
@@ -63,7 +63,7 @@ class CodeRepository(Object):
                 print 'Unknown requirement: %s/%s' % (registry, key)  # May be statically loaded, ignore
         return modules
 
-    def _find_dynamic_modules( self ):
+    def _load_dynamic_modules( self ):
         for fname in os.listdir(DYNAMIC_MODULES_DIR):
             if fname.endswith(DYNAMIC_MODULE_INFO_EXT):
                 self._load_dynamic_module(os.path.join(DYNAMIC_MODULES_DIR, fname))
