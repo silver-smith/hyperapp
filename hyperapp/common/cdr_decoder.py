@@ -17,6 +17,9 @@ from .htypes import (
     )
 
 
+MAX_SANE_LIST_SIZE = 1 << 60
+
+
 def join_path( *args ):
     return '.'.join(filter(None, args))
 
@@ -130,6 +133,8 @@ class CdrDecoder(object):
     def decode_list( self, t, path ):
         size = self.read_int(path)
         elements = []
+        if size > MAX_SANE_LIST_SIZE:
+            raise DecodeError('List size is too large: %d' % size)
         for idx in range(size):
             elt = self.dispatch(t.element_type, join_path(path, '#%d' % idx))
             elements.append(elt)
