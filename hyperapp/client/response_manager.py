@@ -42,10 +42,10 @@ class ResponseManager(object):
         else:
             self._process_packet(server_public_key, packet, payload_decoder)
 
-    def _add_modules_and_reprocess_packet( self, server_public_key, packet, modules ):
+    def _add_modules_and_reprocess_packet( self, server_public_key, packet, payload_decoder, modules ):
         self._module_mgr.add_modules(modules)
         print 'reprocessing %r from %s' % (packet, server_public_key.get_short_id_hex())
-        self._process_packet(server_public_key, packet)
+        self._process_packet(server_public_key, packet, payload_decoder)
 
     def _process_packet( self, server_public_key, packet, payload_decoder ):
         payload = payload_decoder(packet.payload)
