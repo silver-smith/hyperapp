@@ -13,7 +13,7 @@ from . import module
 
 class Server(object):
 
-    def __init__( self, test_delay_sec ):
+    def __init__( self, test_delay_sec=None ):
         self.test_delay_sec = test_delay_sec  # float
         self.updates_queue = Queue()  # Update queue
 
