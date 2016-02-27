@@ -86,13 +86,13 @@ class TcpClient(object):
         self.conn.close()
         self.on_close(self)
 
-    def _process_packet( self, data ):
-        transport_packet = decode_transport_packet(data)
-        print '%r packet from %s:%d:' % (transport_packet.transport_id, self.addr[0], self.addr[1])
-        response_data = transport_registry.process_packet(self.server, self.tcp_server, transport_packet)
-        if response_data is None:
+    def _process_packet( self, request_data ):
+        request_packet = decode_transport_packet(request_data)
+        print '%r packet from %s:%d:' % (request_packet.transport_id, self.addr[0], self.addr[1])
+        response_packet = transport_registry.process_packet(self.server, self.tcp_server, request_packet)
+        if response_packet is None:
             print 'no response'
             return None
-        print '%d bytes to %s:%d' % (len(response_data), self.addr[0], self.addr[1])
-        response_transport_packet = encode_transport_packet(transport_packet.transport_id, response_data)
-        self.conn.send(response_transport_packet)
+        print '%d bytes to %s:%d' % (len(response_packet.data), self.addr[0], self.addr[1])
+        response_data = encode_transport_packet(response_packet)
+        self.conn.send(response_data)

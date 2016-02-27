@@ -20,10 +20,14 @@ class TransportRegistry(object):
     def resolve( self, id ):
         return self._id2transport[id]
 
-    def process_packet( self, server, peer, packet ):
-        tTransportPacket.validate('<TransportPacket>', packet)
-        transport = self.resolve(packet.transport_id)
-        return transport.process_packet(server, peer, packet.data)
+    def process_packet( self, server, peer, request_packet ):
+        tTransportPacket.validate('<TransportPacket>', request_packet)
+        transport = self.resolve(request_packet.transport_id)
+        response_data = transport.process_packet(server, peer, request_packet.data)
+        if response_data is None:
+            return None
+        return tTransportPacket.instantiate(request_packet.transport_id, response_data)
+        
 
 
 transport_registry = TransportRegistry()

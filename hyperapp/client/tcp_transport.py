@@ -1,7 +1,7 @@
 from PySide import QtCore
 from ..common.htypes import tServerPacket
 from ..common.packet import tAuxInfo, AuxInfo, tPacket, Packet
-from ..common.transport_packet import encode_transport_packet, decode_transport_packet
+from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.packet_coders import packet_coders
 from .transport import Transport, transport_registry
 from .tcp_connection import TcpConnection
@@ -45,7 +45,8 @@ class TcpTransport(Transport):
         packet_data = packet_coders.encode(self.encoding, payload, payload_type)
         packet = Packet(aux_info, packet_data)
         encoded_packet = packet_coders.encode(self.encoding, packet, tPacket)
-        return encode_transport_packet(self.transport_id, encoded_packet)
+        transport_packet = tTransportPacket.instantiate(self.transport_id, encoded_packet)
+        return encode_transport_packet(transport_packet)
 
     def _produce_connection( self, server, host, port ):
         key = (server.endpoint.public_key, host, port)
