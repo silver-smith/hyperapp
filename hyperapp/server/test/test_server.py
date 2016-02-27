@@ -4,6 +4,7 @@ from hyperapp.common.htypes import (
     Field,
     RequestCmd,
     Interface,
+    tClientPacket,
     tServerPacket,
     tRequest,
 #    register_iface,
@@ -63,6 +64,7 @@ class ServerTest(unittest.TestCase):
             params=test_iface.get_request_params_type('echo').instantiate(test_param='hello'),
             request_id='001',
             )
+        pprint(tClientPacket, request_data)
         request = RequestBase.from_data(None, None, iface_registry, request_data)
         aux_info, response = server.process_request(request)
         pprint(tAuxInfo, aux_info)
