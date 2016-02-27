@@ -1,4 +1,4 @@
-from ..common.htypes import tClientPacket, tServerPacket, iface_registry
+from ..common.htypes import tUpdate, tClientPacket, tServerPacket, iface_registry
 from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
@@ -11,6 +11,10 @@ class TcpChannel(object):
     def __init__( self ):
         pass
 
+    def send_update( self, update ):
+        tUpdate.validate('<Update>', update)
+        assert 0
+
 
 class TcpTransport(Transport):
 
@@ -21,7 +25,7 @@ class TcpTransport(Transport):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         request_rec = packet_coders.decode(self.encoding, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_data(peer, TcpChannel(), iface_registry, request_rec)
+        request = RequestBase.from_data(server, TcpChannel(), iface_registry, request_rec)
         result = server.process_request(request)
         if result is None:
             return

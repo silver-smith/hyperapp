@@ -4,18 +4,18 @@ from ..common.htypes import tUpdate, tClientPacket, tClientNotification, tReques
 class RequestBase(object):
 
     @classmethod
-    def from_data( cls, me, peer, iface_registry, rec ):
+    def from_data( cls, me, peer_channel, iface_registry, rec ):
         tClientPacket.validate('<ClientPacket>', rec)
         iface = iface_registry.resolve(rec.iface)
         if tClientPacket.isinstance(rec, tRequest):
-            return Request(me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
+            return Request(me, peer_channel, iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
             assert tClientPacket.isinstance(rec, tClientNotification), repr(rec)
-            return ClientNotification(me, peer, iface, rec.path, rec.command_id, rec.params)
+            return ClientNotification(me, peer_channel, iface, rec.path, rec.command_id, rec.params)
 
-    def __init__( self, me, peer, iface, path, command_id, params ):
+    def __init__( self, me, peer_channel, iface, path, command_id, params ):
         self.me = me      # Server instance
-        self.peer = peer  # Client instance
+        self.peer_channel = peer_channel
         self.iface = iface
         self.path = path
         self.command_id = command_id
@@ -28,14 +28,14 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__( self, me, peer, iface, path, command_id, request_id, params ):
-        RequestBase.__init__(self, me, peer, iface, path, command_id, params)
+    def __init__( self, me, peer_channel, iface, path, command_id, request_id, params ):
+        RequestBase.__init__(self, me, peer_channel, iface, path, command_id, params)
         self.request_id = request_id
 
     def make_response( self, result=None ):
         result_type = self.iface.get_command_result_type(self.command_id)
         result_type.validate('%s.Request.%s.result' % (self.iface.iface_id, self.command_id), result)
-        return Response(self.peer, self.iface, self.command_id, self.request_id, result)
+        return Response(self.peer_channel, self.iface, self.command_id, self.request_id, result)
 
     def make_response_object( self, obj ):
         return self.make_response(obj)
