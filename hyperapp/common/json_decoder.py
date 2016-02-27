@@ -3,6 +3,7 @@ import dateutil.parser
 from .method_dispatch import method_dispatch
 from .htypes import (
     TString,
+    TBinary,
     TInt,
     TBool,
     TDateTime,
@@ -47,6 +48,11 @@ class JsonDecoder(object):
     def decode_primitive( self, t, value, path ):
         self.expect_type(path, isinstance(value, basestring), value, 'string')
         return value
+
+    @dispatch.register(TBinary)
+    def decode_primitive( self, t, value, path ):
+        self.expect_type(path, isinstance(value, basestring), value, 'string')
+        return str(value)
 
     @dispatch.register(TInt)
     def decode_primitive( self, t, value, path ):

@@ -2,6 +2,7 @@ import json
 from .method_dispatch import method_dispatch
 from .htypes import (
     TString,
+    TBinary,
     TInt,
     TBool,
     TDateTime,
@@ -28,6 +29,7 @@ class JsonEncoder(object):
         assert False, repr((t, value))  # Unknown type
 
     @dispatch.register(TString)
+    @dispatch.register(TBinary)
     @dispatch.register(TInt)
     @dispatch.register(TBool)
     def encode_primitive( self, t, value ):
