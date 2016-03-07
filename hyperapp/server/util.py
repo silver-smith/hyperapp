@@ -111,3 +111,24 @@ class WeakValueMultiDict(object):
             if not l:
                 del self.data[wr.key]
 
+
+class MultiDict(object):
+
+    def __init__( self ):
+        self.data = {}  # key -> value list
+
+    def add( self, key, value ):
+        l = self.data.setdefault(key, [])
+        l.append(value)
+
+    def remove( self, key, value ):
+        l = self.data[key]
+        l.remove(value)
+        
+    def get( self, key ):
+        return self.data[key]
+
+    def items( self ):
+        for key, values in self.data.items():
+            for value in value:
+                yield (key, value)
