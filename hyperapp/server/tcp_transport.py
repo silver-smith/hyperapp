@@ -9,11 +9,22 @@ from .transport import Transport, transport_registry
 class TcpChannel(object):
 
     def __init__( self ):
-        pass
+        self.updates = []  # tUpdate list
+
+    def __repr__( self ):
+        return 'TcpChannel'
 
     def send_update( self, update ):
+        print '--> update to be sent:'
+        pprint(tUpdate, update)
         tUpdate.validate('<Update>', update)
-        assert 0
+        self.updates.append(update)
+        print '--<'
+
+    def pop_updates( self ):
+        updates = self.updates
+        self.updates = []
+        return updates
 
 
 class TcpTransport(Transport):

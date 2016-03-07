@@ -15,7 +15,6 @@ class Server(object):
 
     def __init__( self, test_delay_sec=None ):
         self.test_delay_sec = test_delay_sec  # float
-        self.updates_queue = Queue()  # Update queue
 
     def process_request( self, request ):
         assert isinstance(request, RequestBase), repr(request)
@@ -31,43 +30,30 @@ class Server(object):
         if response is None:
             return None
         response_data = response.to_data()
-        self._subscribe_objects(response_data)
+        self._subscribe_objects(request.peer_channel, response_data)
         aux_info = self._prepare_aux_info(response_data)
         return (aux_info, response_data)
 
     def _resolve( self, path ):
         return module.Module.run_resolver(path)
 
-    def _subscribe_objects( self, response_data ):
+    def _subscribe_objects( self, peer_channel, response_data ):
         collector = ObjectPathCollector()
         object_paths = collector.collect(tServerPacket, response_data)
         for path in object_paths:
-            subscription.add(path, self)
+            subscription.add(path, peer_channel)
 
     def _prepare_response( self, obj_class, request, response ):
         if response is None and isinstance(request, Request):
             response = request.make_response()  # client need a response to cleanup waiting response handler
-        if response is None and not self.updates_queue.empty():
+        updates = request.peer_channel.pop_updates()
+        if response is None and not updates:
             response = ServerNotification()
-        while not self.updates_queue.empty():
-            response.add_update(self.updates_queue.get())
+        for update in updates or []:
+            response.add_update(update)
         assert response is None or isinstance(response, Response), \
           'Server commands must return a response, but %s.%s command returned %r' % (obj_class.__name__, request.command_id, response)
         return response
-
-    def _send_notification( self ):
-        notification = ServerNotification()
-        while not self.updates_queue.empty():
-            notification.add_update(self.updates_queue.get())
-        self._wrap_and_send(PACKET_ENCODING, notification.encode())
-    
-    def _wrap_and_send( self, encoding, response_or_notification ):
-        aux = self._prepare_aux_info(response_or_notification)
-        packet = Packet.from_contents(encoding, response_or_notification, tServerPacket, aux)
-        print '%r to %s:%d:' % (packet, self.addr[0], self.addr[1])
-        pprint(tAuxInfo, aux)
-        pprint(tServerPacket, response_or_notification)
-        self.conn.send(packet)
 
     def _prepare_aux_info( self, response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
@@ -76,3 +62,17 @@ class Server(object):
         return AuxInfo(
             requirements=requirements,
             modules=modules)
+
+    ## def _send_notification( self ):
+    ##     notification = ServerNotification()
+    ##     while not self.updates_queue.empty():
+    ##         notification.add_update(self.updates_queue.get())
+    ##     self._wrap_and_send(PACKET_ENCODING, notification.encode())
+    
+    ## def _wrap_and_send( self, encoding, response_or_notification ):
+    ##     aux = self._prepare_aux_info(response_or_notification)
+    ##     packet = Packet.from_contents(encoding, response_or_notification, tServerPacket, aux)
+    ##     print '%r to %s:%d:' % (packet, self.addr[0], self.addr[1])
+    ##     pprint(tAuxInfo, aux)
+    ##     pprint(tServerPacket, response_or_notification)
+    ##     self.conn.send(packet)

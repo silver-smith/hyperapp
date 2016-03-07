@@ -37,8 +37,7 @@ class TcpConnection(object):
             ofs += sent_size
 
     def receive( self, timeout ):
-        while True:
-            if has_full_tcp_packet(self.recv_buf): break
+        while not has_full_tcp_packet(self.recv_buf):
             ## print '  receiving...'
             rd, wr, xc = select.select([self.socket], [], [self.socket], timeout)
             if not rd and not xc:
