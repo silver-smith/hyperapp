@@ -1,5 +1,4 @@
 import time
-from Queue import Queue
 from ..common.htypes import tServerPacket
 from ..common.packet import AuxInfo
 from ..common.object_path_collector import ObjectPathCollector
@@ -31,7 +30,7 @@ class Server(object):
             return None
         response_data = response.to_data()
         self._subscribe_objects(request.peer_channel, response_data)
-        aux_info = self._prepare_aux_info(response_data)
+        aux_info = self.prepare_aux_info(response_data)
         return (aux_info, response_data)
 
     def _resolve( self, path ):
@@ -55,7 +54,8 @@ class Server(object):
             response.add_update(update)
         return response
 
-    def _prepare_aux_info( self, response_or_notification ):
+    @staticmethod
+    def prepare_aux_info( response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
         modules = code_repository.get_required_modules(requirements)
         modules = []  # force separate request to code repository

@@ -77,8 +77,8 @@ class TcpClient(object):
             while not self.stop_flag:
                 packet_data = self.conn.receive(NOTIFICATION_DELAY_TIME)
                 if not packet_data:  # receive timed out
-                    ## if not self.updates_queue.empty():
-                    ##     self._send_notification()
+                    for transport_packet in self.session_list.pull_notification_transport_packets():
+                        self._send_notification(transport_packet)
                     continue
                 self._process_packet(packet_data)
         except Error as x:
@@ -98,3 +98,8 @@ class TcpClient(object):
         print '%d bytes to %s:%d' % (len(response_packet.data), self.addr[0], self.addr[1])
         response_data = encode_transport_packet(response_packet)
         self.conn.send(response_data)
+
+    def _send_notification( self, transport_packet ):
+        print '%d bytes to %s:%d' % (len(transport_packet.data), self.addr[0], self.addr[1])
+        data = encode_transport_packet(transport_packet)
+        self.conn.send(data)

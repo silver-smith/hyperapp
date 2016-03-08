@@ -161,8 +161,7 @@ class ServerTest(unittest.TestCase):
     def execute_tcp_notification( self, encoding, obj_id, command_id, **kw ):
         transport_request = self.make_tcp_transport_notification(encoding, obj_id, command_id, **kw)
         response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
-        response = self.decode_tcp_transport_response(encoding, response_transport_packet)
-        return response
+        assert response_transport_packet is None, repr(response_transport_packet)
 
     def test_tcp_cdr_echo_request( self ):
         self._test_tcp_echo_request('cdr')
