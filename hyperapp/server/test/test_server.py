@@ -107,12 +107,6 @@ class ServerTest(unittest.TestCase):
         pprint(tServerPacket, response)
         self.assertEqual('hello to you too', response.result.test_result)
 
-    def test_tcp_cdr_echo_request( self ):
-        self.run_echo_tcp_request('cdr')
-
-    def test_tcp_json_echo_request( self ):
-        self.run_echo_tcp_request('json')
-
     def make_tcp_transport_request( self, encoding, obj_id, command_id, **kw ):
         request = tRequest.instantiate(
             iface='test_iface',
@@ -140,29 +134,34 @@ class ServerTest(unittest.TestCase):
         pprint(tServerPacket, response)
         return response
 
-    def run_echo_tcp_request( self, encoding ):
-        transport_request = self.make_tcp_transport_request(encoding, obj_id='1', command_id='echo', test_param='hello')
+    def execute_tcp_request( self, encoding, obj_id, command_id, **kw ):
+        transport_request = self.make_tcp_transport_request(encoding, obj_id, command_id, **kw)
         response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
         response = self.decode_tcp_transport_response(encoding, response_transport_packet)
+        return response
+
+    def test_tcp_cdr_echo_request( self ):
+        self._test_tcp_echo_request('cdr')
+
+    def test_tcp_json_echo_request( self ):
+        self._test_tcp_echo_request('json')
+
+    def _test_tcp_echo_request( self, encoding ):
+        response = self.execute_tcp_request(encoding, obj_id='1', command_id='echo', test_param='hello')
         self.assertEqual('hello to you too', response.result.test_result)
 
     def test_tcp_cdr_broadcast_request( self ):
-        self.run_broadcast_tcp_request('cdr')
+        self._test_broadcast_tcp_request('cdr')
 
     def test_tcp_json_broadcast_request( self ):
-        self.run_broadcast_tcp_request('json')
+        self._test_broadcast_tcp_request('json')
 
-    def run_broadcast_tcp_request( self, encoding ):
+    def _test_broadcast_tcp_request( self, encoding ):
         message = 'hi, all!'
         obj_id = '1'
 
-        transport_request = self.make_tcp_transport_request(encoding, obj_id=obj_id, command_id='subscribe')
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
-        response = self.decode_tcp_transport_response(encoding, response_transport_packet)
-
-        transport_request = self.make_tcp_transport_request(encoding, obj_id=obj_id, command_id='broadcast', message=message)
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
-        response = self.decode_tcp_transport_response(encoding, response_transport_packet)
+        response = self.execute_tcp_request(encoding, obj_id=obj_id, command_id='subscribe')
+        response = self.execute_tcp_request(encoding, obj_id=obj_id, command_id='broadcast', message=message)
 
         self.assertEqual(1, len(response.updates))
         update = response.updates[0]
