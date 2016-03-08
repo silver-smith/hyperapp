@@ -49,7 +49,7 @@ class ResponseBase(object):
             return Response(server_public_key, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
         else:
             assert tServerPacket.isinstance(rec, tServerNotification), repr(rec)
-            return ServerNotification(server, rec.updates)
+            return ServerNotification(server_public_key, rec.updates)
 
     def __init__( self, server_public_key, updates ):
         self.server_public_key = server_public_key
