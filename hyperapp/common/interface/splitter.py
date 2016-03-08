@@ -1,9 +1,10 @@
-from ..htypes import Field, tHandle, tViewHandle
+from ..htypes import tString, Field, tHandle, tViewHandle
 
 
-tSplitterHandle = tHandle.register('two_side_selector', base=tViewHandle, fields=[
+tSplitterHandle = tHandle.register('splitter', base=tViewHandle, fields=[
     Field('x', tHandle),
     Field('y', tHandle),
+    Field('orientation', tString, 'horizontal'),
     ])
 
 SplitterHandle = tSplitterHandle.instantiate

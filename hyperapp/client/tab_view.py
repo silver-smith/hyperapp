@@ -1,7 +1,8 @@
 from PySide import QtCore, QtGui
-from ..common.htypes import tInt, TList, Field, TRecord
+from ..common.htypes import tInt, TList, Field, TRecord, tHandle
 from .util import DEBUG_FOCUS, call_after, key_match
 from .view_command import command
+from .view_registry import view_registry
 from . import view
 from . import composite
 from . import splitter
@@ -9,7 +10,7 @@ from . import navigator
 
 
 data_type = TRecord([
-    Field('tabs', TList(navigator.data_type)),
+    Field('tabs', TList(tHandle)),
     Field('current_tab', tInt),
     ])
 
@@ -17,8 +18,8 @@ data_type = TRecord([
 class Handle(composite.Handle):
 
     @classmethod
-    def from_data( cls, rec ):
-        return cls([navigator.Handle.from_data(hrec) for hrec in rec.tabs], rec.current_tab)
+    def from_data( cls, rec, server=None ):
+        return cls([view_registry.resolve(handle, server) for handle in rec.tabs], rec.current_tab)
 
     def __init__( self, children, current_idx=0 ):
         composite.Handle.__init__(self, children)

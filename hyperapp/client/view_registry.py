@@ -12,7 +12,8 @@ class ViewRegistry(object):
         return view_id in self.registry
 
     def resolve( self, contents, server=None ):
-        return self.registry[contents.view_id](contents, server)
+        ctr = self.registry[contents.view_id]
+        return ctr(contents, server)
 
 
 view_registry = ViewRegistry()

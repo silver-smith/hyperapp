@@ -28,6 +28,12 @@ def qt2orient( orient ):
 
 class Handle(composite.Handle):
 
+    @classmethod
+    def from_data( cls, contents, server=None ):
+        x = view_registry.resolve(contents.x, server)
+        y = view_registry.resolve(contents.y, server)
+        return cls(x, y, contents.orientation)
+
     def __init__( self, x, y, orient, focused=0, sizes=None ):
         composite.Handle.__init__(self, [x, y])
         assert focused in [0, 1]
@@ -36,6 +42,9 @@ class Handle(composite.Handle):
         self.orient = orient
         self.focused = focused
         self.sizes = sizes
+
+    def to_data( self ):
+        return tSplitterHandle.instantiate('splitter', self.x.to_data(), self.y.to_data(), self.orient)
 
     def construct( self, parent ):
         print 'splitter construct', parent, self.orient, 'focused =', self.focused
@@ -57,15 +66,6 @@ class Handle(composite.Handle):
 
 
 class MonolithHandle(Handle):
-
-    @classmethod
-    def from_data_horizontal( cls, contents, server=None ):
-        x = view_registry.resolve(contents.x, server)
-        y = view_registry.resolve(contents.y, server)
-        return cls(x, y, horizontal)
-
-    def to_data( self ):
-        return tSplitterHandle.instantiate('horizontal_splitter', self.x.to_data(), self.y.to_data())
 
     def construct( self, parent ):
         print 'splitter monolith construct', parent, self.orient, 'focused =', self.focused
@@ -213,4 +213,4 @@ def unsplit( handle ):
             return h
 
 
-view_registry.register('horizontal_splitter', MonolithHandle.from_data_horizontal)
+view_registry.register('splitter', Handle.from_data)

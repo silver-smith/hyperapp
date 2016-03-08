@@ -1,7 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 from PySide import QtCore, QtGui
-from ..common.htypes import tInt, tString, TList, Field, TRecord, tHandle, list_handle_type
+from ..common.htypes import tInt, tString, TList, Field, TRecord, tHandle, tViewHandle, list_handle_type
 from .util import key_match, key_match_any
 from .view_registry import view_registry
 from .view_command import command
@@ -19,7 +19,7 @@ item_type = TRecord([
     Field('handle', tHandle),
     ])
 
-data_type = TRecord([
+data_type = tHandle.register('navigator', base=tViewHandle, fields=[
     Field('history', TList(item_type)),
     Field('current_pos', tInt),
     ])
@@ -54,7 +54,7 @@ class Item(object):
 class Handle(composite.Handle):
 
     @classmethod
-    def from_data( cls, rec ):
+    def from_data( cls, rec, server=None ):
         items = [Item.from_data(item_rec) for item_rec in rec.history]
         child_handle = items[rec.current_pos].load()
         return cls(child_handle, items[:rec.current_pos], items[rec.current_pos + 1:])
@@ -70,7 +70,7 @@ class Handle(composite.Handle):
         history = [item.to_data() for item in self.backward_history] \
            + [item_type.instantiate(self.child.get_title(), self.child.to_data())] \
            + [item.to_data() for item in self.forward_history]
-        return data_type.instantiate(history, current_pos=len(self.backward_history))
+        return data_type.instantiate('navigator', history, current_pos=len(self.backward_history))
 
     def get_child_handle( self ):
         return self.child
@@ -166,3 +166,6 @@ class View(composite.Composite):
 
     def __del__( self ):
         print '~navigator'
+
+
+view_registry.register('navigator', Handle.from_data)

@@ -77,7 +77,7 @@ class ModuleList(SmallListObject):
         dep_list.subscribe(request)
         available_list.subscribe(request)
         return request.make_response(
-            SplitterHandle('horizontal_splitter', dep_list.get_handle(), available_list.get_handle()))
+            SplitterHandle('splitter', dep_list.get_handle(), available_list.get_handle()))
 
     @db_session
     def run_element_command_open( self, request ):
