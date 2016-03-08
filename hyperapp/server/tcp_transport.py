@@ -4,11 +4,13 @@ from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from .request import RequestBase
 from .transport import Transport, transport_registry
+from .transport_session import TransportSession
 
 
-class TcpChannel(object):
+class TcpSession(TransportSession):
 
     def __init__( self ):
+        TransportSession.__init__(self)
         self.updates = []  # tUpdate list
 
     def __repr__( self ):
@@ -32,11 +34,21 @@ class TcpTransport(Transport):
     def __init__( self, encoding ):
         self.encoding = encoding
 
-    def process_packet( self, iface_registry, server, peer, data ):
+    def get_transport_id( self ):
+        return 'tcp.%s' % self.encoding
+
+    def register( self, registry ):
+        registry.register(self.get_transport_id(), self)
+
+    def process_packet( self, iface_registry, server, session_list, data ):
+        session = session_list.get_transport_session(self.get_transport_id())
+        if session is None:
+           session = TcpSession()
+           session_list.set_transport_session(self.get_transport_id(), session) 
         packet = packet_coders.decode(self.encoding, data, tPacket)
         request_rec = packet_coders.decode(self.encoding, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_data(server, TcpChannel(), iface_registry, request_rec)
+        request = RequestBase.from_data(server, session, iface_registry, request_rec)
         result = server.process_request(request)
         if result is None:
             return
@@ -49,5 +61,5 @@ class TcpTransport(Transport):
         return packet_data
 
 
-transport_registry.register('tcp.cdr', TcpTransport('cdr'))
-transport_registry.register('tcp.json', TcpTransport('json'))
+TcpTransport('cdr').register(transport_registry)
+TcpTransport('json').register(transport_registry)

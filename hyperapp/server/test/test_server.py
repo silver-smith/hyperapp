@@ -20,6 +20,7 @@ import hyperapp.server.tcp_transport  # self-registering
 import hyperapp.server.module as module_mod
 from hyperapp.server.object import Object, subscription
 from hyperapp.server.server import Server
+from hyperapp.server.transport_session import TransportSessionList
 
 
 test_iface = Interface('test_iface', commands=[
@@ -87,6 +88,7 @@ class ServerTest(unittest.TestCase):
         self.iface_registry.register(test_iface)
         self.test_module = TestModule()  # self-registering
         self.server = Server()
+        self.session_list = TransportSessionList()
 
     def test_simple_request( self ):
         request_data = tRequest.instantiate(
@@ -140,7 +142,7 @@ class ServerTest(unittest.TestCase):
 
     def run_echo_tcp_request( self, encoding ):
         transport_request = self.make_tcp_transport_request(encoding, obj_id='1', command_id='echo', test_param='hello')
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, None, transport_request)
+        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
         response = self.decode_tcp_transport_response(encoding, response_transport_packet)
         self.assertEqual('hello to you too', response.result.test_result)
 
@@ -155,11 +157,11 @@ class ServerTest(unittest.TestCase):
         obj_id = '1'
 
         transport_request = self.make_tcp_transport_request(encoding, obj_id=obj_id, command_id='subscribe')
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, None, transport_request)
+        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
         response = self.decode_tcp_transport_response(encoding, response_transport_packet)
 
         transport_request = self.make_tcp_transport_request(encoding, obj_id=obj_id, command_id='broadcast', message=message)
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, None, transport_request)
+        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
         response = self.decode_tcp_transport_response(encoding, response_transport_packet)
 
         self.assertEqual(1, len(response.updates))
