@@ -1,7 +1,9 @@
 
 
 class TransportSession(object):
-    pass
+
+    def get_id( self ):
+        return hex(id(self))[-6:]
 
 
 class TransportSessionList(object):
@@ -10,8 +12,12 @@ class TransportSessionList(object):
         self.transport2session = {}  # transport id -> transport session
 
     def get_transport_session( self, transport_id ):
-        return self.transport2session.get(transport_id)
+        session = self.transport2session.get(transport_id)
+        if session is not None:
+            print 'using %r session %s' % (transport_id, session.get_id())
+        return session
 
     def set_transport_session( self, transport_id, session ):
         assert isinstance(session, TransportSession), repr(session)
         self.transport2session[transport_id] = session
+        print 'created %r session %s' % (transport_id, session.get_id())

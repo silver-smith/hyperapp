@@ -44,6 +44,8 @@ class Server(object):
             subscription.add(path, peer_channel)
 
     def _prepare_response( self, obj_class, request, response ):
+        assert response is None or isinstance(response, Response), \
+          'Server commands must return a response, but %s.%s command returned %r' % (obj_class.__name__, request.command_id, response)
         if response is None and isinstance(request, Request):
             response = request.make_response()  # client need a response to cleanup waiting response handler
         updates = request.peer_channel.pop_updates()
@@ -51,8 +53,6 @@ class Server(object):
             response = ServerNotification()
         for update in updates or []:
             response.add_update(update)
-        assert response is None or isinstance(response, Response), \
-          'Server commands must return a response, but %s.%s command returned %r' % (obj_class.__name__, request.command_id, response)
         return response
 
     def _prepare_aux_info( self, response_or_notification ):

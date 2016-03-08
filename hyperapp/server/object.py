@@ -8,7 +8,7 @@ from ..common.htypes import (
     Interface,
     )
 from ..common.visual_rep import pprint
-from .util import MultiDict
+from .util import WeakValueMultiDict
 
 
 MIN_ROWS_RETURNED = 100
@@ -17,15 +17,14 @@ MIN_ROWS_RETURNED = 100
 class Subscription(object):
 
     def __init__( self ):
-        #self.path2channel = WeakValueMultiDict()  # path -> Channel
-        self.path2channel = MultiDict()  # path -> channel
+        self.path2channel = WeakValueMultiDict()  # path -> Channel
 
     def add( self, path, peer_channel ):
-        print '-- subscribing', path, repr(peer_channel)
+        print '-- subscribing', path, peer_channel.get_id()
         self.path2channel.add(encode_path(path), peer_channel)
 
     def remove( self, path, peer_channel ):
-        print '-- unsubscribing', path, repr(peer_channel)
+        print '-- unsubscribing', path, peer_channel.get_id()
         self.path2channel.remove(encode_path(path), peer_channel)
 
     def distribute_update( self, iface, path, diff ):
@@ -33,7 +32,7 @@ class Subscription(object):
         print '-- distributing update:'
         pprint(tUpdate, update)
         for peer_channel in self.path2channel.get(encode_path(path)):
-            print '-- sending update to', repr(peer_channel)
+            print '-- sending update to', peer_channel.get_id()
             peer_channel.send_update(update)
 
 

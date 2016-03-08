@@ -7,6 +7,7 @@ from hyperapp.common.htypes import (
     tClientPacket,
     tServerPacket,
     tRequest,
+    tClientNotification,
 #    register_iface,
     )
 from hyperapp.common.htypes import IfaceRegistry
@@ -125,6 +126,23 @@ class ServerTest(unittest.TestCase):
             data=packet_coders.encode(encoding, request_packet, tPacket))
         return transport_request
 
+    def make_tcp_transport_notification( self, encoding, obj_id, command_id, **kw ):
+        request = tClientNotification.instantiate(
+            iface='test_iface',
+            path=[TestModule.name, TestObject.class_name, obj_id],
+            command_id=command_id,
+            params=test_iface.get_request_params_type(command_id).instantiate(**kw),
+            )
+        print 'Sending client notification:'
+        pprint(tClientPacket, request)
+        request_packet = tPacket.instantiate(
+            aux_info=tAuxInfo.instantiate(requirements=[], modules=[]),
+            payload=packet_coders.encode(encoding, request, tClientPacket))
+        transport_request = tTransportPacket.instantiate(
+            transport_id='tcp.%s' % encoding,
+            data=packet_coders.encode(encoding, request_packet, tPacket))
+        return transport_request
+
     def decode_tcp_transport_response( self, encoding, response_transport_packet ):
         self.assertEqual('tcp.%s' % encoding, response_transport_packet.transport_id)
         response_packet = packet_coders.decode(encoding, response_transport_packet.data, tPacket)
@@ -136,6 +154,12 @@ class ServerTest(unittest.TestCase):
 
     def execute_tcp_request( self, encoding, obj_id, command_id, **kw ):
         transport_request = self.make_tcp_transport_request(encoding, obj_id, command_id, **kw)
+        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+        response = self.decode_tcp_transport_response(encoding, response_transport_packet)
+        return response
+
+    def execute_tcp_notification( self, encoding, obj_id, command_id, **kw ):
+        transport_request = self.make_tcp_transport_notification(encoding, obj_id, command_id, **kw)
         response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
         response = self.decode_tcp_transport_response(encoding, response_transport_packet)
         return response
@@ -168,3 +192,14 @@ class ServerTest(unittest.TestCase):
         self.assertEqual('test_iface', update.iface)
         self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
         self.assertEqual(message, update.diff)
+
+    def test_tcp_cdr_unsubscribe_notification_request( self ):
+        self._test_unsubscribe_notification_tcp_request('cdr')
+
+    def test_tcp_json_unsubscribe_notification_request( self ):
+        self._test_unsubscribe_notification_tcp_request('json')
+
+    def _test_unsubscribe_notification_tcp_request( self, encoding ):
+        obj_id = '1'
+        response = self.execute_tcp_request(encoding, obj_id=obj_id, command_id='subscribe')
+        response = self.execute_tcp_notification(encoding, obj_id=obj_id, command_id='unsubscribe')
