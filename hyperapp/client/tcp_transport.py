@@ -49,7 +49,7 @@ class TcpTransport(Transport):
         return encode_transport_packet(transport_packet)
 
     def _produce_connection( self, server, host, port ):
-        key = (server.endpoint.public_key, host, port)
+        key = (server.endpoint.public_key.get_id(), host, port)
         connection = self.connections.get(key)
         if not connection:
             connection = TcpConnection(server.endpoint.public_key, host, port)

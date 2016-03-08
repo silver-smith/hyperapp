@@ -34,12 +34,12 @@ class ProxyRegistry(object):
         assert key not in self.instances, repr(key)  # Already registered. Duplicate?
         self.instances[key] = object
 
-    def resolve( self, server, path ):
-        key = self._make_key(server, path)
+    def resolve( self, server_public_key, path ):
+        key = self._make_key(server_public_key, path)
         return self.instances.get(key)
 
-    def _make_key( self, server, path ):
-        return (server.get_id(),) + tuple(path)
+    def _make_key( self, server_public_key, path ):
+        return (server_public_key.get_id(),) + tuple(path)
 
 
 proxy_class_registry = ProxyClassRegistry()

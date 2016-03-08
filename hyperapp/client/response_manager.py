@@ -50,7 +50,7 @@ class ResponseManager(object):
     def _process_packet( self, server_public_key, packet, payload_decoder ):
         payload = payload_decoder(packet.payload)
         response_or_notification = ResponseBase.from_data(self, iface_registry, payload)
-        self._process_updates(response_or_notification.updates)
+        self._process_updates(server_public_key, response_or_notification.updates)
         if isinstance(response_or_notification, Response):
             response = response_or_notification
             print '   response for request', response.command_id, response.request_id
@@ -62,9 +62,9 @@ class ResponseManager(object):
             server = Server.produce(self._load_endpoint(server_public_key))
             request.process_response(server, response)
 
-    def _process_updates( self, updates ):
+    def _process_updates( self, server_public_key, updates ):
         for update in updates:
-            obj = proxy_registry.resolve(self, update.path)
+            obj = proxy_registry.resolve(server_public_key, update.path)
             if obj:
                 obj.process_update(update.diff)
             # otherwize object is already gone and updates must be discarded

@@ -35,7 +35,7 @@ class TcpConnection(object):
         self.socket.connectToHost(self.host, self.port)
 
     def trace( self, msg ):
-        print 'tcp to %s:%d: %s' % (self.host, self.port, msg)
+        print 'tcp to %s at %s:%d: %s' % (self.server_public_key.get_short_id_hex(), self.host, self.port, msg)
 
     def on_error( self, error ):
         self.trace('Error: %s' % error)
