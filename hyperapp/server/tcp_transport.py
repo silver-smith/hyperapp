@@ -4,7 +4,7 @@ from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
-from .request import RequestBase
+from .request import RequestBase, ServerNotification
 from .transport import Transport, transport_registry
 from .transport_session import TransportSession
 from .server import Server
@@ -12,9 +12,10 @@ from .server import Server
 
 class TcpSession(TransportSession):
 
-    def __init__( self, transport_id ):
+    def __init__( self, transport ):
+        assert isinstance(transport, TcpTransport), repr(transport)
         TransportSession.__init__(self)
-        self.transport_id = transport_id
+        self.transport = transport
         self.updates = Queue()  # tUpdate list
 
     def __repr__( self ):
@@ -47,9 +48,9 @@ class TcpSession(TransportSession):
         aux_info = Server.prepare_aux_info(notification_data)
         print '-- sending notification'
         pprint(tAuxInfo, aux_info)
-        pprint(tServerPacket, notification)
-        packet_data = TcpTransport.encode_response_or_notification(self.encoding, aux_info, response_or_notification)
-        return [tTransportPacket.instantiate(self.transport_id, packet_data)]
+        pprint(tServerPacket, notification_data)
+        packet_data = self.transport.encode_response_or_notification(aux_info, notification_data)
+        return [tTransportPacket.instantiate(self.transport.get_transport_id(), packet_data)]
 
 
 class TcpTransport(Transport):
@@ -66,7 +67,7 @@ class TcpTransport(Transport):
     def process_packet( self, iface_registry, server, session_list, data ):
         session = session_list.get_transport_session(self.get_transport_id())
         if session is None:
-           session = TcpSession(self.get_transport_id())
+           session = TcpSession(self)
            session_list.set_transport_session(self.get_transport_id(), session) 
         packet = packet_coders.decode(self.encoding, data, tPacket)
         request_rec = packet_coders.decode(self.encoding, packet.payload, tClientPacket)
@@ -80,14 +81,13 @@ class TcpTransport(Transport):
         aux_info, response_or_notification = result
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, response_or_notification)
-        packet_data = self.encode_response_or_notification(self.encoding, aux_info, response_or_notification)
+        packet_data = self.encode_response_or_notification(aux_info, response_or_notification)
         return packet_data
 
-    @staticmethod
-    def encode_response_or_notification( encoding, aux_info, response_or_notification ):
-        payload = packet_coders.encode(encoding, response_or_notification, tServerPacket)
+    def encode_response_or_notification( self, aux_info, response_or_notification ):
+        payload = packet_coders.encode(self.encoding, response_or_notification, tServerPacket)
         packet = Packet(aux_info, payload)
-        packet_data = packet_coders.encode(encoding, packet, tPacket)
+        packet_data = packet_coders.encode(self.encoding, packet, tPacket)
         return packet_data
 
 

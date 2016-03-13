@@ -152,9 +152,11 @@ class ServerTest(unittest.TestCase):
         pprint(tServerPacket, response)
         return response
 
-    def execute_tcp_request( self, encoding, obj_id, command_id, **kw ):
+    def execute_tcp_request( self, encoding, obj_id, command_id, session_list=None, **kw ):
+        if session_list is None:
+            session_list = self.session_list
         transport_request = self.make_tcp_transport_request(encoding, obj_id, command_id, **kw)
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, session_list, transport_request)
         response = self.decode_tcp_transport_response(encoding, response_transport_packet)
         return response
 
@@ -202,3 +204,31 @@ class ServerTest(unittest.TestCase):
         obj_id = '1'
         response = self.execute_tcp_request(encoding, obj_id=obj_id, command_id='subscribe')
         response = self.execute_tcp_notification(encoding, obj_id=obj_id, command_id='unsubscribe')
+
+    def test_tcp_cdr_server_notification( self ):
+        self._test_tcp_server_notification('cdr')
+
+    def test_tcp_json_server_notification( self ):
+        self._test_tcp_server_notification('json')
+
+    def _test_tcp_server_notification( self, encoding ):
+        message = 'hi, all!'
+        obj_id = '1'
+        session1 = TransportSessionList()
+        session2 = TransportSessionList()
+
+        response = self.execute_tcp_request(encoding, obj_id=obj_id, command_id='subscribe', session_list=session1)
+        response = self.execute_tcp_request(encoding, obj_id=obj_id, command_id='subscribe', session_list=session2)
+
+        response = self.execute_tcp_request(encoding, obj_id=obj_id, command_id='broadcast', session_list=session2, message=message)
+        notifications = session1.pull_notification_transport_packets()
+
+        self.assertEqual(1, len(notifications))
+        notification_packet = notifications[0]
+        tTransportPacket.validate('<TransportPacket>', notification_packet)
+        notification = self.decode_tcp_transport_response(encoding, notification_packet)
+        self.assertEqual(1, len(notification.updates))
+        update = notification.updates[0]
+        self.assertEqual('test_iface', update.iface)
+        self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
+        self.assertEqual(message, update.diff)
