@@ -4,6 +4,7 @@ from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_t
 from ..common.transport_packet import decode_transport_packet
 from .util import call_in_future
 from .transport import transport_registry
+from .transport_session import TransportSessionList
 
 
 RECONNECT_INTERVAL_MS = 2000
@@ -27,6 +28,7 @@ class TcpConnection(object):
         self.server_public_key = server_public_key
         self.host = host
         self.port = port
+        self.session_list = TransportSessionList()
         self.socket = None
         self.connected = False
         self.send_buf = ''
@@ -41,6 +43,9 @@ class TcpConnection(object):
         self.socket.bytesWritten.connect(self.on_bytes_written)
         self.socket.readyRead.connect(self.on_ready_read)
         self._connect()
+
+    def get_session_list( self ):
+        return self.session_list
 
     def _connect( self ):
         self.socket.connectToHost(self.host, self.port)

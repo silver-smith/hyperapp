@@ -8,6 +8,7 @@ from hyperapp.client.application import Application
 
 # self-registering transports:
 import hyperapp.client.tcp_transport
+import hyperapp.client.encrypted_transport
 
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
