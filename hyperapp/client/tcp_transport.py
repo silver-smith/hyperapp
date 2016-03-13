@@ -13,8 +13,6 @@ JSON_TRANSPORT_ID = 'tcp.json'
 
 class TcpTransport(Transport):
 
-    connections = {}  # (server public key, host, port) -> Connection
-
     def __init__( self, transport_id, encoding ):
         self.transport_id = transport_id
         self.encoding = encoding
@@ -26,8 +24,8 @@ class TcpTransport(Transport):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
-        connection = self._produce_connection(server, host, port)
         packet = self._make_packet(payload, payload_type, aux_info)
+        connection = TcpConnection.produce(server.endpoint.public_key, host, port)
         connection.send_data(packet)
         return True
 
@@ -47,14 +45,6 @@ class TcpTransport(Transport):
         encoded_packet = packet_coders.encode(self.encoding, packet, tPacket)
         transport_packet = tTransportPacket.instantiate(self.transport_id, encoded_packet)
         return encode_transport_packet(transport_packet)
-
-    def _produce_connection( self, server, host, port ):
-        key = (server.endpoint.public_key.get_id(), host, port)
-        connection = self.connections.get(key)
-        if not connection:
-            connection = TcpConnection(server.endpoint.public_key, host, port)
-            self.connections[key] = connection
-        return connection
 
 
 TcpTransport(CDR_TRANSPORT_ID, 'cdr').register()

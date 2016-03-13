@@ -11,6 +11,17 @@ RECONNECT_INTERVAL_MS = 2000
 
 class TcpConnection(object):
 
+    _connections = {}  # (server public key, host, port) -> Connection
+
+    @classmethod
+    def produce( cls, server_public_key, host, port ):
+        key = (server_public_key.get_id(), host, port)
+        connection = cls._connections.get(key)
+        if not connection:
+            connection = cls(server_public_key, host, port)
+            cls._connections[key] = connection
+        return connection
+
     def __init__( self, server_public_key, host, port ):
         assert isinstance(server_public_key, PublicKey), repr(server_public_key)
         self.server_public_key = server_public_key
@@ -80,6 +91,7 @@ class TcpConnection(object):
             self.trace('consumed %d bytes, remained %d' % (packet_size, len(self.recv_buf)))
 
     def send_data( self, contents ):
+        assert isinstance(contents, str), repr(contents)
         data = encode_tcp_packet(contents)
         self.trace('sending data, old=%d, write=%d, new=%d' % (len(self.send_buf), len(data), len(self.send_buf) + len(data)))
         if self.connected and not self.send_buf:
