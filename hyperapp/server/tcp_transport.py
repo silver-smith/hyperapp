@@ -22,17 +22,14 @@ class TcpSession(TransportSession):
         return 'TcpChannel'
 
     def send_update( self, update ):
-        print '--> update to be sent:'
-        pprint(tUpdate, update)
-        tUpdate.validate('<Update>', update)
+        print '    update to be sent to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
         self.updates.put(update)
-        print '--<'
 
     def _pop_all( self ):
         updates = []
         while not self.updates.empty():
             updates.append(self.updates.get())
-        return reversed(updates)
+        return list(reversed(updates))
 
     def pop_updates( self ):
         return self._pop_all()
@@ -46,7 +43,7 @@ class TcpSession(TransportSession):
             notification.add_update(update)
         notification_data = notification.to_data()
         aux_info = Server.prepare_aux_info(notification_data)
-        print '-- sending notification'
+        print '-- sending notification to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, notification_data)
         packet_data = self.transport.encode_response_or_notification(aux_info, notification_data)

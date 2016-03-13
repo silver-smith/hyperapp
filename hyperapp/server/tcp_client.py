@@ -78,6 +78,7 @@ class TcpClient(object):
                 packet_data = self.conn.receive(NOTIFICATION_DELAY_TIME)
                 if not packet_data:  # receive timed out
                     for transport_packet in self.session_list.pull_notification_transport_packets():
+                        print 'sending %r notification:' % transport_packet.transport_id
                         self._send_notification(transport_packet)
                     continue
                 self._process_packet(packet_data)

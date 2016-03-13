@@ -48,7 +48,7 @@ class Server(object):
         if response is None and isinstance(request, Request):
             response = request.make_response()  # client need a response to cleanup waiting response handler
         updates = request.peer_channel.pop_updates()
-        if response is None and not updates:
+        if response is None and updates:
             response = ServerNotification()
         for update in updates or []:
             response.add_update(update)
