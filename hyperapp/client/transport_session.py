@@ -9,5 +9,5 @@ class TransportSessionList(object):
         return self.transport2session.get(transport_id)
 
     def set_transport_session( self, transport_id, session ):
-        assert isinstance(session, TransportSession), repr(session)
+        #assert isinstance(session, TransportSession), repr(session)
         self.transport2session[transport_id] = session

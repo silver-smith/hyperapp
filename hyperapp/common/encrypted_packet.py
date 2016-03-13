@@ -9,6 +9,7 @@ tEncryptedInitialPacket = TRecord([
     ])
 
 tEncryptedPacket = TRecord([
+    Field('cbc_iv', tBinary),
     Field('encrypted_contents', tBinary),
     Field('hash', tBinary),
     ])

@@ -7,6 +7,10 @@ from ..common.identity import Identity
 from ..common.endpoint import Endpoint, Url
 from .module import Module
 from .tcp_client import TcpClient
+
+
+#TRANSPORT_ID = 'tcp.cdr'
+TRANSPORT_ID = 'encrypted_tcp'
           
 
 class TcpServer(object):
@@ -29,7 +33,7 @@ class TcpServer(object):
         return self.identity.get_public_key()
 
     def get_endpoint( self ):
-        route = ['tcp.cdr', self.host, str(self.port)]
+        route = [TRANSPORT_ID, self.host, str(self.port)]
         return Endpoint(self.identity.get_public_key(), [route])
 
     def run( self ):
