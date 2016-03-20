@@ -8,7 +8,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
 
 
-KEY_SIZE = 4096
+RSA_KEY_SIZE = 4096
 
 
 def create_identity( fpath, overwrite ):
@@ -21,11 +21,11 @@ def create_identity( fpath, overwrite ):
         print 'identity file %r is already exists' % public_fpath
         return
 
-    print 'generating rsa key of size %d...' % KEY_SIZE,
+    print 'generating rsa key of size %d...' % RSA_KEY_SIZE,
     sys.stdout.flush()
     private_key = rsa.generate_private_key(
         public_exponent=65537,
-        key_size=KEY_SIZE,
+        key_size=RSA_KEY_SIZE,
         backend=default_backend()
     )
     print ' ... done'
