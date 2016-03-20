@@ -37,8 +37,8 @@ def main():
 
     identity = Identity.load_from_file(args.identity_fpath)
     host, port = parse_addr(args.addr)
-    server = Server(args.test_delay)
-    tcp_server = TcpServer(server, identity, host, port)
+    server = Server(identity, args.test_delay)
+    tcp_server = TcpServer(server, host, port)
     tcp_server.get_endpoint().save_to_file(args.endpoint_fpath)
     tcp_server.run()
 

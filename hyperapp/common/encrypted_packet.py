@@ -4,9 +4,10 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from .htypes import tBinary, Field, TRecord
-from .identity import PublicKey
+from .identity import Identity, PublicKey
 
 
+ENCODING = 'cdr'
 AES_KEY_SIZE = 256
 AES_BLOCK_SIZE = 128
 
@@ -28,7 +29,7 @@ tEncryptedPacket = TRecord([
 def make_session_key():
     return os.urandom(AES_KEY_SIZE/8)
 
-def encrypt_packet( session_key, server_public_key, plain_contents ):
+def encrypt_initial_packet( session_key, server_public_key, plain_contents ):
     assert isinstance(session_key, str), repr(session_key)
     assert isinstance(server_public_key, PublicKey), repr(server_public_key)
     assert isinstance(plain_contents, str), repr(plain_contents)
@@ -49,3 +50,22 @@ def encrypt_packet( session_key, server_public_key, plain_contents ):
     hash = digest.finalize()
     # done
     return tEncryptedInitialPacket.instantiate(encrypted_session_key, cbc_iv, encrypted_contents, hash)
+
+def decrypt_initial_packet( identity, encrypted_initial_packet ):
+    assert isinstance(identity, Identity), repr(identity)
+    tEncryptedInitialPacket.validate('EncryptedInitialPacket', encrypted_initial_packet)
+    # check hash first
+    digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
+    digest.update(encrypted_initial_packet.encrypted_contents)
+    hash = digest.finalize()
+    if hash != encrypted_initial_packet.hash:
+        raise RuntimeError('encrypted_contents hash does not match')
+    # decode session key and contents
+    session_key = identity.decrypt(encrypted_initial_packet.encrypted_session_key)
+    symmetric_cipher = Cipher(algorithms.AES(session_key), modes.CBC(encrypted_initial_packet.cbc_iv), backend=default_backend())
+    decryptor = symmetric_cipher.decryptor()
+    padded_plaintext = decryptor.update(encrypted_initial_packet.encrypted_contents) + decryptor.finalize()
+    # unpad
+    unpadder = padding.PKCS7(AES_BLOCK_SIZE).unpadder()
+    plaintext = unpadder.update(padded_plaintext) + unpadder.finalize()
+    return plaintext

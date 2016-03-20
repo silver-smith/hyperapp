@@ -3,7 +3,6 @@ import time
 import threading
 import socket
 import select
-from ..common.identity import Identity
 from ..common.endpoint import Endpoint, Url
 from .module import Module
 from .tcp_client import TcpClient
@@ -15,10 +14,8 @@ TRANSPORT_ID = 'encrypted_tcp'
 
 class TcpServer(object):
 
-    def __init__( self, server, identity, host, port ):
-        assert isinstance(identity, Identity), repr(identity)
+    def __init__( self, server, host, port ):
         self.server = server
-        self.identity = identity
         self.host = host
         self.port = port
         self.client2thread = {}  # client -> thread
@@ -29,12 +26,9 @@ class TcpServer(object):
         self.socket.listen(5)
         print 'listening on port %s:%d' % (self.host, self.port)
 
-    def get_public_key( self ):
-        return self.identity.get_public_key()
-
     def get_endpoint( self ):
         route = [TRANSPORT_ID, self.host, str(self.port)]
-        return Endpoint(self.identity.get_public_key(), [route])
+        return Endpoint(self.server.get_public_key(), [route])
 
     def run( self ):
         Module.init_phases()
@@ -74,10 +68,3 @@ class TcpServer(object):
         self.finished_threads.append(self.client2thread[client])
         del self.client2thread[client]
         print 'client %s:%d is gone' % client.addr
-
-    def is_mine_url( self, url ):
-        assert isinstance(url, Url), repr(url)
-        return url.endpoint.public_key == self.identity.get_public_key()
-
-    def make_url( self, path ):
-        return Url(self.get_endpoint(), path)

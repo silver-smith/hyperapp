@@ -15,14 +15,15 @@ from hyperapp.common.htypes import (
     )
 from hyperapp.common.htypes import IfaceRegistry
 from hyperapp.common.transport_packet import tTransportPacket
-from hyperapp.common.identity import PublicKey
-from hyperapp.common.encrypted_packet import tEncryptedPacket, tEncryptedInitialPacket, make_session_key, encrypt_packet
+from hyperapp.common.identity import Identity, PublicKey
+from hyperapp.common.encrypted_packet import tEncryptedPacket, tEncryptedInitialPacket, make_session_key, encrypt_initial_packet
 from hyperapp.common.packet import tAuxInfo, tPacket
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
 from hyperapp.server.request import RequestBase
 from hyperapp.server.transport import transport_registry
 import hyperapp.server.tcp_transport  # self-registering
+import hyperapp.server.encrypted_transport  # self-registering
 import hyperapp.server.module as module_mod
 from hyperapp.server.object import Object, subscription
 from hyperapp.server.server import Server
@@ -94,11 +95,10 @@ class TestSession(TransportSession):
     pass
 
 
-server_private_key = rsa.generate_private_key(
+server_identity = Identity('rsa', rsa.generate_private_key(
     public_exponent=65537,
     key_size=RSA_KEY_SIZE,
-    backend=default_backend())
-server_public_key = PublicKey('rsa', server_private_key.public_key())
+    backend=default_backend()))
 
 
 class ServerTest(unittest.TestCase):
@@ -107,7 +107,7 @@ class ServerTest(unittest.TestCase):
         self.iface_registry = IfaceRegistry()
         self.iface_registry.register(test_iface)
         self.test_module = TestModule()  # self-registering
-        self.server = Server()
+        self.server = Server(server_identity)
         self.session_list = TransportSessionList()
 
     def test_simple_request( self ):
@@ -147,7 +147,7 @@ class ServerTest(unittest.TestCase):
             session = TestSession()
             session.session_key = make_session_key()
             session_list.set_transport_session('test.encrypted_tcp', session)
-        packet = encrypt_packet(session.session_key, server_public_key, data)
+        packet = encrypt_initial_packet(session.session_key, server_identity.get_public_key(), data)
         return self.encode_packet(transport_id, packet, tEncryptedInitialPacket)
 
     def make_tcp_transport_request( self, session_list, transport_id, obj_id, command_id, **kw ):

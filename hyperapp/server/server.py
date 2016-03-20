@@ -1,5 +1,6 @@
 import time
 from ..common.htypes import tServerPacket
+from ..common.identity import Identity
 from ..common.packet import AuxInfo
 from ..common.object_path_collector import ObjectPathCollector
 from ..common.visual_rep import pprint
@@ -12,8 +13,23 @@ from . import module
 
 class Server(object):
 
-    def __init__( self, test_delay_sec=None ):
+    def __init__( self, identity, test_delay_sec=None ):
+        assert isinstance(identity, Identity), repr(identity)
+        self.identity = identity
         self.test_delay_sec = test_delay_sec  # float
+
+    def get_identity( self ):
+        return self.identity
+
+    def get_public_key( self ):
+        return self.identity.get_public_key()
+
+    def make_url( self, path ):
+        return Url(self.get_endpoint(), path)
+
+    def is_mine_url( self, url ):
+        assert isinstance(url, Url), repr(url)
+        return url.endpoint.public_key == self.get_public_key()
 
     def process_request( self, request ):
         assert isinstance(request, RequestBase), repr(request)
