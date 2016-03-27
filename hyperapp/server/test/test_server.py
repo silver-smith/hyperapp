@@ -26,7 +26,7 @@ from hyperapp.common.encrypted_packet import (
 from hyperapp.common.packet import tAuxInfo, tPacket
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
-from hyperapp.server.request import RequestBase
+from hyperapp.server.request import PeerChannel, RequestBase
 from hyperapp.server.transport import transport_registry
 import hyperapp.server.tcp_transport  # self-registering
 import hyperapp.server.encrypted_transport  # self-registering
@@ -88,7 +88,7 @@ class TestModule(module_mod.Module):
         path.raise_not_found()
 
         
-class PhonyChannel(object):
+class PhonyChannel(PeerChannel):
 
     def send_update( self ):
         pass

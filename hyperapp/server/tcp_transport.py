@@ -4,10 +4,30 @@ from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
-from .request import RequestBase, ServerNotification
+from .request import PeerChannel, RequestBase, ServerNotification
 from .transport import Transport, transport_registry
 from .transport_session import TransportSession
 from .server import Server
+
+
+class TcpChannel(PeerChannel):
+
+    def __init__( self, transport ):
+        self.transport = transport
+        self.updates = Queue()  # tUpdate list
+
+    def _pop_all( self ):
+        updates = []
+        while not self.updates.empty():
+            updates.append(self.updates.get())
+        return list(reversed(updates))
+
+    def send_update( self, update ):
+        print '    update to be sent to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+        self.updates.put(update)
+
+    def pop_updates( self ):
+        return self._pop_all()
 
 
 class TcpSession(TransportSession):
@@ -16,26 +36,13 @@ class TcpSession(TransportSession):
         assert isinstance(transport, TcpTransport), repr(transport)
         TransportSession.__init__(self)
         self.transport = transport
-        self.updates = Queue()  # tUpdate list
+        self.channel = TcpChannel(transport)
 
-    def __repr__( self ):
-        return 'TcpChannel'
-
-    def send_update( self, update ):
-        print '    update to be sent to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
-        self.updates.put(update)
-
-    def _pop_all( self ):
-        updates = []
-        while not self.updates.empty():
-            updates.append(self.updates.get())
-        return list(reversed(updates))
-
-    def pop_updates( self ):
-        return self._pop_all()
+    ## def __repr__( self ):
+    ##     return 'TcpChannel'
 
     def pull_notification_transport_packets( self ):
-        updates = self._pop_all()
+        updates = self.channel._pop_all()
         if not updates:
             return []
         notification = ServerNotification()
@@ -69,7 +76,7 @@ class TcpTransport(Transport):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         request_rec = packet_coders.decode(self.encoding, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_data(server, session, iface_registry, request_rec)
+        request = RequestBase.from_data(server, session.channel, iface_registry, request_rec)
 
         result = server.process_request(request)
 

@@ -1,10 +1,23 @@
 from ..common.htypes import tUpdate, tClientPacket, tClientNotification, tRequest, tServerNotification, tResponse
 
 
+class PeerChannel(object):
+
+    def get_id( self ):
+        return hex(id(self))[-6:]
+
+    def send_update( self, update ):
+        raise NotImplementedError(self.__class__)
+
+    def pop_updates( self ):
+        raise NotImplementedError(self.__class__)
+
+
 class RequestBase(object):
 
     @classmethod
     def from_data( cls, me, peer_channel, iface_registry, rec ):
+        assert isinstance(peer_channel, PeerChannel), repr(peer_channel)
         tClientPacket.validate('<ClientPacket>', rec)
         iface = iface_registry.resolve(rec.iface)
         if tClientPacket.isinstance(rec, tRequest):
