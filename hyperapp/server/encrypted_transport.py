@@ -1,8 +1,12 @@
 from Queue import Queue
-from .transport import Transport, transport_registry
-from .transport_session import TransportSession
+from ..common.htypes import tClientPacket, tServerPacket
+from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.encrypted_packet import ENCODING, tEncryptedInitialPacket, decrypt_initial_packet
 from ..common.packet_coders import packet_coders
+from ..common.visual_rep import pprint
+from .request import RequestBase
+from .transport import Transport, transport_registry
+from .transport_session import TransportSession
 
 
 class EncryptedTcpSession(TransportSession):
@@ -12,6 +16,9 @@ class EncryptedTcpSession(TransportSession):
         TransportSession.__init__(self)
         self.transport = transport
         self.updates = Queue()  # tUpdate list
+
+    def pop_updates( self ):
+        return []
 
 
 class EncryptedTcpTransport(Transport):
@@ -28,7 +35,7 @@ class EncryptedTcpTransport(Transport):
            session = EncryptedTcpSession(self)
            session_list.set_transport_session(self.get_transport_id(), session)
         packet_data = self.decrypt_packet(server, session, data)
-        packet = packet_coders.decode(self.encoding, packet_data, tPacket)
+        packet = packet_coders.decode(ENCODING, packet_data, tPacket)
         request_rec = packet_coders.decode(ENCODING, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
         request = RequestBase.from_data(server, session, iface_registry, request_rec)
@@ -41,6 +48,12 @@ class EncryptedTcpTransport(Transport):
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, response_or_notification)
         packet_data = self.encode_response_or_notification(aux_info, response_or_notification)
+        return packet_data
+
+    def encode_response_or_notification( self, aux_info, response_or_notification ):
+        payload = packet_coders.encode(ENCODING, response_or_notification, tServerPacket)
+        packet = Packet(aux_info, payload)
+        packet_data = packet_coders.encode(ENCODING, packet, tPacket)
         return packet_data
 
     def decrypt_packet( self, server, session, data ):
