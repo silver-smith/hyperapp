@@ -7,6 +7,7 @@ from hyperapp.server.tcp_server import TcpServer
 
 # self-registering modules:
 import hyperapp.server.tcp_transport
+import hyperapp.server.encrypted_transport
 import hyperapp.server.ponyorm_module
 import hyperapp.server.fs
 import hyperapp.server.article

@@ -1,7 +1,7 @@
 from Queue import Queue
 from ..common.htypes import tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket, Packet
-from ..common.encrypted_packet import ENCODING, tEncryptedInitialPacket, decrypt_initial_packet
+from ..common.encrypted_packet import ENCODING, tEncryptedInitialPacket, tEncryptedPacket, decrypt_initial_packet, encrypt_packet
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from .request import RequestBase
@@ -15,9 +15,16 @@ class EncryptedTcpSession(TransportSession):
         assert isinstance(transport, EncryptedTcpTransport), repr(transport)
         TransportSession.__init__(self)
         self.transport = transport
+        self.session_key = None
         self.updates = Queue()  # tUpdate list
 
+    def send_update( self, update ):
+        print '    update to be sent to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+
     def pop_updates( self ):
+        return []
+
+    def pull_notification_transport_packets( self ):
         return []
 
 
@@ -47,18 +54,22 @@ class EncryptedTcpTransport(Transport):
         aux_info, response_or_notification = result
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, response_or_notification)
-        packet_data = self.encode_response_or_notification(aux_info, response_or_notification)
+        packet_data = self.encode_response_or_notification(session, aux_info, response_or_notification)
         return packet_data
 
-    def encode_response_or_notification( self, aux_info, response_or_notification ):
+    def encode_response_or_notification( self, session, aux_info, response_or_notification ):
+        assert session.session_key  # must be set when initial packet is received
         payload = packet_coders.encode(ENCODING, response_or_notification, tServerPacket)
         packet = Packet(aux_info, payload)
         packet_data = packet_coders.encode(ENCODING, packet, tPacket)
-        return packet_data
+        encrypted_packet = encrypt_packet(session.session_key, packet_data)
+        return packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
 
     def decrypt_packet( self, server, session, data ):
         encrypted_initial_packet = packet_coders.decode(ENCODING, data, tEncryptedInitialPacket)
-        return decrypt_initial_packet(server.get_identity(), encrypted_initial_packet)
+        session_key, plain_text = decrypt_initial_packet(server.get_identity(), encrypted_initial_packet)
+        session.session_key = session_key
+        return plain_text
 
 
 EncryptedTcpTransport().register(transport_registry)
