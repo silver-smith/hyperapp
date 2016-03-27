@@ -20,9 +20,16 @@ class EncryptedTcpSession(TransportSession):
 
     def send_update( self, update ):
         print '    update to be sent to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+        self.updates.put(update)
+
+    def _pop_all( self ):
+        updates = []
+        while not self.updates.empty():
+            updates.append(self.updates.get())
+        return list(reversed(updates))
 
     def pop_updates( self ):
-        return []
+        return self._pop_all()
 
     def pull_notification_transport_packets( self ):
         return []
