@@ -71,10 +71,12 @@ def decrypt_initial_packet( identity, encrypted_initial_packet ):
     return (session_key, plain_text)
 
 def decrypt_packet( session_key, encrypted_packet ):
+    assert isinstance(session_key, str), repr(session_key)
     tEncryptedPacket.validate('EncryptedPacket', encrypted_packet)
     return _decrypt(session_key, encrypted_packet)
 
 def _decrypt( session_key, encrypted_packet ):
+    assert isinstance(session_key, str), repr(session_key)
     # check hash first
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
     digest.update(encrypted_packet.encrypted_contents)
