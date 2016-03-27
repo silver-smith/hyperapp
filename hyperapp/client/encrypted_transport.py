@@ -14,9 +14,6 @@ from .transport import Transport, transport_registry
 from .tcp_connection import TcpConnection
 
 
-class HashMismatchError(Exception): pass
-
-
 TRANSPORT_ID = 'encrypted_tcp'
 ENCODING = 'cdr'
 

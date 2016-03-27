@@ -12,6 +12,10 @@ AES_KEY_SIZE = 256
 AES_BLOCK_SIZE = 128
 
 
+class HashMismatchError(Exception):
+    pass
+
+
 tEncryptedInitialPacket = TRecord([
     Field('encrypted_session_key', tBinary),
     Field('cbc_iv', tBinary),
@@ -82,7 +86,7 @@ def _decrypt( session_key, encrypted_packet ):
     digest.update(encrypted_packet.encrypted_contents)
     hash = digest.finalize()
     if hash != encrypted_packet.hash:
-        raise RuntimeError('encrypted_contents hash does not match')
+        raise HashMismatchError('encrypted_contents hash does not match')
     # decode session key and contents
     symmetric_cipher = Cipher(algorithms.AES(session_key), modes.CBC(encrypted_packet.cbc_iv), backend=default_backend())
     decryptor = symmetric_cipher.decryptor()

@@ -34,6 +34,7 @@ class TransportRegistry(object):
 
     def process_packet( self, session_list, server_public_key, packet ):
         tTransportPacket.validate('<TransportPacket>', packet)
+        print 'received %r packet, contents %d bytes' % (packet.transport_id, len(packet.data))
         transport = self.resolve(packet.transport_id)
         transport.process_packet(session_list, server_public_key, packet.data)
         

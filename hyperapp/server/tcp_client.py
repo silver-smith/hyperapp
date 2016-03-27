@@ -10,7 +10,6 @@ from .transport import transport_registry
 from .transport_session import TransportSessionList
 
 
-PACKET_ENCODING = 'cdr'
 NOTIFICATION_DELAY_TIME = 1  # sec
 RECV_SIZE = 4096
 

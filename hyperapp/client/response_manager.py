@@ -1,6 +1,6 @@
 # manage packats - responses and notifications from servers
 
-from ..common.htypes import iface_registry
+from ..common.htypes import tServerPacket, iface_registry
 from ..common.endpoint import Endpoint
 from ..common.packet import tPacket
 from ..common.visual_rep import pprint
@@ -49,6 +49,7 @@ class ResponseManager(object):
 
     def _process_packet( self, server_public_key, packet, payload_decoder ):
         payload = payload_decoder(packet.payload)
+        pprint(tServerPacket, payload)
         response_or_notification = ResponseBase.from_data(self, iface_registry, payload)
         self._process_updates(server_public_key, response_or_notification.updates)
         if isinstance(response_or_notification, Response):
