@@ -21,19 +21,6 @@ TRANSPORT_ID = 'encrypted_tcp'
 ENCODING = 'cdr'
 
 
-    ## def decrypt( self, identity ):
-    ##     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
-    ##     digest.update(self.encrypted_contents)
-    ##     hash = digest.finalize()
-    ##     if hash != self.hash:
-    ##         raise HashMismatchError('Hash for received message does not match')
-    ##     session_key = identity.decrypt(self.encrypted_session_key)
-    ##     symmetric_cipher = Cipher(algorithms.AES(session_key), modes.CBC(self.cbc_iv), backend=default_backend())
-    ##     decryptor = symmetric_cipher.decryptor()
-    ##     plain_context = decryptor.update(self.encrypted_contents) + decryptor.finalize()
-    ##     return plain_context
-
-
 class Session(object):
 
     def __init__( self, session_key ):
