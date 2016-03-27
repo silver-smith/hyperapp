@@ -98,7 +98,9 @@ class PhonyChannel(object):
 
 
 class TestSession(TransportSession):
-    pass
+
+    def pull_notification_transport_packets( self ):
+        return []
 
 
 server_identity = Identity('rsa', rsa.generate_private_key(

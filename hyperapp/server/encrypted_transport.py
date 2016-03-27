@@ -1,12 +1,14 @@
 from Queue import Queue
 from ..common.htypes import tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket, Packet
+from ..common.transport_packet import tTransportPacket
 from ..common.encrypted_packet import ENCODING, tEncryptedInitialPacket, tEncryptedPacket, decrypt_initial_packet, encrypt_packet
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
-from .request import RequestBase
+from .request import RequestBase, ServerNotification
 from .transport import Transport, transport_registry
 from .transport_session import TransportSession
+from .server import Server
 
 
 class EncryptedTcpSession(TransportSession):
@@ -32,7 +34,19 @@ class EncryptedTcpSession(TransportSession):
         return self._pop_all()
 
     def pull_notification_transport_packets( self ):
-        return []
+        updates = self._pop_all()
+        if not updates:
+            return []
+        notification = ServerNotification()
+        for update in updates:
+            notification.add_update(update)
+        notification_data = notification.to_data()
+        aux_info = Server.prepare_aux_info(notification_data)
+        print '-- sending notification to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+        pprint(tAuxInfo, aux_info)
+        pprint(tServerPacket, notification_data)
+        packet_data = self.transport.encode_response_or_notification(self, aux_info, notification_data)
+        return [tTransportPacket.instantiate(self.transport.get_transport_id(), packet_data)]
 
 
 class EncryptedTcpTransport(Transport):
