@@ -18,7 +18,6 @@ from hyperapp.common.transport_packet import tTransportPacket
 from hyperapp.common.identity import Identity, PublicKey
 from hyperapp.common.encrypted_packet import (
     tEncryptedPacket,
-    tEncryptedInitialPacket,
     make_session_key,
     encrypt_initial_packet,
     decrypt_packet,
@@ -156,7 +155,7 @@ class ServerTest(unittest.TestCase):
             session.session_key = make_session_key()
             session_list.set_transport_session('test.encrypted_tcp', session)
         packet = encrypt_initial_packet(session.session_key, server_identity.get_public_key(), data)
-        return self.encode_packet(transport_id, packet, tEncryptedInitialPacket)
+        return self.encode_packet(transport_id, packet, tEncryptedPacket)
 
     def decrypt_packet( self, session_list, transport_id, data ):
         if transport_id != 'encrypted_tcp':
@@ -164,7 +163,8 @@ class ServerTest(unittest.TestCase):
         session = session_list.get_transport_session('test.encrypted_tcp')
         assert session is not None  # must be created by encrypt_packet
         encrypted_packet = self.decode_packet(transport_id, data, tEncryptedPacket)
-        return decrypt_packet(session.session_key, encrypted_packet)
+        session_key, packet_data = decrypt_packet(server_identity, session.session_key, encrypted_packet)
+        return packet_data
 
     def make_tcp_transport_request( self, session_list, transport_id, obj_id, command_id, **kw ):
         request = tRequest.instantiate(

@@ -3,7 +3,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
-from .htypes import tBinary, Field, TRecord
+from .htypes import tBinary, Field, TRecord, THierarchy
 from .identity import Identity, PublicKey
 
 
@@ -16,17 +16,16 @@ class HashMismatchError(Exception):
     pass
 
 
-tEncryptedInitialPacket = TRecord([
-    Field('encrypted_session_key', tBinary),
+tEncryptedPacket = THierarchy('encrypted_packet')
+
+tSubsequentEncryptedPacket = tEncryptedPacket.register('subsequent', fields=[
     Field('cbc_iv', tBinary),
     Field('encrypted_contents', tBinary),
     Field('hash', tBinary),
     ])
 
-tEncryptedPacket = TRecord([
-    Field('cbc_iv', tBinary),
-    Field('encrypted_contents', tBinary),
-    Field('hash', tBinary),
+tInitialEncryptedPacket = tEncryptedPacket.register('initial', base=tSubsequentEncryptedPacket, fields=[
+    Field('encrypted_session_key', tBinary),
     ])
 
 
@@ -40,13 +39,13 @@ def encrypt_initial_packet( session_key, server_public_key, plain_contents ):
     # encrypt session key
     encrypted_session_key = server_public_key.encrypt(session_key)
     cbc_iv, encrypted_contents, hash = _encrypt(session_key, plain_contents)
-    return tEncryptedInitialPacket.instantiate(encrypted_session_key, cbc_iv, encrypted_contents, hash)
+    return tInitialEncryptedPacket.instantiate(cbc_iv, encrypted_contents, hash, encrypted_session_key)
 
-def encrypt_packet( session_key, plain_contents ):
+def encrypt_subsequent_packet( session_key, plain_contents ):
     assert isinstance(session_key, str), repr(session_key)
     assert isinstance(plain_contents, str), repr(plain_contents)
     cbc_iv, encrypted_contents, hash = _encrypt(session_key, plain_contents)
-    return tEncryptedPacket.instantiate(cbc_iv, encrypted_contents, hash)
+    return tSubsequentEncryptedPacket.instantiate(cbc_iv, encrypted_contents, hash)
 
 def _encrypt( session_key, plain_contents ):
     assert isinstance(session_key, str), repr(session_key)
@@ -67,17 +66,23 @@ def _encrypt( session_key, plain_contents ):
     # done
     return (cbc_iv, encrypted_contents, hash)
 
-def decrypt_initial_packet( identity, encrypted_initial_packet ):
+def decrypt_packet( identity, session_key, encrypted_packet ):
     assert isinstance(identity, Identity), repr(identity)
-    tEncryptedInitialPacket.validate('EncryptedInitialPacket', encrypted_initial_packet)
-    session_key = identity.decrypt(encrypted_initial_packet.encrypted_session_key)
-    plain_text = _decrypt(session_key, encrypted_initial_packet)
+    tEncryptedPacket.validate('EncryptedPacket', encrypted_packet)
+    if tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket):
+        print len(encrypted_packet.encrypted_session_key), repr(encrypted_packet.encrypted_session_key)
+        session_key = identity.decrypt(encrypted_packet.encrypted_session_key)
+    else:
+        assert session_key is not None  # session_key must be passed for subsequent packet
+    plain_text = _decrypt(session_key, encrypted_packet)
     return (session_key, plain_text)
 
-def decrypt_packet( session_key, encrypted_packet ):
-    assert isinstance(session_key, str), repr(session_key)
+def decrypt_subsequent_packet( session_key, encrypted_packet ):
     tEncryptedPacket.validate('EncryptedPacket', encrypted_packet)
-    return _decrypt(session_key, encrypted_packet)
+    assert not tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket)
+    assert session_key is not None  # session_key must be passed for subsequent packet
+    plain_text = _decrypt(session_key, encrypted_packet)
+    return plain_text
 
 def _decrypt( session_key, encrypted_packet ):
     assert isinstance(session_key, str), repr(session_key)

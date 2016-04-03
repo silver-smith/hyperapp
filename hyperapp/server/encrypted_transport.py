@@ -2,7 +2,13 @@ from Queue import Queue
 from ..common.htypes import tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.transport_packet import tTransportPacket
-from ..common.encrypted_packet import ENCODING, tEncryptedInitialPacket, tEncryptedPacket, decrypt_initial_packet, encrypt_packet
+from ..common.encrypted_packet import (
+    ENCODING,
+    tEncryptedPacket,
+    tInitialEncryptedPacket,
+    encrypt_subsequent_packet,
+    decrypt_packet,
+    )
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from .request import PeerChannel, RequestBase, ServerNotification
@@ -90,12 +96,14 @@ class EncryptedTcpTransport(Transport):
         payload = packet_coders.encode(ENCODING, response_or_notification, tServerPacket)
         packet = Packet(aux_info, payload)
         packet_data = packet_coders.encode(ENCODING, packet, tPacket)
-        encrypted_packet = encrypt_packet(session.session_key, packet_data)
+        encrypted_packet = encrypt_subsequent_packet(session.session_key, packet_data)
         return packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
 
     def decrypt_packet( self, server, session, data ):
-        encrypted_initial_packet = packet_coders.decode(ENCODING, data, tEncryptedInitialPacket)
-        session_key, plain_text = decrypt_initial_packet(server.get_identity(), encrypted_initial_packet)
+        encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
+        if not tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket):
+            assert session.session_key, tEncryptedPacket.resolve_obj(encrypted_packet).id  # subsequent packet must not be first one
+        session_key, plain_text = decrypt_packet(server.get_identity(), session.session_key, encrypted_packet)
         session.session_key = session_key
         return plain_text
 
