@@ -5,6 +5,9 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 
+RSA_KEY_SIZE = 4096  # use this key size when generating new identities
+
+
 @total_ordering
 class PublicKey(object):
 
@@ -42,6 +45,13 @@ class PublicKey(object):
     def to_pem( self ):
         return self.public_pem
 
+    def save_to_file( self, fpath ):
+        with open(fpath, 'w') as f:
+            f.write(self.public_key.public_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PublicFormat.SubjectPublicKeyInfo
+                ))
+
     def encrypt( self, plain_text ):
         hash_alg = hashes.SHA1()
         cipher_text = self.public_key.encrypt(
@@ -68,11 +78,28 @@ class Identity(object):
             private_key = serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
         return cls('rsa', private_key)
 
+    @classmethod
+    def generate( cls ):
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=RSA_KEY_SIZE,
+            backend=default_backend()
+        )
+        return cls('rsa', private_key)
+
     def __init__( self, algorithm, private_key ):
         assert isinstance(algorithm, basestring), repr(algorithm)
         assert algorithm == 'rsa', repr(algorithm)  # only algorithm supported for now
         self.algorithm = algorithm
         self.private_key = private_key
+
+    def save_to_file( self, fpath ):
+        with open(fpath, 'w') as f:
+            f.write(self.private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.PKCS8,
+                encryption_algorithm=serialization.NoEncryption()
+                ))
 
     def get_public_key( self ):
         return PublicKey(self.algorithm, self.private_key.public_key())

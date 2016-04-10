@@ -3,12 +3,7 @@
 import os.path
 import sys
 import argparse
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
-
-
-RSA_KEY_SIZE = 4096
+from hyperapp.common.identity import RSA_KEY_SIZE, Identity
 
 
 def create_identity( fpath, overwrite ):
@@ -23,27 +18,13 @@ def create_identity( fpath, overwrite ):
 
     print 'generating rsa key of size %d...' % RSA_KEY_SIZE,
     sys.stdout.flush()
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=RSA_KEY_SIZE,
-        backend=default_backend()
-    )
+    identity = Identity.generate()
     print ' ... done'
 
-    public_key = private_key.public_key()
-
-    with open(private_fpath, 'w') as f:
-        f.write(private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
-            ))
+    public_key = identity.private_key.public_key()
+    identity.save_to_file(private_fpath)
     print 'identity is written to %r' % private_fpath
-    with open(public_fpath, 'w') as f:
-        f.write(public_key.public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
-            ))
+    identity.get_public_key().save_to_file(public_fpath)
     print 'public key is written to %r' % public_fpath
 
 def main():

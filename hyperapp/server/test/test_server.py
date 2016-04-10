@@ -35,9 +35,6 @@ from hyperapp.server.server import Server
 from hyperapp.server.transport_session import TransportSession, TransportSessionList
 
 
-RSA_KEY_SIZE = 4096
-
-
 test_iface = Interface('test_iface', commands=[
     RequestCmd('echo', [Field('test_param', tString)], [Field('test_result', tString)]),
     RequestCmd('broadcast', [Field('message', tString)]),
@@ -102,10 +99,7 @@ class TestSession(TransportSession):
         return []
 
 
-server_identity = Identity('rsa', rsa.generate_private_key(
-    public_exponent=65537,
-    key_size=RSA_KEY_SIZE,
-    backend=default_backend()))
+server_identity = Identity.generate()
 
 
 class ServerTest(unittest.TestCase):
