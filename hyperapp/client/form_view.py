@@ -134,7 +134,7 @@ class View(view.View, QtGui.QWidget):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.object = object
-        self.fields = []
+        self.fields = []  # (name, field_view) list
         layout = QtGui.QVBoxLayout()
         for idx, field in enumerate(fields):
             self._construct_field(layout, field.name, field.handle, focus_it=idx == current_field)

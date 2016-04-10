@@ -23,6 +23,8 @@ from .module_manager import ModuleManager
 from .response_manager import ResponseManager
 from .route_repository import RouteRepository
 
+from . import identity_form
+
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
@@ -82,14 +84,18 @@ class Application(QtGui.QApplication, view.View):
 
     @command('Open server', 'Load server endpoint from file', 'Alt+O')
     def open_server( self ):
-        # open in any window
-        window = self._windows[0]
+        window = self._windows[0]  # usually first window is the current one
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load endpoint', os.getcwd(), 'Server endpoint (*.endpoint)')
         endpoint = Endpoint.load_from_file(fpath)
         server = Server.produce(endpoint)
         url = server.make_url(['management'])
         GetRequest(url, window.get_current_view()).execute()
+
+    @command('New identity', 'Create new identity, public+private key pair', 'Alt+N')
+    def new_identity( self ):
+        window = self._windows[0]  # usually first window is the current one
+        window.get_current_view().open(identity_form.make_identity_form())
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
