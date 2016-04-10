@@ -1,7 +1,9 @@
 from ..common.htypes import tObject, tBaseObject
 from .objimpl_registry import objimpl_registry
-from . object import Object
-from . import form_view
+from .object import Object
+from .command import Command
+from .import form_view
+from .identity_controller import identity_controller
 
 
 tIdentityFormObject = tObject.register('identity_form', base=tBaseObject)
@@ -20,7 +22,17 @@ class IdentityFormObject(Object):
         return tIdentityFormObject.instantiate('identity_form')
 
     def get_commands( self ):
-        return []
+        return [Command('submit', 'Create', 'Create new identity, generate private+public key pair', 'Return')]
+
+    def run_command( self, command_id, initiator_view=None, **kw ):
+        if command_id == 'submit':
+            return self.run_command_submit(initiator_view, **kw)
+        return Object.run_command(self, command_id, initiator_view, **kw)
+
+    def run_command_submit( self, initiator_view, name ):
+        print 'creating identity %r...' % name
+        identity_controller.generate(name)
+        print 'creating identity %r: done' % name
 
 
 def make_identity_form():
