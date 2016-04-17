@@ -1,9 +1,9 @@
-from ..common.htypes import tObject, tBaseObject
-from .objimpl_registry import objimpl_registry
-from .object import Object
-from .command import Command
-from .import form_view
-from .identity_controller import identity_controller
+from hyperapp.common.htypes import tObject, tBaseObject
+from ..objimpl_registry import objimpl_registry
+from ..object import Object
+from ..command import Command
+from ..import form_view
+from .controller import identity_controller
 
 
 tIdentityFormObject = tObject.register('identity_form', base=tBaseObject)

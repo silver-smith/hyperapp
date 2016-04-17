@@ -1,4 +1,4 @@
-from ..common.identity import Identity
+from hyperapp.common.identity import Identity
 
 
 class IdentityController(object):

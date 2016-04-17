@@ -23,7 +23,7 @@ from .module_manager import ModuleManager
 from .response_manager import ResponseManager
 from .route_repository import RouteRepository
 
-from . import identity_form
+from .identity import make_identity_form
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -95,7 +95,7 @@ class Application(QtGui.QApplication, view.View):
     @command('New identity', 'Create new identity, public+private key pair', 'Alt+N')
     def new_identity( self ):
         window = self._windows[0]  # usually first window is the current one
-        window.get_current_view().open(identity_form.make_identity_form())
+        window.get_current_view().open(make_identity_form())
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
