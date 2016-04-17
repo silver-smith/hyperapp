@@ -19,7 +19,7 @@ class MenuBar(object):
     def _build( self ):
         self.file_menu = self._build_global_menu('&File')
         self.dir_menu = QtGui.QMenu('&Dir')
-        self.window_menu = QtGui.QMenu('W&indow')
+        self.window_menu = QtGui.QMenu('Wi&ndow')
         self.help_menu = QtGui.QMenu('H&elp')
         self.add_action_to_menu(self.help_menu, '&Dir commands', 'F1', MenuBar._open_dir_commands, weakref.ref(self))
         self.add_action_to_menu(self.help_menu, '&Current element commands', '.', MenuBar._open_elt_commands, weakref.ref(self))

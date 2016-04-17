@@ -23,7 +23,7 @@ class TextObject(Object):
         cls.edit_handle_ctr = ctr
 
     @classmethod
-    def factory( cls, objinfo, server=None ):
+    def from_data( cls, objinfo, server=None ):
         return cls(objinfo.text)
 
     def __init__( self, text ):
@@ -65,4 +65,4 @@ class TextObject(Object):
         print '~text_object', self
 
 
-objimpl_registry.register('text', TextObject.factory)
+objimpl_registry.register('text', TextObject.from_data)
