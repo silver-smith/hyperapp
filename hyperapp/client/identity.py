@@ -91,7 +91,15 @@ class IdentityList(ListObject):
         return 'Identity list'
 
     def get_commands( self ):
-        return []
+        return [Command('new', 'Create', 'Create new identity, generate private+public key pair', 'Ins')]
+
+    def run_command( self, command_id, initiator_view=None, **kw ):
+        if command_id == 'new':
+            return self.run_command_new(initiator_view, **kw)
+        return ListObject.run_command(self, command_id, initiator_view, **kw)
+
+    def run_command_new( self, initiator_view ):
+        return make_identity_form()
 
     def to_data( self ):
         return identity_list_type.instantiate('identity_list')
