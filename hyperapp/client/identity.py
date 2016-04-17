@@ -1,3 +1,6 @@
+import os
+import os.path
+import glob
 from ..common.htypes import (
     tString,
     tObject,
@@ -23,17 +26,52 @@ class IdentityItem(object):
         self.identity = identity
 
 
+class IdentityRepository(object):
+
+    def add( self, identity_item ):
+        raise NotImplementedError(self.__class__)
+
+    def enumerate( self ):
+        raise NotImplementedError(self.__class__)
+
+
+class FileIdentityRepository(IdentityRepository):
+
+    fext = '.identity'
+
+    def __init__( self, dir ):
+        self.dir = dir
+
+    def add( self, identity_item ):
+        assert isinstance(identity_item, IdentityItem), repr(identity_item)
+        if not os.path.isdir(self.dir):
+            os.makedirs(self.dir)
+        fpath = os.path.join(self.dir, identity_item.name + self.fext)
+        identity_item.identity.save_to_file(fpath)
+
+    def enumerate( self ):
+        for fpath in glob.glob(os.path.join(self.dir, '*' + self.fext)):
+            fname = os.path.basename(fpath)
+            name, ext = os.path.splitext(fname)
+            identity = Identity.load_from_file(fpath)
+            yield IdentityItem(name, identity)
+
+
 class IdentityController(object):
 
-    def __init__( self ):
-        self._items = []  # IdentityItem list
+    def __init__( self, repository ):
+        assert isinstance(repository, IdentityRepository), repr(repository)
+        self._repository = repository
+        self._items = list(self._repository.enumerate())  # IdentityItem list
 
     def get_items( self ):
         return self._items
 
     def generate( self, name ):
         identity = Identity.generate()
-        self._items.append(IdentityItem(name, identity))
+        item = IdentityItem(name, identity)
+        self._items.append(item)
+        self._repository.add(item)
 
 
 tIdentityFormObject = tObject.register('identity_form', base=tBaseObject)
@@ -129,6 +167,6 @@ def make_identity_list( key=None ):
     return list_view.Handle(identity_list_handle_type, object, sort_column_id='name', key=key)
 
 
-identity_controller = IdentityController()
+identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
 objimpl_registry.register('identity_form', IdentityFormObject.from_data)
 objimpl_registry.register('identity_list', IdentityList.from_data)
