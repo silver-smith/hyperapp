@@ -7,7 +7,7 @@ from hyperapp.common.htypes import (
 from ..objimpl_registry import objimpl_registry
 from ..list_object import Element, Slice, ListObject
 from .. import list_view
-from .controller import IdentityController, identity_controller
+from .controller import IdentityItem, IdentityController, identity_controller
 
 
 identity_list_type = tBaseObject
@@ -23,6 +23,7 @@ class IdentityList(ListObject):
     def __init__( self, controller ):
         assert isinstance(controller, IdentityController), repr(controller)
         ListObject.__init__(self)
+        self.controller = controller
 
     def get_title( self ):
         return 'Identity list'
@@ -45,7 +46,12 @@ class IdentityList(ListObject):
         self._notify_fetch_result(self._get_slice())
 
     def _get_slice( self ):
-        return Slice('name', None, 'asc', [], bof=True, eof=True)
+        items = self.controller.get_items()
+        return Slice('name', None, 'asc', map(self._item2element, items), bof=True, eof=True)
+
+    def _item2element( self, item ):
+        assert isinstance(item, IdentityItem), repr(item)
+        return Element(item.name, item, commands=[])
 
 
 def make_identity_list( key=None ):

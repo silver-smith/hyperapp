@@ -156,7 +156,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
     def run_open_command( self, url ):
         GetRequest(url, self.get_current_view()).execute()
 
-    @command('Duplicate window', 'Duplicate window', 'Alt+W')
+    @command('Duplicate window', 'Duplicate window', 'Alt+Shift+W')
     def duplicate_window( self ):
         self.handle().move(DUP_OFFSET).construct(self._parent())
 

@@ -4,6 +4,7 @@ from ..object import Object
 from ..command import Command
 from ..import form_view
 from .controller import identity_controller
+from .list import make_identity_list
 
 
 tIdentityFormObject = tObject.register('identity_form', base=tBaseObject)
@@ -33,6 +34,7 @@ class IdentityFormObject(Object):
         print 'creating identity %r...' % name
         identity_controller.generate(name)
         print 'creating identity %r: done' % name
+        return make_identity_list(name)
 
 
 def make_identity_form():
