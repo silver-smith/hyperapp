@@ -91,13 +91,13 @@ class TcpClient(object):
     def _process_packet( self, request_data ):
         request_packet = decode_transport_packet(request_data)
         print '%r packet from %s:%d:' % (request_packet.transport_id, self.addr[0], self.addr[1])
-        response_packet = transport_registry.process_packet(iface_registry, self.server, self.session_list, request_packet)
-        if response_packet is None:
+        response_packets = transport_registry.process_packet(iface_registry, self.server, self.session_list, request_packet)
+        if not response_packets:
             print 'no response'
-            return None
-        print '%d bytes to %s:%d' % (len(response_packet.data), self.addr[0], self.addr[1])
-        response_data = encode_transport_packet(response_packet)
-        self.conn.send(response_data)
+        for response_packet in response_packets:
+            print 'response: %d bytes to %s:%d' % (len(response_packet.data), self.addr[0], self.addr[1])
+            response_data = encode_transport_packet(response_packet)
+            self.conn.send(response_data)
 
     def _send_notification( self, transport_packet ):
         print '%d bytes to %s:%d' % (len(transport_packet.data), self.addr[0], self.addr[1])

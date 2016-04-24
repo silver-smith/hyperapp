@@ -84,12 +84,12 @@ class EncryptedTcpTransport(Transport):
         result = server.process_request(request)
 
         if result is None:
-            return
+            return []
         aux_info, response_or_notification = result
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, response_or_notification)
         packet_data = self.encode_response_or_notification(session, aux_info, response_or_notification)
-        return packet_data
+        return [packet_data]
 
     def encode_response_or_notification( self, session, aux_info, response_or_notification ):
         assert session.session_key  # must be set when initial packet is received

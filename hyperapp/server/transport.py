@@ -26,10 +26,9 @@ class TransportRegistry(object):
         assert isinstance(session_list, TransportSessionList), repr(session_list)
         tTransportPacket.validate('<TransportPacket>', request_packet)
         transport = self.resolve(request_packet.transport_id)
-        response_data = transport.process_packet(iface_registry, server, session_list, request_packet.data)
-        if response_data is None:
-            return None
-        return tTransportPacket.instantiate(request_packet.transport_id, response_data)
+        responses = transport.process_packet(iface_registry, server, session_list, request_packet.data)
+        return [tTransportPacket.instantiate(request_packet.transport_id, response_data)
+                for response_data in responses]
         
 
 
