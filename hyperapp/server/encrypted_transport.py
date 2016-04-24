@@ -1,11 +1,14 @@
+import os
 from Queue import Queue
 from ..common.htypes import tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.transport_packet import tTransportPacket
 from ..common.encrypted_packet import (
     ENCODING,
+    POP_CHALLENGE_SIZE,
     tEncryptedPacket,
     tInitialEncryptedPacket,
+    tPopChallengePacket,
     encrypt_subsequent_packet,
     decrypt_packet,
     )
@@ -45,6 +48,8 @@ class EncryptedTcpSession(TransportSession):
         self.transport = transport
         self.channel = EncryptedTcpChannel(transport)
         self.session_key = None
+        self.pop_challenge_sent = False
+        self.pop_received = False
 
     def pull_notification_transport_packets( self ):
         updates = self.channel._pop_all()
@@ -83,13 +88,17 @@ class EncryptedTcpTransport(Transport):
 
         result = server.process_request(request)
 
-        if result is None:
-            return []
-        aux_info, response_or_notification = result
-        pprint(tAuxInfo, aux_info)
-        pprint(tServerPacket, response_or_notification)
-        packet_data = self.encode_response_or_notification(session, aux_info, response_or_notification)
-        return [packet_data]
+        responses = []
+        if not session.pop_challenge_sent:
+            responses.append(self.make_pop_challenge_packet())
+            session.pop_challenge_sent = True
+        if result is not None:
+            aux_info, response_or_notification = result
+            pprint(tAuxInfo, aux_info)
+            pprint(tServerPacket, response_or_notification)
+            packet_data = self.encode_response_or_notification(session, aux_info, response_or_notification)
+            responses.append(packet_data)
+        return responses
 
     def encode_response_or_notification( self, session, aux_info, response_or_notification ):
         assert session.session_key  # must be set when initial packet is received
@@ -103,9 +112,18 @@ class EncryptedTcpTransport(Transport):
         encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
         if not tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket):
             assert session.session_key, tEncryptedPacket.resolve_obj(encrypted_packet).id  # subsequent packet must not be first one
+        if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
+            pass
         session_key, plain_text = decrypt_packet(server.get_identity(), session.session_key, encrypted_packet)
         session.session_key = session_key
         return plain_text
+
+    def make_pop_challenge_packet( self ):
+        packet = tPopChallengePacket.instantiate(
+            challenge=os.urandom(POP_CHALLENGE_SIZE/8))
+        print 'sending pop challenge:'
+        pprint(tEncryptedPacket, packet)
+        return packet_coders.encode(ENCODING, packet, tEncryptedPacket)
 
 
 EncryptedTcpTransport().register(transport_registry)

@@ -29,7 +29,7 @@ class TcpTransport(Transport):
         connection.send_data(packet)
         return True
 
-    def process_packet( self, session_list, server_public_key, data ):
+    def process_packet( self, connection, session_list, server_public_key, data ):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         app = QtCore.QCoreApplication.instance()
         app.response_mgr.process_packet(server_public_key, packet, self._decode_payload)

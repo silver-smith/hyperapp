@@ -3,13 +3,14 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
-from .htypes import tBinary, Field, TRecord, THierarchy
+from .htypes import tBinary, Field, TRecord, TList, THierarchy
 from .identity import Identity, PublicKey
 
 
 ENCODING = 'cdr'
 AES_KEY_SIZE = 256
 AES_BLOCK_SIZE = 128
+POP_CHALLENGE_SIZE = AES_BLOCK_SIZE*4
 
 
 class HashMismatchError(Exception):
@@ -26,6 +27,20 @@ tSubsequentEncryptedPacket = tEncryptedPacket.register('subsequent', fields=[
 
 tInitialEncryptedPacket = tEncryptedPacket.register('initial', base=tSubsequentEncryptedPacket, fields=[
     Field('encrypted_session_key', tBinary),
+    ])
+
+tPopChallengePacket = tEncryptedPacket.register('pop_challenge', fields=[
+    Field('challenge', tBinary),
+    ])
+
+tPopRecord = TRecord([
+    Field('public_key_der', tBinary),  # SubjectPublicKeyInfo format
+    Field('signature', tBinary),
+    ])
+
+tProofOfPossessionPacket = tEncryptedPacket.register('pop', fields=[
+    Field('challenge', tBinary),
+    Field('pop_records', TList(tPopRecord)),
     ])
 
 

@@ -45,6 +45,12 @@ class PublicKey(object):
     def to_pem( self ):
         return self.public_pem
 
+    def to_der( self ):
+        return self.public_key.public_bytes(
+            encoding=serialization.Encoding.DER,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+
     def save_to_file( self, fpath ):
         with open(fpath, 'w') as f:
             f.write(self.public_key.public_bytes(
@@ -113,3 +119,15 @@ class Identity(object):
                 algorithm=hash_alg,
                 label=None))
         return plain_text
+
+    def sign( self, message ):
+        hashalg = hashes.SHA256()
+        signer = self.private_key.signer(
+            padding.PSS(
+                mgf=padding.MGF1(hashalg),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hashes.SHA256())
+        signer.update(message)
+        signature = signer.finalize()
+        return 'rsa:sha256:%s' % signature
