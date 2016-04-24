@@ -1,4 +1,5 @@
 from functools import total_ordering
+import cryptography.exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
@@ -6,6 +7,10 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 
 RSA_KEY_SIZE = 4096  # use this key size when generating new identities
+
+
+class BadSignature(Exception):
+    pass
 
 
 @total_ordering
@@ -68,6 +73,22 @@ class PublicKey(object):
                 label=None))
         return cipher_text
 
+    def verify( self, message, signature ):
+        sign_alg, hash_alg, sign = signature.split(':', 2)
+        assert sign_alg == 'rsa' and hash_alg == 'sha256', repr((sign_alg, hash_alg))
+        hashalg = hashes.SHA256()
+        verifier = self.public_key.verifier(
+            sign,
+            padding.PSS(
+                mgf=padding.MGF1(hashalg),
+                salt_length=padding.PSS.MAX_LENGTH),
+            hashalg)
+        verifier.update(message)
+        try:
+            verifier.verify()
+        except cryptography.exceptions.InvalidSignature as x:
+            raise BadSignature('Signature does not match')
+
     def __eq__( self, other ):
         return isinstance(other, PublicKey) and self.public_pem == other.public_pem
 
@@ -127,7 +148,7 @@ class Identity(object):
                 mgf=padding.MGF1(hashalg),
                 salt_length=padding.PSS.MAX_LENGTH
             ),
-            hashes.SHA256())
+            hashalg)
         signer.update(message)
         signature = signer.finalize()
         return 'rsa:sha256:%s' % signature
