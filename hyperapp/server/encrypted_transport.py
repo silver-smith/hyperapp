@@ -8,7 +8,9 @@ from ..common.encrypted_packet import (
     POP_CHALLENGE_SIZE,
     tEncryptedPacket,
     tInitialEncryptedPacket,
+    tSubsequentEncryptedPacket,
     tPopChallengePacket,
+    tProofOfPossessionPacket,
     encrypt_subsequent_packet,
     decrypt_packet,
     )
@@ -80,7 +82,19 @@ class EncryptedTcpTransport(Transport):
         if session is None:
            session = EncryptedTcpSession(self)
            session_list.set_transport_session(self.get_transport_id(), session)
-        packet_data = self.decrypt_packet(server, session, data)
+        encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
+        pprint(tEncryptedPacket, encrypted_packet)
+        if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
+            responses = self.process_encrypted_payload_packet(iface_registry, server, session, encrypted_packet)
+        if tEncryptedPacket.isinstance(encrypted_packet, tProofOfPossessionPacket):
+            responses = self.process_pop_packet(session, encrypted_packet)
+        for response in responses:
+            pprint(tEncryptedPacket, response)
+        return [packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
+                for encrypted_packet in responses]
+
+    def process_encrypted_payload_packet( self, iface_registry, server, session, encrypted_packet ):
+        packet_data = self.decrypt_packet(server, session, encrypted_packet)
         packet = packet_coders.decode(ENCODING, packet_data, tPacket)
         request_rec = packet_coders.decode(ENCODING, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
@@ -96,34 +110,32 @@ class EncryptedTcpTransport(Transport):
             aux_info, response_or_notification = result
             pprint(tAuxInfo, aux_info)
             pprint(tServerPacket, response_or_notification)
-            packet_data = self.encode_response_or_notification(session, aux_info, response_or_notification)
-            responses.append(packet_data)
+            response = self.encode_response_or_notification(session, aux_info, response_or_notification)
+            responses.append(response)
         return responses
+
+    def process_pop_packet( self, session, encrypted_packet ):
+        print 'POP received'
+        return []
 
     def encode_response_or_notification( self, session, aux_info, response_or_notification ):
         assert session.session_key  # must be set when initial packet is received
         payload = packet_coders.encode(ENCODING, response_or_notification, tServerPacket)
         packet = Packet(aux_info, payload)
         packet_data = packet_coders.encode(ENCODING, packet, tPacket)
-        encrypted_packet = encrypt_subsequent_packet(session.session_key, packet_data)
-        return packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
+        return encrypt_subsequent_packet(session.session_key, packet_data)
 
-    def decrypt_packet( self, server, session, data ):
-        encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
+    def decrypt_packet( self, server, session, encrypted_packet ):
         if not tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket):
             assert session.session_key, tEncryptedPacket.resolve_obj(encrypted_packet).id  # subsequent packet must not be first one
-        if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
-            pass
         session_key, plain_text = decrypt_packet(server.get_identity(), session.session_key, encrypted_packet)
         session.session_key = session_key
         return plain_text
 
     def make_pop_challenge_packet( self ):
-        packet = tPopChallengePacket.instantiate(
-            challenge=os.urandom(POP_CHALLENGE_SIZE/8))
         print 'sending pop challenge:'
-        pprint(tEncryptedPacket, packet)
-        return packet_coders.encode(ENCODING, packet, tEncryptedPacket)
+        return tPopChallengePacket.instantiate(
+            challenge=os.urandom(POP_CHALLENGE_SIZE/8))
 
 
 EncryptedTcpTransport().register(transport_registry)
