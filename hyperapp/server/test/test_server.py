@@ -18,6 +18,7 @@ from hyperapp.common.transport_packet import tTransportPacket
 from hyperapp.common.identity import Identity, PublicKey
 from hyperapp.common.encrypted_packet import (
     tEncryptedPacket,
+    tSubsequentEncryptedPacket,
     make_session_key,
     encrypt_initial_packet,
     decrypt_packet,
@@ -151,14 +152,20 @@ class ServerTest(unittest.TestCase):
         packet = encrypt_initial_packet(session.session_key, server_identity.get_public_key(), data)
         return self.encode_packet(transport_id, packet, tEncryptedPacket)
 
-    def decrypt_packet( self, session_list, transport_id, data ):
+    def decrypt_transport_response_packets( self, session_list, transport_id, packets ):
         if transport_id != 'encrypted_tcp':
-            return data
+            self.assertEqual(1, len(packets), repr(packets))
+            self.assertEqual(transport_id, packets[0].transport_id)
+            return packets[0].data
         session = session_list.get_transport_session('test.encrypted_tcp')
         assert session is not None  # must be created by encrypt_packet
-        encrypted_packet = self.decode_packet(transport_id, data, tEncryptedPacket)
-        session_key, packet_data = decrypt_packet(server_identity, session.session_key, encrypted_packet)
-        return packet_data
+        for packet in packets:
+            self.assertEqual(transport_id, packet.transport_id)
+            encrypted_packet = self.decode_packet(transport_id, packet.data, tEncryptedPacket)
+            if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
+                session_key, packet_data = decrypt_packet(server_identity, session.session_key, encrypted_packet)
+                return packet_data
+        self.fail('No tSubsequentEncryptedPacket is returned in encrypted_tcp responses')
 
     def make_tcp_transport_request( self, session_list, transport_id, obj_id, command_id, **kw ):
         request = tRequest.instantiate(
@@ -197,9 +204,8 @@ class ServerTest(unittest.TestCase):
             data=self.encrypt_packet(session_list, transport_id, request_packet_data))
         return transport_request
 
-    def decode_tcp_transport_response( self, session_list, transport_id, response_transport_packet ):
-        self.assertEqual(transport_id, response_transport_packet.transport_id)
-        packet_data = self.decrypt_packet(session_list, transport_id, response_transport_packet.data)
+    def decode_tcp_transport_response( self, session_list, transport_id, response_transport_packets ):
+        packet_data = self.decrypt_transport_response_packets(session_list, transport_id, response_transport_packets)
         response_packet = self.decode_packet(transport_id, packet_data, tPacket)
         print 'Received response:'
         pprint(tPacket, response_packet)
@@ -211,16 +217,16 @@ class ServerTest(unittest.TestCase):
         if session_list is None:
             session_list = self.session_list
         transport_request = self.make_tcp_transport_request(session_list, transport_id, obj_id, command_id, **kw)
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, session_list, transport_request)
-        response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packet)
+        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, session_list, transport_request)
+        response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packets)
         return response
 
     def execute_tcp_notification( self, transport_id, obj_id, command_id, session_list=None, **kw ):
         if session_list is None:
             session_list = self.session_list
         transport_request = self.make_tcp_transport_notification(session_list, transport_id, obj_id, command_id, **kw)
-        response_transport_packet = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
-        assert response_transport_packet is None, repr(response_transport_packet)
+        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+        self.assertEqual([], response_transport_packets)
 
     def test_tcp_cdr_echo_request( self ):
         self._test_tcp_echo_request('tcp.cdr')
@@ -296,7 +302,7 @@ class ServerTest(unittest.TestCase):
         self.assertEqual(1, len(notifications))
         notification_packet = notifications[0]
         tTransportPacket.validate('<TransportPacket>', notification_packet)
-        notification = self.decode_tcp_transport_response(session1, transport_id, notification_packet)
+        notification = self.decode_tcp_transport_response(session1, transport_id, [notification_packet])
         self.assertEqual(1, len(notification.updates))
         update = notification.updates[0]
         self.assertEqual('test_iface', update.iface)

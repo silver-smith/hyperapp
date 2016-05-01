@@ -65,7 +65,8 @@ class EncryptedTcpSession(TransportSession):
         print '-- sending notification to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, notification_data)
-        packet_data = self.transport.encode_response_or_notification(self, aux_info, notification_data)
+        encrypted_packet = self.transport.encode_response_or_notification(self, aux_info, notification_data)
+        packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
         return [tTransportPacket.instantiate(self.transport.get_transport_id(), packet_data)]
 
 
