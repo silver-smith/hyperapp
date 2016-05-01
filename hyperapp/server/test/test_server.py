@@ -19,6 +19,9 @@ from hyperapp.common.identity import Identity, PublicKey
 from hyperapp.common.encrypted_packet import (
     tEncryptedPacket,
     tSubsequentEncryptedPacket,
+    tPopChallengePacket,
+    tPopRecord,
+    tProofOfPossessionPacket,
     make_session_key,
     encrypt_initial_packet,
     decrypt_packet,
@@ -308,3 +311,25 @@ class ServerTest(unittest.TestCase):
         self.assertEqual('test_iface', update.iface)
         self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
         self.assertEqual(message, update.diff)
+
+    def test_proof_of_possession( self ):
+        transport_id = 'encrypted_tcp'
+        transport_request = self.make_tcp_transport_request(self.session_list, transport_id, obj_id='1', command_id='echo', test_param='hi')
+        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+        for packet in response_transport_packets:
+            encrypted_packet = self.decode_packet(transport_id, packet.data, tEncryptedPacket)
+            if tEncryptedPacket.isinstance(encrypted_packet, tPopChallengePacket):
+                challenge = encrypted_packet.challenge
+                break
+        else:
+            self.fail('No challenge packet in response')
+        identity = Identity.generate()
+
+        pop_record = tPopRecord.instantiate(
+            identity.get_public_key().to_der(),
+            identity.sign(challenge))
+        pop_packet = tProofOfPossessionPacket.instantiate(challenge, [pop_record])
+        pop_packet_data = self.encode_packet(transport_id, pop_packet, tEncryptedPacket)
+        transport_request = tTransportPacket.instantiate(transport_id=transport_id, data=pop_packet_data)
+
+        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)

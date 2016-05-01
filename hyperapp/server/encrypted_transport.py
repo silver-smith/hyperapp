@@ -50,6 +50,7 @@ class EncryptedTcpSession(TransportSession):
         self.transport = transport
         self.channel = EncryptedTcpChannel(transport)
         self.session_key = None
+        self.pop_challenge = None  # str
         self.pop_challenge_sent = False
         self.pop_received = False
 
@@ -105,7 +106,7 @@ class EncryptedTcpTransport(Transport):
 
         responses = []
         if not session.pop_challenge_sent:
-            responses.append(self.make_pop_challenge_packet())
+            responses.append(self.make_pop_challenge_packet(session))
             session.pop_challenge_sent = True
         if result is not None:
             aux_info, response_or_notification = result
@@ -133,10 +134,12 @@ class EncryptedTcpTransport(Transport):
         session.session_key = session_key
         return plain_text
 
-    def make_pop_challenge_packet( self ):
+    def make_pop_challenge_packet( self, session ):
         print 'sending pop challenge:'
+        challenge = os.urandom(POP_CHALLENGE_SIZE/8)
+        session.pop_challenge = challenge
         return tPopChallengePacket.instantiate(
-            challenge=os.urandom(POP_CHALLENGE_SIZE/8))
+            challenge=challenge)
 
 
 EncryptedTcpTransport().register(transport_registry)
