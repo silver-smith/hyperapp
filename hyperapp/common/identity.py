@@ -10,10 +10,6 @@ RSA_KEY_SIZE_SAFE = 4096  # key size used when generating new identities
 RSA_KEY_SIZE_FAST = 1024  # used for testing
 
 
-class BadSignature(Exception):
-    pass
-
-
 @total_ordering
 class PublicKey(object):
 
@@ -87,8 +83,9 @@ class PublicKey(object):
         verifier.update(message)
         try:
             verifier.verify()
-        except cryptography.exceptions.InvalidSignature as x:
-            raise BadSignature('Signature does not match')
+            return True
+        except cryptography.exceptions.InvalidSignature:
+            return False
 
     def __eq__( self, other ):
         return isinstance(other, PublicKey) and self.public_pem == other.public_pem
