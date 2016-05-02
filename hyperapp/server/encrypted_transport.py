@@ -16,6 +16,7 @@ from ..common.encrypted_packet import (
     )
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
+from ..common.identity import PublicKey
 from .request import PeerChannel, RequestBase, ServerNotification
 from .transport import Transport, transport_registry
 from .transport_session import TransportSession
@@ -53,6 +54,7 @@ class EncryptedTcpSession(TransportSession):
         self.pop_challenge = None  # str
         self.pop_challenge_sent = False
         self.pop_received = False
+        self.peer_public_keys = []  # verified using pop
 
     def pull_notification_transport_packets( self ):
         updates = self.channel._pop_all()
@@ -118,6 +120,15 @@ class EncryptedTcpTransport(Transport):
 
     def process_pop_packet( self, session, encrypted_packet ):
         print 'POP received'
+        if encrypted_packet.challenge != session.pop_challenge:
+            print 'Error processing POP: challenge does not match'  # todo: return error
+            return
+        for rec in encrypted_packet.pop_records:
+            public_key = PublicKey.from_der(rec.public_key_der)
+            if public_key.verify(session.pop_challenge, rec.signature):
+                session.peer_public_keys.append(public_key)
+            else:
+                print 'Error processing POP record: signature does not match'  # todo: return error
         return []
 
     def encode_response_or_notification( self, session, aux_info, response_or_notification ):

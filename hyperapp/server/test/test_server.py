@@ -323,13 +323,22 @@ class ServerTest(unittest.TestCase):
                 break
         else:
             self.fail('No challenge packet in response')
-        identity = Identity.generate(fast=True)
 
-        pop_record = tPopRecord.instantiate(
-            identity.get_public_key().to_der(),
-            identity.sign(challenge))
-        pop_packet = tProofOfPossessionPacket.instantiate(challenge, [pop_record])
+        identity_1 = Identity.generate(fast=True)
+        identity_2 = Identity.generate(fast=True)
+
+        pop_record_1 = tPopRecord.instantiate(
+            identity_1.get_public_key().to_der(),
+            identity_1.sign(challenge))
+        pop_record_2 = tPopRecord.instantiate(
+            identity_2.get_public_key().to_der(),
+            identity_2.sign(challenge + 'x'))  # make invlid signature; verification must fail
+        pop_packet = tProofOfPossessionPacket.instantiate(challenge, [pop_record_1, pop_record_2])
         pop_packet_data = self.encode_packet(transport_id, pop_packet, tEncryptedPacket)
         transport_request = tTransportPacket.instantiate(transport_id=transport_id, data=pop_packet_data)
 
         response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+
+        session = self.session_list.get_transport_session(transport_id)
+        self.assertIn(identity_1.get_public_key(), session.peer_public_keys)
+        self.assertNotIn(identity_2.get_public_key(), session.peer_public_keys)

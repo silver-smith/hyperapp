@@ -19,6 +19,12 @@ class PublicKey(object):
         public_key = serialization.load_pem_public_key(str(pem), backend=default_backend())
         return cls('rsa', public_key)
 
+    @classmethod
+    def from_der( cls, der ):
+        assert isinstance(der, str), repr(der)
+        public_key = serialization.load_der_public_key(der, backend=default_backend())
+        return cls('rsa', public_key)
+
     def __init__( self, algorithm, public_key ):
         assert isinstance(algorithm, basestring), repr(algorithm)
         self.algorithm = algorithm
