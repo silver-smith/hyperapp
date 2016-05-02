@@ -6,7 +6,8 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
 
-RSA_KEY_SIZE = 4096  # use this key size when generating new identities
+RSA_KEY_SIZE_SAFE = 4096  # key size used when generating new identities
+RSA_KEY_SIZE_FAST = 1024  # used for testing
 
 
 class BadSignature(Exception):
@@ -106,10 +107,10 @@ class Identity(object):
         return cls('rsa', private_key)
 
     @classmethod
-    def generate( cls ):
+    def generate( cls, fast=False ):
         private_key = rsa.generate_private_key(
             public_exponent=65537,
-            key_size=RSA_KEY_SIZE,
+            key_size=RSA_KEY_SIZE_FAST if fast else RSA_KEY_SIZE_SAFE,
             backend=default_backend()
         )
         return cls('rsa', private_key)

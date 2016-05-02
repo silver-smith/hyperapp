@@ -103,7 +103,7 @@ class TestSession(TransportSession):
         return []
 
 
-server_identity = Identity.generate()
+server_identity = Identity.generate(fast=True)
 
 
 class ServerTest(unittest.TestCase):
@@ -323,7 +323,7 @@ class ServerTest(unittest.TestCase):
                 break
         else:
             self.fail('No challenge packet in response')
-        identity = Identity.generate()
+        identity = Identity.generate(fast=True)
 
         pop_record = tPopRecord.instantiate(
             identity.get_public_key().to_der(),
