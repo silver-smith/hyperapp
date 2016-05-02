@@ -17,7 +17,7 @@ from ..common.encrypted_packet import (
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from ..common.identity import PublicKey
-from .request import PeerChannel, RequestBase, ServerNotification
+from .request import PeerChannel, Peer, RequestBase, ServerNotification
 from .transport import Transport, transport_registry
 from .transport_session import TransportSession
 from .server import Server
@@ -102,7 +102,7 @@ class EncryptedTcpTransport(Transport):
         packet = packet_coders.decode(ENCODING, packet_data, tPacket)
         request_rec = packet_coders.decode(ENCODING, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_data(server, session.channel, iface_registry, request_rec)
+        request = RequestBase.from_data(server, Peer(session.channel, session.peer_public_keys), iface_registry, request_rec)
 
         result = server.process_request(request)
 
@@ -127,8 +127,9 @@ class EncryptedTcpTransport(Transport):
             public_key = PublicKey.from_der(rec.public_key_der)
             if public_key.verify(session.pop_challenge, rec.signature):
                 session.peer_public_keys.append(public_key)
+                print 'Peer public key %s is verified' % public_key.get_short_id_hex()
             else:
-                print 'Error processing POP record: signature does not match'  # todo: return error
+                print 'Error processing POP record for %s: signature does not match' % public_key.get_short_id_hex()  # todo: return error
         return []
 
     def encode_response_or_notification( self, session, aux_info, response_or_notification ):

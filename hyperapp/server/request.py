@@ -1,4 +1,6 @@
+from ..common.util import is_list_inst
 from ..common.htypes import tUpdate, tClientPacket, tClientNotification, tRequest, tServerNotification, tResponse
+from ..common.identity import PublicKey
 
 
 class PeerChannel(object):
@@ -13,22 +15,31 @@ class PeerChannel(object):
         raise NotImplementedError(self.__class__)
 
 
+class Peer(object):
+
+    def __init__( self, channel, public_keys=None ):
+        assert isinstance(channel, PeerChannel), repr(channel)
+        assert public_keys is None or is_list_inst(public_keys, PublicKey), repr(public_keys)
+        self.channel = channel
+        self.public_keys = public_keys or []
+
+
 class RequestBase(object):
 
     @classmethod
-    def from_data( cls, me, peer_channel, iface_registry, rec ):
-        assert isinstance(peer_channel, PeerChannel), repr(peer_channel)
+    def from_data( cls, me, peer, iface_registry, rec ):
+        assert isinstance(peer, Peer), repr(peer)
         tClientPacket.validate('<ClientPacket>', rec)
         iface = iface_registry.resolve(rec.iface)
         if tClientPacket.isinstance(rec, tRequest):
-            return Request(me, peer_channel, iface, rec.path, rec.command_id, rec.request_id, rec.params)
+            return Request(me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
             assert tClientPacket.isinstance(rec, tClientNotification), repr(rec)
-            return ClientNotification(me, peer_channel, iface, rec.path, rec.command_id, rec.params)
+            return ClientNotification(me, peer, iface, rec.path, rec.command_id, rec.params)
 
-    def __init__( self, me, peer_channel, iface, path, command_id, params ):
+    def __init__( self, me, peer, iface, path, command_id, params ):
         self.me = me      # Server instance
-        self.peer_channel = peer_channel
+        self.peer = peer
         self.iface = iface
         self.path = path
         self.command_id = command_id
@@ -41,14 +52,14 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__( self, me, peer_channel, iface, path, command_id, request_id, params ):
-        RequestBase.__init__(self, me, peer_channel, iface, path, command_id, params)
+    def __init__( self, me, peer, iface, path, command_id, request_id, params ):
+        RequestBase.__init__(self, me, peer, iface, path, command_id, params)
         self.request_id = request_id
 
     def make_response( self, result=None ):
         result_type = self.iface.get_command_result_type(self.command_id)
         result_type.validate('%s.Request.%s.result' % (self.iface.iface_id, self.command_id), result)
-        return Response(self.peer_channel, self.iface, self.command_id, self.request_id, result)
+        return Response(self.peer, self.iface, self.command_id, self.request_id, result)
 
     def make_response_object( self, obj ):
         return self.make_response(obj)
@@ -85,6 +96,7 @@ class ServerNotification(ResponseBase):
 class Response(ResponseBase):
 
     def __init__( self, peer, iface, command_id, request_id, result ):
+        assert isinstance(peer, Peer), repr(peer)
         ResponseBase.__init__(self)
         self.peer = peer
         self.iface = iface

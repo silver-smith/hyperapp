@@ -89,10 +89,10 @@ class Object(object):
         return request.make_response(self.get_contents())
 
     def subscribe( self, request ):
-        subscription.add(self.get_path(), request.peer_channel)
+        subscription.add(self.get_path(), request.peer.channel)
 
     def unsubscribe( self, request ):
-        subscription.remove(self.get_path(), request.peer_channel)
+        subscription.remove(self.get_path(), request.peer.channel)
 
 
 class ListObject(Object):

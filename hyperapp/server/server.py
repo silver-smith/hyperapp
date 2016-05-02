@@ -45,7 +45,7 @@ class Server(object):
         if response is None:
             return None
         response_data = response.to_data()
-        self._subscribe_objects(request.peer_channel, response_data)
+        self._subscribe_objects(request.peer.channel, response_data)
         aux_info = self.prepare_aux_info(response_data)
         return (aux_info, response_data)
 
@@ -63,7 +63,7 @@ class Server(object):
           'Server commands must return a response, but %s.%s command returned %r' % (obj_class.__name__, request.command_id, response)
         if response is None and isinstance(request, Request):
             response = request.make_response()  # client need a response to cleanup waiting response handler
-        updates = request.peer_channel.pop_updates()
+        updates = request.peer.channel.pop_updates()
         if response is None and updates:
             response = ServerNotification()
         for update in updates or []:

@@ -4,7 +4,7 @@ from ..common.packet import tAuxInfo, tPacket, Packet
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
-from .request import PeerChannel, RequestBase, ServerNotification
+from .request import PeerChannel, Peer, RequestBase, ServerNotification
 from .transport import Transport, transport_registry
 from .transport_session import TransportSession
 from .server import Server
@@ -76,7 +76,7 @@ class TcpTransport(Transport):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         request_rec = packet_coders.decode(self.encoding, packet.payload, tClientPacket)
         pprint(tClientPacket, request_rec)
-        request = RequestBase.from_data(server, session.channel, iface_registry, request_rec)
+        request = RequestBase.from_data(server, Peer(session.channel), iface_registry, request_rec)
 
         result = server.process_request(request)
 
