@@ -1,3 +1,4 @@
+import itertools
 from dateutil.tz import tzutc, tzlocal
 
 
@@ -27,6 +28,11 @@ def is_tuple_inst( val, cls ):
         if not isinstance(elt, cls):
             return False
     return True
+
+# from itertools recipes
+def flatten(listOfLists):
+    "Flatten one level of nesting"
+    return itertools.chain.from_iterable(listOfLists)
 
 # todo: quote/unquote '|' chars
 def encode_path( path ):

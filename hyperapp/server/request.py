@@ -3,6 +3,13 @@ from ..common.htypes import tUpdate, tClientPacket, tClientNotification, tReques
 from ..common.identity import PublicKey
 
 
+class NotAuthorizedError(Exception):
+
+    def __init__( self, public_key ):
+        Exception.__init__(self, 'Authorization required for %s' % public_key.get_short_id_hex())
+        self.public_key = public_key
+
+
 class PeerChannel(object):
 
     def get_id( self ):

@@ -1,6 +1,6 @@
 # composite component - base class
 
-from .util import flatten
+from ..common.util import flatten
 from . import view
 
 

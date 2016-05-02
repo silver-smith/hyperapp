@@ -2,10 +2,10 @@ import os.path
 import cPickle as pickle
 from PySide import QtCore, QtGui
 from hyperapp.common.endpoint import Endpoint
+from ..common.util import flatten
 from ..common.htypes import TList, get_iface, iface_registry
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
-from .util import flatten
 from .request import Request
 from .server import Server
 from .proxy_object import GetRequest

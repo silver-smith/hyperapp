@@ -29,7 +29,7 @@ from hyperapp.common.encrypted_packet import (
 from hyperapp.common.packet import tAuxInfo, tPacket
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
-from hyperapp.server.request import PeerChannel, Peer, RequestBase
+from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
 from hyperapp.server.transport import transport_registry
 import hyperapp.server.tcp_transport  # self-registering
 import hyperapp.server.encrypted_transport  # self-registering
@@ -41,9 +41,13 @@ from hyperapp.server.transport_session import TransportSession, TransportSession
 
 test_iface = Interface('test_iface', commands=[
     RequestCmd('echo', [Field('test_param', tString)], [Field('test_result', tString)]),
+    RequestCmd('required_auth', result_fields=[Field('test_result', tString)]),
     RequestCmd('broadcast', [Field('message', tString)]),
     ],
     diff_type=tString)
+
+
+authorized_peer_identity = Identity.generate(fast=True)
 
 
 class TestObject(Object):
@@ -64,10 +68,18 @@ class TestObject(Object):
             return self.run_command_echo(request)
         if request.command_id == 'broadcast':
             return self.run_command_broadcast(request)
+        if request.command_id == 'required_auth':
+            return self.run_command_required_auth(request)
         return Object.process_request(self, request)
 
     def run_command_echo( self, request ):
         return request.make_response_result(test_result=request.params.test_param + ' to you too')
+
+    def run_command_required_auth( self, request ):
+        pk = authorized_peer_identity.get_public_key()
+        if pk not in request.peer.public_keys:
+            raise NotAuthorizedError(pk)
+        return request.make_response_result(test_result='ok')
 
     def run_command_broadcast( self, request ):
         subscription.distribute_update(self.iface, self.get_path(), request.params.message)
@@ -157,6 +169,8 @@ class ServerTest(unittest.TestCase):
 
     def decrypt_transport_response_packets( self, session_list, transport_id, packets ):
         if transport_id != 'encrypted_tcp':
+            if len(packets) == 0:
+                return None  # no response
             self.assertEqual(1, len(packets), repr(packets))
             self.assertEqual(transport_id, packets[0].transport_id)
             return packets[0].data
@@ -168,7 +182,7 @@ class ServerTest(unittest.TestCase):
             if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
                 session_key, packet_data = decrypt_packet(server_identity, session.session_key, encrypted_packet)
                 return packet_data
-        self.fail('No tSubsequentEncryptedPacket is returned in encrypted_tcp responses')
+        return None  # no response
 
     def make_tcp_transport_request( self, session_list, transport_id, obj_id, command_id, **kw ):
         request = tRequest.instantiate(
@@ -209,6 +223,8 @@ class ServerTest(unittest.TestCase):
 
     def decode_tcp_transport_response( self, session_list, transport_id, response_transport_packets ):
         packet_data = self.decrypt_transport_response_packets(session_list, transport_id, response_transport_packets)
+        if packet_data is None:
+            return None  # no response
         response_packet = self.decode_packet(transport_id, packet_data, tPacket)
         print 'Received response:'
         pprint(tPacket, response_packet)
@@ -229,7 +245,8 @@ class ServerTest(unittest.TestCase):
             session_list = self.session_list
         transport_request = self.make_tcp_transport_notification(session_list, transport_id, obj_id, command_id, **kw)
         response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
-        self.assertEqual([], response_transport_packets)
+        response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packets)
+        self.assertIsNone(response)
 
     def test_tcp_cdr_echo_request( self ):
         self._test_tcp_echo_request('tcp.cdr')
@@ -312,17 +329,23 @@ class ServerTest(unittest.TestCase):
         self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
         self.assertEqual(message, update.diff)
 
+    def pick_pop_channelge_from_responses( self, transport_id, response_transport_packets ):
+        for packet in response_transport_packets:
+            encrypted_packet = self.decode_packet(transport_id, packet.data, tEncryptedPacket)
+            if tEncryptedPacket.isinstance(encrypted_packet, tPopChallengePacket):
+                return encrypted_packet.challenge
+        self.fail('No challenge packet in response')
+
+    def encode_pop_transport_request( self, transport_id, challenge, pop_records ):
+        pop_packet = tProofOfPossessionPacket.instantiate(challenge, pop_records)
+        pop_packet_data = self.encode_packet(transport_id, pop_packet, tEncryptedPacket)
+        return tTransportPacket.instantiate(transport_id=transport_id, data=pop_packet_data)
+
     def test_proof_of_possession( self ):
         transport_id = 'encrypted_tcp'
         transport_request = self.make_tcp_transport_request(self.session_list, transport_id, obj_id='1', command_id='echo', test_param='hi')
         response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
-        for packet in response_transport_packets:
-            encrypted_packet = self.decode_packet(transport_id, packet.data, tEncryptedPacket)
-            if tEncryptedPacket.isinstance(encrypted_packet, tPopChallengePacket):
-                challenge = encrypted_packet.challenge
-                break
-        else:
-            self.fail('No challenge packet in response')
+        challenge = self.pick_pop_channelge_from_responses(transport_id, response_transport_packets)
 
         identity_1 = Identity.generate(fast=True)
         identity_2 = Identity.generate(fast=True)
@@ -333,12 +356,32 @@ class ServerTest(unittest.TestCase):
         pop_record_2 = tPopRecord.instantiate(
             identity_2.get_public_key().to_der(),
             identity_2.sign(challenge + 'x'))  # make invlid signature; verification must fail
-        pop_packet = tProofOfPossessionPacket.instantiate(challenge, [pop_record_1, pop_record_2])
-        pop_packet_data = self.encode_packet(transport_id, pop_packet, tEncryptedPacket)
-        transport_request = tTransportPacket.instantiate(transport_id=transport_id, data=pop_packet_data)
+        transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record_1, pop_record_2])
 
         response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
 
         session = self.session_list.get_transport_session(transport_id)
         self.assertIn(identity_1.get_public_key(), session.peer_public_keys)
         self.assertNotIn(identity_2.get_public_key(), session.peer_public_keys)
+
+    # when NotAuthorizedError raised in first request before pop is returned, that request must be reprocessed when pop is processed
+    def test_unauthorized_request_reprocess( self ):
+        transport_id = 'encrypted_tcp'
+        transport_request = self.make_tcp_transport_request(self.session_list, transport_id, obj_id='1', command_id='required_auth')
+        response_transport_packets = transport_registry.process_packet(
+            self.iface_registry, self.server, self.session_list, transport_request)
+        challenge = self.pick_pop_channelge_from_responses(transport_id, response_transport_packets)
+
+        authorized_peer_identity
+        
+        pop_record = tPopRecord.instantiate(
+            authorized_peer_identity.get_public_key().to_der(),
+            authorized_peer_identity.sign(challenge))
+        transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record])
+
+        response_transport_packets = transport_registry.process_packet(
+            self.iface_registry, self.server, self.session_list, transport_request)
+
+        response = self.decode_tcp_transport_response(self.session_list, transport_id, response_transport_packets)
+        self.assertIsNotNone(response)  # now, after pop is received, first request must be processed
+        self.assertEqual('ok', response.result.test_result)

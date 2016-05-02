@@ -1,7 +1,6 @@
 from cStringIO import StringIO
 import pickle
 import weakref
-import itertools
 from datetime import datetime
 from dateutil.tz import tzutc
 from PySide import QtCore, QtGui
@@ -113,11 +112,6 @@ def uni2str( v ):
         return v.encode('utf-8')
     else:
         return v
-
-# from itertools recipes
-def flatten(listOfLists):
-    "Flatten one level of nesting"
-    return itertools.chain.from_iterable(listOfLists)
 
 def utcnow():
     return datetime.now(tzutc())
