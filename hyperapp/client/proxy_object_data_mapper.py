@@ -21,7 +21,7 @@ class ProxyObjectMapper(Mapper):
         self.server = server
 
     def map_hierarchy_obj( self, tclass, value ):
-        if not tclass.issubclass(tThisProxyObject):
+        if not issubclass(tclass, tThisProxyObject):
             return value
         ## print '======== received proxy object ========'
         ## pprint(tObject, value)

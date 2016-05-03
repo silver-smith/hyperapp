@@ -27,9 +27,12 @@ class TClass(TRecord):
         setattr(rec, REC_CLASS_ID_ATTR, self.id)
         return rec
 
-    def issubclass( self, tclass ):
-        assert isinstance(tclass, TClass), repr(tclass)
-        return self is tclass or issubclass(self.trec, tclass.get_trecord())
+    def __subclasscheck__( self, tclass ):
+        if not isinstance(tclass, TClass):
+            return False
+        if tclass is self:
+            return True
+        return issubclass(tclass.get_trecord(), self.trec)
             
 
 class THierarchy(Type):
@@ -73,4 +76,4 @@ class THierarchy(Type):
 
     def isinstance( self, obj, tclass ):
         assert isinstance(tclass, TClass), repr(tclass)
-        return self.resolve_obj(obj).issubclass(tclass)
+        return issubclass(self.resolve_obj(obj), tclass)
