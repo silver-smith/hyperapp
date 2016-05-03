@@ -14,7 +14,7 @@ class FieldHandle(object):
         return cls(contents.value)
 
     def to_data( self ):
-        return self.handle_type.instantiate(self.field_view_id, self.value)
+        return self.handle_type(self.field_view_id, self.value)
 
 
 class StringFieldHandle(FieldHandle):
@@ -94,7 +94,7 @@ class Field(object):
         self.handle = field_handle
 
     def to_data( self ):
-        return tFormField.instantiate(self.name, self.handle.to_data())
+        return tFormField(self.name, self.handle.to_data())
 
 
 class Handle(view.Handle):
@@ -114,7 +114,7 @@ class Handle(view.Handle):
         self.current_field = current_field
 
     def to_data( self ):
-        return tFormHandle.instantiate(
+        return tFormHandle(
             self.view_id, self.object.to_data(), [field.to_data() for field in self.fields], self.current_field)
 
     def get_object( self ):

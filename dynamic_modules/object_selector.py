@@ -1,5 +1,5 @@
 from PySide import QtCore, QtGui
-from ..common.interface.article import ObjSelectorHandle, ObjSelectorUnwrapHandle
+from ..common.interface.article import tObjSelectorHandle, tObjSelectorUnwrapHandle
 from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .proxy_object import ProxyObject
@@ -19,7 +19,7 @@ class ObjSelectorUnwrap(view.Handle):
         self.base_handle = base_handle
 
     def to_data( self ):
-        return ObjSelectorUnwrapHandle('object_selector_unwrap', self.base_handle.to_data())
+        return tObjSelectorUnwrapHandle('object_selector_unwrap', self.base_handle.to_data())
 
     def get_object( self ):
         return self.base_handle.get_object()
@@ -47,7 +47,7 @@ class Handle(view.Handle):
         self.target = target
 
     def to_data( self ):
-        return ObjSelectorHandle('object_selector', ref=self.ref.to_data(), target=self.target.to_data())
+        return tObjSelectorHandle('object_selector', ref=self.ref.to_data(), target=self.target.to_data())
 
     def get_title( self ):
         return '%s: %s' % (self.ref.get_title(), self.target.get_title())

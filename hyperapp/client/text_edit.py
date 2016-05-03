@@ -22,7 +22,7 @@ class Handle(view.Handle):
         self.object = object
 
     def to_data( self ):
-        return data_type.instantiate('text_edit', self.object.to_data())
+        return data_type('text_edit', self.object.to_data())
 
     def get_object( self ):
         return self.object

@@ -1,9 +1,9 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
-from ..common.htypes import Command, Column, ObjHandle, RedirectHandle
+from ..common.htypes import tCommand, Column, tObjHandle, tRedirectHandle
 from ..common.interface.article import (
-    ObjSelectorHandle,
-    ObjSelectorUnwrapHandle,
+    tObjSelectorHandle,
+    tObjSelectorUnwrapHandle,
     article_iface,
     ref_list_iface,
     object_selector_iface,
@@ -66,16 +66,16 @@ class Article(Object):
 
     def get_handle( self ):
         if self.mode == self.mode_view:
-            return ObjHandle('text_view', self.get())
+            return tObjHandle('text_view', self.get())
         else:
-            return ObjHandle('text_edit', self.get())
+            return tObjHandle('text_edit', self.get())
 
     def get_commands( self ):
         return [
-            Command('edit', 'Edit', 'Switch to edit mode', 'E'),
-            Command('view', 'View', 'Finish editing, switch to view mode', 'Ctrl+F'),
-            Command('save', 'Save', 'Save article', 'Ctrl+S'),
-            Command('refs', 'Refs', 'Open article references', 'Ctrl+R'),
+            tCommand('edit', 'Edit', 'Switch to edit mode', 'E'),
+            tCommand('view', 'View', 'Finish editing, switch to view mode', 'Ctrl+F'),
+            tCommand('save', 'Save', 'Save article', 'Ctrl+S'),
+            tCommand('refs', 'Refs', 'Open article references', 'Ctrl+R'),
             ]
 
     def process_request( self, request ):
@@ -104,7 +104,7 @@ class Article(Object):
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             endpoint = load_server_routes(public_key)
             target_url = Url(endpoint, path)
-            return request.make_response(RedirectHandle(redirect_to=target_url.to_data()))
+            return request.make_response(tRedirectHandle(redirect_to=target_url.to_data()))
         else:
             target = module.run_resolver(path)
             return request.make_response_handle(target)
@@ -144,8 +144,8 @@ class ArticleRefList(SmallListObject):
 
     def get_commands( self ):
         return [
-            Command('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
-            Command('add', 'Add ref', 'Create new reference', 'Ins'),
+            tCommand('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
+            tCommand('add', 'Add ref', 'Create new reference', 'Ins'),
             ]
 
     def process_request( self, request ):
@@ -200,8 +200,8 @@ class ArticleRefList(SmallListObject):
     @classmethod
     def rec2element( cls, rec ):
         commands = [
-            Command('open', 'Open', 'Open reference selector'),
-            Command('delete', 'Delete', 'Delete article reference', 'Del'),
+            tCommand('open', 'Open', 'Open reference selector'),
+            tCommand('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
         if not rec.server_public_key_pem:
             url = u'<local>:%s' % rec.path
@@ -259,7 +259,7 @@ class RefSelector(Object):
         diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
         list_elt = ArticleRefList.ListHandle(ref_list_obj.get(), key=rec.id)
-        handle = ObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
+        handle = tObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
         return request.make_response(handle)
 
     @db_session
@@ -271,11 +271,11 @@ class RefSelector(Object):
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             endpoint = load_server_routes(public_key)
             target_url = Url(endpoint, path)
-            target_handle = RedirectHandle(target_url.to_data())
+            target_handle = tRedirectHandle(target_url.to_data())
         else:
             target_obj = module.run_resolver(path)
             target_handle = target_obj.get_handle()
-        return ObjSelectorHandle('object_selector', self.get(), target_handle)
+        return tObjSelectorHandle('object_selector', self.get(), target_handle)
 
 
 class ArticleModule(PonyOrmModule):

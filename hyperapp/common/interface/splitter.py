@@ -6,5 +6,3 @@ tSplitterHandle = tHandle.register('splitter', base=tViewHandle, fields=[
     Field('y', tHandle),
     Field('orientation', tString, 'horizontal'),
     ])
-
-SplitterHandle = tSplitterHandle.instantiate

@@ -97,7 +97,7 @@ class ResponseBase(object):
 class ServerNotification(ResponseBase):
 
     def to_data( self ):
-        return tServerNotification.instantiate(self.updates)
+        return tServerNotification(self.updates)
 
 
 class Response(ResponseBase):
@@ -112,4 +112,4 @@ class Response(ResponseBase):
         self.result = result
 
     def to_data( self ):
-        return tResponse.instantiate(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
+        return tResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)

@@ -1,8 +1,8 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
-from ..common.htypes import Command
-from ..common.interface.form import FormField, FormHandle
-from ..common.interface.splitter import SplitterHandle
+from ..common.htypes import tCommand
+from ..common.interface.form import tFormField, tFormHandle
+from ..common.interface.splitter import tSplitterHandle
 from ..common.interface.module_list import (
     module_list_iface,
     module_form_iface,
@@ -40,13 +40,13 @@ class ModuleList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [Command('open', 'Open', 'Open module', 'Return'),
-                    Command('deps', 'Dependencies', 'Open dependency selector', 'Ctrl+D'),
-                    Command('delete', 'Delete', 'Delete module', 'Del')]
+        commands = [tCommand('open', 'Open', 'Open module', 'Return'),
+                    tCommand('deps', 'Dependencies', 'Open dependency selector', 'Ctrl+D'),
+                    tCommand('delete', 'Delete', 'Delete module', 'Del')]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
     def get_commands( self ):
-        return [Command('add', 'Add', 'Create new module', 'Ins')]
+        return [tCommand('add', 'Add', 'Create new module', 'Ins')]
 
     def process_request( self, request ):
         if request.command_id == 'add':
@@ -77,7 +77,7 @@ class ModuleList(SmallListObject):
         dep_list.subscribe(request)
         available_list.subscribe(request)
         return request.make_response(
-            SplitterHandle('splitter', dep_list.get_handle(), available_list.get_handle()))
+            tSplitterHandle('splitter', dep_list.get_handle(), available_list.get_handle()))
 
     @db_session
     def run_element_command_open( self, request ):
@@ -106,12 +106,12 @@ class ModuleForm(Object):
         return module.make_path(self.class_name, self.id or '')
 
     def get_handle( self, name=None ):
-        return FormHandle('form', self.get(), [
-            FormField('name', stringFieldHandle(name)),
+        return tFormHandle('form', self.get(), [
+            tFormField('name', stringFieldHandle(name)),
             ])
 
     def get_commands( self ):
-        return [Command('submit', 'Submit', 'Submit form', 'Return')]
+        return [tCommand('submit', 'Submit', 'Submit form', 'Return')]
 
     def process_request( self, request ):
         if request.command_id == 'submit':
@@ -160,7 +160,7 @@ class ModuleDepList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [Command('remove', 'Remove', 'Remove module from dependency list', 'Del')]
+        commands = [tCommand('remove', 'Remove', 'Remove module from dependency list', 'Del')]
         return cls.Element(cls.Row(rec.id, rec.visible_as, rec.dep.id), commands)
 
     def process_request( self, request ):
@@ -213,7 +213,7 @@ class AvailableDepList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [Command('add', 'Add', 'Add module to dependency list', 'Ins')]
+        commands = [tCommand('add', 'Add', 'Add module to dependency list', 'Ins')]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
     def process_request( self, request ):

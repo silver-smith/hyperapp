@@ -39,13 +39,13 @@ class Mapper(object):
     @dispatch.register(TRecord)
     def process_record( self, t, value ):
         fields = self.map_record_fields(t, value)
-        return t.instantiate(**fields)
+        return t(**fields)
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj( self, t, value ):
         tclass = t.resolve_obj(value)
         fields = self.map_record_fields(tclass.get_trecord(), value)
-        mapped_obj = tclass.instantiate(**fields)
+        mapped_obj = tclass(**fields)
         return self.map_hierarchy_obj(tclass, mapped_obj)
 
     def map_record_fields( self, t, value ):

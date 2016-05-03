@@ -36,7 +36,7 @@ class Handle(view.Handle):
         self.select_first = select_first  # bool
 
     def to_data( self ):
-        return self.data_type.instantiate(
+        return self.data_type(
             'list',
             self.object.to_data(),
             self.sort_column_id,

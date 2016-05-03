@@ -54,13 +54,13 @@ def encrypt_initial_packet( session_key, server_public_key, plain_contents ):
     # encrypt session key
     encrypted_session_key = server_public_key.encrypt(session_key)
     cbc_iv, encrypted_contents, hash = _encrypt(session_key, plain_contents)
-    return tInitialEncryptedPacket.instantiate(cbc_iv, encrypted_contents, hash, encrypted_session_key)
+    return tInitialEncryptedPacket(cbc_iv, encrypted_contents, hash, encrypted_session_key)
 
 def encrypt_subsequent_packet( session_key, plain_contents ):
     assert isinstance(session_key, str), repr(session_key)
     assert isinstance(plain_contents, str), repr(plain_contents)
     cbc_iv, encrypted_contents, hash = _encrypt(session_key, plain_contents)
-    return tSubsequentEncryptedPacket.instantiate(cbc_iv, encrypted_contents, hash)
+    return tSubsequentEncryptedPacket(cbc_iv, encrypted_contents, hash)
 
 def _encrypt( session_key, plain_contents ):
     assert isinstance(session_key, str), repr(session_key)

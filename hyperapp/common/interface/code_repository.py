@@ -17,9 +17,6 @@ tModuleDep = TRecord([
     Field('visible_as', tString),
     ])
 
-ModuleDep = tModuleDep.instantiate
-
-
 tModule = TRecord([
     Field('id', tString),  # uuid
     Field('package', tString),  # like 'hyperapp.client'
@@ -28,9 +25,6 @@ tModule = TRecord([
     Field('source', tString),
     Field('fpath', tString),
     ])
-
-Module = tModule.instantiate
-
 
 code_repository_iface = Interface('code_repository', commands=[
     RequestCmd('get_modules', [Field('module_ids', TList(tString))], [Field('modules', TList(tModule))]),

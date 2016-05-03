@@ -7,12 +7,7 @@ tAuxInfo = TRecord([
     Field('modules', TList(tModule)),
     ])
 
-AuxInfo = tAuxInfo.instantiate
-
-
 tPacket = TRecord([
     Field('aux_info', tAuxInfo),
     Field('payload', tBinary),
     ])
-
-Packet = tPacket.instantiate

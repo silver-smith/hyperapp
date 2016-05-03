@@ -107,7 +107,7 @@ class CdrDecoder(object):
     @dispatch.register(TRecord)
     def decode_record( self, t, path ):
         fields = self.decode_record_fields(t, path)
-        return t.instantiate(**fields)
+        return t(**fields)
 
     def decode_record_fields( self, t, path ):
         fields = self.decode_record_fields_impl(t.get_static_fields(), path)
@@ -127,7 +127,7 @@ class CdrDecoder(object):
         class_id = self.read_unicode(path)
         tclass = t.resolve(class_id)
         fields = self.decode_record_fields(tclass.get_trecord(), path)
-        return tclass.instantiate(**fields)
+        return tclass(**fields)
 
     @dispatch.register(TList)
     def decode_list( self, t, path ):

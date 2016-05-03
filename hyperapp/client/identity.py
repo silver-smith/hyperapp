@@ -10,7 +10,7 @@ from ..common.htypes import (
     )
 from ..common.identity import Identity
 from .objimpl_registry import objimpl_registry
-from .command import Command
+from .command import tCommand
 from .object import Object
 from .list_object import Element, Slice, ListObject
 from .import form_view
@@ -87,10 +87,10 @@ class IdentityFormObject(Object):
         return 'Create identity'
 
     def to_data( self ):
-        return tIdentityFormObject.instantiate('identity_form')
+        return tIdentityFormObject('identity_form')
 
     def get_commands( self ):
-        return [Command('submit', 'Create', 'Create new identity, generate private+public key pair', 'Return')]
+        return [tCommand('submit', 'Create', 'Create new identity, generate private+public key pair', 'Return')]
 
     def run_command( self, command_id, initiator_view=None, **kw ):
         if command_id == 'submit':
@@ -129,7 +129,7 @@ class IdentityList(ListObject):
         return 'Identity list'
 
     def get_commands( self ):
-        return [Command('new', 'Create', 'Create new identity, generate private+public key pair', 'Ins')]
+        return [tCommand('new', 'Create', 'Create new identity, generate private+public key pair', 'Ins')]
 
     def run_command( self, command_id, initiator_view=None, **kw ):
         if command_id == 'new':
@@ -140,7 +140,7 @@ class IdentityList(ListObject):
         return make_identity_form()
 
     def to_data( self ):
-        return identity_list_type.instantiate('identity_list')
+        return identity_list_type('identity_list')
 
     def get_columns( self ):
         return [

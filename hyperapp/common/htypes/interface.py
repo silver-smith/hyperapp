@@ -39,10 +39,8 @@ tThisProxyObjectWithContents = tObject.register('this_proxy_with_contents', base
 tHandle = THierarchy('handle')
 tViewHandle = tHandle.register('handle', fields=[Field('view_id', tString)])
 tObjHandle = tHandle.register('obj_handle', base=tViewHandle, fields=[Field('object', tObject)])
-ObjHandle = tObjHandle.instantiate
 
 tRedirectHandle = tHandle.register('redirect', fields=[Field('redirect_to', tUrl)])
-RedirectHandle = tRedirectHandle.instantiate
 
 
 class IfaceCommand(object):
@@ -161,13 +159,13 @@ class Interface(object):
         return self._get_command(command_id).get_params_type(self)
 
     def make_params( self, command_id, *args, **kw ):
-        return self.get_request_params_type(command_id).instantiate(*args, **kw)
+        return self.get_request_params_type(command_id)(*args, **kw)
 
     def get_command_result_type( self, command_id ):
         return self._get_command(command_id).get_result_type(self)
 
     def make_result( self, command_id, *args, **kw ):
-        return self.get_command_result_type(command_id).instantiate(*args, **kw)
+        return self.get_command_result_type(command_id)(*args, **kw)
 
     def validate_request( self, command_id, params=None ):
         type = self.get_request_params_type(command_id)
@@ -180,13 +178,13 @@ class Interface(object):
         return self.get_default_contents_fields() + self.content_fields
 
     def Object( self, **kw ):
-        return self._tObject.instantiate(**kw)
+        return self._tObject(**kw)
 
     def Contents( self, **kw ):
-        return self._tContents.instantiate(**kw)
+        return self._tContents(**kw)
 
     def Update( self, path, diff ):
-        return tUpdate.instantiate(self.iface_id, path, diff)
+        return tUpdate(self.iface_id, path, diff)
         
     def validate_contents( self, path, value ):
         self._tContents.validate(path, value)

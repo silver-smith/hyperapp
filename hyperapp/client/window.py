@@ -66,10 +66,10 @@ class Handle(composite.Handle):
         self.pos = pos
 
     def to_data( self ):
-        return data_type.instantiate(
+        return data_type(
             tab_view=self.child_handle.to_data(),
-            size=size_type.instantiate(w=self.size.width(), h=self.size.height()),
-            pos=point_type.instantiate(x=self.pos.x(), y=self.pos.y()),
+            size=size_type(w=self.size.width(), h=self.size.height()),
+            pos=point_type(x=self.pos.x(), y=self.pos.y()),
             )
 
     def get_child_handle( self ):

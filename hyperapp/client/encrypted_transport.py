@@ -10,7 +10,7 @@ from ..common.encrypted_packet import (
     encrypt_initial_packet,
     decrypt_subsequent_packet,
     )
-from ..common.packet import AuxInfo, tPacket, Packet
+from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.packet_coders import packet_coders
 from .transport import Transport, transport_registry
@@ -61,10 +61,10 @@ class EncryptedTransport(Transport):
         challenge = encrypted_packet.challenge
         pop_records = []
         for item in identity_controller.get_items():
-            pop_records.append(tPopRecord.instantiate(
+            pop_records.append(tPopRecord(
                 item.identity.get_public_key().to_der(),
                 item.identity.sign(challenge)))
-        pop_packet = tProofOfPossessionPacket.instantiate(challenge, pop_records)
+        pop_packet = tProofOfPossessionPacket(challenge, pop_records)
         transport_packet_data = self._make_transport_packet(pop_packet)
         connection.send_data(transport_packet_data)
         
@@ -73,16 +73,16 @@ class EncryptedTransport(Transport):
     
     def _make_payload_packet( self, session, server_public_key, payload, payload_type, aux_info ):
         if aux_info is None:
-            aux_info = AuxInfo(requirements=[], modules=[])
+            aux_info = tAuxInfo(requirements=[], modules=[])
         packet_data = packet_coders.encode(ENCODING, payload, payload_type)
-        packet = Packet(aux_info, packet_data)
+        packet = tPacket(aux_info, packet_data)
         packet_data = packet_coders.encode(ENCODING, packet, tPacket)
         encrypted_packet = encrypt_initial_packet(session.session_key, server_public_key, packet_data)
         return self._make_transport_packet(encrypted_packet)
 
     def _make_transport_packet( self, encrypted_packet ):
         encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
-        transport_packet = tTransportPacket.instantiate(TRANSPORT_ID, encrypted_packet_data)
+        transport_packet = tTransportPacket(TRANSPORT_ID, encrypted_packet_data)
         return encode_transport_packet(transport_packet)
 
     def _produce_session( self, session_list ):

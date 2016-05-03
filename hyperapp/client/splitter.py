@@ -44,7 +44,7 @@ class Handle(composite.Handle):
         self.sizes = sizes
 
     def to_data( self ):
-        return tSplitterHandle.instantiate('splitter', self.x.to_data(), self.y.to_data(), self.orient)
+        return tSplitterHandle('splitter', self.x.to_data(), self.y.to_data(), self.orient)
 
     def construct( self, parent ):
         print 'splitter construct', parent, self.orient, 'focused =', self.focused

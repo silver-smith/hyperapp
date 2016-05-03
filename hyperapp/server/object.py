@@ -4,7 +4,6 @@ from ..common.htypes import (
     tString,
     Field,
     tUpdate,
-    ObjHandle,
     Interface,
     )
 from ..common.visual_rep import pprint

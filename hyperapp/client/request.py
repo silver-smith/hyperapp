@@ -23,7 +23,7 @@ class RequestBase(object):
 class ClientNotification(RequestBase):
 
     def to_data( self ):
-        return tClientNotification.instantiate(self.iface.iface_id, self.path, self.command_id, self.params)
+        return tClientNotification(self.iface.iface_id, self.path, self.command_id, self.params)
 
 
 class Request(RequestBase):
@@ -33,7 +33,7 @@ class Request(RequestBase):
 
     def to_data( self, request_id ):
         assert isinstance(request_id, str), repr(request_id)
-        return tRequest.instantiate(self.iface.iface_id, self.path, self.command_id, self.params, request_id)
+        return tRequest(self.iface.iface_id, self.path, self.command_id, self.params, request_id)
 
     def process_response( self, server, response ):
         raise NotImplementedError(self.__class__)

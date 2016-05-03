@@ -25,13 +25,10 @@ tObjSelectorHandle = tHandle.register('object_selector', base=tViewHandle, field
         Field('ref', tObject),
         Field('target', tHandle),
         ])
-ObjSelectorHandle = tObjSelectorHandle.instantiate
 
 tObjSelectorUnwrapHandle = tHandle.register('object_selector_unwrap', base=tViewHandle, fields=[
         Field('base_handle', tHandle),
         ])
-ObjSelectorUnwrapHandle = tObjSelectorUnwrapHandle.instantiate
-
 
 article_iface = Interface('article',
                           content_fields=[Field('text', TOptional(tString))],

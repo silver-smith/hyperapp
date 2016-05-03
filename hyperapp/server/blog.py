@@ -1,6 +1,6 @@
 from datetime import datetime
 from pony.orm import db_session, commit, desc, Required, Set
-from ..common.htypes import Command, Column, DateTimeColumnType
+from ..common.htypes import tCommand, Column, DateTimeColumnType
 from ..common.interface.blog import blog_entry_iface, blog_iface
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
@@ -22,7 +22,7 @@ class BlogEntry(article.Article):
 
     def get_commands( self ):
         return [
-            Command('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
+            tCommand('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
             ] + article.Article.get_commands(self)
 
     def process_request( self, request ):
@@ -73,7 +73,7 @@ class Blog(SmallListObject):
         return module.make_path(cls.class_name)
 
     def get_commands( self ):
-        return [Command('add', 'Add entry', 'Create new blog entry', 'Ins')]
+        return [tCommand('add', 'Add entry', 'Create new blog entry', 'Ins')]
 
     def process_request( self, request ):
         if request.command_id == 'add':
@@ -94,8 +94,8 @@ class Blog(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [Command('open', 'Open', 'Open blog entry'),
-                    Command('delete', 'Delete', 'Delete blog entry', 'Del'),
+        commands = [tCommand('open', 'Open', 'Open blog entry'),
+                    tCommand('delete', 'Delete', 'Delete blog entry', 'Del'),
                     ]
         return cls.Element(cls.Row(rec.id, rec.created_at), commands)
 

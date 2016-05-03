@@ -1,8 +1,7 @@
 import os.path
 import yaml
 from ..common.interface.code_repository import (
-    ModuleDep,
-    Module,
+    tModule,
     code_repository_iface,
     )
 from . import module as module_mod
@@ -25,8 +24,8 @@ class CodeRepository(Object):
 
     def __init__( self ):
         Object.__init__(self)
-        self._id2module = {}           # module id -> Module
-        self._requirement2module = {}  # (registry, key) -> Module
+        self._id2module = {}           # module id -> tModule
+        self._requirement2module = {}  # (registry, key) -> tModule
         self._load_dynamic_modules()
 
     def resolve( self, path ):
@@ -83,7 +82,7 @@ class CodeRepository(Object):
         fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
         with open(fpath) as f:
             source = f.read()
-        return Module(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
+        return tModule(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
 
 
 class CodeRepositoryModule(module_mod.Module):

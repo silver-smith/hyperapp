@@ -23,7 +23,7 @@ class Handle(view.Handle):
         self.object = object
 
     def to_data( self ):
-        return dataType.instantiate('text_view', self.object.to_data())
+        return dataType('text_view', self.object.to_data())
 
     def get_object( self ):
         return self.object

@@ -23,7 +23,7 @@ class Endpoint(object):
         self.routes = routes
 
     def to_data( self ):
-        return tEndpoint.instantiate(
+        return tEndpoint(
             self.public_key.to_pem(),
             self.routes)
 
@@ -48,4 +48,4 @@ class Url(object):
         self.path = path
 
     def to_data( self ):
-        return tUrl.instantiate(self.endpoint.to_data(), self.path)
+        return tUrl(self.endpoint.to_data(), self.path)

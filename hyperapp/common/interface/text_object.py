@@ -7,4 +7,3 @@ from ..htypes import (
 
 
 tTextObject = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
-TextObject = tTextObject.instantiate

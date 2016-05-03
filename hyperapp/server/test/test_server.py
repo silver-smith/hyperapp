@@ -128,11 +128,11 @@ class ServerTest(unittest.TestCase):
         self.session_list = TransportSessionList()
 
     def test_simple_request( self ):
-        request_data = tRequest.instantiate(
+        request_data = tRequest(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, '1'],
             command_id='echo',
-            params=test_iface.get_request_params_type('echo').instantiate(test_param='hello'),
+            params=test_iface.get_request_params_type('echo')(test_param='hello'),
             request_id='001',
             )
         pprint(tClientPacket, request_data)
@@ -185,38 +185,38 @@ class ServerTest(unittest.TestCase):
         return None  # no response
 
     def make_tcp_transport_request( self, session_list, transport_id, obj_id, command_id, **kw ):
-        request = tRequest.instantiate(
+        request = tRequest(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
-            params=test_iface.get_request_params_type(command_id).instantiate(**kw),
+            params=test_iface.get_request_params_type(command_id)(**kw),
             request_id='001',
             )
         print 'Sending request:'
         pprint(tClientPacket, request)
-        request_packet = tPacket.instantiate(
-            aux_info=tAuxInfo.instantiate(requirements=[], modules=[]),
+        request_packet = tPacket(
+            aux_info=tAuxInfo(requirements=[], modules=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
-        transport_request = tTransportPacket.instantiate(
+        transport_request = tTransportPacket(
             transport_id=transport_id,
             data=self.encrypt_packet(session_list, transport_id, request_packet_data))
         return transport_request
 
     def make_tcp_transport_notification( self, session_list, transport_id, obj_id, command_id, **kw ):
-        request = tClientNotification.instantiate(
+        request = tClientNotification(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
-            params=test_iface.get_request_params_type(command_id).instantiate(**kw),
+            params=test_iface.get_request_params_type(command_id)(**kw),
             )
         print 'Sending client notification:'
         pprint(tClientPacket, request)
-        request_packet = tPacket.instantiate(
-            aux_info=tAuxInfo.instantiate(requirements=[], modules=[]),
+        request_packet = tPacket(
+            aux_info=tAuxInfo(requirements=[], modules=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
-        transport_request = tTransportPacket.instantiate(
+        transport_request = tTransportPacket(
             transport_id=transport_id,
             data=self.encrypt_packet(session_list, transport_id, request_packet_data))
         return transport_request
@@ -337,9 +337,9 @@ class ServerTest(unittest.TestCase):
         self.fail('No challenge packet in response')
 
     def encode_pop_transport_request( self, transport_id, challenge, pop_records ):
-        pop_packet = tProofOfPossessionPacket.instantiate(challenge, pop_records)
+        pop_packet = tProofOfPossessionPacket(challenge, pop_records)
         pop_packet_data = self.encode_packet(transport_id, pop_packet, tEncryptedPacket)
-        return tTransportPacket.instantiate(transport_id=transport_id, data=pop_packet_data)
+        return tTransportPacket(transport_id=transport_id, data=pop_packet_data)
 
     def test_proof_of_possession( self ):
         transport_id = 'encrypted_tcp'
@@ -350,10 +350,10 @@ class ServerTest(unittest.TestCase):
         identity_1 = Identity.generate(fast=True)
         identity_2 = Identity.generate(fast=True)
 
-        pop_record_1 = tPopRecord.instantiate(
+        pop_record_1 = tPopRecord(
             identity_1.get_public_key().to_der(),
             identity_1.sign(challenge))
-        pop_record_2 = tPopRecord.instantiate(
+        pop_record_2 = tPopRecord(
             identity_2.get_public_key().to_der(),
             identity_2.sign(challenge + 'x'))  # make invlid signature; verification must fail
         transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record_1, pop_record_2])
@@ -374,7 +374,7 @@ class ServerTest(unittest.TestCase):
 
         authorized_peer_identity
         
-        pop_record = tPopRecord.instantiate(
+        pop_record = tPopRecord(
             authorized_peer_identity.get_public_key().to_der(),
             authorized_peer_identity.sign(challenge))
         transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record])

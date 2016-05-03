@@ -34,7 +34,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def to_data( self ):
-        return dataType.instantiate('text', self.text)
+        return dataType('text', self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)

@@ -1,6 +1,6 @@
 from PySide import QtCore
 from ..common.htypes import tServerPacket
-from ..common.packet import tAuxInfo, AuxInfo, tPacket, Packet
+from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.packet_coders import packet_coders
 from .transport import Transport, transport_registry
@@ -39,11 +39,11 @@ class TcpTransport(Transport):
 
     def _make_packet( self, payload, payload_type, aux_info ):
         if aux_info is None:
-            aux_info = AuxInfo(requirements=[], modules=[])
+            aux_info = tAuxInfo(requirements=[], modules=[])
         packet_data = packet_coders.encode(self.encoding, payload, payload_type)
-        packet = Packet(aux_info, packet_data)
+        packet = tPacket(aux_info, packet_data)
         encoded_packet = packet_coders.encode(self.encoding, packet, tPacket)
-        transport_packet = tTransportPacket.instantiate(self.transport_id, encoded_packet)
+        transport_packet = tTransportPacket(self.transport_id, encoded_packet)
         return encode_transport_packet(transport_packet)
 
 

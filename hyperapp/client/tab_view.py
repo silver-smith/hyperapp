@@ -27,7 +27,7 @@ class Handle(composite.Handle):
 
     def to_data( self ):
         tabs = [h.to_data() for h in self.children]
-        return data_type.instantiate(tabs=tabs, current_tab=self.current_idx)
+        return data_type(tabs=tabs, current_tab=self.current_idx)
 
     def get_current_child( self ):
         return self.children[self.current_idx]

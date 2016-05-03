@@ -1,6 +1,6 @@
 from Queue import Queue
 from ..common.htypes import tUpdate, tClientPacket, tServerPacket
-from ..common.packet import tAuxInfo, tPacket, Packet
+from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
@@ -54,7 +54,7 @@ class TcpSession(TransportSession):
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, notification_data)
         packet_data = self.transport.encode_response_or_notification(aux_info, notification_data)
-        return [tTransportPacket.instantiate(self.transport.get_transport_id(), packet_data)]
+        return [tTransportPacket(self.transport.get_transport_id(), packet_data)]
 
 
 class TcpTransport(Transport):
@@ -90,7 +90,7 @@ class TcpTransport(Transport):
 
     def encode_response_or_notification( self, aux_info, response_or_notification ):
         payload = packet_coders.encode(self.encoding, response_or_notification, tServerPacket)
-        packet = Packet(aux_info, payload)
+        packet = tPacket(aux_info, payload)
         packet_data = packet_coders.encode(self.encoding, packet, tPacket)
         return packet_data
 

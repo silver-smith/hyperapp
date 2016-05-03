@@ -31,7 +31,7 @@ class ProxyObjectMapper(Mapper):
         cls = proxy_class_registry.resolve(value.objimpl_id)
         obj = cls.produce_obj(self.server, value.path, iface)
         obj.set_contents(value.contents)
-        resolved_obj = tProxyObject.instantiate(
+        resolved_obj = tProxyObject(
             value.objimpl_id, value.iface, value.path, self.server.get_endpoint().to_data())
         ## pprint(tObject, resolved_obj)
         ## print '======================================='

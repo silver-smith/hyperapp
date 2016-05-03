@@ -31,7 +31,7 @@ class Handle(list_view.Handle):
         self.prefix = prefix
 
     def to_data( self ):
-        return self.data_type.instantiate(
+        return self.data_type(
             'list_narrower',
             self.object.to_data(),
             self.sort_column_id,

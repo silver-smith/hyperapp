@@ -130,7 +130,7 @@ class ListInterface(Interface):
                RequestCmd('subscribe_and_fetch_elements', fetch_params_fields, self.get_contents_fields())]
 
     def Row( self, *args, **kw ):
-        return self.tRowRecord.instantiate(*args, **kw)
+        return self.tRowRecord(*args, **kw)
 
     def tElement( self ):
         return TRecord([
@@ -139,7 +139,7 @@ class ListInterface(Interface):
             ])
 
     def Element( self, row, commands=None ):
-        return self.tElement().instantiate(row, commands or [])
+        return self.tElement()(row, commands or [])
 
     def tSlice( self ):
         return TRecord([
@@ -152,7 +152,7 @@ class ListInterface(Interface):
             ])
 
     def Slice( self, *args, **kw ):
-        return self.tSlice().instantiate(*args, **kw)
+        return self.tSlice()(*args, **kw)
 
     def tDiff( self ):
         return TRecord([
@@ -162,13 +162,13 @@ class ListInterface(Interface):
             ])
 
     def Diff( self, *args, **kw ):
-        return self.tDiff().instantiate(*args, **kw)
+        return self.tDiff()(*args, **kw)
 
     def tListHandle( self ):
         return self._tListHandle
 
     def ListHandle( self, *args, **kw ):
-        return self.tListHandle().instantiate(*args, **kw)
+        return self.tListHandle()(*args, **kw)
 
     def ListNarrowerHandle( self, *args, **kw ):
-        return self._tListNarrowerHandle.instantiate(*args, **kw)
+        return self._tListNarrowerHandle(*args, **kw)

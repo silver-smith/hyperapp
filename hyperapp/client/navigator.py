@@ -41,7 +41,7 @@ class Item(object):
         self.handle_data = handle_data
 
     def to_data( self ):
-        return item_type.instantiate(self.title, self.handle_data)
+        return item_type(self.title, self.handle_data)
 
     def load( self ):
         handle = view_registry.resolve(self.handle_data)
@@ -68,9 +68,9 @@ class Handle(composite.Handle):
 
     def to_data( self ):
         history = [item.to_data() for item in self.backward_history] \
-           + [item_type.instantiate(self.child.get_title(), self.child.to_data())] \
+           + [item_type(self.child.get_title(), self.child.to_data())] \
            + [item.to_data() for item in self.forward_history]
-        return data_type.instantiate('navigator', history, current_pos=len(self.backward_history))
+        return data_type('navigator', history, current_pos=len(self.backward_history))
 
     def get_child_handle( self ):
         return self.child

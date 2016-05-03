@@ -12,6 +12,9 @@ def join_path( *args ):
 
 class Type(object):
 
+    def __call__( self, *args, **kw ):
+        return self.instantiate(*args, **kw)
+
     def validate( self, path, value ):
         raise NotImplementedError(self.__class__)
 
@@ -222,4 +225,3 @@ tCommand = TRecord([
             Field('desc', tString),
             Field('shortcut', TOptional(tString)),
             ])
-Command = tCommand.instantiate

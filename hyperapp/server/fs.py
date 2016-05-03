@@ -1,7 +1,7 @@
 import sys
 import os.path
 import stat
-from ..common.htypes import Command, Column
+from ..common.htypes import tCommand, Column
 from ..common.interface.fs import file_iface, dir_iface
 from .object import SmallListObject
 from .module import Module, ModuleCommand
@@ -86,9 +86,9 @@ class Dir(FsObject):
 
     def elt_commands( self, finfo ):
         if finfo['ftype'] == 'dir':
-            return [Command('open', 'Open', 'Open directory')]
+            return [tCommand('open', 'Open', 'Open directory')]
         else:
-            return [Command('open', 'Open', 'Open file')]
+            return [tCommand('open', 'Open', 'Open file')]
 
     def get_handle( self ):
         return self.ListNarrowerHandle(self.get(), 'key')
@@ -113,7 +113,7 @@ class Dir(FsObject):
         return dir
 
     def get_commands( self ):
-        return [Command('parent', 'Open parent', 'Open parent directory', 'Ctrl+Backspace')]
+        return [tCommand('parent', 'Open parent', 'Open parent directory', 'Ctrl+Backspace')]
 
 
 class FileModule(Module):

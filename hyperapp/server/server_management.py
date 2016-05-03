@@ -1,6 +1,6 @@
 # server management module: used to expose module commands in one list
 
-from ..common.htypes import Command, Column
+from ..common.htypes import tCommand, Column
 from ..common.interface.server_management import server_management_iface
 from .object import SmallListObject
 from .module import Module
@@ -31,7 +31,7 @@ class CommandList(SmallListObject):
 
     @classmethod
     def cmd2element( cls, cmd ):
-        commands = [Command('open', 'Run', 'Run command')]
+        commands = [tCommand('open', 'Run', 'Run command')]
         id = '%s.%s' % (cmd.module_name, cmd.id)
         return cls.Element(cls.Row(id, cmd.module_name, cmd.text), commands)
 

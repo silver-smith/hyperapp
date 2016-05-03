@@ -1,7 +1,7 @@
 # test for returning non-proxy object to client, text object
 
-from .. common.htypes import ObjHandle
-from .. common.interface.text_object import TextObject
+from .. common.htypes import tObjHandle
+from .. common.interface.text_object import tTextObject
 from .module import Module, ModuleCommand
 
 
@@ -28,8 +28,8 @@ class TestTextObjectModule(Module):
 
     def run_command( self, request, command_id ):
         if command_id == 'get_text_obj':
-            object = TextObject('text', sample_text)
-            handle = ObjHandle('text_view', object)
+            object = tTextObject('text', sample_text)
+            handle = tObjHandle('text_view', object)
             return request.make_response(handle)
         return Module.run_command(self, request, command_id)
 

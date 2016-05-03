@@ -20,11 +20,8 @@ tFormField = TRecord([
     Field('name', tString),
     Field('field_handle', tFieldHandle),
     ])
-FormField = tFormField.instantiate
-
 
 tFormHandle = tHandle.register('form', base=tObjHandle, fields=[
     Field('fields', TList(tFormField)),
     Field('current_field', tInt, default=0),
     ])
-FormHandle = tFormHandle.instantiate

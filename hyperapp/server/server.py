@@ -1,7 +1,7 @@
 import time
 from ..common.htypes import tServerPacket
 from ..common.identity import Identity
-from ..common.packet import AuxInfo
+from ..common.packet import tAuxInfo
 from ..common.object_path_collector import ObjectPathCollector
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
@@ -75,7 +75,7 @@ class Server(object):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
         modules = code_repository.get_required_modules(requirements)
         modules = []  # force separate request to code repository
-        return AuxInfo(
+        return tAuxInfo(
             requirements=requirements,
             modules=modules)
 

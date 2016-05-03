@@ -2,8 +2,8 @@ from ..common.interface.form import tStringFieldHandle, tIntFieldHandle
 
 
 def stringFieldHandle( value=None ):
-    return tStringFieldHandle.instantiate('string', value or '')
+    return tStringFieldHandle('string', value or '')
 
 def intFieldHandle( value ):
-    return tIntFieldHandle.instantiate('int', value)
+    return tIntFieldHandle('int', value)
 

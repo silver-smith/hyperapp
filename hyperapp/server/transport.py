@@ -27,7 +27,7 @@ class TransportRegistry(object):
         tTransportPacket.validate('<TransportPacket>', request_packet)
         transport = self.resolve(request_packet.transport_id)
         responses = transport.process_packet(iface_registry, server, session_list, request_packet.data)
-        return [tTransportPacket.instantiate(request_packet.transport_id, response_data)
+        return [tTransportPacket(request_packet.transport_id, response_data)
                 for response_data in responses]
         
 

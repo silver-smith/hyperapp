@@ -2,7 +2,7 @@ import os
 from Queue import Queue
 from ..common.util import flatten
 from ..common.htypes import tClientPacket, tServerPacket
-from ..common.packet import tAuxInfo, tPacket, Packet
+from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.encrypted_packet import (
     ENCODING,
@@ -72,7 +72,7 @@ class EncryptedTcpSession(TransportSession):
         pprint(tServerPacket, notification_data)
         encrypted_packet = self.transport.encode_response_or_notification(self, aux_info, notification_data)
         packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
-        return [tTransportPacket.instantiate(self.transport.get_transport_id(), packet_data)]
+        return [tTransportPacket(self.transport.get_transport_id(), packet_data)]
 
 
 class EncryptedTcpTransport(Transport):
@@ -154,7 +154,7 @@ class EncryptedTcpTransport(Transport):
     def encode_response_or_notification( self, session, aux_info, response_or_notification ):
         assert session.session_key  # must be set when initial packet is received
         payload = packet_coders.encode(ENCODING, response_or_notification, tServerPacket)
-        packet = Packet(aux_info, payload)
+        packet = tPacket(aux_info, payload)
         packet_data = packet_coders.encode(ENCODING, packet, tPacket)
         return encrypt_subsequent_packet(session.session_key, packet_data)
 
@@ -169,7 +169,7 @@ class EncryptedTcpTransport(Transport):
         print 'sending pop challenge:'
         challenge = os.urandom(POP_CHALLENGE_SIZE/8)
         session.pop_challenge = challenge
-        return tPopChallengePacket.instantiate(
+        return tPopChallengePacket(
             challenge=challenge)
 
 

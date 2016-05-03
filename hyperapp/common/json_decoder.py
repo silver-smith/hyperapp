@@ -79,7 +79,7 @@ class JsonDecoder(object):
     def decode_record( self, t, value, path ):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         fields = self.decode_record_fields(t, value, path)
-        return t.instantiate(**fields)
+        return t(**fields)
 
     @dispatch.register(THierarchy)
     def decode_hierarchy_obj( self, t, value, path ):
@@ -88,7 +88,7 @@ class JsonDecoder(object):
         id = self.dispatch(tString, value['_class_id'], join_path(path, '_class_id'))
         tclass = t.resolve(id)
         fields = self.decode_record_fields(tclass.get_trecord(), value, path)
-        return tclass.instantiate(**fields)
+        return tclass(**fields)
 
     def decode_record_fields( self, t, value, path ):
         fields = self.decode_record_fields_impl(t.get_static_fields(), value, path)

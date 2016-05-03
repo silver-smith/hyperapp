@@ -25,7 +25,7 @@ class Command(CommandBase):
         self.shortcut = shortcut
 
     def to_data( self ):
-        return tCommand.instantiate(self.id, self.text, self.desc, self.shortcut)
+        return tCommand(self.id, self.text, self.desc, self.shortcut)
 
     def as_object_command( self, view ):
         return ObjectCommand(view, self.id, self.text, self.desc, self.shortcut)

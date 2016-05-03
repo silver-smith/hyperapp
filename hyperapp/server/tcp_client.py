@@ -3,7 +3,6 @@ import traceback
 import time
 import select
 from ..common.htypes import iface_registry
-from ..common.interface.code_repository import ModuleDep
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from .transport import transport_registry

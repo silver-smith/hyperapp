@@ -171,7 +171,7 @@ class ProxyObject(Object):
         return 'ProxyObject(%s, %s, %s)' % (self.server.endpoint.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
 
     def to_data( self ):
-        return tProxyObject.instantiate(
+        return tProxyObject(
             self.get_objimpl_id(),
             self.iface.iface_id,
             self.path,
