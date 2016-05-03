@@ -29,7 +29,7 @@ class TClass(TRecord):
 
     def issubclass( self, tclass ):
         assert isinstance(tclass, TClass), repr(tclass)
-        return self is tclass or self.trec.issubclass(tclass.get_trecord())
+        return self is tclass or issubclass(self.trec, tclass.get_trecord())
             
 
 class THierarchy(Type):

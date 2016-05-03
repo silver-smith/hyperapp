@@ -123,10 +123,12 @@ class TRecord(Type):
             self.fields = base.get_fields() + self.fields
         self.base = base
 
-    def issubclass( self, trec ):
-        assert isinstance(trec, TRecord), repr(trec)
-        return self is trec \
-          or self.base and self.base.issubclass(trec)
+    def __subclasscheck__( self, cls ):
+        if not isinstance(cls, TRecord):
+            return False
+        if cls is self:
+            return True
+        return issubclass(cls.base, self)
 
     def get_fields( self ):
         return self.fields
