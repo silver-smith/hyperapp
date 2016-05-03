@@ -31,6 +31,6 @@ class TransportSessionList(object):
         for transport_id, session in self.transport2session.items():
             transport_packets = session.pull_notification_transport_packets()
             for packet in transport_packets:
-                tTransportPacket.validate('<TransportPacket from %r>' % transport_id, packet)
+                assert isinstance(packet, tTransportPacket), repr(packet)
             packets += transport_packets
         return packets

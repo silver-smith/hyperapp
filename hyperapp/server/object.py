@@ -170,7 +170,8 @@ class ListObject(Object):
     def process_request_fetch_elements( self, request ):
         params = request.params
         slice = self.fetch_elements(params.sort_column_id, params.from_key, params.direction, params.count)
-        self.iface.tSlice().validate('Slice', slice)  # invalid result from fetch_elements, use: return self.Slice(...)
+        assert isinstance(slice, self.iface.tSlice()), \
+          'Invalid result is returned from fetch_elements: %r; use: return self.Slice(...)' % slice
         return request.make_response(Object.get_contents(self, slice=slice))
 
     # must return Slice, construct using self.Slice(...)

@@ -134,14 +134,14 @@ class ProxyObject(Object):
 
     @classmethod
     def produce_obj_by_objinfo( cls, objinfo, server=None ):
-        assert tObject.isinstance(objinfo, tThisProxyObject) or tObject.isinstance(objinfo, tProxyObject), repr(objinfo)
-        if tObject.isinstance(objinfo, tProxyObject):
+        assert isinstance(objinfo, tThisProxyObject) or isinstance(objinfo, tProxyObject), repr(objinfo)
+        if isinstance(objinfo, tProxyObject):
             server = Server.produce(Endpoint.from_data(objinfo.endpoint))
         else:
             assert server is not None, repr(objinfo)  # we need endpoint somehow
         iface = iface_registry.resolve(objinfo.iface)
         object = cls.produce_obj(server, objinfo.path, iface)
-        if tObject.isinstance(objinfo, tThisProxyObjectWithContents):  # is it a response?
+        if isinstance(objinfo, tThisProxyObjectWithContents):  # is it a response?
             object.set_contents(objinfo.contents)
         return object
 

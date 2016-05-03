@@ -111,12 +111,14 @@ class Interface(object):
 
     def _register_types( self ):
         self._tContents = TRecord(self.get_contents_fields())
+        self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self.id2command.items())
+        self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self.id2command.items())
         self._tObject = tObject.register(self.iface_id, base=tThisProxyObjectWithContents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
         for command in self.commands + self.get_basic_commands():
             cmd_id = command.command_id
-            tClientNotificationRec.register((self.iface_id, cmd_id), command.get_params_type(self))
-            tResponseRec.register((self.iface_id, cmd_id), command.get_result_type(self))
+            tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
+            tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
 
     def get_object_type( self ):
         return self._tObject
@@ -156,20 +158,16 @@ class Interface(object):
         return cmd
 
     def get_request_params_type( self, command_id ):
-        return self._get_command(command_id).get_params_type(self)
+        return self._command_params_t[command_id]
 
     def make_params( self, command_id, *args, **kw ):
         return self.get_request_params_type(command_id)(*args, **kw)
 
     def get_command_result_type( self, command_id ):
-        return self._get_command(command_id).get_result_type(self)
+        return self._command_result_t[command_id]
 
     def make_result( self, command_id, *args, **kw ):
         return self.get_command_result_type(command_id)(*args, **kw)
-
-    def validate_request( self, command_id, params=None ):
-        type = self.get_request_params_type(command_id)
-        type.validate(join_path(self.iface_id, command_id, 'params'), params)
 
     def get_default_contents_fields( self ):
         return [Field('commands', TList(tCommand))]

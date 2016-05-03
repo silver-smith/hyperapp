@@ -90,9 +90,9 @@ class EncryptedTcpTransport(Transport):
            session_list.set_transport_session(self.get_transport_id(), session)
         encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
         pprint(tEncryptedPacket, encrypted_packet)
-        if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
+        if isinstance(encrypted_packet, tSubsequentEncryptedPacket):
             responses = self.process_encrypted_payload_packet(iface_registry, server, session, encrypted_packet)
-        if tEncryptedPacket.isinstance(encrypted_packet, tProofOfPossessionPacket):
+        if isinstance(encrypted_packet, tProofOfPossessionPacket):
             responses = self.process_pop_packet(session, encrypted_packet)
         if session.pop_received:
             responses += flatten([self.process_postponed_request(server, session, request) for request in session.requests_waiting_for_pop])
@@ -159,7 +159,7 @@ class EncryptedTcpTransport(Transport):
         return encrypt_subsequent_packet(session.session_key, packet_data)
 
     def decrypt_packet( self, server, session, encrypted_packet ):
-        if not tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket):
+        if not isinstance(encrypted_packet, tInitialEncryptedPacket):
             assert session.session_key, tEncryptedPacket.resolve_obj(encrypted_packet).id  # subsequent packet must not be first one
         session_key, plain_text = decrypt_packet(server.get_identity(), session.session_key, encrypted_packet)
         session.session_key = session_key

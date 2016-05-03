@@ -6,8 +6,8 @@ from .htypes import join_path, Type, Field, TRecord
 
 class TSwitched(Type):
 
-    def validate( self, path, value ):
-        pass
+    def __instancecheck__( self, value ):
+        return True
 
 
 tSwitched = TSwitched()
@@ -63,5 +63,6 @@ class TSwitchedRec(TRecord):
         switch = self._pick_switch(adopted_args)
         type = self._resolve(switch)
         dyn_name = self.dynamic_field.name
-        type.validate(join_path('<TSwitchedRec>', dyn_name), adopted_args[dyn_name])
+        assert isinstance(adopted_args[dyn_name], type), \
+          'Field %r is expected to be %r, but is %r' % (dyn_name, type, adopted_args[dyn_name])
         return adopted_args

@@ -15,7 +15,7 @@ class Type(object):
     def __call__( self, *args, **kw ):
         return self.instantiate(*args, **kw)
 
-    def validate( self, path, value ):
+    def __instancecheck__( self, value ):
         raise NotImplementedError(self.__class__)
 
     def expect( self, path, value, name, expr ):
@@ -32,8 +32,11 @@ class Type(object):
 
 class TPrimitive(Type):
 
-    def validate( self, path, value ):
-        self.expect(path, value, self.type_name, isinstance(value, self.get_type()))
+    def __instancecheck__( self, value ):
+        return isinstance(value, self.get_type())
+
+    def __repr__( self ):
+        return 'TPrimitive(%s)' % repr(self.get_type())
 
     def get_type( self ):
         return self.type
@@ -78,9 +81,11 @@ class TOptional(Type):
         assert isinstance(type, Type), repr(type)
         self.type = type
 
-    def validate( self, path, value ):
-        if value is None: return
-        self.type.validate(path, value)
+    def __repr__( self ):
+        return 'TOptional(%r)' % self.type
+
+    def __instancecheck__( self, value ):
+        return value is None or isinstance(value, self.type)
 
 
 class Field(object):
@@ -88,29 +93,29 @@ class Field(object):
     def __init__( self, name, type, default=None ):
         assert isinstance(name, str), repr(name)
         assert isinstance(type, Type), repr(type)
-        if default is not None:
-            type.validate('default', default)
+        assert default is None or isinstance(default, type), repr(default)
         self.name = name
         self.type = type
         self.default = default
 
-    def validate( self, path, value ):
-        if self.type:
-            self.type.validate(join_path(path, self.name), value)
+    def isinstance( self, value ):
+        if not self.type:
+            return True  # todo: check why
+        return isisntance(value, self.type)
 
     def __repr__( self ):
-        return 'Field(%r, %r)' % (self.name, self.type)
+        return '%r: %r' % (self.name, self.type)
 
 
 # class for instantiated records
 class Record(object):
 
-    def belongs( self, t ):
-        try:
-            t.validate('Record', self)
-            return True
-        except TypeError:
-            return False
+    def __init__( self, type ):
+        assert isinstance(type, TRecord), repr(type)
+        self._type = type
+
+    def __repr__( self ):
+        return 'Record: %r' % self._type
 
 
 class TRecord(Type):
@@ -123,7 +128,11 @@ class TRecord(Type):
             self.fields = base.get_fields() + self.fields
         self.base = base
 
+    def __repr__( self ):
+        return 'TRecord(%d(%s)<-%s)' % (id(self), ', '.join(map(repr, self.get_fields())), self.base)
+
     def __subclasscheck__( self, cls ):
+        print '__subclasscheck__', self, cls
         if not isinstance(cls, TRecord):
             return False
         if cls is self:
@@ -136,12 +145,11 @@ class TRecord(Type):
     def get_static_fields( self ):
         return self.fields
 
-    def validate( self, path, rec ):
-        ## print '*** trecord validate', path, rec, self, [field.name for field in self.fields]
-        for field in self.fields:
-            ## print '  * validating', path, `rec`, `field.name`, hasattr(rec, field.name)
-            self.assert_(path, hasattr(rec, field.name), 'Missing field: %s' % field.name)
-            field.validate(path, getattr(rec, field.name))
+    def __instancecheck__( self, rec ):
+        print '__instancecheck__', self, rec
+        if not isinstance(rec, Record):
+            return False
+        return issubclass(rec._type, self)
 
     def adopt_args( self, args, kw, check_unexpected=True ):
         path = '<Record>'
@@ -167,7 +175,7 @@ class TRecord(Type):
                     value = field.default
                 else:
                     raise TypeError('Record field is missing: %r' % field.name)
-            field.type.validate(join_path(path, field.name), value)
+            assert isinstance(value, field.type), 'Field %r is expected to be %r, but is %r' % (field.name, field.type, value)
             adopted_args[field.name] = value
         if check_unexpected:
             self.assert_(path, not unexpected,
@@ -175,19 +183,16 @@ class TRecord(Type):
                          % (', '.join(unexpected), ', '.join(field.name for field in tfields)))
         return adopted_args
 
-    def instantiate_impl( self, args=(), kw=None, check_unexpected=True ):
-        fields = self.adopt_args(args, kw or {}, check_unexpected)
+    def instantiate_impl( self, rec, *args, **kw ):
+        fields = self.adopt_args(args, kw or {})
         ## print '*** instantiate', self, sorted(fields.keys()), sorted(f.name for f in self.fields), fields
-        rec = self.make_object()
         for name, val in fields.items():
             setattr(rec, name, val)
-        return rec
-
-    def make_object( self ):
-        return Record()
 
     def instantiate( self, *args, **kw ):
-        return self.instantiate_impl(args, kw)
+        rec = Record(self)
+        self.instantiate_impl(rec, *args, **kw)
+        return rec
         
 
 class TList(Type):
@@ -196,10 +201,11 @@ class TList(Type):
         assert isinstance(element_type, Type), repr(element_type)
         self.element_type = element_type
 
-    def validate( self, path, value ):
-        self.expect(path, value, 'list', isinstance(value, list))
-        for idx, item in enumerate(value):
-            self.element_type.validate(join_path(path, '#%d' % idx), item)
+    def __repr__( self ):
+        return 'TList(%r)' % self.element_type
+
+    def __instancecheck__( self, value ):
+        return is_list_inst(value, self.element_type)
 
 
 class TIndexedList(TList):

@@ -100,7 +100,24 @@ class ListInterface(Interface):
         self.key_column = key_column
         self.key_type = self._pick_key_column().type.type  # used by parent __init__
         self.tRowRecord = TRecord([Field(column.id, column.type.type) for column in columns])  # --//--
-        Interface.__init__(self, iface_id, base, content_fields, self.tDiff(), commands, required_module_id)
+        self._tElement = TRecord([
+            Field('row', self.tRowRecord),
+            Field('commands', TList(tCommand)),
+            ])
+        self._tDiff = TRecord([
+            Field('start_key', self.key_type),          # replace elements from this one
+            Field('end_key', self.key_type),            # up to (and including) this one
+            Field('elements', TList(self._tElement)),  # with these elemenents
+            ])
+        self._tSlice = TRecord([
+            Field('sort_column_id', tString),
+            Field('from_key', TOptional(self.key_type)),
+            Field('direction', tString),  # asc/desc; todo: enum
+            Field('elements', TList(self._tElement)),
+            Field('bof', tBool),
+            Field('eof', tBool),
+            ])
+        Interface.__init__(self, iface_id, base, content_fields, self._tDiff, commands, required_module_id)
 
     def _pick_key_column( self ):
         for column in self.columns:
@@ -133,33 +150,19 @@ class ListInterface(Interface):
         return self.tRowRecord(*args, **kw)
 
     def tElement( self ):
-        return TRecord([
-            Field('row', self.tRowRecord),
-            Field('commands', TList(tCommand)),
-            ])
+        return self._tElement
 
     def Element( self, row, commands=None ):
         return self.tElement()(row, commands or [])
 
     def tSlice( self ):
-        return TRecord([
-            Field('sort_column_id', tString),
-            Field('from_key', TOptional(self.key_type)),
-            Field('direction', tString),  # asc/desc; todo: enum
-            Field('elements', TList(self.tElement())),
-            Field('bof', tBool),
-            Field('eof', tBool),
-            ])
+        return self._tSlice
 
     def Slice( self, *args, **kw ):
         return self.tSlice()(*args, **kw)
 
     def tDiff( self ):
-        return TRecord([
-            Field('start_key', self.key_type),          # replace elements from this one
-            Field('end_key', self.key_type),            # up to (and including) this one
-            Field('elements', TList(self.tElement())),  # with these elemenents
-            ])
+        return self._tDiff
 
     def Diff( self, *args, **kw ):
         return self.tDiff()(*args, **kw)

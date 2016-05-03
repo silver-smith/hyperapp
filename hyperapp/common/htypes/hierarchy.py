@@ -1,8 +1,12 @@
 from ..util import is_list_inst
-from .htypes import join_path, Type, Field, TRecord
+from .htypes import join_path, Type, Field, Record, TRecord
 
 
-REC_CLASS_ID_ATTR = '_class_id'
+class TClassRecord(Record):
+
+    def __init__( self, trec, tclass ):
+        Record.__init__(self, trec)
+        self._class = tclass
 
 
 class TClass(TRecord):
@@ -19,12 +23,14 @@ class TClass(TRecord):
     def get_fields( self ):
         return self.trec.get_fields()
 
-    def validate( self, path, obj ):
-        return self.trec.validate(path, obj)
+    def __instancecheck__( self, obj ):
+        if not isinstance(obj, TClassRecord):
+            return False
+        return issubclass(obj._class, self)
 
     def instantiate( self, *args, **kw ):
-        rec = self.trec.instantiate(*args, **kw)
-        setattr(rec, REC_CLASS_ID_ATTR, self.id)
+        rec = TClassRecord(self.trec, self)
+        self.trec.instantiate_impl(rec, *args, **kw)
         return rec
 
     def __subclasscheck__( self, tclass ):
@@ -32,6 +38,8 @@ class TClass(TRecord):
             return False
         if tclass is self:
             return True
+        if self.hierarchy is not tclass.hierarchy:
+            return False
         return issubclass(tclass.get_trecord(), self.trec)
             
 
@@ -60,20 +68,16 @@ class THierarchy(Type):
         self.registry[id] = tclass
         return tclass
 
-    def validate( self, path, obj ):
-        self.assert_(path, hasattr(obj, REC_CLASS_ID_ATTR), 'Object is not a hierarchy instance: %r' % obj)
-        self.resolve_obj(obj).validate(path, obj)
+    def __instancecheck__( self, rec ):
+        if not isinstance(rec, TClassRecord):
+            return False
+        return rec._class.hierarchy is self
 
     def resolve( self, id ):
         assert isinstance(id, basestring), repr(id)
         assert id in self.registry, 'Unknown class id: %r. Known are: %r' % (id, sorted(self.registry.keys()))
         return self.registry[id]
 
-    def resolve_obj( self, obj ):
-        id = getattr(obj, REC_CLASS_ID_ATTR, None)
-        assert id is not None, repr(obj)  # not a TClass instance
-        return self.resolve(id)
-
-    def isinstance( self, obj, tclass ):
-        assert isinstance(tclass, TClass), repr(tclass)
-        return issubclass(self.resolve_obj(obj), tclass)
+    def resolve_obj( self, rec ):
+        assert isinstance(rec, TClassRecord), repr(rec)
+        return rec._class

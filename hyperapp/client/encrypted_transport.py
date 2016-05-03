@@ -46,9 +46,9 @@ class EncryptedTransport(Transport):
         session = session_list.get_transport_session(TRANSPORT_ID)
         assert session is not None  # must be created when sending request
         encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
-        if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
+        if isinstance(encrypted_packet, tSubsequentEncryptedPacket):
             self.process_subsequent_encrypted_packet(server_public_key, session, encrypted_packet)
-        if tEncryptedPacket.isinstance(encrypted_packet, tPopChallengePacket):
+        if isinstance(encrypted_packet, tPopChallengePacket):
             self.process_pop_challenge_packet(connection, server_public_key, session, encrypted_packet)
 
     def process_subsequent_encrypted_packet( self, server_public_key, session, encrypted_packet ):

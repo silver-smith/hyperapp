@@ -83,8 +83,8 @@ def _encrypt( session_key, plain_contents ):
 
 def decrypt_packet( identity, session_key, encrypted_packet ):
     assert isinstance(identity, Identity), repr(identity)
-    tEncryptedPacket.validate('EncryptedPacket', encrypted_packet)
-    if tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket):
+    assert isinstance(encrypted_packet, tEncryptedPacket), repr(encrypted_packet)
+    if isinstance(encrypted_packet, tInitialEncryptedPacket):
         print len(encrypted_packet.encrypted_session_key), repr(encrypted_packet.encrypted_session_key)
         session_key = identity.decrypt(encrypted_packet.encrypted_session_key)
     else:
@@ -93,8 +93,8 @@ def decrypt_packet( identity, session_key, encrypted_packet ):
     return (session_key, plain_text)
 
 def decrypt_subsequent_packet( session_key, encrypted_packet ):
-    tEncryptedPacket.validate('EncryptedPacket', encrypted_packet)
-    assert not tEncryptedPacket.isinstance(encrypted_packet, tInitialEncryptedPacket)
+    assert isinstance(encrypted_packet, tEncryptedPacket), repr(encrypted_packet)
+    assert not isinstance(encrypted_packet, tInitialEncryptedPacket)
     assert session_key is not None  # session_key must be passed for subsequent packet
     plain_text = _decrypt(session_key, encrypted_packet)
     return plain_text

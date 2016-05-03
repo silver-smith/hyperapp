@@ -33,7 +33,7 @@ class TransportRegistry(object):
                            % server.get_endpoint().public_key.get_short_id_hex())
 
     def process_packet( self, connection, session_list, server_public_key, packet ):
-        tTransportPacket.validate('<TransportPacket>', packet)
+        assert isinstance(packet, tTransportPacket), repr(packet)
         print 'received %r packet, contents %d bytes' % (packet.transport_id, len(packet.data))
         transport = self.resolve(packet.transport_id)
         transport.process_packet(connection, session_list, server_public_key, packet.data)

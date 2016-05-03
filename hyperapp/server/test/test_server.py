@@ -179,7 +179,7 @@ class ServerTest(unittest.TestCase):
         for packet in packets:
             self.assertEqual(transport_id, packet.transport_id)
             encrypted_packet = self.decode_packet(transport_id, packet.data, tEncryptedPacket)
-            if tEncryptedPacket.isinstance(encrypted_packet, tSubsequentEncryptedPacket):
+            if isinstance(encrypted_packet, tSubsequentEncryptedPacket):
                 session_key, packet_data = decrypt_packet(server_identity, session.session_key, encrypted_packet)
                 return packet_data
         return None  # no response
@@ -321,7 +321,7 @@ class ServerTest(unittest.TestCase):
 
         self.assertEqual(1, len(notifications))
         notification_packet = notifications[0]
-        tTransportPacket.validate('<TransportPacket>', notification_packet)
+        assert isinstance(notification_packet, tTransportPacket), repr(notification_packet)
         notification = self.decode_tcp_transport_response(session1, transport_id, [notification_packet])
         self.assertEqual(1, len(notification.updates))
         update = notification.updates[0]
@@ -332,7 +332,7 @@ class ServerTest(unittest.TestCase):
     def pick_pop_channelge_from_responses( self, transport_id, response_transport_packets ):
         for packet in response_transport_packets:
             encrypted_packet = self.decode_packet(transport_id, packet.data, tEncryptedPacket)
-            if tEncryptedPacket.isinstance(encrypted_packet, tPopChallengePacket):
+            if isinstance(encrypted_packet, tPopChallengePacket):
                 return encrypted_packet.challenge
         self.fail('No challenge packet in response')
 

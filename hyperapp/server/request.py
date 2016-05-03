@@ -36,12 +36,12 @@ class RequestBase(object):
     @classmethod
     def from_data( cls, me, peer, iface_registry, rec ):
         assert isinstance(peer, Peer), repr(peer)
-        tClientPacket.validate('<ClientPacket>', rec)
+        assert isinstance(rec, tClientPacket), repr(rec)
         iface = iface_registry.resolve(rec.iface)
-        if tClientPacket.isinstance(rec, tRequest):
+        if isinstance(rec, tRequest):
             return Request(me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
-            assert tClientPacket.isinstance(rec, tClientNotification), repr(rec)
+            assert isinstance(rec, tClientNotification), repr(rec)
             return ClientNotification(me, peer, iface, rec.path, rec.command_id, rec.params)
 
     def __init__( self, me, peer, iface, path, command_id, params ):
@@ -65,7 +65,10 @@ class Request(RequestBase):
 
     def make_response( self, result=None ):
         result_type = self.iface.get_command_result_type(self.command_id)
-        result_type.validate('%s.Request.%s.result' % (self.iface.iface_id, self.command_id), result)
+        if result is None:
+            result = result_type()
+        assert isinstance(result, result_type), \
+          '%s.Request.%s.result is expected to be %r, but is %r' % (self.iface.iface_id, self.command_id, result_type, result)
         return Response(self.peer, self.iface, self.command_id, self.request_id, result)
 
     def make_response_object( self, obj ):
@@ -90,7 +93,7 @@ class ResponseBase(object):
         self.updates = []
 
     def add_update( self, update ):
-        tUpdate.validate('<Update>', update)
+        assert isinstance(update, tUpdate), repr(update)
         self.updates.append(update)
 
 
