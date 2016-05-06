@@ -2,6 +2,7 @@ pony==0.6.1
 python-dateutil==2.1
 singledispatch
 simpleyaml
+cryptography>=1.0.2  # under debian requires: libffi-dev:amd64 libssl-dev:amd64
 
 # installing pyside using pip has following package requirements:
 # apt-get install build-essential git cmake libqt4-dev libphonon-dev python2.7-dev libxml2-dev libxslt1-dev qtmobility-dev
