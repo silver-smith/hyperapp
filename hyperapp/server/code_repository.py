@@ -1,5 +1,5 @@
 import os.path
-import yaml
+import simpleyaml as yaml
 from ..common.interface.code_repository import (
     tModule,
     code_repository_iface,

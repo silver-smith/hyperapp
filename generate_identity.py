@@ -3,7 +3,7 @@
 import os.path
 import sys
 import argparse
-from hyperapp.common.identity import RSA_KEY_SIZE, Identity
+from hyperapp.common.identity import RSA_KEY_SIZE_SAFE, Identity
 
 
 def create_identity( fpath, overwrite ):
@@ -16,7 +16,7 @@ def create_identity( fpath, overwrite ):
         print 'identity file %r is already exists' % public_fpath
         return
 
-    print 'generating rsa key of size %d...' % RSA_KEY_SIZE,
+    print 'generating rsa key of size %d...' % RSA_KEY_SIZE_SAFE,
     sys.stdout.flush()
     identity = Identity.generate()
     print ' ... done'
