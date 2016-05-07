@@ -101,7 +101,7 @@ class Field(object):
     def isinstance( self, value ):
         if not self.type:
             return True  # todo: check why
-        return isisntance(value, self.type)
+        return isinstance(value, self.type)
 
     def __repr__( self ):
         return '%r: %r' % (self.name, self.type)
@@ -132,7 +132,7 @@ class TRecord(Type):
         return 'TRecord(%d(%s)<-%s)' % (id(self), ', '.join(map(repr, self.get_fields())), self.base)
 
     def __subclasscheck__( self, cls ):
-        print '__subclasscheck__', self, cls
+        ## print '__subclasscheck__', self, cls
         if not isinstance(cls, TRecord):
             return False
         if cls is self:
@@ -146,7 +146,7 @@ class TRecord(Type):
         return self.fields
 
     def __instancecheck__( self, rec ):
-        print '__instancecheck__', self, rec
+        ## print '__instancecheck__', self, rec
         if not isinstance(rec, Record):
             return False
         return issubclass(rec._type, self)

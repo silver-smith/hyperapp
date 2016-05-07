@@ -26,7 +26,7 @@ class ProxyObjectMapper(Mapper):
         ## print '======== received proxy object ========'
         ## pprint(tObject, value)
         ## print '=== =>=>=>============================='
-        assert tObject.isinstance(value, tThisProxyObjectWithContents)
+        assert isinstance(value, tThisProxyObjectWithContents), repr(value)
         iface = iface_registry.resolve(value.iface)
         cls = proxy_class_registry.resolve(value.objimpl_id)
         obj = cls.produce_obj(self.server, value.path, iface)

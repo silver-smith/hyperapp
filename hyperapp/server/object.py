@@ -150,7 +150,9 @@ class ListObject(Object):
 
     def get_contents( self, **kw ):
         slice = self.fetch_elements(self.default_sort_column_id, None, self.default_direction, MIN_ROWS_RETURNED)
-        self.iface.tSlice().validate('Slice', slice)  # invalid result from fetch_elements, use: return self.Slice(...)
+        assert isinstance(slice, self.iface.tSlice()), \
+          'Invalid result returned from fetch_elements, use: return self.Slice(...); returned: %r, expected: %r' \
+            % (slice, self.iface.tSlice())
         return Object.get_contents(self, slice=slice, **kw)
 
     def get_handle( self ):

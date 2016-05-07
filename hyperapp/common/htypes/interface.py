@@ -184,10 +184,6 @@ class Interface(object):
     def Update( self, path, diff ):
         return tUpdate(self.iface_id, path, diff)
         
-    def validate_contents( self, path, value ):
-        self._tContents.validate(path, value)
-
-
 
 class IfaceRegistry(object):
 

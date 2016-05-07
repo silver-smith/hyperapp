@@ -123,7 +123,7 @@ class View(ObjectObserver):
 
     def process_handle_open( self, result, server ):
         if result is None: return  # no new view opening is requested
-        tHandle.validate('Handle', result)
+        assert isinstance(result, tHandle), repr(result)
         handle = view_registry.resolve(result, server)
         assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
         self.open(handle)

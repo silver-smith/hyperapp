@@ -55,14 +55,14 @@ class OpenRequest(Request):
         self.initiator_view_wr = weakref.ref(initiator_view)
 
     def process_response( self, server, response ):
-        tHandle.validate('Handle', response.result)
+        assert isinstance(response.result, tHandle), repr(response.result)
         handle = response.result
         handle = ProxyObjectMapper.map(handle, proxy_registry, server)
         redirect_handles = RedirectHandleCollector.collect(handle)
         if redirect_handles:
             self.run_resolve_redirect_request(handle, redirect_handles)
             return
-        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
+        assert isinstance(handle, tViewHandle), repr(handle)
         self.open_handle(handle, server)
 
     def open_handle( self, handle, server ):
@@ -99,15 +99,15 @@ class GetRequestBase(Request):
 class RedirectResolveRequest(GetRequestBase):
 
     def __init__( self, url, orig_request, orig_handle ):
-        assert isinstance(orig_request, OpenRequest)
-        tHandle.validate('Handle', orig_handle)
+        assert isinstance(orig_request, OpenRequest), repr(orig_request)
+        assert isinstance(orig_handle, tHandle), repr(orig_handle)
         GetRequestBase.__init__(self, url)
         self.orig_request = orig_request
         self.orig_handle = orig_handle
 
     def process_response( self, server, response ):
         handle = response.result
-        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
+        assert isinstance(handle, tViewHandle), repr(handle)
         self.orig_request.redirect_resolved(self.orig_handle, handle, server)
 
 
@@ -121,7 +121,7 @@ class GetRequest(GetRequestBase):
         
     def process_response( self, server, response ):
         handle = response.result
-        assert tHandle.isinstance(handle, tViewHandle), repr(handle)
+        assert isinstance(handle, tViewHandle), repr(handle)
 
         view = self.initiator_view_wr()
         if not view:
