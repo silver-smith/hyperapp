@@ -76,10 +76,10 @@ class OpenCommand(RequestCmd):
         return TOptional(tHandle)
 
 
-class SubscribeCommand(RequestCmd):
+class ContentsCommand(RequestCmd):
 
-    def __init__( self ):
-        RequestCmd.__init__(self, 'subscribe')
+    def __init__( self, command_id, params_fields=None ):
+        RequestCmd.__init__(self, command_id, params_fields)
 
     def get_result_type( self, iface ):
         return iface.get_contents_type()
@@ -115,7 +115,7 @@ class Interface(object):
         self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self.id2command.items())
         self._tObject = tObject.register(self.iface_id, base=tThisProxyObjectWithContents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
-        for command in self.commands + self.get_basic_commands():
+        for command in self.id2command.values():
             cmd_id = command.command_id
             tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
             tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
@@ -135,7 +135,7 @@ class Interface(object):
     def get_basic_commands( self ):
         return [
             OpenCommand('get'),
-            SubscribeCommand(),
+            ContentsCommand('subscribe'),
             NotificationCmd('unsubscribe'),
             ]
 

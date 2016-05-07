@@ -12,7 +12,7 @@ from .htypes import (
     TIndexedList,
     tCommand,
     )
-from .interface import RequestCmd, OpenCommand, tHandle, tObjHandle, Interface
+from .interface import RequestCmd, OpenCommand, ContentsCommand, tHandle, tObjHandle, Interface
 
 
 def list_handle_type( id, key_type ):
@@ -143,8 +143,8 @@ class ListInterface(Interface):
             Field('count', tInt),
             ]
         return Interface.get_basic_commands(self) \
-            + [RequestCmd('fetch_elements', fetch_params_fields, [Field('slice', self.tSlice())]),
-               RequestCmd('subscribe_and_fetch_elements', fetch_params_fields, self.get_contents_fields())]
+            + [ContentsCommand('fetch_elements', fetch_params_fields),
+               ContentsCommand('subscribe_and_fetch_elements', fetch_params_fields)]
 
     def Row( self, *args, **kw ):
         return self.tRowRecord(*args, **kw)
