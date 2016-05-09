@@ -92,7 +92,7 @@ class TestModule(module_mod.Module):
     def __init__( self ):
         module_mod.Module.__init__(self, self.name)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         objname = path.pop_str()
         if objname == TestObject.class_name:
             obj_id = path.pop_str()

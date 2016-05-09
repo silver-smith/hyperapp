@@ -294,7 +294,7 @@ class ArticleModule(PonyOrmModule):
                                            )
         Article.register_class(self.Article)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         objname = path.pop_str()
         if objname == Article.class_name:
             return Article.resolve(path)

@@ -40,12 +40,12 @@ class Module(object):
         return cls.module_by_name[name]
 
     @classmethod
-    def run_resolver( cls, path ):
+    def run_resolver( cls, iface, path ):
         path = Path(path)
         module = path.pop_str()
-        return cls.module_by_name[module].resolve(path)
+        return cls.module_by_name[module].resolve(iface, path)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         path.raise_not_found()
 
     def get_commands( self ):

@@ -51,7 +51,7 @@ class ManagementModule(Module):
     def __init__( self ):
         Module.__init__(self, MODULE_NAME)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         path.check_empty()
         return CommandList()
 

@@ -121,7 +121,7 @@ class FileModule(Module):
     def __init__( self ):
         Module.__init__(self, MODULE_NAME)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         fspath = path.pop_str()
         return self.open(fspath)
 

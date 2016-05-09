@@ -119,7 +119,7 @@ class BlogModule(PonyOrmModule):
                                                     created_at=Required(datetime))
         BlogEntry.register_class(self.BlogEntry)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         objname = path.pop_str()
         if objname == BlogEntry.class_name:
             return BlogEntry.resolve(path)

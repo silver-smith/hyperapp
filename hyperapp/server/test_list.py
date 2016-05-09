@@ -93,7 +93,7 @@ class TestListModule(Module):
     def __init__( self ):
         Module.__init__(self, MODULE_NAME)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         class_name = path.pop_str()
         if class_name == ParamsForm.class_name:
             return ParamsForm()

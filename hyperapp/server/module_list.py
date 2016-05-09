@@ -253,7 +253,7 @@ class ModuleListModule(PonyOrmModule):
                                           visible_as=Required(unicode),
                                           )
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         objname = path.pop_str()
         if objname == ModuleList.class_name:
             return ModuleList.resolve(path)

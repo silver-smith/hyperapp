@@ -1,4 +1,5 @@
 import time
+from ..common.util import encode_path
 from ..common.htypes import tServerPacket
 from ..common.identity import Identity
 from ..common.packet import tAuxInfo
@@ -33,10 +34,9 @@ class Server(object):
 
     def process_request( self, request ):
         assert isinstance(request, RequestBase), repr(request)
-        path = request.path
-        object = self._resolve(path)
+        object = self._resolve(request.iface, request.path)
         print 'Object:', object
-        assert object, repr(path)  # 404: Path not found
+        assert object, 'Object with iface=%r, path=%r not found' % (request.iface.iface_id, encode_path(request.path))
         if self.test_delay_sec:
             print 'Test delay for %s sec...' % self.test_delay_sec
             time.sleep(self.test_delay_sec)
@@ -49,8 +49,8 @@ class Server(object):
         aux_info = self.prepare_aux_info(response_data)
         return (aux_info, response_data)
 
-    def _resolve( self, path ):
-        return module.Module.run_resolver(path)
+    def _resolve( self, iface, path ):
+        return module.Module.run_resolver(iface, path)
 
     def _subscribe_objects( self, peer_channel, response_data ):
         collector = ObjectPathCollector()

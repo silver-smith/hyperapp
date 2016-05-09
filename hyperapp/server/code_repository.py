@@ -90,7 +90,7 @@ class CodeRepositoryModule(module_mod.Module):
     def __init__( self ):
         module_mod.Module.__init__(self, MODULE_NAME)
 
-    def resolve( self, path ):
+    def resolve( self, iface, path ):
         objname = path.pop_str()
         if objname == CodeRepository.class_name:
             return code_repository.resolve(path)
