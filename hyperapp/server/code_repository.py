@@ -67,26 +67,26 @@ class CodeRepository(Object):
         return self
 
     def process_request( self, request ):
-        if request.command_id == 'get_modules':
-            return self.run_command_get_modules(request)
-        if request.command_id == 'get_required_modules':
-            return self.run_command_get_required_modules(request)
+        if request.command_id == 'get_modules_by_ids':
+            return self.run_command_get_modules_by_ids(request)
+        if request.command_id == 'get_modules_by_requirements':
+            return self.run_command_get_modules_by_requirements(request)
         return Object.process_request(self, request)
 
-    def run_command_get_modules( self, request ):
-        print 'run_command_get_modules', request.params.module_ids
+    def run_command_get_modules_by_ids( self, request ):
+        print 'run_command_get_modules_by_ids', request.params.module_ids
         return request.make_response_result(
-            modules=self.get_modules(request.params.module_ids))
+            modules=self.get_modules_by_ids(request.params.module_ids))
 
-    def run_command_get_required_modules( self, request ):
-        print 'run_command_get_required_modules', request.params.requirements
+    def run_command_get_modules_by_requirements( self, request ):
+        print 'run_command_get_modules_by_requirements', request.params.requirements
         return request.make_response_result(
-            modules=self.get_required_modules(request.params.requirements))
+            modules=self.get_modules_by_requirements(request.params.requirements))
 
-    def get_modules( self, module_ids ):
+    def get_modules_by_ids( self, module_ids ):
         return [self._repository.get_module_by_id(id) for id in module_ids]
 
-    def get_required_modules( self, requirements ):
+    def get_modules_by_requirements( self, requirements ):
         modules = []
         for registry, key in requirements:
             module = self._repository.get_module_by_requirement(registry, key)

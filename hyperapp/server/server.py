@@ -73,7 +73,7 @@ class Server(object):
     @staticmethod
     def prepare_aux_info( response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
-        modules = code_repository.get_required_modules(requirements)
+        modules = code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
         return tAuxInfo(
             requirements=requirements,

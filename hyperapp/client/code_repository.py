@@ -23,13 +23,13 @@ class CodeRepositoryProxy(ProxyObject):
         ProxyObject.__init__(self, server, path, code_repository_iface)
 
     def get_modules_and_continue( self, module_ids, continuation ):
-        command_id = 'get_modules'
+        command_id = 'get_modules_by_ids'
         params = self.iface.make_params(command_id, module_ids=module_ids)
         request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
         self.server.execute_request(request)
 
     def get_required_modules_and_continue( self, requirements, continuation ):
-        command_id = 'get_required_modules'
+        command_id = 'get_modules_by_requirements'
         params = self.iface.make_params(command_id, requirements=requirements)
         request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
         self.server.execute_request(request)
