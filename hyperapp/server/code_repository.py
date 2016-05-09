@@ -13,54 +13,18 @@ DYNAMIC_MODULES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '.
 DYNAMIC_MODULE_INFO_EXT = '.module.yaml'
 
 
-class CodeRepository(Object):
-
-    iface = code_repository_iface
-    class_name = 'code_repository'
-
-    @classmethod
-    def get_path( cls ):
-        return module.make_path(cls.class_name)
+class ModuleRepository(object):
 
     def __init__( self ):
-        Object.__init__(self)
         self._id2module = {}           # module id -> tModule
         self._requirement2module = {}  # (registry, key) -> tModule
         self._load_dynamic_modules()
 
-    def resolve( self, path ):
-        path.check_empty()
-        return self
+    def get_module_by_id( self, id ):
+        return self._id2module[id]
 
-    def process_request( self, request ):
-        if request.command_id == 'get_modules':
-            return self.run_command_get_modules(request)
-        if request.command_id == 'get_required_modules':
-            return self.run_command_get_required_modules(request)
-        return Object.process_request(self, request)
-
-    def run_command_get_modules( self, request ):
-        print 'run_command_get_modules', request.params.module_ids
-        return request.make_response_result(
-            modules=self.get_modules(request.params.module_ids))
-
-    def run_command_get_required_modules( self, request ):
-        print 'run_command_get_required_modules', request.params.requirements
-        return request.make_response_result(
-            modules=self.get_required_modules(request.params.requirements))
-
-    def get_modules( self, module_ids ):
-        return [self._id2module[id] for id in module_ids]
-
-    def get_required_modules( self, requirements ):
-        modules = []
-        for registry, key in requirements:
-            module = self._requirement2module.get((registry, key))
-            if module:
-                modules.append(module)
-            else:
-                print 'Unknown requirement: %s/%s' % (registry, key)  # May be statically loaded, ignore
-        return modules
+    def get_module_by_requirement( self, registry, key ):
+        return self._requirement2module.get((registry, key))
 
     def _load_dynamic_modules( self ):
         for fname in os.listdir(DYNAMIC_MODULES_DIR):
@@ -85,6 +49,54 @@ class CodeRepository(Object):
         return tModule(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
 
 
+class CodeRepository(Object):
+
+    iface = code_repository_iface
+    class_name = 'code_repository'
+
+    @classmethod
+    def get_path( cls ):
+        return module.make_path(cls.class_name)
+
+    def __init__( self, repository ):
+        Object.__init__(self)
+        self._repository = repository
+
+    def resolve( self, path ):
+        path.check_empty()
+        return self
+
+    def process_request( self, request ):
+        if request.command_id == 'get_modules':
+            return self.run_command_get_modules(request)
+        if request.command_id == 'get_required_modules':
+            return self.run_command_get_required_modules(request)
+        return Object.process_request(self, request)
+
+    def run_command_get_modules( self, request ):
+        print 'run_command_get_modules', request.params.module_ids
+        return request.make_response_result(
+            modules=self.get_modules(request.params.module_ids))
+
+    def run_command_get_required_modules( self, request ):
+        print 'run_command_get_required_modules', request.params.requirements
+        return request.make_response_result(
+            modules=self.get_required_modules(request.params.requirements))
+
+    def get_modules( self, module_ids ):
+        return [self._repository.get_module_by_id(id) for id in module_ids]
+
+    def get_required_modules( self, requirements ):
+        modules = []
+        for registry, key in requirements:
+            module = self._repository.get_module_by_requirement(registry, key)
+            if module:
+                modules.append(module)
+            else:
+                print 'Unknown requirement: %s/%s' % (registry, key)  # May be statically loaded, ignore
+        return modules
+
+
 class CodeRepositoryModule(module_mod.Module):
 
     def __init__( self ):
@@ -97,5 +109,6 @@ class CodeRepositoryModule(module_mod.Module):
         path.raise_not_found()
 
 
-code_repository = CodeRepository()
+module_repository = ModuleRepository()
+code_repository = CodeRepository(module_repository)
 module = CodeRepositoryModule()
