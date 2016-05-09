@@ -24,6 +24,7 @@ tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
 # proxy to server returning this object
 tThisProxyObject = tObject.register('this_proxy', base=tBaseObject, fields=[
     Field('iface', tIfaceId),
+    Field('facets', TList(tIfaceId)),
     Field('path', tPath),
     ])
 

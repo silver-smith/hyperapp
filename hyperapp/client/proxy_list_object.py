@@ -7,8 +7,8 @@ from .proxy_registry import proxy_class_registry
 
 class ProxyListObject(ProxyObject, ListObject):
 
-    def __init__( self, server, path, iface ):
-        ProxyObject.__init__(self, server, path, iface)
+    def __init__( self, server, path, iface, facets=None ):
+        ProxyObject.__init__(self, server, path, iface, facets)
         ListObject.__init__(self)
         self._default_sort_column_id = None
         self._slices = []  # all slices are stored in ascending order, actual/up-do-date

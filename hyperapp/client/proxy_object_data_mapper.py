@@ -27,12 +27,14 @@ class ProxyObjectMapper(Mapper):
         ## pprint(tObject, value)
         ## print '=== =>=>=>============================='
         assert isinstance(value, tThisProxyObjectWithContents), repr(value)
+        # save this object' contents; tProxyObject does not has it
         iface = iface_registry.resolve(value.iface)
+        facets = [iface_registry.resolve(facet) for facet in value.facets]
         cls = proxy_class_registry.resolve(value.objimpl_id)
-        obj = cls.produce_obj(self.server, value.path, iface)
+        obj = cls.produce_obj(self.server, value.path, iface, facets)
         obj.set_contents(value.contents)
         resolved_obj = tProxyObject(
-            value.objimpl_id, value.iface, value.path, self.server.get_endpoint().to_data())
+            value.objimpl_id, value.iface, value.facets, value.path, self.server.get_endpoint().to_data())
         ## pprint(tObject, resolved_obj)
         ## print '======================================='
         return resolved_obj

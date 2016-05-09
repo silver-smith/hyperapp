@@ -134,35 +134,39 @@ class ProxyObject(Object):
 
     @classmethod
     def produce_obj_by_objinfo( cls, objinfo, server=None ):
-        assert isinstance(objinfo, tThisProxyObject) or isinstance(objinfo, tProxyObject), repr(objinfo)
+        assert isinstance(objinfo, tThisProxyObject), repr(objinfo)
         if isinstance(objinfo, tProxyObject):
             server = Server.produce(Endpoint.from_data(objinfo.endpoint))
         else:
             assert server is not None, repr(objinfo)  # we need endpoint somehow
         iface = iface_registry.resolve(objinfo.iface)
-        object = cls.produce_obj(server, objinfo.path, iface)
+        facets = [iface_registry.resolve(facet) for facet in objinfo.facets]
+        object = cls.produce_obj(server, objinfo.path, iface, facets)
         if isinstance(objinfo, tThisProxyObjectWithContents):  # is it a response?
             object.set_contents(objinfo.contents)
         return object
 
     # we avoid making proxy objects with same server+path
     @classmethod
-    def produce_obj( cls, server, path, iface ):
+    def produce_obj( cls, server, path, iface, facets ):
         object = proxy_registry.resolve(server, path)
         if object is not None:
             print '> proxy object is resolved from registry:', object
             return object
-        object = cls(server, path, iface)
+        object = cls(server, path, iface, facets)
         proxy_registry.register(server, path, object)
         print '< proxy object is registered in registry:', object
         return object
 
-    def __init__( self, server, path, iface ):
+    def __init__( self, server, path, iface, facets=None ):
         assert is_list_inst(path, basestring), repr(path)
+        assert isinstance(iface, Interface), repr(iface)
+        assert facets is None or is_list_inst(facets, Interface), repr(facets)
         Object.__init__(self)
         self.server = server
         self.path = path
         self.iface = iface
+        self.facets = facets or []
         self.cache = cache_repository
         cached_commands = self.cache.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
         self.commands = map(Command.from_data, cached_commands or [])
@@ -174,6 +178,7 @@ class ProxyObject(Object):
         return tProxyObject(
             self.get_objimpl_id(),
             self.iface.iface_id,
+            [facet.iface_id for facet in self.facets],
             self.path,
             self.server.get_endpoint().to_data(),
             )

@@ -19,6 +19,7 @@ class RequirementsCollector(Visitor):
         if t is tObject:
             self.collected_requirements.add(('object', value.objimpl_id))
             if isinstance(value, (tThisProxyObject, tProxyObject)):
-                self.collected_requirements.add(('interface', value.iface))
+                for iface in value.facets:
+                    self.collected_requirements.add(('interface', iface))
         if t is tHandle and isinstance(value, tViewHandle):
             self.collected_requirements.add(('handle', value.view_id))

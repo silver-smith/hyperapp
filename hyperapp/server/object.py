@@ -40,6 +40,8 @@ subscription = Subscription()
 
 class Object(object):
 
+    facets = None
+
     def __init__( self ):
         pass
 
@@ -49,12 +51,19 @@ class Object(object):
     def get_commands( self ):
         return []
 
+    def get_facets( self ):
+        if self.facets is None:
+            return [self.iface]
+        else:
+            return self.facets
+
     def get( self ):
         path = self.get_path()
         assert is_list_inst(path, basestring), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
         return self.iface.Object(
             objimpl_id=self.objimpl_id,
             iface=self.iface.iface_id,
+            facets=[facet.iface_id for facet in self.get_facets()],
             path=path,
             contents=self.get_contents(),
             )

@@ -14,6 +14,7 @@ MODULE_NAME = 'code_repository'
 DYNAMIC_MODULES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
 DYNAMIC_MODULE_INFO_EXT = '.module.yaml'
 CODE_REPOSITORY_CLASS_NAME = 'code_repository'
+CODE_REPOSITORY_FACETS = [code_repository_iface, code_repository_browser_iface]
 
 
 class ModuleRepository(object):
@@ -58,6 +59,7 @@ class ModuleRepository(object):
 class CodeRepository(Object):
 
     iface = code_repository_iface
+    facets = CODE_REPOSITORY_FACETS
     class_name = CODE_REPOSITORY_CLASS_NAME
 
     @classmethod
@@ -106,6 +108,7 @@ class CodeRepository(Object):
 class CodeRepositoryBrowser(SmallListObject):
 
     iface = code_repository_browser_iface
+    facets = CODE_REPOSITORY_FACETS
     class_name = CODE_REPOSITORY_CLASS_NAME
     objimpl_id = 'list'
     default_sort_column_id = 'id'

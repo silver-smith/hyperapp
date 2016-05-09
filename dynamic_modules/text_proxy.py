@@ -8,9 +8,9 @@ from .proxy_registry import proxy_class_registry
 
 class ProxyTextObject(ProxyObject, TextObject):
 
-    def __init__( self, server, path, iface ):
+    def __init__( self, server, path, iface, facets=None ):
         TextObject.__init__(self, text='')
-        ProxyObject.__init__(self, server, path, iface)
+        ProxyObject.__init__(self, server, path, iface, facets)
         self.text = self._load_text_from_cache()
 
     @staticmethod
