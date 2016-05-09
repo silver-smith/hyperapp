@@ -3,14 +3,17 @@ import simpleyaml as yaml
 from ..common.interface.code_repository import (
     tModule,
     code_repository_iface,
+    code_repository_browser_iface,
     )
 from . import module as module_mod
-from .object import Object
+from .module import ModuleCommand
+from .object import Object, SmallListObject
 
 
 MODULE_NAME = 'code_repository'
 DYNAMIC_MODULES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
 DYNAMIC_MODULE_INFO_EXT = '.module.yaml'
+CODE_REPOSITORY_CLASS_NAME = 'code_repository'
 
 
 class ModuleRepository(object):
@@ -19,6 +22,9 @@ class ModuleRepository(object):
         self._id2module = {}           # module id -> tModule
         self._requirement2module = {}  # (registry, key) -> tModule
         self._load_dynamic_modules()
+
+    def get_module_list( self ):
+        return sorted(self._id2module.values(), key=lambda module: module.id)
 
     def get_module_by_id( self, id ):
         return self._id2module[id]
@@ -52,7 +58,7 @@ class ModuleRepository(object):
 class CodeRepository(Object):
 
     iface = code_repository_iface
-    class_name = 'code_repository'
+    class_name = CODE_REPOSITORY_CLASS_NAME
 
     @classmethod
     def get_path( cls ):
@@ -97,6 +103,36 @@ class CodeRepository(Object):
         return modules
 
 
+class CodeRepositoryBrowser(SmallListObject):
+
+    iface = code_repository_browser_iface
+    class_name = CODE_REPOSITORY_CLASS_NAME
+    objimpl_id = 'list'
+    default_sort_column_id = 'id'
+
+    @classmethod
+    def get_path( cls ):
+        return module.make_path(cls.class_name)
+
+    def __init__( self, repository ):
+        SmallListObject.__init__(self)
+        self._repository = repository
+
+    def resolve( self, path ):
+        path.check_empty()
+        return self
+
+    def fetch_all_elements( self ):
+        return [self._module2element(module) for module in self._repository.get_module_list()]
+
+    def _module2element( self, module ):
+        return self.Element(self.Row(
+            module.id,
+            module.package,
+            '',
+            ))
+
+
 class CodeRepositoryModule(module_mod.Module):
 
     def __init__( self ):
@@ -104,9 +140,19 @@ class CodeRepositoryModule(module_mod.Module):
 
     def resolve( self, iface, path ):
         objname = path.pop_str()
-        if objname == CodeRepository.class_name:
+        if objname == CodeRepository.class_name and iface is CodeRepository.iface:
             return code_repository.resolve(path)
+        if objname == CodeRepositoryBrowser.class_name and iface is CodeRepositoryBrowser.iface:
+            return CodeRepositoryBrowser(module_repository).resolve(path)
         path.raise_not_found()
+
+    def get_commands( self ):
+        return [ModuleCommand('code_repository', 'Code repository', 'Browser code repository modules', 'Alt+R', self.name)]
+
+    def run_command( self, request, command_id ):
+        if command_id == 'code_repository':
+            return request.make_response_handle(CodeRepositoryBrowser(module_repository))
+        return Module.run_command(self, request, command_id)
 
 
 module_repository = ModuleRepository()
