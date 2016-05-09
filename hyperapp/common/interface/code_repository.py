@@ -35,6 +35,7 @@ code_repository_iface = Interface('code_repository', commands=[
 
 code_repository_browser_iface = ListInterface('code_repository_browser', key_column='id', columns=[
         Column('id', 'Module id'),
+        Column('fname', 'File name'),
         Column('package', 'Package'),
         Column('satisfies', 'Satisfies requirements'),
         ])

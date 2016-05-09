@@ -128,8 +128,9 @@ class CodeRepositoryBrowser(SmallListObject):
     def _module2element( self, module ):
         return self.Element(self.Row(
             module.id,
+            os.path.basename(module.fpath),
             module.package,
-            '',
+            ', '.join('.'.join(requirement) for requirement in module.satisfies),
             ))
 
 
