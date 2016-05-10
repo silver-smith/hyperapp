@@ -26,8 +26,8 @@ class Server(object):
     def get_public_key( self ):
         return self.identity.get_public_key()
 
-    def make_url( self, path ):
-        return Url(self.get_endpoint(), path)
+    def make_url( self, iface, path ):
+        return Url(iface, path, self.get_endpoint())
 
     def is_mine_url( self, url ):
         assert isinstance(url, Url), repr(url)

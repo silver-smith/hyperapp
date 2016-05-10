@@ -1,4 +1,5 @@
 import os.path
+from ..common.htypes import iface_registry
 from .proxy_registry import proxy_class_registry
 from .proxy_list_object import ProxyListObject
 
@@ -22,7 +23,8 @@ class RefList(ProxyListObject):
 
     # todo
     def get_default_url( self ):
-        return self.server.make_url(['file', os.path.expanduser('~')])
+        iface = iface_registry.resolve('fs_dir')
+        return self.server.make_url(iface, ['file', os.path.expanduser('~')])
 
 
 proxy_class_registry.register(RefList)

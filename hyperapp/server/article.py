@@ -1,6 +1,6 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
-from ..common.htypes import tCommand, Column, tObjHandle, tRedirectHandle
+from ..common.htypes import tCommand, Column, tObjHandle, tRedirectHandle, iface_registry
 from ..common.interface.article import (
     tObjSelectorHandle,
     tObjSelectorUnwrapHandle,
@@ -99,14 +99,15 @@ class Article(Object):
     def run_command_open_ref( self, request ):
         ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
+        iface = iface_registry.resolve(rec.iface)
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             endpoint = load_server_routes(public_key)
-            target_url = Url(endpoint, path)
+            target_url = Url(iface, path, endpoint)
             return request.make_response(tRedirectHandle(redirect_to=target_url.to_data()))
         else:
-            target = module.run_resolver(path)
+            target = module.run_resolver(iface, path)
             return request.make_response_handle(target)
 
     @db_session
@@ -166,7 +167,7 @@ class ArticleRefList(SmallListObject):
 
     @db_session
     def run_command_add( self, request ):
-        url = Url.from_data(request.params.target_url)
+        url = Url.from_data(iface_registry, request.params.target_url)
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
@@ -174,6 +175,7 @@ class ArticleRefList(SmallListObject):
             server_public_key_pem = url.endpoint.public_key.to_pem()
         rec = module.ArticleRef(article=module.Article[self.article_id],
                                 server_public_key_pem=server_public_key_pem.strip(),
+                                iface=url.iface.iface_id,
                                 path=encode_path(url.path))
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
@@ -238,7 +240,7 @@ class RefSelector(Object):
 
     @db_session
     def run_command_choose( self, request ):
-        url = Url.from_data(request.params.target_url)
+        url = Url.from_data(iface_registry, request.params.target_url)
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
@@ -247,10 +249,12 @@ class RefSelector(Object):
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     server_public_key_pem=server_public_key_pem,
+                                    iface=url.iface.iface_id,
                                     path=encode_path(url.path))
         else:
             rec = module.ArticleRef[self.ref_id]
             rec.server_public_key_pem = server_public_key_pem
+            rec.iface = url.iface.iface_id
             rec.path = encode_path(url.path)
         commit()
         print 'Saved article#%d reference#%d path: %r, server_public_key_pem=%r' \
@@ -266,14 +270,15 @@ class RefSelector(Object):
     def make_handle( self, request ):
         assert self.ref_id is not None  # why can it be?
         rec = module.ArticleRef[self.ref_id]
+        iface = iface_registry.resolve(rec.iface)
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             endpoint = load_server_routes(public_key)
-            target_url = Url(endpoint, path)
+            target_url = Url(iface, path, endpoint)
             target_handle = tRedirectHandle(target_url.to_data())
         else:
-            target_obj = module.run_resolver(path)
+            target_obj = module.run_resolver(iface, path)
             target_handle = target_obj.get_handle()
         return tObjSelectorHandle('object_selector', self.get(), target_handle)
 
@@ -290,6 +295,7 @@ class ArticleModule(PonyOrmModule):
         self.ArticleRef = self.make_entity('ArticleRef',
                                            article=Required(self.Article),
                                            server_public_key_pem=Optional(str),  # '' if local
+                                           iface=Required(unicode),
                                            path=Required(unicode),
                                            )
         Article.register_class(self.Article)

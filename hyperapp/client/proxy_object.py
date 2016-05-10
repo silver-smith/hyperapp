@@ -74,7 +74,7 @@ class OpenRequest(Request):
 
     def run_resolve_redirect_request( self, handle, redirect_handles ):
         assert len(redirect_handles) == 1  # multiple redirects in one response is not supported (yet?)
-        url = Url.from_data(redirect_handles[0].redirect_to)
+        url = Url.from_data(iface_registry, redirect_handles[0].redirect_to)
         RedirectResolveRequest(url, orig_request=self, orig_handle=handle).execute()
 
     def redirect_resolved( self, handle, map_to_handle, server ):
@@ -184,7 +184,7 @@ class ProxyObject(Object):
             )
 
     def get_url( self ):
-        return self.server.make_url(self.path)
+        return self.server.make_url(self.iface, self.path)
 
     def get_module_ids( self ):
         return self.iface.get_module_ids()

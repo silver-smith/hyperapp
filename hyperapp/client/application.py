@@ -70,8 +70,9 @@ class Application(QtGui.QApplication, view.View):
         return None
 
     def get_global_commands( self ):
+        url = self.server.make_url(iface_registry.resolve('server_management'), ['management'])
         management_cmd = window.OpenCommand(
-            'open_server', 'Server', 'Open server global commands', 'Alt+G', self.server.make_url(['management']))
+            'open_server', 'Server', 'Open server global commands', 'Alt+G', url)
         return [management_cmd]  + self._commands
 
     def window_created( self, view ):
@@ -89,7 +90,7 @@ class Application(QtGui.QApplication, view.View):
             window.get_widget(), 'Load endpoint', os.getcwd(), 'Server endpoint (*.endpoint)')
         endpoint = Endpoint.load_from_file(fpath)
         server = Server.produce(endpoint)
-        url = server.make_url(['management'])
+        url = server.make_url(iface_registry.resolve('server_management'), ['management'])
         GetRequest(url, window.get_current_view()).execute()
 
     @command('New identity', 'Create new identity, public+private key pair', 'Alt+N')

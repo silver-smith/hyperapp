@@ -218,14 +218,15 @@ tEndpoint = TRecord([
     Field('routes', TList(tRoute)),
     ])
 
+tIfaceId = tString
+
 tPath = TList(tString)
 
 tUrl = TRecord([
-    Field('endpoint', tEndpoint),
+    Field('iface', tIfaceId),
     Field('path', tPath),
+    Field('endpoint', tEndpoint),
     ])
-
-tIfaceId = tString
 
 tCommand = TRecord([
             Field('id', tString),

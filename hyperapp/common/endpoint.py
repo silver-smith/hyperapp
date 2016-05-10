@@ -1,7 +1,7 @@
 import pickle
 from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
-from ..common.htypes import tEndpoint, tUrl
+from ..common.htypes import tEndpoint, tUrl, Interface
 
 
 class Endpoint(object):
@@ -38,14 +38,17 @@ class Endpoint(object):
 class Url(object):
 
     @classmethod
-    def from_data( cls, rec ):
-        return cls(Endpoint.from_data(rec.endpoint), rec.path)
+    def from_data( cls, iface_registry, rec ):
+        iface = iface_registry.resolve(rec.iface)
+        return cls(iface, rec.path, Endpoint.from_data(rec.endpoint))
 
-    def __init__( self, endpoint, path ):
-        assert isinstance(endpoint, Endpoint), repr(endpoint)
+    def __init__( self, iface, path, endpoint ):
+        assert isinstance(iface, Interface), repr(iface)
         assert is_list_inst(path, basestring), path
-        self.endpoint = endpoint
+        assert isinstance(endpoint, Endpoint), repr(endpoint)
+        self.iface = iface
         self.path = path
+        self.endpoint = endpoint
 
     def to_data( self ):
-        return tUrl(self.endpoint.to_data(), self.path)
+        return tUrl(self.iface.iface_id, self.path, self.endpoint.to_data())

@@ -32,8 +32,8 @@ class Server(object):
     def get_id( self ):
         return self.endpoint.public_key.get_id()
 
-    def make_url( self, path ):
-        return Url(self.endpoint, path)
+    def make_url( self, iface, path ):
+        return Url(iface, path, self.endpoint)
 
     def __repr__( self ):
         return 'server:%s' % self.endpoint
