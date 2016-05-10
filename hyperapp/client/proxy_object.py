@@ -19,7 +19,6 @@ from ..common.htypes import (
     tEndpoint,
     resolve_iface,
     iface_registry,
-    get_iface,
     )
 from .object import Object
 from .command import Command
@@ -86,9 +85,8 @@ class GetRequestBase(Request):
 
     def __init__( self, url ):
         assert isinstance(url, Url), repr(url)
-        iface = get_iface
         command_id = 'get'
-        Request.__init__(self, iface, url.path, command_id)
+        Request.__init__(self, url.iface, url.path, command_id)
         self.endpoint = url.endpoint
 
     def execute( self ):
