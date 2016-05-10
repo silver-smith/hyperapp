@@ -3,6 +3,7 @@
 import os.path
 import glob
 import uuid
+from PySide import QtCore, QtGui
 from ..common.htypes import (
     tString,
     Field,
@@ -130,16 +131,17 @@ class CodeRepositoryFormObject(Object):
 
     def run_command_submit( self, initiator_view, name, url ):
         print 'adding code repository %r...' % name
-        assert False, 'Not implemented'
-        item = code_repository_controller.add(name)
+        url_ = Url.from_str(iface_registry, url)
+        item = code_repository_controller.add(name, url)
         print 'adding code repository %r, id=%r: done' % (item.name, item.id)
         return make_code_repository_list(name)
 
 
 def make_code_repository_form():
+    url_str = QtGui.QApplication.clipboard().text()
     return form_view.Handle(CodeRepositoryFormObject(), [
         form_view.Field('name', form_view.StringFieldHandle('default repository')),
-        form_view.Field('url', form_view.StringFieldHandle('xxx')),
+        form_view.Field('url', form_view.StringFieldHandle(url_str)),
         ])
 
 

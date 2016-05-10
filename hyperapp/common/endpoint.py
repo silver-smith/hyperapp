@@ -1,7 +1,13 @@
 import pickle
+import binascii
 from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
 from ..common.htypes import tEndpoint, tUrl, Interface
+from ..common.packet_coders import packet_coders
+
+
+class StringIsNotAnUrl(Exception):
+    pass
 
 
 class Endpoint(object):
@@ -41,6 +47,15 @@ class Url(object):
     def from_data( cls, iface_registry, rec ):
         iface = iface_registry.resolve(rec.iface)
         return cls(iface, rec.path, Endpoint.from_data(rec.endpoint))
+
+    @classmethod
+    def from_str( cls, iface_registry, value ):
+        try:
+            data = value.decode('base64')
+        except binascii.Error:
+            raise StringIsNotAnUrl('Provided string is not stringified url')
+        rec = packet_coders.decode('cdr', data, tUrl)
+        return cls.from_data(iface_registry, rec)
 
     def __init__( self, iface, path, endpoint ):
         assert isinstance(iface, Interface), repr(iface)
