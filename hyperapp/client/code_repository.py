@@ -23,6 +23,7 @@ from .server import Server
 from .objimpl_registry import objimpl_registry
 from .proxy_object import ProxyObject
 from .command import Command
+from .object import Object
 from .list_object import Element, Slice, ListObject
 from .import form_view
 from . import list_view
@@ -102,9 +103,45 @@ class CodeRepositoryController(object):
         item = Item(id, name, url)
         self._items.append(item)
         self._url_repository.add(item)
+        return item
 
 
 tFormObject = tObject.register('code_repository_form', base=tBaseObject)
+
+class CodeRepositoryFormObject(Object):
+
+    @classmethod
+    def from_data( cls, data, server=None ):
+        return CodeRepositoryFormObject()
+
+    def get_title( self ):
+        return 'Create identity'
+
+    def to_data( self ):
+        return tFormObject('code_repository_form')
+
+    def get_commands( self ):
+        return [Command('submit', 'Add', 'Add new code repository', 'Return')]
+
+    def run_command( self, command_id, initiator_view=None, **kw ):
+        if command_id == 'submit':
+            return self.run_command_submit(initiator_view, **kw)
+        return Object.run_command(self, command_id, initiator_view, **kw)
+
+    def run_command_submit( self, initiator_view, name, url ):
+        print 'adding code repository %r...' % name
+        assert False, 'Not implemented'
+        item = code_repository_controller.add(name)
+        print 'adding code repository %r, id=%r: done' % (item.name, item.id)
+        return make_code_repository_list(name)
+
+
+def make_code_repository_form():
+    return form_view.Handle(CodeRepositoryFormObject(), [
+        form_view.Field('name', form_view.StringFieldHandle('default repository')),
+        form_view.Field('url', form_view.StringFieldHandle('xxx')),
+        ])
+
 
 code_repository_list_type = tBaseObject
 code_repository_list_handle_type = list_handle_type('code_repository_list', tString)
@@ -192,4 +229,5 @@ class CodeRepositoryProxy(ProxyObject):
 
 code_repository_controller = CodeRepositoryController(
     FileUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_data)
 objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
