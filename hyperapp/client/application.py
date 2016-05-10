@@ -23,6 +23,7 @@ from .module_manager import ModuleManager
 from .response_manager import ResponseManager
 from .route_repository import RouteRepository
 
+from .code_repository import make_code_repository_list
 from .identity import make_identity_form, make_identity_list
 
 
@@ -102,6 +103,11 @@ class Application(QtGui.QApplication, view.View):
     def identity_list( self ):
         window = self._windows[0]  # usually first window is the current one
         window.get_current_view().open(make_identity_list())
+
+    @command('Code repositories', 'Open code repository list', 'Alt+R')
+    def identity_list( self ):
+        window = self._windows[0]  # usually first window is the current one
+        window.get_current_view().open(make_code_repository_list())
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
