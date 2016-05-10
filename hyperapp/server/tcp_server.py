@@ -3,7 +3,7 @@ import time
 import threading
 import socket
 import select
-from ..common.endpoint import Endpoint, Url
+from ..common.endpoint import Endpoint
 from .module import Module
 from .tcp_client import TcpClient
 
