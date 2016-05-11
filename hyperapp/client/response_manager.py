@@ -7,7 +7,7 @@ from ..common.visual_rep import pprint
 from .request import Request, ResponseBase, Response
 from .route_repository import RouteRepository
 from .module_manager import ModuleManager
-from .code_repository import CodeRepositoryProxy
+from .code_repository import CodeRepository
 from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
 from .view_registry import view_registry
@@ -19,7 +19,7 @@ class ResponseManager(object):
     def __init__( self, route_repo, module_mgr, code_repository ):
         assert isinstance(route_repo, RouteRepository), repr(route_repo)
         assert isinstance(module_mgr, ModuleManager), repr(module_mgr)
-        assert isinstance(code_repository, CodeRepositoryProxy), repr(code_repository)
+        assert isinstance(code_repository, CodeRepository), repr(code_repository)
         self._route_repo = route_repo
         self._module_mgr = module_mgr
         self._code_repository = code_repository
@@ -36,7 +36,7 @@ class ResponseManager(object):
         self._module_mgr.add_modules(packet.aux_info.modules)
         unfulfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux_info.requirements)
         if unfulfilled_requirements:
-            self._code_repository.get_required_modules_and_continue(
+            self._code_repository.get_modules_by_requirements_and_continue(
                 unfulfilled_requirements,
                 lambda modules: self._add_modules_and_reprocess_packet(server_public_key, packet, payload_decoder, modules))
         else:

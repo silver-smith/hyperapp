@@ -90,7 +90,7 @@ class FileUrlRepository(object):
             f.write(data)
 
 
-class CodeRepositoryController(object):
+class CodeRepository(object):
 
     def __init__( self, url_repository ):
         assert isinstance(url_repository, FileUrlRepository), repr(url_repository)
@@ -101,11 +101,24 @@ class CodeRepositoryController(object):
         return self._items
 
     def add( self, name, url ):
+        assert url.iface is code_repository_iface, repr(url.iface.iface_id)
         id = str(uuid.uuid4())
         item = Item(id, name, url)
         self._items.append(item)
         self._url_repository.add(item)
         return item
+
+    # todo: try all items
+    def get_modules_by_ids_and_continue( self, module_ids, continuation ):
+        if not self._items: return
+        proxy = CodeRepositoryProxy.from_url(self._items[0].url)
+        proxy.get_modules_by_ids_and_continue(module_ids, continuation)
+
+    # todo: try all items
+    def get_modules_by_requirements_and_continue( self, requirements, continuation ):
+        if not self._items: return
+        proxy = CodeRepositoryProxy.from_url(self._items[0].url)
+        proxy.get_modules_by_requirements_and_continue(requirements, continuation)
 
 
 class GetModulesRequest(Request):
@@ -120,17 +133,23 @@ class GetModulesRequest(Request):
 
 class CodeRepositoryProxy(ProxyObject):
 
-    def __init__( self, server ):
-        path = ['code_repository', 'code_repository']
-        ProxyObject.__init__(self, server, path, code_repository_iface)
+    @classmethod
+    def from_url( cls, url ):
+        assert isinstance(url, Url), repr(url)
+        server = Server.from_endpoint(url.endpoint)
+        return cls(server, url.path, url.iface)
+        
+    def __init__( self, server, path, iface ):
+        assert iface is code_repository_iface, repr(iface.iface_id)
+        ProxyObject.__init__(self, server, path, iface)
 
-    def get_modules_and_continue( self, module_ids, continuation ):
+    def get_modules_by_ids_and_continue( self, module_ids, continuation ):
         command_id = 'get_modules_by_ids'
         params = self.iface.make_params(command_id, module_ids=module_ids)
         request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
         self.server.execute_request(request)
 
-    def get_required_modules_and_continue( self, requirements, continuation ):
+    def get_modules_by_requirements_and_continue( self, requirements, continuation ):
         command_id = 'get_modules_by_requirements'
         params = self.iface.make_params(command_id, requirements=requirements)
         request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
@@ -143,10 +162,10 @@ class CodeRepositoryFormObject(Object):
 
     @classmethod
     def from_data( cls, data, server=None ):
-        return CodeRepositoryFormObject(this_module.code_repository_controller)
+        return CodeRepositoryFormObject(this_module.code_repository)
 
     def __init__( self, controller ):
-        assert isinstance(controller, CodeRepositoryController), repr(controller)
+        assert isinstance(controller, CodeRepository), repr(controller)
         Object.__init__(self)
         self.controller = controller
 
@@ -173,7 +192,7 @@ class CodeRepositoryFormObject(Object):
 
 
 def make_code_repository_form( url_str ):
-    return form_view.Handle(CodeRepositoryFormObject(this_module.code_repository_controller), [
+    return form_view.Handle(CodeRepositoryFormObject(this_module.code_repository), [
         form_view.Field('name', form_view.StringFieldHandle('default repository')),
         form_view.Field('url', form_view.StringFieldHandle(url_str)),
         ])
@@ -187,10 +206,10 @@ class CodeRepositoryList(ListObject):
 
     @classmethod
     def from_data( cls, objinfo, server=None ):
-        return cls(this_module.code_repository_controller)
+        return cls(this_module.code_repository)
     
     def __init__( self, controller ):
-        assert isinstance(controller, CodeRepositoryController), repr(controller)
+        assert isinstance(controller, CodeRepository), repr(controller)
         ListObject.__init__(self)
         self.controller = controller
 
@@ -231,7 +250,7 @@ class CodeRepositoryList(ListObject):
 
 
 def make_code_repository_list( key=None ):
-    object = CodeRepositoryList(this_module.code_repository_controller)
+    object = CodeRepositoryList(this_module.code_repository)
     return list_view.Handle(code_repository_list_handle_type, object, sort_column_id='name', key=key)
 
 
@@ -239,7 +258,7 @@ class ThisModule(Module):
 
     def __init__( self ):
         Module.__init__(self)
-        self.code_repository_controller = CodeRepositoryController(
+        self.code_repository = CodeRepository(
             FileUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_data)
         objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
@@ -258,6 +277,10 @@ class ThisModule(Module):
         assert code_repository_iface in object.get_facets()
         url = object.get_url().clone(iface=code_repository_iface)
         return make_code_repository_form(url.to_str())
+
+
+def get_code_repository():
+    return this_module.code_repository
 
 
 this_module = ThisModule()

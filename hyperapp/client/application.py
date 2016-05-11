@@ -18,7 +18,7 @@ from . import text_view
 from . import navigator
 from . import window
 from .objimpl_registry import objimpl_registry
-from .code_repository import CodeRepositoryProxy
+from . import code_repository
 from .module_manager import ModuleManager
 from .response_manager import ResponseManager
 from .route_repository import RouteRepository
@@ -51,7 +51,7 @@ class Application(QtGui.QApplication, view.View):
         self._route_repo = RouteRepository()
         self._module_mgr = ModuleManager()
         self.server = Server.from_endpoint(server_endpoint)
-        self._code_repository = CodeRepositoryProxy(self.server)
+        self._code_repository = code_repository.get_code_repository()
         self._response_mgr = ResponseManager(self._route_repo, self._module_mgr, self._code_repository)
         self._windows = []
         self._route_repo.add_endpoint_routes(server_endpoint)
@@ -185,7 +185,7 @@ class Application(QtGui.QApplication, view.View):
         if state:
             module_ids, modules, handles_cdr = state
             print '-- modules loaded from state: ids=%r, modules=%r)' % (module_ids, [module.fpath for module in modules])
-            self._code_repository.get_modules_and_continue(
+            self._code_repository.get_modules_by_ids_and_continue(
                 module_ids, lambda modules: self._add_modules_and_open_state(handles_cdr, modules))
         else:
             whandles = self.get_default_state()
