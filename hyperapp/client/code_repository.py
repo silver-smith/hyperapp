@@ -249,9 +249,13 @@ class ThisModule(Module):
             return [Command('add_to_repository_list', 'Add Repository', 'Add this repository to my repositories list', 'Ctrl+A')]
         return []
 
-    def run_object_command( self, command_id ):
+    def run_object_command( self, command_id, object ):
         if command_id == 'add_to_repository_list':
-            return self.run_object_command_add_to_repository_list()
+            return self.run_object_command_add_to_repository_list(object)
         return Module.run_object_command(self, command_id)
+
+    def run_object_command_add_to_repository_list( self, object ):
+        print '#'*10, object.get_facets()
+
 
 this_module = ThisModule()

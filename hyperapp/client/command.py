@@ -1,4 +1,5 @@
 import weakref
+import abc
 from ..common.util import is_list_inst
 from ..common.htypes import tCommand
 from .util import make_action
@@ -37,15 +38,24 @@ class Command(CommandBase):
         return ObjectCommand(view, self.id, self.text, self.desc, self.shortcut)
 
 
-# returned from View.get_object_commands
-class ObjectCommand(Command):
+class RunnableCommand(Command):
 
-    def __init__( self, view, id, text, desc, shortcut=None ):
-        Command.__init__(self, id, text, desc, shortcut)
-        self.view_wr = weakref.ref(view)  # View or Module
+    __metaclass__ = abc.ABCMeta
 
     def make_action( self, widget ):
         return make_action(widget, self.text, self.shortcut, self.run)
+
+    @abc.abstractmethod
+    def run( self ):
+        pass
+
+
+# returned from View.get_object_commands
+class ObjectCommand(RunnableCommand):
+
+    def __init__( self, view, id, text, desc, shortcut=None ):
+        RunnableCommand.__init__(self, id, text, desc, shortcut)
+        self.view_wr = weakref.ref(view)  # View or Module
 
     def run( self ):
         view = self.view_wr()

@@ -2,7 +2,7 @@ import weakref
 from PySide import QtCore, QtGui
 from ..common.htypes import tCommand
 from .util import make_action
-from .command import ObjectCommand
+from .command import RunnableCommand
 from .view_command import WindowCommand
 ## from .url_form import make_open_url_action
 
@@ -67,7 +67,7 @@ class MenuBar(object):
         self.dir_menu.clear()
         commands = window.get_object_commands()
         for cmd in commands:
-            assert isinstance(cmd, ObjectCommand), repr(cmd)
+            assert isinstance(cmd, RunnableCommand), repr(cmd)
             self.dir_menu.addAction(cmd.make_action(self.dir_menu))
         self.dir_menu.setEnabled(commands != [])
 

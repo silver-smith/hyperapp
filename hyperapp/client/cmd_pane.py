@@ -2,7 +2,7 @@
 
 import weakref
 from PySide import QtCore, QtGui
-from .command import ObjectCommand, ElementCommand
+from .command import RunnableCommand, ElementCommand
 
 
 class View(QtGui.QDockWidget):
@@ -36,7 +36,7 @@ class View(QtGui.QDockWidget):
         self.dir_buttons = []
         idx = 0
         for cmd in window.get_object_commands():
-            assert isinstance(cmd, ObjectCommand), repr(cmd)
+            assert isinstance(cmd, RunnableCommand), repr(cmd)
             button = self._make_button(cmd)
             button.pressed.connect(lambda cmd=cmd: cmd.run())
             self.layout.insertWidget(idx, button)  # must be inserted before spacing

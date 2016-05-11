@@ -94,7 +94,7 @@ class View(ObjectObserver):
         object = self.get_object()
         if object:
             return ([cmd.as_object_command(self) for cmd in object.get_commands(*args, **kw)]
-                    + Module.get_all_object_commands(object))
+                    + Module.get_all_object_commands(self, object))
         else:
             return []
 
