@@ -50,7 +50,7 @@ class Application(QtGui.QApplication, view.View):
         view.View.__init__(self)
         self._route_repo = RouteRepository()
         self._module_mgr = ModuleManager()
-        self.server = Server.produce(server_endpoint)
+        self.server = Server.from_endpoint(server_endpoint)
         self._code_repository = CodeRepositoryProxy(self.server)
         self._response_mgr = ResponseManager(self._route_repo, self._module_mgr, self._code_repository)
         self._windows = []
@@ -90,7 +90,7 @@ class Application(QtGui.QApplication, view.View):
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load endpoint', os.getcwd(), 'Server endpoint (*.endpoint)')
         endpoint = Endpoint.load_from_file(fpath)
-        server = Server.produce(endpoint)
+        server = Server.from_endpoint(endpoint)
         url = server.make_url(iface_registry.resolve('server_management'), ['management'])
         GetRequest(url, window.get_current_view()).execute()
 

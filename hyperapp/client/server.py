@@ -14,7 +14,7 @@ class Server(object):
     _servers = {}  # public key -> Server
 
     @classmethod
-    def produce( cls, endpoint ):
+    def from_endpoint( cls, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         server = cls._servers.get(endpoint.public_key)
         if not server:

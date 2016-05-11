@@ -60,7 +60,7 @@ class ResponseManager(object):
                 print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
                 return
             del self._pending_requests[response.request_id]
-            server = Server.produce(self._load_endpoint(server_public_key))
+            server = Server.from_endpoint(self._load_endpoint(server_public_key))
             request.process_response(server, response)
 
     def _process_updates( self, server_public_key, updates ):

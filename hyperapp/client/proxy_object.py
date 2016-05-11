@@ -90,7 +90,7 @@ class GetRequestBase(Request):
         self.endpoint = url.endpoint
 
     def execute( self ):
-        server = Server.produce(self.endpoint)
+        server = Server.from_endpoint(self.endpoint)
         server.execute_request(self)
 
         
@@ -134,7 +134,7 @@ class ProxyObject(Object):
     def produce_obj_by_objinfo( cls, objinfo, server=None ):
         assert isinstance(objinfo, tThisProxyObject), repr(objinfo)
         if isinstance(objinfo, tProxyObject):
-            server = Server.produce(Endpoint.from_data(objinfo.endpoint))
+            server = Server.from_endpoint(Endpoint.from_data(objinfo.endpoint))
         else:
             assert server is not None, repr(objinfo)  # we need endpoint somehow
         iface = iface_registry.resolve(objinfo.iface)
