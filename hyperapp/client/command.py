@@ -36,7 +36,7 @@ class ObjectCommand(Command):
 
     def __init__( self, view, id, text, desc, shortcut=None ):
         Command.__init__(self, id, text, desc, shortcut)
-        self.view_wr = weakref.ref(view)
+        self.view_wr = weakref.ref(view)  # View or Module
 
     def make_action( self, widget ):
         return make_action(widget, self.text, self.shortcut, self.run, self.view_wr)

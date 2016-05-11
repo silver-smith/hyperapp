@@ -184,6 +184,9 @@ class ProxyObject(Object):
     def get_url( self ):
         return self.server.make_url(self.iface, self.path)
 
+    def get_facets( self ):
+        return self.facets
+
     def get_module_ids( self ):
         return self.iface.get_module_ids()
 

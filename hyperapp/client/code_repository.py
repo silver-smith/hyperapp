@@ -16,9 +16,10 @@ from ..common.htypes import (
     Column,
     list_handle_type,
     )
-from ..common.interface.code_repository import code_repository_iface
+from ..common.interface.code_repository import code_repository_iface, code_repository_browser_iface
 from ..common.endpoint import Url
 from ..common.packet_coders import packet_coders
+from .module import Module
 from .request import Request
 from .server import Server
 from .objimpl_registry import objimpl_registry
@@ -113,7 +114,12 @@ class CodeRepositoryFormObject(Object):
 
     @classmethod
     def from_data( cls, data, server=None ):
-        return CodeRepositoryFormObject()
+        return CodeRepositoryFormObject(this_module.code_repository_controller)
+
+    def __init__( self, controller ):
+        assert isinstance(controller, CodeRepositoryController), repr(controller)
+        Object.__init__(self)
+        self.controller = controller
 
     def get_title( self ):
         return 'Create identity'
@@ -132,14 +138,14 @@ class CodeRepositoryFormObject(Object):
     def run_command_submit( self, initiator_view, name, url ):
         print 'adding code repository %r...' % name
         url_ = Url.from_str(iface_registry, url)
-        item = code_repository_controller.add(name, url)
+        item = self.controller.add(name, url)
         print 'adding code repository %r, id=%r: done' % (item.name, item.id)
         return make_code_repository_list(name)
 
 
 def make_code_repository_form():
     url_str = QtGui.QApplication.clipboard().text()
-    return form_view.Handle(CodeRepositoryFormObject(), [
+    return form_view.Handle(CodeRepositoryFormObject(this_module.code_repository_controller), [
         form_view.Field('name', form_view.StringFieldHandle('default repository')),
         form_view.Field('url', form_view.StringFieldHandle(url_str)),
         ])
@@ -153,7 +159,7 @@ class CodeRepositoryList(ListObject):
 
     @classmethod
     def from_data( cls, objinfo, server=None ):
-        return cls(code_repository_controller)
+        return cls(this_module.code_repository_controller)
     
     def __init__( self, controller ):
         assert isinstance(controller, CodeRepositoryController), repr(controller)
@@ -196,7 +202,7 @@ class CodeRepositoryList(ListObject):
 
 
 def make_code_repository_list( key=None ):
-    object = CodeRepositoryList(code_repository_controller)
+    object = CodeRepositoryList(this_module.code_repository_controller)
     return list_view.Handle(code_repository_list_handle_type, object, sort_column_id='name', key=key)
 
 
@@ -229,7 +235,23 @@ class CodeRepositoryProxy(ProxyObject):
         self.server.execute_request(request)
 
 
-code_repository_controller = CodeRepositoryController(
-    FileUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
-objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_data)
-objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
+class ThisModule(Module):
+
+    def __init__( self ):
+        Module.__init__(self)
+        self.code_repository_controller = CodeRepositoryController(
+            FileUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+        objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_data)
+        objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
+
+    def get_object_commands( self, object ):
+        if code_repository_browser_iface in object.get_facets():
+            return [Command('add_to_repository_list', 'Add Repository', 'Add this repository to my repositories list', 'Ctrl+A')]
+        return []
+
+    def run_object_command( self, command_id ):
+        if command_id == 'add_to_repository_list':
+            return self.run_object_command_add_to_repository_list()
+        return Module.run_object_command(self, command_id)
+
+this_module = ThisModule()

@@ -33,6 +33,9 @@ class Object(object):
     def get_url( self ):
         return None
 
+    def get_facets( self ):
+        return []
+
     def get_module_ids( self ):
         return []
 

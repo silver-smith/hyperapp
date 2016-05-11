@@ -5,6 +5,7 @@ from PySide import QtCore, QtGui
 from ..common.htypes import tHandle
 from .qt_keys import print_key_event
 from .util import DEBUG_FOCUS, make_action, focused_index
+from .module import Module
 from .object import ObjectObserver
 from .view_command import BoundViewCommand, UnboundViewCommand
 from .view_registry import view_registry
@@ -92,7 +93,8 @@ class View(ObjectObserver):
             return child.get_object_commands(*args, **kw)
         object = self.get_object()
         if object:
-            return [cmd.as_object_command(self) for cmd in object.get_commands(*args, **kw)]
+            return ([cmd.as_object_command(self) for cmd in object.get_commands(*args, **kw)]
+                    + Module.get_all_object_commands(object))
         else:
             return []
 
