@@ -39,10 +39,10 @@ class ObjectCommand(Command):
         self.view_wr = weakref.ref(view)  # View or Module
 
     def make_action( self, widget ):
-        return make_action(widget, self.text, self.shortcut, self.run, self.view_wr)
+        return make_action(widget, self.text, self.shortcut, self.run)
 
-    def run( self, view_wr ):
-        view = view_wr()
+    def run( self ):
+        view = self.view_wr()
         if view:
             view.run_object_command(self.id)
 

@@ -38,7 +38,7 @@ class View(QtGui.QDockWidget):
         for cmd in window.get_object_commands():
             assert isinstance(cmd, ObjectCommand), repr(cmd)
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.view.run_object_command(cmd.id))
+            button.pressed.connect(lambda cmd=cmd: cmd.run())
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
             self.dir_buttons.append(button)
             idx += 1
