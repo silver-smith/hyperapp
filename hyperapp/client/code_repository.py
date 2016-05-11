@@ -108,6 +108,35 @@ class CodeRepositoryController(object):
         return item
 
 
+class GetModulesRequest(Request):
+
+    def __init__( self, iface, path, command_id, params, continuation ):
+        Request.__init__(self, iface, path, command_id, params)
+        self.continuation = continuation
+
+    def process_response( self, server, response ):
+        self.continuation(response.result.modules)
+
+
+class CodeRepositoryProxy(ProxyObject):
+
+    def __init__( self, server ):
+        path = ['code_repository', 'code_repository']
+        ProxyObject.__init__(self, server, path, code_repository_iface)
+
+    def get_modules_and_continue( self, module_ids, continuation ):
+        command_id = 'get_modules_by_ids'
+        params = self.iface.make_params(command_id, module_ids=module_ids)
+        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
+        self.server.execute_request(request)
+
+    def get_required_modules_and_continue( self, requirements, continuation ):
+        command_id = 'get_modules_by_requirements'
+        params = self.iface.make_params(command_id, requirements=requirements)
+        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
+        self.server.execute_request(request)
+
+
 tFormObject = tObject.register('code_repository_form', base=tBaseObject)
 
 class CodeRepositoryFormObject(Object):
@@ -204,35 +233,6 @@ class CodeRepositoryList(ListObject):
 def make_code_repository_list( key=None ):
     object = CodeRepositoryList(this_module.code_repository_controller)
     return list_view.Handle(code_repository_list_handle_type, object, sort_column_id='name', key=key)
-
-
-class GetModulesRequest(Request):
-
-    def __init__( self, iface, path, command_id, params, continuation ):
-        Request.__init__(self, iface, path, command_id, params)
-        self.continuation = continuation
-
-    def process_response( self, server, response ):
-        self.continuation(response.result.modules)
-
-
-class CodeRepositoryProxy(ProxyObject):
-
-    def __init__( self, server ):
-        path = ['code_repository', 'code_repository']
-        ProxyObject.__init__(self, server, path, code_repository_iface)
-
-    def get_modules_and_continue( self, module_ids, continuation ):
-        command_id = 'get_modules_by_ids'
-        params = self.iface.make_params(command_id, module_ids=module_ids)
-        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
-        self.server.execute_request(request)
-
-    def get_required_modules_and_continue( self, requirements, continuation ):
-        command_id = 'get_modules_by_requirements'
-        params = self.iface.make_params(command_id, requirements=requirements)
-        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
-        self.server.execute_request(request)
 
 
 class ThisModule(Module):
