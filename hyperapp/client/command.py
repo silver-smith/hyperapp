@@ -1,4 +1,5 @@
 import weakref
+from ..common.util import is_list_inst
 from ..common.htypes import tCommand
 from .util import make_action
 
@@ -6,9 +7,14 @@ from .util import make_action
 class CommandBase(object):
 
     def __init__( self, text, desc, shortcut ):
+        assert isinstance(text, basestring), repr(text)
+        assert isinstance(desc, basestring), repr(desc)
+        assert (shortcut is None
+                or isinstance(shortcut, basestring)
+                or is_list_inst(shortcut, basestring)), repr(shortcut)
         self.text = text
         self.desc = desc
-        self.shortcut = shortcut
+        self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple
 
 
 # returned from Object.get_commands

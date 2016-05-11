@@ -7,10 +7,7 @@ from .command import CommandBase
 class WindowCommand(CommandBase):
 
     def __init__( self, text, desc, shortcut ):
-        assert shortcut is None or isinstance(shortcut, basestring) or is_list_inst(shortcut, basestring), repr(shortcut)
-        self.text = text
-        self.desc = desc
-        self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple
+        CommandBase.__init__(self, text, desc, shortcut)
 
     def make_action( self, widget, window ):
         raise NotImplementedError(self.__class__)
