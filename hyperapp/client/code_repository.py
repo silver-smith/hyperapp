@@ -44,8 +44,8 @@ class Item(object):
         return cls(id, rec.name, Url.from_data(iface_registry, rec.url))
 
     def __init__( self, id, name, url ):
-        assert isinstance(id, unicode), repr(id)
-        assert isinstance(name, unicode), repr(name)
+        assert isinstance(id, basestring), repr(id)
+        assert isinstance(name, basestring), repr(name)
         assert isinstance(url, Url), repr(url)
         self.id = id
         self.name = name
@@ -79,7 +79,7 @@ class FileUrlRepository(object):
         with open(fpath) as f:
             data = f.read()
         rec = packet_coders.decode(self.encoding, data, Item.type)
-        return Item.from_data(name, self.iface_registry, rec)
+        return Item.from_data(self.iface_registry, name, rec)
 
     def _save_item( self, item ):
         if not os.path.isdir(self.dir):
@@ -138,13 +138,12 @@ class CodeRepositoryFormObject(Object):
     def run_command_submit( self, initiator_view, name, url ):
         print 'adding code repository %r...' % name
         url_ = Url.from_str(iface_registry, url)
-        item = self.controller.add(name, url)
+        item = self.controller.add(name, url_)
         print 'adding code repository %r, id=%r: done' % (item.name, item.id)
         return make_code_repository_list(name)
 
 
-def make_code_repository_form():
-    url_str = QtGui.QApplication.clipboard().text()
+def make_code_repository_form( url_str ):
     return form_view.Handle(CodeRepositoryFormObject(this_module.code_repository_controller), [
         form_view.Field('name', form_view.StringFieldHandle('default repository')),
         form_view.Field('url', form_view.StringFieldHandle(url_str)),
@@ -178,7 +177,8 @@ class CodeRepositoryList(ListObject):
         return ListObject.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_add( self, initiator_view ):
-        return make_code_repository_form()
+        url_str = QtGui.QApplication.clipboard().text()
+        return make_code_repository_form(url_str)
 
     def to_data( self ):
         return code_repository_list_type('code_repository_list')
@@ -245,7 +245,7 @@ class ThisModule(Module):
         objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
 
     def get_object_commands( self, object ):
-        if code_repository_browser_iface in object.get_facets():
+        if code_repository_iface in object.get_facets():
             return [Command('add_to_repository_list', 'Add Repository', 'Add this repository to my repositories list', 'Ctrl+A')]
         return []
 
@@ -255,7 +255,9 @@ class ThisModule(Module):
         return Module.run_object_command(self, command_id)
 
     def run_object_command_add_to_repository_list( self, object ):
-        print '#'*10, object.get_facets()
+        assert code_repository_iface in object.get_facets()
+        url = object.get_url().clone(iface=code_repository_iface)
+        return make_code_repository_form(url.to_str())
 
 
 this_module = ThisModule()

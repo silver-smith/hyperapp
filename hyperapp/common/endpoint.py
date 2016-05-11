@@ -43,6 +43,8 @@ class Endpoint(object):
 
 class Url(object):
 
+    str_encoding = 'cdr'
+
     @classmethod
     def from_data( cls, iface_registry, rec ):
         iface = iface_registry.resolve(rec.iface)
@@ -54,7 +56,7 @@ class Url(object):
             data = value.decode('base64')
         except binascii.Error:
             raise StringIsNotAnUrl('Provided string is not stringified url')
-        rec = packet_coders.decode('cdr', data, tUrl)
+        rec = packet_coders.decode(cls.str_encoding, data, tUrl)
         return cls.from_data(iface_registry, rec)
 
     def __init__( self, iface, path, endpoint ):
@@ -67,3 +69,14 @@ class Url(object):
 
     def to_data( self ):
         return tUrl(self.iface.iface_id, self.path, self.endpoint.to_data())
+
+    def to_str( self ):
+        data = packet_coders.encode(self.str_encoding, self.to_data(), tUrl)
+        return data.encode('base64')
+
+    def clone( self, iface=None ):
+        obj = Url(self.iface, self.path, self.endpoint)
+        if iface is not None:
+            assert isinstance(iface, Interface), repr(iface)
+            obj.iface = iface
+        return obj
