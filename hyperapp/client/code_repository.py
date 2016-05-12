@@ -106,7 +106,7 @@ class CodeRepositoryFormObject(Object):
         self.controller = controller
 
     def get_title( self ):
-        return 'Create identity'
+        return 'Add code repository'
 
     def to_data( self ):
         return tFormObject('code_repository_form')
@@ -198,6 +198,17 @@ class ThisModule(Module):
             UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_data)
         objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
+
+    def get_commands( self ):
+        return [Command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')]
+
+    def run_command( self, command_id ):
+        if command_id == 'repository_list':
+            return self.run_command_repository_list()
+        return Module.run_command(self, command_id)
+
+    def run_command_repository_list( self ):
+        return make_code_repository_list()
 
     def get_object_commands( self, object ):
         if code_repository_iface in object.get_facets():

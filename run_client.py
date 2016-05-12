@@ -21,6 +21,7 @@ import hyperapp.client.text_edit
 import hyperapp.client.text_view
 import hyperapp.client.form_view
 import hyperapp.client.identity
+import hyperapp.client.code_repository
 import hyperapp.client.bookmarks
 # self-registering transports:
 import hyperapp.client.tcp_transport
