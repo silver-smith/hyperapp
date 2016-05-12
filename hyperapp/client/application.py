@@ -31,16 +31,6 @@ from .bookmarks import make_bookmark_list
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 
-## class OpenRespHandler(RespHandler):
-
-##     def __init__( self, iface, command_id, app ):
-##         RespHandler.__init__(self, iface, command_id)
-##         self.app = app
-
-##     def process_response( self, response, server ):
-##         self.app.process_open_response(response.result, server, self)
-
-
 class Application(QtGui.QApplication, view.View):
 
     handles_type = TList(window.data_type)
@@ -162,20 +152,6 @@ class Application(QtGui.QApplication, view.View):
                 navigator.Handle(
                     text_handle)]))
         return [window_handle]
-
-    ## def execute_get_request( self, url ):
-    ##     server, path = Server.resolve_url(url)
-    ##     command_id = 'get'
-    ##     resp_handler = OpenRespHandler(get_iface, command_id, self)  # must keep explicit reference to it
-    ##     request = Request(get_iface, path, command_id)
-    ##     server.execute_request(request, resp_handler)
-    ##     self._resp_handlers.add(resp_handler)
-
-    ## def process_open_response( self, result, server, resp_handler ):
-    ##     # open in any window
-    ##     view = self._windows[0].get_current_view()
-    ##     view.process_handle_open(result, server)
-    ##     self._resp_handlers.remove(resp_handler)
 
     def _add_modules_and_open_state( self, handles_cdr, modules ):
         self._module_mgr.add_modules(modules)
