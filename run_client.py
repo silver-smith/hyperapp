@@ -2,13 +2,6 @@
 
 import sys
 import argparse
-from hyperapp.common.endpoint import Endpoint
-from hyperapp.common.htypes import iface_registry
-from hyperapp.client.application import Application
-
-# self-registering transports:
-import hyperapp.client.tcp_transport
-import hyperapp.client.encrypted_transport
 
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
@@ -27,6 +20,13 @@ import hyperapp.client.proxy_list_object
 import hyperapp.client.text_edit
 import hyperapp.client.text_view
 import hyperapp.client.form_view
+# self-registering transports:
+import hyperapp.client.tcp_transport
+import hyperapp.client.encrypted_transport
+
+from hyperapp.common.endpoint import Endpoint
+from hyperapp.common.htypes import iface_registry
+from hyperapp.client.application import Application
 
 
 def main():
