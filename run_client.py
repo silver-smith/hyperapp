@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import sys
-import argparse
-
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
 import hyperapp.common.interface.fs
@@ -28,24 +25,16 @@ import hyperapp.client.url_clipboard
 import hyperapp.client.tcp_transport
 import hyperapp.client.encrypted_transport
 
-from hyperapp.common.endpoint import Endpoint
-from hyperapp.common.htypes import iface_registry
+import sys
+import argparse
 from hyperapp.client.application import Application
 
 
 def main():
     parser = argparse.ArgumentParser(description='Hyperapp client')
-    parser.add_argument('server_endpoint', help='path to server endpoint file')
     args = parser.parse_args()
 
-    server_endpoint = Endpoint.load_from_file(args.server_endpoint)
-
-    app = Application(server_endpoint, sys.argv)
-
-    ## if len(sys.argv) > 1:
-    ##     url = decode_url(sys.argv[1])
-    ##     app.execute_get_request(url)
-
+    app = Application(sys.argv)
     app.exec_()
 
 

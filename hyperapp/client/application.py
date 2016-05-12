@@ -31,17 +31,15 @@ class Application(QtGui.QApplication, view.View):
 
     handles_type = TList(window.data_type)
 
-    def __init__( self, server_endpoint, sys_argv ):
+    def __init__( self, sys_argv ):
         QtGui.QApplication.__init__(self, sys_argv)
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
         self._route_repo = RouteRepository()
         self._module_mgr = ModuleManager()
-        self.server = Server.from_endpoint(server_endpoint)
         self._code_repository = code_repository.get_code_repository()
         self._response_mgr = ResponseManager(self._route_repo, self._module_mgr, self._code_repository)
         self._windows = []
-        self._route_repo.add_endpoint_routes(server_endpoint)
 
     @property
     def response_mgr( self ):
@@ -58,10 +56,7 @@ class Application(QtGui.QApplication, view.View):
         return None
 
     def get_global_commands( self ):
-        url = self.server.make_url(iface_registry.resolve('server_management'), ['management'])
-        management_cmd = window.OpenCommand(
-            'open_server', 'Server', 'Open server global commands', 'Alt+G', url)
-        return [management_cmd]  + self._commands
+        return self._commands
 
     def window_created( self, view ):
         self._windows.append(view)

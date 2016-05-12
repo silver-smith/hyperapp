@@ -3,9 +3,8 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, Field, TRecord, Interface
 #from ..common.request import Request
-from .util import DEBUG_FOCUS, call_after, make_action
-from .proxy_object import GetRequest
-from .view_command import WindowCommand, command
+from .util import DEBUG_FOCUS, call_after
+from .view_command import command
 from . import view
 from . import composite
 from .menu_bar import MenuBar
@@ -32,23 +31,6 @@ data_type = TRecord([
     Field('size', size_type),
     Field('pos', point_type),
     ])
-
-
-class OpenCommand(WindowCommand):
-
-    def __init__( self, id, text, desc, shortcut, url ):
-        WindowCommand.__init__(self, text, desc, shortcut)
-        self.id = id
-        self.url = url
-
-    def run( self, window_wr ):
-        print 'OpenCommand.run', self.id, self.url, window_wr
-        window = window_wr()
-        if window:
-            window.run_open_command(self.url)
-
-    def make_action( self, widget, window ):
-        return make_action(widget, self.text, self.shortcut, self.run, weakref.ref(window))
 
 
 class Handle(composite.Handle):
@@ -152,9 +134,6 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._menu_bar.view_changed(self)
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
-
-    def run_open_command( self, url ):
-        GetRequest(url, self.get_current_view()).execute()
 
     @command('Duplicate window', 'Duplicate window', 'Alt+Shift+W')
     def duplicate_window( self ):
