@@ -121,10 +121,21 @@ class ThisModule(Module):
             iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         objimpl_registry.register('bookmark_list', BookmarkList.from_data)
 
+    def get_commands( self ):
+        return [Command('bookmark_list', 'Bookmarks', 'Open bookmark list', 'Alt+B')]
+
     def get_object_commands( self, object ):
         if object.get_url() is not None:
             return [Command('bookmark', 'Bookmark', 'Add this url to bookmarks', 'Ctrl+D')]
         return []
+
+    def run_command( self, command_id ):
+        if command_id == 'bookmark_list':
+            return self.run_command_bookmark_list()
+        return Module.run_command(command_id, view)
+
+    def run_command_bookmark_list( self ):
+        return make_bookmark_list()
 
     def run_object_command( self, command_id, object ):
         if command_id == 'bookmark':

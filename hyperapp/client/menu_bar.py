@@ -4,6 +4,7 @@ from ..common.htypes import tCommand
 from .util import make_action
 from .command import RunnableCommand
 from .view_command import WindowCommand
+from .module import Module
 ## from .url_form import make_open_url_action
 
 
@@ -37,6 +38,11 @@ class MenuBar(object):
         menu = QtGui.QMenu(title)
         window = self.window()
         ## menu.addAction(make_open_url_action(menu, window))
+        for cmd in Module.get_all_commands(window):
+            assert isinstance(cmd, RunnableCommand), repr(cmd)
+            menu.addAction(cmd.make_action(menu))
+        if not menu.isEmpty():
+            menu.addSeparator()
         for cmd in self.window().get_global_commands():
             assert isinstance(cmd, WindowCommand), repr(cmd)
             menu.addAction(cmd.make_action(menu, window))
