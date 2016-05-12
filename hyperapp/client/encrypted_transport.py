@@ -15,7 +15,7 @@ from ..common.transport_packet import tTransportPacket, encode_transport_packet,
 from ..common.packet_coders import packet_coders
 from .transport import Transport, transport_registry
 from .tcp_connection import TcpConnection
-from .identity import identity_controller
+from .identity import get_identity_controller
 
 
 TRANSPORT_ID = 'encrypted_tcp'
@@ -60,7 +60,7 @@ class EncryptedTransport(Transport):
     def process_pop_challenge_packet( self, connection, server_public_key, session, encrypted_packet ):
         challenge = encrypted_packet.challenge
         pop_records = []
-        for item in identity_controller.get_items():
+        for item in get_identity_controller().get_items():
             pop_records.append(tPopRecord(
                 item.identity.get_public_key().to_der(),
                 item.identity.sign(challenge)))

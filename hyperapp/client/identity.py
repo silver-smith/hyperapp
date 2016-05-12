@@ -11,6 +11,7 @@ from ..common.htypes import (
 from ..common.identity import Identity
 from .objimpl_registry import objimpl_registry
 from .command import Command
+from .module import Module
 from .object import Object
 from .list_object import Element, Slice, ListObject
 from .import form_view
@@ -99,7 +100,7 @@ class IdentityFormObject(Object):
 
     def run_command_submit( self, initiator_view, name ):
         print 'creating identity %r...' % name
-        identity_controller.generate(name)
+        this_module.identity_controller.generate(name)
         print 'creating identity %r: done' % name
         return make_identity_list(name)
 
@@ -118,7 +119,7 @@ class IdentityList(ListObject):
 
     @classmethod
     def from_data( cls, objinfo, server=None ):
-        return cls(identity_controller)
+        return cls(this_module.identity_controller)
     
     def __init__( self, controller ):
         assert isinstance(controller, IdentityController), repr(controller)
@@ -163,10 +164,40 @@ class IdentityList(ListObject):
 
 
 def make_identity_list( key=None ):
-    object = IdentityList(identity_controller)
+    object = IdentityList(this_module.identity_controller)
     return list_view.Handle(identity_list_handle_type, object, sort_column_id='name', key=key)
 
 
-identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
-objimpl_registry.register('identity_form', IdentityFormObject.from_data)
-objimpl_registry.register('identity_list', IdentityList.from_data)
+class ThisModule(Module):
+
+    def __init__( self ):
+        Module.__init__(self)
+        self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
+        objimpl_registry.register('identity_form', IdentityFormObject.from_data)
+        objimpl_registry.register('identity_list', IdentityList.from_data)
+
+    def get_commands( self ):
+        return [
+            Command('identity_list', 'Identities', 'Open identity list', 'Alt+I'),
+            Command('create_identity', 'Create identity', 'Create new identity, public+private key pair', 'Alt+N'),
+            ]
+
+    def run_command( self, command_id ):
+        if command_id == 'identity_list':
+            return self.run_command_identity_list()
+        if command_id == 'create_identity':
+            return self.run_command_create_idenity()
+        return Module.run_command(self, command_id)
+
+    def run_command_identity_list( self ):
+        return make_identity_list()
+
+    def run_command_create_idenity( self ):
+        return make_identity_form()
+
+
+def get_identity_controller():
+    return this_module.identity_controller
+
+
+this_module = ThisModule()
