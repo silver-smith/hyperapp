@@ -1,24 +1,18 @@
 # code repository proxy
 
 import os.path
-import glob
 import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
     tString,
-    Field,
-    TRecord,
-    tUrl,
     tObject,
     tBaseObject,
-    IfaceRegistry,
     iface_registry,
     Column,
     list_handle_type,
     )
 from ..common.interface.code_repository import code_repository_iface, code_repository_browser_iface
 from ..common.endpoint import Url
-from ..common.packet_coders import packet_coders
 from .module import Module
 from .request import Request
 from .server import Server
@@ -29,73 +23,15 @@ from .object import Object
 from .list_object import Element, Slice, ListObject
 from .import form_view
 from . import list_view
-
-
-class Item(object):
-
-    type = TRecord([
-        Field('name', tString),
-        Field('url', tUrl),
-        ])
-
-    @classmethod
-    def from_data( cls, iface_registry, id, rec ):
-        assert isinstance(rec, cls.type), repr(rec)
-        return cls(id, rec.name, Url.from_data(iface_registry, rec.url))
-
-    def __init__( self, id, name, url ):
-        assert isinstance(id, basestring), repr(id)
-        assert isinstance(name, basestring), repr(name)
-        assert isinstance(url, Url), repr(url)
-        self.id = id
-        self.name = name
-        self.url = url
-
-    def to_data( self ):
-        return self.type(self.name, self.url.to_data())
-
-
-class FileUrlRepository(object):
-
-    fext = '.url'
-    encoding = 'json_pretty'
-
-    def __init__( self, iface_registry, dir ):
-        assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
-        self.iface_registry = iface_registry
-        self.dir = dir
-
-    def enumerate( self ):
-        for fpath in glob.glob(os.path.join(self.dir, '*' + self.fext)):
-            yield self._load_item(fpath)
-
-    def add( self, item ):
-        assert isinstance(item, Item), repr(item)
-        self._save_item(item)
-
-    def _load_item( self, fpath ):
-        fname = os.path.basename(fpath)
-        name, ext = os.path.splitext(fname)  # file name is Item.id
-        with open(fpath) as f:
-            data = f.read()
-        rec = packet_coders.decode(self.encoding, data, Item.type)
-        return Item.from_data(self.iface_registry, name, rec)
-
-    def _save_item( self, item ):
-        if not os.path.isdir(self.dir):
-            os.makedirs(self.dir)
-        data = packet_coders.encode(self.encoding, item.to_data(), Item.type)
-        fpath = os.path.join(self.dir, item.id + self.fext)
-        with open(fpath, 'w') as f:
-            f.write(data)
+from .named_url_file_repository import NamedUrl, UrlFileRepository
 
 
 class CodeRepository(object):
 
     def __init__( self, url_repository ):
-        assert isinstance(url_repository, FileUrlRepository), repr(url_repository)
+        assert isinstance(url_repository, UrlFileRepository), repr(url_repository)
         self._url_repository = url_repository
-        self._items = list(self._url_repository.enumerate())  # Item list
+        self._items = list(self._url_repository.enumerate())  # NamedUrl list
 
     def get_items( self ):
         return self._items
@@ -103,7 +39,7 @@ class CodeRepository(object):
     def add( self, name, url ):
         assert url.iface is code_repository_iface, repr(url.iface.iface_id)
         id = str(uuid.uuid4())
-        item = Item(id, name, url)
+        item = NamedUrl(id, name, url)
         self._items.append(item)
         self._url_repository.add(item)
         return item
@@ -245,7 +181,7 @@ class CodeRepositoryList(ListObject):
         return Slice('name', None, 'asc', map(self._item2element, items), bof=True, eof=True)
 
     def _item2element( self, item ):
-        assert isinstance(item, Item), repr(item)
+        assert isinstance(item, NamedUrl), repr(item)
         return Element(item.name, item, commands=[])
 
 
@@ -259,7 +195,7 @@ class ThisModule(Module):
     def __init__( self ):
         Module.__init__(self)
         self.code_repository = CodeRepository(
-            FileUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+            UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_data)
         objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
 
