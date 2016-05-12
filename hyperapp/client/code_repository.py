@@ -202,10 +202,10 @@ class ThisModule(Module):
     def get_commands( self ):
         return [Command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')]
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, initiator_view ):
         if command_id == 'repository_list':
             return self.run_command_repository_list()
-        return Module.run_command(self, command_id)
+        return Module.run_command(self, command_id, initiator_view)
 
     def run_command_repository_list( self ):
         return make_code_repository_list()
@@ -215,10 +215,10 @@ class ThisModule(Module):
             return [Command('add_to_repository_list', 'Add Repository', 'Add this repository to my repositories list', 'Ctrl+A')]
         return []
 
-    def run_object_command( self, command_id, object ):
+    def run_object_command( self, command_id, object, initiator_view ):
         if command_id == 'add_to_repository_list':
             return self.run_object_command_add_to_repository_list(object)
-        return Module.run_object_command(self, command_id)
+        return Module.run_object_command(self, command_id, initiator_view)
 
     def run_object_command_add_to_repository_list( self, object ):
         assert code_repository_iface in object.get_facets()

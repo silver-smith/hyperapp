@@ -17,8 +17,8 @@ class ModuleCommand(RunnableCommand):
         view = self.view_wr()
         if not view:
             return
-        handle = self.module.run_command(self.id)
-        if handle:
+        handle = self.module.run_command(self.id, view)
+        if handle:  # command is handled by client-side
             view.open(handle)
 
 
@@ -39,8 +39,8 @@ class ObjectModuleCommand(RunnableCommand):
         object = self.object_wr()
         if not view or not object:
             return
-        handle = self.module.run_object_command(self.id, object)
-        if handle:
+        handle = self.module.run_object_command(self.id, object, view)
+        if handle:  # command is handled by client-side
             view.open(handle)
 
 
@@ -57,10 +57,10 @@ class Module(object):
     def get_object_commands( self, object ):
         return []
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, initiator_view ):
         assert False, repr(command_id)  # Unknown command
 
-    def run_object_command( self, command_id, object ):
+    def run_object_command( self, command_id, object, initiator_view ):
         assert False, repr(command_id)  # Unknown command
 
     @classmethod

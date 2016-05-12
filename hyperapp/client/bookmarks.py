@@ -129,18 +129,18 @@ class ThisModule(Module):
             return [Command('bookmark', 'Bookmark', 'Add this url to bookmarks', 'Ctrl+D')]
         return []
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, initiator_view ):
         if command_id == 'bookmark_list':
             return self.run_command_bookmark_list()
-        return Module.run_command(self, command_id)
+        return Module.run_command(self, command_id, initiator_view)
 
     def run_command_bookmark_list( self ):
         return make_bookmark_list()
 
-    def run_object_command( self, command_id, object ):
+    def run_object_command( self, command_id, object, initiator_view ):
         if command_id == 'bookmark':
             return self.run_object_command_bookmark(object)
-        return Module.run_object_command(self, command_id, object)
+        return Module.run_object_command(self, command_id, object, initiator_view)
 
     def run_object_command_bookmark( self, object ):
         url = object.get_url()

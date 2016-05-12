@@ -182,12 +182,12 @@ class ThisModule(Module):
             Command('create_identity', 'Create identity', 'Create new identity, public+private key pair', 'Alt+N'),
             ]
 
-    def run_command( self, command_id ):
+    def run_command( self, command_id, initiator_view ):
         if command_id == 'identity_list':
             return self.run_command_identity_list()
         if command_id == 'create_identity':
             return self.run_command_create_idenity()
-        return Module.run_command(self, command_id)
+        return Module.run_command(self, command_id, initiator_view)
 
     def run_command_identity_list( self ):
         return make_identity_list()
