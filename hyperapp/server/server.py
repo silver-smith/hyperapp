@@ -79,17 +79,3 @@ class Server(object):
         return tAuxInfo(
             requirements=requirements,
             modules=modules)
-
-    ## def _send_notification( self ):
-    ##     notification = ServerNotification()
-    ##     while not self.updates_queue.empty():
-    ##         notification.add_update(self.updates_queue.get())
-    ##     self._wrap_and_send(PACKET_ENCODING, notification.encode())
-    
-    ## def _wrap_and_send( self, encoding, response_or_notification ):
-    ##     aux = self._prepare_aux_info(response_or_notification)
-    ##     packet = Packet.from_contents(encoding, response_or_notification, tServerPacket, aux)
-    ##     print '%r to %s:%d:' % (packet, self.addr[0], self.addr[1])
-    ##     pprint(tAuxInfo, aux)
-    ##     pprint(tServerPacket, response_or_notification)
-    ##     self.conn.send(packet)
