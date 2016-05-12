@@ -81,7 +81,7 @@ class BookmarkList(ListObject):
         url = Url.from_str(self._iface_registry, url_str)
         name = 'Imported url'
         item = self._bookmarks.add(name, url)
-        return make_bookmark_list(item.name)
+        return make_bookmark_list(item.id)
 
     def to_data( self ):
         return bookmark_list_type('bookmark_list')
@@ -120,6 +120,22 @@ class ThisModule(Module):
         self.bookmarks = Bookmarks(UrlFileRepository(
             iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         objimpl_registry.register('bookmark_list', BookmarkList.from_data)
+
+    def get_object_commands( self, object ):
+        if object.get_url() is not None:
+            return [Command('bookmark', 'Bookmark', 'Add this url to bookmarks', 'Ctrl+D')]
+        return []
+
+    def run_object_command( self, command_id, object ):
+        if command_id == 'bookmark':
+            return self.run_object_command_bookmark(object)
+        return Module.run_object_command(self, command_id)
+
+    def run_object_command_bookmark( self, object ):
+        url = object.get_url()
+        assert url is not None
+        item = self.bookmarks.add(object.get_title(), url)
+        return make_bookmark_list(item.id)
 
 
 this_module = ThisModule()
