@@ -23,6 +23,7 @@ import hyperapp.client.form_view
 import hyperapp.client.identity
 import hyperapp.client.code_repository
 import hyperapp.client.bookmarks
+import hyperapp.client.url_clipboard
 # self-registering transports:
 import hyperapp.client.tcp_transport
 import hyperapp.client.encrypted_transport

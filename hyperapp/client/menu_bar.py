@@ -5,7 +5,6 @@ from .util import make_action
 from .command import RunnableCommand
 from .view_command import WindowCommand
 from .module import Module
-## from .url_form import make_open_url_action
 
 
 class MenuBar(object):
@@ -37,7 +36,6 @@ class MenuBar(object):
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
         window = self.window()
-        ## menu.addAction(make_open_url_action(menu, window))
         for cmd in Module.get_all_commands(window):
             assert isinstance(cmd, RunnableCommand), repr(cmd)
             menu.addAction(cmd.make_action(menu))
