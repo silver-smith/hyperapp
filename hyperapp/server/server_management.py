@@ -2,6 +2,7 @@
 
 from ..common.htypes import tCommand, Column
 from ..common.interface.server_management import server_management_iface
+from ..common.endpoint import Url
 from .object import SmallListObject
 from .module import Module
 
@@ -20,11 +21,12 @@ class CommandList(SmallListObject):
         Column('text', 'Name'),
         ]
 
+    @classmethod
+    def get_path( cls ):
+        return module.make_path()
+
     def __init__( self ):
         SmallListObject.__init__(self)
-
-    def get_path( self ):
-        return module.make_path()
 
     def fetch_all_elements( self ):
         return map(self.cmd2element, Module.get_all_modules_commands())
@@ -54,6 +56,10 @@ class ManagementModule(Module):
     def resolve( self, iface, path ):
         path.check_empty()
         return CommandList()
+
+
+def get_management_url( endpoint ):
+    return Url(CommandList.iface, CommandList.get_path(), endpoint)
 
 
 module = ManagementModule()

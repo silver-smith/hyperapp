@@ -4,6 +4,7 @@ import argparse
 from hyperapp.common.identity import Identity
 from hyperapp.server.server import Server
 from hyperapp.server.tcp_server import TcpServer
+from hyperapp.server.server_management import get_management_url
 
 # self-registering modules:
 import hyperapp.server.tcp_transport
@@ -31,7 +32,6 @@ def parse_addr( addr ):
 def main():
     parser = argparse.ArgumentParser(description='Hyperapp server')
     parser.add_argument('identity_fpath', help='path to identity file')
-    parser.add_argument('endpoint_fpath', default=ENDPOINT_FNAME, help='path to endpoint file, generated on server start')
     parser.add_argument('addr', nargs='?', help='address to listen at', default=DEFAULT_ADDR)
     parser.add_argument('--test-delay', type=float, help='artificial delay for handling requests, seconds')
     args = parser.parse_args()
@@ -40,7 +40,9 @@ def main():
     host, port = parse_addr(args.addr)
     server = Server(identity, args.test_delay)
     tcp_server = TcpServer(server, host, port)
-    tcp_server.get_endpoint().save_to_file(args.endpoint_fpath)
+    management_url = get_management_url(tcp_server.get_endpoint())
+    print 'Management url:'
+    print management_url.to_str()
     tcp_server.run()
 
 
