@@ -14,6 +14,7 @@ import hyperapp.server.fs
 import hyperapp.server.article
 import hyperapp.server.blog
 import hyperapp.server.server_management
+import hyperapp.server.admin
 import hyperapp.server.module_list
 import hyperapp.server.test_list
 import hyperapp.server.test_text_object

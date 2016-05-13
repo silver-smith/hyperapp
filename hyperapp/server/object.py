@@ -129,11 +129,15 @@ class ListObject(Object):
         return cls.Diff_insert_many(key, [element])
 
     @classmethod
+    def Diff_add_one( cls, element ):
+        return cls.Diff_insert_one(None, element)
+
+    @classmethod
     def Diff_insert_many( cls, key, elements ):
         return cls.Diff(key, key, elements)
 
     @classmethod
-    def Diff_append_many( cls, elements ):
+    def Diff_add_many( cls, elements ):
         return cls.Diff.insert_many(None, elements)
 
     @classmethod
