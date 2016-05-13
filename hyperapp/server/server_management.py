@@ -1,6 +1,6 @@
 # server management module: used to expose module commands in one list
 
-from ..common.htypes import tCommand, Column
+from ..common.htypes import tCommand
 from ..common.interface.server_management import server_management_iface
 from ..common.endpoint import Url
 from .object import SmallListObject
@@ -14,12 +14,6 @@ class CommandList(SmallListObject):
 
     iface = server_management_iface
     objimpl_id = 'list'
-
-    columns = [
-        Column('key'),
-        Column('module', 'Module'),
-        Column('text', 'Name'),
-        ]
 
     @classmethod
     def get_path( cls ):

@@ -1,5 +1,4 @@
 from ..htypes import (
-    tString,
     register_iface,
     Column,
     ElementOpenCommand,
