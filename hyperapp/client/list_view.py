@@ -223,8 +223,6 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
-        ## if not sort_column_id:
-        ##     sort_column_id = object.get_default_sort_column_id()
 #        print (len(slice.elements), slice.eof) if slice else None
         ## if handle_slice:
         ##     object.put_back_slice(handle_slice)

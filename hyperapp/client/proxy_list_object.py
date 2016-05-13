@@ -10,7 +10,6 @@ class ProxyListObject(ProxyObject, ListObject):
     def __init__( self, server, path, iface, facets=None ):
         ProxyObject.__init__(self, server, path, iface, facets)
         ListObject.__init__(self)
-        self._default_sort_column_id = None
         self._slices = []  # all slices are stored in ascending order, actual/up-do-date
         self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, out-of-date
         self._subscribed = True
@@ -22,7 +21,6 @@ class ProxyListObject(ProxyObject, ListObject):
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
         slice = self._slice_from_data(contents.slice)
-        self._default_sort_column_id = slice.sort_column_id
         self._merge_in_slice(slice)
 
     # By default we assume this object was returned from server, and thus is already subscribed,
@@ -31,10 +29,6 @@ class ProxyListObject(ProxyObject, ListObject):
     # then 'subscribe' command will be issued on first fetch_elements call.
     def server_subscribe( self ):
         self._subscribed = False
-
-    def get_default_sort_column_id( self ):
-        assert self._default_sort_column_id  # there were no set_contents calls
-        return self._default_sort_column_id
 
     def _slice_from_data( self, rec ):
         return Slice.from_data(self.get_key_column_id(), rec)
