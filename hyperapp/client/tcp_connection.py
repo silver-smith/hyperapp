@@ -1,3 +1,4 @@
+import logging
 from PySide import QtCore, QtNetwork
 from ..common.identity import PublicKey
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
@@ -5,6 +6,8 @@ from ..common.transport_packet import decode_transport_packet
 from .util import call_in_future
 from .transport import transport_registry
 from .transport_session import TransportSessionList
+
+log = logging.getLogger(__name__)
 
 
 RECONNECT_INTERVAL_MS = 2000
@@ -51,7 +54,7 @@ class TcpConnection(object):
         self.socket.connectToHost(self.host, self.port)
 
     def trace( self, msg ):
-        print 'tcp to %s at %s:%d: %s' % (self.server_public_key.get_short_id_hex(), self.host, self.port, msg)
+        log.info('tcp to %s at %s:%d: %s', self.server_public_key.get_short_id_hex(), self.host, self.port, msg)
 
     def on_error( self, error ):
         self.trace('Error: %s' % error)
@@ -104,4 +107,4 @@ class TcpConnection(object):
         self.send_buf += data  # may be sent partially, will send remainder on bytesWritten signal
 
     def __del__( self ):
-        print '~TcpConnection', self.host, self.port
+        log.info('~TcpConnection host=%r port=%r', self.host, self.port)

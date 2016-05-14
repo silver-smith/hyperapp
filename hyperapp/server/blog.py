@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from pony.orm import db_session, commit, desc, Required, Set
 from ..common.htypes import tCommand, Column, DateTimeColumnType
 from ..common.interface.blog import blog_entry_iface, blog_iface
@@ -7,6 +8,8 @@ from .util import utcnow, path_part_to_str
 from .object import SmallListObject, subscription
 from .module import ModuleCommand
 from . import article
+
+log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'blog'
@@ -46,7 +49,7 @@ class BlogEntry(article.Article):
             is_insertion = True
         commit()
         self.article_id = entry_rec.id  # now may have new get_path()
-        print 'Blog entry is saved, blog entry id =', self.article_id
+        log.info('Blog entry is saved, blog entry id = %r', self.article_id)
         subscription.distribute_update(self.iface, self.get_path(), text)
         if is_insertion:
             diff = Blog.Diff_insert_one(entry_rec.id, Blog.rec2element(entry_rec))

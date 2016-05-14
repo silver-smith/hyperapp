@@ -1,4 +1,5 @@
 import os.path
+import logging
 import traceback
 import time
 import select
@@ -7,6 +8,8 @@ from ..common.transport_packet import encode_transport_packet, decode_transport_
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from .transport import transport_registry
 from .transport_session import TransportSessionList
+
+log = logging.getLogger(__name__)
 
 
 NOTIFICATION_DELAY_TIME = 1  # sec
@@ -30,7 +33,7 @@ class TcpConnection(object):
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
-            print '  sent (%d) %s...' % (sent_size, data[ofs:ofs + min(sent_size, 100)])
+            log.info('  sent (%d) %s...', sent_size, data[ofs:ofs + min(sent_size, 100)])
             if sent_size == 0:
                 raise Error('Socket is closed')
             ofs += sent_size
@@ -42,7 +45,7 @@ class TcpConnection(object):
             if not rd and not xc:
                 return None
             chunk = self.socket.recv(RECV_SIZE)
-            print '  received (%d) %s...' % (len(chunk), chunk[:100])
+            log.info('  received (%d) %s...', len(chunk), chunk[:100])
             if chunk == '':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
@@ -76,12 +79,12 @@ class TcpClient(object):
                 packet_data = self.conn.receive(NOTIFICATION_DELAY_TIME)
                 if not packet_data:  # receive timed out
                     for transport_packet in self.session_list.pull_notification_transport_packets():
-                        print 'sending %r notification:' % transport_packet.transport_id
+                        log.info('sending %r notification:', transport_packet.transport_id)
                         self._send_notification(transport_packet)
                     continue
                 self._process_packet(packet_data)
         except Error as x:
-            print x
+            log.info('Error: %r', x)
         except:
             traceback.print_exc()
         self.conn.close()
@@ -89,16 +92,16 @@ class TcpClient(object):
 
     def _process_packet( self, request_data ):
         request_packet = decode_transport_packet(request_data)
-        print '%r packet from %s:%d:' % (request_packet.transport_id, self.addr[0], self.addr[1])
+        log.info('%r packet from %s:%d:', request_packet.transport_id, self.addr[0], self.addr[1])
         response_packets = transport_registry.process_packet(iface_registry, self.server, self.session_list, request_packet)
         if not response_packets:
-            print 'no response'
+            log.info('no response')
         for response_packet in response_packets:
-            print 'response: %d bytes to %s:%d' % (len(response_packet.data), self.addr[0], self.addr[1])
+            log.info('response: %d bytes to %s:%d', len(response_packet.data), self.addr[0], self.addr[1])
             response_data = encode_transport_packet(response_packet)
             self.conn.send(response_data)
 
     def _send_notification( self, transport_packet ):
-        print '%d bytes to %s:%d' % (len(transport_packet.data), self.addr[0], self.addr[1])
+        log.info('%d bytes to %s:%d', len(transport_packet.data), self.addr[0], self.addr[1])
         data = encode_transport_packet(transport_packet)
         self.conn.send(data)

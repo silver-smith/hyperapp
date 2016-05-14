@@ -1,3 +1,4 @@
+import logging
 import weakref
 from PySide import QtCore, QtGui
 from ..common.htypes import tCommand
@@ -5,6 +6,8 @@ from .util import make_action
 from .command import RunnableCommand
 from .view_command import WindowCommand
 from .module import Module
+
+log = logging.getLogger(__name__)
 
 
 class MenuBar(object):
@@ -103,4 +106,4 @@ class MenuBar(object):
         self.selected_elts = elts
 
     def __del__( self ):
-        print '~menu_bar'
+        log.info('~menu_bar')

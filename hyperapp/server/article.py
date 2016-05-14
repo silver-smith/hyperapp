@@ -1,3 +1,4 @@
+import logging
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
 from ..common.htypes import tCommand, Column, tObjHandle, tRedirectHandle, iface_registry
@@ -16,6 +17,8 @@ from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
 from .ponyorm_module import PonyOrmModule
 from .server_info import store_server_routes, load_server_routes
+
+log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'article'
@@ -119,7 +122,7 @@ class Article(Object):
             article_rec = module.Article(text=text)
         commit()
         self.article_id = article_rec.id  # now may have new get_path()
-        print 'Article is saved, article_id =', self.article_id
+        log.info('Article is saved, article_id = %r', self.article_id)
         subscription.distribute_update(self.iface, self.get_path(), text)
         return request.make_response_result(new_path=self.get_path())
 
@@ -257,8 +260,8 @@ class RefSelector(Object):
             rec.iface = url.iface.iface_id
             rec.path = encode_path(url.path)
         commit()
-        print 'Saved article#%d reference#%d path: %r, server_public_key_pem=%r' \
-          % (rec.article.id, rec.id, rec.path, rec.server_public_key_pem)
+        log.info('Saved article#%d reference#%d path: %r, server_public_key_pem=%r',
+                 rec.article.id, rec.id, rec.path, rec.server_public_key_pem)
         ref_list_obj = ArticleRefList(self.article_id)
         diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)

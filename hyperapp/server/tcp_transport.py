@@ -1,3 +1,4 @@
+import logging
 from Queue import Queue
 from ..common.htypes import tUpdate, tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket
@@ -8,6 +9,8 @@ from .request import PeerChannel, Peer, RequestBase, ServerNotification
 from .transport import Transport, transport_registry
 from .transport_session import TransportSession
 from .server import Server
+
+log = logging.getLogger(__name__)
 
 
 class TcpChannel(PeerChannel):
@@ -23,7 +26,7 @@ class TcpChannel(PeerChannel):
         return list(reversed(updates))
 
     def send_update( self, update ):
-        print '    update to be sent to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+        log.info('    update to be sent to %r channel %s', self.transport.get_transport_id(), self.get_id())
         self.updates.put(update)
 
     def pop_updates( self ):
@@ -50,7 +53,7 @@ class TcpSession(TransportSession):
             notification.add_update(update)
         notification_data = notification.to_data()
         aux_info = Server.prepare_aux_info(notification_data)
-        print '-- sending notification to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+        log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, notification_data)
         packet_data = self.transport.encode_response_or_notification(aux_info, notification_data)

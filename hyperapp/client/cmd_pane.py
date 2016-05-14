@@ -1,8 +1,11 @@
 # panel with commands for current dir and selected elements
 
+import logging
 import weakref
 from PySide import QtCore, QtGui
 from .command import RunnableCommand, ElementCommand
+
+log = logging.getLogger(__name__)
 
 
 class View(QtGui.QDockWidget):
@@ -67,4 +70,4 @@ class View(QtGui.QDockWidget):
         return button
 
     def __del__( self ):
-        print '~cmd_pane'
+        log.info('~cmd_pane')

@@ -1,7 +1,10 @@
 import os.path
 import sys
+import logging
 from types import ModuleType
 from ..common.util import is_list_inst
+
+log = logging.getLogger(__name__)
 
 
 DYNAMIC_MODULE_ID_ATTR = 'this_module_id'
@@ -17,7 +20,7 @@ class ModuleManager(object):
             self.add_module(module)
 
     def add_module( self, module ):
-        print '-- loading module %r package=%r fpath=%r' % (module.id, module.package, module.fpath)
+        log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
         self.id2module[module.id] = module
         self._load_module(module)
 

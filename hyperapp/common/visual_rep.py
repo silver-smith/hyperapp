@@ -1,3 +1,4 @@
+import logging
 import json
 from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route
@@ -22,6 +23,8 @@ from .htypes import (
     )
 from .interface.code_repository import tModule, tRequirement
 
+log = logging.getLogger(__name__)
+
 
 class RepNode(object):
 
@@ -30,7 +33,7 @@ class RepNode(object):
         self.children = children or []
 
     def pprint( self, indent=0 ):
-        print '%s%s' % ('  ' * indent, self.text)
+        log.info('%s%s' % ('  ' * indent, self.text))
         for node in self.children:
             node.pprint(indent + 1)
 

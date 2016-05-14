@@ -1,6 +1,9 @@
+import logging
 from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle
 from .object import Object
 from .objimpl_registry import objimpl_registry
+
+log = logging.getLogger(__name__)
 
 
 dataType = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
@@ -62,7 +65,7 @@ class TextObject(Object):
         self.run_command('open_ref', initiator_view, ref_id=ref_id)
 
     def __del__( self ):
-        print '~text_object', self
+        log.info('~text_object %r', self)
 
 
 objimpl_registry.register('text', TextObject.from_data)

@@ -1,4 +1,7 @@
+import logging
 from PySide import QtCore, QtGui
+
+log = logging.getLogger(__name__)
 
 
 DEBUG_KEYS = False
@@ -446,4 +449,4 @@ def print_key_event( evt, prefix ):
     if DEBUG_KEYS \
         and evt.type() == QtCore.QEvent.Type.KeyPress \
         and evt.key() not in [QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Alt]:
-        print prefix, key_evt2str(evt)
+        log.info('%s %s', prefix, key_evt2str(evt))

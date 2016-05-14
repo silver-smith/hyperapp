@@ -1,5 +1,6 @@
 # manage packats - responses and notifications from servers
 
+import logging
 from ..common.htypes import tServerPacket, iface_registry
 from ..common.endpoint import Endpoint
 from ..common.packet import tPacket
@@ -12,6 +13,8 @@ from .objimpl_registry import objimpl_registry
 from .proxy_registry import proxy_registry
 from .view_registry import view_registry
 from .server import Server
+
+log = logging.getLogger(__name__)
 
 
 class ResponseManager(object):
@@ -31,7 +34,7 @@ class ResponseManager(object):
         self._pending_requests[request_id] = request
 
     def process_packet( self, server_public_key, packet, payload_decoder ):
-        print 'from %s:' % server_public_key.get_short_id_hex()
+        log.info('from %s:', server_public_key.get_short_id_hex())
         pprint(tPacket, packet)
         self._module_mgr.add_modules(packet.aux_info.modules)
         unfulfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux_info.requirements)
@@ -44,7 +47,7 @@ class ResponseManager(object):
 
     def _add_modules_and_reprocess_packet( self, server_public_key, packet, payload_decoder, modules ):
         self._module_mgr.add_modules(modules)
-        print 'reprocessing %r from %s' % (packet, server_public_key.get_short_id_hex())
+        log.info('reprocessing %r from %s', packet, server_public_key.get_short_id_hex())
         self._process_packet(server_public_key, packet, payload_decoder)
 
     def _process_packet( self, server_public_key, packet, payload_decoder ):
@@ -54,10 +57,10 @@ class ResponseManager(object):
         self._process_updates(server_public_key, response_or_notification.updates)
         if isinstance(response_or_notification, Response):
             response = response_or_notification
-            print '   response for request', response.command_id, response.request_id
+            log.info('   response for request command_id=%r request_id=%r', response.command_id, response.request_id)
             request = self._pending_requests.get(response.request_id)
             if not request:
-                print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
+                log.info('Received response #%s for a missing (already destroyed) object, ignoring', response.request_id)
                 return
             del self._pending_requests[response.request_id]
             server = Server.from_endpoint(self._load_endpoint(server_public_key))

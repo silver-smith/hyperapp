@@ -1,4 +1,7 @@
+import logging
 from ..common.transport_packet import tTransportPacket
+
+log = logging.getLogger(__name__)
 
 
 class TransportSession(object):
@@ -18,13 +21,13 @@ class TransportSessionList(object):
     def get_transport_session( self, transport_id ):
         session = self.transport2session.get(transport_id)
         if session is not None:
-            print 'using %r session %s' % (transport_id, session.get_id())
+            log.info('using %r session %s', transport_id, session.get_id())
         return session
 
     def set_transport_session( self, transport_id, session ):
         assert isinstance(session, TransportSession), repr(session)
         self.transport2session[transport_id] = session
-        print 'created %r session %s' % (transport_id, session.get_id())
+        log.info('created %r session %s', transport_id, session.get_id())
 
     def pull_notification_transport_packets( self ):
         packets = []

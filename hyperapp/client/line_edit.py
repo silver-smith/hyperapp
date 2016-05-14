@@ -1,9 +1,12 @@
 # line edit component / widget
 
+import logging
 from PySide import QtCore, QtGui
 ## from util import key_match
 from . import view
 ## from text_obj import TextObj
+
+log = logging.getLogger(__name__)
 
 
 class Handle(view.Handle):
@@ -13,7 +16,7 @@ class Handle(view.Handle):
         self.text = text
 
     def construct( self, parent ):
-        print 'line_edit construct', parent, self.text
+        log.info('line_edit construct parent=%r text=%r', parent, self.text)
         return View(parent, self.text)
 
 
@@ -40,4 +43,4 @@ class View(view.View, QtGui.QLineEdit):
     ##     return True
 
     def __del__( self ):
-        print '~line_edit'
+        log.info('~line_edit')

@@ -1,5 +1,6 @@
 # base class for Views
 
+import logging
 import weakref
 from PySide import QtCore, QtGui
 from ..common.htypes import tHandle
@@ -9,6 +10,8 @@ from .module import Module
 from .object import ObjectObserver
 from .view_command import BoundViewCommand, UnboundViewCommand
 from .view_registry import view_registry
+
+log = logging.getLogger(__name__)
 
 
 class Handle(object):
@@ -149,19 +152,19 @@ class View(ObjectObserver):
         return focused_index(None, [self]) == 0
 
     def ensure_has_focus( self ):
-        if DEBUG_FOCUS: print '  * view.ensure_has_focus', self
+        if DEBUG_FOCUS: log.info('  * view.ensure_has_focus %r', self)
         if not self.has_focus():
             self.acquire_focus()
 
     def acquire_focus( self ):
         w = self.get_widget_to_focus()
-        if DEBUG_FOCUS: print '*** view.acquire_focus', self, w
+        if DEBUG_FOCUS: log.info('*** view.acquire_focus %r w=%r', self, w)
         assert w.focusPolicy() & QtCore.Qt.StrongFocus == QtCore.Qt.StrongFocus, (self, w, w.focusPolicy())  # implement your own get_widget_to_focus otherwise
         w.setFocus()
 
     def get_widget_to_focus( self ):
         child = self.get_current_child()
-        if DEBUG_FOCUS: print '  * view.get_widget_to_focus', self, child
+        if DEBUG_FOCUS: log.info('  * view.get_widget_to_focus %r child=%r', self, child)
         if child:
             return child.get_widget_to_focus()
         return self.get_widget()

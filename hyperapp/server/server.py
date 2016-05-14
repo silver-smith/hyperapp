@@ -1,4 +1,5 @@
 import time
+import logging
 from ..common.util import encode_path
 from ..common.htypes import tServerPacket
 from ..common.identity import Identity
@@ -11,6 +12,8 @@ from .request import RequestBase, Request, ServerNotification, Response
 from .object import subscription
 from .code_repository import code_repository
 from . import module
+
+log = logging.getLogger(__name__)
 
 
 class Server(object):
@@ -36,10 +39,10 @@ class Server(object):
     def process_request( self, request ):
         assert isinstance(request, RequestBase), repr(request)
         object = self._resolve(request.iface, request.path)
-        print 'Object:', object
+        log.info('Object: %r', object)
         assert object, 'Object with iface=%r, path=%r not found' % (request.iface.iface_id, encode_path(request.path))
         if self.test_delay_sec:
-            print 'Test delay for %s sec...' % self.test_delay_sec
+            log.info('Test delay for %s sec...', self.test_delay_sec)
             time.sleep(self.test_delay_sec)
         response = object.process_request(request)
         response = self._prepare_response(object.__class__, request, response)

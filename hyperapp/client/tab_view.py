@@ -1,3 +1,4 @@
+import logging
 from PySide import QtCore, QtGui
 from ..common.htypes import tInt, TList, Field, TRecord, tHandle
 from .util import DEBUG_FOCUS, call_after, key_match
@@ -7,6 +8,8 @@ from . import view
 from . import composite
 from . import splitter
 from . import navigator
+
+log = logging.getLogger(__name__)
 
 
 data_type = TRecord([
@@ -33,7 +36,7 @@ class Handle(composite.Handle):
         return self.children[self.current_idx]
 
     def construct( self, parent ):
-        print 'tab_view construct', parent, len(self.children), self.current_idx
+        log.info('tab_view construct parent=%r len(children)=%r current_idx=%r', parent, len(self.children), self.current_idx)
         return View(parent, self.children, self.current_idx)
 
     def map_current( self, mapper ):
@@ -71,7 +74,7 @@ class View(QtGui.QTabWidget, view.View):
             return  # this child may be deleted right now
         w = self.widget(idx)
         if child is not self._children[idx] or w is not child.get_widget():
-            if DEBUG_FOCUS: print '*** tab_view.view_changed: replacing tab', self, idx, child
+            if DEBUG_FOCUS: log.info('*** tab_view.view_changed: replacing tab self=%r idx=%r child=%r', self, idx, child)
             self.removeTab(idx)
             w.deleteLater()
             self.insertTab(idx, child.get_widget(), child.get_title())
@@ -89,7 +92,7 @@ class View(QtGui.QTabWidget, view.View):
         view.View.view_changed(self)
 
     def setVisible( self, visible ):
-        if DEBUG_FOCUS: print '*** tab_view.setVisible', self, visible, '(current tab#%d)' % self.currentIndex()
+        if DEBUG_FOCUS: log.info('*** tab_view.setVisible self=%r visible=%r current-tab#=%d', self, visible, self.currentIndex())
         QtGui.QTabWidget.setVisible(self, visible)
 
     @command('Duplicate tab', 'Duplicate current tab', 'Ctrl+T')
@@ -144,4 +147,4 @@ class View(QtGui.QTabWidget, view.View):
         self.setCurrentIndex(idx)
 
     def __del__( self ):
-        print '~tab_view'
+        log.info('~tab_view')

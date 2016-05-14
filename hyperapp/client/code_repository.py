@@ -1,6 +1,7 @@
 # code repository proxy
 
 import os.path
+import logging
 import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
@@ -24,6 +25,8 @@ from .list_object import Element, Slice, ListObject
 from .import form_view
 from . import list_view
 from .named_url_file_repository import NamedUrl, UrlFileRepository
+
+log = logging.getLogger(__name__)
 
 
 class CodeRepository(object):
@@ -120,10 +123,10 @@ class CodeRepositoryFormObject(Object):
         return Object.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_submit( self, initiator_view, name, url ):
-        print 'adding code repository %r...' % name
+        log.info('adding code repository %r...', name)
         url_ = Url.from_str(iface_registry, url)
         item = self.controller.add(name, url_)
-        print 'adding code repository %r, id=%r: done' % (item.name, item.id)
+        log.info('adding code repository %r, id=%r: done', item.name, item.id)
         return make_code_repository_list(name)
 
 

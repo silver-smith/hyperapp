@@ -1,3 +1,4 @@
+import logging
 from PySide import QtCore, QtGui
 from ..common.htypes import tObjHandle
 from .util import uni2str
@@ -5,6 +6,8 @@ from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
 from .text_object import TextObject
+
+log = logging.getLogger(__name__)
 
 
 data_type = tObjHandle
@@ -28,7 +31,7 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'text_edit construct', parent, self.object, self.object.get_title()
+        log.info('text_edit construct parent=%r object=%r title=%r', parent, self.object, self.object.get_title())
         return View(parent, self.object)
 
     def __repr__( self ):
@@ -72,7 +75,7 @@ class View(view.View, QtGui.QTextEdit):
         view.View.object_changed(self)
 
     def __del__( self ):
-        print '~text_edit', self
+        log.info('~text_edit %r', self)
 
 
 TextObject.set_edit_handle_ctr(Handle)

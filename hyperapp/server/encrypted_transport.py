@@ -1,4 +1,5 @@
 import os
+import logging
 from Queue import Queue
 from ..common.util import flatten
 from ..common.htypes import tClientPacket, tServerPacket
@@ -23,6 +24,8 @@ from .transport import Transport, transport_registry
 from .transport_session import TransportSession
 from .server import Server
 
+log = logging.getLogger(__name__)
+
 
 class EncryptedTcpChannel(PeerChannel):
 
@@ -37,7 +40,7 @@ class EncryptedTcpChannel(PeerChannel):
         return list(reversed(updates))
 
     def send_update( self, update ):
-        print '    update to be sent to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+        log.info('    update to be sent to %r channel %s', self.transport.get_transport_id(), self.get_id())
         self.updates.put(update)
 
     def pop_updates( self ):
@@ -67,7 +70,7 @@ class EncryptedTcpSession(TransportSession):
             notification.add_update(update)
         notification_data = notification.to_data()
         aux_info = Server.prepare_aux_info(notification_data)
-        print '-- sending notification to %r channel %s' % (self.transport.get_transport_id(), self.get_id())
+        log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())
         pprint(tAuxInfo, aux_info)
         pprint(tServerPacket, notification_data)
         encrypted_packet = self.transport.encode_response_or_notification(self, aux_info, notification_data)
@@ -119,11 +122,11 @@ class EncryptedTcpTransport(Transport):
             if session.pop_received:
                 raise
             session.requests_waiting_for_pop.append(request)
-            print 'Request is postponed until POP is received', request
+            log.info('Request is postponed until POP is received: %r', request)
             return []
 
     def process_postponed_request( self, server, session, request ):
-        print 'Reprocessing postponed request', request
+        log.info('Reprocessing postponed request: %r', request)
         request.peer.public_keys = session.peer_public_keys  # this may change since request was first created
         result = server.process_request(request)
         return self.encode_request_result(session, result)
@@ -137,17 +140,17 @@ class EncryptedTcpTransport(Transport):
         return [self.encode_response_or_notification(session, aux_info, response_or_notification)]
 
     def process_pop_packet( self, session, encrypted_packet ):
-        print 'POP received'
+        log.info('POP received')
         if encrypted_packet.challenge != session.pop_challenge:
-            print 'Error processing POP: challenge does not match'  # todo: return error
+            log.info('Error processing POP: challenge does not match')  # todo: return error
             return
         for rec in encrypted_packet.pop_records:
             public_key = PublicKey.from_der(rec.public_key_der)
             if public_key.verify(session.pop_challenge, rec.signature):
                 session.peer_public_keys.append(public_key)
-                print 'Peer public key %s is verified' % public_key.get_short_id_hex()
+                log.info('Peer public key %s is verified', public_key.get_short_id_hex())
             else:
-                print 'Error processing POP record for %s: signature does not match' % public_key.get_short_id_hex()  # todo: return error
+                log.info('Error processing POP record for %s: signature does not match', public_key.get_short_id_hex())  # todo: return error
         session.pop_received = True
         return []
 
@@ -166,7 +169,7 @@ class EncryptedTcpTransport(Transport):
         return plain_text
 
     def make_pop_challenge_packet( self, session ):
-        print 'sending pop challenge:'
+        log.info('sending pop challenge:')
         challenge = os.urandom(POP_CHALLENGE_SIZE/8)
         session.pop_challenge = challenge
         return tPopChallengePacket(

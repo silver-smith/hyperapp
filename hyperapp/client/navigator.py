@@ -1,5 +1,6 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
+import logging
 from PySide import QtCore, QtGui
 from ..common.htypes import tInt, tString, TList, Field, TRecord, tHandle, tViewHandle, list_handle_type
 from .util import key_match, key_match_any
@@ -9,6 +10,8 @@ from . import view
 from . import composite
 from . import list_view
 from .history_list import HistoryRow, HistoryList
+
+log = logging.getLogger(__name__)
 
 
 MAX_HISTORY_SIZE = 100
@@ -79,7 +82,7 @@ class Handle(composite.Handle):
         return self.required_module_ids
 
     def construct( self, parent ):
-        print 'navigator construct', parent, self.child
+        log.info('navigator construct parent=%r child=%r', parent, self.child)
         return View(parent, self.child, self.backward_history[:], self.forward_history[:])
 
     def _collect_required_module_ids( self ):
@@ -130,7 +133,7 @@ class View(composite.Composite):
 
     @command('Go back', 'Go backward to previous page', ['Escape', 'Alt+Left'])
     def go_back( self ):
-        print '   history back', len(self._back_history), len(self._forward_history)
+        log.info('   history back len(back_history)=%r len(forward_history)=%r', len(self._back_history), len(self._forward_history))
         self._go_back()
 
     def _go_back( self ):
@@ -141,7 +144,7 @@ class View(composite.Composite):
 
     @command('Go forward', 'Go forward to next page', 'Alt+Right')
     def go_forward( self ):
-        print '   history forward', len(self._back_history), len(self._forward_history)
+        log.info('   history forward len(back_history)=%r len(forward_history)=%r', len(self._back_history), len(self._forward_history))
         if not self._forward_history:
             return False
         self._add2history(self._back_history, self._child.handle())
@@ -165,7 +168,7 @@ class View(composite.Composite):
         self.open(list_view.Handle(self.history_handle_type, object, sort_column_id='idx', key=idx))
 
     def __del__( self ):
-        print '~navigator'
+        log.info('~navigator')
 
 
 view_registry.register('navigator', Handle.from_data)

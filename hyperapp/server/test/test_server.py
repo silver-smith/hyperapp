@@ -1,4 +1,5 @@
 import os
+import logging
 import unittest
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -37,6 +38,11 @@ import hyperapp.server.module as module_mod
 from hyperapp.server.object import Object, subscription
 from hyperapp.server.server import Server
 from hyperapp.server.transport_session import TransportSession, TransportSessionList
+
+log = logging.getLogger(__name__)
+
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
 
 
 test_iface = Interface('test_iface', commands=[
@@ -192,7 +198,7 @@ class ServerTest(unittest.TestCase):
             params=test_iface.get_request_params_type(command_id)(**kw),
             request_id='001',
             )
-        print 'Sending request:'
+        log.info('Sending request:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
             aux_info=tAuxInfo(requirements=[], modules=[]),
@@ -210,7 +216,7 @@ class ServerTest(unittest.TestCase):
             command_id=command_id,
             params=test_iface.get_request_params_type(command_id)(**kw),
             )
-        print 'Sending client notification:'
+        log.info('Sending client notification:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
             aux_info=tAuxInfo(requirements=[], modules=[]),
@@ -226,7 +232,7 @@ class ServerTest(unittest.TestCase):
         if packet_data is None:
             return None  # no response
         response_packet = self.decode_packet(transport_id, packet_data, tPacket)
-        print 'Received response:'
+        log.info('Received response:')
         pprint(tPacket, response_packet)
         response = self.decode_packet(transport_id, response_packet.payload, tServerPacket)
         pprint(tServerPacket, response)
@@ -385,3 +391,7 @@ class ServerTest(unittest.TestCase):
         response = self.decode_tcp_transport_response(self.session_list, transport_id, response_transport_packets)
         self.assertIsNotNone(response)  # now, after pop is received, first request must be processed
         self.assertEqual('ok', response.result.test_result)
+
+
+if __name__ == '__main__':
+    unittest.main()

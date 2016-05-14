@@ -1,3 +1,4 @@
+import logging
 from ..common.htypes import tCommand, Column
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
 from ..common.interface.test_list import params_form_iface, test_list_iface
@@ -5,6 +6,8 @@ from .util import path_part_to_str
 from .object import Object, ListObject
 from .module import Module, ModuleCommand
 from .form import stringFieldHandle, intFieldHandle
+
+log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'test_list'
@@ -35,7 +38,7 @@ class ParamsForm(Object):
         return Object.process_request(self, request)
 
     def run_command_submit( self, request ):
-        print 'submitted: ', `request.params.key`, `request.params.size`
+        log.info('submitted: key=%r size=%r', request.params.key, request.params.size)
         object = TestList(request.params.size)
         handle = TestList.ListHandle(object.get(), key=request.params.key)
         return request.make_response(handle)

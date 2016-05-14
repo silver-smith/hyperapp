@@ -1,10 +1,13 @@
 # store known server's endpoints to database
 
+import logging
 from pony.orm import db_session, Required, select
 from ..common.util import encode_route, decode_route
 from ..common.identity import PublicKey
 from ..common.endpoint import Endpoint
 from .ponyorm_module import PonyOrmModule
+
+log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'server_info'
@@ -38,7 +41,7 @@ class ServerInfoModule(PonyOrmModule):
         for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
             rec.delete()
         for route in endpoint.routes:
-            print '-- storing route for %s: %r' % (endpoint.public_key.get_short_id_hex(), encode_route(route))
+            log.info('-- storing route for %s: %r', endpoint.public_key.get_short_id_hex(), encode_route(route))
             self.ServerRoute(
                 public_key_pem=public_key_pem,
                 route=encode_route(route),
@@ -51,7 +54,7 @@ class ServerInfoModule(PonyOrmModule):
         routes = []
         for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
             routes.append(decode_route(rec.route))
-        print '-- loaded routes for %s: %r' % (public_key.get_short_id_hex(), [encode_route(route) for route in routes])
+        log.info('-- loaded routes for %s: %r', public_key.get_short_id_hex(), [encode_route(route) for route in routes])
         return Endpoint(public_key, routes)
 
 

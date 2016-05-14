@@ -1,10 +1,13 @@
 import os
+import logging
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from .htypes import tBinary, Field, TRecord, TList, THierarchy
 from .identity import Identity, PublicKey
+
+log = logging.getLogger(__name__)
 
 
 ENCODING = 'cdr'
@@ -85,7 +88,7 @@ def decrypt_packet( identity, session_key, encrypted_packet ):
     assert isinstance(identity, Identity), repr(identity)
     assert isinstance(encrypted_packet, tEncryptedPacket), repr(encrypted_packet)
     if isinstance(encrypted_packet, tInitialEncryptedPacket):
-        print len(encrypted_packet.encrypted_session_key), repr(encrypted_packet.encrypted_session_key)
+        log.info('decrypt_packet session_key: (%d) %r', len(encrypted_packet.encrypted_session_key), encrypted_packet.encrypted_session_key)
         session_key = identity.decrypt(encrypted_packet.encrypted_session_key)
     else:
         assert session_key is not None  # session_key must be passed for subsequent packet

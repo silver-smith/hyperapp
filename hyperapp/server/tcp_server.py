@@ -1,11 +1,14 @@
 import sys
 import time
+import logging
 import threading
 import socket
 import select
 from ..common.endpoint import Endpoint
 from .module import Module
 from .tcp_client import TcpClient
+
+log = logging.getLogger(__name__)
 
 
 #TRANSPORT_ID = 'tcp.cdr'
@@ -24,7 +27,7 @@ class TcpServer(object):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind((self.host, self.port))
         self.socket.listen(5)
-        print 'listening on port %s:%d' % (self.host, self.port)
+        log.info('listening on port %s:%d', self.host, self.port)
 
     def get_endpoint( self ):
         route = [TRANSPORT_ID, self.host, str(self.port)]
@@ -35,16 +38,16 @@ class TcpServer(object):
         try:
             self.accept_loop()
         except KeyboardInterrupt:
-            print
-            print 'Stopping...'
+            log.info()
+            log.info('Stopping...')
             self.stop()
-        print 'Stopped'
+        log.info('Stopped')
 
     def accept_loop( self ):
         while True:
             select.select([self.socket], [], [self.socket])
             cln_socket, cln_addr = self.socket.accept()
-            print 'accepted connection from %s:%d' % cln_addr
+            log.info('accepted connection from %s:%d' % cln_addr)
             client = TcpClient(self.server, self, cln_socket, cln_addr, on_close=self.on_client_closed)
             thread = threading.Thread(target=client.serve)
             thread.start()
@@ -67,4 +70,4 @@ class TcpServer(object):
     def on_client_closed( self, client ):
         self.finished_threads.append(self.client2thread[client])
         del self.client2thread[client]
-        print 'client %s:%d is gone' % client.addr
+        log.info('client %s:%d is gone' % client.addr)

@@ -1,4 +1,5 @@
 import os.path
+import logging
 import cPickle as pickle
 from PySide import QtCore, QtGui
 from hyperapp.common.endpoint import Endpoint
@@ -22,6 +23,8 @@ from . import code_repository
 from .module_manager import ModuleManager
 from .response_manager import ResponseManager
 from .route_repository import RouteRepository
+
+log = logging.getLogger(__name__)
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
@@ -85,10 +88,10 @@ class Application(QtGui.QApplication, view.View):
 
     def save_state( self, handles ):
         module_ids = list(flatten(handle.get_module_ids() for handle in handles))
-        print 'modules required for state: %s' % module_ids
+        log.info('modules required for state: %s', module_ids)
         modules = self._module_mgr.resolve_ids(module_ids)
         for module in modules:
-            print '-- module is stored to state: %r %r (satisfies %s)' % (module.id, module.fpath, module.satisfies)
+            log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
         handles_data = [h.to_data() for h in handles]
         handles_cdr = packet_coders.encode('cdr', handles_data, self.handles_type)
         state = (module_ids, modules, handles_cdr)
@@ -113,7 +116,7 @@ class Application(QtGui.QApplication, view.View):
             with file(STATE_FILE_PATH, 'rb') as f:
                 return pickle.load(f)
         except (EOFError, IOError, IndexError) as x:
-            print 'Error loading state:', x
+            log.info('Error loading state: %r', x)
             return None
 
     def get_default_state( self ):
@@ -137,7 +140,7 @@ class Application(QtGui.QApplication, view.View):
         state = self.load_state_file()
         if state:
             module_ids, modules, handles_cdr = state
-            print '-- modules loaded from state: ids=%r, modules=%r)' % (module_ids, [module.fpath for module in modules])
+            log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
             self._code_repository.get_modules_by_ids_and_continue(
                 module_ids, lambda modules: self._add_modules_and_open_state(handles_cdr, modules))
         else:

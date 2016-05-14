@@ -1,3 +1,4 @@
+import logging
 import re
 from PySide import QtCore, QtGui
 from ..common.htypes import tString, tObject, Field, tObjHandle
@@ -6,6 +7,8 @@ from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
 from .text_object import TextObject
+
+log = logging.getLogger(__name__)
 
 
 dataType = tObjHandle
@@ -29,7 +32,7 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'text_view construct', parent, self.object, self.object.get_title()
+        log.info('text_view construct parent=%r object=%r title=%r', parent, self.object, self.object.get_title())
         return View(parent, self.object)
 
     def __repr__( self ):
@@ -63,7 +66,7 @@ class View(view.View, QtGui.QTextBrowser):
         return re.sub(r'\[([^\]]+)\]', r'<a href="\1">\1</a>', text or '')
 
     def on_anchor_clicked( self, url ):
-        print 'on_anchor_clicked', repr(url.path())
+        log.info('on_anchor_clicked url.path=%r', url.path())
         self.object.open_ref(self, url.path())
 
     def object_changed( self ):
@@ -71,7 +74,7 @@ class View(view.View, QtGui.QTextBrowser):
         view.View.object_changed(self)
 
     def __del__( self ):
-        print '~text_view', self
+        log.info('~text_view %r', self)
 
 
 TextObject.set_view_handle_ctr(Handle)

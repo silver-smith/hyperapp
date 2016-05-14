@@ -1,3 +1,4 @@
+import logging
 from PySide import QtCore, QtGui
 from ..common.interface.article import tObjSelectorHandle, tObjSelectorUnwrapHandle
 from .util import uni2str
@@ -6,6 +7,8 @@ from .proxy_object import ProxyObject
 from .view_registry import view_registry
 from . import view
 from .command import ObjectCommand
+
+log = logging.getLogger(__name__)
 
 
 class ObjSelectorUnwrap(view.Handle):
@@ -59,7 +62,7 @@ class Handle(view.Handle):
         return [this_module_id]
 
     def construct( self, parent ):
-        print 'object_selector construct', parent, self.ref.get_title(), self.target.get_object().get_title()
+        log.info('object_selector construct %r, %r, %r', parent, self.ref.get_title(), self.target.get_object().get_title())
         return View(parent, self.ref, self.target)
 
     def __repr__( self ):
@@ -115,7 +118,7 @@ class View(view.View, QtGui.QWidget):
         view.View.open(self, handle)
 
     def __del__( self ):
-        print '~object_selector.View'
+        log.info('~object_selector.View')
 
 
 view_registry.register('object_selector', Handle.from_data)

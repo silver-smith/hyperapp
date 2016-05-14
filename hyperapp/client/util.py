@@ -1,9 +1,12 @@
+import logging
 from cStringIO import StringIO
 import pickle
 import weakref
 from datetime import datetime
 from dateutil.tz import tzutc
 from PySide import QtCore, QtGui
+
+log = logging.getLogger(__name__)
 
 
 DEBUG_FOCUS = False
@@ -145,7 +148,7 @@ def key_match_any( evt, keys ):
 def make_action( widget, text, shortcut, fn, *args, **kw ):
     ## print '--- make_action', widget, text, shortcut, fn, args, kw
     def run():
-        print '--- make_action/run', widget, text, shortcut, fn, args, kw
+        log.info('--- make_action/run widget=%r text=%r shortcut=%r fn=%r args=%r kw=%r', widget, text, shortcut, fn, args, kw)
         return fn(*args, **kw)
     action = QtGui.QAction(text, widget)
     if isinstance(shortcut, list):

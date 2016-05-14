@@ -1,3 +1,4 @@
+import logging
 import weakref
 from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
@@ -30,6 +31,8 @@ from .view import View
 from .proxy_object_data_mapper import ProxyObjectMapper
 from .redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
 
+log = logging.getLogger(__name__)
+
 
 class RequestForResult(Request):
 
@@ -41,7 +44,7 @@ class RequestForResult(Request):
     def process_response( self, server, response ):
         object = self.object()
         if not object:
-            print 'Received response #%s for a missing (already destroyed) object, ignoring' % response.request_id
+            log.info('Received response #%s for a missing (already destroyed) object, ignoring', response.request_id)
             return
         object.process_response_result(self.command_id, response.result)
 
@@ -67,7 +70,7 @@ class OpenRequest(Request):
     def open_handle( self, handle, server ):
         view = self.initiator_view_wr()
         if not view:
-            print 'Received response #%s for a missing (already destroyed) view, ignoring' % response.request_id
+            log.info('Received response #%s for a missing (already destroyed) view, ignoring', response.request_id)
             return
         view.process_handle_open(handle, server)
 
@@ -123,7 +126,7 @@ class GetRequest(GetRequestBase):
 
         view = self.initiator_view_wr()
         if not view:
-            print 'Received response #%s for a missing (already destroyed) view, ignoring' % response.request_id
+            log.info('Received response #%s for a missing (already destroyed) view, ignoring', response.request_id)
             return
         view.process_handle_open(handle, server)
 
@@ -149,11 +152,11 @@ class ProxyObject(Object):
     def produce_obj( cls, server, path, iface, facets ):
         object = proxy_registry.resolve(server, path)
         if object is not None:
-            print '> proxy object is resolved from registry:', object
+            log.info('> proxy object is resolved from registry: %r', object)
             return object
         object = cls(server, path, iface, facets)
         proxy_registry.register(server, path, object)
-        print '< proxy object is registered in registry:', object
+        log.info('< proxy object is registered in registry: %r', object)
         return object
 
     def __init__( self, server, path, iface, facets=None ):
@@ -211,7 +214,7 @@ class ProxyObject(Object):
         self.execute_request(command_id, initiator_view, **kw)
 
     def observers_gone( self ):
-        print '-- observers_gone', self
+        log.info('-- observers_gone: %r', self)
         self.send_notification('unsubscribe')
 
     # prepare request which does not require/expect response
@@ -255,7 +258,7 @@ class ProxyObject(Object):
         return TList(tCommand)
 
     def __del__( self ):
-        print '~ProxyObject', self, self.path
+        log.info('~ProxyObject %r path=%r', self, self.path)
 
 
 proxy_class_registry.register(ProxyObject)

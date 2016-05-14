@@ -1,3 +1,4 @@
+import logging
 from operator import attrgetter
 from ..common.util import is_list_inst, encode_path
 from ..common.htypes import (
@@ -9,6 +10,8 @@ from ..common.htypes import (
 from ..common.visual_rep import pprint
 from .util import WeakValueMultiDict
 
+log = logging.getLogger(__name__)
+
 
 MIN_ROWS_RETURNED = 100
 
@@ -19,19 +22,19 @@ class Subscription(object):
         self.path2channel = WeakValueMultiDict()  # path -> Channel
 
     def add( self, path, peer_channel ):
-        print '-- subscribing', path, peer_channel.get_id()
+        log.info('-- subscribing %r %r', path, peer_channel.get_id())
         self.path2channel.add(encode_path(path), peer_channel)
 
     def remove( self, path, peer_channel ):
-        print '-- unsubscribing', path, peer_channel.get_id()
+        log.info('-- unsubscribing %r %r', path, peer_channel.get_id())
         self.path2channel.remove(encode_path(path), peer_channel)
 
     def distribute_update( self, iface, path, diff ):
         update = iface.Update(path, diff)
-        print '-- distributing update:'
+        log.info('-- distributing update:')
         pprint(tUpdate, update)
         for peer_channel in self.path2channel.get(encode_path(path)):
-            print '-- sending update to', peer_channel.get_id()
+            log.info('-- sending update to %r', peer_channel.get_id())
             peer_channel.send_update(update)
 
 

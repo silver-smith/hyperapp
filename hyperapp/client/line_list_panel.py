@@ -1,8 +1,11 @@
 # base for panels containing line edit with list view
 
+import logging
 from PySide import QtCore, QtGui
 from .util import DEBUG_FOCUS, call_after, key_match, key_match_any
 from .composite import Composite
+
+log = logging.getLogger(__name__)
 
 
 class LineListPanel(Composite, QtGui.QWidget):
@@ -53,10 +56,10 @@ class LineListPanel(Composite, QtGui.QWidget):
         return QtGui.QWidget.eventFilter(self, obj, evt)
 
     def focusInEvent( self, evt ):
-        if DEBUG_FOCUS: print '*** line_list_panel.focusInEvent', self
+        if DEBUG_FOCUS: log.info('*** line_list_panel.focusInEvent %r', self)
         QtGui.QWidget.focusInEvent(self, evt)
         ## self._line_edit.get_widget().setFocus()  # - now using setFocusProxy
 
     def focusOutEvent( self, evt ):
-        if DEBUG_FOCUS: print '*** line_list_panel.focusOutEvent', self
+        if DEBUG_FOCUS: log.info('*** line_list_panel.focusOutEvent %r', self)
         QtGui.QWidget.focusOutEvent(self, evt)

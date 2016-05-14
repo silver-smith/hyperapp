@@ -1,3 +1,4 @@
+import logging
 from PySide import QtCore, QtGui
 from ..common.htypes import tHandle
 from .util import uni2str, key_match, key_match_any
@@ -9,6 +10,8 @@ from . import view
 from .line_list_panel import LineListPanel
 from . import line_edit
 from . import list_view
+
+log = logging.getLogger(__name__)
 
 
 FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
@@ -43,7 +46,7 @@ class Handle(list_view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'narrower construct', parent, self.object.get_title(), self.sort_column_id, self.narrow_field_id, repr(self.prefix)
+        log.info('narrower construct parent=%r title=%r sort_column_id=%r narrow_field_id=%r prefix=%r', parent, self.object.get_title(), self.sort_column_id, self.narrow_field_id, repr(self.prefix))
         return View(parent, self.data_type, self.object, self.sort_column_id, self.key,
                     self.first_visible_row, self.select_first, self.narrow_field_id, self.prefix)
 
@@ -87,21 +90,21 @@ class FilteredListObj(ListObject, ListObserver):
         return self._base.get_key_column_id()
     
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
-        print '-- narrower.fetch_elements', sort_column_id, `key`, desc_count, asc_count
+        log.info('-- narrower.fetch_elements sort_column_id=%r key=%r desc_count=%r asc_count=%r', sort_column_id, key, desc_count, asc_count)
         self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
 
     def process_fetch_result( self, result ):
-        print '-- narrower.process_fetch_result', result.sort_column_id, result.bof, result.eof, len(result.elements)
+        log.info('-- narrower.process_fetch_result sort_column_id=%r bof=%r eof=%r elements-len=%r', result.sort_column_id, result.bof, result.eof, len(result.elements))
         elements = filter(self._element_matched, result.elements)
         filtered = result.clone_with_elements(elements)
         # When there is no filtered elements list view can not fetch more elements - it does not have element key
         # to start from. So we issue fetch request ourselves. Yet we have to notify list view about eof.
         if not filtered.elements and result.elements and not result.eof:
-            print '   > all filtered out, fetching more'
+            log.info('   > all filtered out, fetching more')
             self._base.fetch_elements(
                 result.sort_column_id, result.elements[-1].key, result.direction, FETCH_ELEMENT_COUNT)
         else:
-            print '   > notify with', len(filtered.elements)
+            log.info('   > notify with %r elements', len(filtered.elements))
             self._notify_fetch_result(filtered)
         self._cached_elements.extend(elements)  # may has duplicates now, it's ok
 
@@ -128,7 +131,7 @@ class FilteredListObj(ListObject, ListObserver):
         return getattr(element.row, self._narrow_field_id)
 
     def __del__( self ):
-        print '~FilteredListObj', repr(self._narrow_field_id), repr(self._prefix)
+        log.info('~FilteredListObj narrow_field_id=%r prefix=%r', self._narrow_field_id, self._prefix)
 
 
 class View(LineListPanel):
@@ -201,7 +204,7 @@ class View(LineListPanel):
         self._line_edit.setText(common_prefix)
 
     def __del__( self ):
-        print '~narrower', self._base_obj.get_title(), self
+        log.info('~narrower title=%r self=%r', self._base_obj.get_title(), self)
 
 
 view_registry.register('list_narrower', Handle.from_data)

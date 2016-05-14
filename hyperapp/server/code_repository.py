@@ -1,4 +1,5 @@
 import os.path
+import logging
 import simpleyaml as yaml
 from ..common.interface.code_repository import (
     tModule,
@@ -8,6 +9,8 @@ from ..common.interface.code_repository import (
 from . import module as module_mod
 from .module import ModuleCommand
 from .object import Object, SmallListObject
+
+log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'code_repository'
@@ -41,7 +44,7 @@ class ModuleRepository(object):
     def _load_dynamic_module( self, info_path ):
         with open(info_path) as f:
             info = yaml.load(f.read())
-        print 'loaded module info:', info
+        log.info('loaded module info: %r', info)
         source_path = os.path.abspath(os.path.join(DYNAMIC_MODULES_DIR, info['source_path']))
         satisfies = [path.split('/') for path in info['satisfies']]
         module = self._load_module(info['id'], info['package'], satisfies, source_path)
@@ -82,12 +85,12 @@ class CodeRepository(Object):
         return Object.process_request(self, request)
 
     def run_command_get_modules_by_ids( self, request ):
-        print 'run_command_get_modules_by_ids', request.params.module_ids
+        log.info('run_command_get_modules_by_ids %r', request.params.module_ids)
         return request.make_response_result(
             modules=self.get_modules_by_ids(request.params.module_ids))
 
     def run_command_get_modules_by_requirements( self, request ):
-        print 'run_command_get_modules_by_requirements', request.params.requirements
+        log.info('run_command_get_modules_by_requirements %r', request.params.requirements)
         return request.make_response_result(
             modules=self.get_modules_by_requirements(request.params.requirements))
 
@@ -101,7 +104,7 @@ class CodeRepository(Object):
             if module:
                 modules.append(module)
             else:
-                print 'Unknown requirement: %s/%s' % (registry, key)  # May be statically loaded, ignore
+                log.info('Unknown requirement: %s/%s', registry, key)  # May be statically loaded, ignore
         return modules
 
 

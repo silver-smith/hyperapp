@@ -1,4 +1,5 @@
 import sys
+import logging
 import bisect
 from PySide import QtCore, QtGui
 from ..common.htypes import Type, tHandle
@@ -8,6 +9,8 @@ from .objimpl_registry import objimpl_registry
 from .list_object import ListObserver, ListDiff, Slice, ListObject
 from .view_registry import view_registry
 from . import view
+
+log = logging.getLogger(__name__)
 
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
@@ -47,7 +50,7 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'list_view construct', parent, self.object.get_title(), self.object, repr(self.key)
+        log.info('list_view construct parent=%r title=%r object=%r key=%r', parent, self.object.get_title(), self.object, self.key)
         return View(parent, self.data_type, self.object, self.key, self.sort_column_id,
                     self.first_visible_row, self.select_first)
 
@@ -130,14 +133,16 @@ class Model(QtCore.QAbstractTableModel):
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         wanted_rows = wanted_last_row - len(self.keys)
         key = self.keys[-1] if self.keys else None
-        print '-- list_view.Model.fetch_elements_if_required', id(self), first_visible_row, visible_row_count, wanted_last_row, len(self.keys), self.eof, wanted_rows
+        log.info('-- list_view.Model.fetch_elements_if_required self=%r first_visible_row=%r visible_row_count=%r'
+                 ' wanted_last_row=%r len(keys)=%r eof=%r wanted_rows=%r',
+                 id(self), first_visible_row, visible_row_count, wanted_last_row, len(self.keys), self.eof, wanted_rows)
         if wanted_rows > 0 and not self.eof:
-            print '   fetch_elements', self._object, `key`, wanted_rows
+            log.info('   fetch_elements object=%r key=%r wanted_rows=%r', self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
 
     def process_fetch_result( self, result ):
-        print '-- list_view.Model.process_fetch_result', id(self), self._object, len(result.elements)
+        log.info('-- list_view.Model.process_fetch_result self=%r object=%r len(result.elements)=%r', id(self), self._object, len(result.elements))
         self._fetch_pending = False
         old_len = len(self.keys)
         self._update_elements(result.elements)
@@ -152,7 +157,8 @@ class Model(QtCore.QAbstractTableModel):
     def diff_applied( self, diff ):
         start_idx = bisect.bisect_left(self.keys, diff.start_key)
         end_idx = bisect.bisect_right(self.keys, diff.end_key)
-        print '-- list_view.Model.diff_applied', id(self), diff, start_idx, end_idx, len(self.keys), self.keys
+        log.info('-- list_view.Model.diff_applied self=%r diff=%r start_idx=%r end_idx=%r len(keys)=%r keys=%r',
+                 id(self), diff, start_idx, end_idx, len(self.keys), self.keys)
         for key in self.keys[start_idx:end_idx]:
             del self._key2element[key]
         self._update_elements(diff.elements)
@@ -161,7 +167,7 @@ class Model(QtCore.QAbstractTableModel):
             self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
         if len(diff.elements):
             self.rowsInserted.emit(QtCore.QModelIndex(), start_idx, start_idx + len(diff.elements))
-        print '  > ', len(self.keys), self.keys
+        log.info('  > len(keys)=%r keys=%r', len(self.keys), self.keys)
 
     def get_key_row( self, key ):
         try:
@@ -199,7 +205,7 @@ class Model(QtCore.QAbstractTableModel):
         return self._key2element[key]
 
     def __del__( self ):
-        print '~list_view.Model', self
+        log.info('~list_view.Model %r', self)
 
 
 class View(view.View, ListObserver, QtGui.QTableView):
@@ -243,7 +249,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self._object
 
     def object_changed( self ):
-        print '-- list_view.object_changed', self
+        log.info('-- list_view.object_changed self=%r', self)
         view.View.object_changed(self)
         ## old_key = self._selected_elt.key if self._selected_elt else None
         ## self.model().reset()
@@ -261,7 +267,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result( self, result ):
-        print '-- process_fetch_result', self, id(self.model()), result.sort_column_id, result.bof, result.eof, len(result.elements)
+        log.info('-- process_fetch_result self=%r model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
+                 self, id(self.model()), result.sort_column_id, result.bof, result.eof, len(result.elements))
         assert isinstance(result, Slice), repr(result)
         self.model().process_fetch_result(result)
         self.resizeColumnsToContents()
@@ -306,7 +313,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def set_current_key( self, key, select_first=False, accept_near=False ):
         row = self.model().get_key_row(key)
-        print '-- set_current_key', `key`, select_first, `row`, self.model().keys
+        log.info('-- set_current_key key=%r select_first=%r row=%r keys=%r', key, select_first, row, self.model().keys)
         if row is None and select_first:
             row = 0
         self.set_current_row(row)
@@ -334,7 +341,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return None
 
     def set_object( self, object, sort_column_id=None ):
-        print '-- set_object', self, id(self.model()), object, self.isVisible()
+        log.info('-- set_object self=%r model=%r object=%r isVisible=%r', self, id(self.model()), object, self.isVisible())
         assert isinstance(object, ListObject), repr(object)
         assert sort_column_id is not None or self.model().get_sort_column_id() is not None
         assert isinstance
@@ -357,7 +364,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.fetch_elements_if_required()
 
     def resizeEvent( self, evt ):
-        print '-- resizeEvent', self, id(self.model()), self.isVisible(), self._get_visible_rows()
+        log.info('-- resizeEvent self=%r model=%r isVisible=%r visible-rows=%r', self, id(self.model()), self.isVisible(), self._get_visible_rows())
         result = QtGui.QTableView.resizeEvent(self, evt)
         self.fetch_elements_if_required()
         return result
@@ -417,7 +424,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
             self._elt_actions.append(action)
 
     def __del__( self ):
-        print '~list_view.View', self
+        log.info('~list_view.View %r', self)
 
 
 view_registry.register('list', Handle.from_data)

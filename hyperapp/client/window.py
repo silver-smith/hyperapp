@@ -1,3 +1,4 @@
+import logging
 import weakref
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
@@ -10,6 +11,8 @@ from . import composite
 from .menu_bar import MenuBar
 from . import cmd_pane
 from . import tab_view
+
+log = logging.getLogger(__name__)
 
 
 DEFAULT_SIZE = QtCore.QSize(800, 800)
@@ -58,7 +61,7 @@ class Handle(composite.Handle):
         return self.child_handle
 
     def construct( self, app ):
-        print 'window construct', app, self.child_handle
+        log.info('window construct app=%r child_handle=%r', app, self.child_handle)
         return Window(app, self.child_handle, self.size, self.pos)
 
     def move( self, point ):
@@ -125,7 +128,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         assert view is self._view
         w = self._view.get_widget()
         if w is not self._child_widget:
-            if DEBUG_FOCUS: print '*** window.view_changed: replacing widget', self, view, w, 'old w:', self._child_widget
+            if DEBUG_FOCUS: log.info('*** window.view_changed: replacing widget self=%r view=%r w=%r old-w=%r', self, view, w, self._child_widget)
             if self._child_widget:
                 self._child_widget.deleteLater()
             self.setCentralWidget(w)
@@ -140,4 +143,4 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self.handle().move(DUP_OFFSET).construct(self._parent())
 
     def __del__( self ):
-        print '~window'
+        log.info('~window')

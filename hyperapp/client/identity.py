@@ -1,6 +1,7 @@
 import os
 import os.path
 import glob
+import logging
 from ..common.htypes import (
     tString,
     tObject,
@@ -16,6 +17,8 @@ from .object import Object
 from .list_object import Element, Slice, ListObject
 from .import form_view
 from . import list_view
+
+log = logging.getLogger(__name__)
 
 
 class IdentityItem(object):
@@ -99,9 +102,9 @@ class IdentityFormObject(Object):
         return Object.run_command(self, command_id, initiator_view, **kw)
 
     def run_command_submit( self, initiator_view, name ):
-        print 'creating identity %r...' % name
+        log.info('creating identity %r...', name)
         this_module.identity_controller.generate(name)
-        print 'creating identity %r: done' % name
+        log.info('creating identity %r: done', name)
         return make_identity_list(name)
 
 

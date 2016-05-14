@@ -1,9 +1,12 @@
+import logging
 from PySide import QtCore, QtGui
 from ..common.interface.splitter import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
 from . import view
 from . import composite
 from .view_registry import view_registry
+
+log = logging.getLogger(__name__)
 
 
 # orientation constants
@@ -47,7 +50,7 @@ class Handle(composite.Handle):
         return tSplitterHandle('splitter', self.x.to_data(), self.y.to_data(), self.orient)
 
     def construct( self, parent ):
-        print 'splitter construct', parent, self.orient, 'focused =', self.focused
+        log.info('splitter construct parent=%r orient=%r focused=%r', parent, self.orient, self.focused)
         return View(parent, self.x, self.y, self.orient, self.focused, self.sizes)
 
     def get_child_handle( self ):
@@ -68,7 +71,7 @@ class Handle(composite.Handle):
 class MonolithHandle(Handle):
 
     def construct( self, parent ):
-        print 'splitter monolith construct', parent, self.orient, 'focused =', self.focused
+        log.info('splitter monolith construct parent=%r orient=%r focused=%r', parent, self.orient, self.focused)
         return MonolithView(parent, self.x, self.y, self.orient, self.focused, self.sizes)
 
 
@@ -92,12 +95,13 @@ class View(QtGui.QSplitter, view.View):
         w = view.get_widget()
         self.insertWidget(idx, w)
         if focus:
-            if DEBUG_FOCUS: print '*** splitter: focusing new child', self, view, w
+            if DEBUG_FOCUS: log.info('*** splitter: focusing new child self=%r view=%r w=%r', self, view, w)
             view.ensure_has_focus()
 
     def handle( self ):
-        if DEBUG_FOCUS: print '*** splitter.handle', self, 'focused =', self._focused, \
-              self._get_view(self._focused).get_widget() if self._focused is not None else None
+        if DEBUG_FOCUS:
+            log.info('*** splitter.handle self=%r focused=%r focused-widget=%r',
+                     self, self._focused, self._get_view(self._focused).get_widget() if self._focused is not None else None)
         return self._handle_class()(self._x.handle(), self._y.handle(), qt2orient(self.orientation()),
                                     self._focused or 0, self.sizes())
 
@@ -105,14 +109,15 @@ class View(QtGui.QSplitter, view.View):
         return Handle
 
     def get_current_child( self ):
-        if DEBUG_FOCUS: print '  * splitter.get_current_child', self, self._focused
+        if DEBUG_FOCUS: log.info('  * splitter.get_current_child self=%r focused=%r', self, self._focused)
         if self._focused is not None:
             return self._get_view(self._focused)
         else:
             return None
 
     def view_changed( self, child ):
-        if DEBUG_FOCUS: print '*** splitter.view_changed', self, child, 0 if child == self._x else 1, child.get_widget()
+        if DEBUG_FOCUS:
+            log.info('*** splitter.view_changed self=%r child=%r x/y=%r child-widget=%r', self, child, 0 if child == self._x else 1, child.get_widget())
         if self._x is None or self._y is None: return  # constructing right now
         sizes = self.sizes()
         if child == self._x:
@@ -150,7 +155,7 @@ class View(QtGui.QSplitter, view.View):
         if not self.isVisible(): return
         focused = self._focused_index(default=None)
         if focused is not None and focused != self._focused:
-            if DEBUG_FOCUS: print '--- splitter._on_focus_changed: received _focused', self, focused
+            if DEBUG_FOCUS: log.info('--- splitter._on_focus_changed: received _focused self=%r focused=%r', self, focused)
             self._focused = focused
             view.View.view_changed(self)
 
@@ -166,24 +171,27 @@ class View(QtGui.QSplitter, view.View):
             assert False, idx  # expected 0 or 1
 
     def setVisible( self, visible ):
-        if DEBUG_FOCUS: print '*** splitter.setVisible', self, visible, \
-              'self._to_focus =', `self._to_focus`, self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None, \
-              'actual focus =', self._focused_index(), self._get_view(self._focused_index()).get_widget()
+        if DEBUG_FOCUS:
+            log.info('*** splitter.setVisible self=%r visible=%r self._to_focus=%r to-focus-widget=%r actual-focus=%r focused-widget=%r',
+                      self, visible, self._to_focus, self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None,
+                      self._focused_index(), self._get_view(self._focused_index()).get_widget())
         QtGui.QWidget.setVisible(self, visible)
         if visible and self._to_focus is not None:
-            if DEBUG_FOCUS: print '  will focus', self, self._to_focus, self._get_view(self._to_focus).get_widget()
+            if DEBUG_FOCUS:
+                log.info('  will focus self=%r to_focus=%r to-focus-widget=%r', self, self._to_focus, self._get_view(self._to_focus).get_widget())
             self._get_view(self._to_focus).ensure_has_focus()
             # and leave self._to_focus set for later focusInEvent - required for active tab to work
             self._focused = self._to_focus
             self._to_focus = None
 
     def focusInEvent( self, evt ):
-        if DEBUG_FOCUS: print '*** splitter.focusInEvent', self, 'self._to_focus =', `self._to_focus`, \
-              self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None
+        if DEBUG_FOCUS:
+            log.info('*** splitter.focusInEvent self=%r to_focus=%r to-focus-widget=%r',
+                     self, self._to_focus, self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None)
         QtGui.QSplitter.focusInEvent(self, evt)
 
     def focusOutEvent( self, evt ):
-        if DEBUG_FOCUS: print '*** splitter.focusOutEvent', self
+        if DEBUG_FOCUS: log.info('*** splitter.focusOutEvent self=%r', self)
         QtGui.QSplitter.focusOutEvent(self, evt)
 
 

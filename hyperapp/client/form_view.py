@@ -1,3 +1,4 @@
+import logging
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
@@ -5,6 +6,8 @@ from .util import uni2str, call_after
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
+
+log = logging.getLogger(__name__)
 
 
 class FieldHandle(object):
@@ -63,7 +66,7 @@ class StringField(LineEditField):
         return self.text()
 
     def __del__( self ):
-        print '~string_field'
+        log.info('~string_field')
 
 
 class IntField(LineEditField):
@@ -79,7 +82,7 @@ class IntField(LineEditField):
         return int(self.text())
 
     def __del__( self ):
-        print '~int_field'
+        log.info('~int_field')
 
 
 class Field(object):
@@ -121,7 +124,7 @@ class Handle(view.Handle):
         return self.object
 
     def construct( self, parent ):
-        print 'form construct', parent, self.object.get_title(), self.current_field, self.fields
+        log.info('form construct parent=%r title=%r current_field=%r fields=%r', parent, self.object.get_title(), self.current_field, self.fields)
         return View(parent, self.object, self.fields, self.current_field)
 
     def __repr__( self ):
