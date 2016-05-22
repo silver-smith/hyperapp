@@ -57,7 +57,7 @@ class Element(object):
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = map(ElementCommand.from_data, rec.commands)
+        commands = list(map(ElementCommand.from_data, rec.commands))
         return cls(key, rec.row, commands, order_key)
 
     def __init__( self, key, row, commands, order_key=None ):
@@ -97,7 +97,7 @@ class Slice(object):
         return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
     def __init__( self, sort_column_id, from_key, direction, elements, bof, eof ):
-        assert isinstance(sort_column_id, basestring), repr(sort_column_id)
+        assert isinstance(sort_column_id, str), repr(sort_column_id)
         assert direction in ['asc', 'desc'], repr(direction)
         assert is_list_inst(elements, Element), repr(elements)
         self.sort_column_id = sort_column_id

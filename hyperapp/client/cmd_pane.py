@@ -62,7 +62,7 @@ class View(QtGui.QDockWidget):
 
     def _make_button( self, cmd ):
         if cmd.shortcut:
-            text = u'%s (%s)' % (cmd.text, cmd.shortcut)
+            text = '%s (%s)' % (cmd.text, cmd.shortcut)
         else:
             text = cmd.text
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)

@@ -198,9 +198,9 @@ class ArticleRefList(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        return map(self.rec2element, select(ref for ref in module.ArticleRef
+        return list(map(self.rec2element, select(ref for ref in module.ArticleRef
             if ref.article==module.Article[self.article_id]) \
-            .order_by(module.ArticleRef.id))
+            .order_by(module.ArticleRef.id)))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -209,10 +209,10 @@ class ArticleRefList(SmallListObject):
             tCommand('delete', 'Delete', 'Delete article reference', 'Del'),
             ]
         if not rec.server_public_key_pem:
-            url = u'<local>:%s' % rec.path
+            url = '<local>:%s' % rec.path
         else:
             pk = PublicKey.from_pem(rec.server_public_key_pem)
-            url = u'%s:%s' % (pk.get_short_id_hex(), rec.path)
+            url = '%s:%s' % (pk.get_short_id_hex(), rec.path)
         return cls.Element(cls.Row(rec.id, url), commands)
 
 
@@ -290,7 +290,7 @@ class ArticleModule(PonyOrmModule):
 
     def __init__( self ):
         PonyOrmModule.__init__(self, MODULE_NAME)
-        self.article_fields = dict(text=Required(unicode),
+        self.article_fields = dict(text=Required(str),
                                    refs=Set('ArticleRef'))
 
     def init_phase2( self ):
@@ -298,8 +298,8 @@ class ArticleModule(PonyOrmModule):
         self.ArticleRef = self.make_entity('ArticleRef',
                                            article=Required(self.Article),
                                            server_public_key_pem=Optional(str),  # '' if local
-                                           iface=Required(unicode),
-                                           path=Required(unicode),
+                                           iface=Required(str),
+                                           path=Required(str),
                                            )
         Article.register_class(self.Article)
 

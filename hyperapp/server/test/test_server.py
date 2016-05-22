@@ -361,7 +361,7 @@ class ServerTest(unittest.TestCase):
             identity_1.sign(challenge))
         pop_record_2 = tPopRecord(
             identity_2.get_public_key().to_der(),
-            identity_2.sign(challenge + 'x'))  # make invlid signature; verification must fail
+            identity_2.sign(challenge + b'x'))  # make invlid signature; verification must fail
         transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record_1, pop_record_2])
 
         response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)

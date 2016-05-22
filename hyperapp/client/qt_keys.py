@@ -437,7 +437,7 @@ key_modifiers = {
 
 def modifiers2str( modifiers ):
     prefix = ''
-    for mod_id, mod_name in key_modifiers.items():
+    for mod_id, mod_name in list(key_modifiers.items()):
         if modifiers & mod_id:
             prefix += mod_name + '+'
     return prefix

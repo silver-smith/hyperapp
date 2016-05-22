@@ -1,5 +1,6 @@
 import pickle
 import binascii
+import base64
 from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
 from ..common.htypes import tEndpoint, tUrl, Interface
@@ -24,7 +25,7 @@ class Endpoint(object):
 
     def __init__( self, public_key, routes ):
         assert isinstance(public_key, PublicKey), repr(public_key)
-        assert is_list_list_inst(routes, basestring), repr(routes)
+        assert is_list_list_inst(routes, str), repr(routes)
         self.public_key = public_key
         self.routes = routes
 
@@ -53,7 +54,7 @@ class Url(object):
     @classmethod
     def from_str( cls, iface_registry, value ):
         try:
-            data = value.decode('base64')
+            data = base64.b64decode(value)
         except binascii.Error:
             raise StringIsNotAnUrl('Provided string is not stringified url')
         rec = packet_coders.decode(cls.str_encoding, data, tUrl)
@@ -61,7 +62,7 @@ class Url(object):
 
     def __init__( self, iface, path, endpoint ):
         assert isinstance(iface, Interface), repr(iface)
-        assert is_list_inst(path, basestring), path
+        assert is_list_inst(path, str), path
         assert isinstance(endpoint, Endpoint), repr(endpoint)
         self.iface = iface
         self.path = path
@@ -72,7 +73,7 @@ class Url(object):
 
     def to_str( self ):
         data = packet_coders.encode(self.str_encoding, self.to_data(), tUrl)
-        return data.encode('base64')
+        return str(base64.b64encode(data), 'ascii')
 
     def clone( self, iface=None ):
         obj = Url(self.iface, self.path, self.endpoint)

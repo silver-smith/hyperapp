@@ -28,7 +28,7 @@ class Handle(list_view.Handle):
 
     def __init__( self, data_type, object, sort_column_id, key,
                   first_visible_row, select_first, narrow_field_id, prefix=None ):
-        assert prefix is None or isinstance(prefix, basestring), repr(prefix)
+        assert prefix is None or isinstance(prefix, str), repr(prefix)
         list_view.Handle.__init__(self, data_type, object, sort_column_id, key, first_visible_row, select_first)
         self.narrow_field_id = narrow_field_id
         self.prefix = prefix
@@ -95,7 +95,7 @@ class FilteredListObj(ListObject, ListObserver):
 
     def process_fetch_result( self, result ):
         log.info('-- narrower.process_fetch_result sort_column_id=%r bof=%r eof=%r elements-len=%r', result.sort_column_id, result.bof, result.eof, len(result.elements))
-        elements = filter(self._element_matched, result.elements)
+        elements = list(filter(self._element_matched, result.elements))
         filtered = result.clone_with_elements(elements)
         # When there is no filtered elements list view can not fetch more elements - it does not have element key
         # to start from. So we issue fetch request ourselves. Yet we have to notify list view about eof.

@@ -47,7 +47,7 @@ def main():
     server = Server(identity, args.test_delay)
     tcp_server = TcpServer(server, host, port)
     management_url = get_management_url(tcp_server.get_endpoint())
-    log.info('Management url:%s', management_url.to_str())
+    log.info('Management url: %s', management_url.to_str())
     tcp_server.run()
 
 

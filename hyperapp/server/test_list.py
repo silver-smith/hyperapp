@@ -76,14 +76,14 @@ class TestList(ListObject):
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
         assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
-        assert from_key is None or isinstance(from_key, (int, long)), repr(from_key)
+        assert from_key is None or isinstance(from_key, int), repr(from_key)
         if from_key is None:
             start = 0
         else:
             start = from_key + 1
         stop = min(self.size, start + min(count, MAX_ROWS_RETURNED))
         elements = []
-        for idx in xrange(start, stop):
+        for idx in range(start, stop):
             row = self.Row(idx, 'field1#%d' % idx, 'field2#%d' % idx, 'field3#%d' % idx)
             elements.append(self.Element(row))
         bof = start == 0

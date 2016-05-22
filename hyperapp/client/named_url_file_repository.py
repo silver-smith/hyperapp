@@ -26,8 +26,8 @@ class NamedUrl(object):
         return cls(id, rec.name, Url.from_data(iface_registry, rec.url))
 
     def __init__( self, id, name, url ):
-        assert isinstance(id, basestring), repr(id)
-        assert isinstance(name, basestring), repr(name)
+        assert isinstance(id, str), repr(id)
+        assert isinstance(name, str), repr(name)
         assert isinstance(url, Url), repr(url)
         self.id = id
         self.name = name

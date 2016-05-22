@@ -62,7 +62,7 @@ class Dir(FsObject):
                 files.append(finfo)
         def key( finfo ):
             return finfo['key']
-        return map(self.make_elt, sorted(dirs, key=key) + sorted(files, key=key))
+        return list(map(self.make_elt, sorted(dirs, key=key) + sorted(files, key=key)))
 
     def get_file_info( self, fname, fspath ):
         try:
@@ -146,10 +146,10 @@ else:
     fs_encoding = 'utf-8'
 
 def fsname2uni( v ):
-    if type(v) is unicode:
+    if type(v) is str:
         return v
     else:
-       return unicode(v, fs_encoding)
+       return str(v, fs_encoding)
 
 
 module = FileModule()

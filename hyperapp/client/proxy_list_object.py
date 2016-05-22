@@ -56,7 +56,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _update_slices( self, diff ):
         for slice in self._slices:
-            for idx in reversed(range(len(slice.elements))):
+            for idx in reversed(list(range(len(slice.elements)))):
                 element = slice.elements[idx]
                 if diff.start_key <= element.key and element.key <= diff.end_key:
                     del slice.elements[idx]
@@ -122,7 +122,7 @@ class ProxyListObject(ProxyObject, ListObject):
         if sort_column_id in self._slices_from_cache: return  # already loaded
         key = self._get_slice_cache_key(sort_column_id)
         slice_recs = self.cache.load_value(key, self._get_slices_cache_type())
-        self._slices_from_cache[sort_column_id] = map(self._slice_from_data, slice_recs or [])
+        self._slices_from_cache[sort_column_id] = list(map(self._slice_from_data, slice_recs or []))
 
     def put_back_slice( self, slice ):
         log.info('-- proxy put_back_slice self=%r len(elements)=%r', self, len(slice.elements))

@@ -12,7 +12,7 @@ class RequestBase(object):
 
     def __init__( self, iface, path, command_id, params ):
         assert isinstance(iface, Interface), repr(iface)
-        assert isinstance(command_id, basestring), repr(command_id)
+        assert isinstance(command_id, str), repr(command_id)
         params_type = iface.get_request_params_type(command_id)
         if params is None:
             params = params_type()

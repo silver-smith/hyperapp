@@ -29,8 +29,8 @@ class ServerInfoModule(PonyOrmModule):
     def init_phase2( self ):
         self.ServerRoute = self.make_entity(
             'ServerRoute',
-            public_key_pem=Required(unicode),
-            route=Required(unicode),
+            public_key_pem=Required(str),
+            route=Required(str),
             )
 
     @db_session

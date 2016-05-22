@@ -1,6 +1,6 @@
 import os.path
 import logging
-import cPickle as pickle
+import pickle as pickle
 from PySide import QtCore, QtGui
 from hyperapp.common.endpoint import Endpoint
 from ..common.util import flatten
@@ -95,7 +95,7 @@ class Application(QtGui.QApplication, view.View):
         handles_data = [h.to_data() for h in handles]
         handles_cdr = packet_coders.encode('cdr', handles_data, self.handles_type)
         state = (module_ids, modules, handles_cdr)
-        with file(STATE_FILE_PATH, 'wb') as f:
+        with open(STATE_FILE_PATH, 'wb') as f:
             pickle.dump(state, f)
 
     ## def load_state_and_modules( self ):
@@ -113,7 +113,7 @@ class Application(QtGui.QApplication, view.View):
 
     def load_state_file( self ):
         try:
-            with file(STATE_FILE_PATH, 'rb') as f:
+            with open(STATE_FILE_PATH, 'rb') as f:
                 return pickle.load(f)
         except (EOFError, IOError, IndexError) as x:
             log.info('Error loading state: %r', x)

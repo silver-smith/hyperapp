@@ -29,7 +29,7 @@ class BoundViewCommand(WindowCommand):
 
     # returns basestring list
     def get_shortcut_list( self ):
-        if isinstance(self.shortcut, basestring):
+        if isinstance(self.shortcut, str):
             return [self.shortcut]
         else:
             return self.shortcut or []
@@ -87,7 +87,7 @@ class UnboundViewCommand(object):
 class command(object):
 
     def __init__( self, text, desc, shortcut, enabled=True ):
-        assert shortcut is None or isinstance(shortcut, basestring) or is_list_inst(shortcut, basestring), repr(shortcut)
+        assert shortcut is None or isinstance(shortcut, str) or is_list_inst(shortcut, str), repr(shortcut)
         self.text = text
         self.desc = desc
         self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple

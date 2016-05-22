@@ -23,7 +23,7 @@ class CommandList(SmallListObject):
         SmallListObject.__init__(self)
 
     def fetch_all_elements( self ):
-        return map(self.cmd2element, Module.get_all_modules_commands())
+        return list(map(self.cmd2element, Module.get_all_modules_commands()))
 
     @classmethod
     def cmd2element( cls, cmd ):

@@ -20,7 +20,7 @@ class CacheRepository(object):
         return re.sub(r'[/|"]', '-', name)
 
     def key2fpath( self, key ):
-        assert is_list_inst(key, basestring), repr(key)
+        assert is_list_inst(key, str), repr(key)
         return os.path.join(CACHE_DIR, *tuple(map(self._quote, key)))
         
     def store_data( self, key, data ):

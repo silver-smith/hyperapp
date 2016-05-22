@@ -21,7 +21,7 @@ MAX_SANE_LIST_SIZE = 1 << 60
 
 
 def join_path( *args ):
-    return '.'.join(filter(None, args))
+    return '.'.join([_f for _f in args if _f])
 
 
 class DecodeError(Exception): pass
@@ -30,7 +30,7 @@ class DecodeError(Exception): pass
 class CdrDecoder(object):
 
     def decode( self, t, value, path='root' ):
-        assert isinstance(value, str), repr(value)
+        assert isinstance(value, bytes), repr(value)
         self.data = value
         self.ofs = 0
         return self.dispatch(t, path)

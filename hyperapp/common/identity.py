@@ -1,4 +1,5 @@
 from functools import total_ordering
+import codecs
 import cryptography.exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -15,18 +16,18 @@ class PublicKey(object):
 
     @classmethod
     def from_pem( cls, pem ):
-        assert isinstance(pem, basestring), repr(pem)
+        assert isinstance(pem, bytes), repr(pem)
         public_key = serialization.load_pem_public_key(str(pem), backend=default_backend())
         return cls('rsa', public_key)
 
     @classmethod
     def from_der( cls, der ):
-        assert isinstance(der, str), repr(der)
+        assert isinstance(der, bytes), repr(der)
         public_key = serialization.load_der_public_key(der, backend=default_backend())
         return cls('rsa', public_key)
 
     def __init__( self, algorithm, public_key ):
-        assert isinstance(algorithm, basestring), repr(algorithm)
+        assert isinstance(algorithm, str), repr(algorithm)
         self.algorithm = algorithm
         self.public_key = public_key
         self.public_pem = public_key.public_bytes(
@@ -42,13 +43,13 @@ class PublicKey(object):
             )
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(pk_der)
-        return '%s' % digest.finalize()
+        return digest.finalize()
 
     def get_id( self ):
         return self._id
 
     def get_short_id_hex( self ):
-        return self._id[:4].encode('hex')
+        return codecs.encode(self._id[:4], 'hex')
 
     def to_pem( self ):
         return self.public_pem
@@ -77,8 +78,8 @@ class PublicKey(object):
         return cipher_text
 
     def verify( self, message, signature ):
-        sign_alg, hash_alg, sign = signature.split(':', 2)
-        assert sign_alg == 'rsa' and hash_alg == 'sha256', repr((sign_alg, hash_alg))
+        sign_alg, hash_alg, sign = signature.split(b':', 2)
+        assert sign_alg == b'rsa' and hash_alg == b'sha256', repr((sign_alg, hash_alg))
         hashalg = hashes.SHA256()
         verifier = self.public_key.verifier(
             sign,
@@ -105,7 +106,7 @@ class Identity(object):
 
     @classmethod
     def load_from_file( cls, fpath ):
-        with open(fpath) as f:
+        with open(fpath, 'rb') as f:
             private_key = serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
         return cls('rsa', private_key)
 
@@ -119,7 +120,7 @@ class Identity(object):
         return cls('rsa', private_key)
 
     def __init__( self, algorithm, private_key ):
-        assert isinstance(algorithm, basestring), repr(algorithm)
+        assert isinstance(algorithm, str), repr(algorithm)
         assert algorithm == 'rsa', repr(algorithm)  # only algorithm supported for now
         self.algorithm = algorithm
         self.private_key = private_key
@@ -155,4 +156,4 @@ class Identity(object):
             hashalg)
         signer.update(message)
         signature = signer.finalize()
-        return 'rsa:sha256:%s' % signature
+        return b'rsa:sha256:' + signature

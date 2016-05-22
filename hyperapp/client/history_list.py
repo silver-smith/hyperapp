@@ -47,7 +47,7 @@ class HistoryList(ListObject):
         self._notify_fetch_result(self._get_slice())
 
     def _get_slice( self ):
-        return Slice('idx', None, 'asc', map(self._row2element, self._rows), bof=True, eof=True)
+        return Slice('idx', None, 'asc', list(map(self._row2element, self._rows)), bof=True, eof=True)
 
     def _row2element( self, row ):
         commands = [ElementCommand('open', 'Open', 'Open selected item')]

@@ -8,11 +8,11 @@ from .util import make_action
 class CommandBase(object):
 
     def __init__( self, text, desc, shortcut ):
-        assert isinstance(text, basestring), repr(text)
-        assert isinstance(desc, basestring), repr(desc)
+        assert isinstance(text, str), repr(text)
+        assert isinstance(desc, str), repr(desc)
         assert (shortcut is None
-                or isinstance(shortcut, basestring)
-                or is_list_inst(shortcut, basestring)), repr(shortcut)
+                or isinstance(shortcut, str)
+                or is_list_inst(shortcut, str)), repr(shortcut)
         self.text = text
         self.desc = desc
         self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple
@@ -38,9 +38,7 @@ class Command(CommandBase):
         return ObjectCommand(view, self.id, self.text, self.desc, self.shortcut)
 
 
-class RunnableCommand(Command):
-
-    __metaclass__ = abc.ABCMeta
+class RunnableCommand(Command, metaclass=abc.ABCMeta):
 
     def make_action( self, widget ):
         return make_action(widget, self.text, self.shortcut, self.run)
