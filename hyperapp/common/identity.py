@@ -129,7 +129,7 @@ class Identity(object):
         self.private_key = private_key
 
     def save_to_file( self, fpath ):
-        with open(fpath, 'w') as f:
+        with open(fpath, 'wb') as f:
             f.write(self.private_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.PKCS8,

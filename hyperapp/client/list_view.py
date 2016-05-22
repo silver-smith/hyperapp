@@ -381,7 +381,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def _get_visible_rows( self ):
         first_visible_row = self.verticalHeader().visualIndexAt(0)
         row_height = self.verticalHeader().defaultSectionSize()
-        visible_row_count = self.viewport().height() / row_height
+        visible_row_count = self.viewport().height() // row_height
         return (first_visible_row, visible_row_count)
 
     def fetch_elements_if_required( self ):

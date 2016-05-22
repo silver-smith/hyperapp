@@ -36,10 +36,10 @@ def flatten(listOfLists):
 
 # todo: quote/unquote '|' chars
 def encode_path( path ):
-    return '|'.join(path).encode('utf-8')
+    return '|'.join(path)
 
 def decode_path( path_str ):
-    return path_str.decode('utf-8').split('|')
+    return path_str.split('|')
 
 # todo: quote/unquote '|' chars
 def encode_route( route ):
