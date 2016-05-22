@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
