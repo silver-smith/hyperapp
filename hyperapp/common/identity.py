@@ -17,7 +17,7 @@ class PublicKey(object):
     @classmethod
     def from_pem( cls, pem ):
         assert isinstance(pem, bytes), repr(pem)
-        public_key = serialization.load_pem_public_key(str(pem), backend=default_backend())
+        public_key = serialization.load_pem_public_key(pem, backend=default_backend())
         return cls('rsa', public_key)
 
     @classmethod
@@ -99,6 +99,9 @@ class PublicKey(object):
 
     def __lt__( self, other ):
         return isinstance(other, PublicKey) and self.public_pem < other.public_pem
+
+    def __hash__( self ):
+        return hash(self.public_pem)
 
 
 # Contains assymetryc private key

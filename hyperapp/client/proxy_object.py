@@ -1,5 +1,6 @@
 import logging
 import weakref
+import codecs
 from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
 from ..common.htypes import (
@@ -252,7 +253,7 @@ class ProxyObject(Object):
         return self.make_cache_key('commands')
 
     def make_cache_key( self, name ):
-        return ['object', self.server.get_id().encode('hex')] + self.path + [name]
+        return ['object', codecs.encode(self.server.get_id(), 'hex').decode()] + self.path + [name]
 
     def _get_commands_cache_type( self ):
         return TList(tCommand)

@@ -58,7 +58,7 @@ class UrlFileRepository(object):
     def _load_item( self, fpath ):
         fname = os.path.basename(fpath)
         name, ext = os.path.splitext(fname)  # file name is NamedUrl.id
-        with open(fpath) as f:
+        with open(fpath, 'rb') as f:
             data = f.read()
         rec = packet_coders.decode(self.encoding, data, NamedUrl.type)
         return NamedUrl.from_data(self.iface_registry, name, rec)
@@ -68,5 +68,5 @@ class UrlFileRepository(object):
             os.makedirs(self.dir)
         data = packet_coders.encode(self.encoding, item.to_data(), NamedUrl.type)
         fpath = os.path.join(self.dir, item.id + self.fext)
-        with open(fpath, 'w') as f:
+        with open(fpath, 'wb') as f:
             f.write(data)

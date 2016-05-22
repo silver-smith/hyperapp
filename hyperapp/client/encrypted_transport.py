@@ -25,7 +25,7 @@ ENCODING = 'cdr'
 class Session(object):
 
     def __init__( self, session_key ):
-        assert isinstance(session_key, str), repr(session_key)
+        assert isinstance(session_key, bytes), repr(session_key)
         self.session_key = session_key
 
 
