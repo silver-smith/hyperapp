@@ -26,8 +26,8 @@ class NamedUrl(object):
         return cls(id, rec.name, Url.from_data(iface_registry, rec.url))
 
     def __init__( self, id, name, url ):
-        assert isinstance(id, basestring), repr(id)
-        assert isinstance(name, basestring), repr(name)
+        assert isinstance(id, str), repr(id)
+        assert isinstance(name, str), repr(name)
         assert isinstance(url, Url), repr(url)
         self.id = id
         self.name = name
@@ -58,7 +58,7 @@ class UrlFileRepository(object):
     def _load_item( self, fpath ):
         fname = os.path.basename(fpath)
         name, ext = os.path.splitext(fname)  # file name is NamedUrl.id
-        with open(fpath) as f:
+        with open(fpath, 'rb') as f:
             data = f.read()
         rec = packet_coders.decode(self.encoding, data, NamedUrl.type)
         return NamedUrl.from_data(self.iface_registry, name, rec)
@@ -68,5 +68,5 @@ class UrlFileRepository(object):
             os.makedirs(self.dir)
         data = packet_coders.encode(self.encoding, item.to_data(), NamedUrl.type)
         fpath = os.path.join(self.dir, item.id + self.fext)
-        with open(fpath, 'w') as f:
+        with open(fpath, 'wb') as f:
             f.write(data)

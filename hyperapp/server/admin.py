@@ -30,7 +30,7 @@ class UserList(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        return map(self.rec2element, this_module.User.select())
+        return list(map(self.rec2element, this_module.User.select()))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -58,7 +58,7 @@ class ThisModule(PonyOrmModule):
     def __init__( self ):
         PonyOrmModule.__init__(self, MODULE_NAME)
         self.User = self.make_entity('User',
-                                     user_name=Required(unicode),
+                                     user_name=Required(str),
                                      public_key_pem=Required(str),
                                      )
 

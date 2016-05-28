@@ -37,7 +37,7 @@ class ResponseManager(object):
         log.info('from %s:', server_public_key.get_short_id_hex())
         pprint(tPacket, packet)
         self._module_mgr.add_modules(packet.aux_info.modules)
-        unfulfilled_requirements = filter(self._is_unfulfilled_requirement, packet.aux_info.requirements)
+        unfulfilled_requirements = list(filter(self._is_unfulfilled_requirement, packet.aux_info.requirements))
         if unfulfilled_requirements:
             self._code_repository.get_modules_by_requirements_and_continue(
                 unfulfilled_requirements,

@@ -69,8 +69,8 @@ dateTimeColumnType = DateTimeColumnType()
 class Column(object):
 
     def __init__( self, id, title=None, type=stringColumnType ):
-        assert isinstance(id, basestring), repr(id)
-        assert title is None or isinstance(title, basestring), repr(title)
+        assert isinstance(id, str), repr(id)
+        assert title is None or isinstance(title, str), repr(title)
         assert isinstance(type, ColumnType), repr(type)
         self.id = id
         self.title = title
@@ -95,7 +95,7 @@ class ListInterface(Interface):
         
     def __init__( self, iface_id, base=None, content_fields=None, commands=None, columns=None, key_column='key', required_module_id=None ):
         assert is_list_inst(columns, Column), repr(columns)
-        assert isinstance(key_column, basestring), repr(key_column)
+        assert isinstance(key_column, str), repr(key_column)
         self.columns = columns
         self.key_column = key_column
         self.key_type = self._pick_key_column().type.type  # used by parent __init__

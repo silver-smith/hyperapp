@@ -1,5 +1,5 @@
 import logging
-from cStringIO import StringIO
+from io import StringIO
 import pickle
 import weakref
 from datetime import datetime
@@ -111,7 +111,7 @@ class cached_property(object):
 
 
 def uni2str( v ):
-    if isinstance(v, unicode):
+    if isinstance(v, str):
         return v.encode('utf-8')
     else:
         return v

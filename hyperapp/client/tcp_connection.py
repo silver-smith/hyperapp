@@ -34,8 +34,8 @@ class TcpConnection(object):
         self.session_list = TransportSessionList()
         self.socket = None
         self.connected = False
-        self.send_buf = ''
-        self.recv_buf = ''
+        self.send_buf = b''
+        self.recv_buf = b''
         self.trace('connecting...')
         self.socket = QtNetwork.QTcpSocket()
         self.socket.error.connect(self.on_error)
@@ -76,7 +76,7 @@ class TcpConnection(object):
     def on_disconnected( self ):
         self.trace('Disconnected')
         self.connected = False
-        self.recv_buf = ''
+        self.recv_buf = b''
         self._connect()
 
     def on_bytes_written( self, size ):
@@ -86,7 +86,7 @@ class TcpConnection(object):
             self.socket.write(self.send_buf)
 
     def on_ready_read( self ):
-        data = str(self.socket.readAll())
+        data = self.socket.readAll().data()  # QtCore.QByteArray -> bytes
         self.trace('%d bytes is received' % len(data))
         self.recv_buf += data
         while self.recv_buf:
@@ -99,7 +99,7 @@ class TcpConnection(object):
             self.trace('consumed %d bytes, remained %d' % (packet_size, len(self.recv_buf)))
 
     def send_data( self, contents ):
-        assert isinstance(contents, str), repr(contents)
+        assert isinstance(contents, bytes), repr(contents)
         data = encode_tcp_packet(contents)
         self.trace('sending data, old=%d, write=%d, new=%d' % (len(self.send_buf), len(data), len(self.send_buf) + len(data)))
         if self.connected and not self.send_buf:

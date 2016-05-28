@@ -1,6 +1,6 @@
 import os
 import logging
-from Queue import Queue
+from queue import Queue
 from ..common.util import flatten
 from ..common.htypes import tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket
@@ -170,7 +170,7 @@ class EncryptedTcpTransport(Transport):
 
     def make_pop_challenge_packet( self, session ):
         log.info('sending pop challenge:')
-        challenge = os.urandom(POP_CHALLENGE_SIZE/8)
+        challenge = os.urandom(POP_CHALLENGE_SIZE//8)
         session.pop_challenge = challenge
         return tPopChallengePacket(
             challenge=challenge)

@@ -51,7 +51,7 @@ class THierarchy(Type):
         self.registry = {}  # id -> TClass
 
     def register( self, id, trec=None, fields=None, base=None ):
-        assert isinstance(id, basestring), repr(id)
+        assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         if trec is not None:
             assert fields is None and base is None
@@ -74,7 +74,7 @@ class THierarchy(Type):
         return rec._class.hierarchy is self
 
     def resolve( self, id ):
-        assert isinstance(id, basestring), repr(id)
+        assert isinstance(id, str), repr(id)
         assert id in self.registry, 'Unknown class id: %r. Known are: %r' % (id, sorted(self.registry.keys()))
         return self.registry[id]
 

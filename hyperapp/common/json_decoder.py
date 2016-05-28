@@ -1,4 +1,5 @@
 import json
+import base64
 import dateutil.parser
 from .method_dispatch import method_dispatch
 from .htypes import (
@@ -18,7 +19,7 @@ from .htypes import (
 
 
 def join_path( *args ):
-    return '.'.join(filter(None, args))
+    return '.'.join([_f for _f in args if _f])
 
 
 class DecodeError(Exception): pass
@@ -27,7 +28,8 @@ class DecodeError(Exception): pass
 class JsonDecoder(object):
 
     def decode( self, t, value, path='root' ):
-        return self.dispatch(t, json.loads(value), path)
+        assert isinstance(value, bytes), repr(value)
+        return self.dispatch(t, json.loads(value.decode()), path)
 
     def expect( self, path, expr, desc ):
         if not expr:
@@ -46,17 +48,17 @@ class JsonDecoder(object):
 
     @dispatch.register(TString)
     def decode_primitive( self, t, value, path ):
-        self.expect_type(path, isinstance(value, basestring), value, 'string')
+        self.expect_type(path, isinstance(value, str), value, 'string')
         return value
 
     @dispatch.register(TBinary)
     def decode_primitive( self, t, value, path ):
-        self.expect_type(path, isinstance(value, basestring), value, 'string')
-        return str(value)
+        self.expect_type(path, isinstance(value, str), value, 'string')
+        return base64.b64decode(value)
 
     @dispatch.register(TInt)
     def decode_primitive( self, t, value, path ):
-        self.expect_type(path, isinstance(value, (int, long)), value, 'integer')
+        self.expect_type(path, isinstance(value, int), value, 'integer')
         return value
 
     @dispatch.register(TBool)
@@ -66,7 +68,7 @@ class JsonDecoder(object):
 
     @dispatch.register(TDateTime)
     def decode_datetime( self, t, value, path ):
-        self.expect_type(path, isinstance(value, basestring), value, 'datetime (string)')
+        self.expect_type(path, isinstance(value, str), value, 'datetime (string)')
         return dateutil.parser.parse(value)
 
     @dispatch.register(TOptional)

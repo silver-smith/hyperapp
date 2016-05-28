@@ -36,7 +36,7 @@ class ModuleList(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        return map(self.rec2element, module.Module.select().order_by(module.Module.id))
+        return list(map(self.rec2element, module.Module.select().order_by(module.Module.id)))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -156,7 +156,7 @@ class ModuleDepList(SmallListObject):
     @db_session
     def fetch_all_elements( self ):
         rec = module.Module[self.module_id]
-        return map(self.rec2element, rec.deps)
+        return list(map(self.rec2element, rec.deps))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -209,7 +209,7 @@ class AvailableDepList(SmallListObject):
             query = select(rec for rec in module.Module if rec.id not in dep_ids)
         else:
             query = select(rec for rec in module.Module)
-        return map(self.rec2element, query.order_by(module.Module.id))
+        return list(map(self.rec2element, query.order_by(module.Module.id)))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -242,15 +242,15 @@ class ModuleListModule(PonyOrmModule):
 
     def init_phase2( self ):
         self.Module = self.make_entity('Module',
-                                       id=PrimaryKey(unicode),
-                                       name=Required(unicode),
+                                       id=PrimaryKey(str),
+                                       name=Required(str),
                                        deps=Set('ModuleDep', reverse='module'),
                                        dep_of=Set('ModuleDep', reverse='dep'),
                                        )
         self.ModuleDep = self.make_entity('ModuleDep',
                                           module=Required(self.Module),
                                           dep=Required(self.Module),
-                                          visible_as=Required(unicode),
+                                          visible_as=Required(str),
                                           )
 
     def resolve( self, iface, path ):

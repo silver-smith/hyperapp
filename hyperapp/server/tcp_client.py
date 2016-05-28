@@ -23,7 +23,7 @@ class TcpConnection(object):
 
     def __init__( self, socket ):
         self.socket = socket
-        self.recv_buf = ''
+        self.recv_buf = b''
 
     def close( self ):
         self.socket.close()
@@ -46,7 +46,7 @@ class TcpConnection(object):
                 return None
             chunk = self.socket.recv(RECV_SIZE)
             log.info('  received (%d) %s...', len(chunk), chunk[:100])
-            if chunk == '':
+            if chunk == b'':
                 raise Error('Socket is closed')
             self.recv_buf += chunk
         packet_data, packet_size = decode_tcp_packet(self.recv_buf)

@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 class IdentityItem(object):
 
     def __init__( self, name, identity ):
-        assert isinstance(name, basestring), repr(name)
+        assert isinstance(name, str), repr(name)
         assert isinstance(identity, Identity), repr(identity)
         self.name = name
         self.identity = identity
@@ -159,7 +159,7 @@ class IdentityList(ListObject):
 
     def _get_slice( self ):
         items = self.controller.get_items()
-        return Slice('name', None, 'asc', map(self._item2element, items), bof=True, eof=True)
+        return Slice('name', None, 'asc', list(map(self._item2element, items)), bof=True, eof=True)
 
     def _item2element( self, item ):
         assert isinstance(item, IdentityItem), repr(item)

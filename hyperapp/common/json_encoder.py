@@ -1,4 +1,5 @@
 import json
+import base64
 from .method_dispatch import method_dispatch
 from .htypes import (
     TString,
@@ -22,18 +23,21 @@ class JsonEncoder(object):
         self.pretty = pretty
 
     def encode( self, t, value ):
-        return json.dumps(self.dispatch(t, value), indent=4 if self.pretty else None)
+        return json.dumps(self.dispatch(t, value), indent=4 if self.pretty else None).encode()
 
     @method_dispatch
     def dispatch( self, t, value ):
         assert False, repr((t, value))  # Unknown type
 
     @dispatch.register(TString)
-    @dispatch.register(TBinary)
     @dispatch.register(TInt)
     @dispatch.register(TBool)
     def encode_primitive( self, t, value ):
         return value
+
+    @dispatch.register(TBinary)
+    def encode_primitive( self, t, value ):
+        return str(base64.b64encode(value), 'ascii')
 
     @dispatch.register(TDateTime)
     def encode_datetime( self, t, value ):

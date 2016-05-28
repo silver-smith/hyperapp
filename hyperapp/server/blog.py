@@ -93,7 +93,7 @@ class Blog(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        return map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at)))
+        return list(map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at))))
 
     @classmethod
     def rec2element( cls, rec ):

@@ -26,7 +26,7 @@ class StringFieldHandle(FieldHandle):
     handle_type = tStringFieldHandle
 
     def __init__( self, value ):
-        assert isinstance(value, basestring), repr(value)
+        assert isinstance(value, str), repr(value)
         self.value = value
 
     def construct( self, parent ):
@@ -39,7 +39,7 @@ class IntFieldHandle(FieldHandle):
     handle_type = tIntFieldHandle
 
     def __init__( self, value ):
-        assert isinstance(value, (int, long)), repr(value)
+        assert isinstance(value, int), repr(value)
         self.value = value
 
     def construct( self, parent ):

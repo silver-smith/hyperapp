@@ -31,7 +31,7 @@ class TransportSessionList(object):
 
     def pull_notification_transport_packets( self ):
         packets = []
-        for transport_id, session in self.transport2session.items():
+        for transport_id, session in list(self.transport2session.items()):
             transport_packets = session.pull_notification_transport_packets()
             for packet in transport_packets:
                 assert isinstance(packet, tTransportPacket), repr(packet)

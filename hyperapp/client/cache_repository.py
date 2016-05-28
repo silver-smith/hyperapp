@@ -20,7 +20,7 @@ class CacheRepository(object):
         return re.sub(r'[/|"]', '-', name)
 
     def key2fpath( self, key ):
-        assert is_list_inst(key, basestring), repr(key)
+        assert is_list_inst(key, str), repr(key)
         return os.path.join(CACHE_DIR, *tuple(map(self._quote, key)))
         
     def store_data( self, key, data ):
@@ -28,14 +28,14 @@ class CacheRepository(object):
         dir = os.path.dirname(fpath)
         if not os.path.isdir(dir):
             os.makedirs(dir)
-        with file(fpath, 'wb') as f:
+        with open(fpath, 'wb') as f:
             f.write(data)
 
     def load_data( self, key ):
         fpath = self.key2fpath(key)
         if not os.path.exists(fpath):
             return None
-        with file(fpath, 'rb') as f:
+        with open(fpath, 'rb') as f:
             return f.read()
 
     def store_value( self, key, value, t ):

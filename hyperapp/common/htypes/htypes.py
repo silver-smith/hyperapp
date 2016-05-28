@@ -1,4 +1,3 @@
-from types import NoneType
 import datetime
 from ..util import is_list_inst
 
@@ -7,7 +6,7 @@ class TypeError(Exception): pass
 
 
 def join_path( *args ):
-    return '.'.join(filter(None, args))
+    return '.'.join([_f for _f in args if _f])
 
 
 class Type(object):
@@ -44,19 +43,19 @@ class TPrimitive(Type):
 
 class TNone(TPrimitive):
     type_name = 'none'
-    type = NoneType
+    type = type(None)
 
 class TString(TPrimitive):
     type_name = 'string'
-    type = basestring
+    type = str
 
 class TBinary(TPrimitive):
-    type_name = 'string'
-    type = basestring
+    type_name = 'binary'
+    type = bytes
 
 class TInt(TPrimitive):
     type_name = 'int'
-    type = (int, long)
+    type = int
 
 class TBool(TPrimitive):
     type_name = 'bool'
@@ -186,7 +185,7 @@ class TRecord(Type):
     def instantiate_impl( self, rec, *args, **kw ):
         fields = self.adopt_args(args, kw or {})
         ## print '*** instantiate', self, sorted(fields.keys()), sorted(f.name for f in self.fields), fields
-        for name, val in fields.items():
+        for name, val in list(fields.items()):
             setattr(rec, name, val)
 
     def instantiate( self, *args, **kw ):
@@ -214,7 +213,7 @@ class TIndexedList(TList):
 
 tRoute = TList(tString)
 tEndpoint = TRecord([
-    Field('public_key_pem', tString),
+    Field('public_key_pem', tBinary),
     Field('routes', TList(tRoute)),
     ])
 

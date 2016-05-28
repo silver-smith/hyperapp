@@ -1,5 +1,6 @@
 import logging
 import weakref
+import codecs
 from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
 from ..common.htypes import (
@@ -160,7 +161,7 @@ class ProxyObject(Object):
         return object
 
     def __init__( self, server, path, iface, facets=None ):
-        assert is_list_inst(path, basestring), repr(path)
+        assert is_list_inst(path, str), repr(path)
         assert isinstance(iface, Interface), repr(iface)
         assert facets is None or is_list_inst(facets, Interface), repr(facets)
         Object.__init__(self)
@@ -170,7 +171,7 @@ class ProxyObject(Object):
         self.facets = facets or []
         self.cache = cache_repository
         cached_commands = self.cache.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
-        self.commands = map(Command.from_data, cached_commands or [])
+        self.commands = list(map(Command.from_data, cached_commands or []))
 
     def __repr__( self ):
         return 'ProxyObject(%s, %s, %s)' % (self.server.endpoint.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
@@ -201,7 +202,7 @@ class ProxyObject(Object):
         self.execute_request('subscribe')
 
     def set_contents( self, contents ):
-        self.commands = map(Command.from_data, contents.commands)
+        self.commands = list(map(Command.from_data, contents.commands))
         self.cache.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
 
     def get_title( self ):
@@ -252,7 +253,7 @@ class ProxyObject(Object):
         return self.make_cache_key('commands')
 
     def make_cache_key( self, name ):
-        return ['object', self.server.get_id().encode('hex')] + self.path + [name]
+        return ['object', codecs.encode(self.server.get_id(), 'hex').decode()] + self.path + [name]
 
     def _get_commands_cache_type( self ):
         return TList(tCommand)

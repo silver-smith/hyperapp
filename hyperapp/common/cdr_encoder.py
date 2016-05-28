@@ -18,7 +18,7 @@ from .htypes import (
 class CdrEncoder(object):
 
     def encode( self, t, value ):
-        self.data = ''
+        self.data = b''
         self.dispatch(t, value)
         return self.data
 
@@ -33,12 +33,12 @@ class CdrEncoder(object):
         self.data += struct.pack('!?', value)
 
     def write_binary( self, value ):
-        assert isinstance(value, str), repr(value)
+        assert isinstance(value, bytes), repr(value)
         self.write_int(len(value))
         self.data += value
 
     def write_unicode( self, value ):
-        if isinstance(value, unicode):
+        if isinstance(value, str):
             value = value.encode('utf-8')
         self.write_int(len(value))
         self.data += value

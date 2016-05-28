@@ -62,7 +62,7 @@ class Object(object):
 
     def get( self ):
         path = self.get_path()
-        assert is_list_inst(path, basestring), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
+        assert is_list_inst(path, str), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
         return self.iface.Object(
             objimpl_id=self.objimpl_id,
             iface=self.iface.iface_id,
@@ -200,7 +200,7 @@ class ListObject(Object):
         assert False, repr(command_id)  # Unexpected command_id
 
     def Slice( self, sort_column_id, from_key, direction, elements, bof, eof ):
-        assert isinstance(sort_column_id, basestring), repr(sort_column_id)
+        assert isinstance(sort_column_id, str), repr(sort_column_id)
         column = self._pick_column(sort_column_id)
         assert column, 'Unknown column: %r; known are: %r'\
            % (sort_column_id, [column.id for column in self.iface.columns])

@@ -1,5 +1,5 @@
 import logging
-from Queue import Queue
+from queue import Queue
 from ..common.htypes import tUpdate, tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket

@@ -113,7 +113,7 @@ class Model(QtCore.QAbstractTableModel):
     def set_object( self, object, sort_column_id ):
         self._object = object
         self._columns = object.get_columns()
-        self._visible_columns = filter(lambda column: column.title is not None, self._columns)
+        self._visible_columns = [column for column in self._columns if column.title is not None]
         self._key_column_id = object.get_key_column_id()
         self._current_order = sort_column_id or self._current_order
         self.keys = []
@@ -381,7 +381,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def _get_visible_rows( self ):
         first_visible_row = self.verticalHeader().visualIndexAt(0)
         row_height = self.verticalHeader().defaultSectionSize()
-        visible_row_count = self.viewport().height() / row_height
+        visible_row_count = self.viewport().height() // row_height
         return (first_visible_row, visible_row_count)
 
     def fetch_elements_if_required( self ):

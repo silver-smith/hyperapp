@@ -1,6 +1,6 @@
 import os.path
 import logging
-import simpleyaml as yaml
+import yaml
 from ..common.interface.code_repository import (
     tModule,
     code_repository_iface,
@@ -28,7 +28,7 @@ class ModuleRepository(object):
         self._load_dynamic_modules()
 
     def get_module_list( self ):
-        return sorted(self._id2module.values(), key=lambda module: module.id)
+        return sorted(list(self._id2module.values()), key=lambda module: module.id)
 
     def get_module_by_id( self, id ):
         return self._id2module[id]
