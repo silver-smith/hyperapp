@@ -1,5 +1,6 @@
 import os.path
 import logging
+import asyncio
 import pickle as pickle
 from PySide import QtCore, QtGui
 from hyperapp.common.endpoint import Endpoint
@@ -43,6 +44,7 @@ class Application(QtGui.QApplication, view.View):
         self._code_repository = code_repository.get_code_repository()
         self._response_mgr = ResponseManager(self._route_repo, self._module_mgr, self._code_repository)
         self._windows = []
+        self._loop = asyncio.get_event_loop()
 
     @property
     def response_mgr( self ):
@@ -66,8 +68,9 @@ class Application(QtGui.QApplication, view.View):
 
     def window_closed( self, view ):
         self._windows.remove(view)
-        if not self._windows:
+        if not self._windows:  # Was it the last window? Then it is time to exit
             self.save_state([view.handle()])
+            self._loop.stop()
 
     @command('Open server', 'Load server endpoint from file', 'Alt+O')
     def open_server( self ):
@@ -84,7 +87,7 @@ class Application(QtGui.QApplication, view.View):
         ## module.set_shutdown_flag()
         handles = self.get_windows_handles()
         self.save_state(handles)
-        QtGui.QApplication.quit()
+        self._loop.stop()
 
     def save_state( self, handles ):
         module_ids = list(flatten(handle.get_module_ids() for handle in handles))
@@ -136,6 +139,12 @@ class Application(QtGui.QApplication, view.View):
         handles = [window.Handle.from_data(rec) for rec in handles_data]
         self.open_windows(handles)
 
+    def process_events_and_repeat( self ):
+        while self.hasPendingEvents():
+            self.processEvents()
+        self.sendPostedEvents()
+        self._loop.call_later(0.01, self.process_events_and_repeat)
+
     def exec_( self ):
         state = self.load_state_file()
         if state:
@@ -147,4 +156,8 @@ class Application(QtGui.QApplication, view.View):
             whandles = self.get_default_state()
             self.open_windows(whandles)
             del whandles  # or objects will be kept alive
-        QtGui.QApplication.exec_()
+        self._loop.call_soon(self.process_events_and_repeat)
+        try:
+            self._loop.run_forever()
+        finally:
+            self._loop.close()
