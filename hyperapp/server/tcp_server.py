@@ -54,7 +54,7 @@ class TcpServer(object):
             self.join_finished_threads()
 
     def stop( self ):
-        for client in list(self.client2thread.keys()):
+        for client in self.client2thread.keys():
             client.stop()
         while self.client2thread:
             time.sleep(0.1)  # hacky

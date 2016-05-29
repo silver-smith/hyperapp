@@ -95,7 +95,7 @@ class WeakValueMultiDict(object):
         return l
 
     def items( self ):
-        for key, value in list(self.data.items()):
+        for key, value in self.data.items():
             for wr in value:
                 item = wr()
                 if item:
@@ -129,6 +129,6 @@ class MultiDict(object):
         return self.data[key]
 
     def items( self ):
-        for key, values in list(self.data.items()):
+        for key, values in self.data.items():
             for value in value:
                 yield (key, value)

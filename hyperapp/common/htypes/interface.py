@@ -112,11 +112,11 @@ class Interface(object):
 
     def _register_types( self ):
         self._tContents = TRecord(self.get_contents_fields())
-        self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in list(self.id2command.items()))
-        self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in list(self.id2command.items()))
+        self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self.id2command.items())
+        self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self.id2command.items())
         self._tObject = tObject.register(self.iface_id, base=tThisProxyObjectWithContents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
-        for command in list(self.id2command.values()):
+        for command in self.id2command.values():
             cmd_id = command.command_id
             tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
             tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])

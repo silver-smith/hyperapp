@@ -56,7 +56,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _update_slices( self, diff ):
         for slice in self._slices:
-            for idx in reversed(list(range(len(slice.elements)))):
+            for idx in reversed(range(len(slice.elements))):
                 element = slice.elements[idx]
                 if diff.start_key <= element.key and element.key <= diff.end_key:
                     del slice.elements[idx]

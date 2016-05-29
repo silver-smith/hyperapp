@@ -185,7 +185,7 @@ class TRecord(Type):
     def instantiate_impl( self, rec, *args, **kw ):
         fields = self.adopt_args(args, kw or {})
         ## print '*** instantiate', self, sorted(fields.keys()), sorted(f.name for f in self.fields), fields
-        for name, val in list(fields.items()):
+        for name, val in fields.items():
             setattr(rec, name, val)
 
     def instantiate( self, *args, **kw ):
