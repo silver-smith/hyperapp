@@ -1,4 +1,5 @@
 import logging
+import asyncio
 import weakref
 import codecs
 from ..common.util import is_list_inst
@@ -211,8 +212,9 @@ class ProxyObject(Object):
     def get_commands( self ):
         return self.commands
 
+    @asyncio.coroutine
     def run_command( self, command_id, initiator_view=None, **kw ):
-        self.execute_request(command_id, initiator_view, **kw)
+        return (yield from self.execute_request(command_id, initiator_view, **kw))
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)
@@ -234,9 +236,10 @@ class ProxyObject(Object):
         request = self.prepare_notification(command_id, *args, **kw)
         self.server.send_notification(request)
 
+    @asyncio.coroutine
     def execute_request( self, command_id, initiator_view=None, *args, **kw ):
         request = self.prepare_request(command_id, initiator_view, *args, **kw)
-        self.server.execute_request(request)
+        return (yield from self.server.execute_request(request))
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':

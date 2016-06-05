@@ -1,3 +1,4 @@
+import asyncio
 from functools import total_ordering
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
@@ -131,8 +132,9 @@ class ListObject(Object):
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         raise NotImplementedError(self.__class__)
 
-    def run_element_command( self, command_id, element_key, initiator_view ):
-        return self.run_command(command_id, initiator_view, element_key=element_key)
+    @asyncio.coroutine
+    def run_element_command( self, command_id, element_key ):
+        return (yield from self.run_command(command_id, element_key=element_key))
 
     def _notify_fetch_result( self, result ):
         assert isinstance(result, Slice), repr(result)

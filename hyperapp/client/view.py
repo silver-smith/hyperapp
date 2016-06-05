@@ -1,6 +1,7 @@
 # base class for Views
 
 import logging
+import asyncio
 import weakref
 from PySide import QtCore, QtGui
 from ..common.htypes import tHandle
@@ -106,8 +107,9 @@ class View(ObjectObserver):
         if handle:  # command is handled by client-side
             self.open(handle)
 
+    @asyncio.coroutine
     def run_object_element_command( self, command_id, element_key ):
-        handle = self.get_object().run_element_command(command_id, element_key, self)
+        handle = yield from self.get_object().run_element_command(command_id, element_key)
         if handle:  # command is handled by client-side
             self.open(handle)
 

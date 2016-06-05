@@ -1,4 +1,5 @@
 import logging
+import asyncio
 import uuid
 from PySide import QtCore
 from ..common.util import is_list_inst
@@ -49,6 +50,7 @@ class Server(object):
         log.info('send_notification command_id=%r notification=%r', notification.command_id, notification)
         self._send(notification.to_data())
 
+    @asyncio.coroutine
     def execute_request( self, request ):
         assert isinstance(request, Request), repr(request)
         request_id = str(uuid.uuid4())

@@ -45,6 +45,7 @@ class Application(QtGui.QApplication, view.View):
         self._response_mgr = ResponseManager(self._route_repo, self._module_mgr, self._code_repository)
         self._windows = []
         self._loop = asyncio.get_event_loop()
+        self._loop.set_debug(True)
 
     @property
     def response_mgr( self ):

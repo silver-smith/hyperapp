@@ -1,3 +1,4 @@
+import asyncio
 import weakref
 import traceback
 from .util import WeakSetWithCallback
@@ -42,6 +43,7 @@ class Object(object):
     def get_commands( self ):
         raise NotImplementedError(self.__class__)
 
+    @asyncio.coroutine
     def run_command( self, command_id, initiator_view=None, **kw ):
         assert False, repr(command_id)  # Unknown command
 

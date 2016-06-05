@@ -1,6 +1,7 @@
 # panel with commands for current dir and selected elements
 
 import logging
+import asyncio
 import weakref
 from PySide import QtCore, QtGui
 from .command import RunnableCommand, ElementCommand
@@ -41,7 +42,7 @@ class View(QtGui.QDockWidget):
         for cmd in window.get_object_commands():
             assert isinstance(cmd, RunnableCommand), repr(cmd)
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: cmd.run())
+            button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
             self.dir_buttons.append(button)
             idx += 1
@@ -56,7 +57,7 @@ class View(QtGui.QDockWidget):
         for cmd in elt.commands:
             assert isinstance(cmd, ElementCommand), repr(cmd)
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: view.run_object_element_command(cmd.id, elt.key))
+            button.pressed.connect(lambda cmd=cmd: asyncio.async(view.run_object_element_command(cmd.id, elt.key)))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 
