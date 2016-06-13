@@ -11,8 +11,8 @@ from .tcp_client import TcpClient
 log = logging.getLogger(__name__)
 
 
-#TRANSPORT_ID = 'tcp.cdr'
-TRANSPORT_ID = 'encrypted_tcp'
+TRANSPORT_ID = 'tcp.cdr'
+#TRANSPORT_ID = 'encrypted_tcp'
           
 
 class TcpServer(object):

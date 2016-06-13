@@ -1,7 +1,6 @@
 import logging
 import asyncio
 import uuid
-from PySide import QtCore
 from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
@@ -55,11 +54,10 @@ class Server(object):
         assert isinstance(request, Request), repr(request)
         request_id = str(uuid.uuid4())
         log.info('execute_request command_id=%r request_id=%r', request.command_id, request_id)
-        app = QtCore.QCoreApplication.instance()
-        app.response_mgr.register_request(request_id, request)
-        self._send(request.to_data(request_id))
+        return (yield from self._send(request.to_data(request_id)))
 
+    @asyncio.coroutine
     def _send( self, request_rec ):
         log.info('packet to %s', self.endpoint)
         pprint(tClientPacket, request_rec)
-        transport_registry.send_packet(self, request_rec, tClientPacket)
+        return (yield from transport_registry.send_packet(self, request_rec, tClientPacket))

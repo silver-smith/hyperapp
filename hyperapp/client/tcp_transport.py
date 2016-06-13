@@ -1,10 +1,10 @@
-from PySide import QtCore
+import asyncio
 from ..common.htypes import tServerPacket
 from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.packet_coders import packet_coders
 from .transport import Transport, transport_registry
-from .tcp_connection import TcpConnection
+from .tcp_protocol import TcpProtocol
 
 
 CDR_TRANSPORT_ID = 'tcp.cdr'
@@ -20,13 +20,14 @@ class TcpTransport(Transport):
     def register( self ):
         transport_registry.register(self.transport_id, self)
 
+    @asyncio.coroutine
     def send_packet( self, server, route, payload, payload_type, aux_info ):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
         packet = self._make_packet(payload, payload_type, aux_info)
-        connection = TcpConnection.produce(server.endpoint.public_key, host, port)
-        connection.send_data(packet)
+        protocol = yield from TcpProtocol.produce(server.endpoint.public_key, host, port)
+        protocol.send_data(packet)
         return True
 
     def process_packet( self, connection, session_list, server_public_key, data ):

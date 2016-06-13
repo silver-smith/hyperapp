@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from ..common.transport_packet import tTransportPacket
 
 log = logging.getLogger(__name__)
@@ -23,6 +24,7 @@ class TransportRegistry(object):
     def resolve( self, id ):
         return self._id2transport[id]
 
+    @asyncio.coroutine
     def send_packet( self, server, payload, payload_type, aux_info=None ):
         for route in server.get_endpoint().routes:
             transport_id = route[0]
@@ -30,8 +32,11 @@ class TransportRegistry(object):
             if not transport:
                 log.info('Warning: unknown transport: %r', transport_id)
                 continue
-            if transport.send_packet(server, route[1:], payload, payload_type, aux_info):
-                return
+            try:
+                return (yield from transport.send_packet(server, route[1:], payload, payload_type, aux_info))
+            except:
+                # todo: catch specific exceptions; try next route
+                raise
         raise RuntimeError('Unable to send packet to %s - no reachable transports'
                            % server.get_endpoint().public_key.get_short_id_hex())
 
