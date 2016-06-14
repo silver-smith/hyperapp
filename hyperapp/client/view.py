@@ -10,7 +10,6 @@ from .util import DEBUG_FOCUS, make_action, focused_index
 from .module import Module
 from .object import ObjectObserver
 from .view_command import BoundViewCommand, UnboundViewCommand
-from .view_registry import view_registry
 
 log = logging.getLogger(__name__)
 
@@ -102,15 +101,16 @@ class View(ObjectObserver):
         else:
             return []
 
+    @asyncio.coroutine
     def run_object_command( self, command_id ):
-        handle = self.get_object().run_command(command_id, self)
-        if handle:  # command is handled by client-side
+        handle = yield from self.get_object().run_command(command_id, self)
+        if handle:
             self.open(handle)
 
     @asyncio.coroutine
     def run_object_element_command( self, command_id, element_key ):
         handle = yield from self.get_object().run_element_command(command_id, element_key)
-        if handle:  # command is handled by client-side
+        if handle:
             self.open(handle)
 
     def get_selected_elts( self ):
@@ -128,12 +128,12 @@ class View(ObjectObserver):
     def object_selected( self, obj ):
         return self._parent().object_selected(obj)
 
-    def process_handle_open( self, result, server ):
-        if result is None: return  # no new view opening is requested
-        assert isinstance(result, tHandle), repr(result)
-        handle = view_registry.resolve(result, server)
-        assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
-        self.open(handle)
+    ## def process_handle_open( self, result, server ):
+    ##     if result is None: return  # no new view opening is requested
+    ##     assert isinstance(result, tHandle), repr(result)
+    ##     handle = view_registry.resolve(result, server)
+    ##     assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
+    ##     self.open(handle)
 
     def open( self, handle ):
         self._parent().open(handle)

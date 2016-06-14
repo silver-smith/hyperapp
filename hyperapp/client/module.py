@@ -1,3 +1,4 @@
+import asyncio
 import weakref
 from .command import RunnableCommand
 
@@ -13,12 +14,13 @@ class ModuleCommand(RunnableCommand):
         self.module = module
         self.view_wr = weakref.ref(view)
 
+    @asyncio.coroutine
     def run( self ):
         view = self.view_wr()
         if not view:
             return
-        handle = self.module.run_command(self.id, view)
-        if handle:  # command is handled by client-side
+        handle = yield from self.module.run_command(self.id)
+        if handle:
             view.open(handle)
 
 
@@ -34,13 +36,14 @@ class ObjectModuleCommand(RunnableCommand):
         self.view_wr = weakref.ref(view)
         self.object_wr = weakref.ref(object)
 
+    @asyncio.coroutine
     def run( self ):
         view = self.view_wr()
         object = self.object_wr()
         if not view or not object:
             return
-        handle = self.module.run_object_command(self.id, object, view)
-        if handle:  # command is handled by client-side
+        handle = yield from self.module.run_object_command(self.id, object)
+        if handle:
             view.open(handle)
 
 
@@ -57,6 +60,7 @@ class Module(object):
     def get_object_commands( self, object ):
         return []
 
+    @asyncio.coroutine
     def run_command( self, command_id, initiator_view ):
         assert False, repr(command_id)  # Unknown command
 

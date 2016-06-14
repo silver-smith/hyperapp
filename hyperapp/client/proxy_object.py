@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import uuid
 import weakref
 import codecs
 from ..common.util import is_list_inst
@@ -29,9 +30,10 @@ from .proxy_registry import proxy_class_registry, proxy_registry
 from .request import ClientNotification, Request
 from .server import Server
 from .cache_repository import cache_repository
-from .view import View
-from .proxy_object_data_mapper import ProxyObjectMapper
-from .redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
+from .view import Handle, View
+## from .proxy_object_data_mapper import ProxyObjectMapper
+## from .redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
+from .view_registry import view_registry
 
 log = logging.getLogger(__name__)
 
@@ -98,7 +100,22 @@ class GetRequestBase(Request):
         server = Server.from_endpoint(self.endpoint)
         server.execute_request(self)
 
-        
+
+@asyncio.coroutine
+def execute_get_request( url ):
+    assert isinstance(url, Url), repr(url)
+    server = Server.from_endpoint(url.endpoint)
+    request_id = str(uuid.uuid4())
+    command_id = 'get'
+    params = url.iface.make_params(command_id)
+    request = Request(url.iface, url.path, command_id, request_id, params)
+    response = yield from server.execute_request(request)
+    assert isinstance(response.result, tHandle), repr(response.result)
+    handle = view_registry.resolve(response.result, server)
+    assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
+    return handle
+
+
 class RedirectResolveRequest(GetRequestBase):
 
     def __init__( self, url, orig_request, orig_handle ):
@@ -213,8 +230,8 @@ class ProxyObject(Object):
         return self.commands
 
     @asyncio.coroutine
-    def run_command( self, command_id, initiator_view=None, **kw ):
-        return (yield from self.execute_request(command_id, initiator_view, **kw))
+    def run_command( self, command_id, **kw ):
+        return (yield from self.execute_request(command_id, **kw))
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)
@@ -225,20 +242,18 @@ class ProxyObject(Object):
         params = self.iface.make_params(command_id, *args, **kw)
         return ClientNotification(self.iface, self.path, command_id, params=params)
 
-    def prepare_request( self, command_id, initiator_view, *args, **kw ):
+    def prepare_request( self, command_id, *args, **kw ):
         request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
-        if self.iface.is_open_command(command_id) and initiator_view:
-            return OpenRequest(self.iface, self.path, command_id, params, initiator_view)
-        else:
-            return RequestForResult(self, command_id, params)
-
-    def send_notification( self, command_id, *args, **kw ):
-        request = self.prepare_notification(command_id, *args, **kw)
-        self.server.send_notification(request)
+        return Request(self.iface, self.path, command_id, request_id, params)
 
     @asyncio.coroutine
-    def execute_request( self, command_id, initiator_view=None, *args, **kw ):
+    def send_notification( self, command_id, *args, **kw ):
+        notification = self.prepare_notification(command_id, *args, **kw)
+        yield from self.server.send_notification(notification)
+
+    @asyncio.coroutine
+    def execute_request( self, command_id, *args, **kw ):
         request = self.prepare_request(command_id, initiator_view, *args, **kw)
         return (yield from self.server.execute_request(request))
 

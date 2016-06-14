@@ -1,4 +1,5 @@
 import os.path
+import asyncio
 import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
@@ -14,7 +15,7 @@ from .module import Module
 from .objimpl_registry import objimpl_registry
 from .command import Command, ElementCommand
 from .list_object import Element, Slice, ListObject
-from .proxy_object import GetRequest
+from .proxy_object import execute_get_request
 from . import list_view
 from .named_url_file_repository import NamedUrl, UrlFileRepository
 
@@ -65,18 +66,21 @@ class BookmarkList(ListObject):
     def get_commands( self ):
         return [Command('add', 'Add', 'Add url from clipboard', 'Ins')]
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
         if command_id == 'open':
-            return self.run_command_open(initiator_view, **kw)
+            return (yield from self.run_command_open(**kw))
         if command_id == 'add':
-            return self.run_command_add(initiator_view, **kw)
-        return ListObject.run_command(self, command_id, initiator_view, **kw)
+            return (yield from self.run_command_add(**kw))
+        return (yield from ListObject.run_command(self, command_id, **kw))
 
-    def run_command_open( self, initiator_view, element_key ):
+    @asyncio.coroutine
+    def run_command_open( self, element_key ):
         item = self._bookmarks.get_item(element_key)
-        GetRequest(item.url, initiator_view).execute()
+        return (yield from execute_get_request(item.url))
 
-    def run_command_add( self, initiator_view ):
+    @asyncio.coroutine
+    def run_command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
         url = Url.from_str(self._iface_registry, url_str)
         name = 'Imported url'

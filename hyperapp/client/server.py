@@ -1,6 +1,5 @@
 import logging
 import asyncio
-import uuid
 from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
