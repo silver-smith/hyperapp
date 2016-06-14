@@ -2,7 +2,7 @@ import logging
 import asyncio
 from ..common.endpoint import Endpoint
 from ..common.transport_packet import tTransportPacket
-from . request import Request, Response
+from . request import Request, ClientNotification, Response
 
 log = logging.getLogger(__name__)
 
@@ -37,6 +37,12 @@ class TransportRegistry(object):
             return (yield from future)
         finally:
             del self._futures[request.request_id]
+
+    @asyncio.coroutine
+    def send_notification( self, endpoint, notification ):
+        assert isinstance(endpoint, Endpoint), repr(endpoint)
+        assert isinstance(notification, ClientNotification), repr(notification)
+        yield from self.send_request_or_notification(endpoint, notification)
 
     @asyncio.coroutine
     def send_request_or_notification( self, endpoint, request_or_notification ):

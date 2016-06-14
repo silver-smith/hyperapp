@@ -46,8 +46,8 @@ class Server(object):
 
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
-        log.info('send_notification command_id=%r notification=%r', notification.command_id, notification)
-        self._send(notification.to_data())
+        log.info('notification command_id=%r to %s', notification.command_id, self.endpoint)
+        return (yield from transport_registry.send_notification(self.get_endpoint(), notification))
 
     @asyncio.coroutine
     def execute_request( self, request ):
