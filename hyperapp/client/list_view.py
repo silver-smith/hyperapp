@@ -1,5 +1,6 @@
 import sys
 import logging
+import asyncio
 import bisect
 from PySide import QtCore, QtGui
 from ..common.htypes import Type, tHandle
@@ -398,7 +399,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         element = self.model().get_row_element(index.row())
         for cmd in element.commands:
             if cmd.id == 'open':
-                self.run_object_element_command(cmd.id, element.key)
+                asyncio.async(self.run_object_element_command(cmd.id, element.key))
                 return
 
     def _selected_elements_changed( self ):

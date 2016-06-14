@@ -2,6 +2,7 @@
 
 import os.path
 import logging
+import asyncio
 import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
@@ -117,10 +118,11 @@ class CodeRepositoryFormObject(Object):
     def get_commands( self ):
         return [Command('submit', 'Add', 'Add new code repository', 'Return')]
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
         if command_id == 'submit':
-            return self.run_command_submit(initiator_view, **kw)
-        return Object.run_command(self, command_id, initiator_view, **kw)
+            return self.run_command_submit(**kw)
+        return (yield from Object.run_command(self, command_id, **kw))
 
     def run_command_submit( self, initiator_view, name, url ):
         log.info('adding code repository %r...', name)
@@ -158,12 +160,13 @@ class CodeRepositoryList(ListObject):
     def get_commands( self ):
         return [Command('add', 'Add', 'Create code repository url from clipboard', 'Ins')]
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
         if command_id == 'add':
-            return self.run_command_add(initiator_view, **kw)
-        return ListObject.run_command(self, command_id, initiator_view, **kw)
+            return self.run_command_add(**kw)
+        return (yield from ListObject.run_command(self, command_id, **kw))
 
-    def run_command_add( self, initiator_view ):
+    def run_command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
         return make_code_repository_form(url_str)
 
@@ -205,10 +208,11 @@ class ThisModule(Module):
     def get_commands( self ):
         return [Command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')]
 
-    def run_command( self, command_id, initiator_view ):
+    @asyncio.coroutine
+    def run_command( self, command_id ):
         if command_id == 'repository_list':
             return self.run_command_repository_list()
-        return Module.run_command(self, command_id, initiator_view)
+        return (yield from Module.run_command(self, command_id))
 
     def run_command_repository_list( self ):
         return make_code_repository_list()
@@ -218,10 +222,11 @@ class ThisModule(Module):
             return [Command('add_to_repository_list', 'Add Repository', 'Add this repository to my repositories list', 'Ctrl+A')]
         return []
 
-    def run_object_command( self, command_id, object, initiator_view ):
+    @asyncio.coroutine
+    def run_object_command( self, command_id, object ):
         if command_id == 'add_to_repository_list':
             return self.run_object_command_add_to_repository_list(object)
-        return Module.run_object_command(self, command_id, initiator_view)
+        return (yield from Module.run_object_command(self, command_id))
 
     def run_object_command_add_to_repository_list( self, object ):
         assert code_repository_iface in object.get_facets()

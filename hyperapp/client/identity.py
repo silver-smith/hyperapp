@@ -97,12 +97,13 @@ class IdentityFormObject(Object):
     def get_commands( self ):
         return [Command('submit', 'Create', 'Create new identity, generate private+public key pair', 'Return')]
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
         if command_id == 'submit':
-            return self.run_command_submit(initiator_view, **kw)
-        return Object.run_command(self, command_id, initiator_view, **kw)
+            return self.run_command_submit(**kw)
+        return (yield from Object.run_command(self, command_id, **kw))
 
-    def run_command_submit( self, initiator_view, name ):
+    def run_command_submit( self, name ):
         log.info('creating identity %r...', name)
         this_module.identity_controller.generate(name)
         log.info('creating identity %r: done', name)
@@ -136,12 +137,13 @@ class IdentityList(ListObject):
     def get_commands( self ):
         return [Command('new', 'Create', 'Create new identity, generate private+public key pair', 'Ins')]
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
         if command_id == 'new':
-            return self.run_command_new(initiator_view, **kw)
-        return ListObject.run_command(self, command_id, initiator_view, **kw)
+            return self.run_command_new(**kw)
+        return (yield from ListObject.run_command(self, command_id, **kw))
 
-    def run_command_new( self, initiator_view ):
+    def run_command_new( self ):
         return make_identity_form()
 
     def to_data( self ):
@@ -186,12 +188,13 @@ class ThisModule(Module):
             Command('create_identity', 'Create identity', 'Create new identity, public+private key pair', 'Alt+N'),
             ]
 
-    def run_command( self, command_id, initiator_view ):
+    @asyncio.coroutine
+    def run_command( self, command_id ):
         if command_id == 'identity_list':
             return self.run_command_identity_list()
         if command_id == 'create_identity':
             return self.run_command_create_idenity()
-        return Module.run_command(self, command_id, initiator_view)
+        return (yield from Module.run_command(self, command_id))
 
     def run_command_identity_list( self ):
         return make_identity_list()

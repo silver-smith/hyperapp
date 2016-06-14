@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
@@ -171,20 +172,21 @@ class View(view.View, QtGui.QWidget):
             fields.append(Field(name, field.handle()))
         return Handle(self.object, fields, focused_idx)
 
+    @asyncio.coroutine
     def run_object_command( self, command_id ):
         if command_id == 'submit':
-            self.run_object_command_submit(command_id)
+            return (yield from self.run_object_command_submit(command_id))
         else:
-            view.View.run_object_command(self, command_id)
+            return (yield from view.View.run_object_command(self, command_id))
 
+    @asyncio.coroutine
     def run_object_command_submit( self, command_id ):
         field_values = {}
         for name, field in self.fields:
             field_values[name] = field.get_value()
-        handle = self.object.run_command(command_id, self, **field_values)
-        if handle:  # command is handled by client-side
+        handle = yield from self.object.run_command(command_id, **field_values)
+        if handle:
             self.open(handle)
-
 
 
 class FieldRegistry(object):

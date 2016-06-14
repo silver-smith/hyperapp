@@ -4,7 +4,7 @@ import weakref
 import abc
 from ..common.util import is_list_inst
 from ..common.htypes import tCommand
-from .util import make_action
+from .util import make_async_action
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class RunnableCommand(Command, metaclass=abc.ABCMeta):
 
     def make_action( self, widget ):
         log.debug('RunnableCommand.make_action: %r %r, %r', self.id, self, self.run)
-        return make_action(widget, self.text, self.shortcut, lambda: asyncio.async(self.run()))
+        return make_async_action(widget, self.text, self.shortcut, self.run)
 
     @asyncio.coroutine
     @abc.abstractmethod
@@ -72,9 +72,10 @@ class ObjectCommand(RunnableCommand):
 class ElementCommand(Command):
 
     def make_action( self, widget, view, element_key ):
-        return make_action(widget, self.text, self.shortcut, self.run, weakref.ref(view), element_key)
+        return make_async_action(widget, self.text, self.shortcut, self.run, weakref.ref(view), element_key)
 
+    @asyncio.coroutine
     def run( self, view_wr, element_key ):
         view = view_wr()
         if view:
-            view.run_object_element_command(self.id, element_key)
+            yield from view.run_object_element_command(self.id, element_key)

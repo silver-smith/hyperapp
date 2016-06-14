@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from io import StringIO
 import pickle
 import weakref
@@ -144,6 +145,12 @@ def key_match_any( evt, keys ):
         if key_match(evt, key):
             return True
     return False
+
+def make_async_action( widget, text, shortcut, fn, *args, **kw ):
+    def run():
+        log.info('async action run %r %r(%s, %s)', text, fn, args, kw)
+        asyncio.async(fn(*args, **kw))
+    return make_action(widget, text, shortcut, run)
 
 def make_action( widget, text, shortcut, fn, *args, **kw ):
     ## print '--- make_action', widget, text, shortcut, fn, args, kw

@@ -110,10 +110,7 @@ def execute_get_request( url ):
     params = url.iface.make_params(command_id)
     request = Request(url.iface, url.path, command_id, request_id, params)
     response = yield from server.execute_request(request)
-    assert isinstance(response.result, tHandle), repr(response.result)
-    handle = view_registry.resolve(response.result, server)
-    assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
-    return handle
+    return view_registry.resolve(response.result, server)
 
 
 class RedirectResolveRequest(GetRequestBase):
@@ -231,7 +228,8 @@ class ProxyObject(Object):
 
     @asyncio.coroutine
     def run_command( self, command_id, **kw ):
-        return (yield from self.execute_request(command_id, **kw))
+        result = yield from self.execute_request(command_id, **kw)
+        return view_registry.resolve(result, self.server)
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)
@@ -254,8 +252,9 @@ class ProxyObject(Object):
 
     @asyncio.coroutine
     def execute_request( self, command_id, *args, **kw ):
-        request = self.prepare_request(command_id, initiator_view, *args, **kw)
-        return (yield from self.server.execute_request(request))
+        request = self.prepare_request(command_id, *args, **kw)
+        response = yield from self.server.execute_request(request)
+        return response.result
 
     def process_response_result( self, command_id, result ):
         if command_id == 'subscribe':
