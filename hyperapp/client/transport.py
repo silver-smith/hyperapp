@@ -2,7 +2,7 @@ import logging
 import asyncio
 from ..common.endpoint import Endpoint
 from ..common.transport_packet import tTransportPacket
-from . request import Request
+from . request import Request, Response
 
 log = logging.getLogger(__name__)
 
@@ -54,11 +54,15 @@ class TransportRegistry(object):
         raise RuntimeError('Unable to send packet to %s - no reachable transports'
                            % server.get_endpoint().public_key.get_short_id_hex())
 
-    def process_packet( self, connection, session_list, server_public_key, packet ):
+    def process_packet( self, protocol, session_list, server_public_key, packet ):
         assert isinstance(packet, tTransportPacket), repr(packet)
         log.info('received %r packet, contents %d bytes', packet.transport_id, len(packet.data))
         transport = self.resolve(packet.transport_id)
-        transport.process_packet(connection, session_list, server_public_key, packet.data)
+        response_or_notification = transport.process_packet(protocol, session_list, server_public_key, packet.data)
+        if isinstance(response_or_notification, Response):
+            future = self._futures.get(response_or_notification.request_id)
+            if future:
+                future.set_result(response_or_notification)
         
 
 transport_registry = TransportRegistry()

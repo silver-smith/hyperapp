@@ -1,8 +1,10 @@
 import asyncio
-from ..common.htypes import tClientPacket, tServerPacket
+from ..common.htypes import tClientPacket, tServerPacket, iface_registry
 from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
+from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
+from .request import ResponseBase
 from .transport import Transport, transport_registry
 from .tcp_protocol import TcpProtocol
 
@@ -30,20 +32,18 @@ class TcpTransport(Transport):
         protocol.send_packet(transport_packet)
         return True
 
-    def process_packet( self, connection, session_list, server_public_key, data ):
-        packet = packet_coders.decode(self.encoding, data, tPacket)
-        app = QtCore.QCoreApplication.instance()
-        app.response_mgr.process_packet(server_public_key, packet, self._decode_payload)
-
-    def _decode_payload( self, data ):
-        return packet_coders.decode(self.encoding, data, tServerPacket)
-
     def _make_transport_packet( self, request_or_notification ):
         aux_info = tAuxInfo(requirements=[], modules=[])  # not used in packets from client
         packet_data = packet_coders.encode(self.encoding, request_or_notification.to_data(), tClientPacket)
         packet = tPacket(aux_info, packet_data)
         encoded_packet = packet_coders.encode(self.encoding, packet, tPacket)
         return tTransportPacket(self.transport_id, encoded_packet)
+
+    def process_packet( self, protocol, session_list, server_public_key, data ):
+        packet = packet_coders.decode(self.encoding, data, tPacket)
+        response_or_notification_rec = packet_coders.decode(self.encoding, packet.payload, tServerPacket)
+        pprint(tServerPacket, response_or_notification_rec)
+        return ResponseBase.from_data(server_public_key, iface_registry, response_or_notification_rec)
 
 
 TcpTransport(CDR_TRANSPORT_ID, 'cdr').register()

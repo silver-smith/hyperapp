@@ -5,7 +5,9 @@ from ..common.htypes import (
     tServerNotification,
     tResponse,
     Interface,
+    IfaceRegistry,
     )
+from ..common.identity import PublicKey
 
 
 class RequestBase(object):
@@ -47,7 +49,9 @@ class ResponseBase(object):
 
     @classmethod
     def from_data( cls, server_public_key, iface_registry, rec ):
+        assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(rec, tServerPacket), repr(rec)
+        
         if isinstance(rec, tResponse):
             iface = iface_registry.resolve(rec.iface)
             return Response(server_public_key, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
@@ -56,6 +60,7 @@ class ResponseBase(object):
             return ServerNotification(server_public_key, rec.updates)
 
     def __init__( self, server_public_key, updates ):
+        assert isinstance(server_public_key, PublicKey), repr(server_public_key)
         self.server_public_key = server_public_key
         self.updates = updates
 
