@@ -31,12 +31,13 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__( self, iface, path, command_id, params=None ):
-        RequestBase.__init__(self, iface, path, command_id, params)
-
-    def to_data( self, request_id ):
+    def __init__( self, iface, path, command_id, request_id, params=None ):
         assert isinstance(request_id, str), repr(request_id)
-        return tRequest(self.iface.iface_id, self.path, self.command_id, self.params, request_id)
+        RequestBase.__init__(self, iface, path, command_id, params)
+        self.request_id = request_id
+
+    def to_data( self ):
+        return tRequest(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
 
     def process_response( self, server, response ):
         raise NotImplementedError(self.__class__)

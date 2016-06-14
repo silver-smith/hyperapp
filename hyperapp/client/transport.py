@@ -1,6 +1,8 @@
 import logging
 import asyncio
+from ..common.endpoint import Endpoint
 from ..common.transport_packet import tTransportPacket
+from . request import Request
 
 log = logging.getLogger(__name__)
 
@@ -15,6 +17,7 @@ class TransportRegistry(object):
 
     def __init__( self ):
         self._id2transport = {}
+        self._futures = {}  # request id -> future for response
 
     def register( self, id, transport ):
         assert isinstance(id, str), repr(id)
@@ -25,15 +28,26 @@ class TransportRegistry(object):
         return self._id2transport[id]
 
     @asyncio.coroutine
-    def send_packet( self, server, payload, payload_type, aux_info=None ):
-        for route in server.get_endpoint().routes:
+    def execute_request( self, endpoint, request ):
+        assert isinstance(endpoint, Endpoint), repr(endpoint)
+        assert isinstance(request, Request), repr(request)
+        self._futures[request.request_id] = future = asyncio.Future()
+        try:
+            yield from self.send_request_or_notification(endpoint, request)
+            return (yield from future)
+        finally:
+            del self._futures[request.request_id]
+
+    @asyncio.coroutine
+    def send_request_or_notification( self, endpoint, request_or_notification ):
+        for route in endpoint.routes:
             transport_id = route[0]
             transport = self._id2transport.get(transport_id)
             if not transport:
                 log.info('Warning: unknown transport: %r', transport_id)
                 continue
             try:
-                return (yield from transport.send_packet(server, route[1:], payload, payload_type, aux_info))
+                return (yield from transport.send_request_rec(endpoint, route[1:], request_or_notification))
             except:
                 # todo: catch specific exceptions; try next route
                 raise

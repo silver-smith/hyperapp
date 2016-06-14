@@ -226,6 +226,7 @@ class ProxyObject(Object):
         return ClientNotification(self.iface, self.path, command_id, params=params)
 
     def prepare_request( self, command_id, initiator_view, *args, **kw ):
+        request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
         if self.iface.is_open_command(command_id) and initiator_view:
             return OpenRequest(self.iface, self.path, command_id, params, initiator_view)

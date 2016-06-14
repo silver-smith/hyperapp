@@ -4,7 +4,7 @@ import uuid
 from ..common.util import is_list_inst
 from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
-from ..common.htypes import tClientPacket, Interface, iface_registry
+from ..common.htypes import Interface, iface_registry
 from .request import ClientNotification, Request
 from .objimpl_registry import objimpl_registry
 from .transport import transport_registry
@@ -52,12 +52,5 @@ class Server(object):
     @asyncio.coroutine
     def execute_request( self, request ):
         assert isinstance(request, Request), repr(request)
-        request_id = str(uuid.uuid4())
-        log.info('execute_request command_id=%r request_id=%r', request.command_id, request_id)
-        return (yield from self._send(request.to_data(request_id)))
-
-    @asyncio.coroutine
-    def _send( self, request_rec ):
-        log.info('packet to %s', self.endpoint)
-        pprint(tClientPacket, request_rec)
-        return (yield from transport_registry.send_packet(self, request_rec, tClientPacket))
+        log.info('request command_id=%r request_id=%r to %s', request.command_id, request.request_id, self.endpoint)
+        return (yield from transport_registry.execute_request(self.get_endpoint(), request))

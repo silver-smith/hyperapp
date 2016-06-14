@@ -36,10 +36,10 @@ class RealRequestTest(unittest.TestCase):
             iface=url.iface,
             path=url.path,
             command_id='get',
+            request_id='test-001',
             params=url.iface.get_request_params_type('get')(),
             )
-        request_id = 'test-001'
-        pprint(tClientPacket, request.to_data(request_id))
+        pprint(tClientPacket, request.to_data())
         server = Server.from_endpoint(url.endpoint)
-        response = yield from server.execute_request(request)
+        response = yield from (asyncio.wait_for(server.execute_request(request), timeout=0.5))
         assert 0

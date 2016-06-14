@@ -1,7 +1,7 @@
 import asyncio
-from ..common.htypes import tServerPacket
+from ..common.htypes import tClientPacket, tServerPacket
 from ..common.packet import tAuxInfo, tPacket
-from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
+from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from .transport import Transport, transport_registry
 from .tcp_protocol import TcpProtocol
@@ -21,13 +21,13 @@ class TcpTransport(Transport):
         transport_registry.register(self.transport_id, self)
 
     @asyncio.coroutine
-    def send_packet( self, server, route, payload, payload_type, aux_info ):
+    def send_request_rec( self, endpoint, route, request_or_notification ):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
-        packet = self._make_packet(payload, payload_type, aux_info)
-        protocol = yield from TcpProtocol.produce(server.endpoint.public_key, host, port)
-        protocol.send_data(packet)
+        transport_packet = self._make_transport_packet(request_or_notification)
+        protocol = yield from TcpProtocol.produce(endpoint.public_key, host, port)
+        protocol.send_packet(transport_packet)
         return True
 
     def process_packet( self, connection, session_list, server_public_key, data ):
@@ -38,14 +38,12 @@ class TcpTransport(Transport):
     def _decode_payload( self, data ):
         return packet_coders.decode(self.encoding, data, tServerPacket)
 
-    def _make_packet( self, payload, payload_type, aux_info ):
-        if aux_info is None:
-            aux_info = tAuxInfo(requirements=[], modules=[])
-        packet_data = packet_coders.encode(self.encoding, payload, payload_type)
+    def _make_transport_packet( self, request_or_notification ):
+        aux_info = tAuxInfo(requirements=[], modules=[])  # not used in packets from client
+        packet_data = packet_coders.encode(self.encoding, request_or_notification.to_data(), tClientPacket)
         packet = tPacket(aux_info, packet_data)
         encoded_packet = packet_coders.encode(self.encoding, packet, tPacket)
-        transport_packet = tTransportPacket(self.transport_id, encoded_packet)
-        return encode_transport_packet(transport_packet)
+        return tTransportPacket(self.transport_id, encoded_packet)
 
 
 TcpTransport(CDR_TRANSPORT_ID, 'cdr').register()
