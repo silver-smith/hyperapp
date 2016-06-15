@@ -1,3 +1,4 @@
+import asyncio
 from ..common.util import is_list_inst
 from ..common.htypes import intColumnType, Column, tHandle
 from .command import ElementCommand
@@ -25,14 +26,14 @@ class HistoryList(ListObject):
     def get_commands( self ):
         return []
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
         if command_id == 'open':
-            return self.run_command_open(initiator_view, **kw)
-        return ListObject.run_command(self, command_id, initiator_view, **kw)
+            return self.run_command_open(**kw)
+        return (yield from ListObject.run_command(self, command_id, **kw))
 
-    def run_command_open( self, initiator_view, element_key ):
-        handle = self._rows[element_key].item.load()
-        initiator_view.open(handle)
+    def run_command_open( self, element_key ):
+        return self._rows[element_key].item.load()
 
     def get_columns( self ):
         return [
@@ -43,6 +44,7 @@ class HistoryList(ListObject):
     def get_key_column_id( self ):
         return 'idx'
 
+    @asyncio.coroutine
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         self._notify_fetch_result(self._get_slice())
 
