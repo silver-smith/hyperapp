@@ -1,4 +1,5 @@
 import logging
+import asyncio
 import re
 from PySide import QtCore, QtGui
 from ..common.htypes import tString, tObject, Field, tObjHandle
@@ -67,7 +68,13 @@ class View(view.View, QtGui.QTextBrowser):
 
     def on_anchor_clicked( self, url ):
         log.info('on_anchor_clicked url.path=%r', url.path())
-        self.object.open_ref(self, url.path())
+        asyncio.async(self.open_url(url))
+
+    @asyncio.coroutine
+    def open_url( self, url ):
+        handle = yield from self.object.open_ref(url.path())
+        if handle:
+            self.open(handle)
 
     def object_changed( self ):
         self.setHtml(self.text2html(self.object.text))
