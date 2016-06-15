@@ -1,5 +1,6 @@
 # text object representing server text object
 
+import asyncio
 from ..common.htypes import tString
 from .text_object import TextObject
 from .proxy_object import ProxyObject
@@ -34,19 +35,16 @@ class ProxyTextObject(ProxyObject, TextObject):
             commands.append(cmd)
         return commands
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
         if command_id == 'edit' or command_id == 'view':
-            return TextObject.run_command(self, command_id, initiator_view, **kw)
+            return (yield from TextObject.run_command(self, command_id, **kw))
         if command_id == 'save':
-            return ProxyObject.run_command(self, command_id, initiator_view, text=self.text, **kw)
-        return ProxyObject.run_command(self, command_id, initiator_view, **kw)
-
-    def process_response_result( self, command_id, result ):
-        if command_id == 'save':
+            result = yield from ProxyObject.execute_request(self, command_id, text=self.text, **kw)
             self.path = result.new_path
             self._notify_object_changed()
-        else:
-            ProxyObject.process_response_result(self, command_id, result)
+            return
+        return (yield from ProxyObject.run_command(self, command_id, **kw))
 
     def process_update( self, new_text ):
         self.text_changed(new_text)

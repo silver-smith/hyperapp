@@ -103,7 +103,7 @@ class View(ObjectObserver):
 
     @asyncio.coroutine
     def run_object_command( self, command_id ):
-        handle = yield from self.get_object().run_command(command_id, self)
+        handle = yield from self.get_object().run_command(command_id)
         if handle:
             self.open(handle)
 
