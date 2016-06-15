@@ -13,7 +13,7 @@ from ..common.encrypted_packet import (
 from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.packet_coders import packet_coders
-from .transport import Transport, transport_registry
+from .transport import Transport
 from .tcp_connection import TcpConnection
 from .identity import get_identity_controller
 
@@ -94,4 +94,4 @@ class EncryptedTransport(Transport):
         return session
 
 
-transport_registry.register(TRANSPORT_ID, EncryptedTransport())
+#transport_registry.register(TRANSPORT_ID, EncryptedTransport())

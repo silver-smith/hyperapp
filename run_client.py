@@ -22,14 +22,18 @@ import hyperapp.client.identity
 import hyperapp.client.code_repository
 import hyperapp.client.bookmarks
 import hyperapp.client.url_clipboard
-# self-registering transports:
-import hyperapp.client.tcp_transport
-import hyperapp.client.encrypted_transport
+
+from hyperapp.client import tcp_transport
+from hyperapp.client import encrypted_transport
 
 import sys
 import logging
 import argparse
+from hyperapp.common.htypes import tServerPacket, iface_registry
 from hyperapp.client.application import Application
+from hyperapp.client.transport import transport_registry
+from hyperapp.client.objimpl_registry import objimpl_registry
+from hyperapp.client.view_registry import view_registry
 
 
 def main():
@@ -39,6 +43,10 @@ def main():
     args = parser.parse_args()
 
     app = Application(sys.argv)
+
+    tcp_transport.register_transports(transport_registry, app._module_mgr, app._code_repository,
+                                      iface_registry, objimpl_registry, view_registry)
+
     app.exec_()
 
 

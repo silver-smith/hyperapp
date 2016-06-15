@@ -49,26 +49,18 @@ class CodeRepository(object):
         return item
 
     # todo: try all items
-    def get_modules_by_ids_and_continue( self, module_ids, continuation ):
+    @asyncio.coroutine
+    def get_modules_by_ids( self, module_ids ):
         if not self._items: return
         proxy = CodeRepositoryProxy.from_url(self._items[0].url)
-        proxy.get_modules_by_ids_and_continue(module_ids, continuation)
+        return (yield from proxy.get_modules_by_ids(module_ids))
 
     # todo: try all items
-    def get_modules_by_requirements_and_continue( self, requirements, continuation ):
+    @asyncio.coroutine
+    def get_modules_by_requirements( self, requirements ):
         if not self._items: return
         proxy = CodeRepositoryProxy.from_url(self._items[0].url)
-        proxy.get_modules_by_requirements_and_continue(requirements, continuation)
-
-
-class GetModulesRequest(Request):
-
-    def __init__( self, iface, path, command_id, params, continuation ):
-        Request.__init__(self, iface, path, command_id, params)
-        self.continuation = continuation
-
-    def process_response( self, server, response ):
-        self.continuation(response.result.modules)
+        return (yield from proxy.get_modules_by_requirements(requirements))
 
 
 class CodeRepositoryProxy(ProxyObject):
@@ -83,17 +75,15 @@ class CodeRepositoryProxy(ProxyObject):
         assert iface is code_repository_iface, repr(iface.iface_id)
         ProxyObject.__init__(self, server, path, iface)
 
-    def get_modules_by_ids_and_continue( self, module_ids, continuation ):
-        command_id = 'get_modules_by_ids'
-        params = self.iface.make_params(command_id, module_ids=module_ids)
-        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
-        self.server.execute_request(request)
+    @asyncio.coroutine
+    def get_modules_by_ids( self, module_ids ):
+        result = yield from self.execute_request('get_modules_by_ids', module_ids=module_ids)
+        return result.modules
 
-    def get_modules_by_requirements_and_continue( self, requirements, continuation ):
-        command_id = 'get_modules_by_requirements'
-        params = self.iface.make_params(command_id, requirements=requirements)
-        request = GetModulesRequest(self.iface, self.path, command_id, params, continuation)
-        self.server.execute_request(request)
+    @asyncio.coroutine
+    def get_modules_by_requirements( self, requirements ):
+        result = yield from self.execute_request('get_modules_by_requirements', requirements=requirements)
+        return result.modules
 
 
 tFormObject = tObject.register('code_repository_form', base=tBaseObject)
@@ -124,7 +114,7 @@ class CodeRepositoryFormObject(Object):
             return self.run_command_submit(**kw)
         return (yield from Object.run_command(self, command_id, **kw))
 
-    def run_command_submit( self, initiator_view, name, url ):
+    def run_command_submit( self, name, url ):
         log.info('adding code repository %r...', name)
         url_ = Url.from_str(iface_registry, url)
         item = self.controller.add(name, url_)

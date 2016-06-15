@@ -47,7 +47,7 @@ class TcpProtocol(asyncio.Protocol):
         while has_full_tcp_packet(self.recv_buf):
             packet_data, packet_size = decode_tcp_packet(self.recv_buf)
             transport_packet = decode_transport_packet(packet_data)
-            transport_registry.process_packet(self, self.session_list, self.server_public_key, transport_packet)
+            asyncio.async(transport_registry.process_packet(self, self.session_list, self.server_public_key, transport_packet))
             assert packet_size <= len(self.recv_buf), repr(packet_size)
             self.recv_buf = self.recv_buf[packet_size:]
             self._log('consumed %d bytes, remained %d' % (packet_size, len(self.recv_buf)))
