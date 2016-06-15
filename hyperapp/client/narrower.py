@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from PySide import QtCore, QtGui
 from ..common.htypes import tHandle
 from .util import uni2str, key_match, key_match_any
@@ -89,9 +90,10 @@ class FilteredListObj(ListObject, ListObserver):
     def get_key_column_id( self ):
         return self._base.get_key_column_id()
     
+    @asyncio.coroutine
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         log.info('-- narrower.fetch_elements sort_column_id=%r key=%r desc_count=%r asc_count=%r', sort_column_id, key, desc_count, asc_count)
-        self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
+        yield from self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
 
     def process_fetch_result( self, result ):
         log.info('-- narrower.process_fetch_result sort_column_id=%r bof=%r eof=%r elements-len=%r', result.sort_column_id, result.bof, result.eof, len(result.elements))
@@ -101,8 +103,8 @@ class FilteredListObj(ListObject, ListObserver):
         # to start from. So we issue fetch request ourselves. Yet we have to notify list view about eof.
         if not filtered.elements and result.elements and not result.eof:
             log.info('   > all filtered out, fetching more')
-            self._base.fetch_elements(
-                result.sort_column_id, result.elements[-1].key, result.direction, FETCH_ELEMENT_COUNT)
+            asyncio.async(self._base.fetch_elements(
+                result.sort_column_id, result.elements[-1].key, result.direction, FETCH_ELEMENT_COUNT))
         else:
             log.info('   > notify with %r elements', len(filtered.elements))
             self._notify_fetch_result(filtered)
@@ -112,8 +114,9 @@ class FilteredListObj(ListObject, ListObserver):
         value = self._get_filter_field(element)
         return value.lower().startswith(self._prefix.lower())
 
-    def run_command( self, command_id, initiator_view, **kw ):
-        return self._base.run_command(command_id, initiator_view, **kw)
+    @asyncio.coroutine
+    def run_command( self, command_id, **kw ):
+        return (yield from self._base.run_command(command_id, **kw))
 
     # we find only in cached elements, that is elements we have seen; do not issue additional fetch command
     def find_common_prefix( self ):
