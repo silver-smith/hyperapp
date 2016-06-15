@@ -1,7 +1,9 @@
 import os.path
+import asyncio
 from ..common.htypes import iface_registry
 from .proxy_registry import proxy_class_registry
 from .proxy_list_object import ProxyListObject
+from .view_registry import view_registry
 
 
 class RefList(ProxyListObject):
@@ -13,13 +15,16 @@ class RefList(ProxyListObject):
     def get_module_ids( self ):
         return [this_module_id]
 
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    @asyncio.coroutine
+    def run_command( self, command_id=None, **kw ):
         if command_id == 'add':
-            return self.run_command_add(initiator_view)
-        return ProxyListObject.run_command(self, command_id, initiator_view, **kw)
+            return (yield from self.run_command_add())
+        return (yield from ProxyListObject.run_command(self, command_id, **kw))
 
-    def run_command_add( self, initiator_view ):
-        self.execute_request('add', initiator_view, target_url=self.get_default_url().to_data())
+    @asyncio.coroutine
+    def run_command_add( self ):
+        result = yield from self.execute_request('add', target_url=self.get_default_url().to_data())
+        return view_registry.resolve(result, self.server)
 
     # todo
     def get_default_url( self ):

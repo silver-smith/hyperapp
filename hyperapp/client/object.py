@@ -44,7 +44,7 @@ class Object(object):
         raise NotImplementedError(self.__class__)
 
     @asyncio.coroutine
-    def run_command( self, command_id, initiator_view=None, **kw ):
+    def run_command( self, command_id, **kw ):
         assert False, repr(command_id)  # Unknown command
 
     def subscribe( self, observer ):

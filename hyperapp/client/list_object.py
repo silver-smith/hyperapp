@@ -1,4 +1,5 @@
 import asyncio
+import abc
 from functools import total_ordering
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
@@ -117,20 +118,24 @@ class Slice(object):
         return Slice(self.sort_column_id, self.from_key, self.direction, elements, self.bof, self.eof)
 
 
-class ListObject(Object):
+class ListObject(Object, metaclass=abc.ABCMeta):
 
     @classmethod
     def get_objimpl_id( cls ):
         return 'list'
 
+    @abc.abstractmethod
     def get_columns( self ):
-        raise NotImplementedError(self.__class__)
+        pass
 
+    @abc.abstractmethod
     def get_key_column_id( self ):
-        raise NotImplementedError(self.__class__)
+        pass
 
+    @asyncio.coroutine
+    @abc.abstractmethod
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
-        raise NotImplementedError(self.__class__)
+        pass
 
     @asyncio.coroutine
     def run_element_command( self, command_id, element_key ):

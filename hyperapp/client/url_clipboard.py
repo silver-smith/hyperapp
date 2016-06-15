@@ -32,7 +32,7 @@ class ThisModule(Module):
     def run_object_command( self, command_id, object ):
         if command_id == 'url_to_clipboard':
             return self.run_command_url_to_clipboard(object)
-        return Module.run_object_command(self, command_id, object, initiator_view)
+        return Module.run_object_command(self, command_id, object)
 
     def run_command_url_to_clipboard( self, object ):
         url = object.get_url()

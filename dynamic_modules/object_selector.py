@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface.article import tObjSelectorHandle, tObjSelectorUnwrapHandle
 from .util import uni2str
@@ -98,17 +99,19 @@ class View(view.View, QtGui.QWidget):
         choose_cmd = ObjectCommand(self, 'choose', 'Choose', 'Choose current object', 'Ctrl+Return')
         return [choose_cmd] + commands
 
+    @asyncio.coroutine
     def run_object_command( self, command_id ):
         if command_id == 'choose':
-            self.run_object_command_choose(command_id)
+            yield from self.run_object_command_choose(command_id)
         else:
-            self.target_view.run_object_command(command_id)
+            return (yield from self.target_view.run_object_command(command_id))
 
+    @asyncio.coroutine
     def run_object_command_choose( self, command_id ):
         target_obj = self.target_view.get_object()
         url = target_obj.get_url()
         if not url: return  # not a proxy - can not choose it
-        handle = self.ref.run_command(command_id, self, target_url=url.to_data())
+        handle = (yield from self.ref.run_command(command_id, target_url=url.to_data()))
         if handle:  # command is handled by client-side
             self.open(handle)
 

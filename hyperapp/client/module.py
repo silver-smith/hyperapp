@@ -61,10 +61,11 @@ class Module(object):
         return []
 
     @asyncio.coroutine
-    def run_command( self, command_id, initiator_view ):
+    def run_command( self, command_id ):
         assert False, repr(command_id)  # Unknown command
 
-    def run_object_command( self, command_id, object, initiator_view ):
+    @asyncio.coroutine
+    def run_object_command( self, command_id, object ):
         assert False, repr(command_id)  # Unknown command
 
     @classmethod

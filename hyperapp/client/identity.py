@@ -157,6 +157,7 @@ class IdentityList(ListObject):
     def get_key_column_id( self ):
         return 'name'
 
+    @asyncio.coroutine
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         self._notify_fetch_result(self._get_slice())
 
