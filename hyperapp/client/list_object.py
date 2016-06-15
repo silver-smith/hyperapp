@@ -136,10 +136,10 @@ class ListObject(Object):
     def run_element_command( self, command_id, element_key ):
         return (yield from self.run_command(command_id, element_key=element_key))
 
-    def _notify_fetch_result( self, result ):
-        assert isinstance(result, Slice), repr(result)
+    def _notify_fetch_result( self, slice ):
+        assert isinstance(slice, Slice), repr(slice)
         for observer in self._observers:
-            observer.process_fetch_result(result)
+            observer.process_fetch_result(slice)
 
     def _notify_diff_applied( self, diff ):
         assert isinstance(diff, ListDiff), repr(diff)

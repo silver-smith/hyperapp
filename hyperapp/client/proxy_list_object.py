@@ -17,6 +17,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._slices = []  # all slices are stored in ascending order, actual/up-do-date
         self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, out-of-date
         self._subscribed = True
+        self._subscribe_pending = False  # subscribe method is called and response is not yet received
 
     @staticmethod
     def get_objimpl_id():
@@ -85,7 +86,6 @@ class ProxyListObject(ProxyObject, ListObject):
                         slice.elements.append(new_elt)
                         log.info('-- slice with sort %r: element is appended to the end of slice', slice.sort_column_id)
                     
-
     def _pick_slice( self, slices, sort_column_id, from_key, direction ):
         log.info('  -- pick_slice self=%r sort_column_id=%r from_key=%r direction=%r', id(self), sort_column_id, from_key, direction)
         assert direction == 'asc'  # todo: desc direction
@@ -144,6 +144,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def get_key_column_id( self ):
         return self.iface.key_column
 
+    @asyncio.coroutine
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
         log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r count=%r', self, self._subscribed, from_key, count)
         slice = self._pick_slice(self._slices, sort_column_id, from_key, direction)
@@ -151,41 +152,29 @@ class ProxyListObject(ProxyObject, ListObject):
             log.info('   > cached actual, len(elements)=%r', len(slice.elements))
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
             self._notify_fetch_result(slice)
-            if self._subscribed:
-                return  # otherwise our cache may already be invalid, need to subscribe and refetch anyway
-        self._load_slices_from_cache(sort_column_id)
-        cached_slices = self._slices_from_cache.get(sort_column_id, [])
-        slice = self._pick_slice(cached_slices, sort_column_id, from_key, direction)
-        if slice:
-            log.info('   > cached outdated, len(elements)=%r', len(slice.elements))
-            self._notify_fetch_result(slice)
-            # and subscribe/fetch anyway
+            if self._subscribed:  # otherwise our _slices may already be invalid, need to subscribe and refetch anyway
+                return
+        else:
+            self._load_slices_from_cache(sort_column_id)
+            cached_slices = self._slices_from_cache.get(sort_column_id, [])
+            slice = self._pick_slice(cached_slices, sort_column_id, from_key, direction)
+            if slice:
+                log.info('   > cached outdated, len(elements)=%r', len(slice.elements))
+                self._notify_fetch_result(slice)
+                # and subscribe/fetch anyway
         log.info('   > not cached or not subscribed, requesting')
-        if self._subscribed:
-            command_id = 'fetch_elements'
-        else:
-            command_id = 'subscribe_and_fetch_elements'
-            # several views can call fetch_elements before response is received, and we do not want several subscribe_and... calls
-            # yet a subscribe_... call can fail... todo
+        subscribing_now = not self._subscribed and not self._subscribe_pending
+        command_id = 'subscribe_and_fetch_elements' if subscribing_now else 'fetch_elements'
+        if subscribing_now:
+            # several views can call fetch_elements before response is received, and we do not want several subscribe... calls
+            self._subscribe_pending = True
+        result = yield from self.execute_request(command_id, sort_column_id, from_key, direction, count)
+        log.debug('proxy_list_object fetch_elements result self=%r len(result.slice.elements)=%r', self, len(result.slice.elements))
+        if subscribing_now:
+            self._subscribe_pending = False
             self._subscribed = True
-        self.execute_request(command_id, None, sort_column_id, from_key, direction, count)
-
-    def process_response_result( self, command_id, result ):
-        if command_id == 'subscribe_and_fetch_elements':
-            self.process_subscribe_and_fetch_elements_result(result)
-        elif command_id == 'fetch_elements':
-            self.process_fetch_elements_result(result)
-        else:
-            ProxyObject.process_response_result(self, command_id, result)
-
-    def process_subscribe_and_fetch_elements_result( self, result ):
-        log.info('-- proxy process_subscribe_and_fetch_elements_result self=%r len(result.slice.elements)=%r', self, len(result.slice.elements))
-        ProxyObject.set_contents(self, result)
-        self._process_fetch_elements_result(result)
-        self._notify_object_changed()
-
-    def process_fetch_elements_result( self, result ):
-        log.info('-- proxy process_fetch_elements_result self=%r len(result.slice.elements)=%r', self, len(result.slice.elements))
+            ProxyObject.set_contents(self, result)
+            self._notify_object_changed()
         self._process_fetch_elements_result(result)
 
     def _process_fetch_elements_result( self, result ):

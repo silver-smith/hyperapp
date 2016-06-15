@@ -129,6 +129,7 @@ class Model(QtCore.QAbstractTableModel):
             wanted_last_row += APPEND_PHONY_REC_COUNT
         return wanted_last_row
 
+    @asyncio.coroutine
     def fetch_elements_if_required( self, first_visible_row, visible_row_count ):
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
@@ -140,20 +141,20 @@ class Model(QtCore.QAbstractTableModel):
         if wanted_rows > 0 and not self.eof:
             log.info('   fetch_elements object=%r key=%r wanted_rows=%r', self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
-            self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
+            yield from self._object.fetch_elements(self._current_order, key, 'asc', wanted_rows)
 
-    def process_fetch_result( self, result ):
-        log.info('-- list_view.Model.process_fetch_result self=%r object=%r len(result.elements)=%r', id(self), self._object, len(result.elements))
+    def process_fetch_result( self, slice ):
+        log.info('-- list_view.Model.process_fetch_result self=%r object=%r len(slice.elements)=%r', id(self), self._object, len(slice.elements))
         self._fetch_pending = False
         old_len = len(self.keys)
-        self._update_elements(result.elements)
-        if result.elements:
-            idx = bisect.bisect_left(self.keys, result.elements[0].key)
+        self._update_elements_map(slice.elements)
+        if slice.elements:
+            idx = bisect.bisect_left(self.keys, slice.elements[0].key)
         else:
             idx = len(self.keys)
-        self.keys = self.keys[:idx] + [element.key for element in result.elements]
-        self.eof = result.eof
-        self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(result.elements))
+        self.keys = self.keys[:idx] + [element.key for element in slice.elements]
+        self.eof = slice.eof
+        self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(slice.elements))
     
     def diff_applied( self, diff ):
         start_idx = bisect.bisect_left(self.keys, diff.start_key)
@@ -162,7 +163,7 @@ class Model(QtCore.QAbstractTableModel):
                  id(self), diff, start_idx, end_idx, len(self.keys), self.keys)
         for key in self.keys[start_idx:end_idx]:
             del self._key2element[key]
-        self._update_elements(diff.elements)
+        self._update_elements_map(diff.elements)
         self.keys[start_idx:end_idx] = [element.key for element in diff.elements]
         if end_idx > start_idx:
             self.rowsRemoved.emit(QtCore.QModelIndex(), start_idx, end_idx - 1)
@@ -198,7 +199,7 @@ class Model(QtCore.QAbstractTableModel):
         eof = self.eof and last_row >= len(self.keys)
         return Slice(self._current_order, from_key, 'asc', elements, bof, eof)
 
-    def _update_elements( self, elements ):
+    def _update_elements_map( self, elements ):
         for element in elements:
             self._key2element[element.key] = element
 
@@ -267,11 +268,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## view.View.object_changed(self)
         ## self.check_if_elements_must_be_fetched()
 
-    def process_fetch_result( self, result ):
+    def process_fetch_result( self, slice ):
         log.info('-- process_fetch_result self=%r model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
-                 self, id(self.model()), result.sort_column_id, result.bof, result.eof, len(result.elements))
-        assert isinstance(result, Slice), repr(result)
-        self.model().process_fetch_result(result)
+                 self, id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements))
+        assert isinstance(slice, Slice), repr(slice)
+        self.model().process_fetch_result(slice)
         self.resizeColumnsToContents()
         self.fetch_elements_if_required()
         if self.wanted_current_key is not None:
@@ -387,7 +388,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def fetch_elements_if_required( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        self.model().fetch_elements_if_required(first_visible_row, visible_row_count)
+        asyncio.async(self.model().fetch_elements_if_required(first_visible_row, visible_row_count))
 
     ## def check_if_elements_must_be_fetched( self ):
     ##     last_visible_row = self.get_last_visible_row()
