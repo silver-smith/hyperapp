@@ -54,6 +54,7 @@ class Object(object):
     def unsubscribe( self, observer ):
         self._observers.remove(observer)
 
+    @asyncio.coroutine
     def server_subscribe( self ):
         pass
 

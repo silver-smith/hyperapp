@@ -41,9 +41,6 @@ class Request(RequestBase):
     def to_data( self ):
         return tRequest(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
 
-    def process_response( self, server, response ):
-        raise NotImplementedError(self.__class__)
-
 
 class ResponseBase(object):
 

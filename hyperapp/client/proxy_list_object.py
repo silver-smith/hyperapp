@@ -1,4 +1,5 @@
 import logging
+import asyncio
 import bisect
 from ..common.htypes import TList
 from .list_object import ListDiff, Element, Slice, ListObject
@@ -30,6 +31,7 @@ class ProxyListObject(ProxyObject, ListObject):
     # and we do not want redundant call to server with 'subscribe' request.
     # If this method is called it means that assumption is not true, and we are not actually subscribed yet;
     # then 'subscribe' command will be issued on first fetch_elements call.
+    @asyncio.coroutine
     def server_subscribe( self ):
         self._subscribed = False
 

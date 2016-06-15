@@ -1,6 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 import logging
+import asyncio
 from PySide import QtCore, QtGui
 from ..common.htypes import tInt, tString, TList, Field, TRecord, tHandle, tViewHandle, list_handle_type
 from .util import key_match, key_match_any
@@ -50,7 +51,7 @@ class Item(object):
         handle = view_registry.resolve(self.handle_data)
         object = handle.get_object()
         if object:
-            object.server_subscribe()
+            asyncio.async(object.server_subscribe())
         return handle
 
 

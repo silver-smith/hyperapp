@@ -38,21 +38,6 @@ from .view_registry import view_registry
 log = logging.getLogger(__name__)
 
 
-class RequestForResult(Request):
-
-    def __init__( self, object, command_id, params ):
-        assert isinstance(object, Object), repr(object)
-        Request.__init__(self, object.iface, object.path, command_id, params)
-        self.object = weakref.ref(object)
-
-    def process_response( self, server, response ):
-        object = self.object()
-        if not object:
-            log.info('Received response #%s for a missing (already destroyed) object, ignoring', response.request_id)
-            return
-        object.process_response_result(self.command_id, response.result)
-
-
 class OpenRequest(Request):
 
     def __init__( self, iface, path, command_id, params, initiator_view ):
@@ -213,8 +198,11 @@ class ProxyObject(Object):
     def get_objimpl_id( cls ):
         return 'object'
 
+    @asyncio.coroutine
     def server_subscribe( self ):
-        self.execute_request('subscribe')
+        result = yield from self.execute_request('subscribe')
+        self.set_contents(result)
+        self._notify_object_changed()
 
     def set_contents( self, contents ):
         self.commands = list(map(Command.from_data, contents.commands))
@@ -233,7 +221,7 @@ class ProxyObject(Object):
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)
-        self.send_notification('unsubscribe')
+        asyncio.async(self.send_notification('unsubscribe'))
 
     # prepare request which does not require/expect response
     def prepare_notification( self, command_id, *args, **kw ):
@@ -255,14 +243,6 @@ class ProxyObject(Object):
         request = self.prepare_request(command_id, *args, **kw)
         response = yield from self.server.execute_request(request)
         return response.result
-
-    def process_response_result( self, command_id, result ):
-        if command_id == 'subscribe':
-            self.process_subscribe_response(result)
-
-    def process_subscribe_response( self, result ):
-        self.set_contents(result)
-        self._notify_object_changed()
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
