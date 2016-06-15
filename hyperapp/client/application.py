@@ -71,7 +71,11 @@ class Application(QtGui.QApplication, view.View):
         self._windows.remove(view)
         if not self._windows:  # Was it the last window? Then it is time to exit
             self.save_state([view.handle()])
-            self._loop.stop()
+            asyncio.async(self.stop_loop())  # call it async to allow all pending tasks to complete
+
+    @asyncio.coroutine
+    def stop_loop( self ):
+        self._loop.stop()
 
     @command('Open server', 'Load server endpoint from file', 'Alt+O')
     def open_server( self ):

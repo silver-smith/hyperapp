@@ -1,6 +1,7 @@
+import asyncio
 import weakref
 from ..common.util import is_list_inst
-from .util import make_action
+from .util import make_async_action
 from .command import CommandBase
 
 
@@ -37,6 +38,7 @@ class BoundViewCommand(WindowCommand):
     def get_inst( self ):
         return self.inst_wr()
 
+    @asyncio.coroutine
     def run( self ):
         inst = self.inst_wr()
         if inst:  # inst not yet deleted?
@@ -44,7 +46,7 @@ class BoundViewCommand(WindowCommand):
 
     # must take same parameters as window.OpenCommand as they are both used as interchangeable by menu bar global menu
     def make_action( self, widget, window=None ):
-        action = make_action(widget, self.text, self.shortcut, self.run)
+        action = make_async_action(widget, self.text, self.shortcut, self.run)
         action.setEnabled(self.enabled)
         return action
 
