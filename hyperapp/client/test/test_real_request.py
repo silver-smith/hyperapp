@@ -12,16 +12,25 @@ from hyperapp.common.endpoint import Url
 from hyperapp.common.visual_rep import pprint
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
+from hyperapp.client import code_repository
+from hyperapp.client.module_manager import ModuleManager
+from hyperapp.client.transport import transport_registry
+from hyperapp.client.objimpl_registry import objimpl_registry
+from hyperapp.client.view_registry import view_registry
 from hyperapp.common.interface.server_management import server_management_iface
-# self-registering transports:
-import hyperapp.client.tcp_transport
-import hyperapp.client.encrypted_transport
+
+from hyperapp.client import tcp_transport
+from hyperapp.client import encrypted_transport
 
 
 class RealRequestTest(unittest.TestCase):
 
     def setUp( self ):
         self.iface_registry = IfaceRegistry()
+        self.module_mgr = ModuleManager()
+        self.code_repository = code_repository.get_code_repository()
+        tcp_transport.register_transports(transport_registry, self.module_mgr, self.code_repository,
+                                          self.iface_registry, objimpl_registry, view_registry)
         self.iface_registry.register(server_management_iface)
 
     def test_get_request( self ):

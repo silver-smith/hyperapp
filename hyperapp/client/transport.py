@@ -97,7 +97,7 @@ class TransportRegistry(object):
                 # todo: catch specific exceptions; try next route
                 raise
         raise RuntimeError('Unable to send packet to %s - no reachable transports'
-                           % server.get_endpoint().public_key.get_short_id_hex())
+                           % endpoint.public_key.get_short_id_hex())
 
     @asyncio.coroutine
     def process_packet( self, protocol, session_list, server_public_key, packet ):
