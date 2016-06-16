@@ -135,15 +135,6 @@ class Application(QtGui.QApplication, view.View):
                     text_handle)]))
         return [window_handle]
 
-    def _add_modules_and_open_state( self, handles_cdr, modules ):
-        self._module_mgr.add_modules(modules)
-        handles_data = packet_coders.decode('cdr', handles_cdr, self.handles_type)
-        ## print '-->8 -- loaded handles  ------'
-        ## pprint(self.handles_type, handles_data)
-        ## print '--- 8<------------------------'
-        handles = [window.Handle.from_data(rec) for rec in handles_data]
-        self.open_windows(handles)
-
     def process_events_and_repeat( self ):
         while self.hasPendingEvents():
             self.processEvents()
@@ -155,8 +146,7 @@ class Application(QtGui.QApplication, view.View):
         if state:
             module_ids, modules, handles_cdr = state
             log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
-            ## self._code_repository.get_modules_by_ids_and_continue(
-            ##     module_ids, lambda modules: self._add_modules_and_open_state(handles_cdr, modules))
+            self._module_mgr.add_modules(modules)
             handles_data = packet_coders.decode('cdr', handles_cdr, self.handles_type)
             ## print '-->8 -- loaded handles  ------'
             ## pprint(self.handles_type, handles_data)
