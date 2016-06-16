@@ -41,10 +41,10 @@ class TcpTransport(Transport):
 
     def _make_transport_packet( self, request_or_notification ):
         aux_info = tAuxInfo(requirements=[], modules=[])  # not used in packets from client
-        packet_data = packet_coders.encode(self.encoding, request_or_notification.to_data(), tClientPacket)
-        packet = tPacket(aux_info, packet_data)
-        encoded_packet = packet_coders.encode(self.encoding, packet, tPacket)
-        return tTransportPacket(self.transport_id, encoded_packet)
+        payload = packet_coders.encode(self.encoding, request_or_notification.to_data(), tClientPacket)
+        packet = tPacket(aux_info, payload)
+        packet_data = packet_coders.encode(self.encoding, packet, tPacket)
+        return tTransportPacket(self.transport_id, packet_data)
 
     @asyncio.coroutine
     def process_packet( self, protocol, session_list, server_public_key, data ):

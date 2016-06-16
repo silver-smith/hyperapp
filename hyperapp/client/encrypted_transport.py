@@ -1,5 +1,5 @@
-from PySide import QtCore
-from ..common.htypes import tServerPacket
+import asyncio
+from ..common.htypes import tClientPacket, tServerPacket
 from ..common.encrypted_packet import (
     tEncryptedPacket,
     tSubsequentEncryptedPacket,
@@ -14,12 +14,17 @@ from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.packet_coders import packet_coders
 from .transport import Transport
-from .tcp_connection import TcpConnection
+from .tcp_protocol import TcpProtocol
 from .identity import get_identity_controller
 
 
 TRANSPORT_ID = 'encrypted_tcp'
 ENCODING = 'cdr'
+
+
+def register_transports( registry, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry ):
+    registry.register(TRANSPORT_ID, EncryptedTransport(
+        module_mgr, code_repository, iface_registry, objimpl_registry, view_registry))
 
 
 class Session(object):
@@ -31,16 +36,36 @@ class Session(object):
 
 class EncryptedTransport(Transport):
 
-    def send_packet( self, server, route, payload, payload_type, aux_info ):
+    @asyncio.coroutine
+    def send_request_rec( self, endpoint, route, request_or_notification ):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
-        server_public_key = server.get_endpoint().public_key
-        connection = TcpConnection.produce(server_public_key, host, port)
-        session = self._produce_session(connection.get_session_list())
-        packet_data = self._make_payload_packet(session, server_public_key, payload, payload_type, aux_info)
-        connection.send_data(packet_data)
+        protocol = yield from TcpProtocol.produce(endpoint.public_key, host, port)
+        session = self._produce_session(protocol.session_list)
+        transport_packet = self._make_payload_packet(session, endpoint.public_key, request_or_notification)
+        protocol.send_packet(transport_packet)
         return True
+
+    def _produce_session( self, session_list ):
+        session = session_list.get_transport_session(TRANSPORT_ID)
+        if session is None:
+            session_key = make_session_key()
+            session = Session(session_key)
+            session_list.set_transport_session(TRANSPORT_ID, session)
+        return session
+    
+    def _make_payload_packet( self, session, server_public_key, request_or_notification ):
+        aux_info = tAuxInfo(requirements=[], modules=[])  # not used in packets from client
+        payload = packet_coders.encode(ENCODING, request_or_notification.to_data(), tClientPacket)
+        packet = tPacket(aux_info, payload)
+        packet_data = packet_coders.encode(ENCODING, packet, tPacket)
+        encrypted_packet = encrypt_initial_packet(session.session_key, server_public_key, packet_data)
+        return self._make_transport_packet(encrypted_packet)
+
+    def _make_transport_packet( self, encrypted_packet ):
+        encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
+        return tTransportPacket(TRANSPORT_ID, encrypted_packet_data)
 
     def process_packet( self, connection, session_list, server_public_key, data ):
         session = session_list.get_transport_session(TRANSPORT_ID)
@@ -70,28 +95,3 @@ class EncryptedTransport(Transport):
         
     def _decode_payload( self, data ):
         return packet_coders.decode(ENCODING, data, tServerPacket)
-    
-    def _make_payload_packet( self, session, server_public_key, payload, payload_type, aux_info ):
-        if aux_info is None:
-            aux_info = tAuxInfo(requirements=[], modules=[])
-        packet_data = packet_coders.encode(ENCODING, payload, payload_type)
-        packet = tPacket(aux_info, packet_data)
-        packet_data = packet_coders.encode(ENCODING, packet, tPacket)
-        encrypted_packet = encrypt_initial_packet(session.session_key, server_public_key, packet_data)
-        return self._make_transport_packet(encrypted_packet)
-
-    def _make_transport_packet( self, encrypted_packet ):
-        encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
-        transport_packet = tTransportPacket(TRANSPORT_ID, encrypted_packet_data)
-        return encode_transport_packet(transport_packet)
-
-    def _produce_session( self, session_list ):
-        session = session_list.get_transport_session(TRANSPORT_ID)
-        if session is None:
-            session_key = make_session_key()
-            session = Session(session_key)
-            session_list.set_transport_session(TRANSPORT_ID, session)
-        return session
-
-
-#transport_registry.register(TRANSPORT_ID, EncryptedTransport())

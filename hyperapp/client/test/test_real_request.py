@@ -31,6 +31,8 @@ class RealRequestTest(unittest.TestCase):
         self.code_repository = code_repository.get_code_repository()
         tcp_transport.register_transports(transport_registry, self.module_mgr, self.code_repository,
                                           self.iface_registry, objimpl_registry, view_registry)
+        encrypted_transport.register_transports(transport_registry, self.module_mgr, self.code_repository,
+                                                self.iface_registry, objimpl_registry, view_registry)
         self.iface_registry.register(server_management_iface)
 
     def test_get_request( self ):
