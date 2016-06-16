@@ -138,7 +138,9 @@ class Application(QtGui.QApplication, view.View):
     def process_events_and_repeat( self ):
         while self.hasPendingEvents():
             self.processEvents()
-        self.sendPostedEvents()
+            # although this event is documented as deprecated, it is essential for qt objects being destroyed:
+            self.processEvents(QtCore.QEventLoop.DeferredDeletion)
+        self.sendPostedEvents(None, 0)
         self._loop.call_later(0.01, self.process_events_and_repeat)
 
     def exec_( self ):
