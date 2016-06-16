@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.interface.article import tObjSelectorHandle, tObjSelectorUnwrapHandle
+from ..common.interface.article import tObjSelectorHandle
 from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .proxy_object import ProxyObject
@@ -10,29 +10,6 @@ from . import view
 from .command import ObjectCommand
 
 log = logging.getLogger(__name__)
-
-
-class ObjSelectorUnwrap(view.Handle):
-
-    @classmethod
-    def from_data( cls, contents, server=None ):
-        base_handle = view_registry.resolve(contents.base_handle, server)
-        return cls(base_handle)
-
-    def __init__( self, base_handle ):
-        self.base_handle = base_handle
-
-    def to_data( self ):
-        return tObjSelectorUnwrapHandle('object_selector_unwrap', self.base_handle.to_data())
-
-    def get_object( self ):
-        return self.base_handle.get_object()
-
-    def get_module_ids( self ):
-        return [this_module_id]
-
-    def construct( self, parent ):
-        return self.base_handle.construct(parent)
 
 
 class Handle(view.Handle):
@@ -112,12 +89,11 @@ class View(view.View, QtGui.QWidget):
         url = target_obj.get_url()
         if not url: return  # not a proxy - can not choose it
         handle = (yield from self.ref.run_command(command_id, target_url=url.to_data()))
-        if handle:  # command is handled by client-side
-            self.open(handle)
+        if handle:
+            view.View.open(self, handle)  # do not wrap in our Handle
 
     def open( self, handle ):
-        if not isinstance(handle, ObjSelectorUnwrap):
-            handle = Handle(self.ref, handle)
+        handle = Handle(self.ref, handle)
         view.View.open(self, handle)
 
     def __del__( self ):
@@ -125,4 +101,3 @@ class View(view.View, QtGui.QWidget):
 
 
 view_registry.register('object_selector', Handle.from_data)
-view_registry.register('object_selector_unwrap', ObjSelectorUnwrap.from_data)

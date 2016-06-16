@@ -4,11 +4,9 @@ from ..common.util import encode_path, decode_path
 from ..common.htypes import tCommand, Column, tObjHandle, tRedirectHandle, iface_registry
 from ..common.interface.article import (
     tObjSelectorHandle,
-    tObjSelectorUnwrapHandle,
     article_iface,
     ref_list_iface,
     object_selector_iface,
-    onwrap_object_selector_iface,
     )
 from ..common.identity import PublicKey
 from ..common.endpoint import Url
@@ -265,8 +263,7 @@ class RefSelector(Object):
         ref_list_obj = ArticleRefList(self.article_id)
         diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
-        list_elt = ArticleRefList.ListHandle(ref_list_obj.get(), key=rec.id)
-        handle = tObjSelectorUnwrapHandle('object_selector_unwrap', list_elt)
+        handle = ArticleRefList.ListHandle(ref_list_obj.get(), key=rec.id)
         return request.make_response(handle)
 
     @db_session
