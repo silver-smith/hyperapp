@@ -12,7 +12,9 @@ from ..common.encrypted_packet import (
     )
 from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
+from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
+from .request import ResponseBase
 from .transport import Transport
 from .tcp_protocol import TcpProtocol
 from .identity import get_identity_controller
@@ -67,22 +69,29 @@ class EncryptedTransport(Transport):
         encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
         return tTransportPacket(TRANSPORT_ID, encrypted_packet_data)
 
-    def process_packet( self, connection, session_list, server_public_key, data ):
+    @asyncio.coroutine
+    def process_packet( self, protocol, session_list, server_public_key, data ):
         session = session_list.get_transport_session(TRANSPORT_ID)
         assert session is not None  # must be created when sending request
         encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
         if isinstance(encrypted_packet, tSubsequentEncryptedPacket):
-            self.process_subsequent_encrypted_packet(server_public_key, session, encrypted_packet)
+            return (yield from self._process_subsequent_encrypted_packet(server_public_key, session, encrypted_packet))
         if isinstance(encrypted_packet, tPopChallengePacket):
-            self.process_pop_challenge_packet(connection, server_public_key, session, encrypted_packet)
+            yield from self._process_pop_challenge_packet(protocol, server_public_key, session, encrypted_packet)
+            return None  # not a response; packet processed by transport
 
-    def process_subsequent_encrypted_packet( self, server_public_key, session, encrypted_packet ):
+    @asyncio.coroutine
+    def _process_subsequent_encrypted_packet( self, server_public_key, session, encrypted_packet ):
         packet_data = decrypt_subsequent_packet(session.session_key, encrypted_packet)
         packet = packet_coders.decode(ENCODING, packet_data, tPacket)
-        app = QtCore.QCoreApplication.instance()
-        app.response_mgr.process_packet(server_public_key, packet, self._decode_payload)
+        pprint(tPacket, packet)
+        yield from self.resolve_requirements(packet.aux_info.requirements)
+        response_or_notification_rec = packet_coders.decode(ENCODING, packet.payload, tServerPacket)
+        pprint(tServerPacket, response_or_notification_rec)
+        return ResponseBase.from_data(server_public_key, self._iface_registry, response_or_notification_rec)
 
-    def process_pop_challenge_packet( self, connection, server_public_key, session, encrypted_packet ):
+    @asyncio.coroutine
+    def _process_pop_challenge_packet( self, protocol, server_public_key, session, encrypted_packet ):
         challenge = encrypted_packet.challenge
         pop_records = []
         for item in get_identity_controller().get_items():
@@ -90,8 +99,5 @@ class EncryptedTransport(Transport):
                 item.identity.get_public_key().to_der(),
                 item.identity.sign(challenge)))
         pop_packet = tProofOfPossessionPacket(challenge, pop_records)
-        transport_packet_data = self._make_transport_packet(pop_packet)
-        connection.send_data(transport_packet_data)
-        
-    def _decode_payload( self, data ):
-        return packet_coders.decode(ENCODING, data, tServerPacket)
+        transport_packet = self._make_transport_packet(pop_packet)
+        protocol.send_packet(transport_packet)

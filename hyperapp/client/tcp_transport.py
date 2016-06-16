@@ -49,6 +49,7 @@ class TcpTransport(Transport):
     @asyncio.coroutine
     def process_packet( self, protocol, session_list, server_public_key, data ):
         packet = packet_coders.decode(self.encoding, data, tPacket)
+        pprint(tPacket, packet)
         yield from self.resolve_requirements(packet.aux_info.requirements)
         response_or_notification_rec = packet_coders.decode(self.encoding, packet.payload, tServerPacket)
         pprint(tServerPacket, response_or_notification_rec)
