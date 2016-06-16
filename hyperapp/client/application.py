@@ -10,7 +10,6 @@ from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .request import Request
 from .server import Server
-from .proxy_object import GetRequest
 from .view_command import command
 from . import text_object
 from . import view
@@ -33,7 +32,7 @@ STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 class Application(QtGui.QApplication, view.View):
 
-    handles_type = TList(window.data_type)
+    state_type = TList(window.state_type)
 
     def __init__( self, sys_argv ):
         QtGui.QApplication.__init__(self, sys_argv)
@@ -51,12 +50,12 @@ class Application(QtGui.QApplication, view.View):
     def response_mgr( self ):
         return self._response_mgr
 
-    def get_windows_handles( self ):
-        return [view.handle() for view in self._windows]
+    def get_state( self ):
+        return [view.get_state() for view in self._windows]
 
-    def open_windows( self, windows_handles ):
-        for handle in windows_handles or []:
-            handle.construct(self)
+    def open_windows( self, state ):
+        for s in state or []:
+            window.Window.from_state(self, s)
 
     def pick_arg( self, kind ):
         return None
@@ -68,9 +67,10 @@ class Application(QtGui.QApplication, view.View):
         self._windows.append(view)
 
     def window_closed( self, view ):
+        state = self.get_state()
         self._windows.remove(view)
         if not self._windows:  # Was it the last window? Then it is time to exit
-            self.save_state([view.handle()])
+            self.save_state(state)
             asyncio.async(self.stop_loop())  # call it async to allow all pending tasks to complete
 
     @asyncio.coroutine
@@ -90,21 +90,21 @@ class Application(QtGui.QApplication, view.View):
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
         ## module.set_shutdown_flag()
-        handles = self.get_windows_handles()
-        self.save_state(handles)
+        state = self.get_state()
+        self.save_state(state)
         self._loop.stop()
 
-    def save_state( self, handles ):
-        module_ids = list(flatten(handle.get_module_ids() for handle in handles))
-        log.info('modules required for state: %s', module_ids)
-        modules = self._module_mgr.resolve_ids(module_ids)
-        for module in modules:
-            log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
-        handles_data = [h.to_data() for h in handles]
-        handles_cdr = packet_coders.encode('cdr', handles_data, self.handles_type)
-        state = (module_ids, modules, handles_cdr)
+    def save_state( self, state ):
+        ## module_ids = list(flatten(handle.get_module_ids() for handle in handles))
+        ## log.info('modules required for state: %s', module_ids)
+        ## modules = self._module_mgr.resolve_ids(module_ids)
+        ## for module in modules:
+        ##     log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
+        state_data = packet_coders.encode('cdr', state, self.state_type)
+        ## contents = (module_ids, modules, state_data)
+        contents = state_data
         with open(STATE_FILE_PATH, 'wb') as f:
-            pickle.dump(state, f)
+            pickle.dump(contents, f)
 
     ## def load_state_and_modules( self ):
     ##     state = self.load_state_file()
@@ -128,12 +128,16 @@ class Application(QtGui.QApplication, view.View):
             return None
 
     def get_default_state( self ):
-        text_handle = text_view.Handle(text_object.TextObject('hello'))
-        window_handle = window.Handle(
-            tab_view.Handle([
-                navigator.Handle(
-                    text_handle)]))
-        return [window_handle]
+        text_handle = text_view.state_type('text_view', text_object.state_type('text', 'hello'))
+        navigator_state = navigator.state_type(
+            history=[navigator.item_type('sample text', text_handle)],
+            current_pos=0)
+        tabs_state = tab_view.state_type(tabs=[navigator_state], current_tab=0)
+        window_state = window.state_type(
+            tab_view=tabs_state,
+            size=window.size_type(600, 500),
+            pos=window.point_type(100, 100))
+        return [window_state]
 
     def process_events_and_repeat( self ):
         while self.hasPendingEvents():
@@ -144,21 +148,20 @@ class Application(QtGui.QApplication, view.View):
         self._loop.call_later(0.01, self.process_events_and_repeat)
 
     def exec_( self ):
-        state = self.load_state_file()
-        if state:
-            module_ids, modules, handles_cdr = state
-            log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
-            self._module_mgr.add_modules(modules)
-            handles_data = packet_coders.decode('cdr', handles_cdr, self.handles_type)
-            ## print '-->8 -- loaded handles  ------'
-            ## pprint(self.handles_type, handles_data)
-            ## print '--- 8<------------------------'
-            handles = [window.Handle.from_data(rec) for rec in handles_data]
-            self.open_windows(handles)
+        contents = self.load_state_file()
+        if contents:
+            state_data = contents
+            ## module_ids, modules, state_data = contents
+            ## log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
+            ## self._module_mgr.add_modules(modules)
+            state = packet_coders.decode('cdr', state_data, self.state_type)
+            log.info('-->8 -- loaded state  ------')
+            pprint(self.state_type, state)
+            log.info('--- 8<------------------------')
+            self.open_windows(state)
         else:
-            whandles = self.get_default_state()
-            self.open_windows(whandles)
-            del whandles  # or objects will be kept alive
+            state = self.get_default_state()
+            self.open_windows(state)
         self._loop.call_soon(self.process_events_and_repeat)
         try:
             self._loop.run_forever()

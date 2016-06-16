@@ -7,7 +7,7 @@ from .objimpl_registry import objimpl_registry
 log = logging.getLogger(__name__)
 
 
-dataType = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
+state_type = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
 
 
 class TextObject(Object):
@@ -27,8 +27,8 @@ class TextObject(Object):
         cls.edit_handle_ctr = ctr
 
     @classmethod
-    def from_data( cls, objinfo, server=None ):
-        return cls(objinfo.text)
+    def from_state( cls, state, server=None ):
+        return cls(state.text)
 
     def __init__( self, text ):
         Object.__init__(self)
@@ -37,8 +37,8 @@ class TextObject(Object):
     def get_title( self ):
         return 'Local text object'
 
-    def to_data( self ):
-        return dataType('text', self.text)
+    def get_state( self ):
+        return state_type('text', self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
@@ -71,4 +71,4 @@ class TextObject(Object):
         log.info('~text_object %r', self)
 
 
-objimpl_registry.register('text', TextObject.from_data)
+objimpl_registry.register('text', TextObject.from_state)

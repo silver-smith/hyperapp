@@ -30,7 +30,7 @@ from .proxy_registry import proxy_class_registry, proxy_registry
 from .request import ClientNotification, Request
 from .server import Server
 from .cache_repository import cache_repository
-from .view import Handle, View
+from .view import View
 ## from .proxy_object_data_mapper import ProxyObjectMapper
 ## from .redirect_handle_resolver import RedirectHandleCollector, RedirectHandleMapper
 from .view_registry import view_registry

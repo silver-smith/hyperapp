@@ -101,35 +101,35 @@ class Field(object):
         return tFormField(self.name, self.handle.to_data())
 
 
-class Handle(view.Handle):
+## class Handle(view.Handle):
 
-    view_id = 'form'
+##     view_id = 'form'
 
-    @classmethod
-    def from_data( cls, contents, server=None ):
-        object = objimpl_registry.produce_obj(contents.object, server)
-        fields = [Field.from_data(rec) for rec in contents.fields] 
-        return cls(object, fields, contents.current_field)
+##     @classmethod
+##     def from_data( cls, contents, server=None ):
+##         object = objimpl_registry.produce_obj(contents.object, server)
+##         fields = [Field.from_data(rec) for rec in contents.fields] 
+##         return cls(object, fields, contents.current_field)
 
-    def __init__( self, object, fields, current_field=0 ):
-        assert is_list_inst(fields, Field), repr(fields)
-        self.object = object
-        self.fields = fields
-        self.current_field = current_field
+##     def __init__( self, object, fields, current_field=0 ):
+##         assert is_list_inst(fields, Field), repr(fields)
+##         self.object = object
+##         self.fields = fields
+##         self.current_field = current_field
 
-    def to_data( self ):
-        return tFormHandle(
-            self.view_id, self.object.to_data(), [field.to_data() for field in self.fields], self.current_field)
+##     def to_data( self ):
+##         return tFormHandle(
+##             self.view_id, self.object.to_data(), [field.to_data() for field in self.fields], self.current_field)
 
-    def get_object( self ):
-        return self.object
+##     def get_object( self ):
+##         return self.object
 
-    def construct( self, parent ):
-        log.info('form construct parent=%r title=%r current_field=%r fields=%r', parent, self.object.get_title(), self.current_field, self.fields)
-        return View(parent, self.object, self.fields, self.current_field)
+##     def construct( self, parent ):
+##         log.info('form construct parent=%r title=%r current_field=%r fields=%r', parent, self.object.get_title(), self.current_field, self.fields)
+##         return View(parent, self.object, self.fields, self.current_field)
 
-    def __repr__( self ):
-        return 'form.Handle(%s, %s)' % (uni2str(self.object.get_title()), self.fields)
+##     def __repr__( self ):
+##         return 'form.Handle(%s, %s)' % (uni2str(self.object.get_title()), self.fields)
 
 
 class View(view.View, QtGui.QWidget):
@@ -206,4 +206,4 @@ field_registry = FieldRegistry()
 
 field_registry.register(StringFieldHandle.field_view_id, StringFieldHandle.from_data)
 field_registry.register(IntFieldHandle.field_view_id, IntFieldHandle.from_data)
-view_registry.register(Handle.view_id, Handle.from_data)
+## view_registry.register(Handle.view_id, Handle.from_data)

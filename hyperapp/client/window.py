@@ -29,48 +29,23 @@ size_type = TRecord([
     Field('h', tInt),
     ])
 
-data_type = TRecord([
-    Field('tab_view', tab_view.data_type),
+state_type = TRecord([
+    Field('tab_view', tab_view.state_type),
     Field('size', size_type),
     Field('pos', point_type),
     ])
 
 
-class Handle(composite.Handle):
-
-    @classmethod
-    def from_data( cls, rec ):
-        return cls(tab_view.Handle.from_data(rec.tab_view),
-                   size=QtCore.QSize(rec.size.w, rec.size.h),
-                   pos=QtCore.QPoint(rec.pos.x, rec.pos.y))
-
-    def __init__( self, child_handle, size=None, pos=None ):
-        composite.Handle.__init__(self, [child_handle])
-        self.child_handle = child_handle
-        self.size = size
-        self.pos = pos
-
-    def to_data( self ):
-        return data_type(
-            tab_view=self.child_handle.to_data(),
-            size=size_type(w=self.size.width(), h=self.size.height()),
-            pos=point_type(x=self.pos.x(), y=self.pos.y()),
-            )
-
-    def get_child_handle( self ):
-        return self.child_handle
-
-    def construct( self, app ):
-        log.info('window construct app=%r child_handle=%r', app, self.child_handle)
-        return Window(app, self.child_handle, self.size, self.pos)
-
-    def move( self, point ):
-        return Handle(self.child_handle, self.size, self.pos + point)
-
-
 class Window(composite.Composite, QtGui.QMainWindow):
 
-    def __init__( self, app, child_handle, size=None, pos=None ):
+    @classmethod
+    def from_state( cls, app, state ):
+        return cls(app, state.tab_view,
+                   size=QtCore.QSize(state.size.w, state.size.h),
+                   pos=QtCore.QPoint(state.pos.x, state.pos.y))
+
+    def __init__( self, app, child_state, size=None, pos=None ):
+        assert isinstance(child_state, tab_view.state_type), repr(child_state)
         QtGui.QMainWindow.__init__(self)
         composite.Composite.__init__(self, app)
         self._app = app  # alias for _parent()
@@ -89,7 +64,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
-        self.set_child(child_handle)
+        self.set_child(child_state)
         self.show()
         self._parent().window_created(self)
 
@@ -98,8 +73,12 @@ class Window(composite.Composite, QtGui.QMainWindow):
         ## self.deleteLater()  # seems not required, at least when moved to QMainWindow from QWidget
         self._parent().window_closed(self)
 
-    def handle( self ):
-        return Handle(self._view.handle(), self.size(), self.pos())
+    def get_state( self ):
+        return state_type(
+            tab_view=self._view.get_state(),
+            size=size_type(w=self.width(), h=self.height()),
+            pos=point_type(x=self.x(), y=self.y()),
+            )
 
     def get_current_child( self ):
         return self._view
@@ -109,8 +88,8 @@ class Window(composite.Composite, QtGui.QMainWindow):
         if handle:
             self.set_child(handle)
 
-    def set_child( self, handle ):
-        self._view = handle.construct(self)
+    def set_child( self, child_state ):
+        self._view = tab_view.View.from_state(self, child_state)
         self.view_changed(self._view)
 
     def open( self, handle ):

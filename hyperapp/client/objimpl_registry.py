@@ -12,10 +12,10 @@ class ObjImplRegistry(object):
     def is_registered( self, objimpl_id ):
         return objimpl_id in self.id2impl
 
-    def produce_obj( self, objinfo, server=None ):
-        producer = self.id2impl.get(objinfo.objimpl_id)
-        assert producer is not None, repr(objinfo.objimpl_id)  # Unknown objimpl_id
-        return producer(objinfo, server)
+    def produce_obj( self, state, server=None ):
+        producer = self.id2impl.get(state.objimpl_id)
+        assert producer is not None, repr(state.objimpl_id)  # Unknown objimpl_id
+        return producer(state, server)
 
 
 objimpl_registry = ObjImplRegistry()

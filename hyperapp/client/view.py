@@ -14,24 +14,6 @@ from .view_command import BoundViewCommand, UnboundViewCommand
 log = logging.getLogger(__name__)
 
 
-class Handle(object):
-
-    def get_object( self ):
-        raise NotImplementedError(self.__class__)
-
-    def get_title( self ):
-        return self.get_object().get_title()
-
-    def to_data( self ):
-        raise NotImplementedError(self.__class__)
-
-    def get_module_ids( self ):
-        return self.get_object().get_module_ids()
-
-    def construct( self, parent ):
-        raise NotImplementedError(self.__class__)
-
-
 class View(ObjectObserver):
 
     CmdPanelHandleCls = None  # registered by cmd_view
@@ -47,6 +29,9 @@ class View(ObjectObserver):
             attr = getattr(self, name)
             if isinstance(attr, UnboundViewCommand):
                 self._commands.append(attr.bind(self))
+
+    def get_state( self ):
+        raise NotImplementedError(self.__class__)
 
     def object_changed( self ):
         self.view_changed()
