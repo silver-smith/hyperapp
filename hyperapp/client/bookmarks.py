@@ -50,7 +50,7 @@ bookmark_list_handle_type = list_handle_type('bookmark_list', tString)
 class BookmarkList(ListObject):
 
     @classmethod
-    def from_data( cls, objinfo, server=None ):
+    def from_state( cls, state, server=None ):
         return cls(iface_registry, this_module.bookmarks)
     
     def __init__( self, iface_registry, bookmarks ):
@@ -59,6 +59,10 @@ class BookmarkList(ListObject):
         ListObject.__init__(self)
         self._iface_registry = iface_registry
         self._bookmarks = bookmarks
+
+    @classmethod
+    def get_state( self ):
+        return bookmark_list_type('bookmark_list')
 
     def get_title( self ):
         return 'Bookmarks'
@@ -114,8 +118,9 @@ class BookmarkList(ListObject):
 
 
 def make_bookmark_list( key=None ):
-    object = BookmarkList(iface_registry, this_module.bookmarks)
-    return list_view.Handle(bookmark_list_handle_type, object, sort_column_id='name', key=key)
+    ## object = BookmarkList(iface_registry, this_module.bookmarks)
+    object = BookmarkList.get_state()
+    return bookmark_list_handle_type('list', object, sort_column_id='name', key=key)
 
 
 class ThisModule(Module):
@@ -124,7 +129,7 @@ class ThisModule(Module):
         Module.__init__(self)
         self.bookmarks = Bookmarks(UrlFileRepository(
             iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
-        objimpl_registry.register('bookmark_list', BookmarkList.from_data)
+        objimpl_registry.register('bookmark_list', BookmarkList.from_state)
 
     def get_commands( self ):
         return [Command('bookmark_list', 'Bookmarks', 'Open bookmark list', 'Alt+B')]

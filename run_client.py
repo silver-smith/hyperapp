@@ -10,7 +10,7 @@ import hyperapp.common.interface.module_list
 # self-registering views:
 import hyperapp.client.window
 import hyperapp.client.tab_view
-#import hyperapp.client.list_view
+import hyperapp.client.list_view
 import hyperapp.client.navigator
 #import hyperapp.client.narrower
 import hyperapp.client.text_object
@@ -20,7 +20,7 @@ import hyperapp.client.text_view
 #import hyperapp.client.form_view
 #import hyperapp.client.identity
 #import hyperapp.client.code_repository
-#import hyperapp.client.bookmarks
+import hyperapp.client.bookmarks
 #import hyperapp.client.url_clipboard
 
 from hyperapp.client import tcp_transport

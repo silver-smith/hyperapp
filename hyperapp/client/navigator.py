@@ -10,7 +10,7 @@ from .view_registry import view_registry
 from .view_command import command
 from . import view
 from . import composite
-#from . import list_view
+from . import list_view
 from .history_list import HistoryRow, HistoryList
 
 log = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ class View(composite.Composite):
     def set_child( self, handle ):
         #print 'history open', self._backward_history, self._forward_history, handle
         self._forward_history = []
-        self._add2history(self._backward_history, self._child.handle())
+        self._add2history(self._backward_history, self._child)
         if len(self._backward_history) > MAX_HISTORY_SIZE:
             self._backward_history = self._backward_history[-MAX_HISTORY_SIZE:]
         self._open(handle)
@@ -83,7 +83,7 @@ class View(composite.Composite):
         self._go_back()
 
     def _open( self, handle ):
-        self._child = handle.construct(self)
+        self._child = view_registry.resolve(self, handle)
         self._parent().view_changed(self)
         object = self._child.get_object()
         if object:
@@ -97,7 +97,7 @@ class View(composite.Composite):
     def _go_back( self ):
         if not self._backward_history:
             return False
-        self._add2history(self._forward_history, self._child.handle())
+        self._add2history(self._forward_history, self._child)
         self._open(self._pop_history(self._backward_history))
 
     @command('Go forward', 'Go forward to next page', 'Alt+Right')
@@ -105,12 +105,13 @@ class View(composite.Composite):
         log.info('   history forward len(back_history)=%r len(forward_history)=%r', len(self._backward_history), len(self._forward_history))
         if not self._forward_history:
             return False
-        self._add2history(self._backward_history, self._child.handle())
+        self._add2history(self._backward_history, self._child)
         self._open(self._pop_history(self._forward_history))
 
-    def _add2history( self, history, handle ):
-        if isinstance(handle.get_object(), HistoryList): return  # do not add history list itself to history
-        history.append(Item.from_handle(handle))
+    def _add2history( self, history, view ):
+        if isinstance(view, list_view.View) and isinstance(view.get_object(), HistoryList):
+            return  # do not add history list itself to history
+        history.append(item_type(view.get_title(), view.get_state()))
 
     def _pop_history( self, history ):
         item = history.pop()

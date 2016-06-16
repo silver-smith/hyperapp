@@ -212,7 +212,13 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, ListObserver, QtGui.QTableView):
 
-    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row, select_first ):
+    @classmethod
+    def from_state( cls, parent, state, server=None ):
+        data_type = tHandle.resolve_obj(state)
+        object = objimpl_registry.produce_obj(state.object, server)
+        return cls(parent, data_type, object, state.key, state.sort_column_id)
+
+    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True ):
         assert isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
         QtGui.QTableView.__init__(self)
@@ -237,11 +243,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.set_object(object, sort_column_id)
         self.wanted_current_key = key  # will set it to current when rows are loaded
 
-    def handle( self ):
+    def get_state( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
         ## slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
-        return Handle(self.data_type, self.get_object(), self.model().get_sort_column_id(),
-                      self.get_current_key(), first_visible_row, self._select_first)
+        return self.data_type('list', self.get_object().get_state(), self.model().get_sort_column_id(),
+                      self.get_current_key())  #, first_visible_row, self._select_first)
 
     def get_title( self ):
         if self._object:
@@ -429,4 +435,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
         log.info('~list_view.View %r', self)
 
 
-## view_registry.register('list', Handle.from_data)
+view_registry.register('list', View.from_state)
