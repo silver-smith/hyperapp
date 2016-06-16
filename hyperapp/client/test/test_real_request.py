@@ -17,11 +17,21 @@ from hyperapp.client.module_manager import ModuleManager
 from hyperapp.client.transport import transport_registry
 from hyperapp.client.objimpl_registry import objimpl_registry
 from hyperapp.client.view_registry import view_registry
+from hyperapp.client.identity import IdentityRepository, IdentityController
 from hyperapp.common.interface.server_management import server_management_iface
 from hyperapp.common.interface.code_repository import code_repository_iface
 
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
+
+
+class PhonyIdentityRepository(IdentityRepository):
+
+    def add( self, identity_item ):
+        pass
+
+    def enumerate( self ):
+        return []
 
 
 class RealRequestTest(unittest.TestCase):
@@ -30,10 +40,11 @@ class RealRequestTest(unittest.TestCase):
         self.iface_registry = IfaceRegistry()
         self.module_mgr = ModuleManager()
         self.code_repository = code_repository.get_code_repository()
+        self.identity_controller = IdentityController(PhonyIdentityRepository())
         tcp_transport.register_transports(transport_registry, self.module_mgr, self.code_repository,
-                                          self.iface_registry, objimpl_registry, view_registry)
+                                          self.iface_registry, objimpl_registry, view_registry, self.identity_controller)
         encrypted_transport.register_transports(transport_registry, self.module_mgr, self.code_repository,
-                                                self.iface_registry, objimpl_registry, view_registry)
+                                                self.iface_registry, objimpl_registry, view_registry, self.identity_controller)
         self.iface_registry.register(server_management_iface)
         self.iface_registry.register(code_repository_iface)
 

@@ -7,21 +7,25 @@ from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
 from .request import Request, ClientNotification, Response
 from .module_manager import ModuleManager
-#from .code_repository import CodeRepository
+from .identity import IdentityController
+#from .code_repository import CodeRepository  # circular dep
 
 log = logging.getLogger(__name__)
 
 
 class Transport(metaclass=abc.ABCMeta):
 
-    def __init__( self, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry ):
+    def __init__( self, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry,
+                  identity_controller ):
         assert isinstance(module_mgr, ModuleManager), repr(module_mgr)
         #assert isinstance(code_repository, CodeRepository), repr(code_repository)
+        assert isinstance(identity_controller, IdentityController), repr(identity_controller)
         self._module_mgr = module_mgr
         self._code_repository = code_repository
         self._iface_registry = iface_registry
         self._objimpl_registry = objimpl_registry
         self._view_registry = view_registry
+        self._identity_controller = identity_controller
 
     @asyncio.coroutine
     def resolve_requirements( self, requirements ):

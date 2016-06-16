@@ -13,16 +13,16 @@ CDR_TRANSPORT_ID = 'tcp.cdr'
 JSON_TRANSPORT_ID = 'tcp.json'
 
 
-def register_transports( registry, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry ):
-    TcpTransport(module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, CDR_TRANSPORT_ID, 'cdr').register(registry)
-    TcpTransport(module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, JSON_TRANSPORT_ID, 'json').register(registry)
+def register_transports( registry, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, identity_controller ):
+    TcpTransport(module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, identity_controller, CDR_TRANSPORT_ID, 'cdr').register(registry)
+    TcpTransport(module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, identity_controller, JSON_TRANSPORT_ID, 'json').register(registry)
 
 
 class TcpTransport(Transport):
 
     def __init__( self, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry,
-                  transport_id, encoding ):
-        Transport.__init__(self, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry)
+                  identity_controller, transport_id, encoding ):
+        Transport.__init__(self, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, identity_controller)
         self.transport_id = transport_id
         self.encoding = encoding
 

@@ -17,16 +17,16 @@ from ..common.packet_coders import packet_coders
 from .request import ResponseBase
 from .transport import Transport
 from .tcp_protocol import TcpProtocol
-from .identity import get_identity_controller
 
 
 TRANSPORT_ID = 'encrypted_tcp'
 ENCODING = 'cdr'
 
 
-def register_transports( registry, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry ):
+def register_transports( registry, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry,
+                         identity_controller ):
     registry.register(TRANSPORT_ID, EncryptedTransport(
-        module_mgr, code_repository, iface_registry, objimpl_registry, view_registry))
+        module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, identity_controller))
 
 
 class Session(object):
@@ -94,7 +94,7 @@ class EncryptedTransport(Transport):
     def _process_pop_challenge_packet( self, protocol, server_public_key, session, encrypted_packet ):
         challenge = encrypted_packet.challenge
         pop_records = []
-        for item in get_identity_controller().get_items():
+        for item in self._identity_controller().get_items():
             pop_records.append(tPopRecord(
                 item.identity.get_public_key().to_der(),
                 item.identity.sign(challenge)))

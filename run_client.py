@@ -34,6 +34,7 @@ from hyperapp.client.application import Application
 from hyperapp.client.transport import transport_registry
 from hyperapp.client.objimpl_registry import objimpl_registry
 from hyperapp.client.view_registry import view_registry
+from hyperapp.client.identity import get_identity_controller
 
 
 def main():
@@ -44,8 +45,11 @@ def main():
 
     app = Application(sys.argv)
 
+    identity_controller = get_identity_controller()
     tcp_transport.register_transports(transport_registry, app._module_mgr, app._code_repository,
-                                      iface_registry, objimpl_registry, view_registry)
+                                      iface_registry, objimpl_registry, view_registry, identity_controller)
+    encrypted_transport.register_transports(transport_registry, app._module_mgr, app._code_repository,
+                                            iface_registry, objimpl_registry, view_registry, identity_controller)
 
     app.exec_()
 
