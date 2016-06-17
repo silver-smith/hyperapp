@@ -13,7 +13,7 @@ class ProxyClassRegistry(object):
     def register( self, cls ):
         objimpl_id = cls.get_objimpl_id()
         assert objimpl_id not in self.implid2class, repr(objimpl_id)  # Already registered. Duplicate?
-        objimpl_registry.register(objimpl_id, cls.produce_obj_by_objinfo)
+        objimpl_registry.register(objimpl_id, cls.from_state)
         self.implid2class[objimpl_id] = cls
 
     def resolve( self, objimpl_id ):

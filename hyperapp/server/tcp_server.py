@@ -27,7 +27,7 @@ class TcpServer(object):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind((self.host, self.port))
         self.socket.listen(5)
-        log.info('listening on port %s:%d', self.host, self.port)
+        log.info('listening on %s:%d', self.host, self.port)
 
     def get_endpoint( self ):
         route = [TRANSPORT_ID, self.host, str(self.port)]

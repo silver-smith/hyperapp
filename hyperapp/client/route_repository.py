@@ -3,8 +3,11 @@ from ..common.endpoint import Endpoint
 
 class RouteRepository(object):
 
+    instance = None  # todo: remove globals
+
     def __init__( self ):
         self.server_id2routes = {}
+        self.__class__.instance = self
 
     def add_endpoint_routes( self, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)

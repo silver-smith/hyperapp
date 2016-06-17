@@ -4,7 +4,6 @@ import uuid
 import weakref
 import codecs
 from ..common.util import is_list_inst
-from ..common.endpoint import Endpoint, Url
 from ..common.htypes import (
     Interface,
     TList,
@@ -13,9 +12,8 @@ from ..common.htypes import (
     TRecord,
     tCommand,
     tObject,
-    tThisProxyObject,
     tProxyObject,
-    tThisProxyObjectWithContents,
+    tProxyObjectWithContents,
     tHandle,
     tViewHandle,
     tRedirectHandle,
@@ -24,6 +22,8 @@ from ..common.htypes import (
     resolve_iface,
     iface_registry,
     )
+from ..common.identity import PublicKey
+from ..common.endpoint import Endpoint, Url
 from .object import Object
 from .command import Command
 from .proxy_registry import proxy_class_registry, proxy_registry
@@ -95,7 +95,7 @@ def execute_get_request( url ):
     params = url.iface.make_params(command_id)
     request = Request(url.iface, url.path, command_id, request_id, params)
     response = yield from server.execute_request(request)
-    return view_registry.resolve(response.result, server)
+    return response.result
 
 
 class RedirectResolveRequest(GetRequestBase):
@@ -135,17 +135,15 @@ class GetRequest(GetRequestBase):
 class ProxyObject(Object):
 
     @classmethod
-    def produce_obj_by_objinfo( cls, objinfo, server=None ):
-        assert isinstance(objinfo, tThisProxyObject), repr(objinfo)
-        if isinstance(objinfo, tProxyObject):
-            server = Server.from_endpoint(Endpoint.from_data(objinfo.endpoint))
-        else:
-            assert server is not None, repr(objinfo)  # we need endpoint somehow
-        iface = iface_registry.resolve(objinfo.iface)
-        facets = [iface_registry.resolve(facet) for facet in objinfo.facets]
-        object = cls.produce_obj(server, objinfo.path, iface, facets)
-        if isinstance(objinfo, tThisProxyObjectWithContents):  # is it a response?
-            object.set_contents(objinfo.contents)
+    def from_state( cls, state, server=None ):
+        assert isinstance(state, tProxyObject), repr(state)
+        server_public_key = PublicKey.from_der(state.public_key_der)
+        server = Server.from_public_key(server_public_key)
+        iface = iface_registry.resolve(state.iface)
+        facets = [iface_registry.resolve(facet) for facet in state.facets]
+        object = cls.produce_obj(server, state.path, iface, facets)
+        if isinstance(state, tProxyObjectWithContents):  # is it a response?
+            object.set_contents(state.contents)
         return object
 
     # we avoid making proxy objects with same server+path
@@ -176,7 +174,7 @@ class ProxyObject(Object):
     def __repr__( self ):
         return 'ProxyObject(%s, %s, %s)' % (self.server.endpoint.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
 
-    def to_data( self ):
+    def get_state( self ):
         return tProxyObject(
             self.get_objimpl_id(),
             self.iface.iface_id,
@@ -209,7 +207,7 @@ class ProxyObject(Object):
         self.cache.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
 
     def get_title( self ):
-        return '%s:%s' % (self.server.endpoint.public_key.get_short_id_hex(), '|'.join(self.path))
+        return '%s:%s' % (self.server.public_key.get_short_id_hex(), '|'.join(self.path))
 
     def get_commands( self ):
         return self.commands

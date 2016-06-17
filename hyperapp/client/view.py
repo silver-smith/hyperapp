@@ -96,6 +96,7 @@ class View(ObjectObserver):
     def run_object_element_command( self, command_id, element_key ):
         handle = yield from self.get_object().run_element_command(command_id, element_key)
         if handle:
+            assert isinstance(handle, tHandle), repr(handle)  # returned from run_element_command
             self.open(handle)
 
     def get_selected_elts( self ):

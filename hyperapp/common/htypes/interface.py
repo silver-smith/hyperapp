@@ -3,6 +3,7 @@ from .htypes import (
     join_path,
     Type,
     tNone,
+    tBinary,
     tString,
     TOptional,
     Field,
@@ -21,20 +22,14 @@ from .request import tUpdate, tClientNotificationRec, tResponseRec
 tObject = THierarchy('object')
 tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
 
-# proxy to server returning this object
-tThisProxyObject = tObject.register('this_proxy', base=tBaseObject, fields=[
+tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
+    Field('public_key_der', tBinary),
     Field('iface', tIfaceId),
     Field('facets', TList(tIfaceId)),
     Field('path', tPath),
     ])
 
-# proxy to server with this endpoint
-tProxyObject = tObject.register('proxy', base=tThisProxyObject, fields=[
-    Field('endpoint', tEndpoint),
-    ])
-
-# base for server response objects
-tThisProxyObjectWithContents = tObject.register('this_proxy_with_contents', base=tThisProxyObject)
+tProxyObjectWithContents = tObject.register('proxy_with_contents', base=tProxyObject)
 
 
 tHandle = THierarchy('handle')
@@ -114,7 +109,7 @@ class Interface(object):
         self._tContents = TRecord(self.get_contents_fields())
         self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self.id2command.items())
         self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self.id2command.items())
-        self._tObject = tObject.register(self.iface_id, base=tThisProxyObjectWithContents, fields=[Field('contents', self._tContents)])
+        self._tObject = tObject.register(self.iface_id, base=tProxyObjectWithContents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self.diff_type)
         for command in self.id2command.values():
             cmd_id = command.command_id

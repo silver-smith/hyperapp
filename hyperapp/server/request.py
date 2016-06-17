@@ -75,7 +75,7 @@ class Request(RequestBase):
         return self.make_response(obj)
 
     def make_response_handle( self, obj ):
-        return self.make_response(obj.get_handle())
+        return self.make_response(obj.get_handle(self))
 
     def make_response_result( self, **kw ):
         return self.make_response(self.iface.make_result(self.command_id, **kw))

@@ -213,7 +213,7 @@ class TIndexedList(TList):
 
 tRoute = TList(tString)
 tEndpoint = TRecord([
-    Field('public_key_pem', tBinary),
+    Field('public_key_der', tBinary),
     Field('routes', TList(tRoute)),
     ])
 

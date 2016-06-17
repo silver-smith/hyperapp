@@ -14,14 +14,14 @@ import hyperapp.client.list_view
 import hyperapp.client.navigator
 #import hyperapp.client.narrower
 import hyperapp.client.text_object
-#import hyperapp.client.proxy_list_object
+import hyperapp.client.proxy_list_object
 #import hyperapp.client.text_edit
 import hyperapp.client.text_view
 #import hyperapp.client.form_view
 #import hyperapp.client.identity
 #import hyperapp.client.code_repository
 import hyperapp.client.bookmarks
-#import hyperapp.client.url_clipboard
+import hyperapp.client.url_clipboard
 
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport

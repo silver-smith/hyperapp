@@ -1,7 +1,6 @@
 from .visitor import Visitor
 from .htypes import (
     tObject,
-    tThisProxyObject,
     tProxyObject,
     tHandle,
     tViewHandle,
@@ -18,7 +17,7 @@ class RequirementsCollector(Visitor):
     def visit_hierarchy_obj( self, t, tclass, value ):
         if t is tObject:
             self.collected_requirements.add(('object', value.objimpl_id))
-            if isinstance(value, (tThisProxyObject, tProxyObject)):
+            if isinstance(value, tProxyObject):
                 for iface in value.facets:
                     self.collected_requirements.add(('interface', iface))
         if t is tHandle and isinstance(value, tViewHandle):
