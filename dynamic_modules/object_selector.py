@@ -12,48 +12,20 @@ from .command import ObjectCommand
 log = logging.getLogger(__name__)
 
 
-class Handle(view.Handle):
-
-    @classmethod
-    def from_data( cls, contents, server=None ):
-        ref = objimpl_registry.produce_obj(contents.ref, server)
-        target_handle = view_registry.resolve(contents.target, server)
-        return cls(ref, target_handle)
-
-    def __init__( self, ref, target ):
-        assert isinstance(ref, ProxyObject), repr(ref)
-        assert isinstance(target, view.Handle), repr(target)
-        view.Handle.__init__(self)
-        self.ref = ref
-        self.target = target
-
-    def to_data( self ):
-        return tObjSelectorHandle('object_selector', ref=self.ref.to_data(), target=self.target.to_data())
-
-    def get_title( self ):
-        return '%s: %s' % (self.ref.get_title(), self.target.get_title())
-
-    def get_object( self ):
-        return self.ref
-
-    def get_module_ids( self ):
-        return [this_module_id]
-
-    def construct( self, parent ):
-        log.info('object_selector construct %r, %r, %r', parent, self.ref.get_title(), self.target.get_object().get_title())
-        return View(parent, self.ref, self.target)
-
-    def __repr__( self ):
-        return 'object_selector.Handle(%s)' % uni2str(self.ref.get_title())
-
-
 class View(view.View, QtGui.QWidget):
 
-    def __init__( self, parent, ref, target ):
+    view_id = 'object_selector'
+
+    @classmethod
+    def from_state( cls, parent, state ):
+        ref = objimpl_registry.produce_obj(state.ref)
+        return cls(parent, ref, state.target)
+
+    def __init__( self, parent, ref, target_state ):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.ref = ref
-        self.target_view = target.construct(self)
+        self.target_view = view_registry.resolve(self, target_state)
         self.groupBox = QtGui.QGroupBox('Select object for %s' % self.ref.get_title())
         gbl = QtGui.QVBoxLayout()
         gbl.addWidget(self.target_view.get_widget())
@@ -62,8 +34,8 @@ class View(view.View, QtGui.QWidget):
         l.addWidget(self.groupBox)
         self.setLayout(l)
 
-    def handle( self ):
-        return Handle(self.ref, self.target_view.handle())
+    def get_state( self ):
+        return tObjSelectorHandle(self.view_id, self.ref.get_state(), self.target_view.get_state())
 
     def get_current_child( self ):
         return self.target_view
@@ -93,11 +65,11 @@ class View(view.View, QtGui.QWidget):
             view.View.open(self, handle)  # do not wrap in our Handle
 
     def open( self, handle ):
-        handle = Handle(self.ref, handle)
+        handle = tObjSelectorHandle(self.view_id, self.ref.get_state(), handle)
         view.View.open(self, handle)
 
     def __del__( self ):
         log.info('~object_selector.View')
 
 
-view_registry.register('object_selector', Handle.from_data)
+view_registry.register(View.view_id, View.from_state)
