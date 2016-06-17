@@ -19,7 +19,7 @@ import hyperapp.client.proxy_list_object
 import hyperapp.client.text_view
 #import hyperapp.client.form_view
 #import hyperapp.client.identity
-#import hyperapp.client.code_repository
+import hyperapp.client.code_repository
 import hyperapp.client.bookmarks
 import hyperapp.client.url_clipboard
 

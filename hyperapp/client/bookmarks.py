@@ -60,8 +60,8 @@ class BookmarkList(ListObject):
         self._iface_registry = iface_registry
         self._bookmarks = bookmarks
 
-    @classmethod
-    def get_state( self ):
+    @staticmethod
+    def get_state():
         return bookmark_list_type('bookmark_list')
 
     def get_title( self ):
@@ -90,9 +90,6 @@ class BookmarkList(ListObject):
         name = 'Imported url'
         item = self._bookmarks.add(name, url)
         return make_bookmark_list(item.id)
-
-    def to_data( self ):
-        return bookmark_list_type('bookmark_list')
 
     def get_columns( self ):
         return [

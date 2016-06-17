@@ -94,7 +94,7 @@ class EncryptedTransport(Transport):
     def _process_pop_challenge_packet( self, protocol, server_public_key, session, encrypted_packet ):
         challenge = encrypted_packet.challenge
         pop_records = []
-        for item in self._identity_controller().get_items():
+        for item in self._identity_controller.get_items():
             pop_records.append(tPopRecord(
                 item.identity.get_public_key().to_der(),
                 item.identity.sign(challenge)))

@@ -213,9 +213,9 @@ class Model(QtCore.QAbstractTableModel):
 class View(view.View, ListObserver, QtGui.QTableView):
 
     @classmethod
-    def from_state( cls, parent, state, server=None ):
+    def from_state( cls, parent, state ):
         data_type = tHandle.resolve_obj(state)
-        object = objimpl_registry.produce_obj(state.object, server)
+        object = objimpl_registry.produce_obj(state.object)
         return cls(parent, data_type, object, state.key, state.sort_column_id)
 
     def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True ):
