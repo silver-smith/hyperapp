@@ -144,6 +144,12 @@ class TRecord(Type):
     def get_static_fields( self ):
         return self.fields
 
+    def get_field( self, name ):
+        for field in self.fields:
+            if field.name == name:
+                return field
+        assert False, repr((name, self.fields))  # Unknown field
+
     def __instancecheck__( self, rec ):
         ## print '__instancecheck__', self, rec
         if not isinstance(rec, Record):

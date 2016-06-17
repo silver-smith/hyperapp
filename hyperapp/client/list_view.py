@@ -219,7 +219,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return cls(parent, data_type, object, state.key, state.sort_column_id)
 
     def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True ):
-        assert isinstance(data_type, Type), repr(data_type)
+        assert data_type is None or isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
@@ -247,7 +247,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         first_visible_row, visible_row_count = self._get_visible_rows()
         ## slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
         return self.data_type('list', self.get_object().get_state(), self.model().get_sort_column_id(),
-                      self.get_current_key())  #, first_visible_row, self._select_first)
+                              self.get_current_key())  #, first_visible_row, self._select_first)
 
     def get_title( self ):
         if self._object:
@@ -255,6 +255,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def get_object( self ):
         return self._object
+
+    def get_sort_column_id( self ):
+        return self.model().get_sort_column_id()
 
     def object_changed( self ):
         log.info('-- list_view.object_changed self=%r', self)

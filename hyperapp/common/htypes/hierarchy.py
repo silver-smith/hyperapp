@@ -23,6 +23,9 @@ class TClass(TRecord):
     def get_fields( self ):
         return self.trec.get_fields()
 
+    def get_field( self, name ):
+        return self.trec.get_field(name)
+
     def __instancecheck__( self, obj ):
         if not isinstance(obj, TClassRecord):
             return False

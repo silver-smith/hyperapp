@@ -10,11 +10,11 @@ log = logging.getLogger(__name__)
 
 class LineListPanel(Composite, QtGui.QWidget):
 
-    def __init__( self, parent, line_handle, list_handle ):
+    def __init__( self, parent, line_edit, list_view ):
         QtGui.QWidget.__init__(self)
         Composite.__init__(self, parent)
-        self._line_edit = line_handle.construct(self)
-        self._list_view = list_handle.construct(self)
+        self._line_edit = line_edit
+        self._list_view = list_view
         self._list_view.get_widget().setFocusPolicy(QtCore.Qt.NoFocus)
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self._line_edit.get_widget())
