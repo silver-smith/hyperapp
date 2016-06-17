@@ -248,7 +248,7 @@ class ProxyObject(Object):
         return self.make_cache_key('commands')
 
     def make_cache_key( self, name ):
-        return ['object', codecs.encode(self.server.get_id(), 'hex').decode()] + self.path + [name]
+        return ['object', self.server.public_key.get_id_hex()] + self.path + [name]
 
     def _get_commands_cache_type( self ):
         return TList(tCommand)

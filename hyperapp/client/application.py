@@ -21,8 +21,7 @@ from . import window
 from .objimpl_registry import objimpl_registry
 from . import code_repository
 from .module_manager import ModuleManager
-from .response_manager import ResponseManager
-from .route_repository import RouteRepository
+from .route_repository import FileRouteRepository, RouteStorage
 
 log = logging.getLogger(__name__)
 
@@ -38,10 +37,9 @@ class Application(QtGui.QApplication, view.View):
         QtGui.QApplication.__init__(self, sys_argv)
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
-        self._route_repo = RouteRepository()
+        self._route_repo = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self._module_mgr = ModuleManager()
         self._code_repository = code_repository.get_code_repository()
-        self._response_mgr = ResponseManager(self._route_repo, self._module_mgr, self._code_repository)
         self._windows = []
         self._loop = asyncio.get_event_loop()
         self._loop.set_debug(True)

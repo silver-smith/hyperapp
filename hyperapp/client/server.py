@@ -8,7 +8,7 @@ from ..common.htypes import Interface, iface_registry
 from .request import ClientNotification, Request
 from .objimpl_registry import objimpl_registry
 from .transport import transport_registry
-from .route_repository import RouteRepository
+from .route_repository import RouteStorage
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class Server(object):
     @classmethod
     def from_endpoint( cls, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
-        RouteRepository.instance.add_endpoint_routes(endpoint)
+        RouteStorage.instance.add_endpoint_routes(endpoint)
         server = cls._servers.get(endpoint.public_key)
         if not server:
             server = Server(endpoint.public_key)
@@ -39,7 +39,7 @@ class Server(object):
     def __init__( self, public_key ):
         assert isinstance(public_key, PublicKey), repr(public_key)
         self.public_key = public_key
-        self._route_repository = RouteRepository.instance
+        self._route_repository = RouteStorage.instance
 
     def get_endpoint( self ):
         routes = self._route_repository.get_routes(self.public_key)
