@@ -3,7 +3,6 @@ import asyncio
 import re
 from PySide import QtCore, QtGui
 from ..common.htypes import tString, tObject, Field, tObjHandle
-from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
@@ -18,8 +17,8 @@ state_type = tObjHandle
 class View(view.View, QtGui.QTextBrowser):
 
     @classmethod
-    def from_state( cls, parent, state, server=None ):
-        object = objimpl_registry.produce_obj(state.object)  #, server)
+    def from_state( cls, parent, state ):
+        object = objimpl_registry.produce_obj(state.object)
         return cls(parent, object)
 
     def __init__( self, parent, object ):
@@ -64,5 +63,4 @@ class View(view.View, QtGui.QTextBrowser):
         log.info('~text_view %r', self)
 
 
-## TextObject.set_view_handle_ctr(Handle)
 view_registry.register('text_view', View.from_state)

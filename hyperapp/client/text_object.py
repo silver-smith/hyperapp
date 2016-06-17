@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle
+from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle, tObjHandle
 from .object import Object
 from .objimpl_registry import objimpl_registry
 
@@ -14,17 +14,6 @@ class TextObject(Object):
 
     mode_view = object()
     mode_edit = object()
-
-    view_handle_ctr = None
-    edit_handle_ctr = None
-
-    @classmethod
-    def set_view_handle_ctr( cls, ctr ):
-        cls.view_handle_ctr = ctr
-
-    @classmethod
-    def set_edit_handle_ctr( cls, ctr ):
-        cls.edit_handle_ctr = ctr
 
     @classmethod
     def from_state( cls, state, server=None ):
@@ -58,10 +47,10 @@ class TextObject(Object):
         return (yield from Object.run_command(self, command_id, **kw))
 
     def run_command_edit( self ):
-        return self.edit_handle_ctr(self)
+        return tObjHandle('text_edit', self.get_state())
 
     def run_command_view( self ):
-        return self.view_handle_ctr(self)
+        return tObjHandle('text_view', self.get_state())
 
     @asyncio.coroutine
     def open_ref( self, ref_id ):
