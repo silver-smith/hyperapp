@@ -172,15 +172,15 @@ class ProxyObject(Object):
         self.commands = list(map(Command.from_data, cached_commands or []))
 
     def __repr__( self ):
-        return 'ProxyObject(%s, %s, %s)' % (self.server.endpoint.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
+        return 'ProxyObject(%s, %s, %s)' % (self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
 
     def get_state( self ):
         return tProxyObject(
-            self.get_objimpl_id(),
-            self.iface.iface_id,
-            [facet.iface_id for facet in self.facets],
-            self.path,
-            self.server.get_endpoint().to_data(),
+            objimpl_id=self.get_objimpl_id(),
+            public_key_der=self.server.public_key.to_der(),
+            iface=self.iface.iface_id,
+            facets=[facet.iface_id for facet in self.facets],
+            path=self.path,
             )
 
     def get_url( self ):
@@ -214,8 +214,7 @@ class ProxyObject(Object):
 
     @asyncio.coroutine
     def run_command( self, command_id, **kw ):
-        result = yield from self.execute_request(command_id, **kw)
-        return view_registry.resolve(result, self.server)
+        return (yield from self.execute_request(command_id, **kw))
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)

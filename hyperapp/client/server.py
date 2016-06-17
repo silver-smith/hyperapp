@@ -20,9 +20,10 @@ class Server(object):
     @classmethod
     def from_endpoint( cls, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
+        RouteRepository.instance.add_endpoint_routes(endpoint)
         server = cls._servers.get(endpoint.public_key)
         if not server:
-            server = Server(endpoint.public_key, endpoint.routes)
+            server = Server(endpoint.public_key)
             cls._servers[endpoint.public_key] = server
         return server
 
@@ -35,15 +36,13 @@ class Server(object):
             cls._servers[public_key] = server
         return server
 
-    def __init__( self, public_key, routes=None ):
+    def __init__( self, public_key ):
         assert isinstance(public_key, PublicKey), repr(public_key)
-        assert routes is None or is_list_list_inst(routes, str), repr(routes)
         self.public_key = public_key
-        self.routes = routes
         self._route_repository = RouteRepository.instance
 
     def get_endpoint( self ):
-        routes = self.routes or self._route_repository.get_routes(self.public_key)
+        routes = self._route_repository.get_routes(self.public_key)
         return Endpoint(self.public_key, routes)
 
     def get_id( self ):

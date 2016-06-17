@@ -14,10 +14,10 @@ class ViewRegistry(object):
     def is_view_registered( self, view_id ):
         return view_id in self.registry
 
-    def resolve( self, parent, state, server=None ):
+    def resolve( self, parent, state ):
         assert isinstance(state, tHandle), repr(state)
         ctr = self.registry[state.view_id]
-        view = ctr(parent, state, server)
+        view = ctr(parent, state)
         assert isinstance(view, View), repr((state.view_id, view))  # must resolve to View
         return view
 
