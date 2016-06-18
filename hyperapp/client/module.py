@@ -21,7 +21,7 @@ class ModuleCommand(RunnableCommand):
             return
         handle = yield from self.module.run_command(self.id)
         if handle:
-            view.open(handle)
+            view.get_current_view().open(handle)
 
 
 class ObjectModuleCommand(RunnableCommand):
