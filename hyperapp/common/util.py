@@ -43,10 +43,10 @@ def decode_path( path_str ):
 
 # todo: quote/unquote '|' chars
 def encode_route( route ):
-    return '|'.join(route).encode('utf-8')
+    return '|'.join(route)
 
 def decode_route( route_str ):
-    return route_str.decode('utf-8').split('|')
+    return route_str.split('|')
 
 def dt2local_str( dt ):
     if dt is None: return ''
