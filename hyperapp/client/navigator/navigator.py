@@ -3,38 +3,21 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.util import is_list_inst
-from ..common.htypes import tInt, tString, TList, Field, TRecord, tHandle, tViewHandle, list_handle_type
-from .util import key_match, key_match_any
-from .view_registry import view_registry
-from .view_command import command
-from . import view
-from . import composite
-from . import list_view
-from .history_list import HistoryRow, HistoryList
+from hyperapp.common.util import is_list_inst
+from hyperapp.common.htypes import tInt, list_handle_type
+from ..util import key_match, key_match_any
+from ..view_registry import view_registry
+from ..view_command import command
+from ..import view
+from ..import composite
+from ..import list_view
+from .htypes import item_type, state_type, history_list_type, history_list_handle_type
+from .history_list import HistoryList
 
 log = logging.getLogger(__name__)
 
 
 MAX_HISTORY_SIZE = 100
-
-
-item_type = TRecord([
-    Field('title', tString),
-    Field('handle', tHandle),
-    ])
-
-state_type = TRecord([
-    Field('history', TList(item_type)),
-    Field('current_pos', tInt),
-    ])
-
-
-    ## def _collect_required_module_ids( self ):
-    ##     module_ids = set(composite.Handle.get_module_ids(self))
-    ##     for item in self.backward_history + self.forward_history:
-    ##         module_ids.update(set(item.required_module_ids))
-    ##     return list(module_ids)
 
 
 class View(composite.Composite):
@@ -44,7 +27,9 @@ class View(composite.Composite):
     @classmethod
     def from_state( cls, parent, state ):
         child = view_registry.resolve(parent, state.history[state.current_pos].handle)
-        return cls(parent, child, state.history[:state.current_pos], state.history[state.current_pos + 1:])
+        return cls(parent, child,
+                   state.history[:state.current_pos],
+                   list(reversed(state.history[state.current_pos + 1:])))
 
     def __init__( self, parent, child, backward_history=None, forward_history=None ):
         assert isinstance(child, view.View), repr(child)
@@ -58,7 +43,7 @@ class View(composite.Composite):
     def get_state( self ):
         history = self._backward_history \
            + [item_type(self._child.get_title(), self._child.get_state())] \
-           + self._forward_history
+           + list(reversed(self._forward_history))
         return state_type(history, current_pos=len(self._backward_history))
 
     def get_widget( self ):
@@ -119,12 +104,9 @@ class View(composite.Composite):
 
     @command('History', 'Open history', 'Ctrl+H')
     def open_history( self ):
-        idx = len(self._backward_history)
-        current_handle = self._child.handle()
-        items = self._backward_history + [Item.from_handle(current_handle)] + list(reversed(self._forward_history))
-        rows = [HistoryRow(idx, item) for idx, item in enumerate(items)]
-        object = HistoryList(rows)
-        self.open(list_view.Handle(self.history_handle_type, object, sort_column_id='idx', key=idx))
+        state = self.get_state()
+        object = history_list_type(HistoryList.objimpl_id, state.history)
+        self.open(history_list_handle_type('list', object, sort_column_id='idx', key=state.current_pos))
 
     def __del__( self ):
         log.info('~navigator')
