@@ -83,8 +83,8 @@ class View(QtGui.QTabWidget, view.View):
     @command('Duplicate tab', 'Duplicate current tab', 'Ctrl+T')
     def duplicate_tab( self ):
         idx = self.currentIndex()
-        view = self._children[idx]
-        new_view = view.handle().construct(self)
+        state = self._children[idx].get_state()
+        new_view = navigator.View.from_state(self, state)
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
