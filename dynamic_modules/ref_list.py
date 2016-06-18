@@ -3,7 +3,6 @@ import asyncio
 from ..common.htypes import iface_registry
 from .proxy_registry import proxy_class_registry
 from .proxy_list_object import ProxyListObject
-from .view_registry import view_registry
 
 
 class RefList(ProxyListObject):
@@ -23,8 +22,7 @@ class RefList(ProxyListObject):
 
     @asyncio.coroutine
     def run_command_add( self ):
-        result = yield from self.execute_request('add', target_url=self.get_default_url().to_data())
-        return view_registry.resolve(result, self.server)
+        return (yield from self.execute_request('add', target_url=self.get_default_url().to_data()))
 
     # todo
     def get_default_url( self ):
