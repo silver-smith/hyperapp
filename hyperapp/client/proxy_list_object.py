@@ -16,7 +16,7 @@ class ProxyListObject(ProxyObject, ListObject):
         ListObject.__init__(self)
         self._slices = []  # all slices are stored in ascending order, actual/up-do-date
         self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, out-of-date
-        self._subscribed = True
+        self._subscribed = False
         self._subscribe_pending = False  # subscribe method is called and response is not yet received
 
     @staticmethod
@@ -27,14 +27,12 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.set_contents(self, contents)
         slice = self._slice_from_data(contents.slice)
         self._merge_in_slice(slice)
+        # set_contents call means this object is returned from server and thus already subscribed
+        self._subscribed = True
 
-    # By default we assume this object was returned from server, and thus is already subscribed,
-    # and we do not want redundant call to server with 'subscribe' request.
-    # If this method is called it means that assumption is not true, and we are not actually subscribed yet;
-    # then 'subscribe' command will be issued on first fetch_elements call.
     @asyncio.coroutine
     def server_subscribe( self ):
-        self._subscribed = False
+        pass
 
     def _slice_from_data( self, rec ):
         return Slice.from_data(self.get_key_column_id(), rec)
