@@ -62,7 +62,7 @@ class View(view.View, QtGui.QWidget):
         if not url: return  # not a proxy - can not choose it
         handle = (yield from self.ref.run_command(command_id, target_url=url.to_data()))
         if handle:
-            view.View.open(self, handle)  # do not wrap in our Handle
+            view.View.open(self, handle)  # do not wrap in our handle
 
     def open( self, handle ):
         handle = tObjSelectorHandle(self.view_id, self.ref.get_state(), handle)

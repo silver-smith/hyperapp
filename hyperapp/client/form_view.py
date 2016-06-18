@@ -123,7 +123,7 @@ class View(view.View, QtGui.QWidget):
 class FieldRegistry(object):
 
     def __init__( self ):
-        self.registry = {}  # field view id -> Handle ctr
+        self.registry = {}  # field view id -> field ctr
 
     def register( self, field_view_id, ctr ):
         assert field_view_id not in self.registry, repr(field_view_id)  # Duplicate id
