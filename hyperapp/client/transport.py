@@ -7,6 +7,7 @@ from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
 from .request import Request, ClientNotification, Response
 from .module_manager import ModuleManager
+from .proxy_registry import proxy_registry
 from .identity import IdentityController
 #from .code_repository import CodeRepository  # circular dep
 
@@ -109,10 +110,20 @@ class TransportRegistry(object):
         log.info('received %r packet, contents %d bytes', packet.transport_id, len(packet.data))
         transport = self.resolve(packet.transport_id)
         response_or_notification = yield from transport.process_packet(protocol, session_list, server_public_key, packet.data)
+        if response_or_notification is None:
+            return
+        self._process_updates(server_public_key, response_or_notification.updates)
         if isinstance(response_or_notification, Response):
             future = self._futures.get(response_or_notification.request_id)
             if future:
                 future.set_result(response_or_notification)
+
+    def _process_updates( self, server_public_key, updates ):
+        for update in updates:
+            obj = proxy_registry.resolve(server_public_key, update.path)
+            if obj:
+                obj.process_update(update.diff)
+            # otherwize object is already gone and updates must be discarded
         
 
 transport_registry = TransportRegistry()
