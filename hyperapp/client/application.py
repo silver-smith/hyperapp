@@ -128,6 +128,7 @@ class Application(QtGui.QApplication, view.View):
     def get_default_state( self ):
         text_handle = text_view.state_type('text_view', text_object.state_type('text', 'hello'))
         navigator_state = navigator.state_type(
+            view_id=navigator.View.view_id,
             history=[navigator.item_type('sample text', text_handle)],
             current_pos=0)
         tabs_state = tab_view.state_type(tabs=[navigator_state], current_tab=0)

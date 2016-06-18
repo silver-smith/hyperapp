@@ -7,6 +7,7 @@ from hyperapp.common.htypes import (
     tObject,
     tBaseObject,
     tHandle,
+    tViewHandle,
     list_handle_type,
     )
 
@@ -16,7 +17,7 @@ item_type = TRecord([
     Field('handle', tHandle),
     ])
 
-state_type = TRecord([
+state_type = tHandle.register('navigator', base=tViewHandle, fields=[
     Field('history', TList(item_type)),
     Field('current_pos', tInt),
     ])

@@ -6,15 +6,13 @@ from .util import DEBUG_FOCUS, call_after, key_match
 from .view_command import command
 from .view_registry import view_registry
 from . import view
-from . import composite
-#from . import splitter
-from . import navigator
+from . import splitter
 
 log = logging.getLogger(__name__)
 
 
 state_type = TRecord([
-    Field('tabs', TList(navigator.state_type)),
+    Field('tabs', TList(tHandle)),
     Field('current_tab', tInt),
     ])
 
@@ -31,14 +29,14 @@ class View(QtGui.QTabWidget, view.View):
         return state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
     def __init__( self, parent, children_state, current_idx ):
-        assert is_list_inst(children_state, navigator.state_type), repr(children_state)
+        assert is_list_inst(children_state, tHandle), repr(children_state)
         QtGui.QTabWidget.__init__(self)
         view.View.__init__(self, parent)
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
         self._children = []  # view list
         for state in children_state:
-            child = navigator.View.from_state(self, state)
+            child = view_registry.resolve(self, state)
             self.addTab(child.get_widget(), child.get_title())
             self._children.append(child)
         self.setCurrentIndex(current_idx)
@@ -69,9 +67,8 @@ class View(QtGui.QTabWidget, view.View):
         view.View.view_changed(self)  # notify parents
 
     def open( self, handle ):
-        # here we assume that child is a navigator view
         idx = self.currentIndex()
-        self._children[idx].open(handle)  # handle it to navigator
+        self._children[idx].open(handle)
 
     def _on_current_changed( self, idx ):
         view.View.view_changed(self)
@@ -84,7 +81,7 @@ class View(QtGui.QTabWidget, view.View):
     def duplicate_tab( self ):
         idx = self.currentIndex()
         state = self._children[idx].get_state()
-        new_view = navigator.View.from_state(self, state)
+        new_view = view_registry.resolve(self, state)
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
@@ -111,10 +108,10 @@ class View(QtGui.QTabWidget, view.View):
 
     def _map_current( self, mapper ):
         idx = self.currentIndex()
-        handle = mapper(self._children[idx].handle())
-        if not handle: return
+        state = mapper(self._children[idx].get_state())
+        if not state: return
         self._remove_tab(idx)
-        child = handle.construct(self)
+        child = view_registry.resolve(self, state)
         self._insert_tab(idx, child)
         child.ensure_has_focus()
         view.View.view_changed(self)  # notify parents

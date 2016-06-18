@@ -22,6 +22,7 @@ MAX_HISTORY_SIZE = 100
 
 class View(composite.Composite):
 
+    view_id = 'navigator'
     history_handle_type = list_handle_type('navigator_history', tInt)
 
     @classmethod
@@ -44,7 +45,7 @@ class View(composite.Composite):
         history = self._backward_history \
            + [item_type(self._child.get_title(), self._child.get_state())] \
            + list(reversed(self._forward_history))
-        return state_type(history, current_pos=len(self._backward_history))
+        return state_type(self.view_id, history, current_pos=len(self._backward_history))
 
     def get_widget( self ):
         if self._child is None: return None  # constructing right now
