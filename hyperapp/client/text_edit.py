@@ -1,7 +1,6 @@
 import logging
 from PySide import QtCore, QtGui
 from ..common.htypes import tObjHandle
-from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
@@ -10,35 +9,15 @@ from .text_object import TextObject
 log = logging.getLogger(__name__)
 
 
-data_type = tObjHandle
-
-
-class Handle(view.Handle):
-
-    @classmethod
-    def from_data( cls, contents, server=None ):
-        object = objimpl_registry.produce_obj(contents.object, server)
-        return cls(object)
-
-    def __init__( self, object ):
-        view.Handle.__init__(self)
-        self.object = object
-
-    def to_data( self ):
-        return data_type('text_edit', self.object.to_data())
-
-    def get_object( self ):
-        return self.object
-
-    def construct( self, parent ):
-        log.info('text_edit construct parent=%r object=%r title=%r', parent, self.object, self.object.get_title())
-        return View(parent, self.object)
-
-    def __repr__( self ):
-        return 'text_edit.Handle(%s)' % uni2str(self.object.get_title())
+state_type = tObjHandle
 
 
 class View(view.View, QtGui.QTextEdit):
+
+    @classmethod
+    def from_state( cls, parent, state ):
+        object = objimpl_registry.produce_obj(state.object)
+        return cls(parent, object)
 
     def __init__( self, parent, object ):
         QtGui.QTextEdit.__init__(self)
@@ -49,8 +28,8 @@ class View(view.View, QtGui.QTextEdit):
         self.textChanged.connect(self._on_text_changed)
         self.object.subscribe(self)
 
-    def handle( self ):
-        return Handle(self.object)
+    def get_state( self ):
+        return state_type('text_edit', self.object.get_state())
 
     def get_title( self ):
         return self.object.get_title()
@@ -78,5 +57,4 @@ class View(view.View, QtGui.QTextEdit):
         log.info('~text_edit %r', self)
 
 
-TextObject.set_edit_handle_ctr(Handle)
-view_registry.register('text_edit', Handle.from_data)
+view_registry.register('text_edit', View.from_state)

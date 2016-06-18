@@ -3,7 +3,6 @@ from PySide import QtCore, QtGui
 from ..common.interface.splitter import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
 from . import view
-from . import composite
 from .view_registry import view_registry
 
 log = logging.getLogger(__name__)
@@ -29,63 +28,23 @@ def qt2orient( orient ):
     assert False, repr(orient)  # Unexpected qt orientation
 
 
-class Handle(composite.Handle):
-
-    @classmethod
-    def from_data( cls, contents, server=None ):
-        x = view_registry.resolve(contents.x, server)
-        y = view_registry.resolve(contents.y, server)
-        return cls(x, y, contents.orientation)
-
-    def __init__( self, x, y, orient, focused=0, sizes=None ):
-        composite.Handle.__init__(self, [x, y])
-        assert focused in [0, 1]
-        self.x = x  # handle of first child
-        self.y = y  # handle of second child
-        self.orient = orient
-        self.focused = focused
-        self.sizes = sizes
-
-    def to_data( self ):
-        return tSplitterHandle('splitter', self.x.to_data(), self.y.to_data(), self.orient)
-
-    def construct( self, parent ):
-        log.info('splitter construct parent=%r orient=%r focused=%r', parent, self.orient, self.focused)
-        return View(parent, self.x, self.y, self.orient, self.focused, self.sizes)
-
-    def get_child_handle( self ):
-        if self.focused == 0:
-            return self.x
-        else:
-            return self.y
-
-    def map_current( self, mapper ):
-        if self.focused == 0:
-            return Handle(mapper(self.x), self.y, self.orient, self.focused, self.sizes)
-        elif self.focused == 1:
-            return Handle(self.x, mapper(self.y), self.orient, self.focused, self.sizes)
-        else:
-            assert False, repr(self.focused)  # 0 or 1 is expected
-
-
-class MonolithHandle(Handle):
-
-    def construct( self, parent ):
-        log.info('splitter monolith construct parent=%r orient=%r focused=%r', parent, self.orient, self.focused)
-        return MonolithView(parent, self.x, self.y, self.orient, self.focused, self.sizes)
-
-
 class View(QtGui.QSplitter, view.View):
 
-    def __init__( self, parent, x, y, orient, focused, sizes ):
+    view_id = 'splitter'
+
+    @classmethod
+    def from_state( cls, parent, state ):
+        return cls(parent, state.x, state.y, state.orientation, state.focused, state.sizes)
+
+    def __init__( self, parent, x_state, y_state, orient, focused, sizes ):
         QtGui.QSplitter.__init__(self, orient2qt(orient))
         view.View.__init__(self, parent)
         self._to_focus = focused  # will be used when become set visible
         self._focused = focused  # will be used by get_widget_to_focus before actual focus is received
         self._x = self._y = None  # view_changed is firing during construction
-        self._x = x.construct(self)
+        self._x = view_registry.resolve(self, x_state)
         self._set_child(0, self._x)
-        self._y = y.construct(self)
+        self._y = view_registry.resolve(self, y_state)
         self._set_child(1, self._y)
         if sizes:
             self.setSizes(sizes)
@@ -98,15 +57,17 @@ class View(QtGui.QSplitter, view.View):
             if DEBUG_FOCUS: log.info('*** splitter: focusing new child self=%r view=%r w=%r', self, view, w)
             view.ensure_has_focus()
 
-    def handle( self ):
+    def get_state( self ):
         if DEBUG_FOCUS:
             log.info('*** splitter.handle self=%r focused=%r focused-widget=%r',
                      self, self._focused, self._get_view(self._focused).get_widget() if self._focused is not None else None)
-        return self._handle_class()(self._x.handle(), self._y.handle(), qt2orient(self.orientation()),
-                                    self._focused or 0, self.sizes())
-
-    def _handle_class( self ):
-        return Handle
+        return tSplitterHandle(
+            view_id=self.view_id,
+            x=self._x.get_state(),
+            y=self._y.get_state(),
+            orientation=qt2orient(self.orientation()),
+            focused=self._focused or 0,
+            sizes=self.sizes())
 
     def get_current_child( self ):
         if DEBUG_FOCUS: log.info('  * splitter.get_current_child self=%r focused=%r', self, self._focused)
@@ -195,30 +156,38 @@ class View(QtGui.QSplitter, view.View):
         QtGui.QSplitter.focusOutEvent(self, evt)
 
 
-class MonolithView(View):
+## class MonolithView(View):
 
-    def _handle_class( self ):
-        return MonolithHandle
+##     def open( self, handle ):
+##         return view.View.open(self, handle)
 
-    def open( self, handle ):
-        return view.View.open(self, handle)
 
+def map_current( handle, mapper ):
+    if handle.focused == 0:
+        return tSplitterHandle(View.view_id, mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
+    elif handle.focused == 1:
+        return tSplitterHandle(View.view_id, handle.x, mapper(handle.y), handle.orientation, handle.focused, handle.sizes)
+    else:
+        assert False, repr(handle.focused)  # 0 or 1 is expected
 
 def split( orient ):
     def mapper( handle ):
-        if isinstance(handle, Handle):
-            return handle.map_current(mapper)
+        if handle.view_id == View.view_id:
+            return map_current(handle, mapper)
         else:
-            return Handle(handle, handle, orient)
+            return tSplitterHandle(View.view_id, handle, handle, orient)
     return mapper
 
 def unsplit( handle ):
-    if isinstance(handle, Handle):
-        h = handle.get_child_handle()
-        if isinstance(h, Handle):
-            return handle.map_current(unsplit)
-        else:
-            return h
+    if handle.view_id != View.view_id:
+        return None
+    if handle.focused == 0:
+        child = handle.x
+    else:
+        child = handle.y
+    if child.view_id != View.view_id:
+        return child
+    return map_current(handle, unsplit)
 
 
-view_registry.register('splitter', Handle.from_data)
+view_registry.register(View.view_id, View.from_state)

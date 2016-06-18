@@ -3,7 +3,6 @@ import asyncio
 import re
 from PySide import QtCore, QtGui
 from ..common.htypes import tString, tObject, Field, tObjHandle
-from .util import uni2str
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
 from . import view
@@ -12,35 +11,15 @@ from .text_object import TextObject
 log = logging.getLogger(__name__)
 
 
-dataType = tObjHandle
-
-
-class Handle(view.Handle):
-
-    @classmethod
-    def from_data( cls, contents, server=None ):
-        object = objimpl_registry.produce_obj(contents.object, server)
-        return cls(object)
-
-    def __init__( self, object ):
-        view.Handle.__init__(self)
-        self.object = object
-
-    def to_data( self ):
-        return dataType('text_view', self.object.to_data())
-
-    def get_object( self ):
-        return self.object
-
-    def construct( self, parent ):
-        log.info('text_view construct parent=%r object=%r title=%r', parent, self.object, self.object.get_title())
-        return View(parent, self.object)
-
-    def __repr__( self ):
-        return 'text_view.Handle(%s)' % uni2str(self.object.get_title())
+state_type = tObjHandle
 
 
 class View(view.View, QtGui.QTextBrowser):
+
+    @classmethod
+    def from_state( cls, parent, state ):
+        object = objimpl_registry.produce_obj(state.object)
+        return cls(parent, object)
 
     def __init__( self, parent, object ):
         QtGui.QTextBrowser.__init__(self)
@@ -51,8 +30,8 @@ class View(view.View, QtGui.QTextBrowser):
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.object.subscribe(self)
 
-    def handle( self ):
-        return Handle(self.object)
+    def get_state( self ):
+        return state_type('text_view', self.object.get_state())
 
     def get_title( self ):
         return self.object.get_title()
@@ -84,5 +63,4 @@ class View(view.View, QtGui.QTextBrowser):
         log.info('~text_view %r', self)
 
 
-TextObject.set_view_handle_ctr(Handle)
-view_registry.register('text_view', Handle.from_data)
+view_registry.register('text_view', View.from_state)

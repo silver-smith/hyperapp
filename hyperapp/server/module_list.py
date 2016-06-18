@@ -77,13 +77,13 @@ class ModuleList(SmallListObject):
         dep_list.subscribe(request)
         available_list.subscribe(request)
         return request.make_response(
-            tSplitterHandle('splitter', dep_list.get_handle(), available_list.get_handle()))
+            tSplitterHandle('splitter', dep_list.get_handle(request), available_list.get_handle(request)))
 
     @db_session
     def run_element_command_open( self, request ):
         id = request.params.element_key
         rec = module.Module[id]
-        return request.make_response(ModuleForm(rec.id).get_handle(name=rec.name))
+        return request.make_response(ModuleForm(rec.id).get_handle(request, name=rec.name))
 
 
 class ModuleForm(Object):
@@ -105,8 +105,8 @@ class ModuleForm(Object):
     def get_path( self ):
         return module.make_path(self.class_name, self.id or '')
 
-    def get_handle( self, name=None ):
-        return tFormHandle('form', self.get(), [
+    def get_handle( self, request, name=None ):
+        return tFormHandle('form', self.get(request), [
             tFormField('name', stringFieldHandle(name)),
             ])
 
@@ -128,7 +128,7 @@ class ModuleForm(Object):
             rec = module.Module(id=id,
                                 name=request.params.name)
         object = ModuleList()
-        handle = ModuleList.ListHandle(object.get(), key=rec.id)
+        handle = ModuleList.ListHandle(object.get(request), key=rec.id)
         return request.make_response(handle)
 
 

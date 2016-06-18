@@ -21,7 +21,7 @@ class Endpoint(object):
 
     @classmethod
     def from_data( cls, rec ):
-        return cls(PublicKey.from_pem(rec.public_key_pem), rec.routes)
+        return cls(PublicKey.from_der(rec.public_key_der), rec.routes)
 
     def __init__( self, public_key, routes ):
         assert isinstance(public_key, PublicKey), repr(public_key)
@@ -31,7 +31,7 @@ class Endpoint(object):
 
     def to_data( self ):
         return tEndpoint(
-            self.public_key.to_pem(),
+            self.public_key.to_der(),
             self.routes)
 
     def save_to_file( self, fpath ):

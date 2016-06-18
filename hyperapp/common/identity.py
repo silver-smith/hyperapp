@@ -48,8 +48,11 @@ class PublicKey(object):
     def get_id( self ):
         return self._id
 
+    def get_id_hex( self ):
+        return codecs.encode(self._id, 'hex').decode()
+
     def get_short_id_hex( self ):
-        return codecs.encode(self._id[:4], 'hex')
+        return codecs.encode(self._id[:4], 'hex').decode()
 
     def to_pem( self ):
         return self.public_pem

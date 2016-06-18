@@ -24,8 +24,8 @@ class ParamsForm(Object):
     def get_path( self ):
         return module.make_path(self.class_name)
 
-    def make_handle( self, key=0, size=DEFAULT_SIZE ):
-        return tFormHandle('form', self.get(), [
+    def make_handle( self, request, key=0, size=DEFAULT_SIZE ):
+        return tFormHandle('form', self.get(request), [
             tFormField('key', intFieldHandle(key)),
             tFormField('size', intFieldHandle(size))])
 
@@ -40,7 +40,7 @@ class ParamsForm(Object):
     def run_command_submit( self, request ):
         log.info('submitted: key=%r size=%r', request.params.key, request.params.size)
         object = TestList(request.params.size)
-        handle = TestList.ListHandle(object.get(), key=request.params.key)
+        handle = TestList.ListHandle(object.get(request), key=request.params.key)
         return request.make_response(handle)
 
 
@@ -72,7 +72,7 @@ class TestList(ListObject):
         return ListObject.process_request(self, request)
 
     def run_command_params( self, request ):
-        return request.make_response(ParamsForm().make_handle(size=self.size))
+        return request.make_response(ParamsForm().make_handle(request, size=self.size))
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
         assert direction == 'asc', repr(direction)  # Descending direction is not yet supported

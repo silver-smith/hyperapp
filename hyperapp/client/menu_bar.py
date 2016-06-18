@@ -56,13 +56,15 @@ class MenuBar(object):
     def _open_dir_commands( self_wr ):
         self = self_wr()
         if self.current_dir is None: return
-        self._current_view().open(cmd_view.Handle(None, [self.current_dir], take_dir_commands=True))
+        assert 0  # todo
+        ## self._current_view().open(cmd_view.Handle(None, [self.current_dir], take_dir_commands=True))
 
     @staticmethod
     def _open_elt_commands( self_wr ):
         self = self_wr()
         if not self.selected_elts: return
-        self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
+        assert 0  # todo
+        ## self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
 
     def view_changed( self, window ):
         self.current_dir = dir = window.get_object()

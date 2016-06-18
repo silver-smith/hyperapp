@@ -18,47 +18,6 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling 
 
 
-class Handle(view.Handle):
-
-    @classmethod
-    def from_data( cls, contents, server=None ):
-        data_type = tHandle.resolve_obj(contents)
-        object = objimpl_registry.produce_obj(contents.object, server)
-        return cls(data_type, object, contents.sort_column_id, contents.key)
-
-    def __init__( self, data_type, object, sort_column_id, key=None,
-                  first_visible_row=None, select_first=True ):
-        assert isinstance(data_type, Type), repr(data_type)
-        assert isinstance(object, ListObject), repr(object)
-        assert sort_column_id, repr(sort_column_id)
-        view.Handle.__init__(self)
-        self.data_type = data_type
-        self.object = object
-        self.key = key
-        self.sort_column_id = sort_column_id
-        self.first_visible_row = first_visible_row
-        self.select_first = select_first  # bool
-
-    def to_data( self ):
-        return self.data_type(
-            'list',
-            self.object.to_data(),
-            self.sort_column_id,
-            self.key,
-            )
-    
-    def get_object( self ):
-        return self.object
-
-    def construct( self, parent ):
-        log.info('list_view construct parent=%r title=%r object=%r key=%r', parent, self.object.get_title(), self.object, self.key)
-        return View(parent, self.data_type, self.object, self.key, self.sort_column_id,
-                    self.first_visible_row, self.select_first)
-
-    def __repr__( self ):
-        return 'list_view.Handle(%s, %s)' % (uni2str(self.object.get_title()), uni2str(self.key))
-
-
 class Model(QtCore.QAbstractTableModel):
 
     def __init__( self ):
@@ -212,8 +171,14 @@ class Model(QtCore.QAbstractTableModel):
 
 class View(view.View, ListObserver, QtGui.QTableView):
 
-    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row, select_first ):
-        assert isinstance(data_type, Type), repr(data_type)
+    @classmethod
+    def from_state( cls, parent, state ):
+        data_type = tHandle.resolve_obj(state)
+        object = objimpl_registry.produce_obj(state.object)
+        return cls(parent, data_type, object, state.key, state.sort_column_id)
+
+    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True ):
+        assert data_type is None or isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
@@ -237,11 +202,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.set_object(object, sort_column_id)
         self.wanted_current_key = key  # will set it to current when rows are loaded
 
-    def handle( self ):
+    def get_state( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
         ## slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
-        return Handle(self.data_type, self.get_object(), self.model().get_sort_column_id(),
-                      self.get_current_key(), first_visible_row, self._select_first)
+        return self.data_type('list', self.get_object().get_state(), self.model().get_sort_column_id(),
+                              self.get_current_key())  #, first_visible_row, self._select_first)
 
     def get_title( self ):
         if self._object:
@@ -249,6 +214,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def get_object( self ):
         return self._object
+
+    def get_sort_column_id( self ):
+        return self.model().get_sort_column_id()
 
     def object_changed( self ):
         log.info('-- list_view.object_changed self=%r', self)
@@ -429,4 +397,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
         log.info('~list_view.View %r', self)
 
 
-view_registry.register('list', Handle.from_data)
+view_registry.register('list', View.from_state)

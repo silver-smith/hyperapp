@@ -60,11 +60,12 @@ class Object(object):
         else:
             return self.facets
 
-    def get( self ):
+    def get( self, request ):
         path = self.get_path()
         assert is_list_inst(path, str), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
         return self.iface.Object(
             objimpl_id=self.objimpl_id,
+            public_key_der=request.me.get_public_key().to_der(),
             iface=self.iface.iface_id,
             facets=[facet.iface_id for facet in self.get_facets()],
             path=path,
@@ -76,7 +77,7 @@ class Object(object):
             commands=self.get_commands(),
             **kw)
 
-    def get_handle( self ):
+    def get_handle( self, request ):
         raise NotImplementedError(self.__class__)
 
     def process_request( self, request ):
@@ -93,7 +94,7 @@ class Object(object):
             assert False, repr(command_id)  # Unknown command
 
     def process_request_get( self, request ):
-        return request.make_response(self.get_handle())
+        return request.make_response(self.get_handle(request))
 
     def process_request_subscribe( self, request ):
         self.subscribe(request)
@@ -171,8 +172,8 @@ class ListObject(Object):
             % (slice, self.iface.tSlice())
         return Object.get_contents(self, slice=slice, **kw)
 
-    def get_handle( self ):
-        return self.ListHandle(self.get())
+    def get_handle( self, request ):
+        return self.ListHandle(self.get(request))
 
     def process_request( self, request ):
         if request.command_id == 'fetch_elements':

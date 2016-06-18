@@ -1,7 +1,6 @@
 from .visitor import Visitor
 from .htypes import (
     tObject,
-    tThisProxyObject,
     tProxyObject,
     )
 
@@ -14,5 +13,5 @@ class ObjectPathCollector(Visitor):
         return [list(path) for path in self.collected_paths]
 
     def visit_hierarchy_obj( self, t, tclass, value ):
-        if t is tObject and isinstance(value, (tThisProxyObject, tProxyObject)):
+        if t is tObject and isinstance(value, tProxyObject):
             self.collected_paths.add(tuple(value.path))

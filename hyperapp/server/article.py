@@ -65,11 +65,11 @@ class Article(Object):
             text = None
         return Object.get_contents(self, text=text, **kw)
 
-    def get_handle( self ):
+    def get_handle( self, request ):
         if self.mode == self.mode_view:
-            return tObjHandle('text_view', self.get())
+            return tObjHandle('text_view', self.get(request))
         else:
-            return tObjHandle('text_edit', self.get())
+            return tObjHandle('text_edit', self.get(request))
 
     def get_commands( self ):
         return [
@@ -263,7 +263,7 @@ class RefSelector(Object):
         ref_list_obj = ArticleRefList(self.article_id)
         diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
-        handle = ArticleRefList.ListHandle(ref_list_obj.get(), key=rec.id)
+        handle = ArticleRefList.ListHandle(ref_list_obj.get(request), key=rec.id)
         return request.make_response(handle)
 
     @db_session
@@ -279,8 +279,8 @@ class RefSelector(Object):
             target_handle = tRedirectHandle(target_url.to_data())
         else:
             target_obj = module.run_resolver(iface, path)
-            target_handle = target_obj.get_handle()
-        return tObjSelectorHandle('object_selector', self.get(), target_handle)
+            target_handle = target_obj.get_handle(request)
+        return tObjSelectorHandle('object_selector', self.get(request), target_handle)
 
 
 class ArticleModule(PonyOrmModule):

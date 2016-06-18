@@ -14,6 +14,7 @@ from ..common.htypes import (
     list_handle_type,
     )
 from ..common.interface.code_repository import code_repository_iface, code_repository_browser_iface
+from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
 from ..common.endpoint import Url
 from .module import Module
 from .request import Request
@@ -23,8 +24,6 @@ from .proxy_object import ProxyObject
 from .command import Command
 from .object import Object
 from .list_object import Element, Slice, ListObject
-from .import form_view
-from . import list_view
 from .named_url_file_repository import NamedUrl, UrlFileRepository
 
 log = logging.getLogger(__name__)
@@ -58,7 +57,9 @@ class CodeRepository(object):
     # todo: try all items
     @asyncio.coroutine
     def get_modules_by_requirements( self, requirements ):
-        if not self._items: return
+        if not self._items:
+            log.warn('No available code repository servers are found')
+            return
         proxy = CodeRepositoryProxy.from_url(self._items[0].url)
         return (yield from proxy.get_modules_by_requirements(requirements))
 
@@ -91,7 +92,7 @@ tFormObject = tObject.register('code_repository_form', base=tBaseObject)
 class CodeRepositoryFormObject(Object):
 
     @classmethod
-    def from_data( cls, data, server=None ):
+    def from_state( cls, state ):
         return CodeRepositoryFormObject(this_module.code_repository)
 
     def __init__( self, controller ):
@@ -99,11 +100,12 @@ class CodeRepositoryFormObject(Object):
         Object.__init__(self)
         self.controller = controller
 
+    @staticmethod
+    def get_state():
+        return tFormObject('code_repository_form')
+
     def get_title( self ):
         return 'Add code repository'
-
-    def to_data( self ):
-        return tFormObject('code_repository_form')
 
     def get_commands( self ):
         return [Command('submit', 'Add', 'Add new code repository', 'Return')]
@@ -123,9 +125,10 @@ class CodeRepositoryFormObject(Object):
 
 
 def make_code_repository_form( url_str ):
-    return form_view.Handle(CodeRepositoryFormObject(this_module.code_repository), [
-        form_view.Field('name', form_view.StringFieldHandle('default repository')),
-        form_view.Field('url', form_view.StringFieldHandle(url_str)),
+    object = CodeRepositoryFormObject.get_state()
+    return tFormHandle('form', object, [
+        tFormField('name', tStringFieldHandle('string', 'default repository')),
+        tFormField('url', tStringFieldHandle('string', url_str)),
         ])
 
 
@@ -136,13 +139,17 @@ code_repository_list_handle_type = list_handle_type('code_repository_list', tStr
 class CodeRepositoryList(ListObject):
 
     @classmethod
-    def from_data( cls, objinfo, server=None ):
+    def from_state( cls, state ):
         return cls(this_module.code_repository)
     
     def __init__( self, controller ):
         assert isinstance(controller, CodeRepository), repr(controller)
         ListObject.__init__(self)
         self.controller = controller
+
+    @staticmethod
+    def get_state():
+        return code_repository_list_type('code_repository_list')
 
     def get_title( self ):
         return 'Code repository list'
@@ -159,9 +166,6 @@ class CodeRepositoryList(ListObject):
     def run_command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
         return make_code_repository_form(url_str)
-
-    def to_data( self ):
-        return code_repository_list_type('code_repository_list')
 
     def get_columns( self ):
         return [Column('name', 'Code Repository name')]
@@ -183,8 +187,8 @@ class CodeRepositoryList(ListObject):
 
 
 def make_code_repository_list( key=None ):
-    object = CodeRepositoryList(this_module.code_repository)
-    return list_view.Handle(code_repository_list_handle_type, object, sort_column_id='name', key=key)
+    object = CodeRepositoryList.get_state()
+    return code_repository_list_handle_type('list', object, sort_column_id='name', key=key)
 
 
 class ThisModule(Module):
@@ -193,8 +197,8 @@ class ThisModule(Module):
         Module.__init__(self)
         self.code_repository = CodeRepository(
             UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
-        objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_data)
-        objimpl_registry.register('code_repository_list', CodeRepositoryList.from_data)
+        objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_state)
+        objimpl_registry.register('code_repository_list', CodeRepositoryList.from_state)
 
     def get_commands( self ):
         return [Command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')]

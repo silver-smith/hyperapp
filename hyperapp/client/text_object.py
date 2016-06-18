@@ -1,13 +1,13 @@
 import logging
 import asyncio
-from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle
+from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle, tObjHandle
 from .object import Object
 from .objimpl_registry import objimpl_registry
 
 log = logging.getLogger(__name__)
 
 
-dataType = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
+state_type = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
 
 
 class TextObject(Object):
@@ -15,20 +15,9 @@ class TextObject(Object):
     mode_view = object()
     mode_edit = object()
 
-    view_handle_ctr = None
-    edit_handle_ctr = None
-
     @classmethod
-    def set_view_handle_ctr( cls, ctr ):
-        cls.view_handle_ctr = ctr
-
-    @classmethod
-    def set_edit_handle_ctr( cls, ctr ):
-        cls.edit_handle_ctr = ctr
-
-    @classmethod
-    def from_data( cls, objinfo, server=None ):
-        return cls(objinfo.text)
+    def from_state( cls, state, server=None ):
+        return cls(state.text)
 
     def __init__( self, text ):
         Object.__init__(self)
@@ -37,8 +26,8 @@ class TextObject(Object):
     def get_title( self ):
         return 'Local text object'
 
-    def to_data( self ):
-        return dataType('text', self.text)
+    def get_state( self ):
+        return state_type('text', self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
@@ -58,10 +47,10 @@ class TextObject(Object):
         return (yield from Object.run_command(self, command_id, **kw))
 
     def run_command_edit( self ):
-        return self.edit_handle_ctr(self)
+        return tObjHandle('text_edit', self.get_state())
 
     def run_command_view( self ):
-        return self.view_handle_ctr(self)
+        return tObjHandle('text_view', self.get_state())
 
     @asyncio.coroutine
     def open_ref( self, ref_id ):
@@ -71,4 +60,4 @@ class TextObject(Object):
         log.info('~text_object %r', self)
 
 
-objimpl_registry.register('text', TextObject.from_data)
+objimpl_registry.register('text', TextObject.from_state)

@@ -14,24 +14,6 @@ from .view_command import BoundViewCommand, UnboundViewCommand
 log = logging.getLogger(__name__)
 
 
-class Handle(object):
-
-    def get_object( self ):
-        raise NotImplementedError(self.__class__)
-
-    def get_title( self ):
-        return self.get_object().get_title()
-
-    def to_data( self ):
-        raise NotImplementedError(self.__class__)
-
-    def get_module_ids( self ):
-        return self.get_object().get_module_ids()
-
-    def construct( self, parent ):
-        raise NotImplementedError(self.__class__)
-
-
 class View(ObjectObserver):
 
     CmdPanelHandleCls = None  # registered by cmd_view
@@ -47,6 +29,9 @@ class View(ObjectObserver):
             attr = getattr(self, name)
             if isinstance(attr, UnboundViewCommand):
                 self._commands.append(attr.bind(self))
+
+    def get_state( self ):
+        raise NotImplementedError(self.__class__)
 
     def object_changed( self ):
         self.view_changed()
@@ -111,6 +96,7 @@ class View(ObjectObserver):
     def run_object_element_command( self, command_id, element_key ):
         handle = yield from self.get_object().run_element_command(command_id, element_key)
         if handle:
+            assert isinstance(handle, tHandle), repr(handle)  # returned from run_element_command
             self.open(handle)
 
     def get_selected_elts( self ):
@@ -127,13 +113,6 @@ class View(ObjectObserver):
 
     def object_selected( self, obj ):
         return self._parent().object_selected(obj)
-
-    ## def process_handle_open( self, result, server ):
-    ##     if result is None: return  # no new view opening is requested
-    ##     assert isinstance(result, tHandle), repr(result)
-    ##     handle = view_registry.resolve(result, server)
-    ##     assert isinstance(handle, Handle), repr(handle)  # view_registry resolved not to a handle
-    ##     self.open(handle)
 
     def open( self, handle ):
         self._parent().open(handle)
