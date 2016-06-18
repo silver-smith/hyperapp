@@ -119,7 +119,10 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     @command('Duplicate window', 'Duplicate window', 'Alt+Shift+W')
     def duplicate_window( self ):
-        self.handle().move(DUP_OFFSET).construct(self._parent())
+        state = self.get_state()
+        state.pos.x += DUP_OFFSET.x()
+        state.pos.y += DUP_OFFSET.y()
+        self.from_state(self._app, state)
 
     def __del__( self ):
         log.info('~window')
