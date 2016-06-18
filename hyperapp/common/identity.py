@@ -16,8 +16,8 @@ class PublicKey(object):
 
     @classmethod
     def from_pem( cls, pem ):
-        assert isinstance(pem, bytes), repr(pem)
-        public_key = serialization.load_pem_public_key(pem, backend=default_backend())
+        assert isinstance(pem, str), repr(pem)
+        public_key = serialization.load_pem_public_key(pem.encode(), backend=default_backend())
         return cls('rsa', public_key)
 
     @classmethod
@@ -33,7 +33,7 @@ class PublicKey(object):
         self.public_pem = public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
-            )
+            ).decode()
         self._id = self._make_id()
 
     def _make_id( self ):
