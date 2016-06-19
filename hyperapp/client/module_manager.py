@@ -13,10 +13,10 @@ DYNAMIC_MODULE_ID_ATTR = 'this_module_id'
 
 class ModuleManager(object):
 
-    def __init__( self, objimpl_registry, view_registry ):
+    def __init__( self, services ):
         self._id2module = {}
-        self._objimpl_registry = objimpl_registry
-        self._view_registry = view_registry
+        self._objimpl_registry = services.objimpl_registry
+        self._view_registry = services.view_registry
 
     def add_modules( self, modules ):
         for module in modules:

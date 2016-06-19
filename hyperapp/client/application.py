@@ -19,21 +19,12 @@ from . import tab_view
 from . import text_view
 from . import navigator
 from . import window
-from .objimpl_registry import objimpl_registry
-from .view_registry import view_registry
-from . import code_repository
-from .module_manager import ModuleManager
-from .route_repository import FileRouteRepository, RouteStorage
-from hyperapp.client.identity import get_identity_controller
+from .services import Services
 
 log = logging.getLogger(__name__)
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
-
-
-class Services(object):
-    pass
 
 
 class Application(QtGui.QApplication, view.View):
@@ -44,21 +35,10 @@ class Application(QtGui.QApplication, view.View):
         QtGui.QApplication.__init__(self, sys_argv)
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
-        self.services = self._create_services()
+        self.services = Services()
         self._windows = []
         self._loop = asyncio.get_event_loop()
         self._loop.set_debug(True)
-
-    def _create_services( self ):
-        services = Services()
-        services.route_repo = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
-        services.module_mgr = ModuleManager(objimpl_registry, view_registry)
-        services.code_repository = code_repository.get_code_repository()
-        services.iface_registry = iface_registry
-        services.objimpl_registry = objimpl_registry
-        services.view_registry = view_registry
-        services.identity_controller = get_identity_controller()
-        return services
 
     @property
     def response_mgr( self ):
@@ -124,9 +104,9 @@ class Application(QtGui.QApplication, view.View):
         for registry_id, id in requirements:
             log.info('requirement for state: %s %r', registry_id, id)
             if registry_id == 'object':
-                registry = objimpl_registry
+                registry = self.services.objimpl_registry
             elif registry_id == 'handle':
-                registry = view_registry
+                registry = self.services.view_registry
             elif registry_id == 'interface':
                 continue  # todo
             else:
