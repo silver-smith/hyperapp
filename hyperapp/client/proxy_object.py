@@ -132,7 +132,7 @@ class GetRequest(GetRequestBase):
 class ProxyObject(Object):
 
     @classmethod
-    def from_state( cls, state, server=None ):
+    def from_state( cls, state ):
         assert isinstance(state, tProxyObject), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
         server = Server.from_public_key(server_public_key)

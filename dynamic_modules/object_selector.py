@@ -3,17 +3,15 @@ import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface.article import tObjSelectorHandle
 from .util import uni2str
-from .objimpl_registry import objimpl_registry
 from .proxy_object import ProxyObject
-from .view_registry import view_registry
 from . import view
 from .command import ObjectCommand
 
 log = logging.getLogger(__name__)
 
 
-def register_views( registry ):
-    registry.register(View.view_id, View.from_state)
+def register_views( registry, services ):
+    registry.register(View.view_id, View.from_state, services.objimpl_registry, services.view_registry)
 
 
 class View(view.View, QtGui.QWidget):
@@ -22,7 +20,7 @@ class View(view.View, QtGui.QWidget):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent ):
+    def from_state( cls, state, parent, objimpl_registry, view_registry ):
         ref = objimpl_registry.produce_obj(state.ref)
         target_view = yield from view_registry.resolve(state.target)
         return cls(parent, ref, target_view)

@@ -15,6 +15,7 @@ class ModuleManager(object):
 
     def __init__( self, services ):
         self._id2module = {}
+        self._services = services
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
 
@@ -53,4 +54,4 @@ class ModuleManager(object):
             register_objects(DynamicModuleRegistryProxy(self._objimpl_registry, module.id))
         register_views = module_dict.get('register_views')
         if register_views:
-            register_views(DynamicModuleRegistryProxy(self._view_registry, module.id))
+            register_views(DynamicModuleRegistryProxy(self._view_registry, module.id), self._services)
