@@ -41,7 +41,7 @@ class Transport(metaclass=abc.ABCMeta):
         if registry == 'object':
             return not self._objimpl_registry.is_registered(key)
         if registry == 'handle':
-            return not self._view_registry.is_view_registered(key)
+            return not self._view_registry.is_registered(key)
         if registry == 'interface':
             return not self._iface_registry.is_registered(key)
         assert False, repr(registry)  # Unknown registry
