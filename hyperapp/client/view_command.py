@@ -41,7 +41,10 @@ class BoundViewCommand(WindowCommand):
     @asyncio.coroutine
     def run( self ):
         inst = self.inst_wr()
-        if inst:  # inst not yet deleted?
+        if not inst: return  # inst is deleteddeleted
+        if asyncio.iscoroutinefunction(self.class_method):
+            asyncio.async(self.class_method(inst))
+        else:
             self.class_method(inst)
 
     # must take same parameters as window.OpenCommand as they are both used as interchangeable by menu bar global menu

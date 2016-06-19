@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface.splitter import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
@@ -33,24 +34,27 @@ class View(QtGui.QSplitter, view.View):
     view_id = 'splitter'
 
     @classmethod
-    def from_state( cls, parent, state ):
-        return cls(parent, state.x, state.y, state.orientation, state.focused, state.sizes)
+    @asyncio.coroutine
+    def from_state( cls, state, parent ):
+        x = yield from view_registry.resolve(state.x)
+        y = yield from view_registry.resolve(state.y)
+        return cls(parent, x, y, state.orientation, state.focused, state.sizes)
 
-    def __init__( self, parent, x_state, y_state, orient, focused, sizes ):
+    def __init__( self, parent, x, y, orient, focused, sizes ):
         QtGui.QSplitter.__init__(self, orient2qt(orient))
         view.View.__init__(self, parent)
         self._to_focus = focused  # will be used when become set visible
         self._focused = focused  # will be used by get_widget_to_focus before actual focus is received
-        self._x = self._y = None  # view_changed is firing during construction
-        self._x = view_registry.resolve(self, x_state)
+        self._x = x
+        self._y = y
         self._set_child(0, self._x)
-        self._y = view_registry.resolve(self, y_state)
         self._set_child(1, self._y)
         if sizes:
             self.setSizes(sizes)
         QtGui.QApplication.instance().focusChanged.connect(self._on_focus_changed)
 
     def _set_child( self, idx, view, focus=False ):
+        view.set_parent(self)
         w = view.get_widget()
         self.insertWidget(idx, w)
         if focus:

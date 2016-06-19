@@ -172,7 +172,8 @@ class Model(QtCore.QAbstractTableModel):
 class View(view.View, ListObserver, QtGui.QTableView):
 
     @classmethod
-    def from_state( cls, parent, state ):
+    @asyncio.coroutine
+    def from_state( cls, state, parent ):
         data_type = tHandle.resolve_obj(state)
         object = objimpl_registry.produce_obj(state.object)
         return cls(parent, data_type, object, state.key, state.sort_column_id)

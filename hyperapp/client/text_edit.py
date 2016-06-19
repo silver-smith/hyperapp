@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from PySide import QtCore, QtGui
 from ..common.htypes import tObjHandle
 from .objimpl_registry import objimpl_registry
@@ -15,11 +16,12 @@ state_type = tObjHandle
 class View(view.View, QtGui.QTextEdit):
 
     @classmethod
-    def from_state( cls, parent, state ):
+    @asyncio.coroutine
+    def from_state( cls, state, parent ):
         object = objimpl_registry.produce_obj(state.object)
-        return cls(parent, object)
+        return cls(object, parent)
 
-    def __init__( self, parent, object ):
+    def __init__( self, object, parent ):
         QtGui.QTextEdit.__init__(self)
         view.View.__init__(self, parent)
         self.object = object

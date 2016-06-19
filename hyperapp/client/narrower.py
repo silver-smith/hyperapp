@@ -100,7 +100,8 @@ class View(LineListPanel):
     view_id = 'list_narrower'
 
     @classmethod
-    def from_state( cls, parent, state ):
+    @asyncio.coroutine
+    def from_state( cls, state, parent ):
         data_type = tHandle.resolve_obj(state)
         object = objimpl_registry.produce_obj(state.object)
         return cls(parent, data_type, object, state.sort_column_id, state.key, state.narrow_field_id)

@@ -1,4 +1,5 @@
 import logging
+import asyncio
 import weakref
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
@@ -39,13 +40,15 @@ state_type = TRecord([
 class Window(composite.Composite, QtGui.QMainWindow):
 
     @classmethod
-    def from_state( cls, app, state ):
-        return cls(app, state.tab_view,
+    @asyncio.coroutine
+    def from_state( cls, state, app ):
+        child = yield from tab_view.View.from_state(state.tab_view)
+        return cls(app, child,
                    size=QtCore.QSize(state.size.w, state.size.h),
                    pos=QtCore.QPoint(state.pos.x, state.pos.y))
 
-    def __init__( self, app, child_state, size=None, pos=None ):
-        assert isinstance(child_state, tab_view.state_type), repr(child_state)
+    def __init__( self, app, child, size=None, pos=None ):
+        assert isinstance(child, tab_view.View), repr(child)
         QtGui.QMainWindow.__init__(self)
         composite.Composite.__init__(self, app)
         self._app = app  # alias for _parent()
@@ -64,7 +67,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
-        self.set_child(child_state)
+        self.set_child(child)
         self.show()
         self._parent().window_created(self)
 
@@ -83,13 +86,14 @@ class Window(composite.Composite, QtGui.QMainWindow):
     def get_current_child( self ):
         return self._view
 
-    def replace_view( self, mapper ):
-        handle = mapper(self._view.handle())
-        if handle:
-            self.set_child(handle)
+    ## def replace_view( self, mapper ):
+    ##     handle = mapper(self._view.handle())
+    ##     if handle:
+    ##         self.set_child(handle)
 
-    def set_child( self, child_state ):
-        self._view = tab_view.View.from_state(self, child_state)
+    def set_child( self, child ):
+        self._view = child
+        child.set_parent(self)
         self.view_changed(self._view)
 
     def open( self, handle ):

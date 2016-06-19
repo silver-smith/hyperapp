@@ -1,4 +1,5 @@
 import logging
+import asyncio
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, TList, Field, TRecord, tHandle
@@ -20,23 +21,28 @@ state_type = TRecord([
 class View(QtGui.QTabWidget, view.View):
 
     @classmethod
-    def from_state( cls, parent, state ):
-        return cls(parent, state.tabs, state.current_tab)
+    @asyncio.coroutine
+    def from_state( cls, state, parent=None ):
+        children = []
+        for tab_state in state.tabs:
+            child = yield from view_registry.resolve(tab_state)
+            children.append(child)
+        return cls(parent, children, state.current_tab)
 
     @staticmethod    
     def map_current( state, mapper ):
         idx = state.current_tab
         return state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
-    def __init__( self, parent, children_state, current_idx ):
-        assert is_list_inst(children_state, tHandle), repr(children_state)
+    def __init__( self, parent, children, current_idx ):
+        assert is_list_inst(children, view.View), repr(children)
         QtGui.QTabWidget.__init__(self)
         view.View.__init__(self, parent)
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
         self._children = []  # view list
-        for state in children_state:
-            child = view_registry.resolve(self, state)
+        for child in children:
+            child.set_parent(self)
             self.addTab(child.get_widget(), child.get_title())
             self._children.append(child)
         self.setCurrentIndex(current_idx)
@@ -78,10 +84,11 @@ class View(QtGui.QTabWidget, view.View):
         QtGui.QTabWidget.setVisible(self, visible)
 
     @command('Duplicate tab', 'Duplicate current tab', 'Ctrl+T')
+    @asyncio.coroutine
     def duplicate_tab( self ):
         idx = self.currentIndex()
         state = self._children[idx].get_state()
-        new_view = view_registry.resolve(self, state)
+        new_view = yield from view_registry.resolve(state, self)
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
@@ -95,23 +102,27 @@ class View(QtGui.QTabWidget, view.View):
         view.View.view_changed(self)  # notify parents
 
     @command('&Split horizontally', 'Split horizontally', 'Alt+S')
+    @asyncio.coroutine
     def split_horizontally( self ):
-        self._map_current(splitter.split(splitter.horizontal))
+        yield from self._map_current(splitter.split(splitter.horizontal))
 
     @command('Split &vertically', 'Split vertically', 'Shift+Alt+S')
+    @asyncio.coroutine
     def split_vertically( self ):
-        self._map_current(splitter.split(splitter.vertical))
+        yield from self._map_current(splitter.split(splitter.vertical))
 
     @command('&Unsplit', 'Unsplit', 'Alt+U')
+    @asyncio.coroutine
     def unsplit( self ):
-        self._map_current(splitter.unsplit)
+        yield from self._map_current(splitter.unsplit)
 
+    @asyncio.coroutine
     def _map_current( self, mapper ):
         idx = self.currentIndex()
         state = mapper(self._children[idx].get_state())
         if not state: return
         self._remove_tab(idx)
-        child = view_registry.resolve(self, state)
+        child = yield from view_registry.resolve(state, self)
         self._insert_tab(idx, child)
         child.ensure_has_focus()
         view.View.view_changed(self)  # notify parents

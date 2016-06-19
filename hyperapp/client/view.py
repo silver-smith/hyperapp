@@ -30,6 +30,9 @@ class View(ObjectObserver):
             if isinstance(attr, UnboundViewCommand):
                 self._commands.append(attr.bind(self))
 
+    def set_parent( self, parent ):
+        self._parent = weakref.ref(parent)
+
     def get_state( self ):
         raise NotImplementedError(self.__class__)
 

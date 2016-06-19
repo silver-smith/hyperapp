@@ -51,9 +51,10 @@ class Application(QtGui.QApplication, view.View):
     def get_state( self ):
         return [view.get_state() for view in self._windows]
 
+    @asyncio.coroutine
     def open_windows( self, state ):
         for s in state or []:
-            window.Window.from_state(self, s)
+            yield from window.Window.from_state(s, self)
 
     def pick_arg( self, kind ):
         return None
@@ -157,10 +158,9 @@ class Application(QtGui.QApplication, view.View):
             log.info('-->8 -- loaded state  ------')
             pprint(self.state_type, state)
             log.info('--- 8<------------------------')
-            self.open_windows(state)
         else:
             state = self.get_default_state()
-            self.open_windows(state)
+        self._loop.run_until_complete(self.open_windows(state))
         self._loop.call_soon(self.process_events_and_repeat)
         try:
             self._loop.run_forever()

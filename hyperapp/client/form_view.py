@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 class LineEditField(view.View, QtGui.QLineEdit):
 
     @classmethod
-    def from_state( cls, parent, state ):
+    def from_state( cls, state, parent ):
         return cls(parent, state.value)
 
     def __init__( self, parent, value ):
@@ -61,7 +61,8 @@ class View(view.View, QtGui.QWidget):
     view_id = 'form'
 
     @classmethod
-    def from_state( cls, parent, state ):
+    @asyncio.coroutine
+    def from_state( cls, state, parent ):
         object = objimpl_registry.produce_obj(state.object)
         return cls(parent, object, state.fields, state.current_field)
 
@@ -78,7 +79,7 @@ class View(view.View, QtGui.QWidget):
         self.object.subscribe(self)
 
     def _construct_field( self, layout, name, field_state, focus_it ):
-        field_view = field_registry.resolve(self, field_state)
+        field_view = field_registry.resolve(field_state, self)
         self.fields.append((name, field_view))
         label = QtGui.QLabel(name)
         label.setBuddy(field_view)
@@ -129,8 +130,8 @@ class FieldRegistry(object):
         assert field_view_id not in self.registry, repr(field_view_id)  # Duplicate id
         self.registry[field_view_id] = ctr
 
-    def resolve( self, parent, state ):
-        return self.registry[state.field_view_id](parent, state)
+    def resolve( self, state, parent ):
+        return self.registry[state.field_view_id](state, parent)
 
 
 field_registry = FieldRegistry()

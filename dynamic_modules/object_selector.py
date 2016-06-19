@@ -17,15 +17,18 @@ class View(view.View, QtGui.QWidget):
     view_id = 'object_selector'
 
     @classmethod
-    def from_state( cls, parent, state ):
+    @asyncio.coroutine
+    def from_state( cls, state, parent ):
         ref = objimpl_registry.produce_obj(state.ref)
-        return cls(parent, ref, state.target)
+        target_view = yield from view_registry.resolve(state.target)
+        return cls(parent, ref, target_view)
 
-    def __init__( self, parent, ref, target_state ):
+    def __init__( self, parent, ref, target_view ):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.ref = ref
-        self.target_view = view_registry.resolve(self, target_state)
+        self.target_view = target_view
+        target_view.set_parent(self)
         self.groupBox = QtGui.QGroupBox('Select object for %s' % self.ref.get_title())
         gbl = QtGui.QVBoxLayout()
         gbl.addWidget(self.target_view.get_widget())

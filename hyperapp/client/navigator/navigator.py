@@ -26,8 +26,9 @@ class View(composite.Composite):
     history_handle_type = list_handle_type('navigator_history', tInt)
 
     @classmethod
-    def from_state( cls, parent, state ):
-        child = view_registry.resolve(parent, state.history[state.current_pos].handle)
+    @asyncio.coroutine
+    def from_state( cls, state, parent ):
+        child = yield from view_registry.resolve(state.history[state.current_pos].handle)
         return cls(parent, child,
                    state.history[:state.current_pos],
                    list(reversed(state.history[state.current_pos + 1:])))
@@ -40,6 +41,7 @@ class View(composite.Composite):
         self._backward_history = backward_history or []     # item_type list
         self._forward_history = forward_history or []   # item_type list
         self._child = child
+        self._child.set_parent(self)
 
     def get_state( self ):
         history = self._backward_history \
@@ -57,7 +59,7 @@ class View(composite.Composite):
         self._add2history(self._backward_history, self._child)
         if len(self._backward_history) > MAX_HISTORY_SIZE:
             self._backward_history = self._backward_history[-MAX_HISTORY_SIZE:]
-        self._open(handle)
+        asyncio.async(self._open(handle))
 
     def get_current_child( self ):
         return self._child
@@ -68,12 +70,13 @@ class View(composite.Composite):
     def hide_current( self ):
         self._go_back()
 
+    @asyncio.coroutine
     def _open( self, handle ):
-        self._child = view_registry.resolve(self, handle)
+        self._child = yield from view_registry.resolve(handle, self)
         self._parent().view_changed(self)
         object = self._child.get_object()
         if object:
-            asyncio.async(object.server_subscribe())
+            yield from object.server_subscribe()
 
     @command('Go back', 'Go backward to previous page', ['Escape', 'Alt+Left'])
     def go_back( self ):
@@ -84,7 +87,7 @@ class View(composite.Composite):
         if not self._backward_history:
             return False
         self._add2history(self._forward_history, self._child)
-        self._open(self._pop_history(self._backward_history))
+        asyncio.async(self._open(self._pop_history(self._backward_history)))
 
     @command('Go forward', 'Go forward to next page', 'Alt+Right')
     def go_forward( self ):
@@ -92,7 +95,7 @@ class View(composite.Composite):
         if not self._forward_history:
             return False
         self._add2history(self._backward_history, self._child)
-        self._open(self._pop_history(self._forward_history))
+        asyncio.async(self._open(self._pop_history(self._forward_history)))
 
     def _add2history( self, history, view ):
         if isinstance(view, list_view.View) and isinstance(view.get_object(), HistoryList):

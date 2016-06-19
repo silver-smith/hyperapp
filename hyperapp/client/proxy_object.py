@@ -16,7 +16,6 @@ from ..common.htypes import (
     tProxyObjectWithContents,
     tHandle,
     tViewHandle,
-    tRedirectHandle,
     tPath,
     tEndpoint,
     resolve_iface,
@@ -31,7 +30,6 @@ from .request import ClientNotification, Request
 from .server import Server
 from .cache_repository import cache_repository
 from .view import View
-from .view_registry import view_registry
 
 log = logging.getLogger(__name__)
 
