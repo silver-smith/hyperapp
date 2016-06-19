@@ -19,7 +19,6 @@ from . import text_view
 from . import navigator
 from . import window
 from .objimpl_registry import objimpl_registry
-from .proxy_registry import proxy_class_registry
 from .view_registry import view_registry
 from . import code_repository
 from .module_manager import ModuleManager
@@ -40,7 +39,7 @@ class Application(QtGui.QApplication, view.View):
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
         self._route_repo = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
-        self._module_mgr = ModuleManager(proxy_class_registry, view_registry)
+        self._module_mgr = ModuleManager(objimpl_registry, view_registry)
         self._code_repository = code_repository.get_code_repository()
         self._windows = []
         self._loop = asyncio.get_event_loop()

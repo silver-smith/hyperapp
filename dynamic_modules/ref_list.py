@@ -4,8 +4,8 @@ from ..common.htypes import iface_registry
 from .proxy_list_object import ProxyListObject
 
 
-def register_proxies( registry ):
-    registry.register(RefList)
+def register_objects( registry ):
+    registry.register(RefList.get_objimpl_id(), RefList.from_state)
 
 
 class RefList(ProxyListObject):

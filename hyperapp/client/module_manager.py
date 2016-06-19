@@ -12,9 +12,9 @@ DYNAMIC_MODULE_ID_ATTR = 'this_module_id'
 
 class ModuleManager(object):
 
-    def __init__( self, proxy_class_registry, view_registry ):
+    def __init__( self, objimpl_registry, view_registry ):
         self._id2module = {}
-        self._proxy_class_registry = proxy_class_registry
+        self._objimpl_registry = objimpl_registry
         self._view_registry = view_registry
 
     def add_modules( self, modules ):
@@ -47,9 +47,9 @@ class ModuleManager(object):
         return module_inst
 
     def _register_provided_services( self, module, module_dict ):
-        register_proxies = module_dict.get('register_proxies')
-        if register_proxies:
-            register_proxies(self._proxy_class_registry)
+        register_objects = module_dict.get('register_objects')
+        if register_objects:
+            register_objects(self._objimpl_registry)
         register_views = module_dict.get('register_views')
         if register_views:
             register_views(self._view_registry)

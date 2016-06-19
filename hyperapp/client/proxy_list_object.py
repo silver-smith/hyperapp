@@ -2,9 +2,9 @@ import logging
 import asyncio
 import bisect
 from ..common.htypes import TList
+from .objimpl_registry import objimpl_registry
 from .list_object import ListDiff, Element, Slice, ListObject
 from .proxy_object import ProxyObject
-from .proxy_registry import proxy_class_registry
 
 log = logging.getLogger(__name__)
 
@@ -184,4 +184,4 @@ class ProxyListObject(ProxyObject, ListObject):
         log.info('~ProxyListObject self=%r path=%r', self, self.path)
 
 
-proxy_class_registry.register(ProxyListObject)
+objimpl_registry.register(ProxyListObject.get_objimpl_id(), ProxyListObject.from_state)

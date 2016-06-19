@@ -4,11 +4,10 @@ import asyncio
 from ..common.htypes import tString
 from .text_object import TextObject
 from .proxy_object import ProxyObject
-from .proxy_registry import proxy_class_registry
 
 
-def register_proxies( registry ):
-    registry.register(ProxyTextObject)
+def register_objects( registry ):
+    registry.register(ProxyTextObject.get_objimpl_id(), ProxyTextObject.from_state)
 
 
 class ProxyTextObject(ProxyObject, TextObject):

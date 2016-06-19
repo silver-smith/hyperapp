@@ -25,7 +25,8 @@ from ..common.identity import PublicKey
 from ..common.endpoint import Endpoint, Url
 from .object import Object
 from .command import Command
-from .proxy_registry import proxy_class_registry, proxy_registry
+from .objimpl_registry import objimpl_registry
+from .proxy_registry import proxy_registry
 from .request import ClientNotification, Request
 from .server import Server
 from .cache_repository import cache_repository
@@ -253,4 +254,4 @@ class ProxyObject(Object):
         log.info('~ProxyObject %r path=%r', self, self.path)
 
 
-proxy_class_registry.register(ProxyObject)
+objimpl_registry.register(ProxyObject.get_objimpl_id(), ProxyObject.from_state)

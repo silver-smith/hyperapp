@@ -4,23 +4,6 @@ import weakref
 from .objimpl_registry import objimpl_registry
 
 
-# todo: remove - it was required for object unpickling, by persistent id resolver
-class ProxyClassRegistry(object):
-
-    def __init__( self ):
-        self.implid2class = {}  # objimpl_id -> proxy class
-
-    def register( self, cls ):
-        objimpl_id = cls.get_objimpl_id()
-        assert objimpl_id not in self.implid2class, repr(objimpl_id)  # Already registered. Duplicate?
-        objimpl_registry.register(objimpl_id, cls.from_state)
-        self.implid2class[objimpl_id] = cls
-
-    def resolve( self, objimpl_id ):
-        assert objimpl_id in self.implid2class, repr(objimpl_id)  # Not found
-        return self.implid2class[objimpl_id]
-
-
 # all proxy objects are registered in this class
 # in particular, to avoid multiple proxy objects with the same url
 # also used to distribute received updates (by Server class)
@@ -42,5 +25,4 @@ class ProxyRegistry(object):
         return (server_public_key.get_id(),) + tuple(path)
 
 
-proxy_class_registry = ProxyClassRegistry()
 proxy_registry = ProxyRegistry()
