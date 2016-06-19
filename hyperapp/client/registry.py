@@ -1,3 +1,6 @@
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class Registry(object):
@@ -17,11 +20,16 @@ class Registry(object):
         self.register_provided_by_dynamic_module(None, id, factory, *args, **kw)
 
     def register_provided_by_dynamic_module( self, dynamic_module_id, id, factory, *args, **kw ):
+        log.info('registering %r from module %r to %r(%r, %r)', id, dynamic_module_id, factory, args, kw)
         assert id not in self._registry, repr(id)  # Duplicate id
         self._registry[id] = self._Rec(dynamic_module_id, factory, args, kw)
 
     def is_registered( self, id ):
         return id in self._registry
+
+    def get_dynamic_module_id( self, id ):
+        rec = self._resolve(id)
+        return rec.dynamic_module_id
 
     def _resolve( self, id ):
         assert id in self._registry, repr(id)  # Unknown id

@@ -7,6 +7,7 @@ from hyperapp.common.endpoint import Endpoint
 from ..common.util import flatten
 from ..common.htypes import TList, get_iface, iface_registry
 from ..common.visual_rep import pprint
+from ..common.requirements_collector import RequirementsCollector
 from ..common.packet_coders import packet_coders
 from .request import Request
 from .server import Server
@@ -95,16 +96,32 @@ class Application(QtGui.QApplication, view.View):
         self._loop.stop()
 
     def save_state( self, state ):
-        ## module_ids = list(flatten(handle.get_module_ids() for handle in handles))
-        ## log.info('modules required for state: %s', module_ids)
-        ## modules = self._module_mgr.resolve_ids(module_ids)
-        ## for module in modules:
-        ##     log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
+        requirements = RequirementsCollector().collect(self.state_type, state)
+        module_ids = list(self._resolve_requirements(requirements))
+        modules = self._module_mgr.resolve_ids(module_ids)
+        for module in modules:
+            log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
         state_data = packet_coders.encode('cdr', state, self.state_type)
-        ## contents = (module_ids, modules, state_data)
-        contents = state_data
+        contents = (module_ids, modules, state_data)
         with open(STATE_FILE_PATH, 'wb') as f:
             pickle.dump(contents, f)
+
+    def _resolve_requirements( self, requirements ):
+        for registry_id, id in requirements:
+            log.info('requirement for state: %s %r', registry_id, id)
+            if registry_id == 'object':
+                registry = objimpl_registry
+            elif registry_id == 'handle':
+                registry = view_registry
+            elif registry_id == 'interface':
+                continue  # todo
+            else:
+                assert False, repr(registry_id)  # unknown registry id
+            module_id = registry.get_dynamic_module_id(id)
+            if module_id is not None:  # None for static module
+                log.info('dynamic module %r provides %s %r', module_id, registry_id, id)
+                yield module_id
+    
 
     ## def load_state_and_modules( self ):
     ##     state = self.load_state_file()
@@ -151,10 +168,9 @@ class Application(QtGui.QApplication, view.View):
     def exec_( self ):
         contents = self.load_state_file()
         if contents:
-            state_data = contents
-            ## module_ids, modules, state_data = contents
-            ## log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
-            ## self._module_mgr.add_modules(modules)
+            module_ids, modules, state_data = contents
+            log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
+            self._module_mgr.add_modules(modules)
             state = packet_coders.decode('cdr', state_data, self.state_type)
             log.info('-->8 -- loaded state  ------')
             pprint(self.state_type, state)
