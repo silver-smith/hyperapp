@@ -12,6 +12,10 @@ from .command import ObjectCommand
 log = logging.getLogger(__name__)
 
 
+def register_views( registry ):
+    registry.register(View.view_id, View.from_state)
+
+
 class View(view.View, QtGui.QWidget):
 
     view_id = 'object_selector'
@@ -73,6 +77,3 @@ class View(view.View, QtGui.QWidget):
 
     def __del__( self ):
         log.info('~object_selector.View')
-
-
-view_registry.register(View.view_id, View.from_state)

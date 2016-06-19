@@ -12,8 +12,10 @@ DYNAMIC_MODULE_ID_ATTR = 'this_module_id'
 
 class ModuleManager(object):
 
-    def __init__( self ):
-        self.id2module = {}
+    def __init__( self, proxy_class_registry, view_registry ):
+        self._id2module = {}
+        self._proxy_class_registry = proxy_class_registry
+        self._view_registry = view_registry
 
     def add_modules( self, modules ):
         for module in modules:
@@ -21,13 +23,13 @@ class ModuleManager(object):
 
     def add_module( self, module ):
         log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
-        self.id2module[module.id] = module
+        self._id2module[module.id] = module
         self._load_module(module)
 
     def resolve_ids( self, module_ids ):
         modules = []
         for id in module_ids:
-            modules.append(self.id2module[id])
+            modules.append(self._id2module[id])
         return modules
 
     def _load_module( self, module, name=None ):
@@ -41,4 +43,13 @@ class ModuleManager(object):
         ast = compile(module.source, module.fpath, 'exec')  # compile allows to associate file path with loaded module
         module_inst.__dict__[DYNAMIC_MODULE_ID_ATTR] = module.id
         exec(ast, module_inst.__dict__)
+        self._register_provided_services(module, module_inst.__dict__)
         return module_inst
+
+    def _register_provided_services( self, module, module_dict ):
+        register_proxies = module_dict.get('register_proxies')
+        if register_proxies:
+            register_proxies(self._proxy_class_registry)
+        register_views = module_dict.get('register_views')
+        if register_views:
+            register_views(self._view_registry)

@@ -1,8 +1,11 @@
 import os.path
 import asyncio
 from ..common.htypes import iface_registry
-from .proxy_registry import proxy_class_registry
 from .proxy_list_object import ProxyListObject
+
+
+def register_proxies( registry ):
+    registry.register(RefList)
 
 
 class RefList(ProxyListObject):
@@ -28,6 +31,3 @@ class RefList(ProxyListObject):
     def get_default_url( self ):
         iface = iface_registry.resolve('fs_dir')
         return self.server.make_url(iface, ['file', os.path.expanduser('~')])
-
-
-proxy_class_registry.register(RefList)

@@ -10,7 +10,7 @@ class ViewRegistry(object):
     def __init__( self ):
         self.registry = {}  # view id -> ctr
 
-    def register( self, view_id, handle_ctr ):
+    def register( self, view_id, handle_ctr, *args, **kw ):
         assert view_id not in self.registry, repr(view_id)  # Duplicate id
         self.registry[view_id] = handle_ctr
 

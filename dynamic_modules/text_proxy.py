@@ -7,6 +7,10 @@ from .proxy_object import ProxyObject
 from .proxy_registry import proxy_class_registry
 
 
+def register_proxies( registry ):
+    registry.register(ProxyTextObject)
+
+
 class ProxyTextObject(ProxyObject, TextObject):
 
     def __init__( self, server, path, iface, facets=None ):
@@ -62,6 +66,3 @@ class ProxyTextObject(ProxyObject, TextObject):
     def _load_text_from_cache( self ):
         key = self._get_text_cache_key()
         return self.cache.load_value(key, self._get_text_cache_type())
-
-
-proxy_class_registry.register(ProxyTextObject)
