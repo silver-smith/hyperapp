@@ -3,11 +3,13 @@ import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
 from .util import call_after
-from .objimpl_registry import objimpl_registry
-from .view_registry import view_registry
 from . import view
 
 log = logging.getLogger(__name__)
+
+
+def register_views( registry, services ):
+    registry.register(View.view_id, View.from_state, services.objimpl_registry)
 
 
 class LineEditField(view.View, QtGui.QLineEdit):
@@ -62,7 +64,7 @@ class View(view.View, QtGui.QWidget):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent ):
+    def from_state( cls, state, parent, objimpl_registry ):
         object = objimpl_registry.produce_obj(state.object)
         return cls(parent, object, state.fields, state.current_field)
 
@@ -138,4 +140,3 @@ field_registry = FieldRegistry()
 
 field_registry.register(StringField.field_view_id, StringField.from_state)
 field_registry.register(IntField.field_view_id, IntField.from_state)
-view_registry.register(View.view_id, View.from_state)

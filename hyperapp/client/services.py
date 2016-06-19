@@ -8,14 +8,8 @@ import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
 import hyperapp.common.interface.module_list
 # self-registering views:
-import hyperapp.client.window
-import hyperapp.client.tab_view
-import hyperapp.client.narrower
 import hyperapp.client.text_object
 import hyperapp.client.proxy_list_object
-import hyperapp.client.text_edit
-import hyperapp.client.text_view
-import hyperapp.client.form_view
 import hyperapp.client.identity
 import hyperapp.client.code_repository
 import hyperapp.client.bookmarks
@@ -36,6 +30,10 @@ from . import encrypted_transport
 from . import navigator
 from . import splitter
 from . import list_view
+from . import narrower
+from . import text_view
+from . import text_edit
+from . import form_view
 
 
 class Services(object):
@@ -61,5 +59,9 @@ class Services(object):
                 navigator,
                 splitter,
                 list_view,
+                narrower,
+                text_view,
+                text_edit,
+                form_view,
                 ]:
             module.register_views(self.view_registry, self)

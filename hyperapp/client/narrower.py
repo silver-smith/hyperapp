@@ -4,9 +4,7 @@ from PySide import QtCore, QtGui
 from ..common.htypes import tHandle, list_handle_type
 from .util import uni2str, key_match, key_match_any
 from .list_object import ListObserver, Slice, ListObject
-from .objimpl_registry import objimpl_registry
 from .view_command import command
-from .view_registry import view_registry
 from . import view
 from .line_list_panel import LineListPanel
 from . import line_edit
@@ -16,6 +14,10 @@ log = logging.getLogger(__name__)
 
 
 FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
+
+
+def register_views( registry, services ):
+    registry.register(View.view_id, View.from_state, services.objimpl_registry)
 
 
 # todo: subscription
@@ -101,7 +103,7 @@ class View(LineListPanel):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent ):
+    def from_state( cls, state, parent, objimpl_registry ):
         data_type = tHandle.resolve_obj(state)
         object = objimpl_registry.produce_obj(state.object)
         return cls(parent, data_type, object, state.sort_column_id, state.key, state.narrow_field_id)
@@ -181,6 +183,3 @@ class View(LineListPanel):
 
     def __del__( self ):
         log.info('~narrower title=%r self=%r', self._base_obj.get_title(), self)
-
-
-view_registry.register(View.view_id, View.from_state)

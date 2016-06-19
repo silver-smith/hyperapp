@@ -2,8 +2,6 @@ import logging
 import asyncio
 from PySide import QtCore, QtGui
 from ..common.htypes import tObjHandle
-from .objimpl_registry import objimpl_registry
-from .view_registry import view_registry
 from . import view
 from .text_object import TextObject
 
@@ -13,11 +11,15 @@ log = logging.getLogger(__name__)
 state_type = tObjHandle
 
 
+def register_views( registry, services ):
+    registry.register('text_edit', View.from_state, services.objimpl_registry)
+
+
 class View(view.View, QtGui.QTextEdit):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent ):
+    def from_state( cls, state, parent, objimpl_registry ):
         object = objimpl_registry.produce_obj(state.object)
         return cls(object, parent)
 
@@ -57,6 +59,3 @@ class View(view.View, QtGui.QTextEdit):
 
     def __del__( self ):
         log.info('~text_edit %r', self)
-
-
-view_registry.register('text_edit', View.from_state)
