@@ -4,7 +4,6 @@ from PySide import QtCore, QtGui
 from ..common.interface.splitter import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
 from . import view
-from .view_registry import view_registry
 
 log = logging.getLogger(__name__)
 
@@ -12,6 +11,10 @@ log = logging.getLogger(__name__)
 # orientation constants
 horizontal = 'horizontal'
 vertical = 'vertical'
+
+
+def register_views( registry, services ):
+    registry.register(View.view_id, View.from_state, services.view_registry)
 
 
 def orient2qt( orient ):
@@ -35,7 +38,7 @@ class View(QtGui.QSplitter, view.View):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent ):
+    def from_state( cls, state, parent, view_registry ):
         x = yield from view_registry.resolve(state.x)
         y = yield from view_registry.resolve(state.y)
         return cls(parent, x, y, state.orientation, state.focused, state.sizes)
@@ -192,6 +195,3 @@ def unsplit( handle ):
     if child.view_id != View.view_id:
         return child
     return map_current(handle, unsplit)
-
-
-view_registry.register(View.view_id, View.from_state)

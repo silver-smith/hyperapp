@@ -6,7 +6,6 @@ from PySide import QtCore, QtGui
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import tInt, list_handle_type
 from ..util import key_match, key_match_any
-from ..view_registry import view_registry
 from ..view_command import command
 from ..import view
 from ..import composite
@@ -20,6 +19,10 @@ log = logging.getLogger(__name__)
 MAX_HISTORY_SIZE = 100
 
 
+def register_views( registry, services ):
+    registry.register('navigator', View.from_state, services.view_registry)
+
+
 class View(composite.Composite):
 
     view_id = 'navigator'
@@ -27,17 +30,18 @@ class View(composite.Composite):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent ):
+    def from_state( cls, state, parent, view_registry ):
         child = yield from view_registry.resolve(state.history[state.current_pos].handle)
-        return cls(parent, child,
+        return cls(parent, view_registry, child,
                    state.history[:state.current_pos],
                    list(reversed(state.history[state.current_pos + 1:])))
 
-    def __init__( self, parent, child, backward_history=None, forward_history=None ):
+    def __init__( self, parent, view_registry, child, backward_history=None, forward_history=None ):
         assert isinstance(child, view.View), repr(child)
         assert backward_history is None or is_list_inst(backward_history, item_type), repr(backward_history)
         assert forward_history is None or is_list_inst(forward_history, item_type), repr(forward_history)
         composite.Composite.__init__(self, parent)
+        self._view_registry = view_registry
         self._backward_history = backward_history or []     # item_type list
         self._forward_history = forward_history or []   # item_type list
         self._child = child
@@ -72,7 +76,7 @@ class View(composite.Composite):
 
     @asyncio.coroutine
     def _open( self, handle ):
-        self._child = yield from view_registry.resolve(handle, self)
+        self._child = yield from self._view_registry.resolve(handle, self)
         self._parent().view_changed(self)
         object = self._child.get_object()
         if object:
@@ -114,6 +118,3 @@ class View(composite.Composite):
 
     def __del__( self ):
         log.info('~navigator')
-
-
-view_registry.register('navigator', View.from_state)

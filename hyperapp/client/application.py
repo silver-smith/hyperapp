@@ -4,12 +4,10 @@ import asyncio
 import pickle as pickle
 from PySide import QtCore, QtGui
 from hyperapp.common.endpoint import Endpoint
-from ..common.util import flatten
-from ..common.htypes import TList, get_iface, iface_registry
+from ..common.htypes import TList
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
 from ..common.packet_coders import packet_coders
-from .request import Request
 from .server import Server
 from .view_command import command
 from . import text_object
@@ -79,7 +77,7 @@ class Application(QtGui.QApplication, view.View):
             window.get_widget(), 'Load endpoint', os.getcwd(), 'Server endpoint (*.endpoint)')
         endpoint = Endpoint.load_from_file(fpath)
         server = Server.from_endpoint(endpoint)
-        url = server.make_url(iface_registry.resolve('server_management'), ['management'])
+        url = server.make_url(self.services.iface_registry.resolve('server_management'), ['management'])
         GetRequest(url, window.get_current_view()).execute()
 
     @command('Quit', 'Quit application', 'Alt+Q')

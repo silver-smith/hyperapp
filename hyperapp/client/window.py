@@ -4,7 +4,6 @@ import weakref
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, Field, TRecord, Interface
-#from ..common.request import Request
 from .util import DEBUG_FOCUS, call_after
 from .view_command import command
 from . import view

@@ -6,9 +6,7 @@ from PySide import QtCore, QtGui
 from ..common.htypes import Type, tHandle
 from .util import uni2str, key_match, key_match_any
 from .command import ElementCommand
-from .objimpl_registry import objimpl_registry
 from .list_object import ListObserver, ListDiff, Slice, ListObject
-from .view_registry import view_registry
 from . import view
 
 log = logging.getLogger(__name__)
@@ -16,6 +14,10 @@ log = logging.getLogger(__name__)
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling 
+
+
+def register_views( registry, services ):
+    registry.register('list', View.from_state, services.objimpl_registry)
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -173,7 +175,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent ):
+    def from_state( cls, state, parent, objimpl_registry ):
         data_type = tHandle.resolve_obj(state)
         object = objimpl_registry.produce_obj(state.object)
         return cls(parent, data_type, object, state.key, state.sort_column_id)
@@ -396,6 +398,3 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def __del__( self ):
         log.info('~list_view.View %r', self)
-
-
-view_registry.register('list', View.from_state)
