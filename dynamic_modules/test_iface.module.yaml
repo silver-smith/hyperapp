@@ -4,3 +4,4 @@ package: hyperapp.common.interface
 source_path: ../hyperapp/common/interface/test_list.py
 satisfies:
  - interface/test_list
+ - interface/test_list_params

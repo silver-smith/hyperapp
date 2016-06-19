@@ -24,6 +24,9 @@ class ParamsForm(Object):
     def get_path( self ):
         return module.make_path(self.class_name)
 
+    def get_handle( self, request ):
+        return self.make_handle(request)  # todo: form data must be preserved somehow
+
     def make_handle( self, request, key=0, size=DEFAULT_SIZE ):
         return tFormHandle('form', self.get(request), [
             tFormField('key', intFieldHandle(key)),
