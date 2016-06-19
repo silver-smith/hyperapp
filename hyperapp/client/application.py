@@ -24,11 +24,16 @@ from .view_registry import view_registry
 from . import code_repository
 from .module_manager import ModuleManager
 from .route_repository import FileRouteRepository, RouteStorage
+from hyperapp.client.identity import get_identity_controller
 
 log = logging.getLogger(__name__)
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
+
+
+class Services(object):
+    pass
 
 
 class Application(QtGui.QApplication, view.View):
@@ -39,12 +44,21 @@ class Application(QtGui.QApplication, view.View):
         QtGui.QApplication.__init__(self, sys_argv)
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
-        self._route_repo = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
-        self._module_mgr = ModuleManager(objimpl_registry, view_registry)
-        self._code_repository = code_repository.get_code_repository()
+        self.services = self._create_services()
         self._windows = []
         self._loop = asyncio.get_event_loop()
         self._loop.set_debug(True)
+
+    def _create_services( self ):
+        services = Services()
+        services.route_repo = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
+        services.module_mgr = ModuleManager(objimpl_registry, view_registry)
+        services.code_repository = code_repository.get_code_repository()
+        services.iface_registry = iface_registry
+        services.objimpl_registry = objimpl_registry
+        services.view_registry = view_registry
+        services.identity_controller = get_identity_controller()
+        return services
 
     @property
     def response_mgr( self ):
@@ -98,7 +112,7 @@ class Application(QtGui.QApplication, view.View):
     def save_state( self, state ):
         requirements = RequirementsCollector().collect(self.state_type, state)
         module_ids = list(self._resolve_requirements(requirements))
-        modules = self._module_mgr.resolve_ids(module_ids)
+        modules = self.services.module_mgr.resolve_ids(module_ids)
         for module in modules:
             log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
         state_data = packet_coders.encode('cdr', state, self.state_type)
@@ -170,7 +184,7 @@ class Application(QtGui.QApplication, view.View):
         if contents:
             module_ids, modules, state_data = contents
             log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
-            self._module_mgr.add_modules(modules)
+            self.services.module_mgr.add_modules(modules)
             state = packet_coders.decode('cdr', state_data, self.state_type)
             log.info('-->8 -- loaded state  ------')
             pprint(self.state_type, state)

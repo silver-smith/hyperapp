@@ -16,17 +16,16 @@ log = logging.getLogger(__name__)
 
 class Transport(metaclass=abc.ABCMeta):
 
-    def __init__( self, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry,
-                  identity_controller ):
-        assert isinstance(module_mgr, ModuleManager), repr(module_mgr)
+    def __init__( self, services ):
+        self._module_mgr = services.module_mgr
+        self._code_repository = services.code_repository
+        self._iface_registry = services.iface_registry
+        self._objimpl_registry = services.objimpl_registry
+        self._view_registry = services.view_registry
+        self._identity_controller = services.identity_controller
+        assert isinstance(self._module_mgr, ModuleManager), repr(self._module_mgr)
         #assert isinstance(code_repository, CodeRepository), repr(code_repository)
-        assert isinstance(identity_controller, IdentityController), repr(identity_controller)
-        self._module_mgr = module_mgr
-        self._code_repository = code_repository
-        self._iface_registry = iface_registry
-        self._objimpl_registry = objimpl_registry
-        self._view_registry = view_registry
-        self._identity_controller = identity_controller
+        assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)
 
     @asyncio.coroutine
     def resolve_requirements( self, requirements ):

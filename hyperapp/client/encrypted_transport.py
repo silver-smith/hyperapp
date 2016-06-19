@@ -23,10 +23,8 @@ TRANSPORT_ID = 'encrypted_tcp'
 ENCODING = 'cdr'
 
 
-def register_transports( registry, module_mgr, code_repository, iface_registry, objimpl_registry, view_registry,
-                         identity_controller ):
-    registry.register(TRANSPORT_ID, EncryptedTransport(
-        module_mgr, code_repository, iface_registry, objimpl_registry, view_registry, identity_controller))
+def register_transports( registry, services ):
+    registry.register(TRANSPORT_ID, EncryptedTransport(services))
 
 
 class Session(object):

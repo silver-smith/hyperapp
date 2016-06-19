@@ -46,10 +46,8 @@ def main():
     app = Application(sys.argv)
 
     identity_controller = get_identity_controller()
-    tcp_transport.register_transports(transport_registry, app._module_mgr, app._code_repository,
-                                      iface_registry, objimpl_registry, view_registry, identity_controller)
-    encrypted_transport.register_transports(transport_registry, app._module_mgr, app._code_repository,
-                                            iface_registry, objimpl_registry, view_registry, identity_controller)
+    tcp_transport.register_transports(transport_registry, app.services)
+    encrypted_transport.register_transports(transport_registry, app.services)
 
     app.exec_()
 
