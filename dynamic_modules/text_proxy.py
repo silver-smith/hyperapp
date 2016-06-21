@@ -6,20 +6,18 @@ from .text_object import TextObject
 from .proxy_object import ProxyObject
 
 
-def register_objects( registry ):
-    registry.register(ProxyTextObject.get_objimpl_id(), ProxyTextObject.from_state)
+def register_object_implementations( registry, services ):
+    ProxyTextObject.register(registry, services)
 
 
 class ProxyTextObject(ProxyObject, TextObject):
 
-    def __init__( self, server, path, iface, facets=None ):
-        TextObject.__init__(self, text='')
-        ProxyObject.__init__(self, server, path, iface, facets)
-        self.text = self._load_text_from_cache()
+    objimpl_id = 'proxy.text'
 
-    @staticmethod
-    def get_objimpl_id():
-        return 'proxy.text'
+    def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):
+        TextObject.__init__(self, text='')
+        ProxyObject.__init__(self, iface_registry, cache_repository, server, path, iface, facets)
+        self.text = self._load_text_from_cache()
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
@@ -60,8 +58,8 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     def _store_text_to_cache( self ):
         key = self._get_text_cache_key()
-        self.cache.store_value(key, self.text, self._get_text_cache_type())
+        self.cache_repository.store_value(key, self.text, self._get_text_cache_type())
 
     def _load_text_from_cache( self ):
         key = self._get_text_cache_key()
-        return self.cache.load_value(key, self._get_text_cache_type())
+        return self.cache_repository.load_value(key, self._get_text_cache_type())

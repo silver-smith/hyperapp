@@ -1,6 +1,5 @@
 # code repository proxy
 
-import os.path
 import logging
 import asyncio
 import uuid
@@ -19,7 +18,6 @@ from ..common.endpoint import Url
 from .module import Module
 from .request import Request
 from .server import Server
-from .objimpl_registry import objimpl_registry
 from .proxy_object import ProxyObject
 from .command import Command
 from .object import Object
@@ -29,10 +27,17 @@ from .named_url_file_repository import NamedUrl, UrlFileRepository
 log = logging.getLogger(__name__)
 
 
+def register_views( registry, services ):
+    registry.register('code_repository_form', CodeRepositoryFormObject.from_state, services.iface_registry, services.code_repository)
+    registry.register('code_repository_list', CodeRepositoryList.from_state, services.code_repository)
+
+
 class CodeRepository(object):
 
-    def __init__( self, url_repository ):
+    def __init__( self, iface_registry, cache_repository, url_repository ):
         assert isinstance(url_repository, UrlFileRepository), repr(url_repository)
+        self._iface_registry = iface_registry
+        self._cache_repository = cache_repository
         self._url_repository = url_repository
         self._items = list(self._url_repository.enumerate())  # NamedUrl list
 
@@ -51,7 +56,7 @@ class CodeRepository(object):
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
         if not self._items: return
-        proxy = CodeRepositoryProxy.from_url(self._items[0].url)
+        proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_ids(module_ids))
 
     # todo: try all items
@@ -60,21 +65,21 @@ class CodeRepository(object):
         if not self._items:
             log.warn('No available code repository servers are found')
             return
-        proxy = CodeRepositoryProxy.from_url(self._items[0].url)
+        proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_requirements(requirements))
 
 
 class CodeRepositoryProxy(ProxyObject):
 
     @classmethod
-    def from_url( cls, url ):
+    def from_url( cls, iface_registry, cache_repository, url ):
         assert isinstance(url, Url), repr(url)
         server = Server.from_endpoint(url.endpoint)
-        return cls(server, url.path, url.iface)
+        return cls(iface_registry, cache_repository, server, url.path, url.iface)
         
-    def __init__( self, server, path, iface ):
+    def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):
         assert iface is code_repository_iface, repr(iface.iface_id)
-        ProxyObject.__init__(self, server, path, iface)
+        ProxyObject.__init__(self, iface_registry, cache_repository, server, path, iface, facets)
 
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
@@ -92,13 +97,14 @@ tFormObject = tObject.register('code_repository_form', base=tBaseObject)
 class CodeRepositoryFormObject(Object):
 
     @classmethod
-    def from_state( cls, state ):
-        return CodeRepositoryFormObject(this_module.code_repository)
+    def from_state( cls, state, iface_registry, code_repository ):
+        return cls(iface_registry, code_repository)
 
-    def __init__( self, controller ):
-        assert isinstance(controller, CodeRepository), repr(controller)
+    def __init__( self, iface_registry, code_repository ):
+        assert isinstance(code_repository, CodeRepository), repr(code_repository)
         Object.__init__(self)
-        self.controller = controller
+        self.iface_registry = iface_registry
+        self.code_repository = code_repository
 
     @staticmethod
     def get_state():
@@ -118,8 +124,8 @@ class CodeRepositoryFormObject(Object):
 
     def run_command_submit( self, name, url ):
         log.info('adding code repository %r...', name)
-        url_ = Url.from_str(iface_registry, url)
-        item = self.controller.add(name, url_)
+        url_ = Url.from_str(self.iface_registry, url)
+        item = self.code_repository.add(name, url_)
         log.info('adding code repository %r, id=%r: done', item.name, item.id)
         return make_code_repository_list(name)
 
@@ -139,13 +145,13 @@ code_repository_list_handle_type = list_handle_type('code_repository_list', tStr
 class CodeRepositoryList(ListObject):
 
     @classmethod
-    def from_state( cls, state ):
-        return cls(this_module.code_repository)
+    def from_state( cls, state, code_repository ):
+        return cls(code_repository)
     
-    def __init__( self, controller ):
-        assert isinstance(controller, CodeRepository), repr(controller)
+    def __init__( self, code_repository ):
+        assert isinstance(code_repository, CodeRepository), repr(code_repository)
         ListObject.__init__(self)
-        self.controller = controller
+        self.code_repository = code_repository
 
     @staticmethod
     def get_state():
@@ -178,7 +184,7 @@ class CodeRepositoryList(ListObject):
         self._notify_fetch_result(self._get_slice())
 
     def _get_slice( self ):
-        items = self.controller.get_items()
+        items = self.code_repository.get_items()
         return Slice('name', None, 'asc', list(map(self._item2element, items)), bof=True, eof=True)
 
     def _item2element( self, item ):
@@ -195,10 +201,6 @@ class ThisModule(Module):
 
     def __init__( self ):
         Module.__init__(self)
-        self.code_repository = CodeRepository(
-            UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
-        objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_state)
-        objimpl_registry.register('code_repository_list', CodeRepositoryList.from_state)
 
     def get_commands( self ):
         return [Command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')]
@@ -227,10 +229,6 @@ class ThisModule(Module):
         assert code_repository_iface in object.get_facets()
         url = object.get_url().clone(iface=code_repository_iface)
         return make_code_repository_form(url.to_str())
-
-
-def get_code_repository():
-    return this_module.code_repository
 
 
 this_module = ThisModule()

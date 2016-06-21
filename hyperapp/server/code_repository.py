@@ -113,7 +113,7 @@ class CodeRepositoryBrowser(SmallListObject):
     iface = code_repository_browser_iface
     facets = CODE_REPOSITORY_FACETS
     class_name = CODE_REPOSITORY_CLASS_NAME
-    objimpl_id = 'list'
+    objimpl_id = 'proxy_list'
     default_sort_column_id = 'id'
 
     @classmethod

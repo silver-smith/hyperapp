@@ -13,7 +13,7 @@ class UserList(SmallListObject):
 
     iface = user_list_iface
     class_name = 'user_list'
-    objimpl_id = 'list'
+    objimpl_id = 'proxy_list'
     default_sort_column_id = 'id'
 
     @classmethod

@@ -13,7 +13,7 @@ MODULE_NAME = 'management'
 class CommandList(SmallListObject):
 
     iface = server_management_iface
-    objimpl_id = 'list'
+    objimpl_id = 'proxy_list'
 
     @classmethod
     def get_path( cls ):

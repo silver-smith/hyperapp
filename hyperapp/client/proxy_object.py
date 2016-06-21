@@ -19,20 +19,20 @@ from ..common.htypes import (
     tPath,
     tEndpoint,
     resolve_iface,
-    iface_registry,
     )
 from ..common.identity import PublicKey
 from ..common.endpoint import Endpoint, Url
 from .object import Object
 from .command import Command
-from .objimpl_registry import objimpl_registry
-from .proxy_registry import proxy_registry
 from .request import ClientNotification, Request
 from .server import Server
-from .cache_repository import cache_repository
 from .view import View
 
 log = logging.getLogger(__name__)
+
+
+def register_object_implementations( registry, services ):
+    ProxyObject.register(registry, services)
 
 
 @asyncio.coroutine
@@ -49,41 +49,48 @@ def execute_get_request( url ):
 
 class ProxyObject(Object):
 
+    objimpl_id = 'proxy'
+
     @classmethod
-    def from_state( cls, state ):
+    def register( cls, registry, services ):
+        registry.register(cls.objimpl_id, cls.from_state, services.iface_registry, services.proxy_registry, services.cache_repository)
+
+    @classmethod
+    def from_state( cls, state, iface_registry, proxy_registry, cache_repository ):
         assert isinstance(state, tProxyObject), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
         server = Server.from_public_key(server_public_key)
         iface = iface_registry.resolve(state.iface)
         facets = [iface_registry.resolve(facet) for facet in state.facets]
-        object = cls.produce_obj(server, state.path, iface, facets)
+        object = cls.produce_obj(iface_registry, proxy_registry, cache_repository, server, state.path, iface, facets)
         if isinstance(state, tProxyObjectWithContents):  # is it a response?
             object.set_contents(state.contents)
         return object
 
     # we avoid making proxy objects with same server+path
     @classmethod
-    def produce_obj( cls, server, path, iface, facets ):
+    def produce_obj( cls, iface_registry, proxy_registry, cache_repository, server, path, iface, facets ):
         object = proxy_registry.resolve(server, path)
         if object is not None:
             log.info('> proxy object is resolved from registry: %r', object)
             return object
-        object = cls(server, path, iface, facets)
+        object = cls(iface_registry, cache_repository, server, path, iface, facets)
         proxy_registry.register(server, path, object)
         log.info('< proxy object is registered in registry: %r', object)
         return object
 
-    def __init__( self, server, path, iface, facets=None ):
+    def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):
         assert is_list_inst(path, str), repr(path)
         assert isinstance(iface, Interface), repr(iface)
         assert facets is None or is_list_inst(facets, Interface), repr(facets)
         Object.__init__(self)
+        self.iface_registry = iface_registry
         self.server = server
         self.path = path
         self.iface = iface
         self.facets = facets or []
-        self.cache = cache_repository
-        cached_commands = self.cache.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
+        self.cache_repository = cache_repository
+        cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
         self.commands = list(map(Command.from_data, cached_commands or []))
 
     def __repr__( self ):
@@ -91,7 +98,7 @@ class ProxyObject(Object):
 
     def get_state( self ):
         return tProxyObject(
-            objimpl_id=self.get_objimpl_id(),
+            objimpl_id=self.objimpl_id,
             public_key_der=self.server.public_key.to_der(),
             iface=self.iface.iface_id,
             facets=[facet.iface_id for facet in self.facets],
@@ -107,10 +114,6 @@ class ProxyObject(Object):
     def get_module_ids( self ):
         return self.iface.get_module_ids()
 
-    @classmethod
-    def get_objimpl_id( cls ):
-        return 'object'
-
     @asyncio.coroutine
     def server_subscribe( self ):
         result = yield from self.execute_request('subscribe')
@@ -119,7 +122,7 @@ class ProxyObject(Object):
 
     def set_contents( self, contents ):
         self.commands = list(map(Command.from_data, contents.commands))
-        self.cache.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
+        self.cache_repository.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
 
     def get_title( self ):
         return '%s:%s' % (self.server.public_key.get_short_id_hex(), '|'.join(self.path))
@@ -163,13 +166,10 @@ class ProxyObject(Object):
         return self.make_cache_key('commands')
 
     def make_cache_key( self, name ):
-        return ['object', self.server.public_key.get_id_hex()] + self.path + [name]
+        return [self.objimpl_id, self.server.public_key.get_id_hex()] + self.path + [name]
 
     def _get_commands_cache_type( self ):
         return TList(tCommand)
 
     def __del__( self ):
         log.info('~ProxyObject %r path=%r', self, self.path)
-
-
-objimpl_registry.register(ProxyObject.get_objimpl_id(), ProxyObject.from_state)

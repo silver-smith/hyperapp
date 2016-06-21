@@ -120,10 +120,6 @@ class Slice(object):
 
 class ListObject(Object, metaclass=abc.ABCMeta):
 
-    @classmethod
-    def get_objimpl_id( cls ):
-        return 'list'
-
     @abc.abstractmethod
     def get_columns( self ):
         pass

@@ -60,7 +60,7 @@ class BlogEntry(article.Article):
 class Blog(SmallListObject):
 
     iface = blog_iface
-    objimpl_id = 'list'
+    objimpl_id = 'proxy_list'
     class_name = 'blog'
     default_sort_column_id = 'id'
 

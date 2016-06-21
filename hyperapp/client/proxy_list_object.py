@@ -9,19 +9,21 @@ from .proxy_object import ProxyObject
 log = logging.getLogger(__name__)
 
 
+def register_object_implementations( registry, services ):
+    ProxyListObject.register(registry, services)
+
+
 class ProxyListObject(ProxyObject, ListObject):
 
-    def __init__( self, server, path, iface, facets=None ):
-        ProxyObject.__init__(self, server, path, iface, facets)
+    objimpl_id = 'proxy_list'
+    
+    def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):
+        ProxyObject.__init__(self, iface_registry, cache_repository, server, path, iface, facets)
         ListObject.__init__(self)
         self._slices = []  # all slices are stored in ascending order, actual/up-do-date
         self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, out-of-date
         self._subscribed = False
         self._subscribe_pending = False  # subscribe method is called and response is not yet received
-
-    @staticmethod
-    def get_objimpl_id():
-        return 'list'
 
     def set_contents( self, contents ):
         ProxyObject.set_contents(self, contents)
@@ -116,12 +118,12 @@ class ProxyListObject(ProxyObject, ListObject):
     def _store_slices_to_cache( self, sort_column_id ):
         key = self._get_slice_cache_key(sort_column_id)
         slices = [slice.to_data(self.iface) for slice in self._slices if slice.sort_column_id == sort_column_id]
-        self.cache.store_value(key, slices, self._get_slices_cache_type())
+        self.cache_repository.store_value(key, slices, self._get_slices_cache_type())
 
     def _load_slices_from_cache( self, sort_column_id ):
         if sort_column_id in self._slices_from_cache: return  # already loaded
         key = self._get_slice_cache_key(sort_column_id)
-        slice_recs = self.cache.load_value(key, self._get_slices_cache_type())
+        slice_recs = self.cache_repository.load_value(key, self._get_slices_cache_type())
         self._slices_from_cache[sort_column_id] = list(map(self._slice_from_data, slice_recs or []))
 
     def put_back_slice( self, slice ):
@@ -182,6 +184,3 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def __del__( self ):
         log.info('~ProxyListObject self=%r path=%r', self, self.path)
-
-
-objimpl_registry.register(ProxyListObject.get_objimpl_id(), ProxyListObject.from_state)

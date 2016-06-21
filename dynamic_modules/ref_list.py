@@ -1,18 +1,15 @@
 import os.path
 import asyncio
-from ..common.htypes import iface_registry
 from .proxy_list_object import ProxyListObject
 
 
-def register_objects( registry ):
-    registry.register(RefList.get_objimpl_id(), RefList.from_state)
+def register_object_implementations( registry, services ):
+    RefList.register(registry, services)
 
 
 class RefList(ProxyListObject):
 
-    @staticmethod
-    def get_objimpl_id():
-        return 'ref_list'
+    objimpl_id = 'ref_list'
 
     def get_module_ids( self ):
         return [this_module_id]
@@ -29,5 +26,5 @@ class RefList(ProxyListObject):
 
     # todo
     def get_default_url( self ):
-        iface = iface_registry.resolve('fs_dir')
+        iface = self.iface_registry.resolve('fs_dir')
         return self.server.make_url(iface, ['file', os.path.expanduser('~')])

@@ -49,9 +49,9 @@ class ModuleManager(object):
         return module_inst
 
     def _register_provided_services( self, module, module_dict ):
-        register_objects = module_dict.get('register_objects')
-        if register_objects:
-            register_objects(DynamicModuleRegistryProxy(self._objimpl_registry, module.id))
+        register_object_implementations = module_dict.get('register_object_implementations')
+        if register_object_implementations:
+            register_object_implementations(DynamicModuleRegistryProxy(self._objimpl_registry, module.id), self._services)
         register_views = module_dict.get('register_views')
         if register_views:
             register_views(DynamicModuleRegistryProxy(self._view_registry, module.id), self._services)

@@ -2,15 +2,20 @@ import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle, tObjHandle
 from .object import Object
-from .objimpl_registry import objimpl_registry
 
 log = logging.getLogger(__name__)
+
+
+def register_object_implementations( registry, serevices ):
+    registry.register(TextObject.objimpl_id, TextObject.from_state)
 
 
 state_type = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
 
 
 class TextObject(Object):
+
+    objimpl_id = 'text'
 
     mode_view = object()
     mode_edit = object()
@@ -58,6 +63,3 @@ class TextObject(Object):
 
     def __del__( self ):
         log.info('~text_object %r', self)
-
-
-objimpl_registry.register('text', TextObject.from_state)
