@@ -5,7 +5,6 @@ from ..common.util import is_list_inst
 from ..common.htypes import tInt, TList, Field, TRecord, tHandle
 from .util import DEBUG_FOCUS, call_after, key_match
 from .view_command import command
-from .view_registry import view_registry
 from . import view
 from . import splitter
 
@@ -22,22 +21,23 @@ class View(QtGui.QTabWidget, view.View):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent=None ):
+    def from_state( cls, state, view_registry ):
         children = []
         for tab_state in state.tabs:
             child = yield from view_registry.resolve(tab_state)
             children.append(child)
-        return cls(parent, children, state.current_tab)
+        return cls(view_registry, None, children, state.current_tab)
 
     @staticmethod    
     def map_current( state, mapper ):
         idx = state.current_tab
         return state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
-    def __init__( self, parent, children, current_idx ):
+    def __init__( self, view_registry, parent, children, current_idx ):
         assert is_list_inst(children, view.View), repr(children)
         QtGui.QTabWidget.__init__(self)
         view.View.__init__(self, parent)
+        self._view_registry = view_registry
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
         self._children = []  # view list
@@ -88,7 +88,7 @@ class View(QtGui.QTabWidget, view.View):
     def duplicate_tab( self ):
         idx = self.currentIndex()
         state = self._children[idx].get_state()
-        new_view = yield from view_registry.resolve(state, self)
+        new_view = yield from self._view_registry.resolve(state, self)
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
@@ -122,7 +122,7 @@ class View(QtGui.QTabWidget, view.View):
         state = mapper(self._children[idx].get_state())
         if not state: return
         self._remove_tab(idx)
-        child = yield from view_registry.resolve(state, self)
+        child = yield from self._view_registry.resolve(state, self)
         self._insert_tab(idx, child)
         child.ensure_has_focus()
         view.View.view_changed(self)  # notify parents
