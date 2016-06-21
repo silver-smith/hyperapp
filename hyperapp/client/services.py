@@ -16,12 +16,13 @@ import hyperapp.client.bookmarks
 import hyperapp.client.url_clipboard
 
 from ..common.htypes import iface_registry
+from ..common.route_storage import RouteStorage
 from .objimpl_registry import objimpl_registry
 from .view_registry import ViewRegistry
 from .named_url_file_repository import UrlFileRepository
 from .code_repository import CodeRepository
 from .module_manager import ModuleManager
-from .route_repository import FileRouteRepository, RouteStorage
+from .file_route_repository import FileRouteRepository
 from . import identity
 from .identity import FileIdentityRepository, IdentityController
 from .cache_repository import CacheRepository

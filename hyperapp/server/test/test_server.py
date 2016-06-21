@@ -144,10 +144,9 @@ class ServerTest(unittest.TestCase):
         pprint(tClientPacket, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()), self.iface_registry, request_data)
 
-        aux_info, response = self.server.process_request(request)
+        response = self.server.process_request(request)
 
-        pprint(tAuxInfo, aux_info)
-        pprint(tServerPacket, response)
+        pprint(tServerPacket, response.to_data())
         self.assertEqual('hello to you too', response.result.test_result)
 
     def transport_id2encoding( self, transport_id ):
@@ -201,7 +200,7 @@ class ServerTest(unittest.TestCase):
         log.info('Sending request:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], modules=[]),
+            aux_info=tAuxInfo(requirements=[], modules=[], routes=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(
@@ -219,7 +218,7 @@ class ServerTest(unittest.TestCase):
         log.info('Sending client notification:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], modules=[]),
+            aux_info=tAuxInfo(requirements=[], modules=[], routes=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(

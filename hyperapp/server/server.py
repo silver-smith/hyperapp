@@ -4,13 +4,9 @@ from ..common.util import encode_path
 from ..common.htypes import tServerPacket
 from ..common.identity import Identity
 from ..common.endpoint import Url
-from ..common.packet import tAuxInfo
 from ..common.object_path_collector import ObjectPathCollector
-from ..common.visual_rep import pprint
-from ..common.requirements_collector import RequirementsCollector
 from .request import RequestBase, Request, ServerNotification, Response
 from .object import subscription
-from .code_repository import code_repository
 from . import module
 
 log = logging.getLogger(__name__)
@@ -46,19 +42,16 @@ class Server(object):
             time.sleep(self.test_delay_sec)
         response = object.process_request(request)
         response = self._prepare_response(object.__class__, request, response)
-        if response is None:
-            return None
-        response_data = response.to_data()
-        self._subscribe_objects(request.peer.channel, response_data)
-        aux_info = self.prepare_aux_info(response_data)
-        return (aux_info, response_data)
+        if response is not None:
+            self._subscribe_objects(request.peer.channel, response)
+        return response
 
     def _resolve( self, iface, path ):
         return module.Module.run_resolver(iface, path)
 
-    def _subscribe_objects( self, peer_channel, response_data ):
+    def _subscribe_objects( self, peer_channel, response ):
         collector = ObjectPathCollector()
-        object_paths = collector.collect(tServerPacket, response_data)
+        object_paths = collector.collect(tServerPacket, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)
 
@@ -73,12 +66,3 @@ class Server(object):
         for update in updates or []:
             response.add_update(update)
         return response
-
-    @staticmethod
-    def prepare_aux_info( response_or_notification ):
-        requirements = RequirementsCollector().collect(tServerPacket, response_or_notification)
-        modules = code_repository.get_modules_by_requirements(requirements)
-        modules = []  # force separate request to code repository
-        return tAuxInfo(
-            requirements=requirements,
-            modules=modules)

@@ -2,10 +2,10 @@ import logging
 import asyncio
 from ..common.identity import PublicKey
 from ..common.endpoint import Endpoint, Url
+from ..common.route_storage import RouteStorage
 from ..common.visual_rep import pprint
 from .request import ClientNotification, Request
 from .transport import transport_registry
-from .route_repository import RouteStorage
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class Server(object):
     @classmethod
     def from_endpoint( cls, endpoint ):
         assert isinstance(endpoint, Endpoint), repr(endpoint)
-        RouteStorage.instance.add_endpoint_routes(endpoint)
+        RouteStorage.instance.add_routes(endpoint.public_key, endpoint.routes)
         server = cls._servers.get(endpoint.public_key)
         if not server:
             server = Server(endpoint.public_key)
@@ -36,10 +36,10 @@ class Server(object):
     def __init__( self, public_key ):
         assert isinstance(public_key, PublicKey), repr(public_key)
         self.public_key = public_key
-        self._route_repository = RouteStorage.instance
+        self._route_storage = RouteStorage.instance
 
     def get_endpoint( self ):
-        routes = self._route_repository.get_routes(self.public_key)
+        routes = self._route_storage.get_routes(self.public_key)
         return Endpoint(self.public_key, routes)
 
     def get_id( self ):

@@ -1,10 +1,10 @@
-from .visitor import Visitor
 from .htypes import (
     tObject,
     tProxyObject,
     tHandle,
     tViewHandle,
     )
+from .visitor import Visitor
 
 
 class RequirementsCollector(Visitor):

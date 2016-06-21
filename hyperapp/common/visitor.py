@@ -14,6 +14,9 @@ class Visitor(object):
     def visit( self, t, value ):
         self.dispatch(t, value)
 
+    def visit_record( self, t, value ):
+        pass
+
     def visit_hierarchy_obj( self, t, tclass, value ):
         pass
 
@@ -32,6 +35,7 @@ class Visitor(object):
 
     @dispatch.register(TRecord)
     def process_record( self, t, value ):
+        self.visit_record(t, value)
         fields = {}
         for field in t.get_static_fields():
             field_val = getattr(value, field.name)

@@ -1,12 +1,52 @@
+from ..common.htypes import tClientPacket, tServerPacket
+from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
+from ..common.packet_coders import packet_coders
+from ..common.visual_rep import pprint
+from ..common.requirements_collector import RequirementsCollector
+from ..common.server_public_key_collector import ServerPksCollector
+from .request import RequestBase
 from .transport_session import TransportSessionList
-
+from .route_storage import load_server_routes
+from .code_repository import code_repository
 
 
 class Transport(object):
 
+    def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
+        request_rec = packet_coders.decode(payload_encoding, packet.payload, tClientPacket)
+        pprint(tClientPacket, request_rec)
+        request = RequestBase.from_data(server, peer, iface_registry, request_rec)
+        response_or_notification = server.process_request(request)
+        if response_or_notification is None:
+            return None
+        aux_info = self.prepare_aux_info(response_or_notification)
+        pprint(tAuxInfo, aux_info)
+        pprint(tServerPacket, response_or_notification.to_data())
+        payload = packet_coders.encode(payload_encoding, response_or_notification.to_data(), tServerPacket)
+        return tPacket(aux_info, payload)
+
+    def make_notification_packet( self, payload_encoding, notification ):
+        aux_info = self.prepare_aux_info(notification)
+        pprint(tAuxInfo, aux_info)
+        pprint(tServerPacket, notification.to_data())
+        payload = packet_coders.encode(payload_encoding, notification.to_data(), tServerPacket)
+        return tPacket(aux_info, payload)
+
     def process_packet( self, server, peer, transport_packet_data ):
         raise NotImplementedError(self.__class__)
+
+    @staticmethod
+    def prepare_aux_info( response_or_notification ):
+        requirements = RequirementsCollector().collect(tServerPacket, response_or_notification.to_data())
+        modules = code_repository.get_modules_by_requirements(requirements)
+        modules = []  # force separate request to code repository
+        server_pks = ServerPksCollector().collect_public_key_ders(tServerPacket, response_or_notification.to_data())
+        routes = [tServerRoute(pk, load_server_routes(PublicKey.from_der(pk))) for pk in server_pks]
+        return tAuxInfo(
+            requirements=requirements,
+            modules=modules,
+            routes=routes)
 
 
 class TransportRegistry(object):
