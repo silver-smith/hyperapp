@@ -18,12 +18,16 @@ import hyperapp.client.url_clipboard
 from ..common.htypes import iface_registry
 from .objimpl_registry import objimpl_registry
 from .view_registry import view_registry
-from .code_repository import CodeRepository, UrlFileRepository
+from .named_url_file_repository import UrlFileRepository
+from .code_repository import CodeRepository
 from .module_manager import ModuleManager
 from .route_repository import FileRouteRepository, RouteStorage
-from .identity import get_identity_controller
+from . import identity
+from .identity import FileIdentityRepository, IdentityController
 from .cache_repository import cache_repository
 from .proxy_registry import proxy_registry
+from . import bookmarks
+from .bookmarks import Bookmarks
 
 from hyperapp.client.transport import transport_registry
 from . import tcp_transport
@@ -50,20 +54,33 @@ class Services(object):
         self.objimpl_registry = objimpl_registry
         self.view_registry = view_registry
         self.module_mgr = ModuleManager(self)
-        self.identity_controller = get_identity_controller()
+        self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
         self.transport_registry = transport_registry
         self.cache_repository = cache_repository
         self.code_repository = CodeRepository(
             self.iface_registry, self.cache_repository,
             UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         self.proxy_registry = proxy_registry
+        self.bookmarks = Bookmarks(UrlFileRepository(
+            self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_transports()
-        self._register_views()
         self._register_object_implementations()
+        self._register_views()
 
     def _register_transports( self ):
         tcp_transport.register_transports(self.transport_registry, self)
         encrypted_transport.register_transports(self.transport_registry, self)
+
+    def _register_object_implementations( self ):
+        for module in [
+                text_object,
+                proxy_object,
+                proxy_list_object,
+                navigator,
+                identity,
+                bookmarks,
+                ]:
+            module.register_object_implementations(self.objimpl_registry, self)
 
     def _register_views( self ):
         for module in [
@@ -76,11 +93,3 @@ class Services(object):
                 form_view,
                 ]:
             module.register_views(self.view_registry, self)
-
-    def _register_object_implementations( self ):
-        for module in [
-                text_object,
-                proxy_object,
-                proxy_list_object,
-                ]:
-            module.register_object_implementations(self.objimpl_registry, self)

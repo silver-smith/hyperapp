@@ -3,11 +3,14 @@ import asyncio
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import intColumnType, Column, tHandle
 from ..command import ElementCommand
-from ..objimpl_registry import objimpl_registry
 from ..list_object import Element, Slice, ListObject
 from .htypes import item_type, history_list_type
 
 log = logging.getLogger(__name__)
+
+
+def register_object_implementations( registry, services ):
+    registry.register(HistoryList.objimpl_id, HistoryList.from_state)
 
 
 class HistoryList(ListObject):
@@ -69,6 +72,3 @@ class HistoryList(ListObject):
         idx, item = idx_and_item
         commands = [ElementCommand('open', 'Open', 'Open selected item')]
         return Element(idx, self._Row(idx, item.title), commands)
-
-
-objimpl_registry.register(HistoryList.objimpl_id, HistoryList.from_state)

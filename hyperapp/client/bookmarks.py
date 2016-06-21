@@ -1,4 +1,3 @@
-import os.path
 import asyncio
 import uuid
 from PySide import QtCore, QtGui
@@ -12,12 +11,14 @@ from ..common.htypes import (
     )
 from ..common.endpoint import Url
 from .module import Module
-from .objimpl_registry import objimpl_registry
 from .command import Command, ElementCommand
 from .list_object import Element, Slice, ListObject
 from .proxy_object import execute_get_request
-from . import list_view
 from .named_url_file_repository import NamedUrl, UrlFileRepository
+
+
+def register_object_implementations( registry, services ):
+    registry.register(BookmarkList.objimpl_id, BookmarkList.from_state, services.bookmarks)
 
 
 class Bookmarks(object):
@@ -49,9 +50,11 @@ bookmark_list_handle_type = list_handle_type('bookmark_list', tString)
 
 class BookmarkList(ListObject):
 
+    objimpl_id = 'bookmark_list'
+
     @classmethod
-    def from_state( cls, state, server=None ):
-        return cls(iface_registry, this_module.bookmarks)
+    def from_state( cls, state, bookmarks ):
+        return cls(iface_registry, bookmarks)
     
     def __init__( self, iface_registry, bookmarks ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
@@ -60,9 +63,9 @@ class BookmarkList(ListObject):
         self._iface_registry = iface_registry
         self._bookmarks = bookmarks
 
-    @staticmethod
-    def get_state():
-        return bookmark_list_type('bookmark_list')
+    @classmethod
+    def get_state( cls ):
+        return bookmark_list_type(cls.objimpl_id)
 
     def get_title( self ):
         return 'Bookmarks'
@@ -115,7 +118,6 @@ class BookmarkList(ListObject):
 
 
 def make_bookmark_list( key=None ):
-    ## object = BookmarkList(iface_registry, this_module.bookmarks)
     object = BookmarkList.get_state()
     return bookmark_list_handle_type('list', object, sort_column_id='name', key=key)
 
@@ -124,9 +126,6 @@ class ThisModule(Module):
 
     def __init__( self ):
         Module.__init__(self)
-        self.bookmarks = Bookmarks(UrlFileRepository(
-            iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
-        objimpl_registry.register('bookmark_list', BookmarkList.from_state)
 
     def get_commands( self ):
         return [Command('bookmark_list', 'Bookmarks', 'Open bookmark list', 'Alt+B')]

@@ -12,13 +12,17 @@ from ..common.htypes import (
     )
 from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
 from ..common.identity import Identity
-from .objimpl_registry import objimpl_registry
 from .command import Command
 from .module import Module
 from .object import Object
 from .list_object import Element, Slice, ListObject
 
 log = logging.getLogger(__name__)
+
+
+def register_object_implementations( registry, services ):
+    registry.register(IdentityFormObject.objimpl_id, IdentityFormObject.from_state, services.identity_controller)
+    registry.register(IdentityList.objimpl_id, IdentityList.from_state, services.identity_controller)
 
 
 class IdentityItem(object):
@@ -86,12 +90,16 @@ class IdentityFormObject(Object):
     objimpl_id = 'identity_form'
 
     @classmethod
-    def from_state( cls, state ):
-        return IdentityFormObject()
+    def from_state( cls, state, identity_controller ):
+        return IdentityFormObject(identity_controller)
 
     @classmethod
     def get_state( cls ):
         return tIdentityFormObject(cls.objimpl_id)
+
+    def __init__( self, identity_controller ):
+        Object.__init__(self)
+        self.identity_controller = identity_controller
 
     def get_title( self ):
         return 'Create identity'
@@ -107,7 +115,7 @@ class IdentityFormObject(Object):
 
     def run_command_submit( self, name ):
         log.info('creating identity %r...', name)
-        this_module.identity_controller.generate(name)
+        self.identity_controller.generate(name)
         log.info('creating identity %r: done', name)
         return make_identity_list(name)
 
@@ -124,20 +132,20 @@ identity_list_handle_type = list_handle_type('identity_list', tString)
 
 class IdentityList(ListObject):
 
-    view_id = 'identity_list'
+    objimpl_id = 'identity_list'
 
     @classmethod
-    def from_state( cls, state ):
-        return cls(this_module.identity_controller)
+    def from_state( cls, state, identity_controller ):
+        return cls(identity_controller)
     
-    def __init__( self, controller ):
-        assert isinstance(controller, IdentityController), repr(controller)
+    def __init__( self, identity_controller ):
+        assert isinstance(identity_controller, IdentityController), repr(identity_controller)
         ListObject.__init__(self)
-        self.controller = controller
+        self.identity_controller = identity_controller
 
     @classmethod
     def get_state( cls ):
-        return identity_list_type(cls.view_id)
+        return identity_list_type(cls.objimpl_id)
 
     def get_title( self ):
         return 'Identity list'
@@ -167,7 +175,7 @@ class IdentityList(ListObject):
         self._notify_fetch_result(self._get_slice())
 
     def _get_slice( self ):
-        items = self.controller.get_items()
+        items = self.identity_controller.get_items()
         return Slice('name', None, 'asc', list(map(self._item2element, items)), bof=True, eof=True)
 
     def _item2element( self, item ):
@@ -184,9 +192,6 @@ class ThisModule(Module):
 
     def __init__( self ):
         Module.__init__(self)
-        self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
-        objimpl_registry.register(IdentityFormObject.objimpl_id, IdentityFormObject.from_state)
-        objimpl_registry.register(IdentityList.view_id, IdentityList.from_state)
 
     def get_commands( self ):
         return [
@@ -207,10 +212,6 @@ class ThisModule(Module):
 
     def run_command_create_idenity( self ):
         return make_identity_form()
-
-
-def get_identity_controller():
-    return this_module.identity_controller
 
 
 this_module = ThisModule()

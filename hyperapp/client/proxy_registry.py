@@ -1,7 +1,6 @@
 # registries for proxy objects and requests
 
 import weakref
-from .objimpl_registry import objimpl_registry
 
 
 # all proxy objects are registered in this class

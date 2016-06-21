@@ -2,7 +2,6 @@ import logging
 import asyncio
 import bisect
 from ..common.htypes import TList
-from .objimpl_registry import objimpl_registry
 from .list_object import ListDiff, Element, Slice, ListObject
 from .proxy_object import ProxyObject
 
