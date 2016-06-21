@@ -1,12 +1,9 @@
 import logging
 import asyncio
-from ..common.util import is_list_list_inst
 from ..common.identity import PublicKey
 from ..common.endpoint import Endpoint, Url
 from ..common.visual_rep import pprint
-from ..common.htypes import Interface, iface_registry
 from .request import ClientNotification, Request
-from .objimpl_registry import objimpl_registry
 from .transport import transport_registry
 from .route_repository import RouteStorage
 
@@ -53,9 +50,6 @@ class Server(object):
 
     def __repr__( self ):
         return 'server:%s' % self.public_key.get_short_id_hex()
-
-    def resolve_object( self, objinfo ):
-        return objimpl_registry.produce_obj(self, objinfo)
 
     def send_notification( self, notification ):
         assert isinstance(notification, ClientNotification), repr(notification)
