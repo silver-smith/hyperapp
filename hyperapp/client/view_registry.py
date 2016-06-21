@@ -22,6 +22,3 @@ class ViewRegistry(Registry):
         view = yield from rec.factory(handle, parent, *rec.args, **rec.kw)
         assert isinstance(view, View), repr((handle.view_id, view))  # must resolve to View
         return view
-
-
-view_registry = ViewRegistry()
