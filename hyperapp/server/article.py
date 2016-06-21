@@ -103,7 +103,7 @@ class Article(Object):
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
-            endpoint = Endpoint(public_key, load_server_routes(public_key))
+            endpoint = Endpoint(public_key, [])
             target_url = Url(iface, path, endpoint)
             return request.make_response(tRedirectHandle(redirect_to=target_url.to_data()))
         else:

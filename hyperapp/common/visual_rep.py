@@ -2,7 +2,6 @@ import logging
 import json
 from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route
-from .endpoint import Endpoint
 from .htypes import (
     TPrimitive,
     TString,
@@ -21,6 +20,9 @@ from .htypes import (
     tEndpoint,
     tCommand,
     )
+from .identity import PublicKey
+from .endpoint import Endpoint
+from .packet import tServerRoute
 from .interface.code_repository import tModule, tRequirement
 
 log = logging.getLogger(__name__)
@@ -75,9 +77,13 @@ class VisualRepEncoder(object):
         children = self.encode_record_fields(t, value)
         if t is tCommand:
             return RepNode('command: %s' % ', '.join(child.text for child in children))
+        if t is tServerRoute:
+            public_key = PublicKey.from_der(value.public_key_der)
+            return RepNode('server routes: %s -> %r'
+                           % (public_key.get_short_id_hex(), [encode_route(route) for route in value.routes]))
         if t is tEndpoint:
             endpoint = Endpoint.from_data(value)
-            return RepNode('endpoint: %s -> %r' \
+            return RepNode('endpoint: %s -> %r'
                            % (endpoint.public_key.get_short_id_hex(), [encode_route(route) for route in endpoint.routes]))
         if children:
             return RepNode('record', children)

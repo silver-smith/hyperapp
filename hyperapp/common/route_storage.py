@@ -1,4 +1,5 @@
 import abc
+from ..common.util import is_list_list_inst
 from ..common.identity import PublicKey
 
 
@@ -31,8 +32,8 @@ class RouteStorage(object):
     def add_routes( self, public_key, routes ):
         assert isinstance(public_key, PublicKey), repr(public_key)
         assert is_list_list_inst(routes, str), repr(routes)
-        self._server_id2routes[endpoint.public_key.get_id()] = routes
-        self._repository.add(endpoint)
+        self._server_id2routes[public_key.get_id()] = routes
+        self._repository.add(public_key, routes)
 
     def get_routes( self, public_key ):
         assert isinstance(public_key, PublicKey), repr(public_key)

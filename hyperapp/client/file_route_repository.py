@@ -1,5 +1,6 @@
 import os.path
 import glob
+from ..common.util import is_list_list_inst
 from ..common.htypes import tEndpoint
 from ..common.identity import PublicKey
 from ..common.endpoint import Endpoint

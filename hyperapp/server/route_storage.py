@@ -49,7 +49,7 @@ class DbRouteRepository(RouteRepository):
     def get( self, public_key ):
         assert isinstance(public_key, PublicKey), repr(public_key)
         routes = []
-        for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
+        for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key.to_pem()):
             routes.append(decode_route(rec.route))
         log.info('-- loaded routes for %s: %r', public_key.get_short_id_hex(), [encode_route(route) for route in routes])
         return routes

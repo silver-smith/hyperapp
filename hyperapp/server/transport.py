@@ -1,5 +1,6 @@
 from ..common.htypes import tClientPacket, tServerPacket
-from ..common.packet import tAuxInfo, tPacket
+from ..common.identity import PublicKey
+from ..common.packet import tServerRoute, tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
@@ -70,7 +71,6 @@ class TransportRegistry(object):
         responses = transport.process_packet(iface_registry, server, session_list, request_packet.data)
         return [tTransportPacket(request_packet.transport_id, response_data)
                 for response_data in responses]
-        
 
 
 transport_registry = TransportRegistry()
