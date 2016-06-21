@@ -24,7 +24,7 @@ from .module_manager import ModuleManager
 from .route_repository import FileRouteRepository, RouteStorage
 from . import identity
 from .identity import FileIdentityRepository, IdentityController
-from .cache_repository import cache_repository
+from .cache_repository import CacheRepository
 from .proxy_registry import proxy_registry
 from . import bookmarks
 from .bookmarks import Bookmarks
@@ -56,7 +56,7 @@ class Services(object):
         self.module_mgr = ModuleManager(self)
         self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
         self.transport_registry = transport_registry
-        self.cache_repository = cache_repository
+        self.cache_repository = CacheRepository()
         self.code_repository = CodeRepository(
             self.iface_registry, self.cache_repository,
             UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))

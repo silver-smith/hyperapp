@@ -48,6 +48,3 @@ class CacheRepository(object):
         if data is None:
             return None
         return packet_coders.decode(CONTENTS_ENCODING, data, t)
-
-
-cache_repository = CacheRepository()
