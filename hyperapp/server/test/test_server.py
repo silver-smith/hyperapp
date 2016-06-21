@@ -31,9 +31,9 @@ from hyperapp.common.packet import tAuxInfo, tPacket
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
 from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
-from hyperapp.server.transport import transport_registry
-import hyperapp.server.tcp_transport  # self-registering
-import hyperapp.server.encrypted_transport  # self-registering
+from hyperapp.server.transport import TransportRegistry
+from hyperapp.server.tcp_transport import TcpTransport
+from hyperapp.server.encrypted_transport import EncryptedTcpTransport
 import hyperapp.server.module as module_mod
 from hyperapp.server.object import Object, subscription
 from hyperapp.server.server import Server
@@ -129,6 +129,10 @@ class ServerTest(unittest.TestCase):
     def setUp( self ):
         self.iface_registry = IfaceRegistry()
         self.iface_registry.register(test_iface)
+        self.transport_registry = TransportRegistry()
+        TcpTransport('cdr').register(self.transport_registry)
+        TcpTransport('json').register(self.transport_registry)
+        EncryptedTcpTransport(self.iface_registry).register(self.transport_registry)
         self.test_module = TestModule()  # self-registering
         self.server = Server(server_identity)
         self.session_list = TransportSessionList()
@@ -241,7 +245,7 @@ class ServerTest(unittest.TestCase):
         if session_list is None:
             session_list = self.session_list
         transport_request = self.make_tcp_transport_request(session_list, transport_id, obj_id, command_id, **kw)
-        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, session_list, transport_request)
+        response_transport_packets = self.transport_registry.process_packet(self.iface_registry, self.server, session_list, transport_request)
         response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packets)
         return response
 
@@ -249,7 +253,7 @@ class ServerTest(unittest.TestCase):
         if session_list is None:
             session_list = self.session_list
         transport_request = self.make_tcp_transport_notification(session_list, transport_id, obj_id, command_id, **kw)
-        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+        response_transport_packets = self.transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
         response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packets)
         self.assertIsNone(response)
 
@@ -349,7 +353,7 @@ class ServerTest(unittest.TestCase):
     def test_proof_of_possession( self ):
         transport_id = 'encrypted_tcp'
         transport_request = self.make_tcp_transport_request(self.session_list, transport_id, obj_id='1', command_id='echo', test_param='hi')
-        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+        response_transport_packets = self.transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
         challenge = self.pick_pop_channelge_from_responses(transport_id, response_transport_packets)
 
         identity_1 = Identity.generate(fast=True)
@@ -363,7 +367,7 @@ class ServerTest(unittest.TestCase):
             identity_2.sign(challenge + b'x'))  # make invlid signature; verification must fail
         transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record_1, pop_record_2])
 
-        response_transport_packets = transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
+        response_transport_packets = self.transport_registry.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
 
         session = self.session_list.get_transport_session(transport_id)
         self.assertIn(identity_1.get_public_key(), session.peer_public_keys)
@@ -373,7 +377,7 @@ class ServerTest(unittest.TestCase):
     def test_unauthorized_request_reprocess( self ):
         transport_id = 'encrypted_tcp'
         transport_request = self.make_tcp_transport_request(self.session_list, transport_id, obj_id='1', command_id='required_auth')
-        response_transport_packets = transport_registry.process_packet(
+        response_transport_packets = self.transport_registry.process_packet(
             self.iface_registry, self.server, self.session_list, transport_request)
         challenge = self.pick_pop_channelge_from_responses(transport_id, response_transport_packets)
 
@@ -384,7 +388,7 @@ class ServerTest(unittest.TestCase):
             authorized_peer_identity.sign(challenge))
         transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record])
 
-        response_transport_packets = transport_registry.process_packet(
+        response_transport_packets = self.transport_registry.process_packet(
             self.iface_registry, self.server, self.session_list, transport_request)
 
         response = self.decode_tcp_transport_response(self.session_list, transport_id, response_transport_packets)

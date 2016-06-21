@@ -15,6 +15,7 @@ class Transport(object):
 
     def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
         request_rec = packet_coders.decode(payload_encoding, packet.payload, tClientPacket)
+        pprint(tAuxInfo, packet.aux_info)
         pprint(tClientPacket, request_rec)
         request = RequestBase.from_data(server, peer, iface_registry, request_rec)
         response_or_notification = server.process_request(request)

@@ -2,7 +2,7 @@ import os
 import logging
 from queue import Queue
 from ..common.util import flatten
-from ..common.htypes import tClientPacket, tServerPacket
+from ..common.htypes import tClientPacket, tServerPacket, iface_registry
 from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.encrypted_packet import (
@@ -59,7 +59,7 @@ class EncryptedTcpSession(TransportSession):
         self.pop_challenge_sent = False
         self.pop_received = False
         self.peer_public_keys = []  # verified using pop
-        self.requests_waiting_for_pop = []  # Request list
+        self.requests_waiting_for_pop = []  # request Packet list
 
     def pull_notification_transport_packets( self ):
         updates = self.channel._pop_all()
@@ -68,17 +68,18 @@ class EncryptedTcpSession(TransportSession):
         notification = ServerNotification()
         for update in updates:
             notification.add_update(update)
-        notification_data = notification.to_data()
-        aux_info = Server.prepare_aux_info(notification_data)
         log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())
-        pprint(tAuxInfo, aux_info)
-        pprint(tServerPacket, notification_data)
-        encrypted_packet = self.transport.encode_response_or_notification(self, aux_info, notification_data)
+        notification_packet = self.transport.make_notification_packet(ENCODING, notification)
+        notification_packet_data = packet_coders.encode(ENCODING, notification_packet, tPacket)
+        encrypted_packet = encrypt_subsequent_packet(self.session_key, notification_packet_data)
         packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
         return [tTransportPacket(self.transport.get_transport_id(), packet_data)]
 
 
 class EncryptedTcpTransport(Transport):
+
+    def __init__( self, iface_registry ):
+        self._iface_registry = iface_registry
 
     def get_transport_id( self ):
         return 'encrypted_tcp'
@@ -109,27 +110,28 @@ class EncryptedTcpTransport(Transport):
                 for encrypted_packet in responses]
 
     def process_encrypted_payload_packet( self, iface_registry, server, session, encrypted_packet ):
-        packet_data = self.decrypt_packet(server, session, encrypted_packet)
-        packet = packet_coders.decode(ENCODING, packet_data, tPacket)
-        request_rec = packet_coders.decode(ENCODING, packet.payload, tClientPacket)
-        pprint(tClientPacket, request_rec)
-        request = RequestBase.from_data(server, Peer(session.channel, session.peer_public_keys), iface_registry, request_rec)
-
+        request_packet_data = self.decrypt_packet(server, session, encrypted_packet)
+        request_packet = packet_coders.decode(ENCODING, request_packet_data, tPacket)
         try:
-            result = server.process_request(request)
-            return self.encode_request_result(session, result)
+            peer = Peer(session.channel, session.peer_public_keys)
+            response_packet = self.process_request_packet(iface_registry, server, peer, ENCODING, request_packet)
+            if response_packet is None:
+                return []
+            response_packet_data = packet_coders.encode(ENCODING, response_packet, tPacket)
+            return [encrypt_subsequent_packet(session.session_key, response_packet_data)]
         except NotAuthorizedError:
             if session.pop_received:
                 raise
-            session.requests_waiting_for_pop.append(request)
-            log.info('Request is postponed until POP is received: %r', request)
+            session.requests_waiting_for_pop.append(request_packet)
+            log.info('Request is postponed until POP is received: %r', request_packet)
             return []
 
-    def process_postponed_request( self, server, session, request ):
-        log.info('Reprocessing postponed request: %r', request)
-        request.peer.public_keys = session.peer_public_keys  # this may change since request was first created
-        result = server.process_request(request)
-        return self.encode_request_result(session, result)
+    def process_postponed_request( self, server, session, request_packet ):
+        log.info('Reprocessing postponed request: %r', request_packet)
+        peer = Peer(session.channel, session.peer_public_keys)
+        response_packet = self.process_request_packet(self._iface_registry, server, peer, ENCODING, request_packet)
+        packet_data = packet_coders.encode(ENCODING, response_packet, tPacket)
+        return [encrypt_subsequent_packet(session.session_key, packet_data)]
 
     def encode_request_result( self, session, result ):
         if result is None:
@@ -176,4 +178,4 @@ class EncryptedTcpTransport(Transport):
             challenge=challenge)
 
 
-EncryptedTcpTransport().register(transport_registry)
+EncryptedTcpTransport(iface_registry).register(transport_registry)
