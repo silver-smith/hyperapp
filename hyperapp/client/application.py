@@ -75,7 +75,7 @@ class Application(QtGui.QApplication, view.View):
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load endpoint', os.getcwd(), 'Server endpoint (*.endpoint)')
         endpoint = Endpoint.load_from_file(fpath)
-        server = Server.from_endpoint(endpoint)
+        server = Server.from_public_key(self.services.transport_registry, endpoint.public_key)
         url = server.make_url(self.services.iface_registry.resolve('server_management'), ['management'])
         GetRequest(url, window.get_current_view()).execute()
 

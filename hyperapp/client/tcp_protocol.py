@@ -3,7 +3,7 @@ import asyncio
 from ..common.identity import PublicKey
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
-from .transport import transport_registry
+from .transport import TransportRegistry
 from .transport_session import TransportSessionList
 
 log = logging.getLogger(__name__)
@@ -15,12 +15,13 @@ class TcpProtocol(asyncio.Protocol):
 
     @classmethod
     @asyncio.coroutine
-    def produce( cls, server_public_key, host, port ):
+    def produce( cls, transport_registry, server_public_key, host, port ):
+        assert isinstance(transport_registry, TransportRegistry), repr(transport_registry)
         key = (server_public_key.get_id(), host, port)
         protocol = cls._connections.get(key)
         if not protocol:
             loop = asyncio.get_event_loop()
-            constructor = lambda: cls(server_public_key, host, port)
+            constructor = lambda: cls(transport_registry, server_public_key, host, port)
             transport, protocol = yield from loop.create_connection(constructor, host, port)
             cls._connections[key] = protocol
         return protocol
@@ -29,13 +30,14 @@ class TcpProtocol(asyncio.Protocol):
     def _make_key( server_public_key, host, port ):
         return (server_public_key.get_id(), host, port)
 
-    def __init__( self, server_public_key, host, port ):
+    def __init__( self, transport_registry, server_public_key, host, port ):
         assert isinstance(server_public_key, PublicKey), repr(server_public_key)
-        self.server_public_key = server_public_key
-        self.host = host
-        self.port = port
+        self._transport_registry = transport_registry
+        self._server_public_key = server_public_key
+        self._host = host
+        self._port = port
         self.session_list = TransportSessionList()
-        self.recv_buf = b''
+        self._recv_buf = b''
 
     def connection_made( self, transport ):
         log.info('tcp connection made')
@@ -43,14 +45,14 @@ class TcpProtocol(asyncio.Protocol):
 
     def data_received( self, data ):
         self._log('%d bytes is received' % len(data))
-        self.recv_buf += data
-        while has_full_tcp_packet(self.recv_buf):
-            packet_data, packet_size = decode_tcp_packet(self.recv_buf)
+        self._recv_buf += data
+        while has_full_tcp_packet(self._recv_buf):
+            packet_data, packet_size = decode_tcp_packet(self._recv_buf)
             transport_packet = decode_transport_packet(packet_data)
-            asyncio.async(transport_registry.process_packet(self, self.session_list, self.server_public_key, transport_packet))
-            assert packet_size <= len(self.recv_buf), repr(packet_size)
-            self.recv_buf = self.recv_buf[packet_size:]
-            self._log('consumed %d bytes, remained %d' % (packet_size, len(self.recv_buf)))
+            asyncio.async(self._transport_registry.process_packet(self, self.session_list, self._server_public_key, transport_packet))
+            assert packet_size <= len(self._recv_buf), repr(packet_size)
+            self._recv_buf = self._recv_buf[packet_size:]
+            self._log('consumed %d bytes, remained %d' % (packet_size, len(self._recv_buf)))
 
     def send_packet( self, packet ):
         assert isinstance(packet, tTransportPacket), repr(packet)
@@ -60,5 +62,5 @@ class TcpProtocol(asyncio.Protocol):
         self.transport.write(data)
 
     def _log( self, msg ):
-        log.info('tcp to %s at %s:%d: %s', self.server_public_key.get_short_id_hex(), self.host, self.port, msg)
+        log.info('tcp to %s at %s:%d: %s', self._server_public_key.get_short_id_hex(), self._host, self._port, msg)
         

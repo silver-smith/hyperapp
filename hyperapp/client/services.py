@@ -19,6 +19,7 @@ from ..common.htypes import iface_registry
 from ..common.route_storage import RouteStorage
 from .objimpl_registry import objimpl_registry
 from .view_registry import ViewRegistry
+from .transport import TransportRegistry
 from .named_url_file_repository import UrlFileRepository
 from .code_repository import CodeRepository
 from .module_manager import ModuleManager
@@ -30,7 +31,6 @@ from .proxy_registry import proxy_registry
 from . import bookmarks
 from .bookmarks import Bookmarks
 
-from hyperapp.client.transport import transport_registry
 from . import tcp_transport
 from . import encrypted_transport
 
@@ -50,16 +50,16 @@ from . import proxy_list_object
 class Services(object):
 
     def __init__( self ):
-        self.route_repo = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.iface_registry = iface_registry
+        self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
+        self.transport_registry = TransportRegistry(self.route_storage)
         self.objimpl_registry = objimpl_registry
-        self.view_registry = ViewRegistry()
+        self.view_registry = ViewRegistry(self.transport_registry)
         self.module_mgr = ModuleManager(self)
         self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
-        self.transport_registry = transport_registry
         self.cache_repository = CacheRepository()
         self.code_repository = CodeRepository(
-            self.iface_registry, self.cache_repository,
+            self.iface_registry, self.transport_registry, self.cache_repository,
             UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         self.proxy_registry = proxy_registry
         self.bookmarks = Bookmarks(UrlFileRepository(

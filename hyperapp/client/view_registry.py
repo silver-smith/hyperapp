@@ -11,12 +11,16 @@ log = logging.getLogger(__name__)
 
 class ViewRegistry(Registry):
 
+    def __init__( self, transport_registry ):
+        Registry.__init__(self)
+        self._transport_registry = transport_registry
+
     @asyncio.coroutine
     def resolve( self, handle, parent=None ):
         assert isinstance(handle, tHandle), repr(handle)
         if isinstance(handle, tRedirectHandle):
             url = Url.from_data(iface_registry, handle.redirect_to)
-            handle = yield from execute_get_request(url)
+            handle = yield from execute_get_request(self._transport_registry, url)
         rec = self._resolve(handle.view_id)
         log.info('producing view %r using %s(%s, %s)', handle.view_id, rec.factory, rec.args, rec.kw)
         view = yield from rec.factory(handle, parent, *rec.args, **rec.kw)

@@ -37,13 +37,13 @@ class Session(object):
 class EncryptedTransport(Transport):
 
     @asyncio.coroutine
-    def send_request_rec( self, endpoint, route, request_or_notification ):
+    def send_request_rec( self, transport_registry, public_key, route, request_or_notification ):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
-        protocol = yield from TcpProtocol.produce(endpoint.public_key, host, port)
+        protocol = yield from TcpProtocol.produce(transport_registry, public_key, host, port)
         session = self._produce_session(protocol.session_list)
-        transport_packet = self._make_payload_packet(session, endpoint.public_key, request_or_notification)
+        transport_packet = self._make_payload_packet(session, public_key, request_or_notification)
         protocol.send_packet(transport_packet)
         return True
 

@@ -2,9 +2,10 @@ import logging
 import asyncio
 import abc
 from ..common.util import is_list_inst
-from ..common.endpoint import Endpoint
+from ..common.identity import PublicKey
 from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
+from ..common.route_storage import RouteStorage
 from .request import Request, ClientNotification, Response
 from .module_manager import ModuleManager
 from .proxy_registry import proxy_registry
@@ -18,10 +19,10 @@ class Transport(metaclass=abc.ABCMeta):
 
     def __init__( self, services ):
         self._module_mgr = services.module_mgr
-        self._code_repository = services.code_repository
         self._iface_registry = services.iface_registry
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
+        self._code_repository = services.code_repository
         self._identity_controller = services.identity_controller
         assert isinstance(self._module_mgr, ModuleManager), repr(self._module_mgr)
         #assert isinstance(code_repository, CodeRepository), repr(code_repository)
@@ -47,7 +48,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     @asyncio.coroutine
     @abc.abstractmethod
-    def send_request_rec( self, endpoint, route, request_or_notification ):
+    def send_request_rec( self, transport_registry, public_key, route, request_or_notification ):
         pass
 
     @asyncio.coroutine
@@ -58,7 +59,9 @@ class Transport(metaclass=abc.ABCMeta):
 
 class TransportRegistry(object):
 
-    def __init__( self ):
+    def __init__( self, route_storage ):
+        assert isinstance(route_storage, RouteStorage), repr(route_storage)
+        self._route_storage = route_storage
         self._id2transport = {}
         self._futures = {}  # request id -> future for response
 
@@ -71,32 +74,32 @@ class TransportRegistry(object):
         return self._id2transport[id]
 
     @asyncio.coroutine
-    def execute_request( self, endpoint, request ):
-        assert isinstance(endpoint, Endpoint), repr(endpoint)
+    def execute_request( self, public_key, request ):
+        assert isinstance(public_key, PublicKey), repr(public_key)
         assert isinstance(request, Request), repr(request)
         self._futures[request.request_id] = future = asyncio.Future()
         try:
-            yield from self.send_request_or_notification(endpoint, request)
+            yield from self.send_request_or_notification(public_key, request)
             return (yield from future)
         finally:
             del self._futures[request.request_id]
 
     @asyncio.coroutine
-    def send_notification( self, endpoint, notification ):
-        assert isinstance(endpoint, Endpoint), repr(endpoint)
+    def send_notification( self, public_key, notification ):
+        assert isinstance(public_key, PublicKey), repr(public_key)
         assert isinstance(notification, ClientNotification), repr(notification)
-        yield from self.send_request_or_notification(endpoint, notification)
+        yield from self.send_request_or_notification(public_key, notification)
 
     @asyncio.coroutine
-    def send_request_or_notification( self, endpoint, request_or_notification ):
-        for route in endpoint.routes:
+    def send_request_or_notification( self, public_key, request_or_notification ):
+        for route in self._route_storage.get_routes(public_key):
             transport_id = route[0]
             transport = self._id2transport.get(transport_id)
             if not transport:
                 log.info('Warning: unknown transport: %r', transport_id)
                 continue
             try:
-                return (yield from transport.send_request_rec(endpoint, route[1:], request_or_notification))
+                return (yield from transport.send_request_rec(self, public_key, route[1:], request_or_notification))
             except:
                 # todo: catch specific exceptions; try next route
                 raise
@@ -123,6 +126,3 @@ class TransportRegistry(object):
             if obj:
                 obj.process_update(update.diff)
             # otherwize object is already gone and updates must be discarded
-        
-
-transport_registry = TransportRegistry()

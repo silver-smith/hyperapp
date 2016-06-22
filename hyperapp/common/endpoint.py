@@ -25,9 +25,9 @@ class Endpoint(object):
 
     def __init__( self, public_key, routes ):
         assert isinstance(public_key, PublicKey), repr(public_key)
-        assert is_list_list_inst(routes, str), repr(routes)
+        assert routes is None or is_list_list_inst(routes, str), repr(routes)
         self.public_key = public_key
-        self.routes = routes
+        self.routes = routes or []
 
     def to_data( self ):
         return tEndpoint(

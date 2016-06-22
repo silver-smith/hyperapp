@@ -36,9 +36,9 @@ def register_object_implementations( registry, services ):
 
 
 @asyncio.coroutine
-def execute_get_request( url ):
+def execute_get_request( transport_registry, url ):
     assert isinstance(url, Url), repr(url)
-    server = Server.from_endpoint(url.endpoint)
+    server = Server.from_public_key(transport_registry, url.endpoint.public_key)
     request_id = str(uuid.uuid4())
     command_id = 'get'
     params = url.iface.make_params(command_id)
@@ -53,13 +53,14 @@ class ProxyObject(Object):
 
     @classmethod
     def register( cls, registry, services ):
-        registry.register(cls.objimpl_id, cls.from_state, services.iface_registry, services.proxy_registry, services.cache_repository)
+        registry.register(cls.objimpl_id, cls.from_state, services.iface_registry, services.transport_registry,
+                          services.proxy_registry, services.cache_repository)
 
     @classmethod
-    def from_state( cls, state, iface_registry, proxy_registry, cache_repository ):
+    def from_state( cls, state, iface_registry, transport_registry, proxy_registry, cache_repository ):
         assert isinstance(state, tProxyObject), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
-        server = Server.from_public_key(server_public_key)
+        server = Server.from_public_key(transport_registry, server_public_key)
         iface = iface_registry.resolve(state.iface)
         facets = [iface_registry.resolve(facet) for facet in state.facets]
         object = cls.produce_obj(iface_registry, proxy_registry, cache_repository, server, state.path, iface, facets)
