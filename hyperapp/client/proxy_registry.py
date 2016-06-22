@@ -22,6 +22,3 @@ class ProxyRegistry(object):
 
     def _make_key( self, server_public_key, path ):
         return (server_public_key.get_id(),) + tuple(path)
-
-
-proxy_registry = ProxyRegistry()

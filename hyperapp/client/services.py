@@ -27,7 +27,7 @@ from .file_route_repository import FileRouteRepository
 from . import identity
 from .identity import FileIdentityRepository, IdentityController
 from .cache_repository import CacheRepository
-from .proxy_registry import proxy_registry
+from .proxy_registry import ProxyRegistry
 from . import bookmarks
 from .bookmarks import Bookmarks
 
@@ -52,7 +52,8 @@ class Services(object):
     def __init__( self ):
         self.iface_registry = iface_registry
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
-        self.transport_registry = TransportRegistry(self.route_storage)
+        self.proxy_registry = ProxyRegistry()
+        self.transport_registry = TransportRegistry(self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.transport_registry)
         self.module_mgr = ModuleManager(self)
@@ -61,7 +62,6 @@ class Services(object):
         self.code_repository = CodeRepository(
             self.iface_registry, self.transport_registry, self.cache_repository,
             UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
-        self.proxy_registry = proxy_registry
         self.bookmarks = Bookmarks(UrlFileRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_transports()

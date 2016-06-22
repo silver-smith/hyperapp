@@ -9,7 +9,7 @@ from ..common.interface.code_repository import tRequirement
 from ..common.route_storage import RouteStorage
 from .request import Request, ClientNotification, Response
 from .module_manager import ModuleManager
-from .proxy_registry import proxy_registry
+from .proxy_registry import ProxyRegistry
 from .identity import IdentityController
 #from .code_repository import CodeRepository  # circular dep
 
@@ -74,9 +74,11 @@ class Transport(metaclass=abc.ABCMeta):
 
 class TransportRegistry(object):
 
-    def __init__( self, route_storage ):
+    def __init__( self, route_storage, proxy_registry ):
         assert isinstance(route_storage, RouteStorage), repr(route_storage)
+        assert isinstance(proxy_registry, ProxyRegistry), repr(proxy_registry)
         self._route_storage = route_storage
+        self._proxy_registry = proxy_registry
         self._id2transport = {}
         self._futures = {}  # request id -> future for response
 
@@ -137,7 +139,7 @@ class TransportRegistry(object):
 
     def _process_updates( self, server_public_key, updates ):
         for update in updates:
-            obj = proxy_registry.resolve(server_public_key, update.path)
+            obj = self._proxy_registry.resolve(server_public_key, update.path)
             if obj:
                 obj.process_update(update.diff)
             # otherwize object is already gone and updates must be discarded
