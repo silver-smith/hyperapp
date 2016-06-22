@@ -7,9 +7,7 @@ import hyperapp.common.interface.fs
 import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
 import hyperapp.common.interface.module_list
-# self-registering views:
-import hyperapp.client.text_object
-import hyperapp.client.proxy_list_object
+# views with self-registering modules:
 import hyperapp.client.identity
 import hyperapp.client.code_repository
 import hyperapp.client.bookmarks
