@@ -5,7 +5,7 @@ from ..common.identity import PublicKey
 
 class RouteRepository(object, metaclass=abc.ABCMeta):
 
-    # returns Endpoint list/iterator
+    # returns (PublicKey, route list) list/iterator
     @abc.abstractmethod
     def enumerate( self ):
         pass
@@ -25,8 +25,7 @@ class RouteStorage(object):
     def __init__( self, repository ):
         assert isinstance(repository, RouteRepository), repr(repository)
         self._repository = repository
-        self._server_id2routes = dict(
-           (endpoint.public_key.get_id(), endpoint.routes) for endpoint in self._repository.enumerate())
+        self._server_id2routes = dict((pk.get_id(), routes) for (pk, routes) in self._repository.enumerate())
         self.__class__.instance = self
 
     def add_routes( self, public_key, routes ):

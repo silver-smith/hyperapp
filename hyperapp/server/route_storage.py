@@ -4,7 +4,6 @@ import logging
 from pony.orm import db_session, Required, select
 from ..common.util import is_list_list_inst, encode_route, decode_route
 from ..common.identity import PublicKey
-from ..common.endpoint import Endpoint
 from ..common.route_storage import RouteRepository, RouteStorage
 from .ponyorm_module import PonyOrmModule
 
@@ -17,7 +16,7 @@ MODULE_NAME = 'server_info'
 def store_server_routes( public_key, routes ):
     return this_module.route_storage.add_routes(public_key, routes)
 
-# returns endpoint    
+# returns route list
 def load_server_routes( public_key ):
     return this_module.route_storage.get_routes(public_key)
 
@@ -39,7 +38,7 @@ class DbRouteRepository(RouteRepository):
         for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
             rec.delete()
         for route in routes:
-            log.info('-- storing route for %s: %r', endpoint.public_key.get_short_id_hex(), encode_route(route))
+            log.info('-- storing route for %s: %r', public_key.get_short_id_hex(), encode_route(route))
             self.ServerRoute(
                 public_key_pem=public_key_pem,
                 route=encode_route(route),

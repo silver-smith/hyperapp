@@ -219,12 +219,7 @@ class TIndexedList(TList):
 
 tRoute = TList(tString)
 
-tRoutes = TRecord([
-    Field('public_key_der', tBinary),
-    Field('routes', TList(tRoute)),
-    ])
-
-tEndpoint = TRecord([
+tServerRoutes = TRecord([
     Field('public_key_der', tBinary),
     Field('routes', TList(tRoute)),
     ])
@@ -235,8 +230,12 @@ tPath = TList(tString)
 
 tUrl = TRecord([
     Field('iface', tIfaceId),
+    Field('public_key_der', tBinary),
     Field('path', tPath),
-    Field('endpoint', tEndpoint),
+    ])
+
+tUrlWithRoutes = TRecord(base=tUrl, fields=[
+    Field('routes', TList(tRoute)),
     ])
 
 tCommand = TRecord([

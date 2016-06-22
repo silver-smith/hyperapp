@@ -83,6 +83,7 @@ class Services(object):
                 proxy_object,
                 proxy_list_object,
                 navigator,
+                code_repository,
                 identity,
                 bookmarks,
                 ]:

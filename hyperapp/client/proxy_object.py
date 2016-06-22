@@ -17,11 +17,10 @@ from ..common.htypes import (
     tHandle,
     tViewHandle,
     tPath,
-    tEndpoint,
     resolve_iface,
     )
 from ..common.identity import PublicKey
-from ..common.endpoint import Endpoint, Url
+from ..common.endpoint import Url
 from .object import Object
 from .command import Command
 from .request import ClientNotification, Request
@@ -38,7 +37,7 @@ def register_object_implementations( registry, services ):
 @asyncio.coroutine
 def execute_get_request( remoting, url ):
     assert isinstance(url, Url), repr(url)
-    server = Server.from_public_key(remoting, url.endpoint.public_key)
+    server = Server.from_public_key(remoting, url.public_key)
     request_id = str(uuid.uuid4())
     command_id = 'get'
     params = url.iface.make_params(command_id)

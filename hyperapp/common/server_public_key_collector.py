@@ -11,4 +11,4 @@ class ServerPksCollector(Visitor):
 
     def visit_record( self, t, value ):
         if t is tUrl:
-            self._collected_pks.add(value.endpoint.public_key_der)
+            self._collected_pks.add(value.public_key_der)

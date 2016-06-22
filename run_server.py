@@ -46,8 +46,9 @@ def main():
     host, port = parse_addr(args.addr)
     server = Server(identity, args.test_delay)
     tcp_server = TcpServer(server, host, port)
-    management_url = get_management_url(tcp_server.get_endpoint())
-    log.info('Management url: %s', management_url.to_str())
+    management_url = get_management_url(server.get_public_key())
+    url_with_routes = management_url.clone_with_routes(tcp_server.get_routes())
+    log.info('Management url: %s', url_with_routes.to_str())
     tcp_server.run()
 
 

@@ -80,7 +80,7 @@ class RealRequestTest(unittest.TestCase):
             params=url.iface.get_request_params_type('get')(),
             )
         pprint(tClientPacket, request.to_data())
-        server = Server.from_public_key(url.endpoint.public_key)
+        server = Server.from_public_key(url.public_key)
         response = yield from (asyncio.wait_for(server.execute_request(request), timeout=0.5))
         self.assertIsInstance(response, Response)
         self.assertEqual('get', response.command_id)
@@ -96,6 +96,6 @@ class RealRequestTest(unittest.TestCase):
             params=url.iface.get_request_params_type('unsubscribe')(),
             )
         pprint(tClientPacket, notification.to_data())
-        server = Server.from_public_key(url.endpoint.public_key)
+        server = Server.from_public_key(url.public_key)
         response = yield from (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
         self.assertEqual(None, response)

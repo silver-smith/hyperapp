@@ -9,7 +9,6 @@ from .htypes import (
     Field,
     TRecord,
     TList,
-    tEndpoint,
     tPath,
     tUrl,
     tIfaceId,

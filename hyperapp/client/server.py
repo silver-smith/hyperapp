@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from ..common.identity import PublicKey
-from ..common.endpoint import Endpoint, Url
+from ..common.endpoint import Url
 from ..common.visual_rep import pprint
 from .request import ClientNotification, Request
 from .remoting import Remoting
@@ -32,7 +32,7 @@ class Server(object):
         return self.public_key.get_id()
 
     def make_url( self, iface, path ):
-        return Url(iface, path, Endpoint(self.public_key, []))
+        return Url(iface, self.public_key, path)
 
     def __repr__( self ):
         return 'server:%s' % self.public_key.get_short_id_hex()

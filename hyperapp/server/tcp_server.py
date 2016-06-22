@@ -4,7 +4,6 @@ import logging
 import threading
 import socket
 import select
-from ..common.endpoint import Endpoint
 from .module import Module
 from .tcp_client import TcpClient
 
@@ -29,9 +28,9 @@ class TcpServer(object):
         self.socket.listen(5)
         log.info('listening on %s:%d', self.host, self.port)
 
-    def get_endpoint( self ):
+    def get_routes( self ):
         route = [TRANSPORT_ID, self.host, str(self.port)]
-        return Endpoint(self.server.get_public_key(), [route])
+        return [route]
 
     def run( self ):
         Module.init_phases()

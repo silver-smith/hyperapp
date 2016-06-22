@@ -52,8 +52,8 @@ class ManagementModule(Module):
         return CommandList()
 
 
-def get_management_url( endpoint ):
-    return Url(CommandList.iface, CommandList.get_path(), endpoint)
+def get_management_url( public_key ):
+    return Url(CommandList.iface, public_key, CommandList.get_path())
 
 
 module = ManagementModule()

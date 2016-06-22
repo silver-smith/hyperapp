@@ -27,7 +27,7 @@ from .named_url_file_repository import NamedUrl, UrlFileRepository
 log = logging.getLogger(__name__)
 
 
-def register_views( registry, services ):
+def register_object_implementations( registry, services ):
     registry.register('code_repository_form', CodeRepositoryFormObject.from_state, services.iface_registry, services.code_repository)
     registry.register('code_repository_list', CodeRepositoryList.from_state, services.code_repository)
 
@@ -75,7 +75,7 @@ class CodeRepositoryProxy(ProxyObject):
     @classmethod
     def from_url( cls, iface_registry, remoting, cache_repository, url ):
         assert isinstance(url, Url), repr(url)
-        server = Server.from_public_key(remoting, url.endpoint.public_key)
+        server = Server.from_public_key(remoting, url.public_key)
         return cls(iface_registry, cache_repository, server, url.path, url.iface)
         
     def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):

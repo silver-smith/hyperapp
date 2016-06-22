@@ -127,6 +127,10 @@ def make_bookmark_list( key=None ):
 
 class ThisModule(Module):
 
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        self.bookmarks = services.bookmarks
+
     def get_commands( self ):
         return [Command('bookmark_list', 'Bookmarks', 'Open bookmark list', 'Alt+B')]
 

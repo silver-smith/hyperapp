@@ -26,11 +26,11 @@ class Server(object):
         return self.identity.get_public_key()
 
     def make_url( self, iface, path ):
-        return Url(iface, path, self.get_endpoint())
+        return Url(iface, self.identity.get_public_key(), path)
 
     def is_mine_url( self, url ):
         assert isinstance(url, Url), repr(url)
-        return url.endpoint.public_key == self.get_public_key()
+        return url.public_key == self.get_public_key()
 
     def process_request( self, request ):
         assert isinstance(request, RequestBase), repr(request)

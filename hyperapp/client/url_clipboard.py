@@ -1,7 +1,7 @@
 import asyncio
 from PySide import QtCore, QtGui
 from ..common.htypes import iface_registry
-from ..common.endpoint import Url
+from ..common.endpoint import UrlWithRoutes
 from .command import Command
 from .module import Module
 from .proxy_object import execute_get_request
@@ -30,7 +30,8 @@ class ThisModule(Module):
     @asyncio.coroutine
     def run_command_url_from_clipboard( self ):
         url_str = QtGui.QApplication.clipboard().text()
-        url = Url.from_str(iface_registry, url_str)
+        url = UrlWithRoutes.from_str(iface_registry, url_str)
+        self._remoting.add_routes(url.public_key, url.routes)
         return execute_get_request(self._remoting, url)
 
     def run_object_command( self, command_id, object ):
@@ -41,4 +42,5 @@ class ThisModule(Module):
     def run_command_url_to_clipboard( self, object ):
         url = object.get_url()
         assert url is not None
-        QtGui.QApplication.clipboard().setText(url.to_str())
+        enriched_url = self._remoting.add_routes_to_url(url)
+        QtGui.QApplication.clipboard().setText(enrich_url.to_str())

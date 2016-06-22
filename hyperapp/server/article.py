@@ -9,7 +9,7 @@ from ..common.interface.article import (
     object_selector_iface,
     )
 from ..common.identity import PublicKey
-from ..common.endpoint import Endpoint, Url
+from ..common.endpoint import Url
 from .util import path_part_to_str
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
@@ -103,8 +103,7 @@ class Article(Object):
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
-            endpoint = Endpoint(public_key, [])
-            target_url = Url(iface, path, endpoint)
+            target_url = Url(iface, public_key, path)
             return request.make_response(tRedirectHandle(redirect_to=target_url.to_data()))
         else:
             target = module.run_resolver(iface, path)
@@ -171,7 +170,7 @@ class ArticleRefList(SmallListObject):
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
-            server_public_key_pem = url.endpoint.public_key.to_pem()
+            server_public_key_pem = url.public_key.to_pem()
         rec = module.ArticleRef(article=module.Article[self.article_id],
                                 server_public_key_pem=server_public_key_pem.strip(),
                                 iface=url.iface.iface_id,
@@ -243,7 +242,7 @@ class RefSelector(Object):
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
-            server_public_key_pem = url.endpoint.public_key.to_pem()
+            server_public_key_pem = url.public_key.to_pem()
         if self.ref_id is None:
             rec = module.ArticleRef(article=module.Article[self.article_id],
                                     server_public_key_pem=server_public_key_pem,
@@ -271,8 +270,7 @@ class RefSelector(Object):
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
-            endpoint = Endpoint(public_key, load_server_routes(public_key))
-            target_url = Url(iface, path, endpoint)
+            target_url = Url(iface, public_key, path)
             target_handle = tRedirectHandle(target_url.to_data())
         else:
             target_obj = module.run_resolver(iface, path)

@@ -4,6 +4,7 @@ import abc
 from ..common.util import is_list_inst, encode_route
 from ..common.packet import tAuxInfo
 from ..common.identity import PublicKey
+from ..common.endpoint import Url
 from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
 from ..common.route_storage import RouteStorage
@@ -95,6 +96,13 @@ class Remoting(object):
         self._route_storage = route_storage
         self._proxy_registry = proxy_registry
         self._futures = {}  # request id -> future for response
+
+    def add_routes( self, public_key, routes ):
+        self._route_storage.add_routes(public_key, routes)
+
+    def add_routes_to_url( self, url ):
+        assert isinstance(url, tUrl), repr(url)
+        return url.clone_with_routes(self._route_storage.get_routes(url.public_key))
 
     @asyncio.coroutine
     def execute_request( self, public_key, request ):

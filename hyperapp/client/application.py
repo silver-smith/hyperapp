@@ -3,8 +3,9 @@ import logging
 import asyncio
 import pickle as pickle
 from PySide import QtCore, QtGui
-from hyperapp.common.endpoint import Endpoint
+from ..common.endpoint import tUrlWithRoutes
 from ..common.htypes import TList
+from ..common.endpoint import UrlWithRoutes
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
 from ..common.packet_coders import packet_coders
@@ -73,9 +74,9 @@ class Application(QtGui.QApplication, view.View):
     def open_server( self ):
         window = self._windows[0]  # usually first window is the current one
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
-            window.get_widget(), 'Load endpoint', os.getcwd(), 'Server endpoint (*.endpoint)')
-        endpoint = Endpoint.load_from_file(fpath)
-        server = Server.from_public_key(self.services.remoting, endpoint.public_key)
+            window.get_widget(), 'Load url', os.getcwd(), 'Server url with routes (*.url)')
+        url_with_routes = UrlWithRoutes.load_from_file(self.services.iface_registry, fpath)
+        server = Server.from_public_key(self.services.remoting, url_with_routes.public_key)
         url = server.make_url(self.services.iface_registry.resolve('server_management'), ['management'])
         GetRequest(url, window.get_current_view()).execute()
 
