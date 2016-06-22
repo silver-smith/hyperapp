@@ -14,7 +14,7 @@ from .command import Command, ElementCommand
 from .remoting import Remoting
 from .list_object import Element, Slice, ListObject
 from .proxy_object import execute_get_request
-from .named_url_file_repository import NamedUrl, UrlFileRepository
+from .named_url_file_repository import NamedUrl, NamedUrlRepository
 
 
 def register_object_implementations( registry, services ):
@@ -25,7 +25,7 @@ def register_object_implementations( registry, services ):
 class Bookmarks(object):
 
     def __init__( self, repository ):
-        assert isinstance(repository, UrlFileRepository), repr(repository)
+        assert isinstance(repository, NamedUrlepository), repr(repository)
         self._repository = repository
         self._items = list(self._repository.enumerate())  # NamedUrl list
         self._id2item = dict((item.id, item) for item in self._items)

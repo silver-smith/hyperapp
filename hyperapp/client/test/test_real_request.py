@@ -17,7 +17,7 @@ from hyperapp.client.code_repository import CodeRepository
 from hyperapp.client.module_manager import ModuleManager
 from hyperapp.client.remoting import Remoting
 from hyperapp.client.objimpl_registry import ObjImplRegistry
-from hyperapp.client.named_url_file_repository import UrlFileRepository
+from hyperapp.client.named_url_file_repository import NamedUrlRepository
 from hyperapp.client.cache_repository import CacheRepository
 from hyperapp.client.proxy_registry import ProxyRegistry
 from hyperapp.client.view_registry import ViewRegistry
@@ -27,6 +27,15 @@ from hyperapp.common.interface.code_repository import code_repository_iface
 
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
+
+
+class PhonyNamedUrlRepository(NamedUrlRepository):
+
+    def enumerate( self ):
+        return []
+
+    def add( self, item ):
+        pass
 
 
 class PhonyIdentityRepository(IdentityRepository):
@@ -61,8 +70,7 @@ class Services(object):
         self.identity_controller = IdentityController(PhonyIdentityRepository())
         self.cache_repository = CacheRepository()
         self.code_repository = CodeRepository(
-            self.iface_registry, self.remoting, self.cache_repository,
-            UrlFileRepository(self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+            self.iface_registry, self.remoting, self.cache_repository, PhonyNamedUrlRepository())
         self._register_transports()
 
     def _register_interfaces( self ):

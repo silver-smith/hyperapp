@@ -13,7 +13,7 @@ from ..common.route_storage import RouteStorage
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .remoting import Remoting
-from .named_url_file_repository import UrlFileRepository
+from .named_url_file_repository import FileNamedUrlRepository
 from . import code_repository
 from .code_repository import CodeRepository
 from .module_manager import ModuleManager
@@ -56,8 +56,8 @@ class Services(object):
         self.cache_repository = CacheRepository()
         self.code_repository = CodeRepository(
             self.iface_registry, self.remoting, self.cache_repository,
-            UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
-        self.bookmarks = Bookmarks(UrlFileRepository(
+            FileNamedUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+        self.bookmarks = Bookmarks(FileNamedUrlRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_transports()
         self._register_modules()

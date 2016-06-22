@@ -1,6 +1,7 @@
 # store urls with associated name in file directory, one file for item, in json, using id as file name
 
 import os.path
+import abc
 import glob
 from ..common.htypes import (
     tString,
@@ -37,7 +38,19 @@ class NamedUrl(object):
         return self.type(self.name, self.url.to_data())
 
 
-class UrlFileRepository(object):
+class NamedUrlRepository(object, metaclass=abc.ABCMeta):
+
+    # returns Item list/iterator
+    @abc.abstractmethod
+    def enumerate( self ):
+        pass
+
+    @abc.abstractmethod
+    def add( self, item ):
+        pass
+
+
+class FileNamedUrlRepository(NamedUrlRepository):
 
     fext = '.url.json'
     encoding = 'json_pretty'

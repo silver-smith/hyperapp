@@ -22,7 +22,7 @@ from .proxy_object import ProxyObject
 from .command import Command
 from .object import Object
 from .list_object import Element, Slice, ListObject
-from .named_url_file_repository import NamedUrl, UrlFileRepository
+from .named_url_file_repository import NamedUrl, NamedUrlRepository
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +35,7 @@ def register_object_implementations( registry, services ):
 class CodeRepository(object):
 
     def __init__( self, iface_registry, remoting, cache_repository, url_repository ):
-        assert isinstance(url_repository, UrlFileRepository), repr(url_repository)
+        assert isinstance(url_repository, NamedUrlRepository), repr(url_repository)
         self._iface_registry = iface_registry
         self._remoting = remoting
         self._cache_repository = cache_repository
