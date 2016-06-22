@@ -9,6 +9,10 @@ from .proxy_object import execute_get_request
 
 class ThisModule(Module):
 
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        self._transport_registry = services.transport_registry
+
     def get_commands( self ):
         return [Command('url_from_clipboard', 'Url from clipboard', 'Open url from clipboard', 'Alt+Ctrl+V')]
 
@@ -27,7 +31,7 @@ class ThisModule(Module):
     def run_command_url_from_clipboard( self ):
         url_str = QtGui.QApplication.clipboard().text()
         url = Url.from_str(iface_registry, url_str)
-        return execute_get_request(url)
+        return execute_get_request(self._transport_registry, url)
 
     def run_object_command( self, command_id, object ):
         if command_id == 'url_to_clipboard':
