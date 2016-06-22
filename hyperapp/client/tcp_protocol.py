@@ -3,7 +3,7 @@ import asyncio
 from ..common.identity import PublicKey
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
-from .transport import TransportRegistry
+from .remoting import Remoting
 from .transport_session import TransportSessionList
 
 log = logging.getLogger(__name__)
@@ -15,13 +15,13 @@ class TcpProtocol(asyncio.Protocol):
 
     @classmethod
     @asyncio.coroutine
-    def produce( cls, transport_registry, server_public_key, host, port ):
-        assert isinstance(transport_registry, TransportRegistry), repr(transport_registry)
+    def produce( cls, remoting, server_public_key, host, port ):
+        assert isinstance(remoting, Remoting), repr(remoting)
         key = (server_public_key.get_id(), host, port)
         protocol = cls._connections.get(key)
         if not protocol:
             loop = asyncio.get_event_loop()
-            constructor = lambda: cls(transport_registry, server_public_key, host, port)
+            constructor = lambda: cls(remoting, server_public_key, host, port)
             transport, protocol = yield from loop.create_connection(constructor, host, port)
             cls._connections[key] = protocol
         return protocol
@@ -30,9 +30,9 @@ class TcpProtocol(asyncio.Protocol):
     def _make_key( server_public_key, host, port ):
         return (server_public_key.get_id(), host, port)
 
-    def __init__( self, transport_registry, server_public_key, host, port ):
+    def __init__( self, remoting, server_public_key, host, port ):
         assert isinstance(server_public_key, PublicKey), repr(server_public_key)
-        self._transport_registry = transport_registry
+        self._remoting = remoting
         self._server_public_key = server_public_key
         self._host = host
         self._port = port
@@ -49,7 +49,7 @@ class TcpProtocol(asyncio.Protocol):
         while has_full_tcp_packet(self._recv_buf):
             packet_data, packet_size = decode_tcp_packet(self._recv_buf)
             transport_packet = decode_transport_packet(packet_data)
-            asyncio.async(self._transport_registry.process_packet(self, self.session_list, self._server_public_key, transport_packet))
+            asyncio.async(self._remoting.process_packet(self, self.session_list, self._server_public_key, transport_packet))
             assert packet_size <= len(self._recv_buf), repr(packet_size)
             self._recv_buf = self._recv_buf[packet_size:]
             self._log('consumed %d bytes, remained %d' % (packet_size, len(self._recv_buf)))

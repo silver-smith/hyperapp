@@ -12,7 +12,7 @@ from ..common.htypes import iface_registry
 from ..common.route_storage import RouteStorage
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
-from .transport import TransportRegistry
+from .remoting import Remoting
 from .named_url_file_repository import UrlFileRepository
 from . import code_repository
 from .code_repository import CodeRepository
@@ -48,14 +48,14 @@ class Services(object):
         self.iface_registry = iface_registry
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
-        self.transport_registry = TransportRegistry(self.route_storage, self.proxy_registry)
+        self.remoting = Remoting(self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
-        self.view_registry = ViewRegistry(self.transport_registry)
+        self.view_registry = ViewRegistry(self.remoting)
         self.module_mgr = ModuleManager(self)
         self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
         self.cache_repository = CacheRepository()
         self.code_repository = CodeRepository(
-            self.iface_registry, self.transport_registry, self.cache_repository,
+            self.iface_registry, self.remoting, self.cache_repository,
             UrlFileRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         self.bookmarks = Bookmarks(UrlFileRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
@@ -65,8 +65,8 @@ class Services(object):
         self._register_views()
 
     def _register_transports( self ):
-        tcp_transport.register_transports(self.transport_registry, self)
-        encrypted_transport.register_transports(self.transport_registry, self)
+        tcp_transport.register_transports(self.remoting.transport_registry, self)
+        encrypted_transport.register_transports(self.remoting.transport_registry, self)
 
     def _register_modules( self ):
         for module in [

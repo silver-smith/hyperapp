@@ -11,7 +11,7 @@ from ..common.htypes import (
 from ..common.endpoint import Url
 from .module import Module
 from .command import Command, ElementCommand
-from .transport import TransportRegistry
+from .remoting import Remoting
 from .list_object import Element, Slice, ListObject
 from .proxy_object import execute_get_request
 from .named_url_file_repository import NamedUrl, UrlFileRepository
@@ -19,7 +19,7 @@ from .named_url_file_repository import NamedUrl, UrlFileRepository
 
 def register_object_implementations( registry, services ):
     registry.register(BookmarkList.objimpl_id, BookmarkList.from_state,
-                      services.iface_registry, services.transport_registry, services.bookmarks)
+                      services.iface_registry, services.remoting, services.bookmarks)
 
 
 class Bookmarks(object):
@@ -54,16 +54,16 @@ class BookmarkList(ListObject):
     objimpl_id = 'bookmark_list'
 
     @classmethod
-    def from_state( cls, state, iface_registry, transport_registry, bookmarks ):
-        return cls(iface_registry, transport_registry, bookmarks)
+    def from_state( cls, state, iface_registry, remoting, bookmarks ):
+        return cls(iface_registry, remoting, bookmarks)
     
-    def __init__( self, iface_registry, transport_registry, bookmarks ):
+    def __init__( self, iface_registry, remoting, bookmarks ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
-        assert isinstance(transport_registry, TransportRegistry), repr(transport_registry)
+        assert isinstance(remoting, Remoting), repr(remoting)
         assert isinstance(bookmarks, Bookmarks), repr(bookmarks)
         ListObject.__init__(self)
         self._iface_registry = iface_registry
-        self._transport_registry = transport_registry
+        self._remoting = remoting
         self._bookmarks = bookmarks
 
     @classmethod
@@ -87,7 +87,7 @@ class BookmarkList(ListObject):
     @asyncio.coroutine
     def run_command_open( self, element_key ):
         item = self._bookmarks.get_item(element_key)
-        return (yield from execute_get_request(self._transport_registry, item.url))
+        return (yield from execute_get_request(self._remoting, item.url))
 
     @asyncio.coroutine
     def run_command_add( self ):

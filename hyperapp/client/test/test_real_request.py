@@ -14,7 +14,7 @@ from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
 from hyperapp.client import code_repository
 from hyperapp.client.module_manager import ModuleManager
-from hyperapp.client.transport import transport_registry
+from hyperapp.client.remoting import remoting
 from hyperapp.client.objimpl_registry import objimpl_registry
 from hyperapp.client.view_registry import view_registry
 from hyperapp.client.route_repository import RouteRepository, RouteStorage
@@ -52,9 +52,9 @@ class RealRequestTest(unittest.TestCase):
         self.code_repository = code_repository.get_code_repository()
         self.identity_controller = IdentityController(PhonyIdentityRepository())
         self.route_storage = RouteStorage(PhonyRouteRepository())
-        tcp_transport.register_transports(transport_registry, self.module_mgr, self.code_repository,
+        tcp_transport.register_transports(remoting, self.module_mgr, self.code_repository,
                                           self.iface_registry, objimpl_registry, view_registry, self.identity_controller)
-        encrypted_transport.register_transports(transport_registry, self.module_mgr, self.code_repository,
+        encrypted_transport.register_transports(remoting, self.module_mgr, self.code_repository,
                                                 self.iface_registry, objimpl_registry, view_registry, self.identity_controller)
         self.iface_registry.register(server_management_iface)
         self.iface_registry.register(code_repository_iface)

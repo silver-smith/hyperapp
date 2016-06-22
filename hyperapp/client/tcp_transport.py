@@ -5,7 +5,7 @@ from ..common.transport_packet import tTransportPacket
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .request import ResponseBase
-from .transport import Transport
+from .remoting import Transport
 from .tcp_protocol import TcpProtocol
 
 
@@ -29,12 +29,12 @@ class TcpTransport(Transport):
         registry.register(self.transport_id, self)
 
     @asyncio.coroutine
-    def send_request_rec( self, transport_registry, public_key, route, request_or_notification ):
+    def send_request_rec( self, remoting, public_key, route, request_or_notification ):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
         transport_packet = self._make_transport_packet(request_or_notification)
-        protocol = yield from TcpProtocol.produce(transport_registry, public_key, host, port)
+        protocol = yield from TcpProtocol.produce(remoting, public_key, host, port)
         protocol.send_packet(transport_packet)
         return True
 

@@ -63,7 +63,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     @asyncio.coroutine
     @abc.abstractmethod
-    def send_request_rec( self, transport_registry, public_key, route, request_or_notification ):
+    def send_request_rec( self, remoting, public_key, route, request_or_notification ):
         pass
 
     @asyncio.coroutine
@@ -74,13 +74,8 @@ class Transport(metaclass=abc.ABCMeta):
 
 class TransportRegistry(object):
 
-    def __init__( self, route_storage, proxy_registry ):
-        assert isinstance(route_storage, RouteStorage), repr(route_storage)
-        assert isinstance(proxy_registry, ProxyRegistry), repr(proxy_registry)
-        self._route_storage = route_storage
-        self._proxy_registry = proxy_registry
+    def __init__( self ):
         self._id2transport = {}
-        self._futures = {}  # request id -> future for response
 
     def register( self, id, transport ):
         assert isinstance(id, str), repr(id)
@@ -89,6 +84,17 @@ class TransportRegistry(object):
 
     def resolve( self, id ):
         return self._id2transport[id]
+
+
+class Remoting(object):
+
+    def __init__( self, route_storage, proxy_registry ):
+        assert isinstance(route_storage, RouteStorage), repr(route_storage)
+        assert isinstance(proxy_registry, ProxyRegistry), repr(proxy_registry)
+        self.transport_registry = TransportRegistry()
+        self._route_storage = route_storage
+        self._proxy_registry = proxy_registry
+        self._futures = {}  # request id -> future for response
 
     @asyncio.coroutine
     def execute_request( self, public_key, request ):
@@ -111,7 +117,7 @@ class TransportRegistry(object):
     def send_request_or_notification( self, public_key, request_or_notification ):
         for route in self._route_storage.get_routes(public_key):
             transport_id = route[0]
-            transport = self._id2transport.get(transport_id)
+            transport = self.transport_registry.resolve(transport_id)
             if not transport:
                 log.info('Warning: unknown transport: %r', transport_id)
                 continue
@@ -127,7 +133,7 @@ class TransportRegistry(object):
     def process_packet( self, protocol, session_list, server_public_key, packet ):
         assert isinstance(packet, tTransportPacket), repr(packet)
         log.info('received %r packet, contents %d bytes', packet.transport_id, len(packet.data))
-        transport = self.resolve(packet.transport_id)
+        transport = self.transport_registry.resolve(packet.transport_id)
         response_or_notification = yield from transport.process_packet(protocol, session_list, server_public_key, packet.data)
         if response_or_notification is None:
             return

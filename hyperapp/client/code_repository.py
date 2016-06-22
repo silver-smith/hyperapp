@@ -34,10 +34,10 @@ def register_views( registry, services ):
 
 class CodeRepository(object):
 
-    def __init__( self, iface_registry, transport_registry, cache_repository, url_repository ):
+    def __init__( self, iface_registry, remoting, cache_repository, url_repository ):
         assert isinstance(url_repository, UrlFileRepository), repr(url_repository)
         self._iface_registry = iface_registry
-        self._transport_registry = transport_registry
+        self._remoting = remoting
         self._cache_repository = cache_repository
         self._url_repository = url_repository
         self._items = list(self._url_repository.enumerate())  # NamedUrl list
@@ -57,7 +57,7 @@ class CodeRepository(object):
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
         if not self._items: return
-        proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._transport_registry, self._cache_repository, self._items[0].url)
+        proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_ids(module_ids))
 
     # todo: try all items
@@ -66,16 +66,16 @@ class CodeRepository(object):
         if not self._items:
             log.warn('No available code repository servers are found')
             return
-        proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._transport_registry, self._cache_repository, self._items[0].url)
+        proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_requirements(requirements))
 
 
 class CodeRepositoryProxy(ProxyObject):
 
     @classmethod
-    def from_url( cls, iface_registry, transport_registry, cache_repository, url ):
+    def from_url( cls, iface_registry, remoting, cache_repository, url ):
         assert isinstance(url, Url), repr(url)
-        server = Server.from_public_key(transport_registry, url.endpoint.public_key)
+        server = Server.from_public_key(remoting, url.endpoint.public_key)
         return cls(iface_registry, cache_repository, server, url.path, url.iface)
         
     def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):
