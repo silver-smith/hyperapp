@@ -49,9 +49,9 @@ class ObjectModuleCommand(RunnableCommand):
 
 class Module(object):
 
-    module_registry = []
+    module_registry = []  # todo: remove global, make separate registry
 
-    def __init__( self ):
+    def __init__( self, services ):
         self.module_registry.append(self)
 
     def get_commands( self ):

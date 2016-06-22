@@ -190,9 +190,6 @@ def make_identity_list( key=None ):
 
 class ThisModule(Module):
 
-    def __init__( self ):
-        Module.__init__(self)
-
     def get_commands( self ):
         return [
             Command('identity_list', 'Identities', 'Open identity list', 'Alt+I'),
@@ -212,6 +209,3 @@ class ThisModule(Module):
 
     def run_command_create_idenity( self ):
         return make_identity_form()
-
-
-this_module = ThisModule()

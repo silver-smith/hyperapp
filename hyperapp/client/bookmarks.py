@@ -127,9 +127,6 @@ def make_bookmark_list( key=None ):
 
 class ThisModule(Module):
 
-    def __init__( self ):
-        Module.__init__(self)
-
     def get_commands( self ):
         return [Command('bookmark_list', 'Bookmarks', 'Open bookmark list', 'Alt+B')]
 
@@ -158,6 +155,3 @@ class ThisModule(Module):
         assert url is not None
         item = self.bookmarks.add(object.get_title(), url)
         return make_bookmark_list(item.id)
-
-
-this_module = ThisModule()

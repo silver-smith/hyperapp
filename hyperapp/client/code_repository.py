@@ -200,9 +200,6 @@ def make_code_repository_list( key=None ):
 
 class ThisModule(Module):
 
-    def __init__( self ):
-        Module.__init__(self)
-
     def get_commands( self ):
         return [Command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')]
 
@@ -230,6 +227,3 @@ class ThisModule(Module):
         assert code_repository_iface in object.get_facets()
         url = object.get_url().clone(iface=code_repository_iface)
         return make_code_repository_form(url.to_str())
-
-
-this_module = ThisModule()

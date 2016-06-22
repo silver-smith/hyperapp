@@ -7,11 +7,6 @@ import hyperapp.common.interface.fs
 import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
 import hyperapp.common.interface.module_list
-# views with self-registering modules:
-import hyperapp.client.identity
-import hyperapp.client.code_repository
-import hyperapp.client.bookmarks
-import hyperapp.client.url_clipboard
 
 from ..common.htypes import iface_registry
 from ..common.route_storage import RouteStorage
@@ -19,6 +14,7 @@ from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .transport import TransportRegistry
 from .named_url_file_repository import UrlFileRepository
+from . import code_repository
 from .code_repository import CodeRepository
 from .module_manager import ModuleManager
 from .file_route_repository import FileRouteRepository
@@ -28,6 +24,7 @@ from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
 from . import bookmarks
 from .bookmarks import Bookmarks
+from . import url_clipboard
 
 from . import tcp_transport
 from . import encrypted_transport
@@ -63,12 +60,22 @@ class Services(object):
         self.bookmarks = Bookmarks(UrlFileRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_transports()
+        self._register_modules()
         self._register_object_implementations()
         self._register_views()
 
     def _register_transports( self ):
         tcp_transport.register_transports(self.transport_registry, self)
         encrypted_transport.register_transports(self.transport_registry, self)
+
+    def _register_modules( self ):
+        for module in [
+            identity,
+            code_repository,
+            bookmarks,
+            url_clipboard,
+            ]:
+            module.ThisModule(self)  # will auto-register itself
 
     def _register_object_implementations( self ):
         for module in [

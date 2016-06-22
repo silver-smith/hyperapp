@@ -38,6 +38,3 @@ class ThisModule(Module):
         url = object.get_url()
         assert url is not None
         QtGui.QApplication.clipboard().setText(url.to_str())
-
-
-this_module = ThisModule()
