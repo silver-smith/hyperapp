@@ -83,7 +83,7 @@ class EncryptedTransport(Transport):
         packet_data = decrypt_subsequent_packet(session.session_key, encrypted_packet)
         packet = packet_coders.decode(ENCODING, packet_data, tPacket)
         pprint(tPacket, packet)
-        yield from self.resolve_requirements(packet.aux_info.requirements)
+        yield from self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(ENCODING, packet.payload, tServerPacket)
         pprint(tServerPacket, response_or_notification_rec)
         return ResponseBase.from_data(server_public_key, self._iface_registry, response_or_notification_rec)

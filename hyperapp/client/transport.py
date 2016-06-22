@@ -1,7 +1,8 @@
 import logging
 import asyncio
 import abc
-from ..common.util import is_list_inst
+from ..common.util import is_list_inst, encode_route
+from ..common.packet import tAuxInfo
 from ..common.identity import PublicKey
 from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
@@ -20,6 +21,7 @@ class Transport(metaclass=abc.ABCMeta):
     def __init__( self, services ):
         self._module_mgr = services.module_mgr
         self._iface_registry = services.iface_registry
+        self._route_storage = services.route_storage
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
         self._code_repository = services.code_repository
@@ -29,7 +31,13 @@ class Transport(metaclass=abc.ABCMeta):
         assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)
 
     @asyncio.coroutine
-    def resolve_requirements( self, requirements ):
+    def process_aux_info( self, aux_info ):
+        assert isinstance(aux_info, tAuxInfo), repr(aux_info)
+        yield from self._resolve_requirements(aux_info.requirements)
+        self._add_routes(aux_info.routes)
+        
+    @asyncio.coroutine
+    def _resolve_requirements( self, requirements ):
         assert is_list_inst(requirements, tRequirement), repr(requirements)
         unfulfilled_requirements = list(filter(self._is_unfulfilled_requirement, requirements))
         if not unfulfilled_requirements: return
@@ -45,6 +53,13 @@ class Transport(metaclass=abc.ABCMeta):
         if registry == 'interface':
             return not self._iface_registry.is_registered(key)
         assert False, repr(registry)  # Unknown registry
+
+    def _add_routes( self, routes ):
+        for srv_routes in routes:
+            public_key = PublicKey.from_der(srv_routes.public_key_der)
+            log.info('received routes for %s: %s',
+                     public_key.get_short_id_hex(), ', '.join(encode_route(route) for route in srv_routes.routes))
+            self._route_storage.add_routes(public_key, srv_routes.routes)
 
     @asyncio.coroutine
     @abc.abstractmethod

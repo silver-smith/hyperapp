@@ -1,6 +1,6 @@
-from ..common.htypes import tClientPacket, tServerPacket
+from ..common.htypes import tRoutes, tClientPacket, tServerPacket
 from ..common.identity import PublicKey
-from ..common.packet import tServerRoute, tAuxInfo, tPacket
+from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
@@ -44,7 +44,7 @@ class Transport(object):
         modules = code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
         server_pks = ServerPksCollector().collect_public_key_ders(tServerPacket, response_or_notification.to_data())
-        routes = [tServerRoute(pk, load_server_routes(PublicKey.from_der(pk))) for pk in server_pks]
+        routes = [tRoutes(pk, load_server_routes(PublicKey.from_der(pk))) for pk in server_pks]
         return tAuxInfo(
             requirements=requirements,
             modules=modules,

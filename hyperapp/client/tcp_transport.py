@@ -49,7 +49,7 @@ class TcpTransport(Transport):
     def process_packet( self, protocol, session_list, server_public_key, data ):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         pprint(tPacket, packet)
-        yield from self.resolve_requirements(packet.aux_info.requirements)
+        yield from self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(self.encoding, packet.payload, tServerPacket)
         pprint(tServerPacket, response_or_notification_rec)
         return ResponseBase.from_data(server_public_key, iface_registry, response_or_notification_rec)
