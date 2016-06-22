@@ -4,12 +4,13 @@ import asyncio
 import pickle as pickle
 from PySide import QtCore, QtGui
 from ..common.htypes import TList
-from ..common.url import tUrlWithRoutes
+from ..common.url import UrlWithRoutes
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
 from ..common.packet_coders import packet_coders
 from .server import Server
 from .view_command import command
+from .proxy_object import execute_get_request
 from . import text_object
 from . import view
 from . import window
@@ -70,14 +71,17 @@ class Application(QtGui.QApplication, view.View):
         self._loop.stop()
 
     @command('Open server', 'Load server url from file', 'Alt+O')
+    @asyncio.coroutine
     def open_server( self ):
         window = self._windows[0]  # usually first window is the current one
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load url', os.getcwd(), 'Server url with routes (*.url)')
-        url_with_routes = UrlWithRoutes.load_from_file(self.services.iface_registry, fpath)
-        server = Server.from_public_key(self.services.remoting, url_with_routes.public_key)
-        url = server.make_url(self.services.iface_registry.resolve('server_management'), ['management'])
-        GetRequest(url, window.get_current_view()).execute()
+        url = UrlWithRoutes.load_from_file(self.services.iface_registry, fpath)
+        self.services.remoting.add_routes(url.public_key, url.routes)
+        server = Server.from_public_key(self.services.remoting, url.public_key)
+        handle = yield from execute_get_request(self.services.remoting, url)
+        assert handle  # url's get command must return a handle
+        window.get_current_view().open(handle)
 
     @command('Quit', 'Quit application', 'Alt+Q')
     def quit( self ):
