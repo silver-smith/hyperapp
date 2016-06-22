@@ -17,7 +17,7 @@ import hyperapp.client.url_clipboard
 
 from ..common.htypes import iface_registry
 from ..common.route_storage import RouteStorage
-from .objimpl_registry import objimpl_registry
+from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .transport import TransportRegistry
 from .named_url_file_repository import UrlFileRepository
@@ -53,7 +53,7 @@ class Services(object):
         self.iface_registry = iface_registry
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.transport_registry = TransportRegistry(self.route_storage)
-        self.objimpl_registry = objimpl_registry
+        self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.transport_registry)
         self.module_mgr = ModuleManager(self)
         self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))

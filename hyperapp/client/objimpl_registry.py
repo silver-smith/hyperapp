@@ -12,6 +12,3 @@ class ObjImplRegistry(Registry):
         rec = self._resolve(state.objimpl_id)
         log.info('producing object %r using %s(%s, %s)', state.objimpl_id, rec.factory, rec.args, rec.kw)
         return rec.factory(state, *rec.args, **rec.kw)
-
-
-objimpl_registry = ObjImplRegistry()
