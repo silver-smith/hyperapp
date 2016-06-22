@@ -9,7 +9,7 @@ from ..common.htypes import (
     tUrl,
     IfaceRegistry,
     )
-from ..common.endpoint import Url
+from ..common.url import Url
 from ..common.packet_coders import packet_coders
 
 

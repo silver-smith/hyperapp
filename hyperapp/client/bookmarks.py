@@ -8,7 +8,7 @@ from ..common.htypes import (
     Column,
     list_handle_type,
     )
-from ..common.endpoint import Url
+from ..common.url import Url
 from .module import Module
 from .command import Command, ElementCommand
 from .remoting import Remoting

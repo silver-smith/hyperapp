@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from ..common.htypes import tHandle, tRedirectHandle, iface_registry
-from ..common.endpoint import Url
+from ..common.url import Url
 from .registry import Registry
 from .view import View
 from .proxy_object import execute_get_request

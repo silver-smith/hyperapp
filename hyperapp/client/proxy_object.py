@@ -20,7 +20,7 @@ from ..common.htypes import (
     resolve_iface,
     )
 from ..common.identity import PublicKey
-from ..common.endpoint import Url
+from ..common.url import Url
 from .object import Object
 from .command import Command
 from .request import ClientNotification, Request

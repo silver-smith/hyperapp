@@ -9,7 +9,7 @@ from ..common.interface.article import (
     object_selector_iface,
     )
 from ..common.identity import PublicKey
-from ..common.endpoint import Url
+from ..common.url import Url
 from .util import path_part_to_str
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand

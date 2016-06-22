@@ -1,4 +1,4 @@
-# store known server's endpoints to database
+# store known server's routes to database
 
 import logging
 from pony.orm import db_session, Required, select

@@ -11,7 +11,7 @@ class RouteRepository(object, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def add( self, endpoint ):
+    def add( self, routes ):
         pass
 
     def get( self, public_key ):

@@ -1,7 +1,7 @@
 import asyncio
 from PySide import QtCore, QtGui
 from ..common.htypes import iface_registry
-from ..common.endpoint import UrlWithRoutes
+from ..common.url import UrlWithRoutes
 from .command import Command
 from .module import Module
 from .proxy_object import execute_get_request

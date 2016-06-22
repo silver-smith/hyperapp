@@ -25,7 +25,6 @@ import hyperapp.server.code_repository
 
 
 DEFAULT_ADDR = 'localhost:8888'
-ENDPOINT_FNAME = 'server.endpoint'
 
 
 def parse_addr( addr ):

@@ -3,7 +3,7 @@ import logging
 from ..common.util import encode_path
 from ..common.htypes import tServerPacket
 from ..common.identity import Identity
-from ..common.endpoint import Url
+from ..common.url import Url
 from ..common.object_path_collector import ObjectPathCollector
 from .request import RequestBase, Request, ServerNotification, Response
 from .object import subscription

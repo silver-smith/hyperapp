@@ -2,7 +2,7 @@
 
 from ..common.htypes import tCommand
 from ..common.interface.server_management import server_management_iface
-from ..common.endpoint import Url
+from ..common.url import Url
 from .object import SmallListObject
 from .module import Module
 

@@ -4,7 +4,7 @@ import abc
 from ..common.util import is_list_inst, encode_route
 from ..common.packet import tAuxInfo
 from ..common.identity import PublicKey
-from ..common.endpoint import Url
+from ..common.url import Url
 from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
 from ..common.route_storage import RouteStorage
@@ -135,7 +135,7 @@ class Remoting(object):
                 # todo: catch specific exceptions; try next route
                 raise
         raise RuntimeError('Unable to send packet to %s - no reachable transports'
-                           % endpoint.public_key.get_short_id_hex())
+                           % public_key.get_short_id_hex())
 
     @asyncio.coroutine
     def process_packet( self, protocol, session_list, server_public_key, packet ):

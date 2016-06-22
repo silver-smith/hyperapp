@@ -14,7 +14,7 @@ from ..common.htypes import (
     )
 from ..common.interface.code_repository import code_repository_iface, code_repository_browser_iface
 from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
-from ..common.endpoint import Url
+from ..common.url import Url
 from .module import Module
 from .request import Request
 from .server import Server

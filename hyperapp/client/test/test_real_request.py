@@ -8,7 +8,7 @@ from hyperapp.common.htypes import (
     tRequest,
     IfaceRegistry,
     )
-from hyperapp.common.endpoint import Url
+from hyperapp.common.url import Url
 from hyperapp.common.visual_rep import pprint
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
@@ -40,7 +40,7 @@ class PhonyRouteRepository(RouteRepository):
     def enumerate( self ):
         return []
 
-    def add( self, endpoint ):
+    def add( self, routes ):
         pass
 
 

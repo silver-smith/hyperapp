@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from ..common.identity import PublicKey
-from ..common.endpoint import Url
+from ..common.url import Url
 from ..common.visual_rep import pprint
 from .request import ClientNotification, Request
 from .remoting import Remoting

@@ -3,9 +3,8 @@ import logging
 import asyncio
 import pickle as pickle
 from PySide import QtCore, QtGui
-from ..common.endpoint import tUrlWithRoutes
 from ..common.htypes import TList
-from ..common.endpoint import UrlWithRoutes
+from ..common.url import tUrlWithRoutes
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
 from ..common.packet_coders import packet_coders
@@ -70,7 +69,7 @@ class Application(QtGui.QApplication, view.View):
     def stop_loop( self ):
         self._loop.stop()
 
-    @command('Open server', 'Load server endpoint from file', 'Alt+O')
+    @command('Open server', 'Load server url from file', 'Alt+O')
     def open_server( self ):
         window = self._windows[0]  # usually first window is the current one
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
