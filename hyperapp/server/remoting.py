@@ -64,13 +64,19 @@ class TransportRegistry(object):
     def resolve( self, id ):
         return self._id2transport[id]
 
+
+class Remoting(object):
+
+    def __init__( self ):
+        self.transport_registry = TransportRegistry()
+
     def process_packet( self, iface_registry, server, session_list, request_packet ):
         assert isinstance(session_list, TransportSessionList), repr(session_list)
         assert isinstance(request_packet, tTransportPacket), repr(request_packet)
-        transport = self.resolve(request_packet.transport_id)
+        transport = self.transport_registry.resolve(request_packet.transport_id)
         responses = transport.process_packet(iface_registry, server, session_list, request_packet.data)
         return [tTransportPacket(request_packet.transport_id, response_data)
                 for response_data in responses]
 
 
-transport_registry = TransportRegistry()
+remoting = Remoting()

@@ -6,7 +6,7 @@ from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from .request import PeerChannel, Peer, ServerNotification
-from .transport import Transport, transport_registry
+from .remoting import Transport, remoting
 from .transport_session import TransportSession
 from .server import Server
 
@@ -78,5 +78,5 @@ class TcpTransport(Transport):
         return [packet_data]
 
 
-TcpTransport('cdr').register(transport_registry)
-TcpTransport('json').register(transport_registry)
+TcpTransport('cdr').register(remoting.transport_registry)
+TcpTransport('json').register(remoting.transport_registry)

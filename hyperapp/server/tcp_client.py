@@ -6,7 +6,7 @@ import select
 from ..common.htypes import iface_registry
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
-from .transport import transport_registry
+from .remoting import remoting
 from .transport_session import TransportSessionList
 
 log = logging.getLogger(__name__)
@@ -93,7 +93,7 @@ class TcpClient(object):
     def _process_packet( self, request_data ):
         request_packet = decode_transport_packet(request_data)
         log.info('%r packet from %s:%d:', request_packet.transport_id, self.addr[0], self.addr[1])
-        response_packets = transport_registry.process_packet(iface_registry, self.server, self.session_list, request_packet)
+        response_packets = remoting.process_packet(iface_registry, self.server, self.session_list, request_packet)
         if not response_packets:
             log.info('no response')
         for response_packet in response_packets:

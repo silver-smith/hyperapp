@@ -20,7 +20,7 @@ from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from ..common.identity import PublicKey
 from .request import NotAuthorizedError, PeerChannel, Peer, RequestBase, ServerNotification
-from .transport import Transport, transport_registry
+from .remoting import Transport, remoting
 from .transport_session import TransportSession
 from .server import Server
 
@@ -178,4 +178,4 @@ class EncryptedTcpTransport(Transport):
             challenge=challenge)
 
 
-EncryptedTcpTransport(iface_registry).register(transport_registry)
+EncryptedTcpTransport(iface_registry).register(remoting.transport_registry)
