@@ -4,7 +4,7 @@ import abc
 from ..common.util import is_list_inst, encode_route
 from ..common.packet import tAuxInfo
 from ..common.identity import PublicKey
-from ..common.url import Url
+from ..common.url import UrlWithRoutes
 from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
 from ..common.route_storage import RouteStorage
@@ -99,6 +99,10 @@ class Remoting(object):
 
     def add_routes( self, public_key, routes ):
         self._route_storage.add_routes(public_key, routes)
+
+    def add_routes_from_url( self, url ):
+        assert isinstance(url, UrlWithRoutes), repr(url)
+        self.add_routes(url.public_key, url.routes)
 
     def add_routes_to_url( self, url ):
         assert isinstance(url, tUrl), repr(url)

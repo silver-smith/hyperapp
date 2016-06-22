@@ -77,7 +77,7 @@ class Application(QtGui.QApplication, view.View):
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load url', os.getcwd(), 'Server url with routes (*.url)')
         url = UrlWithRoutes.load_from_file(self.services.iface_registry, fpath)
-        self.services.remoting.add_routes(url.public_key, url.routes)
+        self.services.remoting.add_routes_from_url(url)
         server = Server.from_public_key(self.services.remoting, url.public_key)
         handle = yield from execute_get_request(self.services.remoting, url)
         assert handle  # url's get command must return a handle
