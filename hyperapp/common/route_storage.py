@@ -31,6 +31,7 @@ class RouteStorage(object):
     def add_routes( self, public_key, routes ):
         assert isinstance(public_key, PublicKey), repr(public_key)
         assert is_list_list_inst(routes, str), repr(routes)
+        if not routes: return  # do not overwrite existing routes with empty
         self._server_id2routes[public_key.get_id()] = routes
         self._repository.add(public_key, routes)
 
