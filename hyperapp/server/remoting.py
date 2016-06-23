@@ -1,3 +1,5 @@
+import logging
+from ..common.util import encode_route
 from ..common.htypes import tServerRoutes, tClientPacket, tServerPacket
 from ..common.identity import PublicKey
 from ..common.packet import tAuxInfo, tPacket
@@ -9,6 +11,8 @@ from ..common.server_public_key_collector import ServerPksCollector
 from .request import RequestBase
 from .transport_session import TransportSessionList
 from .code_repository import code_repository
+
+log = logging.getLogger(__name__)
 
 
 class Transport(object):
@@ -33,7 +37,10 @@ class Transport(object):
 
     def _add_routes( self, routes ):
         for srv_routes in routes:
-            pass
+            public_key = PublicKey.from_der(srv_routes.public_key_der)
+            log.info('received routes for %s: %s',
+                     public_key.get_short_id_hex(), ', '.join(encode_route(route) for route in srv_routes.routes))
+            self._route_storage.add_routes(public_key, srv_routes.routes)
 
     def make_notification_packet( self, payload_encoding, notification ):
         aux_info = self.prepare_aux_info(notification)
