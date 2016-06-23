@@ -19,6 +19,7 @@ from .htypes import (
     tPath,
     tCommand,
     tServerRoutes,
+    tUrl,
     )
 from .identity import PublicKey
 from .interface.code_repository import tModule, tRequirement
@@ -79,10 +80,10 @@ class VisualRepEncoder(object):
             public_key = PublicKey.from_der(value.public_key_der)
             return RepNode('server routes: %s -> %r'
                            % (public_key.get_short_id_hex(), [encode_route(route) for route in value.routes]))
-        ## if t is tEndpoint:
-        ##     endpoint = Endpoint.from_data(value)
-        ##     return RepNode('endpoint: %s -> %r'
-        ##                    % (endpoint.public_key.get_short_id_hex(), [encode_route(route) for route in endpoint.routes]))
+        if t is tUrl:
+            public_key = PublicKey.from_der(value.public_key_der)
+            return RepNode('iface=%s public_key=%s, path=%s'
+                           % (value.iface, public_key.get_short_id_hex(), encode_path(value.path)))
         if children:
             return RepNode('record', children)
         else:
