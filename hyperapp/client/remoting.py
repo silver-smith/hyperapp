@@ -127,7 +127,7 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification( self, public_key, request_or_notification ):
-        for route in self._route_storage.get_routes(public_key):
+        for route in self._route_storage.get_routes(public_key) or []:
             transport_id = route[0]
             transport = self.transport_registry.resolve(transport_id)
             if not transport:
