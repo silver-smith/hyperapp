@@ -56,9 +56,7 @@ class EncryptedTransport(Transport):
         return session
     
     def _make_payload_packet( self, session, server_public_key, request_or_notification ):
-        aux_info = tAuxInfo(requirements=[], modules=[], routes=[])
-        payload = packet_coders.encode(ENCODING, request_or_notification.to_data(), tClientPacket)
-        packet = tPacket(aux_info, payload)
+        packet = self.make_request_packet(ENCODING, request_or_notification)
         packet_data = packet_coders.encode(ENCODING, packet, tPacket)
         encrypted_packet = encrypt_initial_packet(session.session_key, server_public_key, packet_data)
         return self._make_transport_packet(encrypted_packet)

@@ -39,9 +39,7 @@ class TcpTransport(Transport):
         return True
 
     def _make_transport_packet( self, request_or_notification ):
-        aux_info = tAuxInfo(requirements=[], modules=[])  # not used in packets from client
-        payload = packet_coders.encode(self.encoding, request_or_notification.to_data(), tClientPacket)
-        packet = tPacket(aux_info, payload)
+        packet = self.make_request_packet(self.encoding, request_or_notification)
         packet_data = packet_coders.encode(self.encoding, packet, tPacket)
         return tTransportPacket(self.transport_id, packet_data)
 

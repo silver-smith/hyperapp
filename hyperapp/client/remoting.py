@@ -2,7 +2,10 @@ import logging
 import asyncio
 import abc
 from ..common.util import is_list_inst, encode_route
-from ..common.packet import tAuxInfo
+from ..common.htypes import tServerRoutes, tClientPacket
+from ..common.packet import tAuxInfo, tPacket
+from ..common.packet_coders import packet_coders
+from ..common.server_public_key_collector import ServerPksCollector
 from ..common.identity import PublicKey
 from ..common.url import UrlWithRoutes
 from ..common.transport_packet import tTransportPacket
@@ -61,6 +64,13 @@ class Transport(metaclass=abc.ABCMeta):
             log.info('received routes for %s: %s',
                      public_key.get_short_id_hex(), ', '.join(encode_route(route) for route in srv_routes.routes))
             self._route_storage.add_routes(public_key, srv_routes.routes)
+
+    def make_request_packet( self, encoding, request_or_notification ):
+        server_pks = ServerPksCollector().collect_public_key_ders(tClientPacket, request_or_notification.to_data())
+        routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
+        aux_info = tAuxInfo(requirements=[], modules=[], routes=routes)
+        payload = packet_coders.encode(encoding, request_or_notification.to_data(), tClientPacket)
+        return tPacket(aux_info, payload)
 
     @asyncio.coroutine
     @abc.abstractmethod
