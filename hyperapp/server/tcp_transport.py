@@ -6,11 +6,16 @@ from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from .request import PeerChannel, Peer, ServerNotification
-from .remoting import Transport, remoting
+from .remoting import Transport
 from .transport_session import TransportSession
 from .server import Server
 
 log = logging.getLogger(__name__)
+
+
+def register_transports( registry, services ):
+    TcpTransport('cdr', services).register(registry)
+    TcpTransport('json', services).register(registry)
 
 
 class TcpChannel(PeerChannel):
@@ -56,7 +61,8 @@ class TcpSession(TransportSession):
 
 class TcpTransport(Transport):
 
-    def __init__( self, encoding ):
+    def __init__( self, encoding, services ):
+        Transport.__init__(self, services)
         self.encoding = encoding
 
     def get_transport_id( self ):
@@ -76,7 +82,3 @@ class TcpTransport(Transport):
             return []
         packet_data = packet_coders.encode(self.encoding, response_packet, tPacket)
         return [packet_data]
-
-
-TcpTransport('cdr').register(remoting.transport_registry)
-TcpTransport('json').register(remoting.transport_registry)

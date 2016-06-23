@@ -24,9 +24,9 @@ from hyperapp.client.view_registry import ViewRegistry
 from hyperapp.client.identity import IdentityRepository, IdentityController
 from hyperapp.common.interface.server_management import server_management_iface
 from hyperapp.common.interface.code_repository import code_repository_iface
-
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
+from hyperapp.common.test.util import PhonyRouteRepository
 
 
 class PhonyNamedUrlRepository(NamedUrlRepository):
@@ -46,14 +46,6 @@ class PhonyIdentityRepository(IdentityRepository):
     def enumerate( self ):
         return []
 
-
-class PhonyRouteRepository(RouteRepository):
-
-    def enumerate( self ):
-        return []
-
-    def add( self, public_key, routes ):
-        pass
 
 
 class Services(object):

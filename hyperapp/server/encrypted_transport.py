@@ -20,11 +20,15 @@ from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from ..common.identity import PublicKey
 from .request import NotAuthorizedError, PeerChannel, Peer, RequestBase, ServerNotification
-from .remoting import Transport, remoting
+from .remoting import Transport
 from .transport_session import TransportSession
 from .server import Server
 
 log = logging.getLogger(__name__)
+
+
+def register_transports( registry, services ):
+    EncryptedTcpTransport(services).register(registry)
 
 
 class EncryptedTcpChannel(PeerChannel):
@@ -78,8 +82,9 @@ class EncryptedTcpSession(TransportSession):
 
 class EncryptedTcpTransport(Transport):
 
-    def __init__( self, iface_registry ):
-        self._iface_registry = iface_registry
+    def __init__( self, services ):
+        Transport.__init__(self, services)
+        self._iface_registry = services.iface_registry
 
     def get_transport_id( self ):
         return 'encrypted_tcp'
@@ -176,6 +181,3 @@ class EncryptedTcpTransport(Transport):
         session.pop_challenge = challenge
         return tPopChallengePacket(
             challenge=challenge)
-
-
-EncryptedTcpTransport(iface_registry).register(remoting.transport_registry)

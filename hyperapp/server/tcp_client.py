@@ -6,7 +6,7 @@ import select
 from ..common.htypes import iface_registry
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
-from .remoting import remoting
+from .remoting import Remoting
 from .transport_session import TransportSessionList
 
 log = logging.getLogger(__name__)
@@ -58,27 +58,32 @@ class TcpConnection(object):
 
 class TcpClient(object):
 
-    def __init__( self, server, tcp_server, socket, addr, on_close ):
-        self.server = server
-        self.tcp_server = tcp_server
-        self.conn = TcpConnection(socket)
-        self.addr = addr
-        self.on_close = on_close
-        self.stop_flag = False
-        self.session_list = TransportSessionList()
+    def __init__( self, remoting, server, tcp_server, socket, addr, on_close ):
+        assert isinstance(remoting, Remoting), repr(remoting)
+        self._remoting = remoting
+        self._server = server
+        #self.tcp_server = tcp_server
+        self._connection = TcpConnection(socket)
+        self._addr = addr
+        self._on_close = on_close
+        self._stop_flag = False
+        self._session_list = TransportSessionList()
+
+    def get_addr( self ):
+        return self._addr
 
     def send_update( self, update ):
         self.updates_queue.put(update)
 
     def stop( self ):
-        self.stop_flag = True
+        self._stop_flag = True
 
     def serve( self ):
         try:
-            while not self.stop_flag:
-                packet_data = self.conn.receive(NOTIFICATION_DELAY_TIME)
+            while not self._stop_flag:
+                packet_data = self._connection.receive(NOTIFICATION_DELAY_TIME)
                 if not packet_data:  # receive timed out
-                    for transport_packet in self.session_list.pull_notification_transport_packets():
+                    for transport_packet in self._session_list.pull_notification_transport_packets():
                         log.info('sending %r notification:', transport_packet.transport_id)
                         self._send_notification(transport_packet)
                     continue
@@ -87,21 +92,21 @@ class TcpClient(object):
             log.info('Error: %r', x)
         except:
             traceback.print_exc()
-        self.conn.close()
-        self.on_close(self)
+        self._connection.close()
+        self._on_close(self)
 
     def _process_packet( self, request_data ):
         request_packet = decode_transport_packet(request_data)
-        log.info('%r packet from %s:%d:', request_packet.transport_id, self.addr[0], self.addr[1])
-        response_packets = remoting.process_packet(iface_registry, self.server, self.session_list, request_packet)
+        log.info('%r packet from %s:%d:', request_packet.transport_id, self._addr[0], self._addr[1])
+        response_packets = self._remoting.process_packet(iface_registry, self._server, self._session_list, request_packet)
         if not response_packets:
             log.info('no response')
         for response_packet in response_packets:
-            log.info('response: %d bytes to %s:%d', len(response_packet.data), self.addr[0], self.addr[1])
+            log.info('response: %d bytes to %s:%d', len(response_packet.data), self._addr[0], self._addr[1])
             response_data = encode_transport_packet(response_packet)
-            self.conn.send(response_data)
+            self._connection.send(response_data)
 
     def _send_notification( self, transport_packet ):
-        log.info('%d bytes to %s:%d', len(transport_packet.data), self.addr[0], self.addr[1])
+        log.info('%d bytes to %s:%d', len(transport_packet.data), self._addr[0], self._addr[1])
         data = encode_transport_packet(transport_packet)
-        self.conn.send(data)
+        self._connection.send(data)

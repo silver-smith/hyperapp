@@ -12,9 +12,9 @@ from hyperapp.common.htypes import (
     tServerPacket,
     tRequest,
     tClientNotification,
+    IfaceRegistry,
 #    register_iface,
     )
-from hyperapp.common.htypes import IfaceRegistry
 from hyperapp.common.transport_packet import tTransportPacket
 from hyperapp.common.identity import Identity, PublicKey
 from hyperapp.common.encrypted_packet import (
@@ -30,14 +30,18 @@ from hyperapp.common.encrypted_packet import (
 from hyperapp.common.packet import tAuxInfo, tPacket
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
+from hyperapp.common.route_storage import RouteStorage
+from hyperapp.server.module import Module
+from hyperapp.server import route_storage
 from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
 from hyperapp.server.remoting import Remoting
-from hyperapp.server.tcp_transport import TcpTransport
-from hyperapp.server.encrypted_transport import EncryptedTcpTransport
+from hyperapp.server import tcp_transport
+from hyperapp.server import encrypted_transport
 import hyperapp.server.module as module_mod
 from hyperapp.server.object import Object, subscription
 from hyperapp.server.server import Server
 from hyperapp.server.transport_session import TransportSession, TransportSessionList
+from hyperapp.common.test.util import PhonyRouteRepository
 
 log = logging.getLogger(__name__)
 
@@ -121,18 +125,29 @@ class TestSession(TransportSession):
         return []
 
 
+class Services(object):
+
+    def __init__( self ):
+        self.iface_registry = IfaceRegistry()
+        self.route_storage = RouteStorage(PhonyRouteRepository())
+        self.remoting = Remoting(self.iface_registry)
+        self._register_transports()
+        
+    def _register_transports( self ):
+        for module in [tcp_transport, encrypted_transport]:
+            module.register_transports(self.remoting.transport_registry, self)
+
+
 server_identity = Identity.generate(fast=True)
 
 
 class ServerTest(unittest.TestCase):
 
     def setUp( self ):
-        self.iface_registry = IfaceRegistry()
+        self.services = Services()
+        self.iface_registry = self.services.iface_registry
         self.iface_registry.register(test_iface)
-        self.remoting = Remoting()
-        TcpTransport('cdr').register(self.remoting.transport_registry)
-        TcpTransport('json').register(self.remoting.transport_registry)
-        EncryptedTcpTransport(self.iface_registry).register(self.remoting.transport_registry)
+        self.remoting = self.services.remoting
         self.test_module = TestModule()  # self-registering
         self.server = Server(server_identity)
         self.session_list = TransportSessionList()

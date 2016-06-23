@@ -13,18 +13,11 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'server_info'
 
 
-def store_server_routes( public_key, routes ):
-    return this_module.route_storage.add_routes(public_key, routes)
-
-# returns route list
-def load_server_routes( public_key ):
-    return this_module.route_storage.get_routes(public_key)
-
-
 class DbRouteRepository(RouteRepository):
 
-    def __init__( self, ServerRoute ):
-        self.ServerRoute = ServerRoute
+    def __init__( self, this_module ):
+        assert isinstance(this_module, ThisModule), repr(this_module)
+        self.ServerRoute = this_module.ServerRoute
 
     def enumerate( self ):
         return []
@@ -54,7 +47,7 @@ class DbRouteRepository(RouteRepository):
         return routes
 
 
-class ServerInfoModule(PonyOrmModule):
+class ThisModule(PonyOrmModule):
 
     def __init__( self ):
         PonyOrmModule.__init__(self, MODULE_NAME)
@@ -65,7 +58,3 @@ class ServerInfoModule(PonyOrmModule):
             public_key_pem=Required(str),
             route=Required(str),
             )
-        self.route_storage = RouteStorage(DbRouteRepository(self.ServerRoute))
-
-
-this_module = ServerInfoModule()
