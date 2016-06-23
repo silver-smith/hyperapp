@@ -25,7 +25,7 @@ def register_object_implementations( registry, services ):
 class Bookmarks(object):
 
     def __init__( self, repository ):
-        assert isinstance(repository, NamedUrlepository), repr(repository)
+        assert isinstance(repository, NamedUrlRepository), repr(repository)
         self._repository = repository
         self._items = list(self._repository.enumerate())  # NamedUrl list
         self._id2item = dict((item.id, item) for item in self._items)
