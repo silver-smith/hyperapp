@@ -57,18 +57,18 @@ class BoundViewCommand(WindowCommand):
         new_shortcuts = set(self.get_shortcut_list()) - shortcut_set
         return BoundViewCommand(self.text, self.desc, list(new_shortcuts), self.enabled, self.class_method, self.inst_wr)
 
-    def setEnabled( self, enabled ):
-        if enabled != self.enabled:
-            self.enabled = enabled
-            inst = self.inst_wr()
-            if inst:
-                inst.view_changed()
+    def set_enabled( self, enabled ):
+        if enabled == self.enabled: return
+        self.enabled = enabled
+        inst = self.inst_wr()
+        if inst:
+            inst.view_changed()
 
     def enable( self ):
-        self.setEnabled(True)
+        self.set_enabled(True)
 
     def disable( self ):
-        self.setEnabled(False)
+        self.set_enabled(False)
 
 
 class UnboundViewCommand(object):
@@ -81,11 +81,7 @@ class UnboundViewCommand(object):
         self.class_method = class_method
 
     def bind( self, inst ):
-        bound_cmd = BoundViewCommand(self.text, self.desc, self.shortcut, self.enabled, self.class_method, weakref.ref(inst))
-        self.setEnabled = bound_cmd.setEnabled
-        self.enable = bound_cmd.enable
-        self.disable = bound_cmd.disable
-        return bound_cmd
+        return BoundViewCommand(self.text, self.desc, self.shortcut, self.enabled, self.class_method, weakref.ref(inst))
 
 
 # decorator for view methods

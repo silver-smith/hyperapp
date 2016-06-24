@@ -9,7 +9,7 @@ from .qt_keys import print_key_event
 from .util import DEBUG_FOCUS, make_action, focused_index
 from .module import Module
 from .object import ObjectObserver
-from .view_command import BoundViewCommand, UnboundViewCommand
+from .view_command import UnboundViewCommand
 
 log = logging.getLogger(__name__)
 
@@ -27,8 +27,10 @@ class View(ObjectObserver):
     def _init_commands( self ):
         for name in dir(self):
             attr = getattr(self, name)
-            if isinstance(attr, UnboundViewCommand):
-                self._commands.append(attr.bind(self))
+            if not isinstance(attr, UnboundViewCommand): continue
+            bound_cmd = attr.bind(self)
+            setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
+            self._commands.append(bound_cmd)
 
     def set_parent( self, parent ):
         self._parent = weakref.ref(parent)

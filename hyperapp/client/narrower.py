@@ -118,7 +118,7 @@ class View(LineListPanel):
         list_view_view = list_view.View(self, None, object, key, sort_column_id, first_visible_row, select_first)
         LineListPanel.__init__(self, parent, line_edit_view, list_view_view)
         self._line_edit.textEdited.connect(self._on_text_edited)
-        self.cancel_narrowing.setEnabled(bool(prefix))
+        self.cancel_narrowing.set_enabled(bool(prefix))
 
     def get_state( self ):
         return self._data_type(
@@ -148,7 +148,7 @@ class View(LineListPanel):
         object = self._make_filtered_obj(text)
         self._list_view.set_object(object)
         self._list_view.set_current_key(key, select_first=True)
-        self.cancel_narrowing.setEnabled(text != '')
+        self.cancel_narrowing.set_enabled(text != '')
 
     def _on_text_edited( self, text ):
         self._update_prefix(text)
