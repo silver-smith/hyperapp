@@ -9,28 +9,19 @@ from .qt_keys import print_key_event
 from .util import DEBUG_FOCUS, make_action, focused_index
 from .module import Module
 from .object import ObjectObserver
-from .view_command import UnboundViewCommand
+from .command import ViewCommand, Commandable
 
 log = logging.getLogger(__name__)
 
 
-class View(ObjectObserver):
+class View(ObjectObserver, Commandable):
 
     CmdPanelHandleCls = None  # registered by cmd_view
 
     def __init__( self, parent=None ):
         ObjectObserver.__init__(self)
+        Commandable.__init__(self)
         self._parent = weakref.ref(parent) if parent is not None else None
-        self._commands = []  # BoundViewCommand list
-        self._init_commands()
-
-    def _init_commands( self ):
-        for name in dir(self):
-            attr = getattr(self, name)
-            if not isinstance(attr, UnboundViewCommand): continue
-            bound_cmd = attr.bind(self)
-            setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
-            self._commands.append(bound_cmd)
 
     def set_parent( self, parent ):
         self._parent = weakref.ref(parent)
@@ -55,7 +46,7 @@ class View(ObjectObserver):
             return self
 
     def get_commands( self ):
-        commands = self._commands[:]
+        commands = [ViewCommand.from_command(cmd, self) for cmd in Commandable.get_commands(self)]
         view = self.get_current_child()
         if view:
             commands += view.get_commands()
@@ -86,22 +77,10 @@ class View(ObjectObserver):
             return child.get_object_commands(*args, **kw)
         object = self.get_object()
         if object:
-            return ([cmd.as_object_command(self) for cmd in object.get_commands(*args, **kw)]
-                    + Module.get_all_object_commands(self, object))
+            return [ViewCommand.from_command(cmd, self) for cmd in
+                    object.get_commands(*args, **kw) + Module.get_all_object_commands(object)]
         else:
             return []
-
-    @asyncio.coroutine
-    def run_object_command( self, command_id ):
-        handle = yield from self.get_object().run_command(command_id)
-        if handle:
-            self.open(handle)
-
-    @asyncio.coroutine
-    def run_object_element_command( self, command_id, element_key ):
-        handle = yield from self.get_object().run_element_command(command_id, element_key)
-        if isinstance(handle, tHandle):  # may return empty record
-            self.open(handle)
 
     def get_selected_elts( self ):
         view = self.get_current_child()

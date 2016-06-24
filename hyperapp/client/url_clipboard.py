@@ -13,8 +13,8 @@ class ThisModule(Module):
         Module.__init__(self, services)
         self._remoting = services.remoting
 
-    def get_commands( self ):
-        return [Command('url_from_clipboard', 'Url from clipboard', 'Open url from clipboard', 'Alt+Ctrl+V')]
+    ## def get_commands( self ):
+    ##     return [Command('url_from_clipboard', 'Url from clipboard', 'Open url from clipboard', 'Alt+Ctrl+V')]
 
     def get_object_commands( self, object ):
         if object.get_url() is not None:

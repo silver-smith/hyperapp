@@ -50,7 +50,7 @@ class View(view.View, QtGui.QWidget):
 
     def get_object_commands( self ):
         commands = self.target_view.get_object_commands()
-        choose_cmd = ObjectCommand(self, 'choose', 'Choose', 'Choose current object', 'Ctrl+Return')
+        choose_cmd = ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return', self)
         return [choose_cmd] + commands
 
     @asyncio.coroutine

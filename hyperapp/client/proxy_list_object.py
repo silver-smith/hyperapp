@@ -36,7 +36,18 @@ class ProxyListObject(ProxyObject, ListObject):
         pass
 
     def _slice_from_data( self, rec ):
-        return Slice.from_data(self.get_key_column_id(), rec)
+        key_column_id = self.get_key_column_id()
+        elements = [Element.from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
+        return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
+
+    def _element_from_data( self, key_column_id, sort_column_id, rec ):
+        key = getattr(rec.row, key_column_id)
+        if sort_column_id is None:
+            order_key = None
+        else:
+            order_key = getattr(rec.row, sort_column_id)
+        commands = list(map(ElementCommand.from_data, rec.commands))
+        return Element(key, rec.row, commands, order_key)
 
     def _merge_in_slice( self, new_slice ):
         log.info('  -- merge_in_slice self=%r from_key=%r len(elements)=%r bof=%r', id(self), new_slice.from_key, len(new_slice.elements), new_slice.bof)

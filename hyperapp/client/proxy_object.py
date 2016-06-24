@@ -46,6 +46,21 @@ def execute_get_request( remoting, url ):
     return response.result
 
 
+class ProxyCommand(object):
+
+    def __init__( self, id, text, desc, shortcut=None ):
+        assert isinstance(id, str), repr(id)
+        assert isinstance(text, str), repr(text)
+        assert isinstance(desc, str), repr(desc)
+        assert (shortcut is None
+                or isinstance(shortcut, str)
+                or is_list_inst(shortcut, str)), repr(shortcut)
+        self.id = id
+        self.text = text
+        self.desc = desc
+        self.shortcut = shortcut
+
+
 class ProxyObject(Object):
 
     objimpl_id = 'proxy'

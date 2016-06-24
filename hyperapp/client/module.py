@@ -1,84 +1,29 @@
 import asyncio
 import weakref
-from .command import RunnableCommand
+from .command import Commandable, Command
 
 
-class ModuleCommand(RunnableCommand):
-
-    @classmethod
-    def from_command( cls, cmd, module, view ):
-        return cls(cmd.id, cmd.text, cmd.desc, cmd.shortcut, module, view)
-
-    def __init__( self, id, text, desc, shortcut, module, view ):
-        RunnableCommand.__init__(self, id, text, desc, shortcut)
-        self.module = module
-        self.view_wr = weakref.ref(view)
-
-    @asyncio.coroutine
-    def run( self ):
-        view = self.view_wr()
-        if not view:
-            return
-        handle = yield from self.module.run_command(self.id)
-        if handle:
-            view.get_current_view().open(handle)
-
-
-class ObjectModuleCommand(RunnableCommand):
-
-    @classmethod
-    def from_command( cls, cmd, module, view, object ):
-        return cls(cmd.id, cmd.text, cmd.desc, cmd.shortcut, module, view, object)
-
-    def __init__( self, id, text, desc, shortcut, module, view, object ):
-        RunnableCommand.__init__(self, id, text, desc, shortcut)
-        self.module = module
-        self.view_wr = weakref.ref(view)
-        self.object_wr = weakref.ref(object)
-
-    @asyncio.coroutine
-    def run( self ):
-        view = self.view_wr()
-        object = self.object_wr()
-        if not view or not object:
-            return
-        handle = yield from self.module.run_object_command(self.id, object)
-        if handle:
-            view.open(handle)
-
-
-class Module(object):
+class Module(Commandable):
 
     module_registry = []  # todo: remove global, make separate registry
 
     def __init__( self, services ):
+        Commandable.__init__(self)
         self.module_registry.append(self)
-
-    def get_commands( self ):
-        return []
 
     def get_object_commands( self, object ):
         return []
 
-    @asyncio.coroutine
-    def run_command( self, command_id ):
-        assert False, repr(command_id)  # Unknown command
-
-    @asyncio.coroutine
-    def run_object_command( self, command_id, object ):
-        assert False, repr(command_id)  # Unknown command
-
     @classmethod
-    def get_all_commands( cls, view ):
+    def get_all_commands( cls ):
         commands = []
         for module in cls.module_registry:
-            commands += [ModuleCommand.from_command(cmd, module, view) for cmd in module.get_commands()]
+            commands += module.get_commands()
         return commands
 
     @classmethod
-    def get_all_object_commands( cls, view, object ):
+    def get_all_object_commands( cls, object ):
         commands = []
         for module in cls.module_registry:
-            commands += [ObjectModuleCommand.from_command(cmd, module, view, object)
-                         for cmd in module.get_object_commands(object)]
-        return commands
+            commands += module.get_object_commands(object)
+        return [cmd.clone(args=(object,)) for cmd in commands]

@@ -2,6 +2,7 @@ import asyncio
 import weakref
 import traceback
 from .util import WeakSetWithCallback
+from .command import Commandable
 
 
 class ObjectObserver(object):
@@ -10,20 +11,11 @@ class ObjectObserver(object):
         pass
 
 
-class Object(object):
+class Object(Commandable):
 
     def __init__( self ):
+        Commandable.__init__(self)
         self._init_observers()
-
-    # unused since object pickling is removed
-    ## def __getstate__( self ):
-    ##     state = dict(self.__dict__)
-    ##     del state['_observers']
-    ##     return state
-
-    ## def __setstate__( self, state ):
-    ##     self.__dict__.update(state)
-    ##     self._init_observers()
 
     def get_title( self ):
         raise NotImplementedError(self.__class__)
@@ -39,13 +31,6 @@ class Object(object):
 
     def get_module_ids( self ):
         return []
-
-    def get_commands( self ):
-        raise NotImplementedError(self.__class__)
-
-    @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
-        assert False, repr(command_id)  # Unknown command
 
     def subscribe( self, observer ):
         assert isinstance(observer, ObjectObserver), repr(observer)

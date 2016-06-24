@@ -12,7 +12,7 @@ from ..common.htypes import (
     )
 from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
 from ..common.identity import Identity
-from .command import Command
+from .command import command
 from .module import Module
 from .object import Object
 from .list_object import Element, Slice, ListObject
@@ -190,22 +190,10 @@ def make_identity_list( key=None ):
 
 class ThisModule(Module):
 
-    def get_commands( self ):
-        return [
-            Command('identity_list', 'Identities', 'Open identity list', 'Alt+I'),
-            Command('create_identity', 'Create identity', 'Create new identity, public+private key pair', 'Alt+N'),
-            ]
-
-    @asyncio.coroutine
-    def run_command( self, command_id ):
-        if command_id == 'identity_list':
-            return self.run_command_identity_list()
-        if command_id == 'create_identity':
-            return self.run_command_create_idenity()
-        return (yield from Module.run_command(self, command_id))
-
-    def run_command_identity_list( self ):
+    @command('Identities', 'Open identity list', 'Alt+I')
+    def command_identity_list( self ):
         return make_identity_list()
 
+    @command('Create identity', 'Create new identity, public+private key pair', 'Alt+N')
     def run_command_create_idenity( self ):
         return make_identity_form()

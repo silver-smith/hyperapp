@@ -4,7 +4,7 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, TList, Field, TRecord, tHandle
 from .util import DEBUG_FOCUS, call_after, key_match
-from .view_command import command
+from .command import command
 from . import view
 from . import splitter
 

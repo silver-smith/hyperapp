@@ -10,7 +10,7 @@ from ..common.htypes import (
     )
 from ..common.url import Url
 from .module import Module
-from .command import Command, ElementCommand
+from .command import command
 from .remoting import Remoting
 from .list_object import Element, Slice, ListObject
 from .proxy_object import execute_get_request
@@ -74,23 +74,17 @@ class BookmarkList(ListObject):
         return 'Bookmarks'
 
     def get_commands( self ):
-        return [Command('add', 'Add', 'Add url from clipboard', 'Ins')]
+        return []
 
+    @command('Open', 'Open selected bookmark')
     @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
-        if command_id == 'open':
-            return (yield from self.run_command_open(**kw))
-        if command_id == 'add':
-            return (yield from self.run_command_add(**kw))
-        return (yield from ListObject.run_command(self, command_id, **kw))
-
-    @asyncio.coroutine
-    def run_command_open( self, element_key ):
+    def command_open_bookmark( self, element_key ):
         item = self._bookmarks.get_item(element_key)
         return (yield from execute_get_request(self._remoting, item.url))
 
+    @command('Add', 'Add url from clipboard', 'Ins')
     @asyncio.coroutine
-    def run_command_add( self ):
+    def command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
         url = Url.from_str(self._iface_registry, url_str)
         name = 'Imported url'
@@ -116,7 +110,7 @@ class BookmarkList(ListObject):
 
     def _item2element( self, item ):
         assert isinstance(item, NamedUrl), repr(item)
-        commands = [ElementCommand('open', 'Open', 'Open selected bookmark')]
+        commands = [self.command_open_bookmark]
         return Element(item.id, item, commands=commands)
 
 
@@ -131,30 +125,17 @@ class ThisModule(Module):
         Module.__init__(self, services)
         self.bookmarks = services.bookmarks
 
-    def get_commands( self ):
-        return [Command('bookmark_list', 'Bookmarks', 'Open bookmark list', 'Alt+B')]
-
     def get_object_commands( self, object ):
         if object.get_url() is not None:
-            return [Command('bookmark', 'Bookmark', 'Add this url to bookmarks', 'Ctrl+D')]
+            return [self.object_command_bookmark]
         return []
 
-    @asyncio.coroutine
-    def run_command( self, command_id ):
-        if command_id == 'bookmark_list':
-            return self.run_command_bookmark_list()
-        return (yield from Module.run_command(self, command_id))
-
-    def run_command_bookmark_list( self ):
+    @command('Bookmarks', 'Open bookmark list', 'Alt+B')
+    def command_bookmark_list( self ):
         return make_bookmark_list()
 
-    @asyncio.coroutine
-    def run_object_command( self, command_id, object ):
-        if command_id == 'bookmark':
-            return self.run_object_command_bookmark(object)
-        return (yield from Module.run_object_command(self, command_id, object))
-
-    def run_object_command_bookmark( self, object ):
+    @command('Bookmark', 'Add this url to bookmarks', 'Ctrl+D')
+    def object_command_bookmark( self, object ):
         url = object.get_url()
         assert url is not None
         item = self.bookmarks.add(object.get_title(), url)

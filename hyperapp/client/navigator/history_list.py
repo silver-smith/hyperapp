@@ -2,7 +2,7 @@ import logging
 import asyncio
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import intColumnType, Column, tHandle
-from ..command import ElementCommand
+from ..command import command
 from ..list_object import Element, Slice, ListObject
 from .htypes import item_type, history_list_type
 
@@ -43,13 +43,8 @@ class HistoryList(ListObject):
     def get_commands( self ):
         return []
 
-    @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
-        if command_id == 'open':
-            return self.run_command_open(**kw)
-        return (yield from ListObject.run_command(self, command_id, **kw))
-
-    def run_command_open( self, element_key ):
+    @command('Open', 'Open selected item')
+    def command_open( self, element_key ):
         return self._history[element_key].handle
 
     def get_columns( self ):
@@ -70,5 +65,5 @@ class HistoryList(ListObject):
 
     def _item2element( self, idx_and_item ):
         idx, item = idx_and_item
-        commands = [ElementCommand('open', 'Open', 'Open selected item')]
+        commands = [self.command_open]
         return Element(idx, self._Row(idx, item.title), commands)

@@ -4,7 +4,7 @@ from functools import total_ordering
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
 from ..common.htypes import ListInterface
-from .command import ElementCommand
+from .command import Command
 from .object import ObjectObserver, Object
 
 
@@ -52,18 +52,8 @@ class ListDiff(object):
 @total_ordering
 class Element(object):
 
-    @classmethod
-    def from_data( cls, key_column_id, sort_column_id, rec ):
-        key = getattr(rec.row, key_column_id)
-        if sort_column_id is None:
-            order_key = None
-        else:
-            order_key = getattr(rec.row, sort_column_id)
-        commands = list(map(ElementCommand.from_data, rec.commands))
-        return cls(key, rec.row, commands, order_key)
-
     def __init__( self, key, row, commands, order_key=None ):
-        assert is_list_inst(commands, ElementCommand), repr(commands)
+        assert is_list_inst(commands, Command), repr(commands)
         self.key = key
         self.row = row
         self.commands = commands
@@ -92,11 +82,6 @@ class Element(object):
  
 
 class Slice(object):
-
-    @classmethod
-    def from_data( self, key_column_id, rec ):
-        elements = [Element.from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
-        return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
     def __init__( self, sort_column_id, from_key, direction, elements, bof, eof ):
         assert isinstance(sort_column_id, str), repr(sort_column_id)

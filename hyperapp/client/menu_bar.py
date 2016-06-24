@@ -3,8 +3,7 @@ import weakref
 from PySide import QtCore, QtGui
 from ..common.htypes import tCommand
 from .util import make_action
-from .command import RunnableCommand
-from .view_command import WindowCommand
+from .command import Command, WindowCommand
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -39,14 +38,14 @@ class MenuBar(object):
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
         window = self.window()
-        for cmd in Module.get_all_commands(window):
-            assert isinstance(cmd, RunnableCommand), repr(cmd)
-            menu.addAction(cmd.make_action(menu))
+        for cmd in Module.get_all_commands():
+            assert isinstance(cmd, Command), repr(cmd)
+            menu.addAction(WindowCommand.from_command(cmd, window).make_action(menu))
         if not menu.isEmpty():
             menu.addSeparator()
         for cmd in self.window().get_global_commands():
-            assert isinstance(cmd, WindowCommand), repr(cmd)
-            menu.addAction(cmd.make_action(menu, window))
+            assert isinstance(cmd, Command), repr(cmd)
+            menu.addAction(cmd.make_action(menu))
         return menu
 
     def _current_view( self ):
@@ -76,7 +75,7 @@ class MenuBar(object):
         self.dir_menu.clear()
         commands = window.get_object_commands()
         for cmd in commands:
-            assert isinstance(cmd, RunnableCommand), repr(cmd)
+            assert isinstance(cmd, Command), repr(cmd)
             self.dir_menu.addAction(cmd.make_action(self.dir_menu))
         self.dir_menu.setEnabled(commands != [])
 
@@ -86,7 +85,7 @@ class MenuBar(object):
         commands = []  # in reversed order
         shortcuts = set()
         for cmd in reversed(window.get_commands()):
-            assert isinstance(cmd, WindowCommand), repr(cmd)
+            assert isinstance(cmd, Command), repr(cmd)
             if not cmd.is_enabled():
                 commands.append(cmd)
                 continue
@@ -100,7 +99,7 @@ class MenuBar(object):
         for cmd in reversed(commands):
             if last_view is not None and cmd.get_inst() is not last_view:
                 self.window_menu.addSeparator()
-            self.window_menu.addAction(cmd.make_action(self.window_menu, window))
+            self.window_menu.addAction(cmd.make_action(self.window_menu))
             last_view = cmd.get_inst()
 
     def selected_elements_changed( self, elts ):

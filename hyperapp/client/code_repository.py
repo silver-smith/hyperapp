@@ -201,6 +201,7 @@ def make_code_repository_list( key=None ):
 class ThisModule(Module):
 
     def get_commands( self ):
+        return []  # todo
         return [Command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')]
 
     @asyncio.coroutine

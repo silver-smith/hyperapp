@@ -6,7 +6,7 @@ from PySide import QtCore, QtGui
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import tInt, list_handle_type
 from ..util import key_match, key_match_any
-from ..view_command import command
+from ..command import command
 from ..import view
 from ..import composite
 from ..import list_view

@@ -5,7 +5,7 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, Field, TRecord, Interface
 from .util import DEBUG_FOCUS, call_after
-from .view_command import command
+from .command import command
 from . import view
 from . import composite
 from .menu_bar import MenuBar

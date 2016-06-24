@@ -4,7 +4,7 @@ import logging
 import asyncio
 import weakref
 from PySide import QtCore, QtGui
-from .command import RunnableCommand, ElementCommand
+from .command import Command
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class View(QtGui.QDockWidget):
         self.dir_buttons = []
         idx = 0
         for cmd in window.get_object_commands():
-            assert isinstance(cmd, RunnableCommand), repr(cmd)
+            assert isinstance(cmd, Command), repr(cmd)
             button = self._make_button(cmd)
             button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
@@ -55,9 +55,9 @@ class View(QtGui.QDockWidget):
         assert len(elts) == 1  # no multi-select support yet
         elt = elts[0]
         for cmd in elt.commands:
-            assert isinstance(cmd, ElementCommand), repr(cmd)
+            assert isinstance(cmd, Command), repr(cmd)
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: asyncio.async(view.run_object_element_command(cmd.id, elt.key)))
+            button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run(elt.key)))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 

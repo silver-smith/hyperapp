@@ -9,7 +9,7 @@ from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
 from ..common.packet_coders import packet_coders
 from .server import Server
-from .view_command import command
+from .command import command
 from .proxy_object import execute_get_request
 from . import text_object
 from . import view
