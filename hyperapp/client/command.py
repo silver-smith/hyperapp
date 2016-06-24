@@ -166,7 +166,7 @@ class BoundCommand(Command):
         print('BoundCommand.run', self, inst, self._args)
         if not inst: return  # inst is deleteddeleted
         if asyncio.iscoroutinefunction(self._class_method):
-            return (yield from self._class_method(ins, *(self._args + args), **kw))
+            return (yield from self._class_method(inst, *(self._args + args), **kw))
         else:
             return self._class_method(inst, *(self._args + args), **kw)
 
