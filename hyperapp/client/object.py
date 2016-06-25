@@ -34,11 +34,8 @@ class Object(Commandable):
 
     @asyncio.coroutine
     def run_command( self, command_id, *args, **kw ):
-        for command in self._commands:
-            if command.id == command_id:
-                break
-        else:
-            assert False, repr(command_id)  # Unknown command
+        command = self.get_command(command_id)
+        assert command, repr(command_id)  # Unknown command
         return (yield from command.run(*args, **kw))
 
     def subscribe( self, observer ):

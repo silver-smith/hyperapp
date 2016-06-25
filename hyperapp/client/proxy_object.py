@@ -53,6 +53,9 @@ class RemoteCommand(Command):
         Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
         self._object_wr = object_wr
 
+    def __repr__( self ):
+        return 'RemoteCommand(%r)' % self.id
+
     def to_data( self ):
         return tCommand(self.id, self.text, self.desc, self.shortcut)
 

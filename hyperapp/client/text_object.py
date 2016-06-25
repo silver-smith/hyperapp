@@ -36,7 +36,7 @@ class TextObject(Object):
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        return []
+        return Object.get_commands(self)
 
     def text_changed( self, new_text, emitter_view=None ):
         self.text = new_text

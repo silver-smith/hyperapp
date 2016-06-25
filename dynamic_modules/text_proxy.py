@@ -2,6 +2,7 @@
 
 import asyncio
 from ..common.htypes import tString
+from .command import command
 from .text_object import TextObject
 from .proxy_object import ProxyObject
 
@@ -29,24 +30,21 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        commands = []
-        for cmd in ProxyObject.get_commands(self):
-            if mode is self.mode_view and cmd.id in ['view', 'save']: continue
-            if mode is self.mode_edit and cmd.id in ['edit']: continue
-            commands.append(cmd)
-        return commands
+        commands = TextObject.get_commands(self, mode) + ProxyObject.get_commands(self)
+        def pred( command ):
+            if mode is self.mode_view:
+                return command.id not in ['view', 'save']
+            if mode is self.mode_edit:
+                return command.id not in ['edit']
+        return list(filter(pred, commands))
 
+    @command('save', 'Save', 'Save this text', 'Ctrl+S')
     @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
-        if command_id == 'edit' or command_id == 'view':
-            return (yield from TextObject.run_command(self, command_id, **kw))
-        if command_id == 'save':
-            result = yield from ProxyObject.execute_request(self, command_id, text=self.text, **kw)
-            self.path = result.new_path
-            self._notify_object_changed()
-            return
-        return (yield from ProxyObject.run_command(self, command_id, **kw))
-
+    def command_save( self ):
+        result = yield from self.run_remote_command('save', text=self.text)
+        self.path = result.new_path
+        self._notify_object_changed()
+        
     def process_update( self, new_text ):
         self.text_changed(new_text)
 
