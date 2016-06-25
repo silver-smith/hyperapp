@@ -73,10 +73,7 @@ class BookmarkList(ListObject):
     def get_title( self ):
         return 'Bookmarks'
 
-    def get_commands( self ):
-        return []
-
-    @command('open', 'Open', 'Open selected bookmark', is_default_command=True)
+    @command('_open', 'Open', 'Open selected bookmark', is_default_command=True)
     @asyncio.coroutine
     def command_open_bookmark( self, element_key ):
         item = self._bookmarks.get_item(element_key)
@@ -110,7 +107,7 @@ class BookmarkList(ListObject):
 
     def _item2element( self, item ):
         assert isinstance(item, NamedUrl), repr(item)
-        commands = [self.command_open_bookmark]
+        commands = [self.command_open_bookmark.clone(args=(item.id,))]
         return Element(item.id, item, commands=commands)
 
 
