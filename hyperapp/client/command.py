@@ -182,8 +182,8 @@ class UnboundCommand(object):
 
     def __init__( self, id, text, desc, shortcut, is_default_command, enabled, class_method ):
         assert isinstance(id, str), repr(id)
-        assert isinstance(text, str), repr(text)
-        assert isinstance(desc, str), repr(desc)
+        assert text is None or isinstance(text, str), repr(text)
+        assert desc is None or isinstance(desc, str), repr(desc)
         assert (shortcut is None
                 or isinstance(shortcut, str)
                 or is_list_inst(shortcut, str)), repr(shortcut)
@@ -205,10 +205,10 @@ class UnboundCommand(object):
 # decorator for view methods
 class command(object):
 
-    def __init__( self, id, text, desc, shortcut=None, is_default_command=False, enabled=True ):
+    def __init__( self, id, text=None, desc=None, shortcut=None, is_default_command=False, enabled=True ):
         assert isinstance(id, str), repr(id)
-        assert isinstance(text, str), repr(text)
-        assert isinstance(desc, str), repr(desc)
+        assert text is None or isinstance(text, str), repr(text)
+        assert desc is None or isinstance(desc, str), repr(desc)
         assert (shortcut is None
                 or isinstance(shortcut, str)
                 or is_list_inst(shortcut, str)), repr(shortcut)

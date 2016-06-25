@@ -109,11 +109,11 @@ class View(view.View, QtGui.QWidget):
 
     @command('submit', 'Submit', 'Submit form', 'Return')
     @asyncio.coroutine
-    def command_submit( self, command_id ):
+    def command_submit( self ):
         field_values = {}
         for name, field in self.fields:
             field_values[name] = field.get_value()
-        handle = yield from self.object.run_command(command_id, **field_values)
+        handle = yield from self.object.run_command('submit', **field_values)
         if handle:
             self.open(handle)
 
