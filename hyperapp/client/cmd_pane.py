@@ -57,7 +57,7 @@ class View(QtGui.QDockWidget):
         for cmd in elt.commands:
             assert isinstance(cmd, Command), repr(cmd)
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run(elt.key)))
+            button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 

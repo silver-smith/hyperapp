@@ -371,8 +371,10 @@ class View(view.View, ListObserver, QtGui.QTableView):
         element = self.model().get_row_element(index.row())
         for cmd in element.commands:
             if cmd.is_default_command:
-                asyncio.async(ViewCommand.from_command(cmd, self).run(element.key))
-                return
+                break
+        else:
+            return
+        asyncio.async(ViewCommand.from_command(cmd, self).run())
 
     def _selected_elements_changed( self ):
         self._update_selected_actions()

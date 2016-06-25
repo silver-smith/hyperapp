@@ -48,10 +48,11 @@ def execute_get_request( remoting, url ):
 
 class RemoteCommand(Command):
 
-    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, object_wr ):
+    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, object_wr, args=None ):
         assert isinstance(object_wr(), ProxyObject), repr(object_wr)
         Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
         self._object_wr = object_wr
+        self._args = args or ()
 
     def __repr__( self ):
         return 'RemoteCommand(%r)' % self.id
@@ -62,16 +63,16 @@ class RemoteCommand(Command):
     def get_view( self ):
         return None
 
-    def clone( self, shortcut=None ):
-        if shortcut is None:
-            shortcut = self.shortcut
-        return RemoteCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._object_wr)
+    def clone( self, shortcut=None, args=None ):
+        shortcut = shortcut if shortcut else self.shortcut
+        args = self._args + args if args else self._args
+        return RemoteCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._object_wr, args)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
         object = self._object_wr()
         if not object: return
-        return (yield from object.run_remote_command(self.id, *args, **kw))
+        return (yield from object.run_remote_command(self.id, *(self._args + args), **kw))
 
 
 class ProxyObject(Object):
@@ -156,9 +157,9 @@ class ProxyObject(Object):
         return Object.get_commands(self) + [cmd for cmd in self._remote_commands if cmd.text is not None]
 
     @asyncio.coroutine
-    def run_remote_command( self, command_id, **kw ):
+    def run_remote_command( self, command_id, *args, **kw ):
         log.debug('running remote command %r (%s)', command_id, kw)
-        return (yield from self.execute_request(command_id, **kw))
+        return (yield from self.execute_request(command_id, *args, **kw))
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)
