@@ -230,4 +230,4 @@ class Commandable(object):
         return None
 
     def get_commands( self ):
-        return self._commands
+        return [cmd for cmd in self._commands if not cmd.id.startswith('_')]
