@@ -98,6 +98,7 @@ class ViewCommand(Command):
     def run( self, *args, **kw ):
         view = self._view_wr()
         if not view: return
+        log.debug('ViewCommand.run: %r, %r, (%s, %s)', self.id, self._base_cmd, args, kw)
         handle = yield from self._base_cmd.run(*args, **kw)
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
@@ -213,13 +214,20 @@ class command(object):
 class Commandable(object):
 
     def __init__( self ):
-        self._commands = []  # BoundCommand list
+        if not hasattr(self, '_commands'):  # multiple inheritance hack
+            self._commands = []  # BoundCommand list
         for name in dir(self):
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue
             bound_cmd = attr.bind(self)
             setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
             self._commands.append(bound_cmd)
+
+    def get_command( self, command_id ):
+        for command in self._commands:
+            if command.id == command_id:
+                return command
+        return None
 
     def get_commands( self ):
         return self._commands
