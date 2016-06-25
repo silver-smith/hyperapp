@@ -30,7 +30,7 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        commands = TextObject.get_commands(self, mode) + ProxyObject.get_commands(self)
+        commands = ProxyObject.get_commands(self)
         def pred( command ):
             if mode is self.mode_view:
                 return command.id not in ['view', 'save']

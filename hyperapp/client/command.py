@@ -14,8 +14,8 @@ class Command(object, metaclass=abc.ABCMeta):
 
     def __init__( self, id, text, desc, shortcut=None, is_default_command=False, enabled=True ):
         assert isinstance(id, str), repr(id)
-        assert isinstance(text, str), repr(text)
-        assert isinstance(desc, str), repr(desc)
+        assert text is None or isinstance(text, str), repr(text)
+        assert desc is None or isinstance(desc, str), repr(desc)
         assert (shortcut is None
                 or isinstance(shortcut, str)
                 or is_list_inst(shortcut, str)), repr(shortcut)
@@ -27,6 +27,9 @@ class Command(object, metaclass=abc.ABCMeta):
         self.shortcut = shortcut
         self.is_default_command = is_default_command
         self.enabled = enabled
+
+    def __repr__( self ):
+        return '%s(%r)' % (self.__class__.__name__, self.id)
 
     def is_enabled( self ):
         return self.enabled
@@ -86,6 +89,9 @@ class ViewCommand(Command):
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
 
+    def __repr__( self ):
+        return 'ViewCommand(%r -> %r)' % (self.id, self._view_wr)
+
     def get_view( self ):
         return self._view_wr()
 
@@ -116,6 +122,9 @@ class WindowCommand(Command):
         self._base_cmd = base_cmd
         self._window_wr = window_wr  # weak ref to class instance
 
+    def __repr__( self ):
+        return 'WindowCommand(%r -> %r)' % (self.id, self._base_cmd)
+
     def get_view( self ):
         return self._window_wr()
 
@@ -128,6 +137,7 @@ class WindowCommand(Command):
     def run( self, *args, **kw ):
         window = self._window_wr()
         if not window: return
+        log.debug('WindowCommand.run: %r, %r, (%s, %s)', self.id, self._base_cmd, args, kw)
         handle = yield from self._base_cmd.run(*args, **kw)
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
@@ -141,6 +151,9 @@ class BoundCommand(Command):
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
+
+    def __repr__( self ):
+        return 'BoundCommand(%r -> %r, args=%r)' % (self.id, self._inst_wr, self._args)
 
     def get_view( self ):
         return self._inst_wr()
@@ -158,6 +171,7 @@ class BoundCommand(Command):
     def run( self, *args, **kw ):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
+        log.debug('BoundCommand.run: %s, %r, %r, (%s/%s, %s)', self, self.id, inst, self._args, args, kw)
         if asyncio.iscoroutinefunction(self._class_method):
             return (yield from self._class_method(inst, *(self._args + args), **kw))
         else:
@@ -214,8 +228,9 @@ class command(object):
 class Commandable(object):
 
     def __init__( self ):
-        if not hasattr(self, '_commands'):  # multiple inheritance hack
-            self._commands = []  # BoundCommand list
+        if hasattr(self, '_commands'):  # multiple inheritance hack
+            return  # do not populate _commands twice
+        self._commands = []  # BoundCommand list
         for name in dir(self):
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue

@@ -74,7 +74,7 @@ class Article(Object):
         return [
             tCommand('edit', 'Edit', 'Switch to edit mode', 'E'),
             tCommand('view', 'View', 'Finish editing, switch to view mode', 'Ctrl+F'),
-            tCommand('save', 'Save', 'Save article', 'Ctrl+S'),
+            tCommand('save'),
             tCommand('refs', 'Refs', 'Open article references', 'Ctrl+R'),
             ]
 

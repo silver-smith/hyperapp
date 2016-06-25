@@ -156,7 +156,7 @@ class ProxyObject(Object):
         return '%s:%s' % (self.server.public_key.get_short_id_hex(), '|'.join(self.path))
 
     def get_commands( self ):
-        return Object.get_commands(self) + self._remote_commands
+        return Object.get_commands(self) + [cmd for cmd in self._remote_commands if cmd.text is not None]
 
     @asyncio.coroutine
     def run_remote_command( self, command_id, **kw ):
