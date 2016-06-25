@@ -26,9 +26,9 @@ class ThisModule(Module):
         self._remoting.add_routes(url.public_key, url.routes)
         return execute_get_request(self._remoting, url)
 
-    @command('url_to_clipboard', 'Url to clipboard', 'Copy current url to clipboard', 'Alt+Ctrl+C')
+    @command('_url_to_clipboard', 'Url to clipboard', 'Copy current url to clipboard', 'Alt+Ctrl+C')
     def command_url_to_clipboard( self, object ):
         url = object.get_url()
         assert url is not None
         enriched_url = self._remoting.add_routes_to_url(url)
-        QtGui.QApplication.clipboard().setText(enrich_url.to_str())
+        QtGui.QApplication.clipboard().setText(enriched_url.to_str())

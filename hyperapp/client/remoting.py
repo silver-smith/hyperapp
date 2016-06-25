@@ -7,7 +7,7 @@ from ..common.packet import tAuxInfo, tPacket
 from ..common.packet_coders import packet_coders
 from ..common.server_public_key_collector import ServerPksCollector
 from ..common.identity import PublicKey
-from ..common.url import UrlWithRoutes
+from ..common.url import Url, UrlWithRoutes
 from ..common.transport_packet import tTransportPacket
 from ..common.interface.code_repository import tRequirement
 from ..common.route_storage import RouteStorage
@@ -115,7 +115,7 @@ class Remoting(object):
         self.add_routes(url.public_key, url.routes)
 
     def add_routes_to_url( self, url ):
-        assert isinstance(url, tUrl), repr(url)
+        assert isinstance(url, Url), repr(url)
         return url.clone_with_routes(self._route_storage.get_routes(url.public_key))
 
     @asyncio.coroutine
