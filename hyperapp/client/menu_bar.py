@@ -97,10 +97,10 @@ class MenuBar(object):
             shortcuts |= cmd_shortcuts
         last_view = None
         for cmd in reversed(commands):
-            if last_view is not None and cmd.get_inst() is not last_view:
+            if last_view is not None and cmd.get_view() is not last_view:
                 self.window_menu.addSeparator()
             self.window_menu.addAction(cmd.make_action(self.window_menu))
-            last_view = cmd.get_inst()
+            last_view = cmd.get_view()
 
     def selected_elements_changed( self, elts ):
         return

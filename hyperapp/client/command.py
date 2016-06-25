@@ -12,10 +12,6 @@ log = logging.getLogger(__name__)
 # returned from Object.get_commands
 class Command(object, metaclass=abc.ABCMeta):
 
-    @classmethod
-    def from_data( cls, rec ):
-        return cls(rec.id, rec.text, rec.desc, rec.shortcut)
-
     def __init__( self, id, text, desc, shortcut=None, is_default_command=False, enabled=True ):
         assert isinstance(id, str), repr(id)
         assert isinstance(text, str), repr(text)
@@ -38,7 +34,7 @@ class Command(object, metaclass=abc.ABCMeta):
     def set_enabled( self, enabled ):
         if enabled == self.enabled: return
         self.enabled = enabled
-        view = self._view_wr()
+        view = self.get_view()
         if view:
             view.view_changed()
 
@@ -53,7 +49,7 @@ class Command(object, metaclass=abc.ABCMeta):
         return self.clone(shortcut=list(new_shortcuts))
 
     @abc.abstractmethod
-    def get_inst( self ):
+    def get_view( self ):
         pass
 
     @abc.abstractmethod
@@ -67,11 +63,8 @@ class Command(object, metaclass=abc.ABCMeta):
         else:
             return self.shortcut or []
 
-    ## def to_data( self ):
-    ##     return tCommand(self.id, self.text, self.desc, self.shortcut)
-
     def make_action( self, widget ):
-        log.debug('Command.make_action: %r, %r', self, self.run)
+        log.debug('Command.make_action: %r, %r', self.id, self.run)
         action = make_async_action(widget, self.text, self.shortcut, self.run)
         action.setEnabled(self.enabled)
         return action
@@ -93,7 +86,7 @@ class ViewCommand(Command):
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
 
-    def get_inst( self ):
+    def get_view( self ):
         return self._view_wr()
 
     def clone( self, shortcut=None ):
@@ -104,10 +97,8 @@ class ViewCommand(Command):
     @asyncio.coroutine
     def run( self, *args, **kw ):
         view = self._view_wr()
-        print('ViewCommand.run', self, view)
         if not view: return
         handle = yield from self._base_cmd.run(*args, **kw)
-        print(' ->', handle)
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
             view.open(handle)
@@ -124,7 +115,7 @@ class WindowCommand(Command):
         self._base_cmd = base_cmd
         self._window_wr = window_wr  # weak ref to class instance
 
-    def get_inst( self ):
+    def get_view( self ):
         return self._window_wr()
 
     def clone( self, shortcut=None ):
@@ -135,10 +126,8 @@ class WindowCommand(Command):
     @asyncio.coroutine
     def run( self, *args, **kw ):
         window = self._window_wr()
-        print('WindowCommand.run', self, window)
         if not window: return
         handle = yield from self._base_cmd.run(*args, **kw)
-        print(' ->', handle)
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
             window.get_current_view().open(handle)
@@ -152,7 +141,7 @@ class BoundCommand(Command):
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
 
-    def get_inst( self ):
+    def get_view( self ):
         return self._inst_wr()
 
     def clone( self, shortcut=None, args=None ):
@@ -167,7 +156,6 @@ class BoundCommand(Command):
     @asyncio.coroutine
     def run( self, *args, **kw ):
         inst = self._inst_wr()
-        print('BoundCommand.run', self, inst, self._args)
         if not inst: return  # inst is deleteddeleted
         if asyncio.iscoroutinefunction(self._class_method):
             return (yield from self._class_method(inst, *(self._args + args), **kw))

@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import weakref
 import bisect
 from ..common.htypes import TList
 from .list_object import ListDiff, Element, Slice, ListObject
@@ -37,7 +38,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _slice_from_data( self, rec ):
         key_column_id = self.get_key_column_id()
-        elements = [Element.from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
+        elements = [self._element_from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
         return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
     def _element_from_data( self, key_column_id, sort_column_id, rec ):
@@ -46,7 +47,7 @@ class ProxyListObject(ProxyObject, ListObject):
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = list(map(ElementCommand.from_data, rec.commands))
+        commands = list(map(self._command_from_data, rec.commands))
         return Element(key, rec.row, commands, order_key)
 
     def _merge_in_slice( self, new_slice ):

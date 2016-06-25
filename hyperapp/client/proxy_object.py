@@ -46,19 +46,29 @@ def execute_get_request( remoting, url ):
     return response.result
 
 
-class ProxyCommand(object):
+class RemoteCommand(Command):
 
-    def __init__( self, id, text, desc, shortcut=None ):
-        assert isinstance(id, str), repr(id)
-        assert isinstance(text, str), repr(text)
-        assert isinstance(desc, str), repr(desc)
-        assert (shortcut is None
-                or isinstance(shortcut, str)
-                or is_list_inst(shortcut, str)), repr(shortcut)
-        self.id = id
-        self.text = text
-        self.desc = desc
-        self.shortcut = shortcut
+    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, object_wr ):
+        assert isinstance(object_wr(), ProxyObject), repr(object_wr)
+        Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
+        self._object_wr = object_wr
+
+    def to_data( self ):
+        return tCommand(self.id, self.text, self.desc, self.shortcut)
+
+    def get_view( self ):
+        return None
+
+    def clone( self, shortcut=None ):
+        if shortcut is None:
+            shortcut = self.shortcut
+        return RemoteCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._object_wr)
+
+    @asyncio.coroutine
+    def run( self, *args, **kw ):
+        object = self._object_wr()
+        if not object: return
+        return (yield from object.run_remote_command(self.id, *args, **kw))
 
 
 class ProxyObject(Object):
@@ -106,7 +116,7 @@ class ProxyObject(Object):
         self.facets = facets or []
         self.cache_repository = cache_repository
         cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
-        self.commands = list(map(Command.from_data, cached_commands or []))
+        self._remote_commands = list(map(self._command_from_data, cached_commands or []))
 
     def __repr__( self ):
         return 'ProxyObject(%s, %s, %s)' % (self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
@@ -136,17 +146,18 @@ class ProxyObject(Object):
         self._notify_object_changed()
 
     def set_contents( self, contents ):
-        self.commands = list(map(Command.from_data, contents.commands))
+        self._remote_commands = list(map(self._command_from_data, contents.commands))
         self.cache_repository.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
 
     def get_title( self ):
         return '%s:%s' % (self.server.public_key.get_short_id_hex(), '|'.join(self.path))
 
     def get_commands( self ):
-        return self.commands
+        return Object.get_commands(self) + self._remote_commands
 
     @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
+    def run_remote_command( self, command_id, **kw ):
+        log.debug('running remote command %r (%s)', command_id, kw)
         return (yield from self.execute_request(command_id, **kw))
 
     def observers_gone( self ):
@@ -176,6 +187,10 @@ class ProxyObject(Object):
 
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
+
+    def _command_from_data( self, rec ):
+        return RemoteCommand(rec.id, rec.text, rec.desc, rec.shortcut,
+                             is_default_command=rec.id=='open', enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):
         return self.make_cache_key('commands')
