@@ -43,7 +43,7 @@ class HistoryList(ListObject):
     def get_commands( self ):
         return []
 
-    @command('Open', 'Open selected item')
+    @command('open', 'Open', 'Open selected item', is_default_command=True)
     def command_open( self, element_key ):
         return self._history[element_key].handle
 

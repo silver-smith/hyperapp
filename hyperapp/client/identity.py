@@ -104,16 +104,8 @@ class IdentityFormObject(Object):
     def get_title( self ):
         return 'Create identity'
 
-    def get_commands( self ):
-        return [Command('submit', 'Create', 'Create new identity, generate private+public key pair', 'Return')]
-
-    @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
-        if command_id == 'submit':
-            return self.run_command_submit(**kw)
-        return (yield from Object.run_command(self, command_id, **kw))
-
-    def run_command_submit( self, name ):
+    @command('submit', 'Create', 'Create new identity, generate private+public key pair', 'Return')
+    def command_submit( self, name ):
         log.info('creating identity %r...', name)
         self.identity_controller.generate(name)
         log.info('creating identity %r: done', name)
@@ -150,16 +142,8 @@ class IdentityList(ListObject):
     def get_title( self ):
         return 'Identity list'
 
-    def get_commands( self ):
-        return [Command('new', 'Create', 'Create new identity, generate private+public key pair', 'Ins')]
-
-    @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
-        if command_id == 'new':
-            return self.run_command_new(**kw)
-        return (yield from ListObject.run_command(self, command_id, **kw))
-
-    def run_command_new( self ):
+    @command('create', 'Create', 'Create new identity, generate private+public key pair', 'Ins')
+    def command_new( self ):
         return make_identity_form()
 
     def get_columns( self ):
@@ -190,10 +174,10 @@ def make_identity_list( key=None ):
 
 class ThisModule(Module):
 
-    @command('Identities', 'Open identity list', 'Alt+I')
+    @command('identity_list', 'Identities', 'Open identity list', 'Alt+I')
     def command_identity_list( self ):
         return make_identity_list()
 
-    @command('Create identity', 'Create new identity, public+private key pair', 'Alt+N')
+    @command('create_identity', 'Create identity', 'Create new identity, public+private key pair', 'Alt+N')
     def run_command_create_idenity( self ):
         return make_identity_form()

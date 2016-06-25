@@ -32,6 +32,15 @@ class Object(Commandable):
     def get_module_ids( self ):
         return []
 
+    @asyncio.coroutine
+    def run_command( self, command_id, *args, **kw ):
+        for command in self._commands:
+            if command.id == command_id:
+                break
+        else:
+            assert False, repr(command_id)  # Unknown command
+        return (yield from command.run(*args, **kw))
+
     def subscribe( self, observer ):
         assert isinstance(observer, ObjectObserver), repr(observer)
         self._observers.add(observer)

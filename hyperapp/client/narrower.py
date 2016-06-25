@@ -164,7 +164,7 @@ class View(LineListPanel):
             return True
         return LineListPanel.is_list_event(self, evt)
 
-    @command('Wider', 'Cancel narrowing', ['Escape'], enabled=False)
+    @command('wider', 'Wider', 'Cancel narrowing', ['Escape'], enabled=False)
     def cancel_narrowing( self ):
         if self._line_edit.text():
             self._set_prefix('')

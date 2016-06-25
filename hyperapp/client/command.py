@@ -16,16 +16,20 @@ class Command(object, metaclass=abc.ABCMeta):
     def from_data( cls, rec ):
         return cls(rec.id, rec.text, rec.desc, rec.shortcut)
 
-    def __init__( self, text, desc, shortcut=None, enabled=True ):
+    def __init__( self, id, text, desc, shortcut=None, is_default_command=False, enabled=True ):
+        assert isinstance(id, str), repr(id)
         assert isinstance(text, str), repr(text)
         assert isinstance(desc, str), repr(desc)
         assert (shortcut is None
                 or isinstance(shortcut, str)
                 or is_list_inst(shortcut, str)), repr(shortcut)
+        assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
+        self.id = id
         self.text = text
         self.desc = desc
         self.shortcut = shortcut
+        self.is_default_command = is_default_command
         self.enabled = enabled
 
     def is_enabled( self ):
@@ -82,10 +86,10 @@ class ViewCommand(Command):
 
     @classmethod
     def from_command( cls, cmd, view ):
-        return cls(cmd.text, cmd.desc, cmd.shortcut, cmd.enabled, cmd, weakref.ref(view))
+        return cls(cmd.id, cmd.text, cmd.desc, cmd.shortcut, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(view))
 
-    def __init__( self, text, desc, shortcut, enabled, base_cmd, view_wr ):
-        Command.__init__(self, text, desc, shortcut, enabled)
+    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, base_cmd, view_wr ):
+        Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
 
@@ -95,7 +99,7 @@ class ViewCommand(Command):
     def clone( self, shortcut=None ):
         if shortcut is None:
             shortcut = self.shortcut
-        return ViewCommand(self.text, self.desc, shortcut, self.enabled, self._base_cmd, self._view_wr)
+        return ViewCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._base_cmd, self._view_wr)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
@@ -113,10 +117,10 @@ class WindowCommand(Command):
 
     @classmethod
     def from_command( cls, cmd, window ):
-        return cls(cmd.text, cmd.desc, cmd.shortcut, cmd.enabled, cmd, weakref.ref(window))
+        return cls(cmd.id, cmd.text, cmd.desc, cmd.shortcut, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(window))
 
-    def __init__( self, text, desc, shortcut, enabled, base_cmd, window_wr ):
-        Command.__init__(self, text, desc, shortcut, enabled)
+    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, base_cmd, window_wr ):
+        Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
         self._base_cmd = base_cmd
         self._window_wr = window_wr  # weak ref to class instance
 
@@ -126,7 +130,7 @@ class WindowCommand(Command):
     def clone( self, shortcut=None ):
         if shortcut is None:
             shortcut = self.shortcut
-        return WindowCommand(self.text, self.desc, shortcut, self.enabled, self._base_cmd, self._window_wr)
+        return WindowCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
@@ -142,8 +146,8 @@ class WindowCommand(Command):
 
 class BoundCommand(Command):
 
-    def __init__( self, text, desc, shortcut, enabled, class_method, inst_wr, args=None ):
-        Command.__init__(self, text, desc, shortcut, enabled)
+    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, class_method, inst_wr, args=None ):
+        Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
@@ -158,7 +162,7 @@ class BoundCommand(Command):
             args = self._args
         else:
             args = self._args + args
-        return BoundCommand(self.text, self.desc, shortcut, self.enabled, self._class_method, self._inst_wr, args)
+        return BoundCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._class_method, self._inst_wr, args)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
@@ -173,40 +177,49 @@ class BoundCommand(Command):
 
 class UnboundCommand(object):
 
-    def __init__( self, text, desc, shortcut, enabled, class_method ):
+    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, class_method ):
+        assert isinstance(id, str), repr(id)
         assert isinstance(text, str), repr(text)
         assert isinstance(desc, str), repr(desc)
         assert (shortcut is None
                 or isinstance(shortcut, str)
                 or is_list_inst(shortcut, str)), repr(shortcut)
+        assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
+        self.id = id
         self.text = text
         self.desc = desc
         self.shortcut = shortcut
+        self.is_default_command = is_default_command
         self.enabled = enabled
         self._class_method = class_method
 
     def bind( self, inst ):
-        return BoundCommand(self.text, self.desc, self.shortcut, self.enabled, self._class_method, weakref.ref(inst))
+        return BoundCommand(self.id, self.text, self.desc, self.shortcut, self.is_default_command,
+                            self.enabled, self._class_method, weakref.ref(inst))
 
 
 # decorator for view methods
 class command(object):
 
-    def __init__( self, text, desc, shortcut=None, enabled=True ):
+    def __init__( self, id, text, desc, shortcut=None, is_default_command=False, enabled=True ):
+        assert isinstance(id, str), repr(id)
         assert isinstance(text, str), repr(text)
         assert isinstance(desc, str), repr(desc)
         assert (shortcut is None
                 or isinstance(shortcut, str)
                 or is_list_inst(shortcut, str)), repr(shortcut)
+        assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
+        self.id = id
         self.text = text
         self.desc = desc
         self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple
+        self.is_default_command = is_default_command
         self.enabled = enabled
 
     def __call__( self, class_method ):
-        return UnboundCommand(self.text, self.desc, self.shortcut, self.enabled, class_method)
+        return UnboundCommand(self.id, self.text, self.desc, self.shortcut, self.is_default_command, self.enabled, class_method)
 
 
 class Commandable(object):

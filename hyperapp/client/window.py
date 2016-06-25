@@ -121,7 +121,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
-    @command('Duplicate window', 'Duplicate window', 'Alt+Shift+W')
+    @command('duplicate_window', 'Duplicate window', 'Duplicate window', 'Alt+Shift+W')
     @asyncio.coroutine
     def duplicate_window( self ):
         state = self.get_state()

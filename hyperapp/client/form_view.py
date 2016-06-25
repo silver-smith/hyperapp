@@ -3,6 +3,7 @@ import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
 from .util import call_after
+from .command import command
 from . import view
 
 log = logging.getLogger(__name__)
@@ -106,15 +107,9 @@ class View(view.View, QtGui.QWidget):
     def get_widget_to_focus( self ):
         return self.fields[0][1].get_widget()
 
+    @command('submit', 'Submit', 'Submit form', 'Return')
     @asyncio.coroutine
-    def run_object_command( self, command_id ):
-        if command_id == 'submit':
-            return (yield from self.run_object_command_submit(command_id))
-        else:
-            return (yield from view.View.run_object_command(self, command_id))
-
-    @asyncio.coroutine
-    def run_object_command_submit( self, command_id ):
+    def command_submit( self, command_id ):
         field_values = {}
         for name, field in self.fields:
             field_values[name] = field.get_value()

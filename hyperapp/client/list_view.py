@@ -5,7 +5,7 @@ import bisect
 from PySide import QtCore, QtGui
 from ..common.htypes import Type, tHandle
 from .util import uni2str, key_match, key_match_any
-from .command import Command
+from .command import Command, ViewCommand
 from .list_object import ListObserver, ListDiff, Slice, ListObject
 from . import view
 
@@ -370,8 +370,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def _on_activated( self, index ):
         element = self.model().get_row_element(index.row())
         for cmd in element.commands:
-            if cmd.id == 'open':
-                asyncio.async(cmd.run(element.key))
+            if cmd.is_default_command:
+                asyncio.async(ViewCommand.from_command(cmd, self).run(element.key))
                 return
 
     def _selected_elements_changed( self ):
