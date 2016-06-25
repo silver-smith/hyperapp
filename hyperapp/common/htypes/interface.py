@@ -86,7 +86,7 @@ class Interface(object):
     rt_request = 1
     rt_notification =2
 
-    def __init__( self, iface_id, base=None, content_fields=None, diff_type=tNone, commands=None, required_module_id=None ):
+    def __init__( self, iface_id, base=None, content_fields=None, diff_type=tNone, commands=None ):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(content_fields or [], Field), repr(content_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
@@ -95,7 +95,6 @@ class Interface(object):
         self.content_fields = content_fields or []
         self.diff_type = diff_type
         self.commands = commands or []
-        self.required_module_id = required_module_id
         if base:
             self.content_fields = base.content_fields + self.content_fields
             self.commands = base.commands + self.commands
@@ -120,12 +119,6 @@ class Interface(object):
 
     def get_contents_type( self ):
         return self._tContents
-
-    def get_module_ids( self ):
-        if self.required_module_id:
-            return [self.required_module_id]
-        else:
-            return []
 
     def get_basic_commands( self ):
         return [

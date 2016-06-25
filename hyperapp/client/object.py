@@ -29,9 +29,6 @@ class Object(Commandable):
     def get_facets( self ):
         return []
 
-    def get_module_ids( self ):
-        return []
-
     @asyncio.coroutine
     def run_command( self, command_id, *args, **kw ):
         command = self.get_command(command_id)

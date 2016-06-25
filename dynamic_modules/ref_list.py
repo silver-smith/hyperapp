@@ -11,9 +11,6 @@ class RefList(ProxyListObject):
 
     objimpl_id = 'ref_list'
 
-    def get_module_ids( self ):
-        return [this_module_id]
-
     @asyncio.coroutine
     def run_command( self, command_id=None, **kw ):
         if command_id == 'add':

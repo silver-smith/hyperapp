@@ -8,9 +8,6 @@ from .registry import DynamicModuleRegistryProxy
 log = logging.getLogger(__name__)
 
 
-DYNAMIC_MODULE_ID_ATTR = 'this_module_id'
-
-
 class ModuleManager(object):
 
     def __init__( self, services ):
@@ -43,7 +40,6 @@ class ModuleManager(object):
         module_inst = ModuleType(name, 'dynamic hyperapp module %r loaded as %r' % (module.id, name))
         sys.modules[name] = module_inst
         ast = compile(module.source, module.fpath, 'exec')  # compile allows to associate file path with loaded module
-        module_inst.__dict__[DYNAMIC_MODULE_ID_ATTR] = module.id
         exec(ast, module_inst.__dict__)
         self._register_provided_services(module, module_inst.__dict__)
         return module_inst

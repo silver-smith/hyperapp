@@ -139,9 +139,6 @@ class ProxyObject(Object):
     def get_facets( self ):
         return self.facets
 
-    def get_module_ids( self ):
-        return self.iface.get_module_ids()
-
     @asyncio.coroutine
     def server_subscribe( self ):
         result = yield from self.execute_request('subscribe')

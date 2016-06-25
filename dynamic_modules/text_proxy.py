@@ -25,9 +25,6 @@ class ProxyTextObject(ProxyObject, TextObject):
         self.text = contents.text
         self._store_text_to_cache()
 
-    def get_module_ids( self ):
-        return [this_module_id]
-
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
         commands = ProxyObject.get_commands(self)
