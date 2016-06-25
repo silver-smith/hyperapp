@@ -1,6 +1,7 @@
 import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle, tObjHandle
+from .command import command
 from .object import Object
 
 log = logging.getLogger(__name__)
@@ -42,18 +43,11 @@ class TextObject(Object):
         self.text = new_text
         self._notify_object_changed(emitter_view)
 
-    @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
-        # todo: handle 'open_ref' command by client-only object after multi-server support is added
-        if command_id == 'edit':
-            return self.run_command_edit()
-        if command_id == 'view':
-            return self.run_command_view()
-        return (yield from Object.run_command(self, command_id, **kw))
-
-    def run_command_edit( self ):
+    @command('edit', 'Edit', 'Switch to edit mode', 'E')
+    def command_edit( self ):
         return tObjHandle('text_edit', self.get_state())
 
+    @command('view', 'View', 'Switch to view mode', 'Ctrl+F')
     def run_command_view( self ):
         return tObjHandle('text_view', self.get_state())
 

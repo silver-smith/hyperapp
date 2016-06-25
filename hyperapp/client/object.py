@@ -32,7 +32,7 @@ class Object(Commandable):
     @asyncio.coroutine
     def run_command( self, command_id, *args, **kw ):
         command = self.get_command(command_id)
-        assert command, repr(command_id)  # Unknown command
+        assert command, 'Unknown command: %r; known are: %r' % (command_id, [cmd.id for cmd in self._commands])  # Unknown command
         return (yield from command.run(*args, **kw))
 
     def subscribe( self, observer ):
