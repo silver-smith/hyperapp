@@ -76,6 +76,7 @@ class MenuBar(object):
         commands = window.get_object_commands()
         for cmd in commands:
             assert isinstance(cmd, Command), repr(cmd)
+            if cmd.is_system(): continue
             self.dir_menu.addAction(cmd.make_action(self.dir_menu))
         self.dir_menu.setEnabled(commands != [])
 
@@ -86,6 +87,7 @@ class MenuBar(object):
         shortcuts = set()
         for cmd in reversed(window.get_commands()):
             assert isinstance(cmd, Command), repr(cmd)
+            if cmd.is_system(): continue
             if not cmd.is_enabled():
                 commands.append(cmd)
                 continue

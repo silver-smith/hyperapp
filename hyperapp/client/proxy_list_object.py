@@ -41,6 +41,9 @@ class ProxyListObject(ProxyObject, ListObject):
         elements = [self._element_from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
         return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
+    def _list_diff_from_data( self, key_column_id, rec ):
+        return ListDiff(rec.start_key, rec.end_key, [self._element_from_data(key_column_id, None, elt) for elt in rec.elements])
+
     def _element_from_data( self, key_column_id, sort_column_id, rec ):
         key = getattr(rec.row, key_column_id)
         if sort_column_id is None:
@@ -145,7 +148,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def process_update( self, diff ):
         log.info('-- proxy process_update self=%r diff=%r start_key=%r end_key=%r elements=%r', self, diff, diff.start_key, diff.end_key, diff.elements)
         key_column_id = self.get_key_column_id()
-        diff = ListDiff.from_data(key_column_id, diff)
+        diff = self._list_diff_from_data(key_column_id, diff)
         self._update_slices(diff)
         self._notify_diff_applied(diff)
 

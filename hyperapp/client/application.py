@@ -165,6 +165,9 @@ class Application(QtGui.QApplication, view.View):
         if contents:
             module_ids, modules, state_data = contents
             log.info('-- modules loaded from state: ids=%r, modules=%r', module_ids, [module.fpath for module in modules])
+            new_modules = self._loop.run_until_complete(self.services.code_repository.get_modules_by_ids(module_ids))
+            if new_modules is not None:  # has code repositories?
+                modules = new_modules  # load new versions
             self.services.module_mgr.add_modules(modules)
             state = packet_coders.decode('cdr', state_data, self.state_type)
             log.info('-->8 -- loaded state  ------')

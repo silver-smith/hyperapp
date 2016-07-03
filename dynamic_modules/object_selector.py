@@ -5,7 +5,7 @@ from ..common.interface.article import tObjSelectorHandle
 from .util import uni2str
 from .proxy_object import ProxyObject
 from . import view
-from .command import ObjectCommand
+from .command import command, ViewCommand
 
 log = logging.getLogger(__name__)
 
@@ -48,24 +48,18 @@ class View(view.View, QtGui.QWidget):
     def get_object( self ):
         return self.ref
 
-    def get_object_commands( self ):
-        commands = self.target_view.get_object_commands()
-        choose_cmd = ObjectCommand('choose', 'Choose', 'Choose current object', 'Ctrl+Return', self)
-        return [choose_cmd] + commands
+    def get_object_commands( self, *args, **kw ):
+        return (self.target_view.get_object_commands()
+                + view.View.get_object_commands(self, *args, **kw)
+                + [self.object_command_choose])  # do not wrap in ViewCommand - we will open it ourselves
 
+    @command('choose', 'Choose', 'Choose current object', 'Ctrl+Return')
     @asyncio.coroutine
-    def run_object_command( self, command_id ):
-        if command_id == 'choose':
-            yield from self.run_object_command_choose(command_id)
-        else:
-            return (yield from self.target_view.run_object_command(command_id))
-
-    @asyncio.coroutine
-    def run_object_command_choose( self, command_id ):
+    def object_command_choose( self ):
         target_obj = self.target_view.get_object()
         url = target_obj.get_url()
         if not url: return  # not a proxy - can not choose it
-        handle = (yield from self.ref.run_command(command_id, target_url=url.to_data()))
+        handle = (yield from self.ref.run_command('choose', target_url=url.to_data()))
         if handle:
             view.View.open(self, handle)  # do not wrap in our handle
 

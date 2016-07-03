@@ -35,10 +35,6 @@ class ListDiff(object):
     def delete( cls, key ):
         return cls(key, key, [])
 
-    @classmethod
-    def from_data( cls, key_column_id, rec ):
-        return cls(rec.start_key, rec.end_key, [Element.from_data(key_column_id, None, elt) for elt in rec.elements])
-
     def __init__( self, start_key, end_key, elements ):
         # keys == None means append
         self.start_key = start_key  # replace elements from this one

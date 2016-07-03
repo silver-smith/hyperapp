@@ -231,6 +231,11 @@ class RefSelector(Object):
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.article_id), path_part_to_str(self.ref_id))
 
+    def get_commands( self ):
+        return [
+            tCommand('choose'),
+            ]
+
     def process_request( self, request ):
         if request.command_id == 'choose':
             return self.run_command_choose(request)

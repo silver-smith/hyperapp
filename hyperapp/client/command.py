@@ -31,6 +31,9 @@ class Command(object, metaclass=abc.ABCMeta):
     def __repr__( self ):
         return '%s(%r)' % (self.__class__.__name__, self.id)
 
+    def is_system( self ):
+        return self.id.startswith('_')
+
     def is_enabled( self ):
         return self.enabled
 
@@ -239,10 +242,10 @@ class Commandable(object):
             self._commands.append(bound_cmd)
 
     def get_command( self, command_id ):
-        for command in self._commands:
+        for command in self.get_commands():
             if command.id == command_id:
                 return command
         return None
 
     def get_commands( self ):
-        return [cmd for cmd in self._commands if not cmd.id.startswith('_')]
+        return self._commands
