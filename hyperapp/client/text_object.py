@@ -53,7 +53,7 @@ class TextObject(Object):
 
     @asyncio.coroutine
     def open_ref( self, ref_id ):
-        return (yield from self.run_command('open_ref', ref_id=ref_id))
+        pass  # not implemented for local text
 
     def __del__( self ):
         log.info('~text_object %r', self)
