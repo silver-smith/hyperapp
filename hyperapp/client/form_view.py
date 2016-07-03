@@ -113,7 +113,7 @@ class View(view.View, QtGui.QWidget):
         field_values = {}
         for name, field in self.fields:
             field_values[name] = field.get_value()
-        handle = yield from self.object.run_command('submit', **field_values)
+        handle = yield from self.object.run_command('_submit', **field_values)
         if handle:
             self.open(handle)
 
