@@ -1,5 +1,7 @@
-import json
+import abc
 import base64
+import json
+import yaml
 import dateutil.parser
 from .method_dispatch import method_dispatch
 from .htypes import (
@@ -25,11 +27,15 @@ def join_path( *args ):
 class DecodeError(Exception): pass
 
 
-class JsonDecoder(object):
+class DictDecoder(object, metaclass=abc.ABCMeta):
 
     def decode( self, t, value, path='root' ):
         assert isinstance(value, bytes), repr(value)
-        return self.dispatch(t, json.loads(value.decode()), path)
+        return self.dispatch(t, self._str_to_dict(value.decode()), path)
+
+    @abc.abstractmethod
+    def _str_to_dict( self, value ):
+        pass
 
     def expect( self, path, expr, desc ):
         if not expr:
@@ -121,3 +127,15 @@ class JsonDecoder(object):
             setattr(decoded_elt, 'idx', idx)
             decoded_elts.append(decoded_elt)
         return decoded_elts
+
+
+class JsonDecoder(DictDecoder):
+
+    def _str_to_dict( self, value ):
+        return json.loads(value)
+
+
+class YamlDecoder(DictDecoder):
+
+    def _str_to_dict( self, value ):
+        return yaml.load(value)

@@ -1,5 +1,7 @@
-import json
+import abc
 import base64
+import json
+import yaml
 from .method_dispatch import method_dispatch
 from .htypes import (
     TString,
@@ -17,13 +19,14 @@ from .htypes import (
     )
 
 
-class JsonEncoder(object):
-
-    def __init__( self, pretty=False ):
-        self.pretty = pretty
+class DictEncoder(object, metaclass=abc.ABCMeta):
 
     def encode( self, t, value ):
-        return json.dumps(self.dispatch(t, value), indent=4 if self.pretty else None).encode()
+        return self._dict_to_str(self.dispatch(t, value)).encode()
+
+    @abc.abstractmethod
+    def _dict_to_str( self, value ):
+        pass
 
     @method_dispatch
     def dispatch( self, t, value ):
@@ -77,3 +80,18 @@ class JsonEncoder(object):
     @dispatch.register(TList)
     def encode_list( self, t, value ):
         return [self.dispatch(t.element_type, elt) for elt in value]
+
+
+class JsonEncoder(DictEncoder):
+
+    def __init__( self, pretty=False ):
+        self.pretty = pretty
+
+    def _dict_to_str( self, value ):
+        return json.dumps(value, indent=4 if self.pretty else None)
+
+
+class YamlEncoder(DictEncoder):
+
+    def _dict_to_str( self, value ):
+        return yaml.dump(value)

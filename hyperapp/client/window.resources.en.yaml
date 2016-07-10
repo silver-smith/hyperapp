@@ -1,0 +1,5 @@
+commands:
+- id: duplicate_window
+  text: Duplicate window
+  desc: Duplicate window including it's contents
+  shortcut: Alt+Shift+W

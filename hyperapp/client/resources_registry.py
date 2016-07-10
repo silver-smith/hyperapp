@@ -7,7 +7,7 @@ class ResourcesRegistry(object):
         self._registry = {}
 
     def register( self, id, locale, resources ):
-        assert isisntance(resource, tLocaleResources), repr(resources)
+        assert isinstance(resources, tLocaleResources), repr(resources)
         self._registry[(id, locale)] = resources
 
     def resolve( self, id, locale ):

@@ -8,7 +8,8 @@ import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
 import hyperapp.common.interface.module_list
 
-from ..common.htypes import iface_registry
+from ..common.htypes import tLocaleResources, iface_registry
+from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
@@ -46,6 +47,7 @@ from . import proxy_list_object
 class Services(object):
 
     def __init__( self ):
+        self._dir = os.path.abspath(os.path.dirname(__file__))
         self.iface_registry = iface_registry
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
@@ -63,6 +65,7 @@ class Services(object):
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_transports()
         self._register_modules()
+        self._load_resources()
         self._register_object_implementations()
         self._register_views()
 
@@ -78,6 +81,14 @@ class Services(object):
             url_clipboard,
             ]:
             module.ThisModule(self)  # will auto-register itself
+
+    def _load_resources( self ):
+        for module in [
+                'window',
+                ]:
+            with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
+                resources = packet_coders.decode('yaml', f.read(), tLocaleResources)
+                self.resources_registry.register(module, 'en', resources)
 
     def _register_object_implementations( self ):
         for module in [
