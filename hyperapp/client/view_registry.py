@@ -23,6 +23,6 @@ class ViewRegistry(Registry):
             handle = yield from execute_get_request(self._remoting, url)
         rec = self._resolve(handle.view_id)
         log.info('producing view %r using %s(%s, %s)', handle.view_id, rec.factory, rec.args, rec.kw)
-        view = yield from rec.factory(handle, parent, locale, *rec.args, **rec.kw)
+        view = yield from rec.factory(handle, locale, parent, *rec.args, **rec.kw)
         assert isinstance(view, View), repr((handle.view_id, view))  # must resolve to View
         return view

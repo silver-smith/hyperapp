@@ -30,17 +30,18 @@ class View(composite.Composite):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, locale, view_registry ):
+    def from_state( cls, state, locale, parent, view_registry ):
         child = yield from view_registry.resolve(state.history[state.current_pos].handle, locale)
-        return cls(parent, view_registry, child,
+        return cls(parent, locale, view_registry, child,
                    state.history[:state.current_pos],
                    list(reversed(state.history[state.current_pos + 1:])))
 
-    def __init__( self, parent, view_registry, child, backward_history=None, forward_history=None ):
+    def __init__( self, parent, locale, view_registry, child, backward_history=None, forward_history=None ):
         assert isinstance(child, view.View), repr(child)
         assert backward_history is None or is_list_inst(backward_history, item_type), repr(backward_history)
         assert forward_history is None or is_list_inst(forward_history, item_type), repr(forward_history)
         composite.Composite.__init__(self, parent)
+        self._locale = locale
         self._view_registry = view_registry
         self._backward_history = backward_history or []     # item_type list
         self._forward_history = forward_history or []   # item_type list
@@ -76,7 +77,7 @@ class View(composite.Composite):
 
     @asyncio.coroutine
     def _open( self, handle ):
-        self._child = yield from self._view_registry.resolve(handle, self)
+        self._child = yield from self._view_registry.resolve(handle, self._locale, self)
         self._parent().view_changed(self)
         object = self._child.get_object()
         if object:

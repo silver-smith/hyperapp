@@ -40,7 +40,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, app, locale, view_registry, resources_registry ):
+    def from_state( cls, state, locale, app, view_registry, resources_registry ):
         child = yield from tab_view.View.from_state(state.tab_view, locale, view_registry)
         return cls(view_registry, app, child,
                    locale, resources_registry,
@@ -130,7 +130,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        yield from self.from_state(state, self._app, self._locale, self._view_registry, self._resources_registry)
+        yield from self.from_state(state, self._locale, self._app, self._view_registry, self._resources_registry)
 
     def __del__( self ):
         log.info('~window')

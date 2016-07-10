@@ -7,6 +7,7 @@ import hyperapp.common.interface.fs
 import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
 import hyperapp.common.interface.module_list
+import hyperapp.common.interface.test_list
 
 from ..common.htypes import tLocaleResources, iface_registry
 from ..common.packet_coders import packet_coders
