@@ -16,6 +16,7 @@ from .remoting import Remoting
 from .named_url_file_repository import FileNamedUrlRepository
 from . import code_repository
 from .code_repository import CodeRepository
+from .resources_registry import ResourcesRegistry
 from .module_manager import ModuleManager
 from .file_route_repository import FileRouteRepository
 from . import identity
@@ -57,6 +58,7 @@ class Services(object):
         self.code_repository = CodeRepository(
             self.iface_registry, self.remoting, self.cache_repository,
             FileNamedUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+        self.resources_registry = ResourcesRegistry()
         self.bookmarks = Bookmarks(FileNamedUrlRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_transports()

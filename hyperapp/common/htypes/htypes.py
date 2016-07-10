@@ -244,3 +244,13 @@ tCommand = TRecord([
             Field('desc', TOptional(tString)),
             Field('shortcut', TOptional(tString)),
             ])
+
+
+tLocaleResources = TRecord([
+    Field('commands', TList(tCommand)),
+    ])
+
+tResources = TRecord([
+    Field('locale', tString),
+    Field('resources', tLocaleResources),
+    ])
