@@ -85,6 +85,7 @@ class Services(object):
     def _load_resources( self ):
         for module in [
                 'window',
+                'code_repository',
                 ]:
             with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
                 resources = packet_coders.decode('yaml', f.read(), tLocaleResources)

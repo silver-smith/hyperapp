@@ -41,7 +41,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
     @classmethod
     @asyncio.coroutine
     def from_state( cls, state, app, locale, view_registry, resources_registry ):
-        child = yield from tab_view.View.from_state(state.tab_view, view_registry)
+        child = yield from tab_view.View.from_state(state.tab_view, locale, view_registry)
         return cls(view_registry, app, child,
                    locale, resources_registry,
                    size=QtCore.QSize(state.size.w, state.size.h),

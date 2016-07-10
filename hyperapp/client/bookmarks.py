@@ -54,7 +54,7 @@ class BookmarkList(ListObject):
     objimpl_id = 'bookmark_list'
 
     @classmethod
-    def from_state( cls, state, iface_registry, remoting, bookmarks ):
+    def from_state( cls, state, locale, iface_registry, remoting, bookmarks ):
         return cls(iface_registry, remoting, bookmarks)
     
     def __init__( self, iface_registry, remoting, bookmarks ):

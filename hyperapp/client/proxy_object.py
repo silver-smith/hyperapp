@@ -85,7 +85,7 @@ class ProxyObject(Object):
                           services.proxy_registry, services.cache_repository)
 
     @classmethod
-    def from_state( cls, state, iface_registry, remoting, proxy_registry, cache_repository ):
+    def from_state( cls, state, locale, iface_registry, remoting, proxy_registry, cache_repository ):
         assert isinstance(state, tProxyObject), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
         server = Server.from_public_key(remoting, server_public_key)

@@ -1,0 +1,5 @@
+commands:
+- id: add
+  text: Add
+  desc: Create code repository url from clipboard
+  shortcut: Ins

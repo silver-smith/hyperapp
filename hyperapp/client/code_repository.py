@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 
 def register_object_implementations( registry, services ):
     registry.register('code_repository_form', CodeRepositoryFormObject.from_state, services.iface_registry, services.code_repository)
-    registry.register('code_repository_list', CodeRepositoryList.from_state, services.code_repository)
+    registry.register('code_repository_list', CodeRepositoryList.from_state, services.resources_registry, services.code_repository)
 
 
 class CodeRepository(object):
@@ -138,12 +138,12 @@ code_repository_list_handle_type = list_handle_type('code_repository_list', tStr
 class CodeRepositoryList(ListObject):
 
     @classmethod
-    def from_state( cls, state, code_repository ):
-        return cls(code_repository)
+    def from_state( cls, state, locale, resources_registry, code_repository ):
+        return cls(resources_registry.resolve('code_repository', locale), code_repository)
     
-    def __init__( self, code_repository ):
+    def __init__( self, resources, code_repository ):
         assert isinstance(code_repository, CodeRepository), repr(code_repository)
-        ListObject.__init__(self)
+        ListObject.__init__(self, resources)
         self.code_repository = code_repository
 
     @staticmethod

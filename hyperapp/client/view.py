@@ -24,6 +24,7 @@ class View(ObjectObserver, Commandable):
         self._parent = weakref.ref(parent) if parent is not None else None
 
     def set_parent( self, parent ):
+        assert isinstance(parent, View), repr(parent)
         self._parent = weakref.ref(parent)
 
     def get_state( self ):

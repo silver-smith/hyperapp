@@ -30,8 +30,8 @@ class View(composite.Composite):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, view_registry ):
-        child = yield from view_registry.resolve(state.history[state.current_pos].handle)
+    def from_state( cls, state, parent, locale, view_registry ):
+        child = yield from view_registry.resolve(state.history[state.current_pos].handle, locale)
         return cls(parent, view_registry, child,
                    state.history[:state.current_pos],
                    list(reversed(state.history[state.current_pos + 1:])))
