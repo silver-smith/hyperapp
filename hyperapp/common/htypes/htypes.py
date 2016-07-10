@@ -239,11 +239,11 @@ tUrlWithRoutes = TRecord(base=tUrl, fields=[
     ])
 
 tCommand = TRecord([
-            Field('id', tString),
-            Field('text', TOptional(tString)),  # None for commands not shown in UI
-            Field('desc', TOptional(tString)),
-            Field('shortcut', TOptional(tString)),
-            ])
+    Field('id', tString),
+    Field('text', TOptional(tString)),  # None for commands not shown in UI
+    Field('desc', TOptional(tString)),
+    Field('shortcut', TOptional(tString)),
+    ])
 
 
 tLocaleResources = TRecord([

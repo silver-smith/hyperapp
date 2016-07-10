@@ -200,9 +200,13 @@ class UnboundCommand(object):
         self.enabled = enabled
         self._class_method = class_method
 
-    def bind( self, inst ):
-        return BoundCommand(self.id, self.text, self.desc, self.shortcut, self.is_default_command,
-                            self.enabled, self._class_method, weakref.ref(inst))
+    def bind( self, inst, command_resource ):
+        if command_resource:
+            return BoundCommand(self.id, command_resource.text, command_resource.desc, command_resource.shortcut,
+                                self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
+        else:
+            return BoundCommand(self.id, self.text, self.desc, self.shortcut,
+                                self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
 
 
 # decorator for view methods
@@ -230,14 +234,15 @@ class command(object):
 
 class Commandable(object):
 
-    def __init__( self ):
+    def __init__( self, resources=None ):
+        command2resource = dict((command.id, command) for command in (resources.commands if resources else []))
         if hasattr(self, '_commands'):  # multiple inheritance hack
             return  # do not populate _commands twice
         self._commands = []  # BoundCommand list
         for name in dir(self):
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue
-            bound_cmd = attr.bind(self)
+            bound_cmd = attr.bind(self, command2resource.get(attr.id))
             setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
             self._commands.append(bound_cmd)
 
