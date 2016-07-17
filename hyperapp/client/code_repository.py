@@ -184,7 +184,7 @@ def make_code_repository_list( key=None ):
 
 class ThisModule(Module):
 
-    @command('repository_list', 'Code repositories', 'Open code repository list', 'Alt+R')
+    @command('repository_list')
     def command_repository_list( self ):
         return make_code_repository_list()
 

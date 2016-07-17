@@ -23,7 +23,6 @@ log = logging.getLogger(__name__)
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
-LOCALE = 'en'
 
 
 class Application(QtGui.QApplication, view.View):
@@ -49,7 +48,7 @@ class Application(QtGui.QApplication, view.View):
     @asyncio.coroutine
     def open_windows( self, state ):
         for s in state or []:
-            yield from window.Window.from_state(s, self, self.services.view_registry)
+            yield from window.Window.from_state(s, self, self.services.view_registry, self.services.resources_registry)
 
     def pick_arg( self, kind ):
         return None

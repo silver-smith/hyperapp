@@ -1,4 +1,7 @@
+import logging
 from ..common.htypes import tLocaleResources
+
+log = logging.getLogger(__name__)
 
 
 class ResourcesRegistry(object):
@@ -8,6 +11,7 @@ class ResourcesRegistry(object):
 
     def register( self, id, locale, resources ):
         assert isinstance(resources, tLocaleResources), repr(resources)
+        log.debug('Resource registry: registering %r' % id)
         self._registry[(id, locale)] = resources
 
     def resolve( self, id, locale ):

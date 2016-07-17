@@ -3,3 +3,7 @@ commands:
   text: Add
   desc: Create code repository url from clipboard
   shortcut: Ins
+- id: repository_list
+  text: Code repositories
+  desc: Open code repository list
+  shortcut: Alt+R

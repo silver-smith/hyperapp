@@ -40,13 +40,13 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, app, view_registry ):
+    def from_state( cls, state, app, view_registry, resources_registry ):
         child = yield from tab_view.View.from_state(state.tab_view, view_registry)
-        return cls(view_registry, app, child,
+        return cls(view_registry, resources_registry, app, child,
                    size=QtCore.QSize(state.size.w, state.size.h),
                    pos=QtCore.QPoint(state.pos.x, state.pos.y))
 
-    def __init__( self, view_registry, app, child, size=None, pos=None ):
+    def __init__( self, view_registry, resources_registry, app, child, size=None, pos=None ):
         assert isinstance(child, tab_view.View), repr(child)
         QtGui.QMainWindow.__init__(self)
         composite.Composite.__init__(self, app)
@@ -62,7 +62,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
             self.move(pos)
         else:
             self.move(800, 100)
-        self._menu_bar = MenuBar(app, weakref.ref(self))
+        self._menu_bar = MenuBar(app, weakref.ref(self), resources_registry)
         self._cmd_pane = cmd_pane.View(self)
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)

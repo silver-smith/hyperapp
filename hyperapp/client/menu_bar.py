@@ -6,14 +6,17 @@ from .util import make_action, make_async_action
 from .command import Command, WindowCommand
 from .module import Module
 
+LOCALE = 'en'
+
 log = logging.getLogger(__name__)
 
 
 class MenuBar(object):
 
-    def __init__( self, app, window ):
+    def __init__( self, app, window, resources_registry ):
         self.app = app
         self.window = window  # weakref.ref
+        self._resources_registry = resources_registry
         self.current_dir = None
         self.selected_elts = []
         self._build()
@@ -73,7 +76,16 @@ class MenuBar(object):
         self._update_window_menu(window)
 
     def _make_action( self, menu, cmd ):
-        return make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), '', cmd.run)
+        resources = self._resources_registry.resolve(cmd.resource_id, LOCALE)
+        if not resources:
+            return make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), '', cmd.run)
+        for res in resources.commands:
+            if res.id == cmd.id:
+                break
+        else:
+            print([rc.id for rc in resources.commands])
+            assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
+        return make_async_action(menu, res.text, res.desc, res.shortcut, cmd.run)
 
     def _update_dir_menu( self, window ):
         self.dir_menu.clear()
