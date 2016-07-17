@@ -18,9 +18,9 @@ class View(ObjectObserver, Commandable):
 
     CmdPanelHandleCls = None  # registered by cmd_view
 
-    def __init__( self, parent=None, resources=None ):
+    def __init__( self, parent=None ):
         ObjectObserver.__init__(self)
-        Commandable.__init__(self, resources)
+        Commandable.__init__(self)
         self._parent = weakref.ref(parent) if parent is not None else None
 
     def set_parent( self, parent ):

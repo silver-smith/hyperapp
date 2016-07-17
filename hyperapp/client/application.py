@@ -49,7 +49,7 @@ class Application(QtGui.QApplication, view.View):
     @asyncio.coroutine
     def open_windows( self, state ):
         for s in state or []:
-            yield from window.Window.from_state(s, self, self.services.view_registry, self.services.resources_registry)
+            yield from window.Window.from_state(s, self, self.services.view_registry)
 
     def pick_arg( self, kind ):
         return None

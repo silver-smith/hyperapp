@@ -41,7 +41,7 @@ class View(QtGui.QDockWidget):
         idx = 0
         for cmd in window.get_object_commands():
             assert isinstance(cmd, Command), repr(cmd)
-            if cmd.is_system(): continue
+            #if cmd.is_system(): continue
             button = self._make_button(cmd)
             button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
@@ -64,12 +64,13 @@ class View(QtGui.QDockWidget):
             self.elts_buttons.append(button)
 
     def _make_button( self, cmd ):
-        if cmd.shortcut:
-            text = '%s (%s)' % (cmd.text, cmd.shortcut)
-        else:
-            text = cmd.text
+        ## if cmd.shortcut:
+        ##     text = '%s (%s)' % (cmd.text, cmd.shortcut)
+        ## else:
+        ##     text = cmd.text
+        text = '%s/%s' % (cmd.resource_id, cmd.id)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
-        button.setToolTip(cmd.desc)
+        ## button.setToolTip(cmd.desc)
         return button
 
     def __del__( self ):

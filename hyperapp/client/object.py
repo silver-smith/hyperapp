@@ -13,8 +13,8 @@ class ObjectObserver(object):
 
 class Object(Commandable):
 
-    def __init__( self, resources=None ):
-        Commandable.__init__(self, resources)
+    def __init__( self ):
+        Commandable.__init__(self)
         self._init_observers()
 
     def get_title( self ):

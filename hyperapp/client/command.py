@@ -12,27 +12,18 @@ log = logging.getLogger(__name__)
 # returned from Object.get_commands
 class Command(object, metaclass=abc.ABCMeta):
 
-    def __init__( self, id, text, desc, shortcut=None, is_default_command=False, enabled=True ):
+    def __init__( self, id, resource_id, is_default_command=False, enabled=True ):
         assert isinstance(id, str), repr(id)
-        assert text is None or isinstance(text, str), repr(text)
-        assert desc is None or isinstance(desc, str), repr(desc)
-        assert (shortcut is None
-                or isinstance(shortcut, str)
-                or is_list_inst(shortcut, str)), repr(shortcut)
+        assert isinstance(resource_id, str), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
-        self.text = text
-        self.desc = desc
-        self.shortcut = shortcut
+        self.resource_id = resource_id
         self.is_default_command = is_default_command
         self.enabled = enabled
 
     def __repr__( self ):
         return '%s(%r)' % (self.__class__.__name__, self.id)
-
-    def is_system( self ):
-        return self.id.startswith('_')
 
     def is_enabled( self ):
         return self.enabled
@@ -50,31 +41,14 @@ class Command(object, metaclass=abc.ABCMeta):
     def disable( self ):
         self.set_enabled(False)
 
-    def clone_without_shortcuts( self, shortcut_set ):
-        new_shortcuts = set(self.get_shortcut_list()) - shortcut_set
-        return self.clone(shortcut=list(new_shortcuts))
-
     @abc.abstractmethod
     def get_view( self ):
         pass
 
     @abc.abstractmethod
-    def clone( self, shortcut=None ):
+    def clone( self ):
         pass
     
-    # returns basestring list
-    def get_shortcut_list( self ):
-        if isinstance(self.shortcut, str):
-            return [self.shortcut]
-        else:
-            return self.shortcut or []
-
-    def make_action( self, widget ):
-        log.debug('Command.make_action: %r, %r', self.id, self.run)
-        action = make_async_action(widget, self.text, self.shortcut, self.run)
-        action.setEnabled(self.enabled)
-        return action
-
     @asyncio.coroutine
     @abc.abstractmethod
     def run( self, *args, **kw ):
@@ -85,10 +59,10 @@ class ViewCommand(Command):
 
     @classmethod
     def from_command( cls, cmd, view ):
-        return cls(cmd.id, cmd.text, cmd.desc, cmd.shortcut, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(view))
+        return cls(cmd.id, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(view))
 
-    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, base_cmd, view_wr ):
-        Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
+    def __init__( self, id, resource_id, is_default_command, enabled, base_cmd, view_wr ):
+        Command.__init__(self, id, resource_id, is_default_command, enabled)
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
 
@@ -98,10 +72,8 @@ class ViewCommand(Command):
     def get_view( self ):
         return self._view_wr()
 
-    def clone( self, shortcut=None ):
-        if shortcut is None:
-            shortcut = self.shortcut
-        return ViewCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._base_cmd, self._view_wr)
+    def clone( self ):
+        return ViewCommand(self.id, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
@@ -118,10 +90,10 @@ class WindowCommand(Command):
 
     @classmethod
     def from_command( cls, cmd, window ):
-        return cls(cmd.id, cmd.text, cmd.desc, cmd.shortcut, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(window))
+        return cls(cmd.id, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(window))
 
-    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, base_cmd, window_wr ):
-        Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
+    def __init__( self, id, resource_id, is_default_command, enabled, base_cmd, window_wr ):
+        Command.__init__(self, id, resource_id, is_default_command, enabled)
         self._base_cmd = base_cmd
         self._window_wr = window_wr  # weak ref to class instance
 
@@ -131,10 +103,8 @@ class WindowCommand(Command):
     def get_view( self ):
         return self._window_wr()
 
-    def clone( self, shortcut=None ):
-        if shortcut is None:
-            shortcut = self.shortcut
-        return WindowCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
+    def clone( self ):
+        return WindowCommand(self.id, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
@@ -149,8 +119,8 @@ class WindowCommand(Command):
 
 class BoundCommand(Command):
 
-    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, class_method, inst_wr, args=None ):
-        Command.__init__(self, id, text, desc, shortcut, is_default_command, enabled)
+    def __init__( self, id, resource_id, is_default_command, enabled, class_method, inst_wr, args=None ):
+        Command.__init__(self, id, resource_id, is_default_command, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
@@ -161,14 +131,12 @@ class BoundCommand(Command):
     def get_view( self ):
         return self._inst_wr()
 
-    def clone( self, shortcut=None, args=None ):
-        if shortcut is None:
-            shortcut = self.shortcut
+    def clone( self, args=None ):
         if args is None:
             args = self._args
         else:
             args = self._args + args
-        return BoundCommand(self.id, self.text, self.desc, shortcut, self.is_default_command, self.enabled, self._class_method, self._inst_wr, args)
+        return BoundCommand(self.id, self.resource_id, self.is_default_command, self.enabled, self._class_method, self._inst_wr, args)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
@@ -183,66 +151,47 @@ class BoundCommand(Command):
 
 class UnboundCommand(object):
 
-    def __init__( self, id, text, desc, shortcut, is_default_command, enabled, class_method ):
+    def __init__( self, id, module_name, is_default_command, enabled, class_method ):
         assert isinstance(id, str), repr(id)
-        assert text is None or isinstance(text, str), repr(text)
-        assert desc is None or isinstance(desc, str), repr(desc)
-        assert (shortcut is None
-                or isinstance(shortcut, str)
-                or is_list_inst(shortcut, str)), repr(shortcut)
+        assert isinstance(module_name, str), repr(module_name)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
-        self.text = text
-        self.desc = desc
-        self.shortcut = shortcut
+        self._module_name = module_name
         self.is_default_command = is_default_command
         self.enabled = enabled
         self._class_method = class_method
 
-    def bind( self, inst, command_resource ):
-        if command_resource:
-            return BoundCommand(self.id, command_resource.text, command_resource.desc, command_resource.shortcut,
-                                self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
-        else:
-            return BoundCommand(self.id, self.text, self.desc, self.shortcut,
-                                self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
+    def bind( self, inst ):
+        return BoundCommand(self.id, self._module_name, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
 
 
 # decorator for view methods
 class command(object):
 
-    def __init__( self, id, text=None, desc=None, shortcut=None, is_default_command=False, enabled=True ):
+    def __init__( self, id, *args, enabled=True, is_default_command=False, **kw ):
         assert isinstance(id, str), repr(id)
-        assert text is None or isinstance(text, str), repr(text)
-        assert desc is None or isinstance(desc, str), repr(desc)
-        assert (shortcut is None
-                or isinstance(shortcut, str)
-                or is_list_inst(shortcut, str)), repr(shortcut)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
-        self.text = text
-        self.desc = desc
-        self.shortcut = shortcut  # basestring for single shortcut, basestring list for multiple
         self.is_default_command = is_default_command
         self.enabled = enabled
 
     def __call__( self, class_method ):
-        return UnboundCommand(self.id, self.text, self.desc, self.shortcut, self.is_default_command, self.enabled, class_method)
+        module_name = class_method.__module__.split('.')[-1]
+        return UnboundCommand(self.id, module_name, self.is_default_command, self.enabled, class_method)
 
 
 class Commandable(object):
 
-    def __init__( self, resources=None ):
-        command2resource = dict((command.id, command) for command in (resources.commands if resources else []))
+    def __init__( self ):
         if hasattr(self, '_commands'):  # multiple inheritance hack
             return  # do not populate _commands twice
         self._commands = []  # BoundCommand list
         for name in dir(self):
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue
-            bound_cmd = attr.bind(self, command2resource.get(attr.id))
+            bound_cmd = attr.bind(self)
             setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
             self._commands.append(bound_cmd)
 

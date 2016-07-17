@@ -2,7 +2,7 @@ import logging
 import weakref
 from PySide import QtCore, QtGui
 from ..common.htypes import tCommand
-from .util import make_action
+from .util import make_action, make_async_action
 from .command import Command, WindowCommand
 from .module import Module
 
@@ -40,12 +40,13 @@ class MenuBar(object):
         window = self.window()
         for cmd in Module.get_all_commands():
             assert isinstance(cmd, Command), repr(cmd)
-            menu.addAction(WindowCommand.from_command(cmd, window).make_action(menu))
+            window_command = WindowCommand.from_command(cmd, window)
+            menu.addAction(self._make_action(menu, window_command))
         if not menu.isEmpty():
             menu.addSeparator()
         for cmd in self.window().get_global_commands():
             assert isinstance(cmd, Command), repr(cmd)
-            menu.addAction(cmd.make_action(menu))
+            menu.addAction(self._make_action(menu, cmd))
         return menu
 
     def _current_view( self ):
@@ -71,13 +72,16 @@ class MenuBar(object):
         self._update_dir_menu(window)
         self._update_window_menu(window)
 
+    def _make_action( self, menu, cmd ):
+        return make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), '', cmd.run)
+
     def _update_dir_menu( self, window ):
         self.dir_menu.clear()
         commands = window.get_object_commands()
         for cmd in commands:
             assert isinstance(cmd, Command), repr(cmd)
-            if cmd.is_system(): continue
-            self.dir_menu.addAction(cmd.make_action(self.dir_menu))
+            #if cmd.is_system(): continue
+            self.dir_menu.addAction(self._make_action(self.dir_menu, cmd))
         self.dir_menu.setEnabled(commands != [])
 
     def _update_window_menu( self, window ):
@@ -87,11 +91,12 @@ class MenuBar(object):
         shortcuts = set()
         for cmd in reversed(window.get_commands()):
             assert isinstance(cmd, Command), repr(cmd)
-            if cmd.is_system(): continue
+            #if cmd.is_system(): continue
             if not cmd.is_enabled():
                 commands.append(cmd)
                 continue
-            cmd_shortcuts = set(cmd.get_shortcut_list())
+            #cmd_shortcuts = set(cmd.get_shortcut_list())
+            cmd_shortcuts = set()
             dups = shortcuts & cmd_shortcuts
             if dups:
                 cmd = cmd.clone_without_shortcuts(dups)
@@ -101,7 +106,7 @@ class MenuBar(object):
         for cmd in reversed(commands):
             if last_view is not None and cmd.get_view() is not last_view:
                 self.window_menu.addSeparator()
-            self.window_menu.addAction(cmd.make_action(self.window_menu))
+            self.window_menu.addAction(self._make_action(self.window_menu, cmd))
             last_view = cmd.get_view()
 
     def selected_elements_changed( self, elts ):
