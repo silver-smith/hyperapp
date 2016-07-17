@@ -138,8 +138,8 @@ code_repository_list_handle_type = list_handle_type('code_repository_list', tStr
 class CodeRepositoryList(ListObject):
 
     @classmethod
-    def from_state( cls, state, locale, resources_registry, code_repository ):
-        return cls(resources_registry.resolve('code_repository', locale), code_repository)
+    def from_state( cls, state, resources_registry, code_repository ):
+        return cls(resources_registry.resolve('code_repository'), code_repository)
     
     def __init__( self, resources, code_repository ):
         assert isinstance(code_repository, CodeRepository), repr(code_repository)

@@ -6,9 +6,9 @@ class ResourcesRegistry(object):
     def __init__( self ):
         self._registry = {}
 
-    def register( self, id, locale, resources ):
+    def register( self, id, resources ):
         assert isinstance(resources, tLocaleResources), repr(resources)
-        self._registry[(id, locale)] = resources
+        self._registry[(id)] = resources
 
-    def resolve( self, id, locale ):
-        return self._registry.get((id, locale))
+    def resolve( self, id ):
+        return self._registry.get((id))

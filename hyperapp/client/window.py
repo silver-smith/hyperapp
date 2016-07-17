@@ -40,20 +40,19 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, locale, app, view_registry, resources_registry ):
-        child = yield from tab_view.View.from_state(state.tab_view, locale, view_registry)
+    def from_state( cls, state, app, view_registry, resources_registry ):
+        child = yield from tab_view.View.from_state(state.tab_view, view_registry)
         return cls(view_registry, app, child,
-                   locale, resources_registry,
+                   resources_registry,
                    size=QtCore.QSize(state.size.w, state.size.h),
                    pos=QtCore.QPoint(state.pos.x, state.pos.y))
 
-    def __init__( self, view_registry, app, child, locale, resources_registry, size=None, pos=None ):
+    def __init__( self, view_registry, app, child, resources_registry, size=None, pos=None ):
         assert isinstance(child, tab_view.View), repr(child)
         QtGui.QMainWindow.__init__(self)
-        composite.Composite.__init__(self, app, resources_registry.resolve('window', locale))
+        composite.Composite.__init__(self, app, resources_registry.resolve('window'))
         self._view_registry = view_registry
         self._app = app  # alias for _parent()
-        self._locale = locale
         self._resources_registry = resources_registry
         self._view = None
         self._child_widget = None
@@ -130,7 +129,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        yield from self.from_state(state, self._locale, self._app, self._view_registry, self._resources_registry)
+        yield from self.from_state(state, self._app, self._view_registry, self._resources_registry)
 
     def __del__( self ):
         log.info('~window')
