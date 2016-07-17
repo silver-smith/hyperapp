@@ -58,7 +58,7 @@ class RemoteCommand(Command):
         return 'RemoteCommand(%r)' % self.id
 
     def to_data( self ):
-        return tCommand(self.id, self.text, self.desc, self.shortcut)
+        return tCommand(self.id, self.resource_id)
 
     def get_view( self ):
         return None

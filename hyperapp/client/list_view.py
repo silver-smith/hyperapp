@@ -4,7 +4,7 @@ import asyncio
 import bisect
 from PySide import QtCore, QtGui
 from ..common.htypes import Type, tHandle
-from .util import uni2str, key_match, key_match_any
+from .util import uni2str, key_match, key_match_any, make_async_action
 from .command import Command, ViewCommand
 from .list_object import ListObserver, ListDiff, Slice, ListObject
 from . import view
@@ -394,7 +394,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         # create actions
         for cmd in element.commands:
             assert isinstance(cmd, Command), repr(cmd)
-            action = cmd.make_action(action_widget)
+            action = make_async_action(action_widget, '%s/%s' % (cmd.resource_id, cmd.id), cmd.id, '', cmd.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
