@@ -26,17 +26,17 @@ class View(QtGui.QTabWidget, view.View):
         for tab_state in state.tabs:
             child = yield from view_registry.resolve(tab_state)
             children.append(child)
-        return cls(view_registry, None, children, state.current_tab)
+        return cls(view_registry, children, state.current_tab)
 
     @staticmethod    
     def map_current( state, mapper ):
         idx = state.current_tab
         return state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
-    def __init__( self, view_registry, parent, children, current_idx ):
+    def __init__( self, view_registry, children, current_idx ):
         assert is_list_inst(children, view.View), repr(children)
         QtGui.QTabWidget.__init__(self)
-        view.View.__init__(self, parent)
+        view.View.__init__(self)
         self._view_registry = view_registry
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)

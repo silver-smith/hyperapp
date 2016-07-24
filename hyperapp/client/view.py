@@ -91,7 +91,7 @@ class View(ObjectObserver, Commandable):
             return None
 
     def selected_elements_changed( self, elts ):
-        parent = self._parent()
+        parent = self._parent and self._parent()
         if parent:
             parent.selected_elements_changed(elts)
 
