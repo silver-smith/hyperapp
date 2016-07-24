@@ -66,16 +66,15 @@ class View(QtGui.QDockWidget):
             self.elts_buttons.append(button)
 
     def _make_button( self, cmd ):
-        ## if cmd.shortcut:
-        ##     text = '%s (%s)' % (cmd.text, cmd.shortcut)
-        ## else:
-        ##     text = cmd.text
         desc = ''
         resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
         if resources:
             for res in resources.commands:
                 if res.id == cmd.id:
-                    text = res.text
+                    if res.shortcuts:
+                        text = '%s (%s)' % (res.text, res.shortcuts[0])
+                    else:
+                        text = res.text
                     desc = res.desc
                     break
             else:

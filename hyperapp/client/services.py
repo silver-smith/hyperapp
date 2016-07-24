@@ -88,6 +88,7 @@ class Services(object):
                 'window',
                 'navigator',
                 'code_repository',
+                'bookmarks',
                 ]:
             with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
                 resources = packet_coders.decode('yaml', f.read(), tLocaleResources)

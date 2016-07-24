@@ -73,13 +73,13 @@ class BookmarkList(ListObject):
     def get_title( self ):
         return 'Bookmarks'
 
-    @command('_open', 'Open', 'Open selected bookmark', is_default_command=True)
+    @command('_open', is_default_command=True)
     @asyncio.coroutine
     def command_open_bookmark( self, element_key ):
         item = self._bookmarks.get_item(element_key)
         return (yield from execute_get_request(self._remoting, item.url))
 
-    @command('add', 'Add', 'Add url from clipboard', 'Ins')
+    @command('add')
     @asyncio.coroutine
     def command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
@@ -127,11 +127,11 @@ class ThisModule(Module):
             return [self.object_command_bookmark]
         return []
 
-    @command('bookmark_list', 'Bookmarks', 'Open bookmark list', 'Alt+B')
+    @command('bookmark_list')
     def command_bookmark_list( self ):
         return make_bookmark_list()
 
-    @command('_bookmark', 'Bookmark', 'Add this url to bookmarks', 'Ctrl+D')
+    @command('_bookmark')
     def object_command_bookmark( self, object ):
         url = object.get_url()
         assert url is not None
