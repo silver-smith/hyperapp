@@ -104,7 +104,7 @@ class IdentityFormObject(Object):
     def get_title( self ):
         return 'Create identity'
 
-    @command('submit', 'Create', 'Create new identity, generate private+public key pair', 'Return')
+    @command('submit')
     def command_submit( self, name ):
         log.info('creating identity %r...', name)
         self.identity_controller.generate(name)
@@ -142,7 +142,7 @@ class IdentityList(ListObject):
     def get_title( self ):
         return 'Identity list'
 
-    @command('create', 'Create', 'Create new identity, generate private+public key pair', 'Ins')
+    @command('create')
     def command_new( self ):
         return make_identity_form()
 
@@ -174,10 +174,10 @@ def make_identity_list( key=None ):
 
 class ThisModule(Module):
 
-    @command('identity_list', 'Identities', 'Open identity list', 'Alt+I')
+    @command('identity_list')
     def command_identity_list( self ):
         return make_identity_list()
 
-    @command('create_identity', 'Create identity', 'Create new identity, public+private key pair', 'Alt+N')
+    @command('create_identity')
     def run_command_create_idenity( self ):
         return make_identity_form()
