@@ -85,6 +85,7 @@ class Services(object):
 
     def _load_resources( self ):
         for module in [
+                'application',
                 'window',
                 'tab_view',
                 'navigator',
