@@ -1,0 +1,26 @@
+commands:
+- id: duplicate_tab
+  text: Duplicate  tab
+  desc: Duplicate current tab
+  shortcuts:
+  - Ctrl+T
+- id: close_tab
+  text: Close tab
+  desc: Close current tab
+  shortcuts:
+  - Ctrl+F4
+- id: split_horizontally
+  text: '&Split horizontally'
+  desc: Split horizontally
+  shortcuts:
+  - Alt+S
+- id: split_vertically
+  text: Split &vertically
+  desc: Split vertically
+  shortcuts:
+  - Shift+Alt+S
+- id: unsplit
+  text: '&Unsplit'
+  desc: Unsplit
+  shortcuts:
+  - Alt+U
