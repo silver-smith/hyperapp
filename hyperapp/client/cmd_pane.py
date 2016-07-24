@@ -72,16 +72,17 @@ class View(QtGui.QDockWidget):
         ##     text = cmd.text
         desc = ''
         resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
-        if not resources:
-            text = '%s/%s' % (cmd.resource_id, cmd.id)
-        for res in resources.commands:
-            if res.id == cmd.id:
-                text = res.text
-                desc = res.desc
-                break
+        if resources:
+            for res in resources.commands:
+                if res.id == cmd.id:
+                    text = res.text
+                    desc = res.desc
+                    break
+            else:
+                print([rc.id for rc in resources.commands])
+                assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
         else:
-            print([rc.id for rc in resources.commands])
-            assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
+            text = '%s/%s' % (cmd.resource_id, cmd.id)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(desc)
         return button

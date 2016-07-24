@@ -242,7 +242,7 @@ tCommand = TRecord([
     Field('id', tString),
     Field('text', TOptional(tString)),  # None for commands not shown in UI
     Field('desc', TOptional(tString)),
-    Field('shortcuts', TList(tString)),
+    Field('shortcuts', TList(tString), default=[]),
     ])
 
 

@@ -394,7 +394,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         # create actions
         for cmd in element.commands:
             assert isinstance(cmd, Command), repr(cmd)
-            action = make_async_action(action_widget, '%s/%s' % (cmd.resource_id, cmd.id), cmd.id, cmd.run)
+            action = make_async_action(action_widget, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
