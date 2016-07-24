@@ -26,8 +26,8 @@ class MenuBar(object):
         self.dir_menu = QtGui.QMenu('&Dir')
         self.window_menu = QtGui.QMenu('&Window')
         self.help_menu = QtGui.QMenu('H&elp')
-        self.add_action_to_menu(self.help_menu, '&Dir commands', 'F1', MenuBar._open_dir_commands, weakref.ref(self))
-        self.add_action_to_menu(self.help_menu, '&Current element commands', '.', MenuBar._open_elt_commands, weakref.ref(self))
+        self.add_action_to_menu(self.help_menu, '&Dir commands', ['F1'], MenuBar._open_dir_commands, weakref.ref(self))
+        self.add_action_to_menu(self.help_menu, '&Current element commands', ['.'], MenuBar._open_elt_commands, weakref.ref(self))
         ## self.help_menu.setEnabled(False)
         menu_bar = self.window().menuBar()
         menu_bar.addMenu(self.file_menu)
@@ -78,14 +78,14 @@ class MenuBar(object):
     def _make_action( self, menu, cmd ):
         resources = self._resources_registry.resolve(cmd.resource_id, LOCALE)
         if not resources:
-            return make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), '', cmd.run)
+            return make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
         for res in resources.commands:
             if res.id == cmd.id:
                 break
         else:
             print([rc.id for rc in resources.commands])
             assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
-        return make_async_action(menu, res.text, res.desc, res.shortcut, cmd.run)
+        return make_async_action(menu, res.text, res.shortcut, cmd.run)
 
     def _update_dir_menu( self, window ):
         self.dir_menu.clear()

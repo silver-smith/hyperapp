@@ -1,0 +1,17 @@
+commands:
+- id: go_back
+  text: Go back
+  desc: Go backward to previous page
+  shortcut:
+  - Escape
+  - Alt+Left
+- id: go_forward
+  text: Go forward
+  desc: Go forward to next page
+  shortcut:
+  - Alt+Right
+- id: open_history
+  text: History
+  desc: Open history
+  shortcut:
+  - Ctrl+H

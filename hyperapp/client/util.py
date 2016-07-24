@@ -6,6 +6,7 @@ import weakref
 from datetime import datetime
 from dateutil.tz import tzutc
 from PySide import QtCore, QtGui
+from ..common.util import is_list_inst
 
 log = logging.getLogger(__name__)
 
@@ -147,21 +148,24 @@ def key_match_any( evt, keys ):
     return False
 
 def make_async_action( widget, text, shortcut, fn, *args, **kw ):
+    assert isinstance(text, str), repr(text)
+    assert shortcut is None or is_list_inst(shortcut, str), repr(shortcut)
+    assert callable(fn), repr(fn)
     def run():
         log.info('async action run %r %r(%s, %s)', text, fn, args, kw)
         asyncio.async(fn(*args, **kw))
     return make_action(widget, text, shortcut, run)
 
 def make_action( widget, text, shortcut, fn, *args, **kw ):
+    assert isinstance(text, str), repr(text)
+    assert shortcut is None or is_list_inst(shortcut, str), repr(shortcut)
+    assert callable(fn), repr(fn)
     ## print '--- make_action', widget, text, shortcut, fn, args, kw
     def run():
         log.info('--- make_action/run widget=%r text=%r shortcut=%r fn=%r args=%r kw=%r', widget, text, shortcut, fn, args, kw)
         return fn(*args, **kw)
     action = QtGui.QAction(text, widget)
-    if isinstance(shortcut, list):
-        action.setShortcuts(shortcut)
-    else:
-        action.setShortcut(shortcut)
+    action.setShortcuts(shortcut or [])
     action.triggered.connect(run)
     return action
 

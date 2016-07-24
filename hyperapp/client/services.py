@@ -86,6 +86,7 @@ class Services(object):
     def _load_resources( self ):
         for module in [
                 'window',
+                'navigator',
                 'code_repository',
                 ]:
             with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:

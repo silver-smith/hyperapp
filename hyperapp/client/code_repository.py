@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 
 def register_object_implementations( registry, services ):
     registry.register('code_repository_form', CodeRepositoryFormObject.from_state, services.iface_registry, services.code_repository)
-    registry.register('code_repository_list', CodeRepositoryList.from_state, services.resources_registry, services.code_repository)
+    registry.register('code_repository_list', CodeRepositoryList.from_state, services.code_repository)
 
 
 class CodeRepository(object):
@@ -193,7 +193,7 @@ class ThisModule(Module):
             return [self.object_command_add_to_repository_list]
         return []
 
-    @command('_add_to_repository_list', 'Add Repository', 'Add this repository to my repositories list', 'Ctrl+A')
+    @command('_add_to_repository_list')
     def object_command_add_to_repository_list( self, object ):
         assert code_repository_iface in object.get_facets()
         url = object.get_url().clone(iface=code_repository_iface)
