@@ -11,10 +11,12 @@ log = logging.getLogger(__name__)
 
 class View(QtGui.QDockWidget):
 
-    def __init__( self, window ):
+    def __init__( self, window, locale, resources_registry ):
         QtGui.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
         self.window = weakref.ref(window)
+        self._locale = locale
+        self._resources_registry = resources_registry
         self.current_dir = None
         self.layout = QtGui.QVBoxLayout(spacing=1)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
@@ -68,9 +70,20 @@ class View(QtGui.QDockWidget):
         ##     text = '%s (%s)' % (cmd.text, cmd.shortcut)
         ## else:
         ##     text = cmd.text
-        text = '%s/%s' % (cmd.resource_id, cmd.id)
+        desc = ''
+        resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
+        if not resources:
+            text = '%s/%s' % (cmd.resource_id, cmd.id)
+        for res in resources.commands:
+            if res.id == cmd.id:
+                text = res.text
+                desc = res.desc
+                break
+        else:
+            print([rc.id for rc in resources.commands])
+            assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
-        ## button.setToolTip(cmd.desc)
+        button.setToolTip(desc)
         return button
 
     def __del__( self ):

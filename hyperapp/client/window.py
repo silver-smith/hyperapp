@@ -15,6 +15,9 @@ from . import tab_view
 log = logging.getLogger(__name__)
 
 
+LOCALE = 'en'
+
+
 DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
@@ -51,6 +54,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self)
         composite.Composite.__init__(self, app)
         self._view_registry = view_registry
+        self._resources_registry = resources_registry
         self._app = app  # alias for _parent()
         self._view = None
         self._child_widget = None
@@ -62,8 +66,8 @@ class Window(composite.Composite, QtGui.QMainWindow):
             self.move(pos)
         else:
             self.move(800, 100)
-        self._menu_bar = MenuBar(app, weakref.ref(self), resources_registry)
-        self._cmd_pane = cmd_pane.View(self)
+        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, resources_registry)
+        self._cmd_pane = cmd_pane.View(self, LOCALE, resources_registry)
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
@@ -127,7 +131,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        yield from self.from_state(state, self._app, self._view_registry)
+        yield from self.from_state(state, self._app, self._view_registry, self._resources_registry)
 
     def __del__( self ):
         log.info('~window')

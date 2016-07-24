@@ -6,16 +6,15 @@ from .util import make_action, make_async_action
 from .command import Command, WindowCommand
 from .module import Module
 
-LOCALE = 'en'
-
 log = logging.getLogger(__name__)
 
 
 class MenuBar(object):
 
-    def __init__( self, app, window, resources_registry ):
+    def __init__( self, app, window, locale, resources_registry ):
         self.app = app
         self.window = window  # weakref.ref
+        self._locale = locale
         self._resources_registry = resources_registry
         self.current_dir = None
         self.selected_elts = []
@@ -35,8 +34,8 @@ class MenuBar(object):
         menu_bar.addMenu(self.window_menu)
         menu_bar.addMenu(self.help_menu)
 
-    def add_action_to_menu( self, menu, text, shortcut, fn, self_wr ):
-        menu.addAction(make_action(menu, text, shortcut, fn, self_wr))
+    def add_action_to_menu( self, menu, text, shortcuts, fn, self_wr ):
+        menu.addAction(make_action(menu, text, shortcuts, fn, self_wr))
 
     def _build_global_menu( self, title ):
         menu = QtGui.QMenu(title)
@@ -76,7 +75,7 @@ class MenuBar(object):
         self._update_window_menu(window)
 
     def _make_action( self, menu, cmd ):
-        resources = self._resources_registry.resolve(cmd.resource_id, LOCALE)
+        resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
         if not resources:
             return make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
         for res in resources.commands:
@@ -85,7 +84,7 @@ class MenuBar(object):
         else:
             print([rc.id for rc in resources.commands])
             assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
-        return make_async_action(menu, res.text, res.shortcut, cmd.run)
+        return make_async_action(menu, res.text, res.shortcuts, cmd.run)
 
     def _update_dir_menu( self, window ):
         self.dir_menu.clear()

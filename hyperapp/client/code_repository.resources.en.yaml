@@ -2,15 +2,20 @@ commands:
 - id: add
   text: Add
   desc: Create code repository url from clipboard
-  shortcut:
+  shortcuts:
   - Ins
+- id: _submit
+  text: Add
+  desc: Add new code repository
+  shortcuts:
+  - Return
 - id: repository_list
   text: Code repositories
   desc: Open code repository list
-  shortcut:
+  shortcuts:
   - Alt+R
 - id: _add_to_repository_list
   text: Add Repository
   desc: Add this repository to my repositories list
-  shortcut:
+  shortcuts:
   - Ctrl+A
