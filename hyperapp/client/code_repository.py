@@ -153,7 +153,7 @@ class CodeRepositoryList(ListObject):
     def get_title( self ):
         return 'Code repository list'
 
-    @command('add', 'Add', 'Create code repository url from clipboard', 'Ins')
+    @command('add')
     def command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
         return make_code_repository_form(url_str)

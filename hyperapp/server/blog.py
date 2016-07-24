@@ -25,7 +25,7 @@ class BlogEntry(article.Article):
 
     def get_commands( self ):
         return [
-            tCommand('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
+            tCommand('parent', 'Parent', 'Open parent article', ['Ctrl+Backspace']),
             ] + article.Article.get_commands(self)
 
     def process_request( self, request ):
@@ -76,7 +76,7 @@ class Blog(SmallListObject):
         return module.make_path(cls.class_name)
 
     def get_commands( self ):
-        return [tCommand('add', 'Add entry', 'Create new blog entry', 'Ins')]
+        return [tCommand('add', 'Add entry', 'Create new blog entry', ['Ins'])]
 
     def process_request( self, request ):
         if request.command_id == 'add':
@@ -98,7 +98,7 @@ class Blog(SmallListObject):
     @classmethod
     def rec2element( cls, rec ):
         commands = [tCommand('open', 'Open', 'Open blog entry'),
-                    tCommand('delete', 'Delete', 'Delete blog entry', 'Del'),
+                    tCommand('delete', 'Delete', 'Delete blog entry', ['Del']),
                     ]
         return cls.Element(cls.Row(rec.id, rec.created_at), commands)
 

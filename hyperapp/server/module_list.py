@@ -40,13 +40,13 @@ class ModuleList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [tCommand('open', 'Open', 'Open module', 'Return'),
-                    tCommand('deps', 'Dependencies', 'Open dependency selector', 'Ctrl+D'),
-                    tCommand('delete', 'Delete', 'Delete module', 'Del')]
+        commands = [tCommand('open', 'Open', 'Open module', ['Return']),
+                    tCommand('deps', 'Dependencies', 'Open dependency selector', ['Ctrl+D']),
+                    tCommand('delete', 'Delete', 'Delete module', ['Del'])]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
     def get_commands( self ):
-        return [tCommand('add', 'Add', 'Create new module', 'Ins')]
+        return [tCommand('add', 'Add', 'Create new module', ['Ins'])]
 
     def process_request( self, request ):
         if request.command_id == 'add':

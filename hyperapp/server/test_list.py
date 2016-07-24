@@ -67,7 +67,7 @@ class TestList(ListObject):
         return module.make_path(self.class_name, path_part_to_str(self.size))
 
     def get_commands( self ):
-        return [tCommand('params', 'Params', 'Edit params', 'Return')]
+        return [tCommand('params', 'Params', 'Edit params', ['Return'])]
 
     def process_request( self, request ):
         if request.command_id == 'params':

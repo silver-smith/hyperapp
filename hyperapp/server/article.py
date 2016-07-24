@@ -72,10 +72,10 @@ class Article(Object):
 
     def get_commands( self ):
         return [
-            tCommand('edit', 'Edit', 'Switch to edit mode', 'E'),
-            tCommand('view', 'View', 'Finish editing, switch to view mode', 'Ctrl+F'),
+            tCommand('edit', 'Edit', 'Switch to edit mode', ['E']),
+            tCommand('view', 'View', 'Finish editing, switch to view mode', ['Ctrl+F']),
             tCommand('save'),
-            tCommand('refs', 'Refs', 'Open article references', 'Ctrl+R'),
+            tCommand('refs', 'Refs', 'Open article references', ['Ctrl+R']),
             ]
 
     def process_request( self, request ):
@@ -144,8 +144,8 @@ class ArticleRefList(SmallListObject):
 
     def get_commands( self ):
         return [
-            tCommand('parent', 'Parent', 'Open parent article', 'Ctrl+Backspace'),
-            tCommand('add', 'Add ref', 'Create new reference', 'Ins'),
+            tCommand('parent', 'Parent', 'Open parent article', ['Ctrl+Backspace']),
+            tCommand('add', 'Add ref', 'Create new reference', ['Ins']),
             ]
 
     def process_request( self, request ):
