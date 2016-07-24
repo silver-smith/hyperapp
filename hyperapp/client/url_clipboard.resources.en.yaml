@@ -1,0 +1,11 @@
+commands:
+- id: url_from_clipboard
+  text: Url from clipboard
+  desc: Open url from clipboard
+  shortcuts:
+  - Alt+Ctrl+V
+- id: _url_to_clipboard
+  text: Url to clipboard
+  desc: Copy current url to clipboard
+  shortcuts:
+  - Alt+Ctrl+C

@@ -18,7 +18,7 @@ class ThisModule(Module):
             return [self.command_url_to_clipboard]
         return []
 
-    @command('url_from_clipboard', 'Url from clipboard', 'Open url from clipboard', 'Alt+Ctrl+V')
+    @command('url_from_clipboard')
     @asyncio.coroutine
     def command_url_from_clipboard( self ):
         url_str = QtGui.QApplication.clipboard().text()
@@ -26,7 +26,7 @@ class ThisModule(Module):
         self._remoting.add_routes(url.public_key, url.routes)
         return execute_get_request(self._remoting, url)
 
-    @command('_url_to_clipboard', 'Url to clipboard', 'Copy current url to clipboard', 'Alt+Ctrl+C')
+    @command('_url_to_clipboard')
     def command_url_to_clipboard( self, object ):
         url = object.get_url()
         assert url is not None
