@@ -50,7 +50,7 @@ class ProxyListObject(ProxyObject, ListObject):
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = [self._command_from_data(cmd).clone(args=(key,)) for cmd in  rec.commands]
+        commands = [self._command_from_data(cmd) for cmd in  rec.commands]
         return Element(key, rec.row, commands, order_key)
 
     def _merge_in_slice( self, new_slice ):

@@ -221,8 +221,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self._object
 
     def get_commands( self ):
-        return (view.View.get_commands(self)
-                + [ViewCommand.from_command(cmd, self) for cmd in self._elt_commands])
+        return view.View.get_commands(self) + self._elt_commands
 
     def get_sort_column_id( self ):
         return self.model().get_sort_column_id()
@@ -380,12 +379,15 @@ class View(view.View, ListObserver, QtGui.QTableView):
                 break
         else:
             return
-        asyncio.async(ViewCommand.from_command(cmd, self).run())
+        asyncio.async(self._wrap_element_command(element, cmd).run())
 
     def _selected_elements_changed( self ):
         self._update_selected_actions()
         if self.isVisible():  # we may being destructed now
             self.view_commands_changed(['element'])
+
+    def _wrap_element_command( self, element, cmd ):
+        return ViewCommand.from_command(cmd.clone(args=(element.key,)), self)
 
     def _update_selected_actions( self ):
         # remove previous actions
@@ -401,11 +403,13 @@ class View(view.View, ListObserver, QtGui.QTableView):
         for cmd in element.commands:
             assert isinstance(cmd, Command), repr(cmd)
             assert cmd.kind == 'element', repr(cmd)
-            action = make_async_action(action_widget, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
+            wrapped_cmd = self._wrap_element_command(element, cmd)
+            action = make_async_action(
+                action_widget, '%s/%s' % (wrapped_cmd.resource_id, wrapped_cmd.id), None, wrapped_cmd.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
-            self._elt_commands.append(cmd)
+            self._elt_commands.append(wrapped_cmd)
 
     def __del__( self ):
         log.info('~list_view.View %r', self)

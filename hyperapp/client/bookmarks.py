@@ -107,7 +107,7 @@ class BookmarkList(ListObject):
 
     def _item2element( self, item ):
         assert isinstance(item, NamedUrl), repr(item)
-        commands = [self.command_open_bookmark.clone(args=(item.id,))]
+        commands = [self.command_open_bookmark]
         return Element(item.id, item, commands=commands)
 
 
