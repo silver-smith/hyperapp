@@ -1,0 +1,5 @@
+commands:
+- id: open
+  text: Open
+  desc: Open selected item
+  shortcuts: []

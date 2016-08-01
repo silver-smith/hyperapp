@@ -179,6 +179,7 @@ class command(object):
 
     def __call__( self, class_method ):
         module_name = class_method.__module__.split('.')[-1]
+        ## print('### command module:', module_name)
         return UnboundCommand(self.id, module_name, self.is_default_command, self.enabled, class_method)
 
 
