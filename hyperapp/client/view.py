@@ -75,18 +75,6 @@ class View(ObjectObserver, Commander):
     def get_object( self ):
         return None
 
-    def get_selected_elts( self ):
-        view = self.get_current_child()
-        if view:
-            return view.get_selected_elts()
-        else:
-            return None
-
-    def selected_elements_changed( self, elts ):
-        parent = self._parent and self._parent()
-        if parent:
-            parent.selected_elements_changed(elts)
-
     def object_selected( self, obj ):
         return self._parent().object_selected(obj)
 
@@ -104,6 +92,10 @@ class View(ObjectObserver, Commander):
 
     def view_changed( self, view=None ):
         self._parent().view_changed(self)
+
+    def view_commands_changed( self, command_kinds ):
+        if self._parent:
+            self._parent().view_commands_changed(command_kinds)
 
     def has_focus( self ):
         return focused_index(None, [self]) == 0

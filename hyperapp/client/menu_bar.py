@@ -17,7 +17,6 @@ class MenuBar(object):
         self._locale = locale
         self._resources_registry = resources_registry
         self.current_dir = None
-        self.selected_elts = []
         self._build()
 
     def _build( self ):
@@ -64,7 +63,6 @@ class MenuBar(object):
     @staticmethod
     def _open_elt_commands( self_wr ):
         self = self_wr()
-        if not self.selected_elts: return
         assert 0  # todo
         ## self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
 
@@ -74,6 +72,9 @@ class MenuBar(object):
         self._update_dir_menu(window)
         self._update_window_menu(window)
 
+    def view_commands_changed( self, window, command_kinds ):
+        pass
+        
     def _make_action( self, menu, cmd ):
         resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
         if not resources:
@@ -121,10 +122,6 @@ class MenuBar(object):
                 self.window_menu.addSeparator()
             self.window_menu.addAction(self._make_action(self.window_menu, cmd))
             last_view = cmd.get_view()
-
-    def selected_elements_changed( self, elts ):
-        return
-        self.selected_elts = elts
 
     def __del__( self ):
         log.info('~menu_bar')

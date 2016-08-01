@@ -199,6 +199,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.setSelectionMode(self.SingleSelection)
         self.verticalScrollBar().valueChanged.connect(self.vscrollValueChanged)
         self.activated.connect(self._on_activated)
+        self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
 #        print (len(slice.elements), slice.eof) if slice else None
         ## if handle_slice:
@@ -218,6 +219,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def get_object( self ):
         return self._object
+
+    def get_commands( self ):
+        return view.View.get_commands(self) + self._elt_commands
 
     def get_sort_column_id( self ):
         return self.model().get_sort_column_id()
@@ -269,7 +273,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         if index.row() == -1: return None
         return self.model().get_row_element(index.row())
 
-    def get_selected_elts( self ):
+    def _get_selected_elts( self ):
         element = self.get_current_elt()
         if element:
             return [element]
@@ -350,7 +354,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def setVisible( self, visible ):
         QtGui.QTableView.setVisible(self, visible)
         if visible:
-            self.selected_elements_changed(self.get_selected_elts())
+            self.view_commands_changed(['element'])
 
     def _get_visible_rows( self ):
         first_visible_row = self.verticalHeader().visualIndexAt(0)
@@ -380,7 +384,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def _selected_elements_changed( self ):
         self._update_selected_actions()
         if self.isVisible():  # we may being destructed now
-            self.selected_elements_changed(self.get_selected_elts())
+            self.view_commands_changed(['element'])
 
     def _update_selected_actions( self ):
         # remove previous actions
@@ -388,16 +392,19 @@ class View(view.View, ListObserver, QtGui.QTableView):
         for action in self._elt_actions:
             action_widget.removeAction(action)
         self._elt_actions = []
+        self._elt_commands = []
         # pick selection and commands
         element = self.get_current_elt()
         if not element: return
         # create actions
         for cmd in element.commands:
             assert isinstance(cmd, Command), repr(cmd)
+            assert cmd.kind == 'element', repr(cmd)
             action = make_async_action(action_widget, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
+            self._elt_commands.append(cmd)
 
     def __del__( self ):
         log.info('~list_view.View %r', self)

@@ -73,7 +73,7 @@ class BookmarkList(ListObject):
     def get_title( self ):
         return 'Bookmarks'
 
-    @command('_open', is_default_command=True)
+    @command('open', kind='element', is_default_command=True)
     @asyncio.coroutine
     def command_open_bookmark( self, element_key ):
         item = self._bookmarks.get_item(element_key)
@@ -131,7 +131,7 @@ class ThisModule(Module):
     def command_bookmark_list( self ):
         return make_bookmark_list()
 
-    @command('_bookmark')
+    @command('bookmark')
     def object_command_bookmark( self, object ):
         url = object.get_url()
         assert url is not None

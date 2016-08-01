@@ -4,12 +4,12 @@ commands:
   desc: Open bookmark list
   shortcuts:
   - Alt+B
-- id: _bookmark
+- id: bookmark
   text: Bookmark
   desc: Add this url to bookmarks
   shortcuts:
   - Ctrl+D
-- id: _open
+- id: open
   text: Open
   desc: Open selected bookmark
   shortcuts: []

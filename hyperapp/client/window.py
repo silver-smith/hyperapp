@@ -103,11 +103,6 @@ class Window(composite.Composite, QtGui.QMainWindow):
     def open( self, handle ):
         self._view.open(handle)
 
-    def selected_elements_changed( self, elts ):
-        call_after(self._menu_bar.selected_elements_changed, elts)
-        self._cmd_pane.selected_elements_changed(elts)
-        #self._filter_pane.selected_elements_changed(elts)
-
     def object_selected( self, obj ):
         return False
 
@@ -125,6 +120,10 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
+    def view_commands_changed( self, command_kinds ):
+        self._menu_bar.view_commands_changed(self, command_kinds)
+        self._cmd_pane.view_commands_changed(self, command_kinds)
+        
     @command('duplicate_window', kind='window')
     @asyncio.coroutine
     def duplicate_window( self ):

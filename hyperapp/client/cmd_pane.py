@@ -30,11 +30,12 @@ class View(QtGui.QDockWidget):
     def view_changed( self, window ):
         dir = window.get_object()
         self._update_dir_commands(window)
+        self._update_elt_commands(window)
         self.current_dir = dir
-        self._update_elements(window.get_current_view(), window.get_selected_elts())
 
-    def selected_elements_changed( self, elts ):
-        self._update_elements(self.window().get_current_view(), elts)
+    def view_commands_changed( self, window, command_kinds ):
+        if 'element' in command_kinds:
+            self._update_elt_commands(window)
 
     def _update_dir_commands( self, window ):
         for btn in self.dir_buttons:
@@ -43,7 +44,7 @@ class View(QtGui.QDockWidget):
         idx = 0
         for cmd in window.get_commands():
             assert isinstance(cmd, Command), repr(cmd)
-            if cmd.kind != 'object': return
+            if cmd.kind != 'object': continue
             #if cmd.is_system(): continue
             button = self._make_button(cmd)
             button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
@@ -51,15 +52,13 @@ class View(QtGui.QDockWidget):
             self.dir_buttons.append(button)
             idx += 1
 
-    def _update_elements( self, view, elts ):
+    def _update_elt_commands( self, window ):
         for btn in self.elts_buttons:
             btn.deleteLater()
         self.elts_buttons = []
-        if not elts: return
-        assert len(elts) == 1  # no multi-select support yet
-        elt = elts[0]
-        for cmd in elt.commands:
+        for cmd in window.get_commands():
             assert isinstance(cmd, Command), repr(cmd)
+            if cmd.kind != 'element': continue
             #if cmd.is_system(): continue
             button = self._make_button(cmd)
             button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
