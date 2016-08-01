@@ -107,7 +107,7 @@ class View(view.View, QtGui.QWidget):
     def get_widget_to_focus( self ):
         return self.fields[0][1].get_widget()
 
-    @command('submit', 'Submit', 'Submit form', 'Return')
+    @command('submit')  # 'Submit', 'Submit form', 'Return')
     @asyncio.coroutine
     def command_submit( self ):
         field_values = {}

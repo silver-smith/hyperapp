@@ -33,7 +33,7 @@ class ParamsForm(Object):
             tFormField('size', intFieldHandle(size))])
 
     def get_commands( self ):
-        return [tCommand('submit', 'Submit', 'Submit form', 'Return')]
+        return [tCommand('submit', 'Submit', 'Submit form', ['Return'])]
 
     def process_request( self, request ):
         if request.command_id == 'submit':

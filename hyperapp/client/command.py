@@ -169,7 +169,7 @@ class UnboundCommand(object):
 # decorator for view methods
 class command(object):
 
-    def __init__( self, id, *args, enabled=True, is_default_command=False, **kw ):
+    def __init__( self, id, enabled=True, is_default_command=False ):
         assert isinstance(id, str), repr(id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
