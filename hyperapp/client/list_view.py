@@ -221,7 +221,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self._object
 
     def get_commands( self ):
-        return view.View.get_commands(self) + self._elt_commands
+        return (view.View.get_commands(self)
+                + [ViewCommand.from_command(cmd, self) for cmd in self._elt_commands])
 
     def get_sort_column_id( self ):
         return self.model().get_sort_column_id()
