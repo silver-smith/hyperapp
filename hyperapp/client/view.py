@@ -58,7 +58,6 @@ class View(ObjectObserver, Commander):
         return commands
 
     def get_object_commands( self, object ):
-        print('###', self, object)
         return object.get_commands()
 
     def get_shortcut_ctx_widget( self, view ):
