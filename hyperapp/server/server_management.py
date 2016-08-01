@@ -27,7 +27,7 @@ class CommandList(SmallListObject):
 
     @classmethod
     def cmd2element( cls, cmd ):
-        commands = [tCommand('open', 'Run', 'Run command')]
+        commands = [tCommand('open', kind='element', resource_id='', is_default_command=True)]
         id = '%s.%s' % (cmd.module_name, cmd.id)
         return cls.Element(cls.Row(id, cmd.module_name, cmd.text), commands)
 

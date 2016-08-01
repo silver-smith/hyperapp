@@ -58,7 +58,7 @@ class RemoteCommand(Command):
         return 'RemoteCommand(%r)' % self.id
 
     def to_data( self ):
-        return tCommand(self.id, self.resource_id)
+        return tCommand(self.id, self.kind, self.resource_id)
 
     def get_view( self ):
         return None
@@ -192,8 +192,8 @@ class ProxyObject(Object):
         return 'proxy:%s' % encode_path(self.path)
 
     def _command_from_data( self, rec ):
-        return RemoteCommand(rec.id, 'object', self._my_resource_id(),
-                             is_default_command=rec.id=='open', enabled=True, object_wr=weakref.ref(self))
+        return RemoteCommand(rec.id, rec.kind, self._my_resource_id(),
+                             is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):
         return self.make_cache_key('commands')

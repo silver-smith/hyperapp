@@ -3,7 +3,7 @@ import asyncio
 import weakref
 import abc
 from ..common.util import is_list_inst
-from ..common.htypes import tCommand, tHandle
+from ..common.htypes import tHandle
 from .util import make_async_action
 
 log = logging.getLogger(__name__)
