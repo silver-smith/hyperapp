@@ -94,6 +94,8 @@ class Services(object):
                 'identity',
                 'url_clipboard',
                 'narrower',
+                'history_list',
+                'text_object',
                 ]:
             with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
                 resources = packet_coders.decode('yaml', f.read(), tLocaleResources)

@@ -43,11 +43,11 @@ class TextObject(Object):
         self.text = new_text
         self._notify_object_changed(emitter_view)
 
-    @command('edit', 'Edit', 'Switch to edit mode', 'E')
+    @command('edit')
     def command_edit( self ):
         return tObjHandle('text_edit', self.get_state())
 
-    @command('view', 'View', 'Switch to view mode', 'Ctrl+F')
+    @command('view')
     def run_command_view( self ):
         return tObjHandle('text_view', self.get_state())
 

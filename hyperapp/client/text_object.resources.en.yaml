@@ -1,0 +1,11 @@
+commands:
+- id: edit
+  text: Edit
+  desc: Switch to edit mode
+  shortcuts:
+  - E
+- id: view
+  text: View
+  desc: Switch to view mode
+  shortcuts:
+  - Ctrl+F
