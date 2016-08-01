@@ -155,7 +155,7 @@ class UnboundCommand(object):
 
     def __init__( self, id, kind, module_name, is_default_command, enabled, class_method ):
         assert isinstance(id, str), repr(id)
-        assert isinstance(kind, str), repr(kind)
+        assert kind is None or isinstance(kind, str), repr(kind)
         assert isinstance(module_name, str), repr(module_name)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
@@ -166,16 +166,18 @@ class UnboundCommand(object):
         self.enabled = enabled
         self._class_method = class_method
 
-    def bind( self, inst ):
-        return BoundCommand(self.id, self.kind, self._module_name, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
+    def bind( self, inst, kind ):
+        if self.kind is not None:
+            kind = self.kind
+        return BoundCommand(self.id, kind, self._module_name, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
 
 
 # decorator for view methods
 class command(object):
 
-    def __init__( self, id, kind='object', enabled=True, is_default_command=False ):
+    def __init__( self, id, kind=None, enabled=True, is_default_command=False ):
         assert isinstance(id, str), repr(id)
-        assert isinstance(kind, str), repr(kind)
+        assert kind is None or isinstance(kind, str), repr(kind)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
@@ -191,16 +193,17 @@ class command(object):
 
 class Commander(object):
 
-    def __init__( self ):
+    def __init__( self, commands_kind ):
         if hasattr(self, '_commands'):  # multiple inheritance hack
             return  # do not populate _commands twice
         self._commands = []  # BoundCommand list
         for name in dir(self):
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue
-            bound_cmd = attr.bind(self)
+            bound_cmd = attr.bind(self, commands_kind)
             setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
-            self._commands.append(bound_cmd)
+            if bound_cmd.kind == commands_kind:
+                self._commands.append(bound_cmd)
 
     def get_command( self, command_id ):
         for command in self.get_commands():

@@ -124,7 +124,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._menu_bar.view_commands_changed(self, command_kinds)
         self._cmd_pane.view_commands_changed(self, command_kinds)
         
-    @command('duplicate_window', kind='window')
+    @command('duplicate_window')
     @asyncio.coroutine
     def duplicate_window( self ):
         state = self.get_state()

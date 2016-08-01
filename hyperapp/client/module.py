@@ -8,7 +8,7 @@ class Module(Commander):
     module_registry = []  # todo: remove global, make separate registry
 
     def __init__( self, services ):
-        Commander.__init__(self)
+        Commander.__init__(self, commands_kind='module')
         self.module_registry.append(self)
 
     def get_object_commands( self, object ):

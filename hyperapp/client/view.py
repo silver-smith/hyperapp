@@ -20,7 +20,7 @@ class View(ObjectObserver, Commander):
 
     def __init__( self, parent=None ):
         ObjectObserver.__init__(self)
-        Commander.__init__(self)
+        Commander.__init__(self, commands_kind='view')
         self._parent = weakref.ref(parent) if parent is not None else None
 
     def set_parent( self, parent ):

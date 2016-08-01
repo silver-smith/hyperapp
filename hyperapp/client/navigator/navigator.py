@@ -82,7 +82,7 @@ class View(composite.Composite):
         if object:
             yield from object.server_subscribe()
 
-    @command('go_back', kind='window')
+    @command('go_back')
     def go_back( self ):
         log.info('   history back len(back_history)=%r len(forward_history)=%r', len(self._backward_history), len(self._forward_history))
         self._go_back()
@@ -93,7 +93,7 @@ class View(composite.Composite):
         self._add2history(self._forward_history, self._child)
         asyncio.async(self._open(self._pop_history(self._backward_history)))
 
-    @command('go_forward', kind='window')
+    @command('go_forward')
     def go_forward( self ):
         log.info('   history forward len(back_history)=%r len(forward_history)=%r', len(self._backward_history), len(self._forward_history))
         if not self._forward_history:
@@ -110,7 +110,7 @@ class View(composite.Composite):
         item = history.pop()
         return item.handle
 
-    @command('open_history', kind='window')
+    @command('open_history')
     def open_history( self ):
         state = self.get_state()
         object = history_list_type(HistoryList.objimpl_id, state.history)

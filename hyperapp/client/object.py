@@ -14,7 +14,7 @@ class ObjectObserver(object):
 class Object(Commander):
 
     def __init__( self ):
-        Commander.__init__(self)
+        Commander.__init__(self, commands_kind='object')
         self._init_observers()
 
     def get_title( self ):

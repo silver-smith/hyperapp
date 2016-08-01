@@ -104,7 +104,7 @@ class MenuBar(object):
         shortcuts = set()
         for cmd in reversed(window.get_commands()):
             assert isinstance(cmd, Command), repr(cmd)
-            if cmd.kind != 'window': continue
+            if cmd.kind != 'view': continue
             #if cmd.is_system(): continue
             if not cmd.is_enabled():
                 commands.append(cmd)
