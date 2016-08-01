@@ -2,7 +2,7 @@ import asyncio
 import weakref
 import traceback
 from .util import WeakSetWithCallback
-from .command import Commandable
+from .command import Commander
 
 
 class ObjectObserver(object):
@@ -11,10 +11,10 @@ class ObjectObserver(object):
         pass
 
 
-class Object(Commandable):
+class Object(Commander):
 
     def __init__( self ):
-        Commandable.__init__(self)
+        Commander.__init__(self)
         self._init_observers()
 
     def get_title( self ):

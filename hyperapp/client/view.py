@@ -9,18 +9,18 @@ from .qt_keys import print_key_event
 from .util import DEBUG_FOCUS, make_action, focused_index
 from .module import Module
 from .object import ObjectObserver
-from .command import ViewCommand, Commandable
+from .command import ViewCommand, Commander
 
 log = logging.getLogger(__name__)
 
 
-class View(ObjectObserver, Commandable):
+class View(ObjectObserver, Commander):
 
     CmdPanelHandleCls = None  # registered by cmd_view
 
     def __init__( self, parent=None ):
         ObjectObserver.__init__(self)
-        Commandable.__init__(self)
+        Commander.__init__(self)
         self._parent = weakref.ref(parent) if parent is not None else None
 
     def set_parent( self, parent ):
@@ -47,7 +47,7 @@ class View(ObjectObserver, Commandable):
             return self
 
     def get_commands( self ):
-        commands = [ViewCommand.from_command(cmd, self) for cmd in Commandable.get_commands(self)]
+        commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_commands(self)]
         view = self.get_current_child()
         if view:
             commands += view.get_commands()

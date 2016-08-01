@@ -182,7 +182,7 @@ class command(object):
         return UnboundCommand(self.id, module_name, self.is_default_command, self.enabled, class_method)
 
 
-class Commandable(object):
+class Commander(object):
 
     def __init__( self ):
         if hasattr(self, '_commands'):  # multiple inheritance hack
