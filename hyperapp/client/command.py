@@ -12,12 +12,14 @@ log = logging.getLogger(__name__)
 # returned from Object.get_commands
 class Command(object, metaclass=abc.ABCMeta):
 
-    def __init__( self, id, resource_id, is_default_command=False, enabled=True ):
+    def __init__( self, id, kind, resource_id, is_default_command=False, enabled=True ):
         assert isinstance(id, str), repr(id)
+        assert isinstance(kind, str), repr(kind)
         assert isinstance(resource_id, str), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
+        self.kind = kind
         self.resource_id = resource_id
         self.is_default_command = is_default_command
         self.enabled = enabled
@@ -59,10 +61,10 @@ class ViewCommand(Command):
 
     @classmethod
     def from_command( cls, cmd, view ):
-        return cls(cmd.id, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(view))
+        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(view))
 
-    def __init__( self, id, resource_id, is_default_command, enabled, base_cmd, view_wr ):
-        Command.__init__(self, id, resource_id, is_default_command, enabled)
+    def __init__( self, id, kind, resource_id, is_default_command, enabled, base_cmd, view_wr ):
+        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
 
@@ -73,13 +75,13 @@ class ViewCommand(Command):
         return self._view_wr()
 
     def clone( self ):
-        return ViewCommand(self.id, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
+        return ViewCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
         view = self._view_wr()
         if not view: return
-        log.debug('ViewCommand.run: %r, %r, (%s, %s)', self.id, self._base_cmd, args, kw)
+        log.debug('ViewCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
         handle = yield from self._base_cmd.run(*args, **kw)
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
@@ -90,10 +92,10 @@ class WindowCommand(Command):
 
     @classmethod
     def from_command( cls, cmd, window ):
-        return cls(cmd.id, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(window))
+        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(window))
 
-    def __init__( self, id, resource_id, is_default_command, enabled, base_cmd, window_wr ):
-        Command.__init__(self, id, resource_id, is_default_command, enabled)
+    def __init__( self, id, kind, resource_id, is_default_command, enabled, base_cmd, window_wr ):
+        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
         self._base_cmd = base_cmd
         self._window_wr = window_wr  # weak ref to class instance
 
@@ -104,13 +106,13 @@ class WindowCommand(Command):
         return self._window_wr()
 
     def clone( self ):
-        return WindowCommand(self.id, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
+        return WindowCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
         window = self._window_wr()
         if not window: return
-        log.debug('WindowCommand.run: %r, %r, (%s, %s)', self.id, self._base_cmd, args, kw)
+        log.debug('WindowCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
         handle = yield from self._base_cmd.run(*args, **kw)
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
@@ -119,14 +121,14 @@ class WindowCommand(Command):
 
 class BoundCommand(Command):
 
-    def __init__( self, id, resource_id, is_default_command, enabled, class_method, inst_wr, args=None ):
-        Command.__init__(self, id, resource_id, is_default_command, enabled)
+    def __init__( self, id, kind, resource_id, is_default_command, enabled, class_method, inst_wr, args=None ):
+        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
 
     def __repr__( self ):
-        return 'BoundCommand(%r -> %r, args=%r)' % (self.id, self._inst_wr, self._args)
+        return 'BoundCommand(%r/%r -> %r, args=%r)' % (self.id, self.kind, self._inst_wr, self._args)
 
     def get_view( self ):
         return self._inst_wr()
@@ -136,13 +138,13 @@ class BoundCommand(Command):
             args = self._args
         else:
             args = self._args + args
-        return BoundCommand(self.id, self.resource_id, self.is_default_command, self.enabled, self._class_method, self._inst_wr, args)
+        return BoundCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._class_method, self._inst_wr, args)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
-        log.debug('BoundCommand.run: %s, %r, %r, (%s/%s, %s)', self, self.id, inst, self._args, args, kw)
+        log.debug('BoundCommand.run: %s, %r/%r, %r, (%s/%s, %s)', self, self.id, self.kind, inst, self._args, args, kw)
         if asyncio.iscoroutinefunction(self._class_method):
             return (yield from self._class_method(inst, *(self._args + args), **kw))
         else:
@@ -151,36 +153,40 @@ class BoundCommand(Command):
 
 class UnboundCommand(object):
 
-    def __init__( self, id, module_name, is_default_command, enabled, class_method ):
+    def __init__( self, id, kind, module_name, is_default_command, enabled, class_method ):
         assert isinstance(id, str), repr(id)
+        assert isinstance(kind, str), repr(kind)
         assert isinstance(module_name, str), repr(module_name)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
+        self.kind = kind
         self._module_name = module_name
         self.is_default_command = is_default_command
         self.enabled = enabled
         self._class_method = class_method
 
     def bind( self, inst ):
-        return BoundCommand(self.id, self._module_name, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
+        return BoundCommand(self.id, self.kind, self._module_name, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
 
 
 # decorator for view methods
 class command(object):
 
-    def __init__( self, id, enabled=True, is_default_command=False ):
+    def __init__( self, id, kind='object', enabled=True, is_default_command=False ):
         assert isinstance(id, str), repr(id)
+        assert isinstance(kind, str), repr(kind)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
+        self.kind = kind
         self.is_default_command = is_default_command
         self.enabled = enabled
 
     def __call__( self, class_method ):
         module_name = class_method.__module__.split('.')[-1]
         ## print('### command module:', module_name)
-        return UnboundCommand(self.id, module_name, self.is_default_command, self.enabled, class_method)
+        return UnboundCommand(self.id, self.kind, module_name, self.is_default_command, self.enabled, class_method)
 
 
 class Commander(object):

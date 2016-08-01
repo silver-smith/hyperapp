@@ -48,9 +48,9 @@ def execute_get_request( remoting, url ):
 
 class RemoteCommand(Command):
 
-    def __init__( self, id, module_name, is_default_command, enabled, object_wr, args=None ):
+    def __init__( self, id, kind, module_name, is_default_command, enabled, object_wr, args=None ):
         assert isinstance(object_wr(), ProxyObject), repr(object_wr)
-        Command.__init__(self, id, module_name, is_default_command, enabled)
+        Command.__init__(self, id, kind, module_name, is_default_command, enabled)
         self._object_wr = object_wr
         self._args = args or ()
 
@@ -65,7 +65,7 @@ class RemoteCommand(Command):
 
     def clone( self, args=None ):
         args = self._args + args if args else self._args
-        return RemoteCommand(self.id, self.resource_id, self.is_default_command, self.enabled, self._object_wr, args)
+        return RemoteCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._object_wr, args)
 
     @asyncio.coroutine
     def run( self, *args, **kw ):
@@ -192,7 +192,7 @@ class ProxyObject(Object):
         return 'proxy:%s' % encode_path(self.path)
 
     def _command_from_data( self, rec ):
-        return RemoteCommand(rec.id, self._my_resource_id(),
+        return RemoteCommand(rec.id, 'object', self._my_resource_id(),
                              is_default_command=rec.id=='open', enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):
