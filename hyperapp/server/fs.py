@@ -113,7 +113,7 @@ class Dir(FsObject):
         return dir
 
     def get_commands( self ):
-        return [tCommand('parent', 'Open parent', 'Open parent directory', 'Ctrl+Backspace')]
+        return [tCommand('parent', 'Open parent', 'Open parent directory', ['Ctrl+Backspace'])]
 
 
 class FileModule(Module):
@@ -126,7 +126,7 @@ class FileModule(Module):
         return self.open(fspath)
 
     def get_commands( self ):
-        return [ModuleCommand('home', 'Home', 'Open home directory', 'Alt+H', self.name)]
+        return [ModuleCommand('home', 'Home', 'Open home directory', ['Alt+H'], self.name)]
 
     def run_command( self, request, command_id ):
         if command_id == 'home':
