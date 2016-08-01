@@ -41,8 +41,9 @@ class View(QtGui.QDockWidget):
             btn.deleteLater()
         self.dir_buttons = []
         idx = 0
-        for cmd in window.get_object_commands():
+        for cmd in window.get_commands():
             assert isinstance(cmd, Command), repr(cmd)
+            if cmd.kind != 'object': return
             #if cmd.is_system(): continue
             button = self._make_button(cmd)
             button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))

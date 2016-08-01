@@ -48,9 +48,9 @@ class View(view.View, QtGui.QWidget):
     def get_object( self ):
         return self.ref
 
-    def get_object_commands( self, *args, **kw ):
-        return (self.target_view.get_object_commands()
-                + view.View.get_object_commands(self, *args, **kw)
+    def get_commands( self ):
+        return (self.target_view.get_commands()
+                + view.View.get_commands(self)
                 + [self.object_command_choose])  # do not wrap in ViewCommand - we will open it ourselves
 
     @command('choose')  # 'Choose', 'Choose current object', 'Ctrl+Return')

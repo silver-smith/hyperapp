@@ -48,10 +48,18 @@ class View(ObjectObserver, Commander):
 
     def get_commands( self ):
         commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_commands(self)]
-        view = self.get_current_child()
-        if view:
-            commands += view.get_commands()
+        child = self.get_current_child()
+        if child:
+            commands += child.get_commands()
+        object = self.get_object()
+        if object:
+            commands += [ViewCommand.from_command(cmd, self) for cmd in
+                         self.get_object_commands(object) + Module.get_all_object_commands(object)]
         return commands
+
+    def get_object_commands( self, object ):
+        print('###', self, object)
+        return object.get_commands()
 
     def get_shortcut_ctx_widget( self, view ):
         return view.get_widget()
@@ -66,22 +74,7 @@ class View(ObjectObserver, Commander):
         return 'Untitled'
 
     def get_object( self ):
-        view = self.get_current_child()
-        if view:
-            return view.get_object()
-        else:
-            return None
-
-    def get_object_commands( self, *args, **kw ):
-        child = self.get_current_child()
-        if child:
-            return child.get_object_commands(*args, **kw)
-        object = self.get_object()
-        if object:
-            return [ViewCommand.from_command(cmd, self) for cmd in
-                    object.get_commands(*args, **kw) + Module.get_all_object_commands(object)]
-        else:
-            return []
+        return None
 
     def get_selected_elts( self ):
         view = self.get_current_child()

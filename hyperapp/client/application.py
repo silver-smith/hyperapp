@@ -70,7 +70,7 @@ class Application(QtGui.QApplication, view.View):
     def stop_loop( self ):
         self._loop.stop()
 
-    @command('open_server')
+    @command('open_server', kind='file')
     @asyncio.coroutine
     def open_server( self ):
         window = self._windows[0]  # usually first window is the current one
@@ -83,7 +83,7 @@ class Application(QtGui.QApplication, view.View):
         assert handle  # url's get command must return a handle
         window.get_current_view().open(handle)
 
-    @command('quit')
+    @command('quit', kind='file')
     def quit( self ):
         ## module.set_shutdown_flag()
         state = self.get_state()

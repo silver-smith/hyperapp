@@ -83,7 +83,7 @@ class View(QtGui.QTabWidget, view.View):
         if DEBUG_FOCUS: log.info('*** tab_view.setVisible self=%r visible=%r current-tab#=%d', self, visible, self.currentIndex())
         QtGui.QTabWidget.setVisible(self, visible)
 
-    @command('duplicate_tab')
+    @command('duplicate_tab', kind='window')
     @asyncio.coroutine
     def duplicate_tab( self ):
         idx = self.currentIndex()
@@ -92,7 +92,7 @@ class View(QtGui.QTabWidget, view.View):
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
-    @command('close_tab')
+    @command('close_tab', kind='window')
     def close_tab( self ):
         if len(self._children) == 1: return  # never close last tab
         idx = self.currentIndex()
@@ -101,17 +101,17 @@ class View(QtGui.QTabWidget, view.View):
             idx -= 1
         view.View.view_changed(self)  # notify parents
 
-    @command('split_horizontally')
+    @command('split_horizontally', kind='window')
     @asyncio.coroutine
     def split_horizontally( self ):
         yield from self._map_current(splitter.split(splitter.horizontal))
 
-    @command('split_vertically')
+    @command('split_vertically', kind='window')
     @asyncio.coroutine
     def split_vertically( self ):
         yield from self._map_current(splitter.split(splitter.vertical))
 
-    @command('unsplit')
+    @command('unsplit', kind='window')
     @asyncio.coroutine
     def unsplit( self ):
         yield from self._map_current(splitter.unsplit)
