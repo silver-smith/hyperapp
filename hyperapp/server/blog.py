@@ -5,6 +5,7 @@ from ..common.htypes import tCommand, Column, DateTimeColumnType
 from ..common.interface.blog import blog_entry_iface, blog_iface
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
+from .command import command
 from .object import SmallListObject, subscription
 from .module import ModuleCommand
 from . import article
@@ -75,20 +76,11 @@ class Blog(SmallListObject):
     def get_path( cls ):
         return module.make_path(cls.class_name)
 
-    def get_commands( self ):
-        return [tCommand('add', 'Add entry', 'Create new blog entry', ['Ins'])]
+    ## def get_commands( self ):
+    ##     return [tCommand('add', 'Add entry', 'Create new blog entry', ['Ins'])]
 
-    def process_request( self, request ):
-        if request.command_id == 'add':
-            return self.run_command_add(request)
-        if request.command_id == 'open':
-            article_id = request.params.element_key
-            return request.make_response_handle(BlogEntry(article_id))
-        if request.command_id == 'delete':
-            return self.run_element_command_delete(request)
-        return SmallListObject.process_request(self, request)
-
-    def run_command_add( self, request ):
+    @command('add')
+    def command_add( self, request ):
         return request.make_response_handle(BlogEntry(mode=BlogEntry.mode_edit))
 
     @db_session
@@ -97,13 +89,17 @@ class Blog(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [tCommand('open', 'Open', 'Open blog entry'),
-                    tCommand('delete', 'Delete', 'Delete blog entry', ['Del']),
-                    ]
+        commands = [cls.command_open, cls.command_delete]
         return cls.Element(cls.Row(rec.id, rec.created_at), commands)
 
+    @command('open', kind='element', is_default_command=True)
+    def command_open( self, request ):
+        article_id = request.params.element_key
+        return request.make_response_handle(BlogEntry(article_id))
+    
+    @command('delete', kind='element')
     @db_session
-    def run_element_command_delete( self, request ):
+    def command_delete( self, request ):
         article_id = request.params.element_key
         module.BlogEntry[article_id].delete()
         diff = self.Diff_delete(article_id)

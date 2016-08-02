@@ -43,21 +43,25 @@ class BoundCommand(object):
 
 class UnboundCommand(object):
 
-    def __init__( self, id, kind, module_name, is_default_command, class_method ):
+    def __init__( self, id, kind, resource_id, is_default_command, class_method ):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(module_name, str), repr(module_name)
+        assert isinstance(resource_id, str), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         self.id = id
         self.kind = kind
-        self._module_name = module_name
+        self.resource_id = resource_id
         self.is_default_command = is_default_command
         self._class_method = class_method
+
+    # Element may be returned from classmethod, for which commands are unbound
+    def to_data( self ):
+        return tCommand(self.id, self.kind, self.resource_id, self.is_default_command)
 
     def bind( self, inst, kind ):
         if self.kind is not None:
             kind = self.kind
-        return BoundCommand(self.id, kind, self._module_name, self.is_default_command, self._class_method, weakref.ref(inst))
+        return BoundCommand(self.id, kind, self.resource_id, self.is_default_command, self._class_method, weakref.ref(inst))
 
 
 # decorator for object methods
@@ -82,21 +86,21 @@ class Commander(object):
     def __init__( self, commands_kind ):
         if hasattr(self, '_commands'):  # multiple inheritance hack
             return  # do not populate _commands twice
+        self._commands_kind = commands_kind
         self._commands = []  # BoundCommand list
         for name in dir(self):
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue
             bound_cmd = attr.bind(self, commands_kind)
             setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
-            if bound_cmd.kind == commands_kind:
-                self._commands.append(bound_cmd)
+            self._commands.append(bound_cmd)
 
     def get_command( self, command_id ):
-        for command in self.get_commands():
+        for command in self._commands:
             assert isinstance(command, BoundCommand), repr(command)
             if command.id == command_id:
                 return command
         return None
 
     def get_commands( self ):
-        return self._commands
+        return [cmd for cmd in self._commands if cmd.kind == self._commands_kind]

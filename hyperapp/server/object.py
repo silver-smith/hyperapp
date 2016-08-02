@@ -52,9 +52,6 @@ class Object(Commander):
     def get_path( self ):
         raise NotImplementedError(self.__class__)
 
-    def get_commands( self ):
-        return []
-
     def get_facets( self ):
         if self.facets is None:
             return [self.iface]
@@ -75,7 +72,7 @@ class Object(Commander):
 
     def get_contents( self, **kw ):
         return self.iface.Contents(
-            commands=self.get_commands(),
+            commands=[cmd.to_data() for cmd in self.get_commands()],
             **kw)
 
     def get_handle( self, request ):
