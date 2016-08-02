@@ -24,7 +24,6 @@ class BlogEntry(article.Article):
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
 
-    ## tCommand('parent', 'Parent', 'Open parent article', ['Ctrl+Backspace']),
     @command('parent')    
     def command_parent( self, request ):
         return request.make_response_handle(Blog())
@@ -67,9 +66,6 @@ class Blog(SmallListObject):
     @classmethod
     def get_path( cls ):
         return module.make_path(cls.class_name)
-
-    ## def get_commands( self ):
-    ##     return [tCommand('add', 'Add entry', 'Create new blog entry', ['Ins'])]
 
     @command('add')
     def command_add( self, request ):

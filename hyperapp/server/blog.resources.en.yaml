@@ -1,0 +1,22 @@
+commands:
+- id: add
+  text: Add entry
+  desc: Create new blog entry
+  shortcuts:
+  - Ins
+- id: open
+  text: Open
+  desc: Open blog entry
+  shortcuts: []
+- id: delete
+  text: Delete
+  desc: Delete blog entry
+  shortcuts:
+  - Del
+- id: parent
+  text: Parent
+  desc: Open parent article
+  shortcuts:
+  - Ctrl+Backspace
+
+
