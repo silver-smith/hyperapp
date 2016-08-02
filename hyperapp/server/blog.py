@@ -24,17 +24,9 @@ class BlogEntry(article.Article):
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
 
-    def get_commands( self ):
-        return [
-            tCommand('parent', 'Parent', 'Open parent article', ['Ctrl+Backspace']),
-            ] + article.Article.get_commands(self)
-
-    def process_request( self, request ):
-        if request.command_id == 'parent':
-            return self.run_command_parent(request)
-        return article.Article.process_request(self, request)
-    
-    def run_command_parent( self, request ):
+    ## tCommand('parent', 'Parent', 'Open parent article', ['Ctrl+Backspace']),
+    @command('parent')    
+    def command_parent( self, request ):
         return request.make_response_handle(Blog())
 
     @db_session

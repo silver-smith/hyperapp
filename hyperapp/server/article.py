@@ -11,6 +11,7 @@ from ..common.interface.article import (
 from ..common.identity import PublicKey
 from ..common.url import Url
 from .util import path_part_to_str
+from .command import command
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
 from .ponyorm_module import PonyOrmModule
@@ -70,33 +71,22 @@ class Article(Object):
         else:
             return tObjHandle('text_edit', self.get(request))
 
-    def get_commands( self ):
-        return [
-            tCommand('edit', 'Edit', 'Switch to edit mode', ['E']),
-            tCommand('view', 'View', 'Finish editing, switch to view mode', ['Ctrl+F']),
-            tCommand('save'),
-            tCommand('refs', 'Refs', 'Open article references', ['Ctrl+R']),
-            ]
+            ## tCommand('edit', 'Edit', 'Switch to edit mode', ['E']),
+            ## tCommand('view', 'View', 'Finish editing, switch to view mode', ['Ctrl+F']),
+            ## tCommand('save'),
+            ## tCommand('refs', 'Refs', 'Open article references', ['Ctrl+R']),
 
-    def process_request( self, request ):
-        # view and edit commands are expected to be handled by client side enterely
-        if request.command_id == 'save':
-            return self.run_command_save(request)
-        elif request.command_id == 'refs':
-            return self.run_command_refs(request)
-        elif request.command_id == 'open_ref':
-            return self.run_command_open_ref(request)
-        else:
-            return Object.process_request(self, request)
-
-    def run_command_save( self, request ):
+    @command('save')
+    def command_save( self, request ):
         return self.do_save(request, request.params.text)
 
-    def run_command_refs( self, request ):
+    @command('refs')
+    def command_refs( self, request ):
         return request.make_response_handle(ArticleRefList(self.article_id))
 
+    @command('open_ref')
     @db_session
-    def run_command_open_ref( self, request ):
+    def command_open_ref( self, request ):
         ref_id = request.params.ref_id
         rec = module.ArticleRef[ref_id]
         iface = iface_registry.resolve(rec.iface)
