@@ -188,11 +188,8 @@ class ProxyObject(Object):
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
 
-    def _my_resource_id( self ):
-        return 'proxy:%s' % encode_path(self.path)
-
     def _command_from_data( self, rec ):
-        return RemoteCommand(rec.id, rec.kind, self._my_resource_id(),
+        return RemoteCommand(rec.id, rec.kind, rec.resource_id,
                              is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):
