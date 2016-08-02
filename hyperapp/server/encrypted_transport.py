@@ -2,8 +2,7 @@ import os
 import logging
 from queue import Queue
 from ..common.util import flatten
-from ..common.htypes import tClientPacket, tServerPacket, iface_registry
-from ..common.packet import tAuxInfo, tPacket
+from ..common.htypes import tAuxInfo, tPacket, tClientPacket, tServerPacket, iface_registry
 from ..common.transport_packet import tTransportPacket
 from ..common.encrypted_packet import (
     ENCODING,

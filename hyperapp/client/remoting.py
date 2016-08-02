@@ -2,8 +2,7 @@ import logging
 import asyncio
 import abc
 from ..common.util import is_list_inst, encode_route
-from ..common.htypes import tServerRoutes, tClientPacket
-from ..common.packet import tAuxInfo, tPacket
+from ..common.htypes import tServerRoutes, tClientPacket, tAuxInfo, tPacket
 from ..common.packet_coders import packet_coders
 from ..common.server_public_key_collector import ServerPksCollector
 from ..common.identity import PublicKey

@@ -6,6 +6,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from hyperapp.common.htypes import (
     tString,
     Field,
+    tAuxInfo,
+    tPacket,
     RequestCmd,
     Interface,
     tClientPacket,
@@ -27,7 +29,6 @@ from hyperapp.common.encrypted_packet import (
     encrypt_initial_packet,
     decrypt_packet,
     )
-from hyperapp.common.packet import tAuxInfo, tPacket
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.route_storage import RouteStorage

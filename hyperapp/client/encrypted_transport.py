@@ -1,5 +1,5 @@
 import asyncio
-from ..common.htypes import tClientPacket, tServerPacket
+from ..common.htypes import tClientPacket, tServerPacket, tAuxInfo, tPacket
 from ..common.encrypted_packet import (
     tEncryptedPacket,
     tSubsequentEncryptedPacket,
@@ -10,7 +10,6 @@ from ..common.encrypted_packet import (
     encrypt_initial_packet,
     decrypt_subsequent_packet,
     )
-from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders

@@ -1,8 +1,7 @@
 import logging
 from ..common.util import encode_route
-from ..common.htypes import tServerRoutes, tClientPacket, tServerPacket
+from ..common.htypes import tServerRoutes, tAuxInfo, tPacket, tClientPacket, tServerPacket
 from ..common.identity import PublicKey
-from ..common.packet import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
