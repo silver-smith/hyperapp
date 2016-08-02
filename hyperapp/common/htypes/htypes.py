@@ -252,7 +252,6 @@ tCommandResource = TRecord([
     Field('shortcuts', TList(tString), default=[]),
     ])
 
-
 tLocaleResources = TRecord([
     Field('commands', TList(tCommandResource)),
     ])
