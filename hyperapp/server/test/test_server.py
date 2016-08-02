@@ -120,6 +120,12 @@ class PhonyChannel(PeerChannel):
         return None
 
 
+class PhonyResourcesLoader(object):
+
+    def load_resources( self, resource_id ):
+        return []
+
+
 class TestSession(TransportSession):
 
     def pull_notification_transport_packets( self ):
@@ -131,6 +137,7 @@ class Services(object):
     def __init__( self ):
         self.iface_registry = IfaceRegistry()
         self.route_storage = RouteStorage(PhonyRouteRepository())
+        self.resources_loader = PhonyResourcesLoader()
         self.remoting = Remoting(self.iface_registry)
         self._register_transports()
         
@@ -220,7 +227,7 @@ class ServerTest(unittest.TestCase):
         log.info('Sending request:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], modules=[], routes=[]),
+            aux_info=tAuxInfo(requirements=[], modules=[], routes=[], resources=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(
@@ -238,7 +245,7 @@ class ServerTest(unittest.TestCase):
         log.info('Sending client notification:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], modules=[], routes=[]),
+            aux_info=tAuxInfo(requirements=[], modules=[], routes=[], resources=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(

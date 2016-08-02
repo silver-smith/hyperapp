@@ -55,7 +55,7 @@ class Transport(metaclass=abc.ABCMeta):
             return not self._view_registry.is_registered(key)
         if registry == 'interface':
             return not self._iface_registry.is_registered(key)
-        if registry == 'command':
+        if registry == 'resources':
             return False
         assert False, repr(registry)  # Unknown registry
 
