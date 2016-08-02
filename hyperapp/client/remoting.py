@@ -29,6 +29,7 @@ class Transport(metaclass=abc.ABCMeta):
         self._view_registry = services.view_registry
         self._code_repository = services.code_repository
         self._identity_controller = services.identity_controller
+        self._resources_registry = services.resources_registry
         assert isinstance(self._module_mgr, ModuleManager), repr(self._module_mgr)
         #assert isinstance(code_repository, CodeRepository), repr(code_repository)
         assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)
@@ -38,6 +39,7 @@ class Transport(metaclass=abc.ABCMeta):
         assert isinstance(aux_info, tAuxInfo), repr(aux_info)
         yield from self._resolve_requirements(aux_info.requirements)
         self._add_routes(aux_info.routes)
+        self._add_resources(aux_info.resources)
         
     @asyncio.coroutine
     def _resolve_requirements( self, requirements ):
@@ -65,6 +67,11 @@ class Transport(metaclass=abc.ABCMeta):
             log.info('received routes for %s: %s',
                      public_key.get_short_id_hex(), ', '.join(encode_route(route) for route in srv_routes.routes))
             self._route_storage.add_routes(public_key, srv_routes.routes)
+
+    def _add_resources( self, resources ):
+        for rec in resources:
+            log.info('received %r resources for %r', rec.locale, rec.resource_id)
+            self._resources_registry.register(rec.resource_id, rec.locale, rec.resources)
 
     def make_request_packet( self, encoding, request_or_notification ):
         server_pks = ServerPksCollector().collect_public_key_ders(tClientPacket, request_or_notification.to_data())
