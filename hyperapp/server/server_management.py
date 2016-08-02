@@ -5,6 +5,7 @@ from ..common.interface.server_management import server_management_iface
 from ..common.url import Url
 from .object import SmallListObject
 from .module import Module
+from .command import command
 
 
 MODULE_NAME = 'management'
@@ -25,18 +26,13 @@ class CommandList(SmallListObject):
     def fetch_all_elements( self ):
         return list(map(self.cmd2element, Module.get_all_modules_commands()))
 
-    @classmethod
-    def cmd2element( cls, cmd ):
-        commands = [tCommand('open', kind='element', resource_id='', is_default_command=True)]
+    def cmd2element( self, cmd ):
+        commands = [self.command_open_module]
         id = '%s.%s' % (cmd.module_name, cmd.id)
-        return cls.Element(cls.Row(id, cmd.module_name, cmd.text), commands)
+        return self.Element(self.Row(id, cmd.module_name, cmd.text), commands)
 
-    def process_request( self, request ):
-        if request.command_id == 'open':
-            return self.run_module_command(request)
-        return SmallListObject.process_request(self, request)
-
-    def run_module_command( self, request ):
+    @command('open', kind='element', is_default_command=True)
+    def command_open_module( self, request ):
         module_name, command_id = request.params.element_key.split('.')
         module = Module.get_module_by_name(module_name)
         return module.run_command(request, command_id)

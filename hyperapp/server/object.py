@@ -9,6 +9,7 @@ from ..common.htypes import (
     )
 from ..common.visual_rep import pprint
 from .util import WeakValueMultiDict
+from .command import Commander
 
 log = logging.getLogger(__name__)
 
@@ -41,12 +42,12 @@ class Subscription(object):
 subscription = Subscription()
 
 
-class Object(object):
+class Object(Commander):
 
     facets = None
 
     def __init__( self ):
-        pass
+        Commander.__init__(self, commands_kind='object')
 
     def get_path( self ):
         raise NotImplementedError(self.__class__)
@@ -86,12 +87,12 @@ class Object(object):
             return self.process_request_get(request)
         if command_id == 'subscribe':
             return self.process_request_subscribe(request)
-        elif command_id == 'subscribe':
-            self.subscribe(request)
         elif command_id == 'unsubscribe':
             self.unsubscribe(request)
         else:
-            assert False, repr(command_id)  # Unknown command
+            command = self.get_command(command_id)
+            assert command, repr(command_id)  # Unknown command
+            return command.run(request)
 
     def process_request_get( self, request ):
         return request.make_response(self.get_handle(request))
@@ -117,8 +118,8 @@ class ListObject(Object):
         return cls.iface.Row(*args, **kw)
 
     @classmethod
-    def Element( cls, *args, **kw ):
-        return cls.iface.Element(*args, **kw)
+    def Element( cls, row, commands=None ):
+        return cls.iface.Element(row, [cmd.to_data() for cmd in commands or []])
 
     @classmethod
     def Diff( cls, *args, **kw ):
