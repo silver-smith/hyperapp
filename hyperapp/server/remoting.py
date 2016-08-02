@@ -1,5 +1,5 @@
 import logging
-from ..common.util import encode_route
+from ..common.util import flatten, encode_route
 from ..common.htypes import tServerRoutes, tAuxInfo, tPacket, tClientPacket, tServerPacket
 from ..common.identity import PublicKey
 from ..common.transport_packet import tTransportPacket
@@ -18,6 +18,7 @@ class Transport(object):
 
     def __init__( self, services ):
         self._route_storage = services.route_storage
+        self._resources_loader = services.resources_loader
 
     def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
         request_rec = packet_coders.decode(payload_encoding, packet.payload, tClientPacket)
@@ -57,10 +58,16 @@ class Transport(object):
         modules = []  # force separate request to code repository
         server_pks = ServerPksCollector().collect_public_key_ders(tServerPacket, response_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
+        resources = flatten([self._load_resource(id) for (registry, id) in requirements if registry == 'resources'])
         return tAuxInfo(
             requirements=requirements,
             modules=modules,
-            routes=routes)
+            routes=routes,
+            resources=resources,
+            )
+
+    def _load_resource( self, resource_id ):
+        return list(self._resources_loader.load_resources(resource_id))
 
 
 class TransportRegistry(object):

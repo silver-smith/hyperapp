@@ -1,4 +1,4 @@
-from .htypes import tString, tBinary, Field, TRecord, TList, tServerRoutes
+from .htypes import tString, tBinary, Field, TRecord, TList, tServerRoutes, tResources
 
 
 tRequirement = TList(tString)  # [hierarchy id, class id]
@@ -21,6 +21,7 @@ tAuxInfo = TRecord([
     Field('requirements', TList(tRequirement)),
     Field('modules', TList(tModule)),
     Field('routes', TList(tServerRoutes)),
+    Field('resources', TList(tResources)),
     ])
 
 tPacket = TRecord([

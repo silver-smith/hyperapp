@@ -257,6 +257,7 @@ tLocaleResources = TRecord([
     ])
 
 tResources = TRecord([
+    Field('resource_id', tString),
     Field('locale', tString),
     Field('resources', tLocaleResources),
     ])

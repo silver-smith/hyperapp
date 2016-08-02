@@ -1,3 +1,4 @@
+import os.path
 from ..common.htypes import iface_registry
 from ..common.route_storage import RouteStorage
 from .module import Module
@@ -5,6 +6,7 @@ from . import route_storage
 from .remoting import Remoting
 from . import tcp_transport
 from . import encrypted_transport
+from .resources_loader import ResourcesLoader
 
 
 class Services(object):
@@ -16,6 +18,8 @@ class Services(object):
         Module.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository(self.route_storage_module))
         self.remoting = Remoting(self.iface_registry)
+        server_dir = os.path.abspath(os.path.dirname(__file__))
+        self.resources_loader = ResourcesLoader(server_dir)
         self._register_transports()
 
     def _register_modules( self ):
