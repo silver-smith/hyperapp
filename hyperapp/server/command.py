@@ -82,10 +82,8 @@ class CommanderMetaClass(type):
 
     def __new__( meta_cls, name, bases, members ):
         cls = type.__new__(meta_cls, name, bases, members)
-        print('metaclass', cls)
         for name, attr in members.items():
             if not isinstance(attr, UnboundCommand): continue
-            print('binding interface', name, attr)
             iface = getattr(cls, 'iface', None)
             assert iface, '"iface" attribute is not set for class %r' % cls.__name__
             attr.resource_id = iface.iface_id
