@@ -127,30 +127,15 @@ class ArticleRefList(SmallListObject):
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.article_id))
 
-    def get_commands( self ):
-        return [
-            tCommand('parent', 'Parent', 'Open parent article', ['Ctrl+Backspace']),
-            tCommand('add', 'Add ref', 'Create new reference', ['Ins']),
-            ]
-
-    def process_request( self, request ):
-        if request.command_id == 'parent':
-            return self.run_command_parent(request)
-        if request.command_id == 'add':
-            return self.run_command_add(request)
-        if request.command_id == 'open':
-            return self.run_command_open(request)
-        if request.command_id == 'delete':
-            return self.run_element_command_delete(request)
-        return SmallListObject.process_request(self, request)
-
+    @command('parent')
     @db_session
-    def run_command_parent( self, request ):
+    def command_parent( self, request ):
         rec = module.Article[self.article_id]
         return request.make_response_handle(Article.from_rec(rec))
 
+    @command('add')
     @db_session
-    def run_command_add( self, request ):
+    def command_add( self, request ):
         url = Url.from_data(iface_registry, request.params.target_url)
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
@@ -165,12 +150,14 @@ class ArticleRefList(SmallListObject):
         subscription.distribute_update(self.iface, self.get_path(), diff)
         return request.make_response(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
 
-    def run_command_open( self, request ):
+    @command('open', kind='element', is_default_command=True)
+    def command_open( self, request ):
         return request.make_response(
             RefSelector(self.article_id, ref_id=request.params.element_key).make_handle(request))
 
+    @command('delete', kind='element')
     @db_session
-    def run_element_command_delete( self, request ):
+    def command_delete( self, request ):
         ref_id = request.params.element_key
         module.ArticleRef[ref_id].delete()
         diff = self.Diff_delete(ref_id)
@@ -184,10 +171,7 @@ class ArticleRefList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [
-            tCommand('open', 'Open', 'Open reference selector'),
-            tCommand('delete', 'Delete', 'Delete article reference', 'Del'),
-            ]
+        commands = [cls.command_open, cls.command_delete]
         if not rec.server_public_key_pem:
             url = '<local>:%s' % rec.path
         else:

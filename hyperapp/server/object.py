@@ -116,6 +116,9 @@ class ListObject(Object):
 
     @classmethod
     def Element( cls, row, commands=None ):
+        for cmd in commands or []:
+            assert cmd.kind == 'element', ('%s: command %r must has "element" kind, but has kind %r'
+                                           % (cls.__name__, cmd.id, cmd.kind))
         return cls.iface.Element(row, [cmd.to_data() for cmd in commands or []])
 
     @classmethod
