@@ -1,0 +1,6 @@
+commands:
+- id: params
+  text: Params
+  desc: Edit params
+  shortcuts:
+  - Return

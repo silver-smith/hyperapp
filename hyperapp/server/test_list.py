@@ -3,6 +3,7 @@ from ..common.htypes import tCommand, Column
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
 from ..common.interface.test_list import params_form_iface, test_list_iface
 from .util import path_part_to_str
+from .command import command
 from .object import Object, ListObject
 from .module import Module, ModuleCommand
 from .form import stringFieldHandle, intFieldHandle
@@ -32,15 +33,8 @@ class ParamsForm(Object):
             tFormField('key', intFieldHandle(key)),
             tFormField('size', intFieldHandle(size))])
 
-    def get_commands( self ):
-        return [tCommand('submit', 'Submit', 'Submit form', ['Return'])]
-
-    def process_request( self, request ):
-        if request.command_id == 'submit':
-            return self.run_command_submit(request)
-        return Object.process_request(self, request)
-
-    def run_command_submit( self, request ):
+    @command('submit')
+    def command_submit( self, request ):
         log.info('submitted: key=%r size=%r', request.params.key, request.params.size)
         object = TestList(request.params.size)
         handle = TestList.ListHandle(object.get(request), key=request.params.key)
@@ -66,15 +60,8 @@ class TestList(ListObject):
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.size))
 
-    def get_commands( self ):
-        return [tCommand('params', 'Params', 'Edit params', ['Return'])]
-
-    def process_request( self, request ):
-        if request.command_id == 'params':
-            return self.run_command_params(request)
-        return ListObject.process_request(self, request)
-
-    def run_command_params( self, request ):
+    @command('params', is_default_command=True)
+    def command_params( self, request ):
         return request.make_response(ParamsForm().make_handle(request, size=self.size))
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
