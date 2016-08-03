@@ -29,7 +29,7 @@ class CommandList(SmallListObject):
     def cmd2element( self, cmd ):
         commands = [self.command_open]
         id = '%s.%s' % (cmd.module_name, cmd.id)
-        return self.Element(self.Row(id, cmd.module_name, cmd.text), commands)
+        return self.Element(self.Row(id, cmd.module_name, cmd.text, cmd.desc), commands)
 
     @command('open', kind='element', is_default_command=True)
     def command_open( self, request ):
