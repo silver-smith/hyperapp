@@ -3,6 +3,7 @@ import os.path
 import stat
 from ..common.htypes import tCommand, Column
 from ..common.interface.fs import file_iface, dir_iface
+from .command import command
 from .object import SmallListObject
 from .module import Module, ModuleCommand
 
@@ -82,38 +83,30 @@ class Dir(FsObject):
  
     def make_elt( self, finfo ):
         row = self.Row(key=finfo['key'], ftype=finfo['ftype'], ftime=finfo['ftime'], fsize=finfo['fsize'])
-        return self.Element(row, commands=self.elt_commands(finfo))
-
-    def elt_commands( self, finfo ):
-        if finfo['ftype'] == 'dir':
-            return [tCommand('open', 'Open', 'Open directory')]
-        else:
-            return [tCommand('open', 'Open', 'Open file')]
+        return self.Element(row, commands=[self.command_open])
 
     def get_handle( self, request ):
         return self.ListNarrowerHandle(self.get(request), 'key')
 
-    def process_request( self, request ):
-        if request.command_id == 'open':
-            fname = request.params.element_key
-            fspath = os.path.join(self.fspath, fname)
-            return request.make_response_handle(module.open(fspath))
-        if request.command_id == 'parent':
-            fspath = self.get_parent_dir()
-            if fspath is None: return None
-            key = os.path.basename(self.fspath)
-            handle = self.ListNarrowerHandle(module.open(fspath).get(request), 'key', key)
-            return request.make_response(handle)
-        return SmallListObject.process_request(self, request)
+    @command('open', kind='element', is_default_command=True)
+    def command_open( self, request ):
+        fname = request.params.element_key
+        fspath = os.path.join(self.fspath, fname)
+        return request.make_response_handle(module.open(fspath))
+
+    @command('parent')
+    def command_parent( self, request ):
+        fspath = self.get_parent_dir()
+        if fspath is None: return None
+        key = os.path.basename(self.fspath)
+        handle = self.ListNarrowerHandle(module.open(fspath).get(request), 'key', key)
+        return request.make_response(handle)
 
     def get_parent_dir( self ):
         dir = os.path.dirname(self.fspath)
         if dir == self.fspath:
             return None  # already root
         return dir
-
-    def get_commands( self ):
-        return [tCommand('parent', 'Open parent', 'Open parent directory', ['Ctrl+Backspace'])]
 
 
 class FileModule(Module):

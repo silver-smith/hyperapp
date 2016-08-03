@@ -1,0 +1,10 @@
+commands:
+- id: open
+  text: Open
+  desc: Open file or directory
+  shortcuts: []
+- id: parent
+  text: Open parent
+  desc: Open parent directory
+  shortcuts:
+  - Ctrl+Backspace
