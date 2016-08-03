@@ -26,7 +26,7 @@ class ThisModule(Module):
         self._remoting.add_routes(url.public_key, url.routes)
         return execute_get_request(self._remoting, url)
 
-    @command('_url_to_clipboard')
+    @command('url_to_clipboard', kind='object')
     def command_url_to_clipboard( self, object ):
         url = object.get_url()
         assert url is not None

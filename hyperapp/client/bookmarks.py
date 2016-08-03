@@ -131,7 +131,7 @@ class ThisModule(Module):
     def command_bookmark_list( self ):
         return make_bookmark_list()
 
-    @command('bookmark')
+    @command('bookmark', kind='object')
     def object_command_bookmark( self, object ):
         url = object.get_url()
         assert url is not None

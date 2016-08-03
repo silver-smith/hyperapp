@@ -193,7 +193,7 @@ class ThisModule(Module):
             return [self.object_command_add_to_repository_list]
         return []
 
-    @command('_add_to_repository_list')
+    @command('add_to_repository_list', kind='object')
     def object_command_add_to_repository_list( self, object ):
         assert code_repository_iface in object.get_facets()
         url = object.get_url().clone(iface=code_repository_iface)
