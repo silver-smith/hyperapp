@@ -1,0 +1,5 @@
+commands:
+- id: choose
+  text: Choose
+  desc: Choose current object
+  shortcuts: []

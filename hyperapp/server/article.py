@@ -200,18 +200,9 @@ class RefSelector(Object):
     def get_path( self ):
         return module.make_path(self.class_name, path_part_to_str(self.article_id), path_part_to_str(self.ref_id))
 
-    def get_commands( self ):
-        return [
-            tCommand('choose'),
-            ]
-
-    def process_request( self, request ):
-        if request.command_id == 'choose':
-            return self.run_command_choose(request)
-        return Object.process_request(self, request)
-
+    @command('choose')
     @db_session
-    def run_command_choose( self, request ):
+    def command_choose( self, request ):
         url = Url.from_data(iface_registry, request.params.target_url)
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
