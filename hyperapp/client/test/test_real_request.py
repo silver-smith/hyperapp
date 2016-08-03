@@ -47,6 +47,14 @@ class PhonyIdentityRepository(IdentityRepository):
         return []
 
 
+class PhonyResourcesRegistry(object):
+
+    def register( self, id, locale, resources ):
+        pass
+
+    def resolve( self, id, locale ):
+        return None
+
 
 class Services(object):
 
@@ -63,6 +71,7 @@ class Services(object):
         self.cache_repository = CacheRepository()
         self.code_repository = CodeRepository(
             self.iface_registry, self.remoting, self.cache_repository, PhonyNamedUrlRepository())
+        self.resources_registry = PhonyResourcesRegistry()
         self._register_transports()
 
     def _register_interfaces( self ):
