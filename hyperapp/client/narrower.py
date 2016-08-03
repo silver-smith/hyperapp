@@ -130,12 +130,6 @@ class View(LineListPanel):
             # lvs.first_visible_row, lvs.select_first, self._line_edit.text()
             )
 
-    def get_title( self ):
-        return self._base_obj.get_title()
-
-    def get_object( self ):
-        return self._base_obj
-
     def _set_prefix( self, prefix ):
         self._line_edit.setText('')
         self._update_prefix('')
@@ -164,7 +158,7 @@ class View(LineListPanel):
             return True
         return LineListPanel.is_list_event(self, evt)
 
-    @command('wider', enabled=False)
+    @command('wider', kind='object', enabled=False)
     def cancel_narrowing( self ):
         if self._line_edit.text():
             self._set_prefix('')
