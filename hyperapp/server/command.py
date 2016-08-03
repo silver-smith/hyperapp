@@ -43,14 +43,13 @@ class BoundCommand(object):
 
 class UnboundCommand(object):
 
-    def __init__( self, id, kind, resource_id, is_default_command, class_method ):
+    def __init__( self, id, kind, is_default_command, class_method ):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(resource_id, str), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         self.id = id
         self.kind = kind
-        self.resource_id = resource_id
+        self.resource_id = None  # set by CommanderMetaClass
         self.is_default_command = is_default_command
         self._class_method = class_method
 
@@ -76,12 +75,24 @@ class command(object):
         self.is_default_command = is_default_command
 
     def __call__( self, class_method ):
-        module_name = class_method.__module__.split('.')[-1]
-        ## print('### command module:', module_name)
-        return UnboundCommand(self.id, self.kind, module_name, self.is_default_command, class_method)
+        return UnboundCommand(self.id, self.kind, self.is_default_command, class_method)
 
 
-class Commander(object):
+class CommanderMetaClass(type):
+
+    def __new__( meta_cls, name, bases, members ):
+        cls = type.__new__(meta_cls, name, bases, members)
+        print('metaclass', cls)
+        for name, attr in members.items():
+            if not isinstance(attr, UnboundCommand): continue
+            print('binding interface', name, attr)
+            iface = getattr(cls, 'iface', None)
+            assert iface, '"iface" attribute is not set for class %r' % cls.__name__
+            attr.resource_id = iface.iface_id
+        return cls
+
+
+class Commander(object, metaclass=CommanderMetaClass):
 
     def __init__( self, commands_kind ):
         if hasattr(self, '_commands'):  # multiple inheritance hack

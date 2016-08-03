@@ -1,0 +1,24 @@
+commands:
+- id: edit
+  text: Edit
+  desc: Switch to edit mode
+  shortcuts:
+  - E
+- id: view
+  text: View
+  desc: Finish editing, switch to view mode
+  shortcuts:
+  - Ctrl+F
+- id: save
+  text: Save
+  desc: Save article
+  shortcuts: []
+- id: refs
+  text: Refs
+  desc: Open article references
+  shortcuts:
+  - Ctrl+R
+- id: open_ref
+  text: Open ref
+  desc: Open selected reference
+  shortcuts: []

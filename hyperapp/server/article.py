@@ -71,11 +71,6 @@ class Article(Object):
         else:
             return tObjHandle('text_edit', self.get(request))
 
-            ## tCommand('edit', 'Edit', 'Switch to edit mode', ['E']),
-            ## tCommand('view', 'View', 'Finish editing, switch to view mode', ['Ctrl+F']),
-            ## tCommand('save'),
-            ## tCommand('refs', 'Refs', 'Open article references', ['Ctrl+R']),
-
     @command('save')
     def command_save( self, request ):
         return self.do_save(request, request.params.text)

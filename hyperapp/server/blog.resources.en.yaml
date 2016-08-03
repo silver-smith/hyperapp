@@ -13,10 +13,3 @@ commands:
   desc: Delete blog entry
   shortcuts:
   - Del
-- id: parent
-  text: Parent
-  desc: Open parent article
-  shortcuts:
-  - Ctrl+Backspace
-
-

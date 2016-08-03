@@ -1,0 +1,6 @@
+commands:
+- id: parent
+  text: Parent
+  desc: Open parent article
+  shortcuts:
+  - Ctrl+Backspace
