@@ -46,11 +46,11 @@ class View(ObjectObserver, Commander):
         else:
             return self
 
-    def get_commands( self ):
-        commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_commands(self)]
+    def get_commands( self, kinds=None ):
+        commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_commands(self, kinds)]
         child = self.get_current_child()
         if child:
-            commands += child.get_commands()
+            commands += child.get_commands(kinds)
         object = self.get_object()
         if object:
             commands += [ViewCommand.from_command(cmd, self) for cmd in
@@ -91,7 +91,8 @@ class View(ObjectObserver, Commander):
         return self._parent().get_global_commands()
 
     def view_changed( self, view=None ):
-        self._parent().view_changed(self)
+        if self._parent:
+            self._parent().view_changed(self)
 
     def view_commands_changed( self, command_kinds ):
         if self._parent:

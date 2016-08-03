@@ -84,6 +84,7 @@ class View(QtGui.QDockWidget):
             text = '%s/%s' % (cmd.resource_id, cmd.id)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(desc)
+        button.setEnabled(cmd.is_enabled())
         return button
 
     def __del__( self ):

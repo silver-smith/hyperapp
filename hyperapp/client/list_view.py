@@ -220,8 +220,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def get_object( self ):
         return self._object
 
-    def get_commands( self ):
-        return view.View.get_commands(self) + self._elt_commands
+    def get_commands( self, kinds ):
+        return view.View.get_commands(self, kinds) + self._elt_commands
 
     def get_sort_column_id( self ):
         return self.model().get_sort_column_id()

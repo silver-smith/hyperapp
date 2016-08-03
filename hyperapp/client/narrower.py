@@ -36,7 +36,7 @@ class FilteredListObj(ListObject, ListObserver):
         return 'FilteredListObj(%r/%r/%r)' % (self._narrow_field_id, self._prefix, len(self._cached_elements))
 
     def get_title( self ):
-        return 'filtered(%r, %s)' % (self._prefix, self._base.get_title())
+        return self._base.get_title()
 
     def get_url( self ):
         return self._base.get_url()
@@ -129,6 +129,9 @@ class View(LineListPanel):
             narrow_field_id=self._narrow_field_id,
             # lvs.first_visible_row, lvs.select_first, self._line_edit.text()
             )
+
+    def get_commands( self, kinds=None ):
+        return LineListPanel.get_commands(self, ['view', 'object'])
 
     def _set_prefix( self, prefix ):
         self._line_edit.setText('')

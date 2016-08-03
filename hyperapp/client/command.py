@@ -196,20 +196,23 @@ class Commander(object):
     def __init__( self, commands_kind ):
         if hasattr(self, '_commands'):  # multiple inheritance hack
             return  # do not populate _commands twice
+        self._commands_kind = commands_kind
         self._commands = []  # BoundCommand list
         for name in dir(self):
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue
             bound_cmd = attr.bind(self, commands_kind)
             setattr(self, name, bound_cmd)  # set_enabled must change command for this view, not for all of them
-            if bound_cmd.kind == commands_kind:
-                self._commands.append(bound_cmd)
+            self._commands.append(bound_cmd)
 
     def get_command( self, command_id ):
-        for command in self.get_commands():
+        for command in self._commands:
+            assert isinstance(command, BoundCommand), repr(command)
             if command.id == command_id:
                 return command
         return None
 
-    def get_commands( self ):
-        return self._commands
+    def get_commands( self, kinds=None ):
+        if kinds is None:
+            kinds = set([self._commands_kind])
+        return [cmd for cmd in self._commands if cmd.kind in kinds]

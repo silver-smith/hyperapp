@@ -76,15 +76,18 @@ class MenuBar(object):
         
     def _make_action( self, menu, cmd ):
         resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
-        if not resources:
-            return make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
-        for res in resources.commands:
-            if res.id == cmd.id:
-                break
+        if resources:
+            for res in resources.commands:
+                if res.id == cmd.id:
+                    break
+            else:
+                print([rc.id for rc in resources.commands])
+                assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
+            action = make_async_action(menu, res.text, res.shortcuts, cmd.run)
         else:
-            print([rc.id for rc in resources.commands])
-            assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
-        return make_async_action(menu, res.text, res.shortcuts, cmd.run)
+            action = make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
+        action.setEnabled(cmd.is_enabled())
+        return action
 
     def _update_dir_menu( self, window ):
         self.dir_menu.clear()
