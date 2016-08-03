@@ -288,6 +288,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         idx = self.model().createIndex(row, 0)
         self.setCurrentIndex(idx)
         self.scrollTo(idx)
+        self._selected_elements_changed()
 
     def set_current_key( self, key, select_first=False, accept_near=False ):
         row = self.model().get_key_row(key)
@@ -322,7 +323,6 @@ class View(view.View, ListObserver, QtGui.QTableView):
         log.info('-- set_object self=%r model=%r object=%r isVisible=%r', self, id(self.model()), object, self.isVisible())
         assert isinstance(object, ListObject), repr(object)
         assert sort_column_id is not None or self.model().get_sort_column_id() is not None
-        assert isinstance
         if self._object:
             self._object.unsubscribe(self)
         self._object = object
