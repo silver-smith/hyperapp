@@ -7,21 +7,18 @@ from ..common.util import is_list_inst
 from ..common.packet_coders import packet_coders
 
 
-CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
-CONTENTS_ENCODING = 'json_pretty'
-
-
 class CacheRepository(object):
 
-    def __init__( self ):
-        pass
+    def __init__( self, cache_dir, contents_encoding ):
+        self._cache_dir = cache_dir
+        self._contents_encoding = contents_encoding
 
     def _quote( self, name ):
         return re.sub(r'[/|"]', '-', name)
 
     def key2fpath( self, key ):
         assert is_list_inst(key, str), repr(key)
-        return os.path.join(CACHE_DIR, *tuple(map(self._quote, key)))
+        return os.path.join(self._cache_dir, *tuple(map(self._quote, key)))
         
     def store_data( self, key, data ):
         fpath = self.key2fpath(key)
@@ -40,11 +37,11 @@ class CacheRepository(object):
 
     def store_value( self, key, value, t ):
         if value is None: return
-        data = packet_coders.encode(CONTENTS_ENCODING, value, t)
+        data = packet_coders.encode(self._contents_encoding, value, t)
         self.store_data(key, data)
 
     def load_value( self, key, t ):
         data = self.load_data(key)
         if data is None:
             return None
-        return packet_coders.decode(CONTENTS_ENCODING, data, t)
+        return packet_coders.decode(self._contents_encoding, data, t)

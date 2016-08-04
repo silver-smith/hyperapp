@@ -34,7 +34,6 @@ class ModuleManager(object):
     def _load_module( self, module, name=None ):
         if name is None:
             name = module.package + '.' + module.id.replace('-', '_')
-        name = str(name)  # python expects name and package to be a an str, assume it is
         if name in sys.modules:
             return  # already loaded
         module_inst = ModuleType(name, 'dynamic hyperapp module %r loaded as %r' % (module.id, name))

@@ -18,7 +18,6 @@ from hyperapp.client.module_manager import ModuleManager
 from hyperapp.client.remoting import Remoting
 from hyperapp.client.objimpl_registry import ObjImplRegistry
 from hyperapp.client.named_url_file_repository import NamedUrlRepository
-from hyperapp.client.cache_repository import CacheRepository
 from hyperapp.client.proxy_registry import ProxyRegistry
 from hyperapp.client.view_registry import ViewRegistry
 from hyperapp.client.identity import IdentityRepository, IdentityController
@@ -27,6 +26,10 @@ from hyperapp.common.interface.code_repository import code_repository_iface
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
 from hyperapp.common.test.util import PhonyRouteRepository
+
+
+class PhonyCacheRepository(object):
+    pass
 
 
 class PhonyNamedUrlRepository(NamedUrlRepository):
@@ -68,7 +71,7 @@ class Services(object):
         self.view_registry = ViewRegistry(self.remoting)
         self.module_mgr = ModuleManager(self)
         self.identity_controller = IdentityController(PhonyIdentityRepository())
-        self.cache_repository = CacheRepository()
+        self.cache_repository = PhonyCacheRepository()
         self.code_repository = CodeRepository(
             self.iface_registry, self.remoting, self.cache_repository, PhonyNamedUrlRepository())
         self.resources_manager = PhonyResourcesManager()
