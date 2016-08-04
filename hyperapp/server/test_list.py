@@ -1,5 +1,5 @@
 import logging
-from ..common.htypes import tCommand, Column
+from ..common.htypes import Column
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
 from ..common.interface.test_list import params_form_iface, test_list_iface
 from .util import path_part_to_str

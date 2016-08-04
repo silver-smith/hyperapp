@@ -1,6 +1,5 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
-from ..common.htypes import tCommand
 from ..common.interface.form import tFormField, tFormHandle
 from ..common.interface.splitter import tSplitterHandle
 from ..common.interface.module_list import (
@@ -10,6 +9,7 @@ from ..common.interface.module_list import (
     available_dep_list_iface,
     )
 from .ponyorm_module import PonyOrmModule
+from .command import command
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
 from .form import stringFieldHandle
@@ -40,37 +40,24 @@ class ModuleList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [tCommand('open', 'Open', 'Open module', ['Return']),
-                    tCommand('deps', 'Dependencies', 'Open dependency selector', ['Ctrl+D']),
-                    tCommand('delete', 'Delete', 'Delete module', ['Del'])]
+        commands = [cls.command_open, cls.command_deps, cls.command_delete]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
-    def get_commands( self ):
-        return [tCommand('add', 'Add', 'Create new module', ['Ins'])]
-
-    def process_request( self, request ):
-        if request.command_id == 'add':
-            return self.run_command_add(request)
-        if request.command_id == 'delete':
-            return self.run_element_command_delete(request)
-        if request.command_id == 'deps':
-            return self.run_element_command_deps(request)
-        if request.command_id == 'open':
-            return self.run_element_command_open(request)
-        return SmallListObject.process_request(self, request)
-
-    def run_command_add( self, request ):
+    @command('add')
+    def command_add( self, request ):
         return request.make_response_handle(ModuleForm())
 
+    @command('delete', kind='element')
     @db_session
-    def run_element_command_delete( self, request ):
+    def command_delete( self, request ):
         id = request.params.element_key
         module.Module[id].delete()
         diff = self.Diff_delete(id)
         return request.make_response_update(self.iface, self.get_path(), diff)
 
+    @command('deps', kind='element')
     @db_session
-    def run_element_command_deps( self, request ):
+    def command_deps( self, request ):
         module_id = request.params.element_key
         dep_list = ModuleDepList(module_id)
         available_list = AvailableDepList(module_id)
@@ -79,8 +66,9 @@ class ModuleList(SmallListObject):
         return request.make_response(
             tSplitterHandle('splitter', dep_list.get_handle(request), available_list.get_handle(request)))
 
+    @command('open', kind='element', is_default_command=True)
     @db_session
-    def run_element_command_open( self, request ):
+    def command_open( self, request ):
         id = request.params.element_key
         rec = module.Module[id]
         return request.make_response(ModuleForm(rec.id).get_handle(request, name=rec.name))
@@ -110,16 +98,9 @@ class ModuleForm(Object):
             tFormField('name', stringFieldHandle(name)),
             ])
 
-    def get_commands( self ):
-        return [tCommand('submit', 'Submit', 'Submit form', 'Return')]
-
-    def process_request( self, request ):
-        if request.command_id == 'submit':
-            return self.run_command_submit(request)
-        return Object.process_request(self, request)
-
+    @command('submit', is_default_command=True)
     @db_session
-    def run_command_submit( self, request ):
+    def command_submit( self, request ):
         if self.id:
             rec = module.Module[self.id]
             rec.name = request.params.name
@@ -160,16 +141,12 @@ class ModuleDepList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [tCommand('remove', 'Remove', 'Remove module from dependency list', 'Del')]
+        commands = [cls.command_remove]
         return cls.Element(cls.Row(rec.id, rec.visible_as, rec.dep.id), commands)
 
-    def process_request( self, request ):
-        if request.command_id == 'remove':
-            return self.run_element_command_remove(request)
-        return SmallListObject.process_request(self, request)
-
+    @command('remove', kind='element')
     @db_session
-    def run_element_command_remove( self, request ):
+    def command_remove( self, request ):
         rec_id = request.params.element_key
         rec = module.ModuleDep[rec_id]
         dep_module_rec = rec.dep
@@ -213,16 +190,12 @@ class AvailableDepList(SmallListObject):
 
     @classmethod
     def rec2element( cls, rec ):
-        commands = [tCommand('add', 'Add', 'Add module to dependency list', 'Ins')]
+        commands = [cls.command_add]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
-    def process_request( self, request ):
-        if request.command_id == 'add':
-            return self.run_element_command_add(request)
-        return SmallListObject.process_request(self, request)
-
+    @command('add', kind='element')
     @db_session
-    def run_element_command_add( self, request ):
+    def command_add( self, request ):
         module_id = request.params.element_key
         dep_module = module.Module[module_id]
         module_rec = module.Module[self.module_id]

@@ -1,7 +1,7 @@
 import sys
 import os.path
 import stat
-from ..common.htypes import tCommand, Column
+from ..common.htypes import Column
 from ..common.interface.fs import file_iface, dir_iface
 from .command import command
 from .object import SmallListObject

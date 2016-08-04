@@ -1,0 +1,6 @@
+commands:
+- id: remove
+  text: Remove
+  desc: Remove module from dependency list
+  shortcuts:
+  - Del

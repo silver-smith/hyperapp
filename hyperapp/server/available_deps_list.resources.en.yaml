@@ -1,0 +1,6 @@
+commands:
+- id: add
+  text: Add
+  desc: Add module to dependency list
+  shortcuts:
+  - Ins

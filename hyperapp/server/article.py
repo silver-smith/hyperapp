@@ -1,7 +1,7 @@
 import logging
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
-from ..common.htypes import tCommand, Column, tObjHandle, tRedirectHandle, iface_registry
+from ..common.htypes import Column, tObjHandle, tRedirectHandle, iface_registry
 from ..common.interface.article import (
     tObjSelectorHandle,
     article_iface,

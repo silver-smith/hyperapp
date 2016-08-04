@@ -1,0 +1,21 @@
+commands:
+- id: add
+  text: Add
+  desc: Create new module
+  shortcuts:
+  - Ins
+- id: open
+  text: Open
+  desc: Open module
+  shortcuts:
+  - Return
+- id: deps
+  text: Dependencies
+  desc: Open dependency selector
+  shortcuts:
+  - Ctrl+D
+- id: delete
+  text: Delete
+  desc: Delete module
+  shortcuts:
+  - Del
