@@ -8,6 +8,7 @@ from ..common.interface.code_repository import (
     )
 from . import module as module_mod
 from .module import ModuleCommand
+from .command import command
 from .object import Object, SmallListObject
 
 log = logging.getLogger(__name__)
@@ -77,20 +78,15 @@ class CodeRepository(Object):
         path.check_empty()
         return self
 
-    def process_request( self, request ):
-        if request.command_id == 'get_modules_by_ids':
-            return self.run_command_get_modules_by_ids(request)
-        if request.command_id == 'get_modules_by_requirements':
-            return self.run_command_get_modules_by_requirements(request)
-        return Object.process_request(self, request)
-
-    def run_command_get_modules_by_ids( self, request ):
-        log.info('run_command_get_modules_by_ids %r', request.params.module_ids)
+    @command('get_modules_by_ids')
+    def command_get_modules_by_ids( self, request ):
+        log.info('command_get_modules_by_ids %r', request.params.module_ids)
         return request.make_response_result(
             modules=self.get_modules_by_ids(request.params.module_ids))
 
-    def run_command_get_modules_by_requirements( self, request ):
-        log.info('run_command_get_modules_by_requirements %r', request.params.requirements)
+    @command('get_modules_by_requirements')
+    def command_get_modules_by_requirements( self, request ):
+        log.info('command_get_modules_by_requirements %r', request.params.requirements)
         return request.make_response_result(
             modules=self.get_modules_by_requirements(request.params.requirements))
 
