@@ -29,7 +29,7 @@ class Transport(metaclass=abc.ABCMeta):
         self._view_registry = services.view_registry
         self._code_repository = services.code_repository
         self._identity_controller = services.identity_controller
-        self._resources_registry = services.resources_registry
+        self._resources_manager = services.resources_manager
         assert isinstance(self._module_mgr, ModuleManager), repr(self._module_mgr)
         #assert isinstance(code_repository, CodeRepository), repr(code_repository)
         assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)
@@ -71,7 +71,7 @@ class Transport(metaclass=abc.ABCMeta):
     def _add_resources( self, resources ):
         for rec in resources:
             log.info('received %r resources for %r', rec.locale, rec.resource_id)
-            self._resources_registry.register(rec.resource_id, rec.locale, rec.resources)
+            self._resources_manager.register(rec.resource_id, rec.locale, rec.resources)
 
     def make_request_packet( self, encoding, request_or_notification ):
         server_pks = ServerPksCollector().collect_public_key_ders(tClientPacket, request_or_notification.to_data())

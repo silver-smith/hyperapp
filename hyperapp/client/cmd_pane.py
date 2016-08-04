@@ -11,12 +11,12 @@ log = logging.getLogger(__name__)
 
 class View(QtGui.QDockWidget):
 
-    def __init__( self, window, locale, resources_registry ):
+    def __init__( self, window, locale, resources_manager ):
         QtGui.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
         self.window = weakref.ref(window)
         self._locale = locale
-        self._resources_registry = resources_registry
+        self._resources_manager = resources_manager
         self.current_dir = None
         self.layout = QtGui.QVBoxLayout(spacing=1)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
@@ -67,7 +67,7 @@ class View(QtGui.QDockWidget):
 
     def _make_button( self, cmd ):
         desc = ''
-        resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
+        resources = self._resources_manager.resolve(cmd.resource_id, self._locale)
         if resources:
             for res in resources.commands:
                 if res.id == cmd.id:

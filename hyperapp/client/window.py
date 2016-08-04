@@ -43,18 +43,18 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, app, view_registry, resources_registry ):
+    def from_state( cls, state, app, view_registry, resources_manager ):
         child = yield from tab_view.View.from_state(state.tab_view, view_registry)
-        return cls(view_registry, resources_registry, app, child,
+        return cls(view_registry, resources_manager, app, child,
                    size=QtCore.QSize(state.size.w, state.size.h),
                    pos=QtCore.QPoint(state.pos.x, state.pos.y))
 
-    def __init__( self, view_registry, resources_registry, app, child, size=None, pos=None ):
+    def __init__( self, view_registry, resources_manager, app, child, size=None, pos=None ):
         assert isinstance(child, tab_view.View), repr(child)
         QtGui.QMainWindow.__init__(self)
         composite.Composite.__init__(self, app)
         self._view_registry = view_registry
-        self._resources_registry = resources_registry
+        self._resources_manager = resources_manager
         self._app = app  # alias for _parent()
         self._view = None
         self._child_widget = None
@@ -66,8 +66,8 @@ class Window(composite.Composite, QtGui.QMainWindow):
             self.move(pos)
         else:
             self.move(800, 100)
-        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, resources_registry)
-        self._cmd_pane = cmd_pane.View(self, LOCALE, resources_registry)
+        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, resources_manager)
+        self._cmd_pane = cmd_pane.View(self, LOCALE, resources_manager)
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
@@ -130,7 +130,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        yield from self.from_state(state, self._app, self._view_registry, self._resources_registry)
+        yield from self.from_state(state, self._app, self._view_registry, self._resources_manager)
 
     def __del__( self ):
         log.info('~window')

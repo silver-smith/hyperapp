@@ -18,7 +18,7 @@ from .remoting import Remoting
 from .named_url_file_repository import FileNamedUrlRepository
 from . import code_repository
 from .code_repository import CodeRepository
-from .resources_registry import ResourcesRegistry
+from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
 from .file_route_repository import FileRouteRepository
 from . import identity
@@ -62,6 +62,7 @@ class Services(object):
             self.iface_registry, self.remoting, self.cache_repository,
             FileNamedUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         self.resources_registry = ResourcesRegistry()
+        self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
         self.bookmarks = Bookmarks(FileNamedUrlRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_transports()
@@ -99,7 +100,7 @@ class Services(object):
                 ]:
             with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
                 resources = packet_coders.decode('yaml', f.read(), tLocaleResources)
-                self.resources_registry.register(module, 'en', resources)
+                self.resources_manager.register(module, 'en', resources)
 
     def _register_object_implementations( self ):
         for module in [

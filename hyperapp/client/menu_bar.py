@@ -10,11 +10,11 @@ log = logging.getLogger(__name__)
 
 class MenuBar(object):
 
-    def __init__( self, app, window, locale, resources_registry ):
+    def __init__( self, app, window, locale, resources_manager ):
         self.app = app
         self.window = window  # weakref.ref
         self._locale = locale
-        self._resources_registry = resources_registry
+        self._resources_manager = resources_manager
         self.current_dir = None
         self._build()
 
@@ -75,7 +75,7 @@ class MenuBar(object):
         pass
         
     def _make_action( self, menu, cmd ):
-        resources = self._resources_registry.resolve(cmd.resource_id, self._locale)
+        resources = self._resources_manager.resolve(cmd.resource_id, self._locale)
         if resources:
             for res in resources.commands:
                 if res.id == cmd.id:
