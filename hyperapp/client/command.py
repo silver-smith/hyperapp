@@ -187,8 +187,9 @@ class command(object):
 
     def __call__( self, class_method ):
         module_name = class_method.__module__.split('.')[-1]
+        resource_id = '.'.join(['client_module', module_name])
         ## print('### command module:', module_name)
-        return UnboundCommand(self.id, self.kind, module_name, self.is_default_command, self.enabled, class_method)
+        return UnboundCommand(self.id, self.kind, resource_id, self.is_default_command, self.enabled, class_method)
 
 
 class Commander(object):

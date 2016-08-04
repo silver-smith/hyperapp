@@ -5,6 +5,7 @@ from ..htypes import (
     TList,
     tRequirement,
     tModule,
+    tResources,
     RequestCmd,
     Interface,
     ListInterface,
@@ -13,8 +14,14 @@ from ..htypes import (
     )
 
 code_repository_iface = Interface('code_repository', commands=[
-    RequestCmd('get_modules_by_ids', [Field('module_ids', TList(tString))], [Field('modules', TList(tModule))]),
-    RequestCmd('get_modules_by_requirements', [Field('requirements', TList(tRequirement))], [Field('modules', TList(tModule))]),
+    RequestCmd('get_modules_by_ids',
+               [Field('module_ids', TList(tString))],
+               [Field('modules', TList(tModule)),
+                Field('resources', TList(tResources))]),
+    RequestCmd('get_modules_by_requirements',
+               [Field('requirements', TList(tRequirement))],
+               [Field('modules', TList(tModule)),
+                Field('resources', TList(tResources))]),
     ])
 
 code_repository_browser_iface = ListInterface('code_repository_browser', key_column='id', columns=[

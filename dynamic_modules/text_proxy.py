@@ -35,7 +35,7 @@ class ProxyTextObject(ProxyObject, TextObject):
                 return command.id not in ['edit']
         return list(filter(pred, commands))
 
-    @command('save')  # 'Save', 'Save this text', 'Ctrl+S')
+    @command('save')
     @asyncio.coroutine
     def command_save( self ):
         result = yield from self.run_remote_command('save', text=self.text)

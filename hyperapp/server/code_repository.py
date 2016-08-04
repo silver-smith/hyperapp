@@ -1,6 +1,7 @@
 import os.path
 import logging
 import yaml
+from ..common.util import flatten
 from ..common.interface.code_repository import (
     tModule,
     code_repository_iface,
@@ -15,7 +16,6 @@ log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'code_repository'
-DYNAMIC_MODULES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
 DYNAMIC_MODULE_INFO_EXT = '.module.yaml'
 CODE_REPOSITORY_CLASS_NAME = 'code_repository'
 CODE_REPOSITORY_FACETS = [code_repository_iface, code_repository_browser_iface]
@@ -23,7 +23,8 @@ CODE_REPOSITORY_FACETS = [code_repository_iface, code_repository_browser_iface]
 
 class ModuleRepository(object):
 
-    def __init__( self ):
+    def __init__( self, dynamic_modules_dir ):
+        self._dynamic_modules_dir = dynamic_modules_dir
         self._id2module = {}           # module id -> tModule
         self._requirement2module = {}  # (registry, key) -> tModule
         self._load_dynamic_modules()
@@ -38,15 +39,15 @@ class ModuleRepository(object):
         return self._requirement2module.get((registry, key))
 
     def _load_dynamic_modules( self ):
-        for fname in os.listdir(DYNAMIC_MODULES_DIR):
+        for fname in os.listdir(self._dynamic_modules_dir):
             if fname.endswith(DYNAMIC_MODULE_INFO_EXT):
-                self._load_dynamic_module(os.path.join(DYNAMIC_MODULES_DIR, fname))
+                self._load_dynamic_module(os.path.join(self._dynamic_modules_dir, fname))
 
     def _load_dynamic_module( self, info_path ):
         with open(info_path) as f:
             info = yaml.load(f.read())
         log.info('loaded module info: %r', info)
-        source_path = os.path.abspath(os.path.join(DYNAMIC_MODULES_DIR, info['source_path']))
+        source_path = os.path.abspath(os.path.join(self._dynamic_modules_dir, info['source_path']))
         satisfies = [path.split('/') for path in info['satisfies']]
         module = self._load_module(info['id'], info['package'], satisfies, source_path)
         for registry, key in satisfies:
@@ -68,27 +69,16 @@ class CodeRepository(Object):
 
     @classmethod
     def get_path( cls ):
-        return module.make_path(cls.class_name)
+        return this_module.make_path(cls.class_name)
 
-    def __init__( self, repository ):
+    def __init__( self, repository, resources_loader ):
         Object.__init__(self)
         self._repository = repository
+        self._resources_loader = resources_loader
 
     def resolve( self, path ):
         path.check_empty()
         return self
-
-    @command('get_modules_by_ids')
-    def command_get_modules_by_ids( self, request ):
-        log.info('command_get_modules_by_ids %r', request.params.module_ids)
-        return request.make_response_result(
-            modules=self.get_modules_by_ids(request.params.module_ids))
-
-    @command('get_modules_by_requirements')
-    def command_get_modules_by_requirements( self, request ):
-        log.info('command_get_modules_by_requirements %r', request.params.requirements)
-        return request.make_response_result(
-            modules=self.get_modules_by_requirements(request.params.requirements))
 
     def get_modules_by_ids( self, module_ids ):
         return [self._repository.get_module_by_id(id) for id in module_ids]
@@ -103,6 +93,28 @@ class CodeRepository(Object):
                 log.info('Unknown requirement: %s/%s', registry, key)  # May be statically loaded, ignore
         return modules
 
+    @command('get_modules_by_ids')
+    def command_get_modules_by_ids( self, request ):
+        log.info('command_get_modules_by_ids %r', request.params.module_ids)
+        modules = self.get_modules_by_ids(request.params.module_ids)
+        return self._make_response(request, modules)
+
+    @command('get_modules_by_requirements')
+    def command_get_modules_by_requirements( self, request ):
+        log.info('command_get_modules_by_requirements %r', request.params.requirements)
+        modules = self.get_modules_by_requirements(request.params.requirements)
+        return self._make_response(request, modules)
+
+    def _make_response( self, request, modules ):
+        resources = flatten(self._load_module_resources(module) for module in modules)
+        return request.make_response_result(
+            modules=modules,
+            resources=resources)
+
+    def _load_module_resources( self, module ):
+        resource_id = '.'.join(['client_module', module.id.replace('-', '_')])
+        return self._resources_loader.load_resources(resource_id)
+
 
 class CodeRepositoryBrowser(SmallListObject):
 
@@ -114,7 +126,7 @@ class CodeRepositoryBrowser(SmallListObject):
 
     @classmethod
     def get_path( cls ):
-        return module.make_path(cls.class_name)
+        return this_module.make_path(cls.class_name)
 
     def __init__( self, repository ):
         SmallListObject.__init__(self)
@@ -136,17 +148,19 @@ class CodeRepositoryBrowser(SmallListObject):
             ))
 
 
-class CodeRepositoryModule(module_mod.Module):
+class ThisModule(module_mod.Module):
 
-    def __init__( self ):
+    def __init__( self, services ):
         module_mod.Module.__init__(self, MODULE_NAME)
+        self._module_repository = services.module_repository
+        self._code_repository = services.code_repository
 
     def resolve( self, iface, path ):
         objname = path.pop_str()
         if objname == CodeRepository.class_name and iface is CodeRepository.iface:
-            return code_repository.resolve(path)
+            return self._code_repository.resolve(path)
         if objname == CodeRepositoryBrowser.class_name and iface is CodeRepositoryBrowser.iface:
-            return CodeRepositoryBrowser(module_repository).resolve(path)
+            return CodeRepositoryBrowser(self._module_repository).resolve(path)
         path.raise_not_found()
 
     def get_commands( self ):
@@ -154,10 +168,5 @@ class CodeRepositoryModule(module_mod.Module):
 
     def run_command( self, request, command_id ):
         if command_id == 'code_repository':
-            return request.make_response_handle(CodeRepositoryBrowser(module_repository))
+            return request.make_response_handle(CodeRepositoryBrowser(self._module_repository))
         return Module.run_command(self, request, command_id)
-
-
-module_repository = ModuleRepository()
-code_repository = CodeRepository(module_repository)
-module = CodeRepositoryModule()
