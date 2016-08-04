@@ -1,5 +1,6 @@
 import logging
-from ..common.htypes import tLocaleResources
+from ..common.util import is_list_inst
+from ..common.htypes import tLocaleResources, tResources
 
 log = logging.getLogger(__name__)
 
@@ -23,6 +24,11 @@ class ResourcesManager(object):
     def __init__( self, resources_registry, cache_repository ):
         self._resources_registry = resources_registry
         self._cache_repository = cache_repository
+
+    def register_all( self, resources_list ):
+        assert is_list_inst(resources_list, tResources), repr(resources_list)
+        for rec in resources_list:
+            self.register(rec.resource_id, rec.locale, rec.resources)
 
     def register( self, id, locale, resources ):
         assert isinstance(resources, tLocaleResources), repr(resources)

@@ -85,12 +85,12 @@ class CodeRepositoryProxy(ProxyObject):
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
         result = yield from self.execute_request('get_modules_by_ids', module_ids=module_ids)
-        return result.modules
+        return (result.modules, result.resources)
 
     @asyncio.coroutine
     def get_modules_by_requirements( self, requirements ):
         result = yield from self.execute_request('get_modules_by_requirements', requirements=requirements)
-        return result.modules
+        return (result.modules, result.resources)
 
 
 tFormObject = tObject.register('code_repository_form', base=tBaseObject)

@@ -46,8 +46,9 @@ class Transport(metaclass=abc.ABCMeta):
         assert is_list_inst(requirements, tRequirement), repr(requirements)
         unfulfilled_requirements = list(filter(self._is_unfulfilled_requirement, requirements))
         if not unfulfilled_requirements: return
-        modules = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
+        modules, resources = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
         self._module_mgr.add_modules(modules or [])  # modules is None if there is no code repositories
+        self._resources_manager.register_all(resources)
         
     def _is_unfulfilled_requirement( self, requirement ):
         registry, key = requirement
