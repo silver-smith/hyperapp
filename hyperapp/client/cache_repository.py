@@ -9,16 +9,17 @@ from ..common.packet_coders import packet_coders
 
 class CacheRepository(object):
 
-    def __init__( self, cache_dir, contents_encoding ):
+    def __init__( self, cache_dir, contents_encoding, file_ext ):
         self._cache_dir = cache_dir
         self._contents_encoding = contents_encoding
+        self._file_ext = file_ext
 
     def _quote( self, name ):
         return re.sub(r'[/|"]', '-', name)
 
     def key2fpath( self, key ):
         assert is_list_inst(key, str), repr(key)
-        return os.path.join(self._cache_dir, *tuple(map(self._quote, key)))
+        return os.path.join(self._cache_dir, *tuple(map(self._quote, key))) + self._file_ext
         
     def store_data( self, key, data ):
         fpath = self.key2fpath(key)
