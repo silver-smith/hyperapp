@@ -1,19 +1,19 @@
 commands:
-- id: bookmark_list
+- command_id: bookmark_list
   text: Bookmarks
   desc: Open bookmark list
   shortcuts:
   - Alt+B
-- id: bookmark
+- command_id: bookmark
   text: Bookmark
   desc: Add this url to bookmarks
   shortcuts:
   - Ctrl+D
-- id: open
+- command_id: open
   text: Open
   desc: Open selected bookmark
   shortcuts: []
-- id: add
+- command_id: add
   text: Add
   desc: Add url from clipboard
   shortcuts:

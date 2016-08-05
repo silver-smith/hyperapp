@@ -1,3 +1,4 @@
+from .util import encode_path
 from .htypes import (
     tCommand,
     tObject,
@@ -17,7 +18,7 @@ class RequirementsCollector(Visitor):
 
     def visit_record( self, t, value ):
         if t is tCommand:
-            self._collected_requirements.add(('resources', value.resource_id))
+            self._collected_requirements.add(('resources', encode_path(value.resource_id)))
 
     def visit_hierarchy_obj( self, t, tclass, value ):
         if t is tObject:

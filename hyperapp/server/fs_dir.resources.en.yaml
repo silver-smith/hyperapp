@@ -1,9 +1,9 @@
 commands:
-- id: open
+- command_id: open
   text: Open
   desc: Open file or directory
   shortcuts: []
-- id: parent
+- command_id: parent
   text: Open parent
   desc: Open parent directory
   shortcuts:

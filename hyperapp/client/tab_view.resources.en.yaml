@@ -1,25 +1,25 @@
 commands:
-- id: duplicate_tab
+- command_id: duplicate_tab
   text: Duplicate  tab
   desc: Duplicate current tab
   shortcuts:
   - Ctrl+T
-- id: close_tab
+- command_id: close_tab
   text: Close tab
   desc: Close current tab
   shortcuts:
   - Ctrl+F4
-- id: split_horizontally
+- command_id: split_horizontally
   text: '&Split horizontally'
   desc: Split horizontally
   shortcuts:
   - Alt+S
-- id: split_vertically
+- command_id: split_vertically
   text: Split &vertically
   desc: Split vertically
   shortcuts:
   - Shift+Alt+S
-- id: unsplit
+- command_id: unsplit
   text: '&Unsplit'
   desc: Unsplit
   shortcuts:

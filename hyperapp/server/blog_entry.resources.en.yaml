@@ -1,5 +1,5 @@
 commands:
-- id: parent
+- command_id: parent
   text: Parent
   desc: Open parent article
   shortcuts:

@@ -1,5 +1,5 @@
 commands:
-- id: remove
+- command_id: remove
   text: Remove
   desc: Remove module from dependency list
   shortcuts:

@@ -1,10 +1,10 @@
 commands:
-- id: open_server
+- command_id: open_server
   text: Open server
   desc: Load server url from file
   shortcuts:
   - Alt+O
-- id: quit
+- command_id: quit
   text: Quit
   desc: Quit application
   shortcuts:

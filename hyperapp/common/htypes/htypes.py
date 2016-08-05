@@ -238,15 +238,17 @@ tUrlWithRoutes = TRecord(base=tUrl, fields=[
     Field('routes', TList(tRoute)),
     ])
 
+tResourceId = TList(tString)
+
 tCommand = TRecord([
-    Field('id', tString),
+    Field('command_id', tString),
     Field('kind', tString),
-    Field('resource_id', tString),
+    Field('resource_id', tResourceId),
     Field('is_default_command', tBool, default=False),
     ])
 
 tCommandResource = TRecord([
-    Field('id', tString),
+    Field('command_id', tString),
     Field('text', tString),
     Field('desc', TOptional(tString)),
     Field('shortcuts', TList(tString), default=[]),
@@ -257,7 +259,7 @@ tLocaleResources = TRecord([
     ])
 
 tResources = TRecord([
-    Field('resource_id', tString),
+    Field('resource_id', tResourceId),
     Field('locale', tString),
     Field('resources', tLocaleResources),
     ])

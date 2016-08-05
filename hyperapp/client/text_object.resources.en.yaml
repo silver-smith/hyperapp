@@ -1,10 +1,10 @@
 commands:
-- id: edit
+- command_id: edit
   text: Edit
   desc: Switch to edit mode
   shortcuts:
   - E
-- id: view
+- command_id: view
   text: View
   desc: Switch to view mode
   shortcuts:

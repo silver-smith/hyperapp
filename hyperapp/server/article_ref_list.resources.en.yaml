@@ -1,19 +1,19 @@
 commands:
-- id: parent
+- command_id: parent
   text: Parent
   desc: Open parent article
   shortcuts:
   - Ctrl+Backspace
-- id: add
+- command_id: add
   text: Add ref
   desc: Create new reference
   shortcuts:
   - Ins
-- id: open
+- command_id: open
   text: Open
   desc: Open reference selector
   shortcuts: []
-- id: delete
+- command_id: delete
   text: Delete
   desc: Delete article reference
   shortcuts:

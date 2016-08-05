@@ -1,5 +1,5 @@
 commands:
-- id: open
+- command_id: open
   text: Open
   desc: Open module
   shortcuts: []

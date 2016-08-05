@@ -1,16 +1,16 @@
 commands:
-- id: go_back
+- command_id: go_back
   text: Go back
   desc: Go backward to previous page
   shortcuts:
   - Escape
   - Alt+Left
-- id: go_forward
+- command_id: go_forward
   text: Go forward
   desc: Go forward to next page
   shortcuts:
   - Alt+Right
-- id: open_history
+- command_id: open_history
   text: History
   desc: Open history
   shortcuts:

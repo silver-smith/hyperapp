@@ -17,6 +17,7 @@ from .htypes import (
     THierarchy,
     Interface,
     tPath,
+    tResourceId,
     tCommand,
     tServerRoutes,
     tUrl,
@@ -116,6 +117,8 @@ class VisualRepEncoder(object):
             return self.encode_path(value)
         if t is tRequirement:
             return RepNode('requirement: %s' % '/'.join(value))
+        if t is tResourceId:
+            return RepNode(encode_path(value))
         children = [self.dispatch(t.element_type, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
 

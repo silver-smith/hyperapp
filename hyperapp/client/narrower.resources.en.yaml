@@ -1,5 +1,5 @@
 commands:
-- id: wider
+- command_id: wider
   text: Wider
   desc: Cancel narrowing
   shortcuts:
