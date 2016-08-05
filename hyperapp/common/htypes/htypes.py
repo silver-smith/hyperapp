@@ -290,7 +290,7 @@ lbtypes.TList = TList
 
 
 class TIndexedList(TList):
-    pass
+    type_id = 'indexed_list'
 
 lbtypes.TIndexedList = TIndexedList
 
