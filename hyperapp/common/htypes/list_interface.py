@@ -93,7 +93,7 @@ class ElementOpenCommand(ElementCommand, OpenCommand):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, base=None, content_fields=None, commands=None, columns=None, key_column='key' ):
+    def __init__( self, iface_id, base=None, contents_fields=None, commands=None, columns=None, key_column='key' ):
         assert is_list_inst(columns, Column), repr(columns)
         assert isinstance(key_column, str), repr(key_column)
         self.columns = columns
@@ -117,7 +117,7 @@ class ListInterface(Interface):
             Field('bof', tBool),
             Field('eof', tBool),
             ])
-        Interface.__init__(self, iface_id, base, content_fields, self._tDiff, commands)
+        Interface.__init__(self, iface_id, base, contents_fields, self._tDiff, commands)
 
     def _pick_key_column( self ):
         for column in self.columns:

@@ -86,17 +86,17 @@ class Interface(object):
     rt_request = 1
     rt_notification =2
 
-    def __init__( self, iface_id, base=None, content_fields=None, diff_type=tNone, commands=None ):
+    def __init__( self, iface_id, base=None, contents_fields=None, diff_type=tNone, commands=None ):
         assert base is None or isinstance(base, Interface), repr(base)
-        assert is_list_inst(content_fields or [], Field), repr(content_fields)
+        assert is_list_inst(contents_fields or [], Field), repr(contents_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
         assert is_list_inst(commands or [], (RequestCmd, NotificationCmd)), repr(commands)
         self.iface_id = iface_id
-        self.content_fields = content_fields or []
+        self.contents_fields = contents_fields or []
         self.diff_type = diff_type
         self.commands = commands or []
         if base:
-            self.content_fields = base.content_fields + self.content_fields
+            self.contents_fields = base.contents_fields + self.contents_fields
             self.commands = base.commands + self.commands
             assert diff_type is tNone, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
@@ -161,7 +161,7 @@ class Interface(object):
         return [Field('commands', TList(tCommand))]
 
     def get_contents_fields( self ):
-        return self.get_default_contents_fields() + self.content_fields
+        return self.get_default_contents_fields() + self.contents_fields
 
     def Object( self, **kw ):
         return self._tObject(**kw)

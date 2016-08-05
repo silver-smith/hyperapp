@@ -27,7 +27,7 @@ tObjSelectorHandle = tHandle.register('object_selector', base=tViewHandle, field
         ])
 
 article_iface = Interface('article',
-                          content_fields=[Field('text', TOptional(tString))],
+                          contents_fields=[Field('text', TOptional(tString))],
                           commands=[
                               RequestCmd('save', [Field('text', tString)], [Field('new_path', tPath)]),
                               OpenCommand('refs'),
