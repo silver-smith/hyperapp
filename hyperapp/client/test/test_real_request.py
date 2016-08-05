@@ -52,6 +52,9 @@ class PhonyIdentityRepository(IdentityRepository):
 
 class PhonyResourcesManager(object):
 
+    def register_all( self, resources ):
+        pass
+
     def register( self, id, locale, resources ):
         pass
 

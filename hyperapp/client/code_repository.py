@@ -56,7 +56,7 @@ class CodeRepository(object):
     # todo: try all items
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
-        if not self._items: return
+        if not self._items: return (None, None)
         proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_ids(module_ids))
 
@@ -65,7 +65,7 @@ class CodeRepository(object):
     def get_modules_by_requirements( self, requirements ):
         if not self._items:
             log.warn('No available code repository servers are found')
-            return
+            return (None, None)
         proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_requirements(requirements))
 
