@@ -9,6 +9,12 @@ def join_path( *args ):
     return '.'.join([_f for _f in args if _f])
 
 
+class LateBindingTypes(object):
+    pass
+
+lbtypes = LateBindingTypes()
+
+
 class Type(object):
 
     def __call__( self, *args, **kw ):
@@ -31,15 +37,35 @@ class Type(object):
 
 class TPrimitive(Type):
 
+    type_id = 'primitive'
+
+    @classmethod
+    def from_data( cls, rec ):
+        return cls()
+
     def __instancecheck__( self, value ):
         return isinstance(value, self.get_type())
+
+    def __eq__( self, other ):
+        return isinstance(other, TPrimitive) and other.type_name == self.type_name
 
     def __repr__( self ):
         return 'TPrimitive(%s)' % repr(self.get_type())
 
     def get_type( self ):
         return self.type
-        
+
+    @classmethod
+    def register_meta( cls ):
+        lbtypes.tPrimitiveMeta = lbtypes.tMetaType.register(cls.type_id, base=lbtypes.tRootMetaType)
+
+    @classmethod
+    def register( cls, type_registry ):
+        type_registry.register(cls.type_name, cls.from_data)
+
+    def to_data( self ):
+        return lbtypes.tPrimitiveMeta(self.type_name)
+
 
 class TNone(TPrimitive):
     type_name = 'none'
@@ -86,6 +112,8 @@ class TOptional(Type):
     def __instancecheck__( self, value ):
         return value is None or isinstance(value, self.type)
 
+lbtypes.TOptional = TOptional
+
 
 class Field(object):
 
@@ -115,7 +143,7 @@ class Record(object):
 
     def __repr__( self ):
         return 'Record: %r' % self._type
-
+    
 
 class TRecord(Type):
 
@@ -198,6 +226,8 @@ class TRecord(Type):
         rec = Record(self)
         self.instantiate_impl(rec, *args, **kw)
         return rec
+
+lbtypes.TRecord = TRecord
         
 
 class TList(Type):
@@ -212,9 +242,13 @@ class TList(Type):
     def __instancecheck__( self, value ):
         return is_list_inst(value, self.element_type)
 
+lbtypes.TList = TList
+
 
 class TIndexedList(TList):
     pass
+
+lbtypes.TIndexedList = TIndexedList
 
 
 tRoute = TList(tString)
