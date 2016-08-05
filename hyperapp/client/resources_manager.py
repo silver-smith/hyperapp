@@ -13,10 +13,10 @@ class ResourcesRegistry(object):
     def register( self, id, locale, resources ):
         assert isinstance(resources, tLocaleResources), repr(resources)
         log.debug('Resource registry: registering %r' % id)
-        self._registry[(id, locale)] = resources
+        self._registry[(tuple(id), locale)] = resources
 
     def resolve( self, id, locale ):
-        return self._registry.get((id, locale))
+        return self._registry.get((tuple(id), locale))
 
 
 class ResourcesManager(object):
@@ -42,7 +42,7 @@ class ResourcesManager(object):
         return resources
 
     def _cache_key( self, id, locale ):
-        return ['resources', id, locale]
+        return ['resources'] + id + [locale]
 
     def _cache_type( self ):
         return tLocaleResources

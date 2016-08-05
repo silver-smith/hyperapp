@@ -189,7 +189,7 @@ class ProxyObject(Object):
         raise NotImplementedError(self.__class__)
 
     def _command_from_data( self, rec ):
-        return RemoteCommand(rec.id, rec.kind, rec.resource_id,
+        return RemoteCommand(rec.command_id, rec.kind, rec.resource_id,
                              is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):

@@ -3,7 +3,7 @@ import asyncio
 import weakref
 import abc
 from ..common.util import is_list_inst
-from ..common.htypes import tHandle
+from ..common.htypes import tResourceId, tHandle
 from .util import make_async_action
 
 log = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ class Command(object, metaclass=abc.ABCMeta):
     def __init__( self, id, kind, resource_id, is_default_command=False, enabled=True ):
         assert isinstance(id, str), repr(id)
         assert isinstance(kind, str), repr(kind)
-        assert isinstance(resource_id, str), repr(resource_id)
+        assert isinstance(resource_id, tResourceId), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
@@ -153,15 +153,15 @@ class BoundCommand(Command):
 
 class UnboundCommand(object):
 
-    def __init__( self, id, kind, module_name, is_default_command, enabled, class_method ):
+    def __init__( self, id, kind, resource_id, is_default_command, enabled, class_method ):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(module_name, str), repr(module_name)
+        assert isinstance(resource_id, tResourceId), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind
-        self._module_name = module_name
+        self._resource_id = resource_id
         self.is_default_command = is_default_command
         self.enabled = enabled
         self._class_method = class_method
@@ -169,7 +169,7 @@ class UnboundCommand(object):
     def bind( self, inst, kind ):
         if self.kind is not None:
             kind = self.kind
-        return BoundCommand(self.id, kind, self._module_name, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
+        return BoundCommand(self.id, kind, self._resource_id, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
 
 
 # decorator for view methods
@@ -187,7 +187,7 @@ class command(object):
 
     def __call__( self, class_method ):
         module_name = class_method.__module__.split('.')[-1]
-        resource_id = '.'.join(['client_module', module_name])
+        resource_id = ['client_module', module_name]
         ## print('### command module:', module_name)
         return UnboundCommand(self.id, self.kind, resource_id, self.is_default_command, self.enabled, class_method)
 

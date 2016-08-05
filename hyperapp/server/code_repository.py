@@ -112,7 +112,7 @@ class CodeRepository(Object):
             resources=resources)
 
     def _load_module_resources( self, module ):
-        resource_id = '.'.join(['client_module', module.id.replace('-', '_')])
+        resource_id = ['client_module', module.id.replace('-', '_')]
         return self._resources_loader.load_resources(resource_id)
 
 

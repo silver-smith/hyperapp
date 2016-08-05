@@ -104,7 +104,7 @@ class Services(object):
                 ]:
             with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
                 resources = packet_coders.decode('yaml', f.read(), tLocaleResources)
-                resource_id = '.'.join(['client_module', module])
+                resource_id = ['client_module', module]
                 self.resources_manager.register(resource_id, 'en', resources)
 
     def _register_object_implementations( self ):

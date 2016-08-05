@@ -78,7 +78,7 @@ class MenuBar(object):
         resources = self._resources_manager.resolve(cmd.resource_id, self._locale)
         if resources:
             for res in resources.commands:
-                if res.id == cmd.id:
+                if res.command_id == cmd.id:
                     break
             else:
                 print([rc.id for rc in resources.commands])

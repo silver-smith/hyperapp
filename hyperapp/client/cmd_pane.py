@@ -70,7 +70,7 @@ class View(QtGui.QDockWidget):
         resources = self._resources_manager.resolve(cmd.resource_id, self._locale)
         if resources:
             for res in resources.commands:
-                if res.id == cmd.id:
+                if res.command_id == cmd.id:
                     if res.shortcuts:
                         text = '%s (%s)' % (res.text, res.shortcuts[0])
                     else:
