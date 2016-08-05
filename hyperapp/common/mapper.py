@@ -30,11 +30,11 @@ class Mapper(object):
         if value is None:
             return None
         else:
-            return self.dispatch(t.type, value)
+            return self.dispatch(t.base_t, value)
 
     @dispatch.register(TList)
     def process_list( self, t, value ):
-        return [self.dispatch(t.element_type, elt) for elt in value]
+        return [self.dispatch(t.element_t, elt) for elt in value]
 
     @dispatch.register(TRecord)
     def process_record( self, t, value ):

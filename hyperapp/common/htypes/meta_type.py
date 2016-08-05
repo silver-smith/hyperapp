@@ -1,6 +1,14 @@
 # meta type is type for storing types themselves as data
 
-from .htypes import lbtypes, Type, TPrimitive, tString, Field, TOptional
+from .htypes import (
+    lbtypes,
+    Type,
+    TPrimitive,
+    tString,
+    Field,
+    TOptional,
+    TList,
+    )
 from .hierarchy import THierarchy
 
 
@@ -29,3 +37,4 @@ class TypeRegistry(object):
 
 TPrimitive.register_meta()
 TOptional.register_meta()
+TList.register_meta()

@@ -66,7 +66,7 @@ class VisualRepEncoder(object):
     def encode_optional( self, t, value ):
         if value is None:
             return RepNode('None')
-        return self.dispatch(t.type, value)
+        return self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value ):
@@ -118,7 +118,7 @@ class VisualRepEncoder(object):
             return RepNode('requirement: %s' % '/'.join(value))
         if t is tResourceId:
             return RepNode(encode_path(value))
-        children = [self.dispatch(t.element_type, elt) for elt in value]
+        children = [self.dispatch(t.element_t, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
 
     def encode_path( self, obj ):

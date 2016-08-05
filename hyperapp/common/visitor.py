@@ -31,7 +31,7 @@ class Visitor(object):
     @dispatch.register(TOptional)
     def process_optional( self, t, value ):
         if value is not None:
-            self.dispatch(t.type, value)
+            self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
     def process_record( self, t, value ):
@@ -57,4 +57,4 @@ class Visitor(object):
     @dispatch.register(TList)
     def process_list( self, t, value ):
         for elt in value:
-            self.dispatch(t.element_type, elt)
+            self.dispatch(t.element_t, elt)

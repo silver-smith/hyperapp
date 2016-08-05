@@ -81,7 +81,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
     def decode_optional( self, t, value, path ):
         if value is None:
             return None
-        return self.dispatch(t.type, value, path)
+        return self.dispatch(t.base_t, value, path)
 
     @dispatch.register(TRecord)
     def decode_record( self, t, value, path ):
@@ -115,7 +115,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
     @dispatch.register(TList)
     def decode_list( self, t, value, path ):
         self.expect_type(path, isinstance(value, list), value, 'list')
-        return [self.dispatch(t.element_type, elt, join_path(path, '#%d' % idx))
+        return [self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
                 for idx, elt in enumerate(value)]
 
     @dispatch.register(TIndexedList)
@@ -123,7 +123,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         self.expect_type(path, isinstance(value, list), value, 'list')
         decoded_elts = []
         for idx, elt in enumerate(value):
-            decoded_elt = self.dispatch(t.element_type, elt, join_path(path, '#%d' % idx))
+            decoded_elt = self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
             setattr(decoded_elt, 'idx', idx)
             decoded_elts.append(decoded_elt)
         return decoded_elts

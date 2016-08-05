@@ -254,15 +254,37 @@ lbtypes.TRecord = TRecord
 
 class TList(Type):
 
-    def __init__( self, element_type ):
-        assert isinstance(element_type, Type), repr(element_type)
-        self.element_type = element_type
+    type_id = 'list'
+
+    @classmethod
+    def from_data( cls, registry, rec ):
+        element_t = registry.resolve(rec.element)
+        return cls(element_t)
+
+    def __init__( self, element_t ):
+        assert isinstance(element_t, Type), repr(element_t)
+        self.element_t = element_t
 
     def __repr__( self ):
-        return 'TList(%r)' % self.element_type
+        return 'TList(%r)' % self.element_t
+
+    def __eq__( self, other ):
+        return isinstance(other, TList) and other.element_t == self.element_t
 
     def __instancecheck__( self, value ):
-        return is_list_inst(value, self.element_type)
+        return is_list_inst(value, self.element_t)
+
+    @classmethod
+    def register_meta( cls ):
+        lbtypes.tListMeta = lbtypes.tMetaType.register(
+            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('element', lbtypes.tMetaType)])
+
+    @classmethod
+    def register( cls, type_registry ):
+        type_registry.register(cls.type_id, cls.from_data)
+
+    def to_data( self ):
+        return lbtypes.tListMeta(self.type_id, self.element_t.to_data())
 
 lbtypes.TList = TList
 

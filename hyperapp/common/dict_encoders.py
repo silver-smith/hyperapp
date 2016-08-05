@@ -50,7 +50,7 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
     def encode_optional( self, t, value ):
         if value is None:
             return None
-        return self.dispatch(t.type, value)
+        return self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value ):
@@ -79,7 +79,7 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
 
     @dispatch.register(TList)
     def encode_list( self, t, value ):
-        return [self.dispatch(t.element_type, elt) for elt in value]
+        return [self.dispatch(t.element_t, elt) for elt in value]
 
 
 class JsonEncoder(DictEncoder):

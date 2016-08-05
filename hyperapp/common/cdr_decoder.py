@@ -100,7 +100,7 @@ class CdrDecoder(object):
     def decode_optional( self, t, path ):
         value_present = self.read_bool(path)
         if value_present:
-            return self.dispatch(t.type, path)
+            return self.dispatch(t.base_t, path)
         else:
             return None
 
@@ -136,7 +136,7 @@ class CdrDecoder(object):
         if size > MAX_SANE_LIST_SIZE:
             raise DecodeError('List size is too large: %d' % size)
         for idx in range(size):
-            elt = self.dispatch(t.element_type, join_path(path, '#%d' % idx))
+            elt = self.dispatch(t.element_t, join_path(path, '#%d' % idx))
             elements.append(elt)
         return elements
 
@@ -145,7 +145,7 @@ class CdrDecoder(object):
         size = self.read_int(path)
         elements = []
         for idx in range(size):
-            elt = self.dispatch(t.element_type, join_path(path, '#%d' % idx))
+            elt = self.dispatch(t.element_t, join_path(path, '#%d' % idx))
             setattr(elt, 'idx', idx)
             elements.append(elt)
         return elements

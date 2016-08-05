@@ -67,7 +67,7 @@ class CdrEncoder(object):
     def encode_optional( self, t, value ):
         self.write_bool(value is not None)
         if value is not None:
-            return self.dispatch(t.type, value)
+            return self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
     def encode_record( self, t, value ):
@@ -95,4 +95,4 @@ class CdrEncoder(object):
     def encode_list( self, t, value ):
         self.write_int(len(value))
         for elt in value:
-            self.dispatch(t.element_type, elt)
+            self.dispatch(t.element_t, elt)
