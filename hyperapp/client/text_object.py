@@ -1,6 +1,7 @@
 import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle, tObjHandle
+from ..common.interface.text_object import tTextObject
 from .command import command
 from .object import Object
 
@@ -9,9 +10,6 @@ log = logging.getLogger(__name__)
 
 def register_object_implementations( registry, serevices ):
     registry.register(TextObject.objimpl_id, TextObject.from_state)
-
-
-state_type = tObject.register('text', base=tBaseObject, fields=[Field('text', tString)])
 
 
 class TextObject(Object):
@@ -33,7 +31,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def get_state( self ):
-        return state_type('text', self.text)
+        return tTextObject('text', self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
