@@ -40,17 +40,17 @@ class TPrimitive(Type):
     type_id = 'primitive'
 
     @classmethod
-    def from_data( cls, rec ):
+    def from_data( cls, registry, rec ):
         return cls()
 
-    def __instancecheck__( self, value ):
-        return isinstance(value, self.get_type())
+    def __repr__( self ):
+        return 'TPrimitive(%s)' % repr(self.get_type())
 
     def __eq__( self, other ):
         return isinstance(other, TPrimitive) and other.type_name == self.type_name
 
-    def __repr__( self ):
-        return 'TPrimitive(%s)' % repr(self.get_type())
+    def __instancecheck__( self, value ):
+        return isinstance(value, self.get_type())
 
     def get_type( self ):
         return self.type
@@ -102,15 +102,37 @@ tDateTime = TDateTime()
 
 class TOptional(Type):
 
-    def __init__( self, type ):
-        assert isinstance(type, Type), repr(type)
-        self.type = type
+    type_id = 'optional'
+
+    @classmethod
+    def from_data( cls, registry, rec ):
+        base_t = registry.resolve(rec.base)
+        return cls(base_t)
+
+    def __init__( self, base_t ):
+        assert isinstance(base_t, Type), repr(base_t)
+        self.base_t = base_t
 
     def __repr__( self ):
-        return 'TOptional(%r)' % self.type
+        return 'TOptional(%r)' % self.base_t
+
+    def __eq__( self, other ):
+        return isinstance(other, TOptional) and other.base_t == self.base_t
 
     def __instancecheck__( self, value ):
-        return value is None or isinstance(value, self.type)
+        return value is None or isinstance(value, self.base_t)
+
+    @classmethod
+    def register_meta( cls ):
+        lbtypes.tOptionalMeta = lbtypes.tMetaType.register(
+            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('base', lbtypes.tMetaType)])
+
+    @classmethod
+    def register( cls, type_registry ):
+        type_registry.register(cls.type_id, cls.from_data)
+
+    def to_data( self ):
+        return lbtypes.tOptionalMeta(self.type_id, self.base_t.to_data())
 
 lbtypes.TOptional = TOptional
 

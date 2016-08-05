@@ -1,6 +1,6 @@
 # meta type is type for storing types themselves as data
 
-from .htypes import Type, tString, Field, lbtypes
+from .htypes import lbtypes, Type, TPrimitive, tString, Field, TOptional
 from .hierarchy import THierarchy
 
 
@@ -24,4 +24,8 @@ class TypeRegistry(object):
         assert isinstance(rec, tRootMetaType), repr(rec)
         factory = self._registry.get(rec.type_id)
         assert factory, 'Unknown type_id: %r' % rec.type_id
-        return factory(rec)
+        return factory(self, rec)
+
+
+TPrimitive.register_meta()
+TOptional.register_meta()
