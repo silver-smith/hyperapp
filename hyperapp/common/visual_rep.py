@@ -3,7 +3,6 @@ import json
 from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route
 from .htypes import (
-    TPrimitive,
     TString,
     TBinary,
     TInt,
