@@ -7,6 +7,7 @@ from .htypes import (
     tString,
     Field,
     TOptional,
+    TRecord,
     TList,
     )
 from .hierarchy import THierarchy
@@ -37,4 +38,5 @@ class TypeRegistry(object):
 
 TPrimitive.register_meta()
 TOptional.register_meta()
+TRecord.register_meta()
 TList.register_meta()

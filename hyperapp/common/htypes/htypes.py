@@ -155,6 +155,10 @@ class Field(object):
     def __repr__( self ):
         return '%r: %r' % (self.name, self.type)
 
+    def __eq__( self, other ):
+        assert isinstance(other, Field), repr(other)
+        return other.name == self.name and other.type == self.type
+
 
 # class for instantiated records
 class Record(object):
@@ -169,6 +173,13 @@ class Record(object):
 
 class TRecord(Type):
 
+    type_id = 'record'
+
+    @classmethod
+    def from_data( cls, registry, rec ):
+        fields = [Field(field.name, registry.resolve(field.type)) for field in rec.fields]
+        return cls(fields)
+
     def __init__( self, fields=None, base=None ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
@@ -179,6 +190,9 @@ class TRecord(Type):
 
     def __repr__( self ):
         return 'TRecord(%d(%s)<-%s)' % (id(self), ', '.join(map(repr, self.get_fields())), self.base)
+
+    def __eq__( self, other ):
+        return isinstance(other, TRecord) and other.fields == self.fields
 
     def __subclasscheck__( self, cls ):
         ## print '__subclasscheck__', self, cls
@@ -205,6 +219,23 @@ class TRecord(Type):
         if not isinstance(rec, Record):
             return False
         return issubclass(rec._type, self)
+
+    @classmethod
+    def register_meta( cls ):
+        lbtypes.tRecordFieldMeta = TRecord([
+            Field('name', tString),
+            Field('type', lbtypes.tMetaType),
+            ])
+        lbtypes.tRecordMeta = lbtypes.tMetaType.register(
+            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('fields', TList(lbtypes.tRecordFieldMeta))])
+
+    @classmethod
+    def register( cls, type_registry ):
+        type_registry.register(cls.type_id, cls.from_data)
+
+    def to_data( self ):
+        return lbtypes.tRecordMeta(
+            self.type_id, [lbtypes.tRecordFieldMeta(field.name, field.type.to_data()) for field in self.fields])
 
     def adopt_args( self, args, kw, check_unexpected=True ):
         path = '<Record>'
