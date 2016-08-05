@@ -72,6 +72,15 @@ class View(ObjectObserver, Commander):
             return object.get_title()
         return 'Untitled'
 
+    def get_url( self ):
+        object = self.get_object()
+        if object:
+            return object.get_url()
+        child = self.get_current_child()
+        if child:
+            return child.get_url()
+        return None
+
     def get_object( self ):
         return None
 

@@ -56,8 +56,7 @@ class View(view.View, QtGui.QWidget):
     @command('choose', kind='object')
     @asyncio.coroutine
     def object_command_choose( self ):
-        target_obj = self.target_view.get_object()
-        url = target_obj.get_url()
+        url = self.target_view.get_url()
         if not url: return  # not a proxy - can not choose it
         handle = (yield from self.ref.run_command('choose', target_url=url.to_data()))
         if handle:
