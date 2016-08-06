@@ -63,7 +63,7 @@ class TPrimitive(Type):
         lbtypes.tPrimitiveMeta = lbtypes.tMetaType.register(cls.type_id, base=lbtypes.tRootMetaType)
 
     @classmethod
-    def register( cls, type_registry ):
+    def register_type( cls, type_registry ):
         type_registry.register(cls.type_name, cls.from_data)
 
     def to_data( self ):
@@ -131,7 +131,7 @@ class TOptional(Type):
             cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('base', lbtypes.tMetaType)])
 
     @classmethod
-    def register( cls, type_registry ):
+    def register_type( cls, type_registry ):
         type_registry.register(cls.type_id, cls.from_data)
 
     def to_data( self ):
@@ -244,7 +244,7 @@ class TRecord(Type):
             cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('fields', TList(lbtypes.tRecordFieldMeta))])
 
     @classmethod
-    def register( cls, type_registry ):
+    def register_type( cls, type_registry ):
         type_registry.register(cls.type_id, cls.from_data)
 
     def to_data( self ):
@@ -324,7 +324,7 @@ class TList(Type):
             cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('element', lbtypes.tMetaType)])
 
     @classmethod
-    def register( cls, type_registry ):
+    def register_type( cls, type_registry ):
         type_registry.register(cls.type_id, cls.from_data)
 
     def to_data( self ):

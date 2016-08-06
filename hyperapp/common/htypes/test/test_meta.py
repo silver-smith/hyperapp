@@ -42,12 +42,12 @@ class TypeSerializationTest(unittest.TestCase):
     def setUp( self ):
         self.type_registry = TypeRegistry()
         for t in self.primitive_types:
-            t.register(self.type_registry)
-        TOptional.register(self.type_registry)
-        TRecord.register(self.type_registry)
-        TList.register(self.type_registry)
-        TIndexedList.register(self.type_registry)
-        Interface.register(self.type_registry)
+            t.register_type(self.type_registry)
+        TOptional.register_type(self.type_registry)
+        TRecord.register_type(self.type_registry)
+        TList.register_type(self.type_registry)
+        TIndexedList.register_type(self.type_registry)
+        Interface.register_type(self.type_registry)
 
     def check_type( self, t ):
         data = self.to_data(t)

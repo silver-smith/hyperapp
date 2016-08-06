@@ -181,7 +181,7 @@ class Interface(object):
                 ])
 
     @classmethod
-    def register( cls, type_registry ):
+    def register_type( cls, type_registry ):
         type_registry.register(cls.type_id, cls.from_data)
 
     def to_data( self ):
