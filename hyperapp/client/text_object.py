@@ -2,7 +2,7 @@ import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tObjHandle
 from ..common.interface.text_object import tTextObject
-from .command import command
+from .command import open_command
 from .object import Object
 
 log = logging.getLogger(__name__)
@@ -41,12 +41,12 @@ class TextObject(Object):
         self.text = new_text
         self._notify_object_changed(emitter_view)
 
-    @command('edit')
+    @open_command('edit')
     def command_edit( self ):
         return tObjHandle('text_edit', self.get_state())
 
-    @command('view')
-    def run_command_view( self ):
+    @open_command('view')
+    def command_view( self ):
         return tObjHandle('text_view', self.get_state())
 
     @asyncio.coroutine

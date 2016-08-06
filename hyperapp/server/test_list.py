@@ -38,7 +38,7 @@ class ParamsForm(Object):
         log.info('submitted: key=%r size=%r', request.params.key, request.params.size)
         object = TestList(request.params.size)
         handle = TestList.ListHandle(object.get(request), key=request.params.key)
-        return request.make_response(handle)
+        return request.make_response_handle(handle)
 
 
 class TestList(ListObject):
@@ -62,7 +62,7 @@ class TestList(ListObject):
 
     @command('params', is_default_command=True)
     def command_params( self, request ):
-        return request.make_response(ParamsForm().make_handle(request, size=self.size))
+        return request.make_response_handle(ParamsForm().make_handle(request, size=self.size))
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
         assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
@@ -99,7 +99,7 @@ class TestListModule(Module):
 
     def run_command( self, request, command_id ):
         if command_id == 'test_list':
-            return request.make_response_handle(TestList())
+            return request.make_response_object(TestList())
         return Module.run_command(self, request, command_id)
 
 

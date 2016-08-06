@@ -12,7 +12,7 @@ from ..common.htypes import (
     )
 from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
 from ..common.identity import Identity
-from .command import command
+from .command import open_command
 from .module import Module
 from .object import Object
 from .list_object import Element, Slice, ListObject
@@ -104,7 +104,7 @@ class IdentityFormObject(Object):
     def get_title( self ):
         return 'Create identity'
 
-    @command('submit')
+    @open_command('submit')
     def command_submit( self, name ):
         log.info('creating identity %r...', name)
         self.identity_controller.generate(name)
@@ -142,7 +142,7 @@ class IdentityList(ListObject):
     def get_title( self ):
         return 'Identity list'
 
-    @command('create')
+    @open_command('create')
     def command_new( self ):
         return make_identity_form()
 
@@ -174,10 +174,10 @@ def make_identity_list( key=None ):
 
 class ThisModule(Module):
 
-    @command('identity_list')
+    @open_command('identity_list')
     def command_identity_list( self ):
         return make_identity_list()
 
-    @command('create_identity')
+    @open_command('create_identity')
     def run_command_create_idenity( self ):
         return make_identity_form()

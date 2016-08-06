@@ -92,7 +92,7 @@ class Object(Commander):
             return command.run(request)
 
     def process_request_get( self, request ):
-        return request.make_response(self.get_handle(request))
+        return request.make_response_handle(self.get_handle(request))
 
     def process_request_subscribe( self, request ):
         self.subscribe(request)

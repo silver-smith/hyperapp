@@ -45,7 +45,7 @@ class ModuleList(SmallListObject):
 
     @command('add')
     def command_add( self, request ):
-        return request.make_response_handle(ModuleForm())
+        return request.make_response_object(ModuleForm())
 
     @command('delete', kind='element')
     @db_session
@@ -63,7 +63,7 @@ class ModuleList(SmallListObject):
         available_list = AvailableDepList(module_id)
         dep_list.subscribe(request)
         available_list.subscribe(request)
-        return request.make_response(
+        return request.make_response_handle(
             tSplitterHandle('splitter', dep_list.get_handle(request), available_list.get_handle(request)))
 
     @command('open', kind='element', is_default_command=True)
@@ -71,7 +71,7 @@ class ModuleList(SmallListObject):
     def command_open( self, request ):
         id = request.params.element_key
         rec = module.Module[id]
-        return request.make_response(ModuleForm(rec.id).get_handle(request, name=rec.name))
+        return request.make_response_handle(ModuleForm(rec.id).get_handle(request, name=rec.name))
 
 
 class ModuleForm(Object):
@@ -110,7 +110,7 @@ class ModuleForm(Object):
                                 name=request.params.name)
         object = ModuleList()
         handle = ModuleList.ListHandle(object.get(request), key=rec.id)
-        return request.make_response(handle)
+        return request.make_response_handle(handle)
 
 
 class ModuleDepList(SmallListObject):
@@ -245,7 +245,7 @@ class ModuleListModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'open_module_list':
-            return request.make_response_handle(ModuleList())
+            return request.make_response_object(ModuleList())
         return PonyOrmModule.run_command(self, request, command_id)
 
 

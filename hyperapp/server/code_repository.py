@@ -168,5 +168,5 @@ class ThisModule(module_mod.Module):
 
     def run_command( self, request, command_id ):
         if command_id == 'code_repository':
-            return request.make_response_handle(CodeRepositoryBrowser(self._module_repository))
+            return request.make_response_object(CodeRepositoryBrowser(self._module_repository))
         return Module.run_command(self, request, command_id)

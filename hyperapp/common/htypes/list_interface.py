@@ -78,17 +78,11 @@ class Column(object):
 
 
 class ElementCommand(RequestCmd):
-
-    def get_params_fields( self, iface ):
-        assert isinstance(iface, ListInterface), repr(iface)  # ElementCommands can only be used with ListInterface
-        fields = RequestCmd.get_params_fields(self, iface)
-        return [Field('element_key', iface.key_type)] + fields
+    pass
 
 
-class ElementOpenCommand(ElementCommand, OpenCommand):
-
-    get_params_fields = ElementCommand.get_params_fields
-    get_result_type = OpenCommand.get_result_type
+class ElementOpenCommand(OpenCommand, ElementCommand):
+    pass
 
 
 class ListInterface(Interface):
@@ -117,6 +111,7 @@ class ListInterface(Interface):
             Field('bof', tBool),
             Field('eof', tBool),
             ])
+        commands = [self._resolve_command(command) for command in commands or []]
         Interface.__init__(self, iface_id, base, contents_fields, self._tDiff, commands)
 
     def _pick_key_column( self ):
@@ -129,6 +124,13 @@ class ListInterface(Interface):
         Interface._register_types(self)
         self._tListHandle = list_handle_type('%s.list' % self.iface_id, self.key_type)
         self._tListNarrowerHandle = list_narrower_handle_type('%s.list_narrower' % self.iface_id, self.key_type)
+
+    def _resolve_command( self, command ):
+        if isinstance(command, ElementCommand):
+            params_fields = [Field('element_key', self.key_type)] + (command.params_fields or [])
+            return RequestCmd(command.command_id, params_fields, command.result_fields)
+        else:
+            return command
 
     def get_default_contents_fields( self ):
         return Interface.get_default_contents_fields(self) + [

@@ -94,6 +94,12 @@ class IfaceCommand(object):
     def get_result_fields( self, iface ):
         return self.result_fields
 
+    def get_result_field_type( self, field_name ):
+        for field in self.result_fields:
+            if field.name == field_name:
+                return field.type
+        return None
+
 
 class RequestCmd(IfaceCommand):
 
@@ -107,10 +113,11 @@ class NotificationCmd(IfaceCommand):
         IfaceCommand.__init__(self, self.rt_notification, command_id, params_fields)
 
 
-class OpenCommand(RequestCmd):
+class OpenCommand(IfaceCommand):
 
-    def get_result_type( self, iface ):
-        return TOptional(tHandle)
+    def __init__( self, command_id, params_fields=None, result_fields=None ):
+        result_fields = [Field('handle', TOptional(tHandle))] + (result_fields or [])
+        IfaceCommand.__init__(self, self.rt_request, command_id, params_fields, result_fields)
 
 
 class ContentsCommand(RequestCmd):
@@ -201,7 +208,8 @@ class Interface(object):
         return command.request_type
 
     def is_open_command( self, command_id ):
-        return isinstance(self.id2command[command_id], OpenCommand)
+        command = self.id2command[command_id]
+        return command.get_result_field_type('handle') is tHandle
 
     def _get_command( self, command_id ):
         cmd = self.id2command.get(command_id)

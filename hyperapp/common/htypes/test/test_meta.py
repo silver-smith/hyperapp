@@ -17,6 +17,7 @@ from hyperapp.common.htypes import (
     TIndexedList,
     RequestCmd,
     NotificationCmd,
+    OpenCommand,
     Interface,
     tMetaType,
     TypeRegistry,
@@ -94,6 +95,10 @@ class TypeSerializationTest(unittest.TestCase):
                        [Field('request_param_1', tString)],
                        [Field('request_result_1', tInt),
                         Field('request_result_2', tBinary)]),
+            NotificationCmd('notification_one',
+                       [Field('notification_param_1', tDateTime),
+                        Field('notification_param_1', TList(tBool))]),
+            ## OpenCommand('open_command'),
             ])
         data = self.to_data(t)
         data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup

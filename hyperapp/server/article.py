@@ -77,7 +77,7 @@ class Article(Object):
 
     @command('refs')
     def command_refs( self, request ):
-        return request.make_response_handle(ArticleRefList(self.article_id))
+        return request.make_response_object(ArticleRefList(self.article_id))
 
     @command('open_ref')
     @db_session
@@ -89,10 +89,10 @@ class Article(Object):
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             target_url = Url(iface, public_key, path)
-            return request.make_response(tRedirectHandle(redirect_to=target_url.to_data()))
+            return request.make_response_handle(tRedirectHandle(redirect_to=target_url.to_data()))
         else:
             target = module.run_resolver(iface, path)
-            return request.make_response_handle(target)
+            return request.make_response_object(target)
 
     @db_session
     def do_save( self, request, text ):
@@ -131,7 +131,7 @@ class ArticleRefList(SmallListObject):
     @db_session
     def command_parent( self, request ):
         rec = module.Article[self.article_id]
-        return request.make_response_handle(Article.from_rec(rec))
+        return request.make_response_object(Article.from_rec(rec))
 
     @command('add')
     @db_session
@@ -148,11 +148,11 @@ class ArticleRefList(SmallListObject):
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
-        return request.make_response(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
+        return request.make_response_handle(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
 
     @command('open', kind='element', is_default_command=True)
     def command_open( self, request ):
-        return request.make_response(
+        return request.make_response_handle(
             RefSelector(self.article_id, ref_id=request.params.element_key).make_handle(request))
 
     @command('delete', kind='element')
@@ -225,7 +225,7 @@ class RefSelector(Object):
         diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
         handle = ArticleRefList.ListHandle(ref_list_obj.get(request), key=rec.id)
-        return request.make_response(handle)
+        return request.make_response_handle(handle)
 
     @db_session
     def make_handle( self, request ):
@@ -275,7 +275,7 @@ class ArticleModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_handle(Article(mode=Article.mode_edit))
+            return request.make_response_object(Article(mode=Article.mode_edit))
         return PonyOrmModule.run_command(self, request, command_id)
 
     def add_article_fields( self, **fields ):

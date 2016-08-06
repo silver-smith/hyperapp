@@ -30,7 +30,7 @@ class TestTextObjectModule(Module):
         if command_id == 'get_text_obj':
             object = tTextObject('text', sample_text)
             handle = tObjHandle('text_view', object)
-            return request.make_response(handle)
+            return request.make_response_handle(handle)
         return Module.run_command(self, request, command_id)
 
 

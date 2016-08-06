@@ -72,11 +72,11 @@ class Request(RequestBase):
         return Response(self.peer, self.iface, self.command_id, self.request_id, result)
 
     def make_response_object( self, obj ):
-        return self.make_response(obj)
+        return self.make_response_handle(obj.get_handle(self))
 
-    def make_response_handle( self, obj ):
-        return self.make_response(obj.get_handle(self))
-
+    def make_response_handle( self, handle ):
+        return self.make_response_result(handle=handle)
+    
     def make_response_result( self, **kw ):
         return self.make_response(self.iface.make_result(self.command_id, **kw))
 

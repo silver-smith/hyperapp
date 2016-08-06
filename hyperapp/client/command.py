@@ -3,7 +3,7 @@ import asyncio
 import weakref
 import abc
 from ..common.util import is_list_inst
-from ..common.htypes import tResourceId, tHandle
+from ..common.htypes import Field, TRecord, tResourceId, tHandle
 from .util import make_async_action
 
 log = logging.getLogger(__name__)
@@ -82,7 +82,7 @@ class ViewCommand(Command):
         view = self._view_wr()
         if not view: return
         log.debug('ViewCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
-        handle = yield from self._base_cmd.run(*args, **kw)
+        handle = (yield from self._base_cmd.run(*args, **kw)).handle
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
             view.open(handle)
@@ -113,7 +113,7 @@ class WindowCommand(Command):
         window = self._window_wr()
         if not window: return
         log.debug('WindowCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
-        handle = yield from self._base_cmd.run(*args, **kw)
+        handle = (yield from self._base_cmd.run(*args, **kw)).handle
         assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
             window.get_current_view().open(handle)
@@ -189,7 +189,23 @@ class command(object):
         module_name = class_method.__module__.split('.')[-1]
         resource_id = ['client_module', module_name]
         ## print('### command module:', module_name)
-        return UnboundCommand(self.id, self.kind, resource_id, self.is_default_command, self.enabled, class_method)
+        return UnboundCommand(self.id, self.kind, resource_id,
+                              self.is_default_command, self.enabled, self.wrap_method(class_method))
+
+    def wrap_method( self, method ):
+        return method
+
+
+# commands returning handle to open
+class open_command(command):
+
+    tResult = TRecord([Field('handle', tHandle)])
+
+    def wrap_method( self, method ):
+        def fn(*args, **kw):
+            handle = method(*args, **kw)
+            return self.tResult(handle)
+        return fn
 
 
 class Commander(object):

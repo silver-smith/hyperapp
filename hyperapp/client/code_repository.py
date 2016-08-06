@@ -19,7 +19,7 @@ from .module import Module
 from .request import Request
 from .server import Server
 from .proxy_object import ProxyObject
-from .command import command
+from .command import open_command
 from .object import Object
 from .list_object import Element, Slice, ListObject
 from .named_url_file_repository import NamedUrl, NamedUrlRepository
@@ -114,7 +114,7 @@ class CodeRepositoryFormObject(Object):
     def get_title( self ):
         return 'Add code repository'
 
-    @command('_submit')
+    @open_command('_submit')
     def command_submit( self, name, url ):
         log.info('adding code repository %r...', name)
         url_ = Url.from_str(self.iface_registry, url)
@@ -153,7 +153,7 @@ class CodeRepositoryList(ListObject):
     def get_title( self ):
         return 'Code repository list'
 
-    @command('add')
+    @open_command('add')
     def command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
         return make_code_repository_form(url_str)
@@ -184,7 +184,7 @@ def make_code_repository_list( key=None ):
 
 class ThisModule(Module):
 
-    @command('repository_list')
+    @open_command('repository_list')
     def command_repository_list( self ):
         return make_code_repository_list()
 
@@ -193,7 +193,7 @@ class ThisModule(Module):
             return [self.object_command_add_to_repository_list]
         return []
 
-    @command('add_to_repository_list', kind='object')
+    @open_command('add_to_repository_list', kind='object')
     def object_command_add_to_repository_list( self, object ):
         assert code_repository_iface in object.get_facets()
         url = object.get_url().clone(iface=code_repository_iface)

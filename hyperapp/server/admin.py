@@ -75,7 +75,7 @@ class ThisModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'user_list':
-            return request.make_response_handle(UserList())
+            return request.make_response_object(UserList())
         return PonyOrmModule.run_command(self, request, command_id)
 
 

@@ -26,7 +26,7 @@ class BlogEntry(article.Article):
 
     @command('parent')    
     def command_parent( self, request ):
-        return request.make_response_handle(Blog())
+        return request.make_response_object(Blog())
 
     @db_session
     def do_save( self, request, text ):
@@ -69,7 +69,7 @@ class Blog(SmallListObject):
 
     @command('add')
     def command_add( self, request ):
-        return request.make_response_handle(BlogEntry(mode=BlogEntry.mode_edit))
+        return request.make_response_object(BlogEntry(mode=BlogEntry.mode_edit))
 
     @db_session
     def fetch_all_elements( self ):
@@ -83,7 +83,7 @@ class Blog(SmallListObject):
     @command('open', kind='element', is_default_command=True)
     def command_open( self, request ):
         article_id = request.params.element_key
-        return request.make_response_handle(BlogEntry(article_id))
+        return request.make_response_object(BlogEntry(article_id))
     
     @command('delete', kind='element')
     @db_session
@@ -122,9 +122,9 @@ class BlogModule(PonyOrmModule):
 
     def run_command( self, request, command_id ):
         if command_id == 'create':
-            return request.make_response_handle(BlogEntry())
+            return request.make_response_object(BlogEntry())
         if command_id == 'open_blog':
-            return request.make_response_handle(Blog())
+            return request.make_response_object(Blog())
         return PonyOrmModule.run_command(self, request, command_id)
 
 

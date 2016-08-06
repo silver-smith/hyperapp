@@ -10,7 +10,7 @@ from ..common.htypes import (
     )
 from ..common.url import Url
 from .module import Module
-from .command import command
+from .command import command, open_command
 from .remoting import Remoting
 from .list_object import Element, Slice, ListObject
 from .proxy_object import execute_get_request
@@ -79,7 +79,7 @@ class BookmarkList(ListObject):
         item = self._bookmarks.get_item(element_key)
         return (yield from execute_get_request(self._remoting, item.url))
 
-    @command('add')
+    @open_command('add')
     @asyncio.coroutine
     def command_add( self ):
         url_str = QtGui.QApplication.clipboard().text()
@@ -127,11 +127,11 @@ class ThisModule(Module):
             return [self.object_command_bookmark]
         return []
 
-    @command('bookmark_list')
+    @open_command('bookmark_list')
     def command_bookmark_list( self ):
         return make_bookmark_list()
 
-    @command('bookmark', kind='object')
+    @open_command('bookmark', kind='object')
     def object_command_bookmark( self, object ):
         url = object.get_url()
         assert url is not None
