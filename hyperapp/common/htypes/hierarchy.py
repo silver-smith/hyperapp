@@ -86,6 +86,9 @@ class THierarchy(Type):
         self.hierarchy_id = hierarchy_id
         self.registry = {}  # id -> TClass
 
+    def __repr__( self ):
+        return 'THierarchy(%s)' % self.hierarchy_id
+
     def __eq__( self, other ):
         return (isinstance(other, THierarchy) and
                 other.hierarchy_id == self.hierarchy_id and
