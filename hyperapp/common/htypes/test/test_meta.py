@@ -15,6 +15,8 @@ from hyperapp.common.htypes import (
     TRecord,
     TList,
     TIndexedList,
+    TClass,
+    THierarchy,
     RequestCmd,
     NotificationCmd,
     OpenCommand,
@@ -23,6 +25,8 @@ from hyperapp.common.htypes import (
     TypeRegistry,
     )
 from hyperapp.common.visual_rep import pprint
+
+log = logging.getLogger(__name__)
 
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
@@ -47,16 +51,20 @@ class TypeSerializationTest(unittest.TestCase):
         TRecord.register_type(self.type_registry)
         TList.register_type(self.type_registry)
         TIndexedList.register_type(self.type_registry)
+        THierarchy.register_type(self.type_registry)
         Interface.register_type(self.type_registry)
 
     def check_type( self, t ):
         data = self.to_data(t)
         resolved_t = self.type_registry.resolve(data)
-        print('Loaded type:', resolved_t)
+        log.info('Loaded type: %r', resolved_t)
+        log.info('resolved:')
+        resolved_data = resolved_t.to_data()
+        pprint(tMetaType, resolved_data)
         self.assertEqual(resolved_t, t)
 
     def to_data( self, t ):
-        print('Saving type:', t)
+        log.info('Saving type: %r', t)
         data = t.to_data()
         self.assertIsInstance(data, tMetaType)
         pprint(tMetaType, data)
@@ -89,6 +97,12 @@ class TypeSerializationTest(unittest.TestCase):
             ])
         self.check_type(t)
 
+    def test_hierarchy( self ):
+        t = THierarchy('test_hierarchy')
+        class_a = t.register('class_a', fields=[Field('field_a_1', tString)])
+        class_b = t.register('class_b', base=class_a, fields=[Field('field_b_1', TList(tInt))])
+        self.check_type(t)
+
     def test_interface( self ):
         t = Interface('meta_test_iface', commands=[
             RequestCmd('request_one',
@@ -103,7 +117,7 @@ class TypeSerializationTest(unittest.TestCase):
         data = self.to_data(t)
         data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
         resolved_t = self.type_registry.resolve(data)
-        print('Loaded type:', resolved_t)
+        log.info('Loaded type: %r', resolved_t)
         self.assertEqual(data.iface_id, resolved_t.iface_id)
         resolved_t.iface_id = t.iface_id  # hack it back for comparision
         self.assertEqual(resolved_t, t)
