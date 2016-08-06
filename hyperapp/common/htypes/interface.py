@@ -1,6 +1,7 @@
 from ..util import is_list_inst
 from .htypes import (
     join_path,
+    lbtypes,
     Type,
     tNone,
     tBinary,
@@ -40,10 +41,46 @@ tRedirectHandle = tHandle.register('redirect', fields=[Field('redirect_to', tUrl
 
 class IfaceCommand(object):
 
-    def __init__( self, command_id, params_fields=None, result_fields=None ):
+    # client request types
+    rt_request = 'request'
+    rt_notification = 'notification'
+
+    @classmethod
+    def from_data( cls, registry, rec ):
+        params_fields = [Field.from_data(registry, field) for field in rec.params_fields]
+        result_fields = [Field.from_data(registry, field) for field in rec.result_fields]
+        return cls(rec.request_type, rec.command_id, params_fields, result_fields)
+
+    def __init__( self, request_type, command_id, params_fields, result_fields=None ):
+        assert request_type in [self.rt_request, self.rt_notification], repr(request_type)
+        assert isinstance(command_id, str), repr(command_id)
+        assert is_list_inst(params_fields or [], Field), repr(params_fields)
+        assert is_list_inst(result_fields or [], Field), repr(result_fields)
+        self.request_type = request_type
         self.command_id = command_id
         self.params_fields = params_fields or []
         self.result_fields = result_fields or []
+
+    def __eq__( self, other ):
+        assert isinstance(other, IfaceCommand), repr(other)
+        return (other.request_type == self.request_type and
+                other.command_id == self.command_id and
+                other.params_fields == self.params_fields and
+                self.result_fields == self.result_fields)
+
+    @classmethod
+    def register_meta( cls ):
+        lbtypes.tIfaceCommand = TRecord([
+            Field('request_type', tString),
+            Field('command_id', tString),
+            Field('params_fields', TList(lbtypes.tRecordFieldMeta)),
+            Field('result_fields', TList(lbtypes.tRecordFieldMeta)),
+            ])
+
+    def to_data( self ):
+        return lbtypes.tIfaceCommand(self.request_type, self.command_id,
+                                     [field.to_data() for field in self.params_fields],
+                                     [field.to_data() for field in self.result_fields])
 
     def get_params_type( self, iface ):
         return TRecord(self.get_params_fields(iface))
@@ -59,10 +96,15 @@ class IfaceCommand(object):
 
 
 class RequestCmd(IfaceCommand):
-    pass
+
+    def __init__( self, command_id, params_fields=None, result_fields=None ):
+        IfaceCommand.__init__(self, self.rt_request, command_id, params_fields, result_fields)
+
 
 class NotificationCmd(IfaceCommand):
-    pass
+
+    def __init__( self, command_id, params_fields=None ):
+        IfaceCommand.__init__(self, self.rt_notification, command_id, params_fields)
 
 
 class OpenCommand(RequestCmd):
@@ -82,15 +124,18 @@ class ContentsCommand(RequestCmd):
 
 class Interface(object):
 
-    # client request types
-    rt_request = 1
-    rt_notification =2
+    type_id = 'interface'
+
+    @classmethod
+    def from_data( cls, registry, rec ):
+        commands = [IfaceCommand.from_data(registry, command) for command in rec.commands]
+        return cls(rec.iface_id, commands=commands)
 
     def __init__( self, iface_id, base=None, contents_fields=None, diff_type=tNone, commands=None ):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(contents_fields or [], Field), repr(contents_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
-        assert is_list_inst(commands or [], (RequestCmd, NotificationCmd)), repr(commands)
+        assert is_list_inst(commands or [], IfaceCommand), repr(commands)
         self.iface_id = iface_id
         self.contents_fields = contents_fields or []
         self.diff_type = diff_type
@@ -114,6 +159,29 @@ class Interface(object):
             tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
             tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
 
+    def __eq__( self, other ):
+        return (isinstance(other, Interface) and
+                other.iface_id == self.iface_id and
+                other.commands == self.commands)
+
+    @classmethod
+    def register_meta( cls ):
+        IfaceCommand.register_meta()
+        lbtypes.tInterfaceMeta = lbtypes.tMetaType.register(
+            cls.type_id, base=lbtypes.tRootMetaType, fields=[
+                Field('iface_id', tString),
+                Field('commands', TList(lbtypes.tIfaceCommand)),
+                ])
+
+    @classmethod
+    def register( cls, type_registry ):
+        type_registry.register(cls.type_id, cls.from_data)
+
+    def to_data( self ):
+        return lbtypes.tInterfaceMeta(
+            self.type_id, self.iface_id,
+            commands=[command.to_data() for command in self.commands])
+            
     def get_object_type( self ):
         return self._tObject
 
@@ -130,11 +198,7 @@ class Interface(object):
     def get_request_type( self, command_id ):
         assert command_id in self.id2command, repr(command_id)  # Unknown command id
         command = self.id2command[command_id]
-        if isinstance(command, RequestCmd):
-            return self.rt_request
-        if isinstance(command, NotificationCmd):
-            return self.rt_notification
-        assert False, command_id  # Only RequestCmd or NotificationCmd are expected here
+        return command.request_type
 
     def is_open_command( self, command_id ):
         return isinstance(self.id2command[command_id], OpenCommand)

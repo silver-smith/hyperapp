@@ -15,6 +15,9 @@ from hyperapp.common.htypes import (
     TRecord,
     TList,
     TIndexedList,
+    RequestCmd,
+    NotificationCmd,
+    Interface,
     tMetaType,
     TypeRegistry,
     )
@@ -43,15 +46,20 @@ class TypeSerializationTest(unittest.TestCase):
         TRecord.register(self.type_registry)
         TList.register(self.type_registry)
         TIndexedList.register(self.type_registry)
+        Interface.register(self.type_registry)
 
     def check_type( self, t ):
-        print('Saving type:', t)
-        data = t.to_data()
-        pprint(tMetaType, data)
-        self.assertIsInstance(data, tMetaType)
+        data = self.to_data(t)
         resolved_t = self.type_registry.resolve(data)
         print('Loaded type:', resolved_t)
         self.assertEqual(resolved_t, t)
+
+    def to_data( self, t ):
+        print('Saving type:', t)
+        data = t.to_data()
+        self.assertIsInstance(data, tMetaType)
+        pprint(tMetaType, data)
+        return data
 
     def test_primitive( self ):
         for t in self.primitive_types:
@@ -79,3 +87,18 @@ class TypeSerializationTest(unittest.TestCase):
             Field('opt_binary_field', TOptional(tBinary)),
             ])
         self.check_type(t)
+
+    def test_interface( self ):
+        t = Interface('meta_test_iface', commands=[
+            RequestCmd('request_one',
+                       [Field('request_param_1', tString)],
+                       [Field('request_result_1', tInt),
+                        Field('request_result_2', tBinary)]),
+            ])
+        data = self.to_data(t)
+        data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
+        resolved_t = self.type_registry.resolve(data)
+        print('Loaded type:', resolved_t)
+        self.assertEqual(data.iface_id, resolved_t.iface_id)
+        resolved_t.iface_id = t.iface_id  # hack it back for comparision
+        self.assertEqual(resolved_t, t)

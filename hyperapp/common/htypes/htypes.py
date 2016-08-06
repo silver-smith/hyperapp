@@ -23,6 +23,9 @@ class Type(object):
     def __instancecheck__( self, value ):
         raise NotImplementedError(self.__class__)
 
+    def to_data( self ):
+        raise NotImplementedError(self.__class__)
+        
     def expect( self, path, value, name, expr ):
         if not expr:
             self.failure(path, '%s is expected, but got: %r' % (name, value))
@@ -139,6 +142,10 @@ lbtypes.TOptional = TOptional
 
 class Field(object):
 
+    @classmethod
+    def from_data( cls, registry, rec ):
+        return cls(rec.name, registry.resolve(rec.type))
+
     def __init__( self, name, type, default=None ):
         assert isinstance(name, str), repr(name)
         assert isinstance(type, Type), repr(type)
@@ -146,6 +153,16 @@ class Field(object):
         self.name = name
         self.type = type
         self.default = default
+
+    @classmethod
+    def register_meta( cls ):
+        lbtypes.tRecordFieldMeta = TRecord([
+            Field('name', tString),
+            Field('type', lbtypes.tMetaType),
+            ])
+
+    def to_data( self ):
+        return lbtypes.tRecordFieldMeta(self.name, self.type.to_data())
 
     def isinstance( self, value ):
         if not self.type:
@@ -177,7 +194,7 @@ class TRecord(Type):
 
     @classmethod
     def from_data( cls, registry, rec ):
-        fields = [Field(field.name, registry.resolve(field.type)) for field in rec.fields]
+        fields = [Field.from_data(registry, field) for field in rec.fields]
         return cls(fields)
 
     def __init__( self, fields=None, base=None ):
@@ -222,10 +239,7 @@ class TRecord(Type):
 
     @classmethod
     def register_meta( cls ):
-        lbtypes.tRecordFieldMeta = TRecord([
-            Field('name', tString),
-            Field('type', lbtypes.tMetaType),
-            ])
+        Field.register_meta()
         lbtypes.tRecordMeta = lbtypes.tMetaType.register(
             cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('fields', TList(lbtypes.tRecordFieldMeta))])
 
@@ -234,8 +248,7 @@ class TRecord(Type):
         type_registry.register(cls.type_id, cls.from_data)
 
     def to_data( self ):
-        return lbtypes.tRecordMeta(
-            self.type_id, [lbtypes.tRecordFieldMeta(field.name, field.type.to_data()) for field in self.fields])
+        return lbtypes.tRecordMeta(self.type_id, [field.to_data() for field in self.fields])
 
     def adopt_args( self, args, kw, check_unexpected=True ):
         path = '<Record>'

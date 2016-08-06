@@ -11,6 +11,7 @@ from .htypes import (
     TList,
     )
 from .hierarchy import THierarchy
+from .interface import Interface
 
 
 tMetaType = THierarchy('type')
@@ -40,3 +41,4 @@ TPrimitive.register_meta()
 TOptional.register_meta()
 TRecord.register_meta()
 TList.register_meta()
+Interface.register_meta()
