@@ -14,7 +14,6 @@ from ..common.htypes import (
     tObject,
     tProxyObject,
     tProxyObjectWithContents,
-    tHandle,
     tViewHandle,
     tPath,
     resolve_iface,

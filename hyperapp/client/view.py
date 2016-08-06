@@ -4,7 +4,6 @@ import logging
 import asyncio
 import weakref
 from PySide import QtCore, QtGui
-from ..common.htypes import tHandle
 from .qt_keys import print_key_event
 from .util import DEBUG_FOCUS, make_action, focused_index
 from .module import Module

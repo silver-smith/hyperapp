@@ -1,6 +1,6 @@
 import logging
 import asyncio
-from ..common.htypes import tString, tObject, Field, tBaseObject, tHandle, tObjHandle
+from ..common.htypes import tString, tObject, Field, tBaseObject, tObjHandle
 from ..common.interface.text_object import tTextObject
 from .command import command
 from .object import Object
