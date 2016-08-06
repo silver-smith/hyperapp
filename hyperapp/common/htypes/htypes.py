@@ -156,13 +156,13 @@ class Field(object):
 
     @classmethod
     def register_meta( cls ):
-        lbtypes.tRecordFieldMeta = TRecord([
+        lbtypes.tFieldMeta = TRecord([
             Field('name', tString),
             Field('type', lbtypes.tMetaType),
             ])
 
     def to_data( self ):
-        return lbtypes.tRecordFieldMeta(self.name, self.type.to_data())
+        return lbtypes.tFieldMeta(self.name, self.type.to_data())
 
     def isinstance( self, value ):
         if not self.type:
@@ -241,7 +241,7 @@ class TRecord(Type):
     def register_meta( cls ):
         Field.register_meta()
         lbtypes.tRecordMeta = lbtypes.tMetaType.register(
-            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('fields', TList(lbtypes.tRecordFieldMeta))])
+            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('fields', TList(lbtypes.tFieldMeta))])
 
     @classmethod
     def register_type( cls, type_registry ):

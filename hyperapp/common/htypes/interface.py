@@ -73,8 +73,8 @@ class IfaceCommand(object):
         lbtypes.tIfaceCommand = TRecord([
             Field('request_type', tString),
             Field('command_id', tString),
-            Field('params_fields', TList(lbtypes.tRecordFieldMeta)),
-            Field('result_fields', TList(lbtypes.tRecordFieldMeta)),
+            Field('params_fields', TList(lbtypes.tFieldMeta)),
+            Field('result_fields', TList(lbtypes.tFieldMeta)),
             ])
 
     def to_data( self ):
