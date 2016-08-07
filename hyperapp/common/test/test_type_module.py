@@ -2,6 +2,10 @@ import os.path
 import unittest
 from hyperapp.common.htypes import (
     tInt,
+    Field,
+    TRecord,
+    TClass,
+    tObject,
     t_named,
     MetaNameRegistry,
     builtin_type_names,
@@ -20,6 +24,11 @@ class TypeModuleTest(unittest.TestCase):
         fname = os.path.join(os.path.dirname(__file__), 'test_module1.types.yaml')
         meta_names = MetaNameRegistry()
         load_types_from_yaml_file(fname, type_names, self.type_registry, meta_names)
+
+        self.assertTrue(meta_names.has_name('some_int'))
+        t = self.type_registry.resolve(meta_names, type_names, t_named('some_int'))
+        self.assertEqual(t, tInt)
+
         self.assertTrue(meta_names.has_name('text_object'))
         t = self.type_registry.resolve(meta_names, type_names, t_named('text_object'))
-        self.assertEqual(t, tInt)
+        self.assertEqual(t, TClass(tObject, 'text', TRecord([])))

@@ -22,7 +22,7 @@ class TClass(TRecord):
 
     def __eq__( self, other ):
         assert isinstance(other, TClass), repr(other)
-        return other.id == self.id and other.trec == self.trec
+        return other.hierarchy is self.hierarchy and other.id == self.id and other.trec == self.trec
 
     def get_trecord( self ):
         return self.trec

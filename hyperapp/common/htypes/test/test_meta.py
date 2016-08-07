@@ -100,6 +100,7 @@ class MetaTypeTest(unittest.TestCase):
         hdata = t_hierarchy_meta('test_hierarchy')
         meta_names.register('my_test_hierarchy', hdata)
         hierarchy = self.type_registry.resolve(meta_names, type_names, hdata)
+        type_names.register('my_test_hierarchy', hierarchy)
 
         cdata_a = t_hierarchy_class_meta('my_test_hierarchy', 'class_a', base_name=None, fields=[
             t_field_meta('field_a_1', t_named('string')),
@@ -111,7 +112,11 @@ class MetaTypeTest(unittest.TestCase):
         meta_names.register('my_class_b', cdata_b)
         self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
         class_a = self.type_registry.resolve(meta_names, type_names, cdata_a)
+        type_names.register('my_class_a', class_a)
+        class_b = self.type_registry.resolve(meta_names, type_names, cdata_b)
         self.assertEqual(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])), class_a)
+        self.assertEqual(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
+                                                               Field('field_b_1', TList(tInt))])), class_b)
 
     def test_interface( self ):
         type_names = builtin_type_names()

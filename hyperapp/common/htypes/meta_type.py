@@ -14,7 +14,7 @@ from .htypes import (
     TList,
     )
 from .hierarchy import TClass, THierarchy
-from .interface import IfaceCommand, Interface
+from .interface import tObject, tBaseObject, IfaceCommand, Interface
 
 
 tMetaType = THierarchy('type')
@@ -110,7 +110,7 @@ def hierarchy_class_from_data( meta_names, type_names, meta_types, rec ):
     else:
         base = None
     fields = field_list_from_data(meta_names, type_names, meta_types, rec.fields)
-    return hierarchy.register(rec.class_id, base, fields)
+    return hierarchy.register(rec.class_id, base=base, fields=fields)
 
 
 tIfaceCommandMeta = TRecord([
@@ -226,4 +226,6 @@ def builtin_type_names():
         tDateTime,
         ]:
         registry.register(t.type_name, t)
+    registry.register('object', tObject)
+    registry.register('base_object', tBaseObject)
     return registry
