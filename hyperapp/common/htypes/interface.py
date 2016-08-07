@@ -1,7 +1,6 @@
 from ..util import is_list_inst
 from .htypes import (
     join_path,
-    lbtypes,
     Type,
     tNone,
     tBinary,

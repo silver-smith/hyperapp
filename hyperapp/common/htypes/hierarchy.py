@@ -1,5 +1,5 @@
 from ..util import is_list_inst
-from .htypes import join_path, lbtypes, Type, tString, Field, Record, TRecord, TList
+from .htypes import join_path, Type, tString, Field, Record, TRecord, TList
 
 
 class TClassRecord(Record):
@@ -143,6 +143,3 @@ class THierarchy(Type):
     def resolve_obj( self, rec ):
         assert isinstance(rec, TClassRecord), repr(rec)
         return rec._class
-
-
-lbtypes.THierarchy = THierarchy

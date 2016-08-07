@@ -9,12 +9,6 @@ def join_path( *args ):
     return '.'.join([_f for _f in args if _f])
 
 
-class LateBindingTypes(object):
-    pass
-
-lbtypes = LateBindingTypes()
-
-
 class Type(object):
 
     def __call__( self, *args, **kw ):
@@ -40,12 +34,6 @@ class Type(object):
 
 class TPrimitive(Type):
 
-    type_id = 'primitive'
-
-    @classmethod
-    def from_data( cls, registry, rec ):
-        return cls()
-
     def __repr__( self ):
         return 'TPrimitive(%s)' % repr(self.get_type())
 
@@ -57,17 +45,6 @@ class TPrimitive(Type):
 
     def get_type( self ):
         return self.type
-
-    @classmethod
-    def register_meta( cls ):
-        lbtypes.tPrimitiveMeta = lbtypes.tMetaType.register(cls.type_id, base=lbtypes.tRootMetaType)
-
-    @classmethod
-    def register_type( cls, type_registry ):
-        type_registry.register(cls.type_name, cls.from_data)
-
-    def to_data( self ):
-        return lbtypes.tPrimitiveMeta(self.type_name)
 
 
 class TNone(TPrimitive):
@@ -107,11 +84,6 @@ class TOptional(Type):
 
     type_id = 'optional'
 
-    @classmethod
-    def from_data( cls, registry, rec ):
-        base_t = registry.resolve(rec.base)
-        return cls(base_t)
-
     def __init__( self, base_t ):
         assert isinstance(base_t, Type), repr(base_t)
         self.base_t = base_t
@@ -136,8 +108,6 @@ class TOptional(Type):
 
     def to_data( self ):
         return lbtypes.tOptionalMeta(self.type_id, self.base_t.to_data())
-
-lbtypes.TOptional = TOptional
 
 
 class Field(object):
@@ -206,7 +176,7 @@ class TRecord(Type):
         self.base = base
 
     def __repr__( self ):
-        return 'TRecord(%d(%s)<-%s)' % (id(self), ', '.join(map(repr, self.get_fields())), self.base)
+        return 'TRecord(%d: %s)' % (id(self), ', '.join(map(repr, self.get_fields())))
 
     def __eq__( self, other ):
         return isinstance(other, TRecord) and other.fields == self.fields
@@ -293,17 +263,10 @@ class TRecord(Type):
         self.instantiate_impl(rec, *args, **kw)
         return rec
 
-lbtypes.TRecord = TRecord
-        
 
 class TList(Type):
 
     type_id = 'list'
-
-    @classmethod
-    def from_data( cls, registry, rec ):
-        element_t = registry.resolve(rec.element)
-        return cls(element_t)
 
     def __init__( self, element_t ):
         assert isinstance(element_t, Type), repr(element_t)
@@ -318,25 +281,9 @@ class TList(Type):
     def __instancecheck__( self, value ):
         return is_list_inst(value, self.element_t)
 
-    @classmethod
-    def register_meta( cls ):
-        lbtypes.tListMeta = lbtypes.tMetaType.register(
-            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('element', lbtypes.tMetaType)])
-
-    @classmethod
-    def register_type( cls, type_registry ):
-        type_registry.register(cls.type_id, cls.from_data)
-
-    def to_data( self ):
-        return lbtypes.tListMeta(self.type_id, self.element_t.to_data())
-
-lbtypes.TList = TList
-
 
 class TIndexedList(TList):
     type_id = 'indexed_list'
-
-lbtypes.TIndexedList = TIndexedList
 
 
 tRoute = TList(tString)
