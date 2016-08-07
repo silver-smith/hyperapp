@@ -51,6 +51,28 @@ def list_from_data( type_registry, name_registry, rec ):
     element_t = type_registry.resolve(name_registry, rec.element)
     return TList(element_t)
 
+tFieldMeta = TRecord([
+    Field('name', tString),
+    Field('type', tMetaType),
+    ])
+
+def t_field_meta( name, type ):
+    return tFieldMeta(name, type)
+
+tRecordMeta = tMetaType.register(
+    'record', base=tRootMetaType, fields=[Field('fields', TList(tFieldMeta))])
+
+def t_record_meta( fields ):
+    return tRecordMeta(tRecordMeta.id, fields)
+
+def field_from_data( type_registry, name_registry, rec ):
+    t = type_registry.resolve(name_registry, rec.type)
+    return Field(rec.name, t)
+
+def record_from_data( type_registry, name_registry, rec ):
+    fields = [field_from_data(type_registry, name_registry, field) for field in rec.fields]
+    return TRecord(fields)
+
 
 class NameRegistry(object):
 
@@ -95,6 +117,7 @@ def make_type_registry():
     registry.register('named', named_from_data)
     registry.register('optional', optional_from_data)
     registry.register('list', list_from_data)
+    registry.register('record', record_from_data)
     return registry
 
 def builtin_type_names():

@@ -25,6 +25,8 @@ from hyperapp.common.htypes import (
     t_named,
     t_optional_meta,
     t_list_meta,
+    t_field_meta,
+    t_record_meta,
     make_type_registry,
     builtin_type_names,
     )
@@ -73,33 +75,38 @@ class TypeSerializationTest(unittest.TestCase):
     def test_named( self ):
         data = t_named('int')
         t = self.type_registry.resolve(builtin_type_names(), data)
-        self.assertIs(t, tInt)
+        self.assertEqual(t, tInt)
+        self.assertIs(t, tInt)  # must resolve to same instance
 
     def test_optional( self ):
         data = t_optional_meta(t_named('string'))
         t = self.type_registry.resolve(builtin_type_names(), data)
-        self.assertIsInstance(t, TOptional)
+        self.assertEqual(t, TOptional(tString))
         self.assertIs(t.base_t, tString)
 
     def test_list( self ):
         data = t_list_meta(t_optional_meta(t_named('datetime')))
         t = self.type_registry.resolve(builtin_type_names(), data)
-        self.assertIsInstance(t, TList)
-        self.assertIsInstance(t.element_t, TOptional)
-        self.assertIs(t.element_t.base_t, tDateTime)
+        self.assertEqual(TList(TOptional(tDateTime)), t)
 
     ## def test_indexed_list( self ):
     ##     for element_t in self.primitive_types:
     ##         t = TIndexedList(element_t)
     ##         self.check_type(t)
 
-    ## def test_record( self ):
-    ##     t = TRecord([
-    ##         Field('string_field', tString),
-    ##         Field('int_field', tInt),
-    ##         Field('opt_binary_field', TOptional(tBinary)),
-    ##         ])
-    ##     self.check_type(t)
+    def test_record( self ):
+        data = t_record_meta([
+            t_field_meta('int_field', t_named('int')),
+            t_field_meta('string_list_field', t_list_meta(t_named('string'))),
+            t_field_meta('bool_optional_field', t_optional_meta(t_named('bool'))),
+            ])
+        t = self.type_registry.resolve(builtin_type_names(), data)
+        self.assertEqual(TRecord([
+            Field('int_field', tInt),
+            Field('string_list_field', TList(tString)),
+            Field('bool_optional_field', TOptional(tBool)),
+            ]),
+            t)
 
     ## def test_hierarchy( self ):
     ##     t = THierarchy('test_hierarchy')

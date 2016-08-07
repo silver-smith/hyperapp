@@ -124,16 +124,6 @@ class Field(object):
         self.type = type
         self.default = default
 
-    @classmethod
-    def register_meta( cls ):
-        lbtypes.tFieldMeta = TRecord([
-            Field('name', tString),
-            Field('type', lbtypes.tMetaType),
-            ])
-
-    def to_data( self ):
-        return lbtypes.tFieldMeta(self.name, self.type.to_data())
-
     def isinstance( self, value ):
         if not self.type:
             return True  # todo: check why
@@ -161,11 +151,6 @@ class Record(object):
 class TRecord(Type):
 
     type_id = 'record'
-
-    @classmethod
-    def from_data( cls, registry, rec ):
-        fields = [Field.from_data(registry, field) for field in rec.fields]
-        return cls(fields)
 
     def __init__( self, fields=None, base=None ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
@@ -206,19 +191,6 @@ class TRecord(Type):
         if not isinstance(rec, Record):
             return False
         return issubclass(rec._type, self)
-
-    @classmethod
-    def register_meta( cls ):
-        Field.register_meta()
-        lbtypes.tRecordMeta = lbtypes.tMetaType.register(
-            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('fields', TList(lbtypes.tFieldMeta))])
-
-    @classmethod
-    def register_type( cls, type_registry ):
-        type_registry.register(cls.type_id, cls.from_data)
-
-    def to_data( self ):
-        return lbtypes.tRecordMeta(self.type_id, [field.to_data() for field in self.fields])
 
     def adopt_args( self, args, kw, check_unexpected=True ):
         path = '<Record>'
