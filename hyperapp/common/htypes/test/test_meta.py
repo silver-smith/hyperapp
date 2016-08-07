@@ -34,6 +34,7 @@ from hyperapp.common.htypes import (
     MetaNameRegistry,
     make_type_registry,
     builtin_type_names,
+    tHandle,
     )
 from hyperapp.common.visual_rep import pprint
 
@@ -95,10 +96,10 @@ class TypeSerializationTest(unittest.TestCase):
 
     def test_hierarchy( self ):
         meta_names = MetaNameRegistry()
-        builtins = builtin_type_names()
+        type_names = builtin_type_names()
         hdata = t_hierarchy_meta('test_hierarchy')
         meta_names.register('my_test_hierarchy', hdata)
-        hierarchy = self.type_registry.resolve(meta_names, builtins, hdata)
+        hierarchy = self.type_registry.resolve(meta_names, type_names, hdata)
 
         cdata_a = t_hierarchy_class_meta('my_test_hierarchy', 'class_a', base_name=None, fields=[
             t_field_meta('field_a_1', t_named('string')),
@@ -108,21 +109,25 @@ class TypeSerializationTest(unittest.TestCase):
             t_field_meta('field_b_1', t_list_meta(t_named('int'))),
             ])
         meta_names.register('my_class_b', cdata_b)
-        self.assertEqual(THierarchy('test_hierarchy'), hierarchy)
-        class_a = self.type_registry.resolve(meta_names, builtins, cdata_a)
+        self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
+        class_a = self.type_registry.resolve(meta_names, type_names, cdata_a)
         self.assertEqual(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])), class_a)
 
     def test_interface( self ):
+        type_names = builtin_type_names()
+        type_names.register('handle', tHandle)
         data = t_interface_meta('unit_test_iface', [
             t_command_meta('request', 'request_one',
                            [t_field_meta('req_param1', t_named('string'))],
                            [t_field_meta('req_result1', t_list_meta(t_named('int')))]),
             t_command_meta('notification', 'notification_one',
                            [t_field_meta('noti_param1', t_optional_meta(t_named('bool'))),
-                            t_field_meta('noti_param2', t_named('datetime'))])
-                           ])
+                            t_field_meta('noti_param2', t_named('datetime'))]),
+            t_command_meta('request', 'request_open', [],
+                           [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
+            ])
         data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
-        t = self.type_registry.resolve(MetaNameRegistry(), builtin_type_names(), data)
+        t = self.type_registry.resolve(MetaNameRegistry(), type_names, data)
         t.iface_id = 'unit_test_iface'  # hack it back for comparision
         self.assertEqual(Interface('unit_test_iface', commands=[
             RequestCmd('request_one',
@@ -131,5 +136,5 @@ class TypeSerializationTest(unittest.TestCase):
             NotificationCmd('notification_one',
                             [Field('noti_param1', TOptional(tBool)),
                              Field('noti_param2', tDateTime)]),
-            ## OpenCommand('open_command'),
+            OpenCommand('request_open'),
             ]), t)

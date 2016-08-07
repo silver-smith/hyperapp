@@ -64,6 +64,9 @@ class THierarchy(Type):
         return 'THierarchy(%s)' % self.hierarchy_id
 
     def __eq__( self, other ):
+        return other is self  # there must be only one (with same hierarchy_id)
+
+    def matches( self, other ):
         return (isinstance(other, THierarchy) and
                 other.hierarchy_id == self.hierarchy_id and
                 sorted(other.registry.values(), key=lambda cls: cls.id) ==
