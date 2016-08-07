@@ -44,12 +44,6 @@ class IfaceCommand(object):
     rt_request = 'request'
     rt_notification = 'notification'
 
-    @classmethod
-    def from_data( cls, registry, rec ):
-        params_fields = [Field.from_data(registry, field) for field in rec.params_fields]
-        result_fields = [Field.from_data(registry, field) for field in rec.result_fields]
-        return cls(rec.request_type, rec.command_id, params_fields, result_fields)
-
     def __init__( self, request_type, command_id, params_fields, result_fields=None ):
         assert request_type in [self.rt_request, self.rt_notification], repr(request_type)
         assert isinstance(command_id, str), repr(command_id)
@@ -66,20 +60,6 @@ class IfaceCommand(object):
                 other.command_id == self.command_id and
                 other.params_fields == self.params_fields and
                 self.result_fields == self.result_fields)
-
-    @classmethod
-    def register_meta( cls ):
-        lbtypes.tIfaceCommand = TRecord([
-            Field('request_type', tString),
-            Field('command_id', tString),
-            Field('params_fields', TList(lbtypes.tFieldMeta)),
-            Field('result_fields', TList(lbtypes.tFieldMeta)),
-            ])
-
-    def to_data( self ):
-        return lbtypes.tIfaceCommand(self.request_type, self.command_id,
-                                     [field.to_data() for field in self.params_fields],
-                                     [field.to_data() for field in self.result_fields])
 
     def get_params_type( self, iface ):
         return TRecord(self.get_params_fields(iface))
@@ -130,13 +110,6 @@ class ContentsCommand(RequestCmd):
 
 class Interface(object):
 
-    type_id = 'interface'
-
-    @classmethod
-    def from_data( cls, registry, rec ):
-        commands = [IfaceCommand.from_data(registry, command) for command in rec.commands]
-        return cls(rec.iface_id, commands=commands)
-
     def __init__( self, iface_id, base=None, contents_fields=None, diff_type=tNone, commands=None ):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(contents_fields or [], Field), repr(contents_fields)
@@ -170,24 +143,6 @@ class Interface(object):
                 other.iface_id == self.iface_id and
                 other.commands == self.commands)
 
-    @classmethod
-    def register_meta( cls ):
-        IfaceCommand.register_meta()
-        lbtypes.tInterfaceMeta = lbtypes.tMetaType.register(
-            cls.type_id, base=lbtypes.tRootMetaType, fields=[
-                Field('iface_id', tString),
-                Field('commands', TList(lbtypes.tIfaceCommand)),
-                ])
-
-    @classmethod
-    def register_type( cls, type_registry ):
-        type_registry.register(cls.type_id, cls.from_data)
-
-    def to_data( self ):
-        return lbtypes.tInterfaceMeta(
-            self.type_id, self.iface_id,
-            commands=[command.to_data() for command in self.commands])
-            
     def get_object_type( self ):
         return self._tObject
 

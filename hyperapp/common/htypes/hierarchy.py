@@ -11,13 +11,6 @@ class TClassRecord(Record):
 
 class TClass(TRecord):
 
-    type_id = 'hierarchy_class'
-
-    @classmethod
-    def from_data( cls, registry, hierarchy, rec ):
-        fields = [Field.from_data(registry, field) for field in rec.fields]
-        return cls(hierarchy, rec.id, TRecord(fields))
-
     def __init__( self, hierarchy, id, trec ):
         TRecord.__init__(self)
         self.hierarchy = hierarchy
@@ -30,15 +23,6 @@ class TClass(TRecord):
     def __eq__( self, other ):
         assert isinstance(other, TClass), repr(other)
         return other.id == self.id and other.trec == self.trec
-
-    @classmethod
-    def register_meta( cls ):
-        lbtypes.tHierarchyClassMeta = TRecord(base=lbtypes.tRecordMeta, fields=[
-            Field('id', tString),
-            ])
-
-    def to_data( self ):
-        return lbtypes.tHierarchyClassMeta(self.type_id, [field.to_data() for field in self.get_fields()], self.id)
 
     def get_trecord( self ):
         return self.trec
@@ -71,16 +55,6 @@ class TClass(TRecord):
 
 class THierarchy(Type):
 
-    type_id = 'hierarchy'
-
-    @classmethod
-    def from_data( cls, registry, rec ):
-        hierarchy = cls(rec.hierarchy_id)
-        for class_rec in rec.classes:
-            tclass = TClass.from_data(registry, hierarchy, class_rec)
-            hierarchy.register(tclass.id, tclass.trec)
-        return hierarchy
-
     def __init__( self, hierarchy_id ):
         Type.__init__(self)
         self.hierarchy_id = hierarchy_id
@@ -94,23 +68,6 @@ class THierarchy(Type):
                 other.hierarchy_id == self.hierarchy_id and
                 sorted(other.registry.values(), key=lambda cls: cls.id) ==
                 sorted(self.registry.values(), key=lambda cls: cls.id))
-
-    @classmethod
-    def register_meta( cls ):
-        TClass.register_meta()
-        lbtypes.tHierarchyMeta = lbtypes.tMetaType.register(cls.type_id, base=lbtypes.tRootMetaType, fields=[
-            Field('hierarchy_id', tString),
-            Field('classes', TList(lbtypes.tHierarchyClassMeta)),
-            ])
-
-    @classmethod
-    def register_type( cls, type_registry ):
-        type_registry.register(cls.type_id, cls.from_data)
-
-    def to_data( self ):
-        return lbtypes.tHierarchyMeta(
-            self.type_id, self.hierarchy_id,
-            [cls.to_data() for cls in self.registry.values()])
 
     def register( self, id, trec=None, fields=None, base=None ):
         assert isinstance(id, str), repr(id)

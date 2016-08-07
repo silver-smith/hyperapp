@@ -82,8 +82,6 @@ tDateTime = TDateTime()
 
 class TOptional(Type):
 
-    type_id = 'optional'
-
     def __init__( self, base_t ):
         assert isinstance(base_t, Type), repr(base_t)
         self.base_t = base_t
@@ -96,18 +94,6 @@ class TOptional(Type):
 
     def __instancecheck__( self, value ):
         return value is None or isinstance(value, self.base_t)
-
-    @classmethod
-    def register_meta( cls ):
-        lbtypes.tOptionalMeta = lbtypes.tMetaType.register(
-            cls.type_id, base=lbtypes.tRootMetaType, fields=[Field('base', lbtypes.tMetaType)])
-
-    @classmethod
-    def register_type( cls, type_registry ):
-        type_registry.register(cls.type_id, cls.from_data)
-
-    def to_data( self ):
-        return lbtypes.tOptionalMeta(self.type_id, self.base_t.to_data())
 
 
 class Field(object):
@@ -149,8 +135,6 @@ class Record(object):
     
 
 class TRecord(Type):
-
-    type_id = 'record'
 
     def __init__( self, fields=None, base=None ):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
@@ -238,8 +222,6 @@ class TRecord(Type):
 
 class TList(Type):
 
-    type_id = 'list'
-
     def __init__( self, element_t ):
         assert isinstance(element_t, Type), repr(element_t)
         self.element_t = element_t
@@ -255,8 +237,7 @@ class TList(Type):
 
 
 class TIndexedList(TList):
-    type_id = 'indexed_list'
-
+    pass
 
 tRoute = TList(tString)
 
