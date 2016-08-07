@@ -1,0 +1,6 @@
+-
+  name: text_object
+  type:
+    _class_id: named
+    type_id: named
+    name: int

@@ -104,6 +104,7 @@ def hierarchy_from_data( meta_names, type_names, meta_types, rec ):
 
 def hierarchy_class_from_data( meta_names, type_names, meta_types, rec ):
     hierarchy = meta_types.resolve(meta_names, type_names, rec.hierarchy)
+    assert isinstance(hierarchy, THierarchy), repr(hierarchy)
     if rec.base is not None:
         base = meta_types.resolve(meta_names, type_names, rec.base)
     else:
@@ -173,6 +174,9 @@ class MetaNameRegistry(object):
         assert isinstance(name, str), repr(name)
         assert isinstance(t, tMetaType), repr(t)
         self._registry[name] = t
+
+    def has_name( self, name ):
+        return name in self._registry
 
     def resolve( self, name ):
         assert isinstance(name, str), repr(name)
