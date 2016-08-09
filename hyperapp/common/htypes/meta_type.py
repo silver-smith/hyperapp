@@ -26,12 +26,8 @@ tNamed = tMetaType.register('named', base=tRootMetaType, fields=[Field('name', t
 def t_named( name ):
     return tNamed(tNamed.id, name)
 
-def named_from_data( meta_names, type_names, meta_types, rec ):
-    t = type_names.resolve(rec.name)
-    if t is not None:
-        return t
-    meta = meta_names.resolve(rec.name)
-    return meta_types.resolve(meta_names, type_names, meta)
+def named_from_data( type_registry, meta_registry, rec ):
+    return type_registry.resolve(rec.name)
 
 
 tOptionalMeta = tMetaType.register(
@@ -40,8 +36,8 @@ tOptionalMeta = tMetaType.register(
 def t_optional_meta( base_t ):
     return tOptionalMeta(tOptionalMeta.id, base_t)
 
-def optional_from_data( meta_names, type_names, meta_types, rec ):
-    base_t = meta_types.resolve(meta_names, type_names, rec.base)
+def optional_from_data( type_registry, meta_registry, rec ):
+    base_t = meta_registry.resolve(type_registry, rec.base)
     return TOptional(base_t)
 
 
@@ -51,8 +47,8 @@ tListMeta = tMetaType.register(
 def t_list_meta( element_t ):
     return tListMeta(tListMeta.id, element_t)
 
-def list_from_data( meta_names, type_names, meta_types, rec ):
-    element_t = meta_types.resolve(meta_names, type_names, rec.element)
+def list_from_data( type_registry, meta_registry, rec ):
+    element_t = meta_registry.resolve(type_registry, rec.element)
     return TList(element_t)
 
 
@@ -70,15 +66,15 @@ def t_field_meta( name, type ):
 def t_record_meta( fields ):
     return tRecordMeta(tRecordMeta.id, fields)
 
-def field_from_data( meta_names, type_names, meta_types, rec ):
-    t = meta_types.resolve(meta_names, type_names, rec.type)
+def field_from_data( type_registry, meta_registry, rec ):
+    t = meta_registry.resolve(type_registry, rec.type)
     return Field(rec.name, t)
 
-def field_list_from_data( meta_names, type_names, meta_types, fields ):
-    return [field_from_data(meta_names, type_names, meta_types, field) for field in fields]
+def field_list_from_data( type_registry, meta_registry, fields ):
+    return [field_from_data(type_registry, meta_registry, field) for field in fields]
 
-def record_from_data( meta_names, type_names, meta_types, rec ):
-    return TRecord(field_list_from_data(meta_names, type_names, meta_types, rec.fields))
+def record_from_data( type_registry, meta_registry, rec ):
+    return TRecord(field_list_from_data(type_registry, meta_registry, rec.fields))
 
 
 tHierarchyMeta = tMetaType.register(
@@ -99,17 +95,17 @@ def t_hierarchy_class_meta( hierarchy_name, class_id, base_name, fields ):
                                t_named(hierarchy_name), class_id,
                                t_named(base_name) if base_name else None, fields)
 
-def hierarchy_from_data( meta_names, type_names, meta_types, rec ):
+def hierarchy_from_data( type_registry, meta_registry, rec ):
     return THierarchy(rec.hierarchy_id)
 
-def hierarchy_class_from_data( meta_names, type_names, meta_types, rec ):
-    hierarchy = meta_types.resolve(meta_names, type_names, rec.hierarchy)
+def hierarchy_class_from_data( type_registry, meta_registry, rec ):
+    hierarchy = meta_registry.resolve(type_registry, rec.hierarchy)
     assert isinstance(hierarchy, THierarchy), repr(hierarchy)
     if rec.base is not None:
-        base = meta_types.resolve(meta_names, type_names, rec.base)
+        base = meta_registry.resolve(type_registry, rec.base)
     else:
         base = None
-    fields = field_list_from_data(meta_names, type_names, meta_types, rec.fields)
+    fields = field_list_from_data(type_registry, meta_registry, rec.fields)
     return hierarchy.register(rec.class_id, base=base, fields=fields)
 
 
@@ -132,20 +128,20 @@ def t_command_meta( request_type, command_id, params_fields, result_fields=None 
 def t_interface_meta( iface_id, commands ):
     return tInterfaceMeta(tInterfaceMeta.id, iface_id, commands)
 
-def command_from_data( meta_names, type_names, meta_types, rec ):
-    params_fields = field_list_from_data(meta_names, type_names, meta_types, rec.params_fields)
-    result_fields = field_list_from_data(meta_names, type_names, meta_types, rec.result_fields)
+def command_from_data( type_registry, meta_registry, rec ):
+    params_fields = field_list_from_data(type_registry, meta_registry, rec.params_fields)
+    result_fields = field_list_from_data(type_registry, meta_registry, rec.result_fields)
     return IfaceCommand(rec.request_type, rec.command_id, params_fields, result_fields)
 
-def interface_from_data( meta_names, type_names, meta_types, rec ):
-    commands = [command_from_data(meta_names, type_names, meta_types, command) for command in rec.commands]
+def interface_from_data( type_registry, meta_registry, rec ):
+    commands = [command_from_data(type_registry, meta_registry, command) for command in rec.commands]
     return Interface(rec.iface_id, commands=commands)
 
 
-class TypeNameRegistry(object):
+class TypeRegistry(object):
 
     def __init__( self, next=None ):
-        assert next is None or isinstance(next, TypeNameRegistry), repr(next)
+        assert next is None or isinstance(next, TypeRegistry), repr(next)
         self._registry = {}
         self._next = next
 
@@ -165,27 +161,6 @@ class TypeNameRegistry(object):
         ## raise KeyError('Unknown type name: %r' % name)
 
 
-class MetaNameRegistry(object):
-
-    def __init__( self ):
-        self._registry = {}
-
-    def register( self, name, t ):
-        assert isinstance(name, str), repr(name)
-        assert isinstance(t, tMetaType), repr(t)
-        self._registry[name] = t
-
-    def has_name( self, name ):
-        return name in self._registry
-
-    def resolve( self, name ):
-        assert isinstance(name, str), repr(name)
-        t = self._registry.get(name)
-        if t is not None:
-            return t
-        raise KeyError('Unknown meta type name: %r' % name)
-
-
 class MetaTypeRegistry(object):
 
     def __init__( self ):
@@ -195,16 +170,15 @@ class MetaTypeRegistry(object):
         assert isinstance(type_id, str), repr(type_id)
         self._registry[type_id] = t
 
-    def resolve( self, meta_names, type_names, rec ):
-        assert isinstance(meta_names, MetaNameRegistry), repr(meta_names)
-        assert isinstance(type_names, TypeNameRegistry), repr(type_names)
+    def resolve( self, type_registry, rec ):
+        assert isinstance(type_registry, TypeRegistry), repr(type_registry)
         assert isinstance(rec, tRootMetaType), repr(rec)
         factory = self._registry.get(rec.type_id)
         assert factory, 'Unknown type_id: %r' % rec.type_id
-        return factory(meta_names, type_names, self, rec)
+        return factory(type_registry, self, rec)
 
 
-def make_type_registry():
+def make_meta_type_registry():
     registry = MetaTypeRegistry()
     registry.register('named', named_from_data)
     registry.register('optional', optional_from_data)
@@ -215,8 +189,8 @@ def make_type_registry():
     registry.register('interface', interface_from_data)
     return registry
 
-def builtin_type_names():
-    registry = TypeNameRegistry()
+def builtin_type_registry():
+    registry = TypeRegistry()
     for t in [
         tNone,
         tString,

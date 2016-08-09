@@ -4,8 +4,6 @@ from .htypes import (
     TRecord,
     TList,
     tMetaType,
-    MetaNameRegistry,
-    make_type_registry,
     builtin_type_names,
     )
 from .packet_coders import packet_coders
