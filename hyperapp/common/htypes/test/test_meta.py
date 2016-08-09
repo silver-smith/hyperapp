@@ -55,23 +55,23 @@ class MetaTypeTest(unittest.TestCase):
         ]
 
     def setUp( self ):
-        self.type_registry = make_meta_type_registry()
+        self.meta_type_registry = make_meta_type_registry()
 
     def test_named( self ):
         data = t_named('int')
-        t = self.type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
         self.assertEqual(t, tInt)
         self.assertIs(t, tInt)  # must resolve to same instance
 
     def test_optional( self ):
         data = t_optional_meta(t_named('string'))
-        t = self.type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
         self.assertEqual(t, TOptional(tString))
         self.assertIs(t.base_t, tString)
 
     def test_list( self ):
         data = t_list_meta(t_optional_meta(t_named('datetime')))
-        t = self.type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
         self.assertEqual(TList(TOptional(tDateTime)), t)
 
     ## def test_indexed_list( self ):
@@ -85,7 +85,7 @@ class MetaTypeTest(unittest.TestCase):
             t_field_meta('string_list_field', t_list_meta(t_named('string'))),
             t_field_meta('bool_optional_field', t_optional_meta(t_named('bool'))),
             ])
-        t = self.type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
         self.assertEqual(TRecord([
             Field('int_field', tInt),
             Field('string_list_field', TList(tString)),
@@ -96,7 +96,7 @@ class MetaTypeTest(unittest.TestCase):
     def test_hierarchy( self ):
         type_names = builtin_type_registry()
         hdata = t_hierarchy_meta('test_hierarchy')
-        hierarchy = self.type_registry.resolve(type_names, hdata)
+        hierarchy = self.meta_type_registry.resolve(type_names, hdata)
         type_names.register('my_test_hierarchy', hierarchy)
 
         cdata_a = t_hierarchy_class_meta('my_test_hierarchy', 'class_a', base_name=None, fields=[
@@ -106,9 +106,9 @@ class MetaTypeTest(unittest.TestCase):
             t_field_meta('field_b_1', t_list_meta(t_named('int'))),
             ])
         self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
-        class_a = self.type_registry.resolve(type_names, cdata_a)
+        class_a = self.meta_type_registry.resolve(type_names, cdata_a)
         type_names.register('my_class_a', class_a)
-        class_b = self.type_registry.resolve(type_names, cdata_b)
+        class_b = self.meta_type_registry.resolve(type_names, cdata_b)
         self.assertEqual(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])), class_a)
         self.assertEqual(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
                                                                Field('field_b_1', TList(tInt))])), class_b)
@@ -127,7 +127,7 @@ class MetaTypeTest(unittest.TestCase):
                            [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
             ])
         data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
-        t = self.type_registry.resolve(type_names, data)
+        t = self.meta_type_registry.resolve(type_names, data)
         t.iface_id = 'unit_test_iface'  # hack it back for comparision
         self.assertEqual(Interface('unit_test_iface', commands=[
             RequestCmd('request_one',

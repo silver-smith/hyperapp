@@ -7,8 +7,8 @@ from hyperapp.common.htypes import (
     TClass,
     tObject,
     t_named,
-    builtin_type_names,
     make_meta_type_registry,
+    builtin_type_registry,
     )
 from hyperapp.common.type_module import load_types_from_yaml_file
 
@@ -16,17 +16,15 @@ from hyperapp.common.type_module import load_types_from_yaml_file
 class TypeModuleTest(unittest.TestCase):
 
     def setUp( self ):
-        self.type_registry = make_meta_type_registry()
+        self.meta_type_registry = make_meta_type_registry()
 
     def test_module1( self ):
-        type_names = builtin_type_names()
+        type_registry = builtin_type_registry()
         fname = os.path.join(os.path.dirname(__file__), 'test_module1.types.yaml')
-        load_types_from_yaml_file(fname, type_names, self.type_registry)
+        loaded_types = load_types_from_yaml_file(self.meta_type_registry, type_registry, fname)
 
-        self.assertTrue(meta_names.has_name('some_int'))
-        t = self.type_registry.resolve(meta_names, type_names, t_named('some_int'))
-        self.assertEqual(t, tInt)
+        self.assertTrue(loaded_types.has_name('some_int'))
+        self.assertEqual(tInt, loaded_types.get_name('some_int'))
 
-        self.assertTrue(meta_names.has_name('text_object'))
-        t = self.type_registry.resolve(meta_names, type_names, t_named('text_object'))
-        self.assertEqual(t, TClass(tObject, 'text', TRecord([])))
+        self.assertTrue(loaded_types.has_name('text_object'))
+        self.assertEqual(TClass(tObject, 'text', TRecord([])), loaded_types.get_name('text_object'))

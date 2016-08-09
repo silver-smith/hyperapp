@@ -4,7 +4,7 @@ from .htypes import (
     TRecord,
     TList,
     tMetaType,
-    builtin_type_names,
+    TypeRegistry,
     )
 from .packet_coders import packet_coders
 
@@ -20,9 +20,12 @@ tTypeDef = TRecord([
 tTypeModule = TList(tTypeDef)
 
 
-def load_types_from_yaml_file( fpath, type_names, meta_types, meta_names_dest ):
+def load_types_from_yaml_file( meta_registry, type_registry, fpath ):
     with open(fpath, 'rb') as f:
         data = f.read()
     typedefs = packet_coders.decode(TYPEDEF_MODULE_ENCODING, data, tTypeModule)
+    loaded_types = TypeRegistry(next=type_registry)
     for typedef in typedefs:
-        meta_names_dest.register(typedef.name, typedef.type)
+        t = meta_registry.resolve(loaded_types, typedef.type)
+        loaded_types.register(typedef.name, t)
+    return loaded_types
