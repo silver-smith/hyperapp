@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.htypes import tHandle, list_handle_type
+from ..common.htypes import tHandle
 from .util import uni2str, key_match, key_match_any
 from .list_object import ListObserver, Slice, ListObject
 from .command import command
@@ -103,7 +103,7 @@ class View(LineListPanel):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, objimpl_registry ):
+    def from_state( cls, locale, state, parent, objimpl_registry ):
         data_type = tHandle.resolve_obj(state)
         object = objimpl_registry.resolve(state.object)
         return cls(parent, data_type, object, state.sort_column_id, state.key, state.narrow_field_id)

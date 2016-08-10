@@ -11,12 +11,14 @@ from .htypes import (
     TList,
     TIndexedList,
     tCommand,
+    tResourceId,
     )
 from .interface import RequestCmd, OpenCommand, ContentsCommand, tHandle, tObjHandle, Interface
 
 
 def list_handle_type( id, key_type ):
     fields = [
+        Field('resource_id', tResourceId),
         Field('sort_column_id', tString),
         Field('key', TOptional(key_type)),
         ]
@@ -24,6 +26,7 @@ def list_handle_type( id, key_type ):
 
 def list_narrower_handle_type( id, key_type ):
     fields = [
+        Field('resource_id', tResourceId),
         Field('sort_column_id', tString),
         Field('key', TOptional(key_type)),
         Field('narrow_field_id', tString),
@@ -68,12 +71,10 @@ dateTimeColumnType = DateTimeColumnType()
 
 class Column(object):
 
-    def __init__( self, id, title=None, type=stringColumnType ):
+    def __init__( self, id, type=stringColumnType ):
         assert isinstance(id, str), repr(id)
-        assert title is None or isinstance(title, str), repr(title)
         assert isinstance(type, ColumnType), repr(type)
         self.id = id
-        self.title = title
         self.type = type
 
 

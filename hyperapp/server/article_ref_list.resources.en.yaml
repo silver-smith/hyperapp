@@ -18,3 +18,10 @@ commands:
   desc: Delete article reference
   shortcuts:
   - Del
+columns:
+- column_id: ref
+  text: Id
+  desc: Id
+- column_id: url
+  text: Url
+  desc: Url

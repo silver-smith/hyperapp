@@ -107,9 +107,11 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
     def decode_record_fields_impl( self, tfields, value, path ):
         fields = {}
         for field in tfields:
-            self.expect(path, field.name in value, 'field %r is missing' % field.name)
-            elt = self.dispatch(field.type, value[field.name], join_path(path, field.name))
-            fields[field.name] = elt
+            if field.name in value:
+                elt = self.dispatch(field.type, value[field.name], join_path(path, field.name))
+                fields[field.name] = elt
+            elif not isinstance(field.type, TOptional):
+                self.failure(path, 'field %r is missing' % field.name)
         return fields
 
     @dispatch.register(TList)

@@ -65,8 +65,8 @@ class View(view.View, QtGui.QWidget):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, objimpl_registry ):
-        object = objimpl_registry.resolve(state.object)
+    def from_state( cls, locale, state, parent, objimpl_registry ):
+        object = objimpl_registry.resolve(locale, state.object)
         return cls(parent, object, state.fields, state.current_field)
 
     def __init__( self, parent, object, fields, current_field ):

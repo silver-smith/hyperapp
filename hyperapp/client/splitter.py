@@ -38,9 +38,9 @@ class View(QtGui.QSplitter, view.View):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, view_registry ):
-        x = yield from view_registry.resolve(state.x)
-        y = yield from view_registry.resolve(state.y)
+    def from_state( cls, locale, state, parent, view_registry ):
+        x = yield from view_registry.resolve(locale, state.x)
+        y = yield from view_registry.resolve(locale, state.y)
         return cls(parent, x, y, state.orientation, state.focused, state.sizes)
 
     def __init__( self, parent, x, y, orient, focused, sizes ):

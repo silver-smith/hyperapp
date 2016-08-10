@@ -18,3 +18,7 @@ commands:
   desc: Add url from clipboard
   shortcuts:
   - Ins
+columns:
+- column_id: name
+  text: Bookmark name
+  desc: Bookmark name

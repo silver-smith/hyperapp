@@ -17,16 +17,20 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 
 
 def register_views( registry, services ):
-    registry.register('list', View.from_state, services.objimpl_registry)
+    registry.register('list', View.from_state, services.objimpl_registry, services.resources_manager)
 
 
 class Model(QtCore.QAbstractTableModel):
 
-    def __init__( self ):
+    def __init__( self, locale, resources_manager, resource_id ):
         QtCore.QAbstractTableModel.__init__(self)
+        self._locale = locale
+        self._resources_manager = resources_manager
+        self._resource_id = resource_id
         self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._object = None
         self._columns = []
+        self._columns_resource = {}  # column_id -> tColumnResource
         self._visible_columns = []
         self._key2element = {}
         self._current_order = None  # column id
@@ -50,7 +54,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def headerData( self, section, orient, role ):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return self._visible_columns[section].title
+            return self._columns_resource[self._visible_columns[section].id].text
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def rowCount( self, parent ):
@@ -75,7 +79,10 @@ class Model(QtCore.QAbstractTableModel):
     def set_object( self, object, sort_column_id ):
         self._object = object
         self._columns = object.get_columns()
-        self._visible_columns = [column for column in self._columns if column.title is not None]
+        resource = self._resources_manager.resolve(self._resource_id, self._locale)
+        assert resource, repr(self._resource_id)  # columns resource is missing
+        self._columns_resource = dict((rec.column_id, rec) for rec in resource.columns)
+        self._visible_columns = [column for column in self._columns if column.id in self._columns_resource]
         self._key_column_id = object.get_key_column_id()
         self._current_order = sort_column_id or self._current_order
         self.keys = []
@@ -83,6 +90,12 @@ class Model(QtCore.QAbstractTableModel):
         self.eof = False
         self.reset()
         self._fetch_pending = False
+
+    def _resolve_resource( self ):
+        return 
+
+    def _get_column_resource( self, column_id ):
+        return self._resources_manager
 
     def _wanted_last_row( self, first_visible_row, visible_row_count ):
         wanted_last_row = first_visible_row + visible_row_count
@@ -175,21 +188,24 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, objimpl_registry ):
+    def from_state( cls, locale, state, parent, objimpl_registry, resources_manager ):
         data_type = tHandle.resolve_obj(state)
         object = objimpl_registry.resolve(state.object)
-        return cls(parent, data_type, object, state.key, state.sort_column_id)
+        return cls(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)
 
-    def __init__( self, parent, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True ):
+    def __init__( self, locale, parent, resources_manager, resource_id, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True ):
         assert parent is None or isinstance(parent, view.View), repr(parent)
         assert data_type is None or isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
+        self._locale = locale
+        self._resources_manager = resources_manager
+        self._resource_id = resource_id
         self.data_type = data_type
         self._select_first = select_first
         self._object = None
-        self.setModel(Model())
+        self.setModel(Model(self._locale, self._resources_manager, self._resource_id))
         self.verticalHeader().hide()
         opts = self.viewOptions()
         self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + ROW_HEIGHT_PADDING)
@@ -210,8 +226,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def get_state( self ):
         first_visible_row, visible_row_count = self._get_visible_rows()
         ## slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
-        return self.data_type('list', self.get_object().get_state(), self.model().get_sort_column_id(),
-                              self.get_current_key())  #, first_visible_row, self._select_first)
+        return self.data_type('list', self.get_object().get_state(), self._resource_id,
+                              self.model().get_sort_column_id(), self.get_current_key())
+       #, first_visible_row, self._select_first)
 
     def get_title( self ):
         if self._object:

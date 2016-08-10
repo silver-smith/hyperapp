@@ -26,8 +26,8 @@ blog_entry_iface = Interface('blog_entry', base=article_iface,
 blog_iface = ListInterface(
     'blog',
     columns=[
-        Column('id', 'Article id', intColumnType),
-        Column('created_at', 'Creation date', dateTimeColumnType),
+        Column('id', intColumnType),
+        Column('created_at', dateTimeColumnType),
         ],
     commands=[
         ElementOpenCommand('open'),

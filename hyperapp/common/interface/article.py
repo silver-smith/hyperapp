@@ -38,8 +38,8 @@ article_iface = Interface('article',
 ref_list_iface = ListInterface(
     'article_ref_list',
     columns=[
-        Column('ref_id', 'Id', intColumnType),
-        Column('url', 'Url'),
+        Column('ref_id', intColumnType),
+        Column('url'),
     ],
     commands=[
         OpenCommand('parent'),

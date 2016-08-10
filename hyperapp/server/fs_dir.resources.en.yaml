@@ -8,3 +8,16 @@ commands:
   desc: Open parent directory
   shortcuts:
   - Ctrl+Backspace
+columns:
+- column_id: key
+  text: File Name
+  desc: File Name
+- column_id: ftype
+  text: File type
+  desc: File type
+- column_id: ftime
+  text: Modification time
+  desc: Modification time
+- column_id: fsize
+  text: File size
+  desc: File size

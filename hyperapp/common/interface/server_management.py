@@ -10,9 +10,9 @@ server_management_iface = ListInterface(
     'server_management',
     columns=[
         Column('key'),
-        Column('module', 'Module'),
-        Column('text', 'Name'),
-        Column('desc', 'Description'),
+        Column('module'),
+        Column('text'),
+        Column('desc'),
         ],
     commands=[
         ElementOpenCommand('open'),

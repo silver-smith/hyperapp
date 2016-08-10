@@ -91,7 +91,7 @@ class BookmarkList(ListObject):
     def get_columns( self ):
         return [
             Column('id'),
-            Column('name', 'Bookmark name'),
+            Column('name'),
             ]
 
     def get_key_column_id( self ):
@@ -113,7 +113,7 @@ class BookmarkList(ListObject):
 
 def make_bookmark_list( key=None ):
     object = BookmarkList.get_state()
-    return bookmark_list_handle_type('list', object, sort_column_id='name', key=key)
+    return bookmark_list_handle_type('list', object, ['client_module', 'bookmarks'], sort_column_id='name', key=key)
 
 
 class ThisModule(Module):

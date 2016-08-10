@@ -19,9 +19,9 @@ params_form_iface = Interface('test_list_params', commands=[
 
 test_list_iface = ListInterface('test_list', columns=[
         Column('key', type=intColumnType),
-        Column('field_1', 'Field #1'),
-        Column('field_2', 'Field #2'),
-        Column('field_3', 'Field #3'),
+        Column('field_1'),
+        Column('field_2'),
+        Column('field_3'),
     ], commands=[
         OpenCommand('params'),
     ])

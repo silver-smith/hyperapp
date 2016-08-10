@@ -21,22 +21,23 @@ class View(QtGui.QTabWidget, view.View):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, view_registry ):
+    def from_state( cls, locale, state, view_registry ):
         children = []
         for tab_state in state.tabs:
-            child = yield from view_registry.resolve(tab_state)
+            child = yield from view_registry.resolve(locale, tab_state)
             children.append(child)
-        return cls(view_registry, children, state.current_tab)
+        return cls(locale, view_registry, children, state.current_tab)
 
     @staticmethod    
     def map_current( state, mapper ):
         idx = state.current_tab
         return state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
-    def __init__( self, view_registry, children, current_idx ):
+    def __init__( self, locale, view_registry, children, current_idx ):
         assert is_list_inst(children, view.View), repr(children)
         QtGui.QTabWidget.__init__(self)
         view.View.__init__(self)
+        self._locale = locale
         self._view_registry = view_registry
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
@@ -88,7 +89,7 @@ class View(QtGui.QTabWidget, view.View):
     def duplicate_tab( self ):
         idx = self.currentIndex()
         state = self._children[idx].get_state()
-        new_view = yield from self._view_registry.resolve(state, self)
+        new_view = yield from self._view_registry.resolve(self._locale, state, self)
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
@@ -122,7 +123,7 @@ class View(QtGui.QTabWidget, view.View):
         state = mapper(self._children[idx].get_state())
         if not state: return
         self._remove_tab(idx)
-        child = yield from self._view_registry.resolve(state, self)
+        child = yield from self._view_registry.resolve(self._locale, state, self)
         self._insert_tab(idx, child)
         child.ensure_has_focus()
         view.View.view_changed(self)  # notify parents

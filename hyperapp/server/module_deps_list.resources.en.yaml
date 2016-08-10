@@ -4,3 +4,10 @@ commands:
   desc: Remove module from dependency list
   shortcuts:
   - Del
+columns:
+- column_id: visible_as
+  text: Visible as
+  desc: Visible as
+- column_id: id
+  text: Module id
+  desc: Module id

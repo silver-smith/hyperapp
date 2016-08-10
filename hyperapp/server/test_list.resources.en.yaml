@@ -4,3 +4,13 @@ commands:
   desc: Edit params
   shortcuts:
   - Return
+columns:
+- column_id: field_1
+  text: Field #1
+  desc: Field #1
+- column_id: field_2
+  text: Field #2
+  desc: Field #2
+- column_id: field_3
+  text: Field #3
+  desc: Field #3

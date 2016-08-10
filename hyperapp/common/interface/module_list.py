@@ -16,8 +16,8 @@ from ..htypes import (
 module_list_iface = ListInterface(
     'module_list',
     columns=[
-        Column('name', 'Default name', stringColumnType),
-        Column('id', 'Module id', stringColumnType),
+        Column('name', stringColumnType),
+        Column('id', stringColumnType),
         ],
     commands=[
         OpenCommand('add'),
@@ -36,8 +36,8 @@ module_dep_list_iface = ListInterface(
     'module_deps_list',
     columns=[
         Column('dep_id', type=intColumnType),
-        Column('visible_as', 'Visible as', stringColumnType),
-        Column('id', 'Module id', stringColumnType),
+        Column('visible_as', stringColumnType),
+        Column('id', stringColumnType),
         ],
     commands=[
         ElementCommand('remove'),
@@ -47,8 +47,8 @@ module_dep_list_iface = ListInterface(
 available_dep_list_iface = ListInterface(
     'available_deps_list',
     columns=[
-        Column('name', 'Default name', stringColumnType),
-        Column('id', 'Module id', stringColumnType),
+        Column('name', stringColumnType),
+        Column('id', stringColumnType),
         ],
     commands=[
         ElementCommand('add'),

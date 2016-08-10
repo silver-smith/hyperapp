@@ -1,0 +1,14 @@
+columns:
+- column_id: id
+  text: Module id
+  desc: Module id
+- column_id: fname
+  text: File name
+  desc: File name
+- column_id: package
+  text: Package
+  desc: Package
+- column_id: satisfies
+  text: Satisfies requirements
+  desc: Satisfies requirements
+  

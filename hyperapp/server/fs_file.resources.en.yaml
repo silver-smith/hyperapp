@@ -1,0 +1,7 @@
+columns:
+- column_id: idx
+  text: Index
+  desc: Index
+- column_id: line
+  text: Line
+  desc: Line

@@ -19,8 +19,8 @@ class View(view.View, QtGui.QTextEdit):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, objimpl_registry ):
-        object = objimpl_registry.resolve(state.object)
+    def from_state( cls, locale, state, parent, objimpl_registry ):
+        object = objimpl_registry.resolve(locale, state.object)
         return cls(object, parent)
 
     def __init__( self, object, parent ):

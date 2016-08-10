@@ -14,8 +14,8 @@ user_list_iface = ListInterface(
     key_column='id',
     columns=[
         Column('id'),
-        Column('user_name', 'User name'),
-        Column('public_key_id', 'Public key id'),
+        Column('user_name'),
+        Column('public_key_id'),
         ],
     commands=[
         OpenCommand('add', [Field('user_name', tString),

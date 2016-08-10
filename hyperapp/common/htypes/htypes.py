@@ -276,8 +276,15 @@ tCommandResource = TRecord([
     Field('shortcuts', TList(tString), default=[]),
     ])
 
+tColumnResource = TRecord([
+    Field('column_id', tString),
+    Field('text', tString),
+    Field('desc', TOptional(tString)),
+    ])
+
 tLocaleResources = TRecord([
-    Field('commands', TList(tCommandResource)),
+    Field('commands', TOptional(TList(tCommandResource))),
+    Field('columns', TOptional(TList(tColumnResource))),
     ])
 
 tResources = TRecord([

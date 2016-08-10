@@ -153,7 +153,8 @@ class ListObject(Object):
     def ListHandle( cls, object, sort_column_id=None, key=None ):
         if sort_column_id is None:
             sort_column_id = cls.default_sort_column_id
-        return cls.iface.ListHandle('list', object, sort_column_id, key)
+        resource_id = ['interface', cls.iface.iface_id]
+        return cls.iface.ListHandle('list', object, resource_id, sort_column_id, key)
 
     @classmethod
     def ListNarrowerHandle( cls, object, sort_column_id=None, key=None, narrow_field_id=None ):

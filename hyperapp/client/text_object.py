@@ -8,6 +8,9 @@ from .object import Object
 log = logging.getLogger(__name__)
 
 
+state_type = tTextObject
+
+
 def register_object_implementations( registry, serevices ):
     registry.register(TextObject.objimpl_id, TextObject.from_state)
 

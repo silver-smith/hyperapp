@@ -19,3 +19,10 @@ commands:
   desc: Delete module
   shortcuts:
   - Del
+columns:
+- column_id: name
+  text: Default name
+  desc: Default name
+- column_id: id
+  text: Module id
+  desc: Module id

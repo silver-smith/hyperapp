@@ -3,3 +3,13 @@ commands:
   text: Open
   desc: Open module
   shortcuts: []
+columns:
+- column_id: module
+  text: Module
+  desc: Module
+- column_id: text
+  text: Name
+  desc: Name
+- column_id: desc
+  text: Description
+  desc: Description

@@ -4,3 +4,10 @@ commands:
   desc: Add module to dependency list
   shortcuts:
   - Ins
+columns:
+- column_id: name
+  text: Default name
+  desc: Default name
+- column_id: id
+  text: Module id
+  desc: Module id

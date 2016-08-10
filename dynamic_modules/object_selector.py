@@ -20,9 +20,9 @@ class View(view.View, QtGui.QWidget):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, parent, objimpl_registry, view_registry ):
+    def from_state( cls, locale, state, parent, objimpl_registry, view_registry ):
         ref = objimpl_registry.resolve(state.ref)
-        target_view = yield from view_registry.resolve(state.target)
+        target_view = yield from view_registry.resolve(locale, state.target)
         return cls(parent, ref, target_view)
 
     def __init__( self, parent, ref, target_view ):

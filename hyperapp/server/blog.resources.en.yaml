@@ -13,3 +13,10 @@ commands:
   desc: Delete blog entry
   shortcuts:
   - Del
+columns:
+- column_id: id
+  text: Article id
+  desc: Article id
+- column_id: created_at
+  text: Creation date
+  desc: Creation date
