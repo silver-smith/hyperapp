@@ -18,6 +18,7 @@ class Transport(object):
     def __init__( self, services ):
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
+        self._type_repository = services.type_repository
         self._code_repository = services.code_repository
 
     def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
@@ -54,6 +55,7 @@ class Transport(object):
 
     def prepare_aux_info( self, response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification.to_data())
+        type_modules = self._type_repository.get_modules_by_requirements(requirements)
         modules = self._code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
         server_pks = ServerPksCollector().collect_public_key_ders(tServerPacket, response_or_notification.to_data())
@@ -62,6 +64,7 @@ class Transport(object):
                              in requirements if registry == 'resources'])
         return tAuxInfo(
             requirements=requirements,
+            type_modules=type_modules,
             modules=modules,
             routes=routes,
             resources=resources,

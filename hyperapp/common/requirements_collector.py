@@ -22,6 +22,7 @@ class RequirementsCollector(Visitor):
             self._collected_requirements.add(('resources', encode_path(value.resource_id)))
 
     def visit_hierarchy_obj( self, t, tclass, value ):
+        self._collected_requirements.add(('class', encode_path([value._class.hierarchy.hierarchy_id, value._class.id])))
         if t is tObject:
             self._collected_requirements.add(('object', value.objimpl_id))
             if isinstance(value, tProxyObject):

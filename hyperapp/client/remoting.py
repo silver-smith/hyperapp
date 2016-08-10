@@ -58,6 +58,8 @@ class Transport(metaclass=abc.ABCMeta):
             return not self._view_registry.is_registered(key)
         if registry == 'interface':
             return not self._iface_registry.is_registered(key)
+        if registry == 'class':
+            return False
         if registry == 'resources':
             return False
         assert False, repr(registry)  # Unknown registry
@@ -77,7 +79,7 @@ class Transport(metaclass=abc.ABCMeta):
     def make_request_packet( self, encoding, request_or_notification ):
         server_pks = ServerPksCollector().collect_public_key_ders(tClientPacket, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
-        aux_info = tAuxInfo(requirements=[], modules=[], routes=routes, resources=[])
+        aux_info = tAuxInfo(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
         payload = packet_coders.encode(encoding, request_or_notification.to_data(), tClientPacket)
         return tPacket(aux_info, payload)
 

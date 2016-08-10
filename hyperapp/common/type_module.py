@@ -4,20 +4,14 @@ from .htypes import (
     TRecord,
     TList,
     tMetaType,
+    tTypeDef,
+    tTypeModule,
     TypeRegistry,
     )
 from .packet_coders import packet_coders
 
 
 TYPEDEF_MODULE_ENCODING = 'yaml'
-
-
-tTypeDef = TRecord([
-    Field('name', tString),
-    Field('type', tMetaType),
-    ])
-
-tTypeModule = TList(tTypeDef)
 
 
 class TypeModule(object):

@@ -12,7 +12,7 @@ from hyperapp.common.htypes import (
     make_meta_type_registry,
     builtin_type_registry,
     )
-from hyperapp.common.type_module import load_types_from_yaml_file
+from hyperapp.common.type_module import resolve_types_from_yaml_file
 
 
 class TypeModuleTest(unittest.TestCase):
@@ -23,7 +23,7 @@ class TypeModuleTest(unittest.TestCase):
     def test_module1( self ):
         type_registry = builtin_type_registry()
         fname = os.path.join(os.path.dirname(__file__), 'test_module1.types.yaml')
-        module = load_types_from_yaml_file(self.meta_type_registry, type_registry, fname)
+        module = resolve_types_from_yaml_file(self.meta_type_registry, type_registry, fname)
 
         self.assertTrue(hasattr(module, 'some_int'))
         self.assertEqual(tInt, module.some_int)

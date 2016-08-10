@@ -1,4 +1,13 @@
-from .htypes import tString, tBinary, Field, TRecord, TList, tServerRoutes, tResources
+from .htypes import (
+    tString,
+    tBinary,
+    Field,
+    TRecord,
+    TList,
+    tServerRoutes,
+    tResources,
+    )
+from .meta_type import tTypeModule
 
 
 tRequirement = TList(tString)  # [hierarchy id, class id]
@@ -19,6 +28,7 @@ tModule = TRecord([
 
 tAuxInfo = TRecord([
     Field('requirements', TList(tRequirement)),
+    Field('type_modules', TList(tTypeModule)),
     Field('modules', TList(tModule)),
     Field('routes', TList(tServerRoutes)),
     Field('resources', TList(tResources)),

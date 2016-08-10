@@ -122,6 +122,12 @@ class PhonyResourcesLoader(object):
         return []
 
 
+class PhonyTypeRepository(object):
+
+    def get_modules_by_requirements( self, requirements ):
+        return []
+
+
 class PhonyModuleRepository(object):
 
     def get_module_by_requirement( self, registry, key ):
@@ -140,6 +146,7 @@ class Services(object):
         self.iface_registry = IfaceRegistry()
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
+        self.type_repository = PhonyTypeRepository()
         self.module_repository = PhonyModuleRepository()
         self.code_repository = CodeRepository(self.module_repository, self.resources_loader)
         self.remoting = Remoting(self.iface_registry)
@@ -231,7 +238,7 @@ class ServerTest(unittest.TestCase):
         log.info('Sending request:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], modules=[], routes=[], resources=[]),
+            aux_info=tAuxInfo(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(
@@ -249,7 +256,7 @@ class ServerTest(unittest.TestCase):
         log.info('Sending client notification:')
         pprint(tClientPacket, request)
         request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], modules=[], routes=[], resources=[]),
+            aux_info=tAuxInfo(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
             payload=self.encode_packet(transport_id, request, tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(

@@ -21,6 +21,14 @@ tMetaType = THierarchy('type')
 tRootMetaType = tMetaType.register('root', fields=[Field('type_id', tString)])
 
 
+tTypeDef = TRecord([
+    Field('name', tString),
+    Field('type', tMetaType),
+    ])
+
+tTypeModule = TList(tTypeDef)
+
+
 tNamed = tMetaType.register('named', base=tRootMetaType, fields=[Field('name', tString)])
 
 def t_named( name ):
