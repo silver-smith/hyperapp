@@ -110,6 +110,8 @@ class Application(QtGui.QApplication, view.View):
                 registry = self.services.view_registry
             elif registry_id == 'interface':
                 continue  # todo
+            elif registry_id == 'resources':
+                continue  # todo
             else:
                 assert False, repr(registry_id)  # unknown registry id
             module_id = registry.get_dynamic_module_id(id)
