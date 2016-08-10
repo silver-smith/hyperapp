@@ -17,7 +17,7 @@ FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originatin
 
 
 def register_views( registry, services ):
-    registry.register(View.view_id, View.from_state, services.objimpl_registry)
+    registry.register(View.view_id, View.from_state, services.objimpl_registry, services.resources_manager)
 
 
 # todo: subscription
@@ -103,19 +103,22 @@ class View(LineListPanel):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, locale, state, parent, objimpl_registry ):
+    def from_state( cls, locale, state, parent, objimpl_registry, resources_manager ):
         data_type = tHandle.resolve_obj(state)
         object = objimpl_registry.resolve(state.object)
-        return cls(parent, data_type, object, state.sort_column_id, state.key, state.narrow_field_id)
+        return cls(locale, parent, data_type, object, resources_manager, state.resource_id,
+                   state.sort_column_id, state.key, state.narrow_field_id)
 
-    def __init__( self, parent, data_type, object, sort_column_id, key,
+    def __init__( self, locale, parent, data_type, object, resources_manager, resource_id, sort_column_id, key,
                   narrow_field_id, first_visible_row=None, select_first=True, prefix=None ):
         self._data_type = data_type
         self._base_obj = object
+        self._resource_id = resource_id
         self._narrow_field_id = narrow_field_id
         list_object = self._make_filtered_obj(prefix)
         line_edit_view = line_edit.View(self, prefix)
-        list_view_view = list_view.View(self, None, object, key, sort_column_id, first_visible_row, select_first)
+        list_view_view = list_view.View(
+            locale, self, resources_manager, resource_id, None, object, key, sort_column_id, first_visible_row, select_first)
         LineListPanel.__init__(self, parent, line_edit_view, list_view_view)
         self._line_edit.textEdited.connect(self._on_text_edited)
         self.cancel_narrowing.set_enabled(bool(prefix))
@@ -124,6 +127,7 @@ class View(LineListPanel):
         return self._data_type(
             view_id=self.view_id,
             object=self._base_obj.get_state(),
+            resource_id=self._resource_id,
             sort_column_id=self._list_view.get_sort_column_id(),
             key=self._list_view.get_current_key(),
             narrow_field_id=self._narrow_field_id,

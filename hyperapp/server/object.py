@@ -162,7 +162,8 @@ class ListObject(Object):
             sort_column_id = cls.default_sort_column_id
         if narrow_field_id is None:
             narrow_field_id = sort_column_id
-        return cls.iface.ListNarrowerHandle('list_narrower', object, sort_column_id, key, narrow_field_id)
+        resource_id = ['interface', cls.iface.iface_id]
+        return cls.iface.ListNarrowerHandle('list_narrower', object, resource_id, sort_column_id, key, narrow_field_id)
 
     def __init__( self ):
         Object.__init__(self)
