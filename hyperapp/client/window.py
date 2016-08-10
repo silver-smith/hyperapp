@@ -132,7 +132,7 @@ class Window(composite.Composite, QtGui.QMainWindow):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        yield from self.from_state(self._locale, state, self._app, self._view_registry, self._resources_manager)
+        yield from self.from_state(state, self._app, self._view_registry, self._resources_manager)
 
     def __del__( self ):
         log.info('~window')

@@ -1,0 +1,4 @@
+columns:
+- column_id: name
+  text: Identity name
+  desc: Identity name

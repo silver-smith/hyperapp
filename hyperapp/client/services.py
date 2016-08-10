@@ -96,6 +96,8 @@ class Services(object):
                 'tab_view',
                 'navigator',
                 'code_repository',
+                'code_repository_list',
+                'identity_list',
                 'bookmarks',
                 'identity',
                 'url_clipboard',

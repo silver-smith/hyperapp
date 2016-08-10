@@ -159,7 +159,7 @@ class CodeRepositoryList(ListObject):
         return make_code_repository_form(url_str)
 
     def get_columns( self ):
-        return [Column('name', 'Code Repository name')]
+        return [Column('name')]
 
     def get_key_column_id( self ):
         return 'name'
@@ -179,7 +179,7 @@ class CodeRepositoryList(ListObject):
 
 def make_code_repository_list( key=None ):
     object = CodeRepositoryList.get_state()
-    return code_repository_list_handle_type('list', object, sort_column_id='name', key=key)
+    return code_repository_list_handle_type('list', object, ['client_module', 'code_repository_list'], sort_column_id='name', key=key)
 
 
 class ThisModule(Module):
