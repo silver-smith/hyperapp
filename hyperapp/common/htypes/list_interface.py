@@ -16,13 +16,15 @@ from .htypes import (
 from .interface import RequestCmd, OpenCommand, ContentsCommand, tHandle, tObjHandle, Interface
 
 
+tListHandleBase = tHandle.register('list_handle', base=tObjHandle)
+
 def list_handle_type( id, key_type ):
     fields = [
         Field('resource_id', tResourceId),
         Field('sort_column_id', tString),
         Field('key', TOptional(key_type)),
         ]
-    return tHandle.register(id, base=tObjHandle, fields=fields)
+    return tHandle.register(id, base=tListHandleBase, fields=fields)
 
 def list_narrower_handle_type( id, key_type ):
     fields = [

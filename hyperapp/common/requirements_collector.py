@@ -5,6 +5,7 @@ from .htypes import (
     tProxyObject,
     tHandle,
     tViewHandle,
+    tListHandleBase,
     )
 from .visitor import Visitor
 
@@ -26,6 +27,7 @@ class RequirementsCollector(Visitor):
             if isinstance(value, tProxyObject):
                 for iface in value.facets:
                     self._collected_requirements.add(('interface', iface))
-                    self._collected_requirements.add(('resources', encode_path(['interface', iface])))  # todo: remove
         if t is tHandle and isinstance(value, tViewHandle):
             self._collected_requirements.add(('handle', value.view_id))
+        if t is tHandle and isinstance(value, tListHandleBase):
+            self._collected_requirements.add(('resources', encode_path(value.resource_id)))
