@@ -21,17 +21,26 @@ tTypeModule = TList(tTypeDef)
 
 
 class TypeModule(object):
-    pass
+
+    def __init__( self ):
+        self._types = {}
+
+    def _add_type( self, name, t ):
+        self._types[name] = t
+        setattr(self, name, t)
 
 
-def load_types_from_yaml_file( meta_registry, type_registry, fpath ):
+def load_types_from_yaml_file( fpath ):
     with open(fpath, 'rb') as f:
         data = f.read()
-    typedefs = packet_coders.decode(TYPEDEF_MODULE_ENCODING, data, tTypeModule)
+    return packet_coders.decode(TYPEDEF_MODULE_ENCODING, data, tTypeModule)
+
+def resolve_types_from_yaml_file( meta_registry, type_registry, fpath ):
+    typedefs = load_types_from_yaml_file(fpath)
     loaded_types = TypeRegistry(next=type_registry)
     module = TypeModule()
     for typedef in typedefs:
         t = meta_registry.resolve(loaded_types, typedef.type)
         loaded_types.register(typedef.name, t)
-        setattr(module, typedef.name, t)
+        module._add_type(typedef.name, t)
     return module
