@@ -1,8 +1,13 @@
 # test for returning non-proxy object to client, text object
 
-from .. common.htypes import tObjHandle
-from .. common.interface.text_object import tTextObject
+import os.path
+from .. common.htypes import tObjHandle, make_meta_type_registry, builtin_type_registry
+from .. common.type_module import load_types_from_yaml_file
 from .module import Module, ModuleCommand
+
+text_object_types = load_types_from_yaml_file(
+    make_meta_type_registry(), builtin_type_registry(),
+    os.path.abspath(os.path.join(os.path.dirname(__file__), 'text_object.types.yaml')))
 
 
 MODULE_NAME = 'test_text_object'
@@ -28,7 +33,7 @@ class TestTextObjectModule(Module):
 
     def run_command( self, request, command_id ):
         if command_id == 'get_text_obj':
-            object = tTextObject('text', sample_text)
+            object = text_object_types.text_object('text', sample_text)
             handle = tObjHandle('text_view', object)
             return request.make_response_handle(handle)
         return Module.run_command(self, request, command_id)

@@ -1,0 +1,21 @@
+-
+  name: text_object
+  type:
+    _class_id: hierarchy_class
+    type_id: hierarchy_class
+    hierarchy:
+      _class_id: named
+      type_id: named
+      name: object
+    class_id: text
+    base:
+      _class_id: named
+      type_id: named
+      name: base_object
+    fields:
+    - name: text
+      type:
+        _class_id: named
+        type_id: named
+        name: string
+    
