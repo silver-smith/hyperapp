@@ -20,12 +20,18 @@ tTypeDef = TRecord([
 tTypeModule = TList(tTypeDef)
 
 
+class TypeModule(object):
+    pass
+
+
 def load_types_from_yaml_file( meta_registry, type_registry, fpath ):
     with open(fpath, 'rb') as f:
         data = f.read()
     typedefs = packet_coders.decode(TYPEDEF_MODULE_ENCODING, data, tTypeModule)
     loaded_types = TypeRegistry(next=type_registry)
+    module = TypeModule()
     for typedef in typedefs:
         t = meta_registry.resolve(loaded_types, typedef.type)
         loaded_types.register(typedef.name, t)
-    return loaded_types
+        setattr(module, typedef.name, t)
+    return module

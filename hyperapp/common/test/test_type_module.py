@@ -2,10 +2,12 @@ import os.path
 import unittest
 from hyperapp.common.htypes import (
     tInt,
+    tString,
     Field,
     TRecord,
     TClass,
     tObject,
+    tBaseObject,
     t_named,
     make_meta_type_registry,
     builtin_type_registry,
@@ -21,10 +23,14 @@ class TypeModuleTest(unittest.TestCase):
     def test_module1( self ):
         type_registry = builtin_type_registry()
         fname = os.path.join(os.path.dirname(__file__), 'test_module1.types.yaml')
-        loaded_types = load_types_from_yaml_file(self.meta_type_registry, type_registry, fname)
+        module = load_types_from_yaml_file(self.meta_type_registry, type_registry, fname)
 
-        self.assertTrue(loaded_types.has_name('some_int'))
-        self.assertEqual(tInt, loaded_types.get_name('some_int'))
+        self.assertTrue(hasattr(module, 'some_int'))
+        self.assertEqual(tInt, module.some_int)
 
-        self.assertTrue(loaded_types.has_name('text_object'))
-        self.assertEqual(TClass(tObject, 'text', TRecord([])), loaded_types.get_name('text_object'))
+        self.assertTrue(hasattr(module, 'simple_class'))
+        self.assertEqual(TClass(tObject, 'simple', TRecord([])), module.simple_class)
+
+        self.assertTrue(hasattr(module, 'text_object'))
+        self.assertEqual(TClass(tObject, 'text', TRecord(base=tBaseObject, fields=[Field('text', tString)])),
+                         module.text_object)

@@ -163,8 +163,7 @@ class TypeRegistry(object):
             return t
         if self._next:
             return self._next.resolve(name)
-        return None
-        ## raise KeyError('Unknown type name: %r' % name)
+        raise KeyError('Unknown type name: %r' % name)
 
 
 class MetaTypeRegistry(object):
