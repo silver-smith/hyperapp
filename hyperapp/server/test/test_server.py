@@ -39,6 +39,7 @@ from hyperapp.server.code_repository import CodeRepository
 from hyperapp.server.remoting import Remoting
 from hyperapp.server import tcp_transport
 from hyperapp.server import encrypted_transport
+from hyperapp.server.command import command
 import hyperapp.server.module as module_mod
 from hyperapp.server.object import Object, subscription
 from hyperapp.server.server import Server
@@ -75,25 +76,19 @@ class TestObject(Object):
     def get_path( self ):
         return self.module.make_path(self.class_name, self.id)
 
-    def process_request( self, request ):
-        if request.command_id == 'echo':
-            return self.run_command_echo(request)
-        if request.command_id == 'broadcast':
-            return self.run_command_broadcast(request)
-        if request.command_id == 'required_auth':
-            return self.run_command_required_auth(request)
-        return Object.process_request(self, request)
-
-    def run_command_echo( self, request ):
+    @command('echo')
+    def command_echo( self, request ):
         return request.make_response_result(test_result=request.params.test_param + ' to you too')
 
-    def run_command_required_auth( self, request ):
+    @command('required_auth')
+    def command_required_auth( self, request ):
         pk = authorized_peer_identity.get_public_key()
         if pk not in request.peer.public_keys:
             raise NotAuthorizedError(pk)
         return request.make_response_result(test_result='ok')
 
-    def run_command_broadcast( self, request ):
+    @command('broadcast')
+    def command_broadcast( self, request ):
         subscription.distribute_update(self.iface, self.get_path(), request.params.message)
 
 
@@ -128,7 +123,9 @@ class PhonyResourcesLoader(object):
 
 
 class PhonyModuleRepository(object):
-    pass
+
+    def get_module_by_requirement( self, registry, key ):
+        return None
 
 
 class TestSession(TransportSession):
