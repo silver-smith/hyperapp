@@ -7,7 +7,7 @@
       _class_id: named
       type_id: named
       name: object
-    class_id: text
+    class_id: test_text
     base:
       _class_id: named
       type_id: named

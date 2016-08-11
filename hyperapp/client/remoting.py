@@ -38,8 +38,8 @@ class Transport(metaclass=abc.ABCMeta):
     @asyncio.coroutine
     def process_aux_info( self, aux_info ):
         assert isinstance(aux_info, tAuxInfo), repr(aux_info)
+        self._add_types(aux_info.type_modules)  # types must be added before requirements - modules may use them
         yield from self._resolve_requirements(aux_info.requirements)
-        self._add_types(aux_info.type_modules)
         self._add_routes(aux_info.routes)
         self._add_resources(aux_info.resources)
         

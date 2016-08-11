@@ -1,14 +1,18 @@
+# for type modules load testing
+
 import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tObjHandle
-from ..common.interface.text_object import tTextObject
 from .command import open_command
 from .object import Object
+from . import text_object as original_text_object
+from . import text_object_types
+from .text_object_types import text_object
 
 log = logging.getLogger(__name__)
 
 
-state_type = tTextObject
+state_type = text_object_types.text_object
 
 
 def register_object_implementations( registry, serevices ):
@@ -17,10 +21,10 @@ def register_object_implementations( registry, serevices ):
 
 class TextObject(Object):
 
-    objimpl_id = 'text'
+    objimpl_id = 'test_text'
 
-    mode_view = object()
-    mode_edit = object()
+    mode_view = original_text_object.TextObject.mode_view
+    mode_edit = original_text_object.TextObject.mode_edit
 
     @classmethod
     def from_state( cls, state, server=None ):
@@ -34,7 +38,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def get_state( self ):
-        return tTextObject(self.objimpl_id, self.text)
+        return state_type(self.objimpl_id, self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)

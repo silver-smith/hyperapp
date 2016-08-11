@@ -68,19 +68,24 @@ class ModuleManager(object):
         return builtins
 
     def _import( self, module_name, name, globals=None, locals=None, from_list=(), level=0 ):
-        log.info('__import__ %r - %r %r %r %r %r', module_name, name, from_list, level, globals, locals)
-        if level == 1 and '.' not in module_name and self._type_registry.has_module(module_name):
-            result = self._import_type_module(module_name)
+        ## log.info('__import__ %r - %r %r %r %r %r', module_name, name, from_list, level, globals, locals)
+        if level == 1 and '.' not in name and self._type_registry.has_module(name):
+            result = self._import_type_module(name)
         else:
             result = __import__(name, globals, locals, from_list, level)
-        log.info('  -> %r', result)
+            for sub_name in from_list or []:
+                ## print('  sub_name', sub_name, hasattr(result, sub_name), self._type_registry.has_module(sub_name))
+                if hasattr(result, sub_name): continue
+                if self._type_registry.has_module(sub_name):
+                    setattr(result, sub_name, self._import_type_module(sub_name))
+        ## log.info('  -> %r', result)
         return result
 
     def _import_type_module( self, module_name ):
         log.info('importing type module %r', module_name)
         if module_name in self._type_modules:
             return self._type_modules[module_name]
-        type_module = self._type_module.resolve(module_name)
+        type_module = self._type_registry.resolve(module_name)
         module = ModuleType('hyperapp.client.%s' % module_name, 'Hyperapp type module %s' % module_name)
         for typedef in type_module.typedefs:
             t = self._meta_type_registry.resolve(self._builtin_type_registry, typedef.type)
