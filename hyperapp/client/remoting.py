@@ -24,6 +24,7 @@ class Transport(metaclass=abc.ABCMeta):
     def __init__( self, services ):
         self._module_mgr = services.module_mgr
         self._iface_registry = services.iface_registry
+        self._type_registry = services.type_registry
         self._route_storage = services.route_storage
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
@@ -38,6 +39,7 @@ class Transport(metaclass=abc.ABCMeta):
     def process_aux_info( self, aux_info ):
         assert isinstance(aux_info, tAuxInfo), repr(aux_info)
         yield from self._resolve_requirements(aux_info.requirements)
+        self._add_types(aux_info.type_modules)
         self._add_routes(aux_info.routes)
         self._add_resources(aux_info.resources)
         
@@ -63,6 +65,11 @@ class Transport(metaclass=abc.ABCMeta):
         if registry == 'resources':
             return False
         assert False, repr(registry)  # Unknown registry
+
+    def _add_types( self, type_modules ):
+        for type_module in type_modules:
+            log.info('received type module %r with %d typedefs', type_module.module_name, len(type_module.typedefs))
+            self._type_registry.register(type_module)
 
     def _add_routes( self, routes ):
         for srv_routes in routes:
