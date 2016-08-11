@@ -112,6 +112,8 @@ class Application(QtGui.QApplication, view.View):
                 continue  # todo
             elif registry_id == 'resources':
                 continue  # todo
+            elif registry_id == 'class':
+                continue  # todo
             else:
                 assert False, repr(registry_id)  # unknown registry id
             module_id = registry.get_dynamic_module_id(id)
