@@ -26,7 +26,10 @@ tTypeDef = TRecord([
     Field('type', tMetaType),
     ])
 
-tTypeModule = TList(tTypeDef)
+tTypeModule = TRecord([
+    Field('module_name', tString),
+    Field('typedefs', TList(tTypeDef)),
+    ])
 
 
 tNamed = tMetaType.register('named', base=tRootMetaType, fields=[Field('name', tString)])

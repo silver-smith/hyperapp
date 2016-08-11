@@ -24,13 +24,15 @@ class TypeModule(object):
         setattr(self, name, t)
 
 
-def load_types_from_yaml_file( fpath ):
+tFileContents = TList(tTypeDef)
+
+def load_typedefs_from_yaml_file( fpath ):
     with open(fpath, 'rb') as f:
         data = f.read()
-    return packet_coders.decode(TYPEDEF_MODULE_ENCODING, data, tTypeModule)
+    return packet_coders.decode(TYPEDEF_MODULE_ENCODING, data, tFileContents)
 
-def resolve_types_from_yaml_file( meta_registry, type_registry, fpath ):
-    typedefs = load_types_from_yaml_file(fpath)
+def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):
+    typedefs = load_typedefs_from_yaml_file(fpath)
     loaded_types = TypeRegistry(next=type_registry)
     module = TypeModule()
     for typedef in typedefs:

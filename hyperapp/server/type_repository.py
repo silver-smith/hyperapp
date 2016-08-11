@@ -7,7 +7,7 @@ from ..common.htypes import (
     tHierarchyClassMeta,
     tNamed,
     )
-from ..common.type_module import tTypeModule, load_types_from_yaml_file
+from ..common.type_module import tTypeModule, load_typedefs_from_yaml_file
 
 log = logging.getLogger(__name__)
 
@@ -40,12 +40,14 @@ class TypeRepository(object):
     def _load_modules( self, dir ):
         for fname in os.listdir(dir):
             if fname.endswith(TYPE_MODULE_EXT):
-                log.info('loading type module: %r', fname)
-                self._load_module(os.path.join(dir, fname))
+                name = fname.split('.')[0]
+                self._load_module(name, os.path.join(dir, fname))
 
-    def _load_module( self, fpath ):
-        type_module = load_types_from_yaml_file(fpath)
-        for class_path in self._pick_provided_class_paths(type_module):
+    def _load_module( self, name, fpath ):
+        log.info('loading type module %r from %r', name, fpath)
+        typedefs = load_typedefs_from_yaml_file(fpath)
+        type_module = tTypeModule(name, typedefs)
+        for class_path in self._pick_provided_class_paths(typedefs):
             log.info('    provides class %r', class_path)
             self._class2module[class_path] = self._Rec(type_module)
 
