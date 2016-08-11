@@ -21,6 +21,11 @@ tMetaType = THierarchy('type')
 tRootMetaType = tMetaType.register('root', fields=[Field('type_id', tString)])
 
 
+tProvidedClass = TRecord([
+    Field('hierarchy_id', tString),
+    Field('class_id', tString),
+    ])
+
 tTypeDef = TRecord([
     Field('name', tString),
     Field('type', tMetaType),
@@ -28,6 +33,7 @@ tTypeDef = TRecord([
 
 tTypeModule = TRecord([
     Field('module_name', tString),
+    Field('provided_classes', TList(tProvidedClass)),
     Field('typedefs', TList(tTypeDef)),
     ])
 

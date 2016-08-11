@@ -6,8 +6,10 @@ from ..common.htypes import (
     tHierarchyMeta,
     tHierarchyClassMeta,
     tNamed,
+    tProvidedClass,
+    tTypeModule,
     )
-from ..common.type_module import tTypeModule, load_typedefs_from_yaml_file
+from ..common.type_module import load_typedefs_from_yaml_file
 
 log = logging.getLogger(__name__)
 
@@ -46,16 +48,18 @@ class TypeRepository(object):
     def _load_module( self, name, fpath ):
         log.info('loading type module %r from %r', name, fpath)
         typedefs = load_typedefs_from_yaml_file(fpath)
-        type_module = tTypeModule(name, typedefs)
-        for class_path in self._pick_provided_class_paths(typedefs):
-            log.info('    provides class %r', class_path)
-            self._class2module[class_path] = self._Rec(type_module)
+        provided_classes = self._pick_provided_classes(typedefs)
+        type_module = tTypeModule(name, provided_classes, typedefs)
+        for rec in provided_classes:
+            log.info('    provides class %s:%s', rec.hierarchy_id, rec.class_id)
+            path = encode_path([rec.hierarchy_id, rec.class_id])
+            self._class2module[path] = self._Rec(type_module)
 
-    def _pick_provided_class_paths( self, typedefs ):
-        class_paths = []
+    def _pick_provided_classes( self, typedefs ):
+        classes = []
         for typedef in typedefs:
             t = typedef.type
             if not isinstance(t, tHierarchyClassMeta): continue
             assert isinstance(t.hierarchy, tNamed), repr(name)  # tHierarchyClassMeta.hierarchy must be tNamed
-            class_paths.append(encode_path([t.hierarchy.name, t.class_id]))
-        return class_paths
+            classes.append(tProvidedClass(t.hierarchy.name, t.class_id))
+        return classes
