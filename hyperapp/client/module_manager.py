@@ -37,7 +37,9 @@ class ModuleManager(object):
     def resolve_ids( self, module_ids ):
         modules = []
         for id in module_ids:
-            modules.append(self._id2module[id])
+            if self._type_registry.has_module(id): continue  # do not return type modules
+            module = self._id2module[id]
+            modules.append(module)
         return modules
 
     def _load_module( self, module, name=None ):

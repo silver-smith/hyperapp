@@ -3,6 +3,7 @@ import asyncio
 import abc
 from ..common.util import is_list_inst, encode_route
 from ..common.htypes import tServerRoutes, tClientPacket, tAuxInfo, tPacket
+from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from ..common.server_public_key_collector import ServerPksCollector
 from ..common.identity import PublicKey
@@ -68,7 +69,9 @@ class Transport(metaclass=abc.ABCMeta):
 
     def _add_types( self, type_modules ):
         for type_module in type_modules:
-            log.info('received type module %r with %d typedefs', type_module.module_name, len(type_module.typedefs))
+            log.info('received type module %r with %d typedefs, provided %r',
+                      type_module.module_name, len(type_module.typedefs),
+                      ', '.join('%s:%s' % (rec.hierarchy_id, rec.class_id) for rec in type_module.provided_classes))
             self._type_registry.register(type_module)
 
     def _add_routes( self, routes ):
@@ -155,6 +158,7 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification( self, public_key, request_or_notification ):
+        pprint(tClientPacket, request_or_notification.to_data())
         for route in self._route_storage.get_routes(public_key) or []:
             transport_id = route[0]
             transport = self.transport_registry.resolve(transport_id)
