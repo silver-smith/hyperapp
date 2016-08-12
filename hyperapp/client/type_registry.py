@@ -1,4 +1,4 @@
-from ..common.util import encode_path
+from ..common.util import is_list_inst, encode_path
 from ..common.htypes import tTypeModule
 
 
@@ -7,6 +7,11 @@ class TypeRegistry(object):
     def __init__( self ):
         self._name2module = {}  # module name -> tTypeModule
         self._class2module = {}  # encoded hierarchy_id|class_id -> tTypeModule
+
+    def register_all( self, type_modules ):
+        assert is_list_inst(type_modules, tTypeModule), repr(type_modules)
+        for type_module in type_modules:
+            self.register(type_module)
 
     def register( self, type_module ):
         assert isinstance(type_module, tTypeModule), repr(type_module)

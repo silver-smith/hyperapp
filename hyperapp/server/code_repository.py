@@ -11,6 +11,8 @@ from . import module as module_mod
 from .module import ModuleCommand
 from .command import command
 from .object import Object, SmallListObject
+from .type_repository import TypeRepository
+from .resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)
 
@@ -32,8 +34,8 @@ class ModuleRepository(object):
     def get_module_list( self ):
         return sorted(list(self._id2module.values()), key=lambda module: module.id)
 
-    def get_module_by_id( self, id ):
-        return self._id2module[id]
+    def get_module_by_id( self, module_id ):
+        return self._id2module[module_id]
 
     def get_module_by_requirement( self, registry, key ):
         return self._requirement2module.get((registry, key))
@@ -71,22 +73,30 @@ class CodeRepository(Object):
     def get_path( cls ):
         return this_module.make_path(cls.class_name)
 
-    def __init__( self, repository, resources_loader ):
+    def __init__( self, type_repository, code_module_repository, resources_loader ):
         Object.__init__(self)
-        self._repository = repository
+        self._code_module_repository = code_module_repository
         self._resources_loader = resources_loader
+        self._type_repository = type_repository
 
     def resolve( self, path ):
         path.check_empty()
         return self
 
     def get_modules_by_ids( self, module_ids ):
-        return [self._repository.get_module_by_id(id) for id in module_ids]
+        type_modules = []
+        code_modules = []
+        for module_id in module_ids:
+            if self._type_repository.has_module_id(module_id):
+                type_modules.append(self._type_repository.get_module_by_id(module_id))
+            else:
+                code_modules.append(self._code_module_repository.get_module_by_id(module_id))
+        return (type_modules, code_modules)
 
     def get_modules_by_requirements( self, requirements ):
         modules = []
         for registry, key in requirements:
-            module = self._repository.get_module_by_requirement(registry, key)
+            module = self._code_module_repository.get_module_by_requirement(registry, key)
             if module:
                 modules.append(module)
             else:
@@ -96,19 +106,20 @@ class CodeRepository(Object):
     @command('get_modules_by_ids')
     def command_get_modules_by_ids( self, request ):
         log.info('command_get_modules_by_ids %r', request.params.module_ids)
-        modules = self.get_modules_by_ids(request.params.module_ids)
-        return self._make_response(request, modules)
+        type_modules, code_modules = self.get_modules_by_ids(request.params.module_ids)
+        return self._make_response(request, type_modules, code_modules)
 
     @command('get_modules_by_requirements')
     def command_get_modules_by_requirements( self, request ):
         log.info('command_get_modules_by_requirements %r', request.params.requirements)
-        modules = self.get_modules_by_requirements(request.params.requirements)
-        return self._make_response(request, modules)
+        code_modules = self.get_modules_by_requirements(request.params.requirements)
+        return self._make_response(request, [], code_modules)
 
-    def _make_response( self, request, modules ):
-        resources = flatten(self._load_module_resources(module) for module in modules)
+    def _make_response( self, request, type_modules, code_modules ):
+        resources = flatten(self._load_module_resources(module) for module in code_modules)
         return request.make_response_result(
-            modules=modules,
+            type_modules=type_modules,
+            code_modules=code_modules,
             resources=resources)
 
     def _load_module_resources( self, module ):

@@ -22,9 +22,9 @@ class Services(object):
         self.resources_loader = ResourcesLoader(dict(interface=server_dir,
                                                      client_module=dynamic_modules_dir))
         self.route_storage_module = route_storage.ThisModule()
-        self.module_repository = ModuleRepository(dynamic_modules_dir)
-        self.code_repository = CodeRepository(self.module_repository, self.resources_loader)
         self.type_repository = TypeRepository(interface_dir)
+        self.module_repository = ModuleRepository(dynamic_modules_dir)
+        self.code_repository = CodeRepository(self.type_repository, self.module_repository, self.resources_loader)
         self._register_modules()
         Module.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository(self.route_storage_module))

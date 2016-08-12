@@ -6,6 +6,7 @@ from ..htypes import (
     tRequirement,
     tModule,
     tResources,
+    tTypeModule,
     RequestCmd,
     Interface,
     ListInterface,
@@ -16,11 +17,13 @@ from ..htypes import (
 code_repository_iface = Interface('code_repository', commands=[
     RequestCmd('get_modules_by_ids',
                [Field('module_ids', TList(tString))],
-               [Field('modules', TList(tModule)),
+               [Field('type_modules', TList(tTypeModule)),
+                Field('code_modules', TList(tModule)),
                 Field('resources', TList(tResources))]),
     RequestCmd('get_modules_by_requirements',
                [Field('requirements', TList(tRequirement))],
-               [Field('modules', TList(tModule)),
+               [Field('type_modules', TList(tTypeModule)),
+                Field('code_modules', TList(tModule)),
                 Field('resources', TList(tResources))]),
     ])
 

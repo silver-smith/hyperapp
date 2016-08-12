@@ -56,7 +56,8 @@ class CodeRepository(object):
     # todo: try all items
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
-        if not self._items: return (None, None)
+        if not self._items:
+            return (None, None, None)
         proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_ids(module_ids))
 
@@ -65,7 +66,7 @@ class CodeRepository(object):
     def get_modules_by_requirements( self, requirements ):
         if not self._items:
             log.warn('No available code repository servers are found')
-            return (None, None)
+            return (None, None, None)
         proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
         return (yield from proxy.get_modules_by_requirements(requirements))
 
@@ -85,12 +86,12 @@ class CodeRepositoryProxy(ProxyObject):
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
         result = yield from self.execute_request('get_modules_by_ids', module_ids=module_ids)
-        return (result.modules, result.resources)
+        return (result.type_modules, result.code_modules, result.resources)
 
     @asyncio.coroutine
     def get_modules_by_requirements( self, requirements ):
         result = yield from self.execute_request('get_modules_by_requirements', requirements=requirements)
-        return (result.modules, result.resources)
+        return (result.type_modules, result.code_modules, result.resources)
 
 
 tFormObject = tObject.register('code_repository_form', base=tBaseObject)

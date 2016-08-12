@@ -148,7 +148,7 @@ class Services(object):
         self.resources_loader = PhonyResourcesLoader()
         self.type_repository = PhonyTypeRepository()
         self.module_repository = PhonyModuleRepository()
-        self.code_repository = CodeRepository(self.module_repository, self.resources_loader)
+        self.code_repository = CodeRepository(self.type_repository, self.module_repository, self.resources_loader)
         self.remoting = Remoting(self.iface_registry)
         self._register_transports()
         

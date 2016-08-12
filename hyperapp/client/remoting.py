@@ -39,7 +39,7 @@ class Transport(metaclass=abc.ABCMeta):
     @asyncio.coroutine
     def process_aux_info( self, aux_info ):
         assert isinstance(aux_info, tAuxInfo), repr(aux_info)
-        self._add_types(aux_info.type_modules)  # types must be added before requirements - modules may use them
+        self._add_type_modules(aux_info.type_modules)  # types must be added before requirements - modules may use them
         yield from self._resolve_requirements(aux_info.requirements)
         self._add_routes(aux_info.routes)
         self._add_resources(aux_info.resources)
@@ -49,9 +49,10 @@ class Transport(metaclass=abc.ABCMeta):
         assert is_list_inst(requirements, tRequirement), repr(requirements)
         unfulfilled_requirements = list(filter(self._is_unfulfilled_requirement, requirements))
         if not unfulfilled_requirements: return
-        modules, resources = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
-        self._module_mgr.add_modules(modules or [])  # modules is None if there is no code repositories
-        self._resources_manager.register_all(resources)
+        type_modules, code_modules, resources = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
+        self._add_type_modules(type_modules or [])  # modules is None if there is no code repositories
+        self._module_mgr.add_modules(code_modules or [])  # modules is None if there is no code repositories
+        self._resources_manager.register_all(resources or [])
         
     def _is_unfulfilled_requirement( self, requirement ):
         registry, key = requirement
@@ -67,7 +68,7 @@ class Transport(metaclass=abc.ABCMeta):
             return False
         assert False, repr(registry)  # Unknown registry
 
-    def _add_types( self, type_modules ):
+    def _add_type_modules( self, type_modules ):
         for type_module in type_modules:
             log.info('received type module %r with %d typedefs, provided %r',
                       type_module.module_name, len(type_module.typedefs),
