@@ -131,7 +131,8 @@ class Record(object):
         self._type = type
 
     def __repr__( self ):
-        return 'Record: %r' % self._type
+        return 'Record(%s)' % ', '.join(
+            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields())
     
 
 class TRecord(Type):
