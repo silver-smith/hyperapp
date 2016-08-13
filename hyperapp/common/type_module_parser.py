@@ -15,7 +15,7 @@ from .htypes import (
     )
 
 
-keywords = ['opt', 'list', 'class', 'interface', 'commands']
+keywords = ['opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns']
 
 BLOCK_BEGIN = 'BLOCK_BEGIN'
 BLOCK_END = 'BLOCK_END'
@@ -104,6 +104,10 @@ def p_class_fields_def_2( p ):
 
 def p_interface_def( p ):
     'interface_def : INTERFACE NAME COLON NEWLINE BLOCK_BEGIN inteface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[6])
+
+def p_list_interface_def( p ):
+    'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN inteface_columns_defs inteface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[6])
 
 def p_interface_command_defs( p ):

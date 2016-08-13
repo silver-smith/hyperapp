@@ -79,6 +79,11 @@ class Column(object):
         self.id = id
         self.type = type
 
+    def __eq__( self, other ):
+        assert isinstance(other, Column), repr(other)
+        return (other.id == self.id and
+                other.type == self.type)
+
 
 class ElementCommand(RequestCmd):
     pass
@@ -116,6 +121,13 @@ class ListInterface(Interface):
             ])
         commands = [self._resolve_command(command) for command in commands or []]
         Interface.__init__(self, iface_id, base, contents_fields, self._tDiff, commands)
+
+    def __eq__( self, other ):
+        return (isinstance(other, ListInterface) and
+                Interface.__eq__(self, other) and
+                other.columns == self.columns and
+                other.key_type == self.key_type and
+                other.key_column == self.key_column)
 
     def _pick_key_column( self ):
         for column in self.columns:

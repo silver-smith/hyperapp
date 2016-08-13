@@ -21,6 +21,10 @@ from hyperapp.common.htypes import (
     NotificationCmd,
     OpenCommand,
     Interface,
+    Column,
+    StringColumnType,
+    IntColumnType,
+    ListInterface,
     tMetaType,
     t_named,
     t_optional_meta,
@@ -31,6 +35,8 @@ from hyperapp.common.htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
+    t_column_meta,
+    t_list_interface_meta,
     make_meta_type_registry,
     builtin_type_registry,
     tHandle,
@@ -115,7 +121,6 @@ class MetaTypeTest(unittest.TestCase):
 
     def test_interface( self ):
         type_names = builtin_type_registry()
-        type_names.register('handle', tHandle)
         data = t_interface_meta('unit_test_iface', [
             t_command_meta('request', 'request_one',
                            [t_field_meta('req_param1', t_named('string'))],
@@ -137,4 +142,23 @@ class MetaTypeTest(unittest.TestCase):
                             [Field('noti_param1', TOptional(tBool)),
                              Field('noti_param2', tDateTime)]),
             OpenCommand('request_open'),
+            ]), t)
+
+    def test_list_interface( self ):
+        type_names = builtin_type_registry()
+        data = t_list_interface_meta('unit_test_list_iface', commands=[
+                t_command_meta('request', 'request_open', [],
+                           [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
+            ], columns=[
+                t_column_meta('key', 'int'),
+                t_column_meta('text', 'string'),
+            ])
+        data.iface_id = data.iface_id + '_new_list'  # hack to prevent tObject etc registration dup
+        t = self.meta_type_registry.resolve(type_names, data)
+        t.iface_id = 'unit_test_list_iface'  # hack it back for comparision
+        self.assertEqual(ListInterface('unit_test_list_iface', commands=[
+                OpenCommand('request_open'),
+            ], columns=[
+                Column('key', IntColumnType()),
+                Column('text', StringColumnType()),
             ]), t)

@@ -138,12 +138,27 @@ tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
     Field('commands', TList(tIfaceCommandMeta)),
     ])
 
+tColumnMeta = TRecord([
+    Field('name', tString),
+    Field('column_type', tString),
+    ])
+
+tListInterfaceMeta = tMetaType.register('list_interface', base=tInterfaceMeta, fields=[
+    Field('columns', TList(tColumnMeta)),
+    ])
+
 def t_command_meta( request_type, command_id, params_fields, result_fields=None ):
     assert request_type in [IfaceCommand.rt_request, IfaceCommand.rt_notification], repr(request_type)
     return tIfaceCommandMeta(request_type, command_id, params_fields, result_fields or [])
 
 def t_interface_meta( iface_id, commands ):
     return tInterfaceMeta(tInterfaceMeta.id, iface_id, commands)
+
+def t_column_meta( name, column_type ):
+    return tColumnMeta(name, column_type)
+
+def t_list_interface_meta( iface_id, commands, columns ):
+    return tListInterfaceMeta(tInterfaceMeta.id, iface_id, commands, columns)
 
 def command_from_data( meta_registry, type_registry, rec ):
     params_fields = field_list_from_data(meta_registry, type_registry, rec.params_fields)
