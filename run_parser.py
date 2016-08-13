@@ -2,6 +2,8 @@
 
 import logging
 import argparse
+from hyperapp.common.htypes import TList, tTypeDef
+from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module_parser import Lexer, parse_type_module
 
 
@@ -26,6 +28,7 @@ def test_yacc( fpaths ):
         print('parsing:')
         result = parse_type_module(input, debug=True)
         print('result:', result)
+        pprint(TList(tTypeDef), result)
 
 
 def main():

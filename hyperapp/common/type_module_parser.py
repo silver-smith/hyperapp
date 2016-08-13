@@ -60,9 +60,20 @@ def p_typedef_1( p ):
     p[0] = tTypeDef(name=p[1], type=p[3])
 
 def p_typedef_2( p ):
-    'typedef : NAME EQUAL CLASS NAME LPAR NAME RPAR COLON NEWLINE BLOCK_BEGIN field_list BLOCK_END'
-    cls = t_hierarchy_class_meta(p[6], p[4], None, p[11])
-    p[0] = tTypeDef(name=p[1], type=cls)
+    'typedef : NAME EQUAL class_def'
+    p[0] = tTypeDef(name=p[1], type=p[3])
+
+def p_class_def( p ):
+    'class_def : NAME CLASS NAME class_base_def COLON NEWLINE BLOCK_BEGIN field_list BLOCK_END'
+    p[0] = t_hierarchy_class_meta(p[1], p[3], p[4], p[8])
+
+def p_class_base_def_1( p ):
+    'class_base_def : LPAR NAME RPAR'
+    p[0] = p[2]
+
+def p_class_base_def_2( p ):
+    'class_base_def : empty'
+    p[0] = None
 
 def p_field_list_1( p ):
     'field_list : field_list NEWLINE field_def'
@@ -79,6 +90,10 @@ def p_field_def( p ):
 def p_type_expr_name( p ):
     'type_expr : NAME'
     p[0] = t_named(p[1])
+
+def p_empty( p ):
+    'empty :'
+    pass
 
 
 class Lexer(object):
