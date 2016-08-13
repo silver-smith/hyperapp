@@ -139,6 +139,7 @@ tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
     ])
 
 tColumnMeta = TRecord([
+    Field('is_key', tBool),
     Field('name', tString),
     Field('column_type', tString),
     ])
@@ -154,8 +155,8 @@ def t_command_meta( request_type, command_id, params_fields, result_fields=None 
 def t_interface_meta( iface_id, commands ):
     return tInterfaceMeta(tInterfaceMeta.id, iface_id, commands)
 
-def t_column_meta( name, column_type ):
-    return tColumnMeta(name, column_type)
+def t_column_meta( is_key, name, column_type ):
+    return tColumnMeta(is_key, name, column_type)
 
 def t_list_interface_meta( iface_id, commands, columns ):
     return tListInterfaceMeta(tInterfaceMeta.id, iface_id, commands, columns)

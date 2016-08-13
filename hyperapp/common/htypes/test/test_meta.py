@@ -150,8 +150,8 @@ class MetaTypeTest(unittest.TestCase):
                 t_command_meta('request', 'request_open', [],
                            [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
             ], columns=[
-                t_column_meta('key', 'int'),
-                t_column_meta('text', 'string'),
+                t_column_meta(True, 'key', 'int'),
+                t_column_meta(False, 'text', 'string'),
             ])
         data.iface_id = data.iface_id + '_new_list'  # hack to prevent tObject etc registration dup
         t = self.meta_type_registry.resolve(type_names, data)
