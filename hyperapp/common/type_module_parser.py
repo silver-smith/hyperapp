@@ -1,10 +1,9 @@
 import sys
-from collections import namedtuple
 import token, tokenize
 from io import BytesIO
 import ply.lex as lex
 import ply.yacc as yacc
-from .htypes import tNamed, tTypeDef
+from .htypes import t_named, tTypeDef
 
 
 ENCODING = tokenize.ENCODING
@@ -42,11 +41,11 @@ def p_typedef_list_single( p ):
 
 def p_typedef( p ):
     'typedef : NAME EQUAL type_expr'
-    p[0] = namedtuple('Typedef', 'name type')(name=p[1], type=p[3])
+    p[0] = tTypeDef(name=p[1], type=p[3])
 
 def p_type_expr_name( p ):
     'type_expr : NAME'
-    p[0] = namedtuple('Named', 'name')(name=p[1])
+    p[0] = t_named(p[1])
 
 
 class Lexer(object):
