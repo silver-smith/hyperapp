@@ -9,12 +9,12 @@ from ..common.htypes import (
     tProvidedClass,
     tTypeModule,
     )
-from ..common.type_module import load_typedefs_from_yaml_file
+from ..common.type_module import load_typedefs_from_types_file
 
 log = logging.getLogger(__name__)
 
 
-TYPE_MODULE_EXT = '.types.yaml'
+TYPE_MODULE_EXT = '.types'
 
 
 class TypeRepository(object):
@@ -54,7 +54,7 @@ class TypeRepository(object):
 
     def _load_module( self, name, fpath ):
         log.info('loading type module %r from %r', name, fpath)
-        typedefs = load_typedefs_from_yaml_file(fpath)
+        typedefs = load_typedefs_from_types_file(fpath)
         provided_classes = self._pick_provided_classes(typedefs)
         type_module = tTypeModule(name, provided_classes, typedefs)
         module_rec = self._Rec(type_module)

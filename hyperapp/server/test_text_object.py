@@ -2,12 +2,12 @@
 
 import os.path
 from .. common.htypes import tObjHandle, make_meta_type_registry, builtin_type_registry
-from .. common.type_module import resolve_typedefs_from_yaml_file
+from .. common.type_module import resolve_typedefs_from_types_file
 from .module import Module, ModuleCommand
 
-text_object_types = resolve_typedefs_from_yaml_file(
+text_object_types = resolve_typedefs_from_types_file(
     make_meta_type_registry(), builtin_type_registry(),
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface/text_object_types.types.yaml')))
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface/text_object_types.types')))
 
 
 MODULE_NAME = 'test_text_object'

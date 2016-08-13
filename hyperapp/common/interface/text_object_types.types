@@ -1,0 +1,2 @@
+text_object = object class test_text(base_object):
+  text: string
