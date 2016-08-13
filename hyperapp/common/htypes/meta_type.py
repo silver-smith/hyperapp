@@ -164,7 +164,7 @@ class TypeRegistry(object):
 
     def register( self, name, t ):
         assert isinstance(name, str), repr(name)
-        assert isinstance(t, Type), repr(t)
+        assert isinstance(t, (Type, Interface)), repr(t)
         self._registry[name] = t
 
     def has_name( self, name ):
