@@ -7,11 +7,13 @@ from .htypes import (
     tTypeDef,
     t_named,
     t_field_meta,
+    t_optional_meta,
+    t_list_meta,
     t_hierarchy_class_meta,
     )
 
 
-keywords = ['class']
+keywords = ['class', 'opt', 'list']
 
 BLOCK_BEGIN = 'BLOCK_BEGIN'
 BLOCK_END = 'BLOCK_END'
@@ -98,9 +100,17 @@ def p_field_def( p ):
     'field_def : NAME COLON type_expr'
     p[0] = t_field_meta(p[1], p[3])
 
-def p_type_expr_name( p ):
+def p_type_expr_1( p ):
     'type_expr : NAME'
     p[0] = t_named(p[1])
+
+def p_type_expr_2( p ):
+    'type_expr : type_expr OPT'
+    p[0] = t_optional_meta(p[1])
+
+def p_type_expr_3( p ):
+    'type_expr : type_expr LIST'
+    p[0] = t_list_meta(p[1])
 
 def p_empty( p ):
     'empty :'
