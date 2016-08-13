@@ -10,13 +10,16 @@ from .htypes import (
     t_optional_meta,
     t_list_meta,
     t_hierarchy_class_meta,
+    t_command_meta,
+    t_interface_meta,
     )
 
 
-keywords = ['class', 'opt', 'list']
+keywords = ['opt', 'list', 'class', 'interface', 'commands']
 
 BLOCK_BEGIN = 'BLOCK_BEGIN'
 BLOCK_END = 'BLOCK_END'
+ARROW = 'ARROW'
 tok_name = dict(token.tok_name,
                 ENCODING='ENCODING')
 
@@ -34,11 +37,16 @@ token_types = [
     token.LPAR,
     token.RPAR,
     token.COLON,
+    token.COMMA,
     ]
 
+EXACT_TOKEN_TYPES = {
+    '->':  ARROW,
+    }
 tokens = [tok_name[t] for t in token_types] + [
     BLOCK_BEGIN,
     BLOCK_END,
+    ARROW,
     ] + [keyword.upper() for keyword in keywords]
 
 
@@ -68,6 +76,11 @@ def p_typedef_2( p ):
     'typedef : NAME EQUAL class_def'
     p[0] = tTypeDef(name=p[1], type=p[3])
 
+def p_typedef_3( p ):
+    'typedef : NAME EQUAL interface_def'
+    p[0] = tTypeDef(name=p[1], type=p[3])
+
+
 def p_class_def( p ):
     'class_def : NAME CLASS NAME class_base_def class_fields_def'
     p[0] = t_hierarchy_class_meta(p[1], p[3], p[4], p[5])
@@ -87,7 +100,41 @@ def p_class_fields_def_1( p ):
 def p_class_fields_def_2( p ):
     'class_fields_def : empty'
     p[0] = []
-    
+
+
+def p_interface_def( p ):
+    'interface_def : INTERFACE NAME COLON NEWLINE BLOCK_BEGIN inteface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[6])
+
+def p_interface_command_defs( p ):
+    'inteface_command_defs : COMMANDS COLON NEWLINE BLOCK_BEGIN interface_command_list BLOCK_END'
+    p[0] = p[5]
+
+def p_interface_command_list_1( p ):
+    'interface_command_list : interface_command_list NEWLINE interface_command'
+    p[0] = p[1] + [p[3]]
+
+def p_interface_command_list_3( p ):
+    'interface_command_list : interface_command'
+    p[0] = [p[1]]
+
+def p_interface_command( p ):
+    'interface_command : NAME NAME LPAR command_field_list RPAR ARROW LPAR command_field_list RPAR'
+    p[0] = t_command_meta(p[1], p[2], p[4], p[8])
+
+def p_command_field_list_1( p ):
+    'command_field_list : command_field_list COMMA command_field'
+    p[0] = p[1] + [p[3]]
+
+def p_command_field_list_2( p ):
+    'command_field_list : command_field'
+    p[0] = [p[1]]
+
+def p_command_field( p ):
+    'command_field : NAME COLON type_expr'
+    p[0] = t_field_meta(p[1], p[3])
+
+
 def p_field_list_1( p ):
     'field_list : field_list NEWLINE field_def'
     p[0] = p[1] + [p[3]]
@@ -100,6 +147,7 @@ def p_field_def( p ):
     'field_def : NAME COLON type_expr'
     p[0] = t_field_meta(p[1], p[3])
 
+
 def p_type_expr_1( p ):
     'type_expr : NAME'
     p[0] = t_named(p[1])
@@ -111,6 +159,7 @@ def p_type_expr_2( p ):
 def p_type_expr_3( p ):
     'type_expr : type_expr LIST'
     p[0] = t_list_meta(p[1])
+
 
 def p_empty( p ):
     'empty :'
@@ -151,13 +200,15 @@ class Lexer(object):
                 # first indent found, this is file tab size
                 assert '\t' not in tinfo.string, 'Tab intention is not supported'
                 self._tab_size = len(tinfo.string)
-            assert len(tinfo.string) % self._tab_size == 0, 'Invalid indent: %r (detected tab size: %d)' % (token.string, self._tab_size)
-            assert len(tinfo.string)/self._tab_size == 1, 'Invalid indent: %r (detected tab size: %d)' % (token.string, self._tab_size)
+            assert len(tinfo.string) % self._tab_size == 0, 'Invalid indent: %r (detected tab size: %d)' % (tinfo.string, self._tab_size)
+            assert len(tinfo.string)/self._tab_size == self._indent + 1, 'Invalid indent: %r (detected tab size: %d)' % (tinfo.string, self._tab_size)
             self._indent += 1
             t = BLOCK_BEGIN
         elif tinfo.type == token.DEDENT:
             self._indent -= 1
             t = BLOCK_END
+        elif tinfo.type == token.OP and tinfo.string in EXACT_TOKEN_TYPES:
+            t = EXACT_TOKEN_TYPES[tinfo.string]
         elif tinfo.string in keywords:
             t = tinfo.string.upper()
         else:

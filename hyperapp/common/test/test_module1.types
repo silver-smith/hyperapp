@@ -6,3 +6,7 @@ simple_class = object class simple_2
 
 text_object = object class text_2(base_object):
   text: string
+
+params_form_iface = interface test_list_params_2:
+  commands:
+    request submit (key: int, size: int) -> (handle: handle opt)

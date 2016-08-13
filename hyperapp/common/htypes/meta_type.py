@@ -14,7 +14,7 @@ from .htypes import (
     TList,
     )
 from .hierarchy import TClass, THierarchy
-from .interface import tObject, tBaseObject, IfaceCommand, Interface
+from .interface import tHandle, tObject, tBaseObject, IfaceCommand, Interface
 
 
 tMetaType = THierarchy('type')
@@ -222,6 +222,7 @@ def builtin_type_registry():
         tDateTime,
         ]:
         registry.register(t.type_name, t)
+    registry.register('handle', tHandle)
     registry.register('object', tObject)
     registry.register('base_object', tBaseObject)
     return registry
