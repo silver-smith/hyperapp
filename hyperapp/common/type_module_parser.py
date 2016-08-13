@@ -19,6 +19,9 @@ tok_name = dict(token.tok_name,
                 ENCODING='ENCODING')
 
 NEWLINE = tok_name[token.NEWLINE]
+NL = tok_name[tokenize.NL]
+
+ignored_tokens = [NL]
 
 token_types = [
     tokenize.ENCODING,
@@ -64,8 +67,8 @@ def p_typedef_2( p ):
     p[0] = tTypeDef(name=p[1], type=p[3])
 
 def p_class_def( p ):
-    'class_def : NAME CLASS NAME class_base_def COLON NEWLINE BLOCK_BEGIN field_list BLOCK_END'
-    p[0] = t_hierarchy_class_meta(p[1], p[3], p[4], p[8])
+    'class_def : NAME CLASS NAME class_base_def class_fields_def'
+    p[0] = t_hierarchy_class_meta(p[1], p[3], p[4], p[5])
 
 def p_class_base_def_1( p ):
     'class_base_def : LPAR NAME RPAR'
@@ -75,6 +78,14 @@ def p_class_base_def_2( p ):
     'class_base_def : empty'
     p[0] = None
 
+def p_class_fields_def_1( p ):
+    'class_fields_def : COLON NEWLINE BLOCK_BEGIN field_list BLOCK_END'
+    p[0] = p[4]
+    
+def p_class_fields_def_2( p ):
+    'class_fields_def : empty'
+    p[0] = []
+    
 def p_field_list_1( p ):
     'field_list : field_list NEWLINE field_def'
     p[0] = p[1] + [p[3]]
@@ -111,7 +122,10 @@ class Lexer(object):
             tok = self._get_next_token()
         if not tok:
             return tok
-        next = self._get_next_token()
+        while True:
+            next = self._get_next_token()
+            if not next or not next.type in ignored_tokens:
+                break
         if tok.type == NEWLINE and next and next.type == BLOCK_END:
             tok, next = next, tok  # swap NEWLINE and BLOCK_END - parser is straightforward then
         self._next_token = next

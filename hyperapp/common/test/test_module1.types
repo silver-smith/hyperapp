@@ -1,0 +1,6 @@
+some_int = int
+simple_class = object class simple_2
+
+text_object = object class text_2(base_object):
+  text: string
+

@@ -9,6 +9,7 @@ from .htypes import (
     TypeRegistry,
     )
 from .packet_coders import packet_coders
+from .type_module_parser import parse_type_module
 
 
 TYPEDEF_MODULE_ENCODING = 'yaml'
@@ -28,11 +29,15 @@ tFileContents = TList(tTypeDef)
 
 def load_typedefs_from_yaml_file( fpath ):
     with open(fpath, 'rb') as f:
-        data = f.read()
-    return packet_coders.decode(TYPEDEF_MODULE_ENCODING, data, tFileContents)
+        contents = f.read()
+    return packet_coders.decode(TYPEDEF_MODULE_ENCODING, contents, tFileContents)
 
-def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):
-    typedefs = load_typedefs_from_yaml_file(fpath)
+def load_typedefs_from_types_file( fpath ):
+    with open(fpath, 'r') as f:
+        contents = f.read()
+    return parse_type_module(contents)
+
+def resolve_typedefs( meta_registry, type_registry, typedefs ):
     loaded_types = TypeRegistry(next=type_registry)
     module = TypeModule()
     for typedef in typedefs:
@@ -40,3 +45,11 @@ def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):
         loaded_types.register(typedef.name, t)
         module._add_type(typedef.name, t)
     return module
+
+def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):
+    typedefs = load_typedefs_from_yaml_file(fpath)
+    return resolve_typedefs(meta_registry, type_registry, typedefs)
+
+def resolve_typedefs_from_types_file( meta_registry, type_registry, fpath ):
+    typedefs = load_typedefs_from_types_file(fpath)
+    return resolve_typedefs(meta_registry, type_registry, typedefs)
