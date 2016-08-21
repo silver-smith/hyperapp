@@ -53,6 +53,7 @@ tokens = [tok_name[t] for t in token_types] + [
 def p_module( p ):
     'module : ENCODING typedef_list eom'
     p[0] = p[2]
+    print('module', p[0])
 
 def p_eom_1( p ):
     'eom : NEWLINE ENDMARKER'
@@ -134,13 +135,32 @@ def p_command_field_list_2( p ):
     'command_field_list : command_field'
     p[0] = [p[1]]
 
+def p_command_field_list_3( p ):
+    'command_field_list : empty'
+    p[0] = []
+
 def p_command_field( p ):
     'command_field : NAME COLON type_expr'
     p[0] = t_field_meta(p[1], p[3])
 
 
 def p_interface_columns_defs( p ):
-    'interface_columns_defs : COLUMNS'
+    'interface_columns_defs : COLUMNS COLON NEWLINE BLOCK_BEGIN columns_defs BLOCK_END NEWLINE'
+    p[0] = p[5]
+
+
+def p_columns_defs_1( p ):
+    'columns_defs : columns_defs NEWLINE column_def'
+    p[0] = p[1] + [p[3]]
+
+    
+def p_columns_defs_2( p ):
+    'columns_defs : column_def'
+    p[0] = [p[1]]
+
+
+def p_column_def( p ):
+    'column_def : NAME COLON type_expr'
 
 
 def p_field_list_1( p ):

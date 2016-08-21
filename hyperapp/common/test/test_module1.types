@@ -11,7 +11,7 @@ params_form_iface = interface test_list_params_2:
   commands:
     request submit (key: int, size: int) -> (handle: handle opt)
 
-test_list_iface = list_interface test_list:
+test_list_iface = list_interface test_list_2:
   columns:
     key: int
     field_1: string
