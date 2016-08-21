@@ -32,11 +32,6 @@ def load_typedefs_from_yaml_file( fpath ):
         contents = f.read()
     return packet_coders.decode(TYPEDEF_MODULE_ENCODING, contents, tFileContents)
 
-def load_typedefs_from_types_file( fpath ):
-    with open(fpath, 'r') as f:
-        contents = f.read()
-    return parse_type_module(contents)
-
 def resolve_typedefs( meta_registry, type_registry, typedefs ):
     loaded_types = TypeRegistry(next=type_registry)
     module = TypeModule()
@@ -44,6 +39,15 @@ def resolve_typedefs( meta_registry, type_registry, typedefs ):
         t = meta_registry.resolve(loaded_types, typedef.type)
         loaded_types.register(typedef.name, t)
         module._add_type(typedef.name, t)
+    return module
+
+def load_typedefs_from_types_file( meta_registry, type_registry, fpath ):
+    with open(fpath, 'r') as f:
+        contents = f.read()
+    typedefs, loaded_types = parse_type_module(meta_registry, type_registry, fpath, contents)
+    module = TypeModule()
+    for name, t in loaded_types.items():
+        module._add_type(name, t)
     return module
 
 def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):

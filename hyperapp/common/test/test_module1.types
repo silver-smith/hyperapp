@@ -1,7 +1,7 @@
 some_int = int
 some_string_opt = string opt
 some_bool_list = bool list
-some_int_opt_list = int opt list
+some_bool_list_opt = some_bool_list opt
 simple_class = object class simple_2
 
 text_object = object class text_2(base_object):

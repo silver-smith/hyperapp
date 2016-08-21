@@ -45,10 +45,7 @@ class TypeModuleTest(unittest.TestCase):
     def test_types_module( self ):
         type_registry = builtin_type_registry()
         fpath = os.path.join(os.path.dirname(__file__), 'test_module1.types')
-        typedefs = load_typedefs_from_types_file(fpath)
-        print(typedefs)
-        pprint(TList(tTypeDef), typedefs)
-        module = resolve_typedefs(self.meta_type_registry, type_registry, typedefs)
+        module = load_typedefs_from_types_file(self.meta_type_registry, type_registry, fpath)
 
         self.assertTrue(hasattr(module, 'some_int'))
         self.assertEqual(tInt, module.some_int)

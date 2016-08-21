@@ -184,10 +184,20 @@ class TypeRegistry(object):
         self._registry[name] = t
 
     def has_name( self, name ):
-        return name in self._registry
+        if name in self._registry: return True
+        if self._next:
+            return self._next.has_name(name)
+        return False
 
     def get_name( self, name ):
-        return self._registry[name]
+        if name in self._registry:
+            return self._registry[name]
+        if self._next:
+            return self._next.get_name(name)
+        return None
+
+    def items( self ):
+        return self._registry.items()
 
     def resolve( self, name ):
         assert isinstance(name, str), repr(name)

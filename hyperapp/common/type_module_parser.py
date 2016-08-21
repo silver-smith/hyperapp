@@ -12,6 +12,7 @@ from .htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
+    TypeRegistry,
     )
 
 
@@ -50,10 +51,16 @@ tokens = [tok_name[t] for t in token_types] + [
     ] + [keyword.upper() for keyword in keywords]
 
 
+def register_typedef( parser, name, type ):
+    typedef = tTypeDef(name=name, type=type)
+    t = parser.meta_registry.resolve(parser.type_registry, typedef.type)
+    parser.type_registry.register(typedef.name, t)
+    return typedef
+
+
 def p_module( p ):
     'module : ENCODING typedef_list eom'
     p[0] = p[2]
-    print('module', p[0])
 
 def p_eom_1( p ):
     'eom : NEWLINE ENDMARKER'
@@ -71,15 +78,15 @@ def p_typedef_list_2( p ):
 
 def p_typedef_1( p ):
     'typedef : NAME EQUAL type_expr'
-    p[0] = tTypeDef(name=p[1], type=p[3])
+    p[0] = register_typedef(p.parser, p[1], p[3])
 
 def p_typedef_2( p ):
     'typedef : NAME EQUAL class_def'
-    p[0] = tTypeDef(name=p[1], type=p[3])
+    p[0] = register_typedef(p.parser, p[1], p[3])
 
 def p_typedef_3( p ):
     'typedef : NAME EQUAL interface_def'
-    p[0] = tTypeDef(name=p[1], type=p[3])
+    p[0] = register_typedef(p.parser, p[1], p[3])
 
 
 def p_class_def( p ):
@@ -178,7 +185,11 @@ def p_field_def( p ):
 
 def p_type_expr_1( p ):
     'type_expr : NAME'
-    p[0] = t_named(p[1])
+    name = p[1]
+    if not p.parser.type_registry.has_name(name):
+        print('%s:%d: Unknown type: %r' % (p.parser.fname, p.lineno(1), name))
+        raise SyntaxError('Unknown name: %r' % name)
+    p[0] = t_named(name)
 
 def p_type_expr_2( p ):
     'type_expr : type_expr OPT'
@@ -250,9 +261,13 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module( contents, debug=False ):
+def parse_type_module( meta_registry, type_registry, fname, contents, debug=False ):
     parser = yacc.yacc(debug=debug)
-    return parser.parse(contents, lexer=Lexer())
+    parser.fname = fname
+    parser.meta_registry = meta_registry
+    parser.type_registry = TypeRegistry(next=type_registry)
+    typedefs = parser.parse(contents, lexer=Lexer())
+    return (typedefs, parser.type_registry)
  
 
 if __name__ == '__main__':
