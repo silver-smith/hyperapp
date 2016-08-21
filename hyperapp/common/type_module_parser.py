@@ -103,15 +103,15 @@ def p_class_fields_def_2( p ):
 
 
 def p_interface_def( p ):
-    'interface_def : INTERFACE NAME COLON NEWLINE BLOCK_BEGIN inteface_command_defs BLOCK_END'
+    'interface_def : INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[6])
 
 def p_list_interface_def( p ):
-    'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN inteface_columns_defs inteface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[6])
+    'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[7])
 
 def p_interface_command_defs( p ):
-    'inteface_command_defs : COMMANDS COLON NEWLINE BLOCK_BEGIN interface_command_list BLOCK_END'
+    'interface_command_defs : COMMANDS COLON NEWLINE BLOCK_BEGIN interface_command_list BLOCK_END'
     p[0] = p[5]
 
 def p_interface_command_list_1( p ):
@@ -137,6 +137,10 @@ def p_command_field_list_2( p ):
 def p_command_field( p ):
     'command_field : NAME COLON type_expr'
     p[0] = t_field_meta(p[1], p[3])
+
+
+def p_interface_columns_defs( p ):
+    'interface_columns_defs : COLUMNS'
 
 
 def p_field_list_1( p ):
