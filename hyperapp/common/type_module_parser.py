@@ -57,6 +57,12 @@ def register_typedef( parser, name, type ):
     parser.type_registry.register(typedef.name, t)
     return typedef
 
+def syntax_error( p, token_num, msg ):
+    line_num = p.lineno(token_num)
+    print(p.parser.lines[line_num - 1])
+    print('%s:%d: %s' % (p.parser.fname, line_num, msg))
+    raise SyntaxError(msg)
+
 
 def p_module( p ):
     'module : ENCODING typedef_list eom'
@@ -100,6 +106,7 @@ def p_class_base_def_1( p ):
 def p_class_base_def_2( p ):
     'class_base_def : empty'
     p[0] = None
+
 
 def p_class_fields_def_1( p ):
     'class_fields_def : COLON NEWLINE BLOCK_BEGIN field_list BLOCK_END'
@@ -187,8 +194,7 @@ def p_type_expr_1( p ):
     'type_expr : NAME'
     name = p[1]
     if not p.parser.type_registry.has_name(name):
-        print('%s:%d: Unknown type: %r' % (p.parser.fname, p.lineno(1), name))
-        raise SyntaxError('Unknown name: %r' % name)
+        syntax_error(p, 1, 'Unknown name: %r' % name)
     p[0] = t_named(name)
 
 def p_type_expr_2( p ):
@@ -264,6 +270,7 @@ class Lexer(object):
 def parse_type_module( meta_registry, type_registry, fname, contents, debug=False ):
     parser = yacc.yacc(debug=debug)
     parser.fname = fname
+    parser.lines = contents.splitlines()
     parser.meta_registry = meta_registry
     parser.type_registry = TypeRegistry(next=type_registry)
     typedefs = parser.parse(contents, lexer=Lexer())
