@@ -55,5 +55,5 @@ def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):
     return resolve_typedefs(meta_registry, type_registry, typedefs)
 
 def resolve_typedefs_from_types_file( meta_registry, type_registry, fpath ):
-    typedefs = load_typedefs_from_types_file(fpath)
-    return resolve_typedefs(meta_registry, type_registry, typedefs)
+    module = load_typedefs_from_types_file(fpath)
+    return module

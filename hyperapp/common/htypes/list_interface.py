@@ -13,6 +13,7 @@ from .htypes import (
     tCommand,
     tResourceId,
     )
+from .hierarchy import THierarchy
 from .interface import RequestCmd, OpenCommand, ContentsCommand, tHandle, tObjHandle, Interface
 
 
@@ -36,46 +37,22 @@ def list_narrower_handle_type( id, key_type ):
     return tHandle.register(id, base=tObjHandle, fields=fields)
 
 
-class ColumnType(object):
-
-    def to_string( self, value ):
-        raise NotImplementedError(self.__class__)
+tColumnType = THierarchy('column_type')
+tSimpleColumnType = tColumnType.register('simple', fields=[Field('impl_id', tString)])
 
 
-class StringColumnType(ColumnType):
-
-    type = tString
-
-    def to_string( self, value ):
-        return value
 
 
-class IntColumnType(ColumnType):
-
-    type = tInt
-
-    def to_string( self, value ):
-        return str(value)
-
-
-class DateTimeColumnType(ColumnType):
-
-    type = tDateTime
-
-    def to_string( self, value ):
-        return dt2local_str(value)
-
-
-stringColumnType = StringColumnType()
-intColumnType = IntColumnType()
-dateTimeColumnType = DateTimeColumnType()
+stringColumnType = tSimpleColumnType('string')
+intColumnType = tSimpleColumnType('int')
+dateTimeColumnType = tSimpleColumnType('date_time')
 
 
 class Column(object):
 
     def __init__( self, id, type=stringColumnType ):
         assert isinstance(id, str), repr(id)
-        assert isinstance(type, ColumnType), repr(type)
+        assert isinstance(type, tSimpleColumnType), repr(type)
         self.id = id
         self.type = type
 
