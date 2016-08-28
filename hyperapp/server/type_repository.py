@@ -8,8 +8,10 @@ from ..common.htypes import (
     tNamed,
     tProvidedClass,
     tTypeModule,
+    make_meta_type_registry,
+    builtin_type_registry,
     )
-from ..common.type_module import load_typedefs_from_types_file
+from ..common.type_module import load_types_file
 
 log = logging.getLogger(__name__)
 
@@ -54,7 +56,7 @@ class TypeRepository(object):
 
     def _load_module( self, name, fpath ):
         log.info('loading type module %r from %r', name, fpath)
-        typedefs = load_typedefs_from_types_file(fpath)
+        typedefs, loaded_types = load_types_file(make_meta_type_registry(), builtin_type_registry(), fpath)
         provided_classes = self._pick_provided_classes(typedefs)
         type_module = tTypeModule(name, provided_classes, typedefs)
         module_rec = self._Rec(type_module)

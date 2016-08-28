@@ -88,6 +88,7 @@ class THierarchy(Type):
             trec = TRecord(fields, base_rec)
         tclass = TClass(self, id, trec)
         self.registry[id] = tclass
+        #print('registered %s %s' % (self.hierarchy_id, id))
         return tclass
 
     def __instancecheck__( self, rec ):

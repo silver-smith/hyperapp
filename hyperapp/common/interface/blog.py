@@ -8,8 +8,6 @@ from ..htypes import (
     OpenCommand,
     Interface,
     register_iface,
-    intColumnType,
-    dateTimeColumnType,
     Column,
     ElementCommand,
     ElementOpenCommand,
@@ -26,15 +24,14 @@ blog_entry_iface = Interface('blog_entry', base=article_iface,
 blog_iface = ListInterface(
     'blog',
     columns=[
-        Column('id', intColumnType),
-        Column('created_at', dateTimeColumnType),
+        Column('id', tInt, is_key=True),
+        Column('created_at', tDateTime),
         ],
     commands=[
         ElementOpenCommand('open'),
         ElementCommand('delete'),
         OpenCommand('add'),
-    ],
-    key_column='id')
+    ])
 
 register_iface(blog_entry_iface)
 register_iface(blog_iface)

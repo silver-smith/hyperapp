@@ -9,7 +9,7 @@ from ..htypes import (
 server_management_iface = ListInterface(
     'server_management',
     columns=[
-        Column('key'),
+        Column('key', is_key=True),
         Column('module'),
         Column('text'),
         Column('desc'),

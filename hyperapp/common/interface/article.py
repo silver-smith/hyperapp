@@ -13,7 +13,6 @@ from ..htypes import (
     OpenCommand,
     Interface,
     register_iface,
-    intColumnType,
     Column,
     ElementCommand,
     ElementOpenCommand,
@@ -38,7 +37,7 @@ article_iface = Interface('article',
 ref_list_iface = ListInterface(
     'article_ref_list',
     columns=[
-        Column('ref_id', intColumnType),
+        Column('ref_id', tInt, is_key=True),
         Column('url'),
     ],
     commands=[
@@ -46,8 +45,7 @@ ref_list_iface = ListInterface(
         OpenCommand('add', [Field('target_url', tUrl)]),
         ElementOpenCommand('open'),
         ElementCommand('delete'),
-    ],
-    key_column='ref_id')
+    ])
 
 object_selector_iface = Interface('article_object_selector',
                                   commands=[

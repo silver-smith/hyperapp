@@ -11,9 +11,8 @@ from ..htypes import (
 
 user_list_iface = ListInterface(
     'user_list',
-    key_column='id',
     columns=[
-        Column('id'),
+        Column('id', is_key=True),
         Column('user_name'),
         Column('public_key_id'),
         ],

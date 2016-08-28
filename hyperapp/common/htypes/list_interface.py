@@ -14,6 +14,7 @@ from .htypes import (
     tResourceId,
     )
 from .hierarchy import THierarchy
+from .meta_type import tMetaType, tInterfaceMeta, command_from_data
 from .interface import RequestCmd, OpenCommand, ContentsCommand, tHandle, tObjHandle, Interface
 
 
@@ -37,29 +38,57 @@ def list_narrower_handle_type( id, key_type ):
     return tHandle.register(id, base=tObjHandle, fields=fields)
 
 
+class Column(object):
+
+    @classmethod
+    def from_data( cls, meta_registry, type_registry, rec ):
+        t = meta_registry.resolve(type_registry, rec.type)
+        return cls(rec.id, t, rec.is_key)
+
+    def __init__( self, id, type=tString, is_key=False ):
+        assert isinstance(id, str), repr(id)
+        assert isinstance(type, Type), repr(type)
+        assert isinstance(is_key, bool), repr(is_key)
+        self.id = id
+        self.type = type
+        self.is_key = is_key
+
+    def __eq__( self, other ):
+        assert isinstance(other, Column), repr(other)
+        return (other.id == self.id and
+                other.type == self.type and
+                other.is_key == self.is_key)
+
+
+tColumn = TRecord([
+    Field('id', tString),
+    Field('type', tMetaType),
+    Field('is_key', tBool),
+    ])
+
 tColumnType = THierarchy('column_type')
 tSimpleColumnType = tColumnType.register('simple', fields=[Field('impl_id', tString)])
 
+tListInterface = tMetaType.register('list_interface', base=tInterfaceMeta, fields=[
+    Field('columns', TList(tColumn)),
+    ])
 
+
+def t_column_meta( id, type, is_key ):
+    return tColumn(id, type, is_key)
+
+def t_list_interface_meta( iface_id, commands, columns ):
+    return tListInterface(tListInterface.id, iface_id, commands, columns)
+
+def list_interface_from_data( meta_registry, type_registry, rec ):
+    commands = [command_from_data(meta_registry, type_registry, command) for command in rec.commands]
+    columns = [Column.from_data(meta_registry, type_registry, column) for column in rec.columns]
+    return ListInterface(rec.iface_id, commands=commands, columns=columns)
 
 
 stringColumnType = tSimpleColumnType('string')
 intColumnType = tSimpleColumnType('int')
 dateTimeColumnType = tSimpleColumnType('date_time')
-
-
-class Column(object):
-
-    def __init__( self, id, type=stringColumnType ):
-        assert isinstance(id, str), repr(id)
-        assert isinstance(type, tSimpleColumnType), repr(type)
-        self.id = id
-        self.type = type
-
-    def __eq__( self, other ):
-        assert isinstance(other, Column), repr(other)
-        return (other.id == self.id and
-                other.type == self.type)
 
 
 class ElementCommand(RequestCmd):
@@ -72,25 +101,25 @@ class ElementOpenCommand(OpenCommand, ElementCommand):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, base=None, contents_fields=None, commands=None, columns=None, key_column='key' ):
+    def __init__( self, iface_id, base=None, contents_fields=None, commands=None, columns=None ):
         assert is_list_inst(columns, Column), repr(columns)
-        assert isinstance(key_column, str), repr(key_column)
-        self.columns = columns
-        self.key_column = key_column
-        self.key_type = self._pick_key_column().type.type  # used by parent __init__
-        self.tRowRecord = TRecord([Field(column.id, column.type.type) for column in columns])  # --//--
+        self._id2column = dict((column.id, column) for column in columns)
+        self._columns = columns
+        self._key_column_id = self._pick_key_column_id()
+        self._key_type = self._id2column[self._key_column_id].type
+        self._tRowRecord = TRecord([Field(column.id, column.type) for column in columns])
         self._tElement = TRecord([
-            Field('row', self.tRowRecord),
+            Field('row', self._tRowRecord),
             Field('commands', TList(tCommand)),
             ])
         self._tDiff = TRecord([
-            Field('start_key', self.key_type),          # replace elements from this one
-            Field('end_key', self.key_type),            # up to (and including) this one
+            Field('start_key', self._key_type),          # replace elements from this one
+            Field('end_key', self._key_type),            # up to (and including) this one
             Field('elements', TList(self._tElement)),  # with these elemenents
             ])
         self._tSlice = TRecord([
             Field('sort_column_id', tString),
-            Field('from_key', TOptional(self.key_type)),
+            Field('from_key', TOptional(self._key_type)),
             Field('direction', tString),  # asc/desc; todo: enum
             Field('elements', TList(self._tElement)),
             Field('bof', tBool),
@@ -102,24 +131,26 @@ class ListInterface(Interface):
     def __eq__( self, other ):
         return (isinstance(other, ListInterface) and
                 Interface.__eq__(self, other) and
-                other.columns == self.columns and
-                other.key_type == self.key_type and
-                other.key_column == self.key_column)
+                other._columns == self._columns and
+                other._key_column_id == self._key_column_id)
 
-    def _pick_key_column( self ):
-        for column in self.columns:
-            if column.id == self.key_column:
-                return column
-        assert False, repr((self.key_column, [column.id for column in self.columns]))  # unknown key column
+    def _pick_key_column_id( self ):
+        key_column_id = None
+        for column in self._columns:
+            if column.is_key:
+                assert not key_column_id, 'Only one key column is supported, but got two: %r and %r' % (key_column_id, column.id)
+                key_column_id = column.id
+        assert key_column_id, 'No column with is_key is found'
+        return key_column_id
 
     def _register_types( self ):
         Interface._register_types(self)
-        self._tListHandle = list_handle_type('%s.list' % self.iface_id, self.key_type)
-        self._tListNarrowerHandle = list_narrower_handle_type('%s.list_narrower' % self.iface_id, self.key_type)
+        self._tListHandle = list_handle_type('%s.list' % self.iface_id, self._key_type)
+        self._tListNarrowerHandle = list_narrower_handle_type('%s.list_narrower' % self.iface_id, self._key_type)
 
     def _resolve_command( self, command ):
         if isinstance(command, ElementCommand):
-            params_fields = [Field('element_key', self.key_type)] + (command.params_fields or [])
+            params_fields = [Field('element_key', self._key_type)] + (command.params_fields or [])
             return RequestCmd(command.command_id, params_fields, command.result_fields)
         else:
             return command
@@ -132,7 +163,7 @@ class ListInterface(Interface):
     def get_basic_commands( self ):
         fetch_params_fields = [
             Field('sort_column_id', tString),
-            Field('from_key', TOptional(self.key_type)),
+            Field('from_key', TOptional(self._key_type)),
             Field('direction', tString),  # asc/desc; todo: enum
             Field('count', tInt),
             ]

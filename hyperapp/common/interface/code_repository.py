@@ -27,8 +27,8 @@ code_repository_iface = Interface('code_repository', commands=[
                 Field('resources', TList(tResources))]),
     ])
 
-code_repository_browser_iface = ListInterface('code_repository_browser', key_column='id', columns=[
-        Column('id'),
+code_repository_browser_iface = ListInterface('code_repository_browser', columns=[
+        Column('id', is_key=True),
         Column('fname'),
         Column('package'),
         Column('satisfies'),

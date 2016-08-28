@@ -4,8 +4,6 @@ from ..htypes import (
     OpenCommand,
     Interface,
     register_iface,
-    stringColumnType,
-    intColumnType,
     Column,
     ElementCommand,
     ElementOpenCommand,
@@ -16,16 +14,15 @@ from ..htypes import (
 module_list_iface = ListInterface(
     'module_list',
     columns=[
-        Column('name', stringColumnType),
-        Column('id', stringColumnType),
+        Column('name'),
+        Column('id', is_key=True),
         ],
     commands=[
         OpenCommand('add'),
         ElementCommand('delete'),
         ElementOpenCommand('open'),
         ElementOpenCommand('deps'),
-    ],
-    key_column='id')
+    ])
 
 module_form_iface = Interface('module_form', commands=[
     OpenCommand('submit', [Field('name', tString)]),
@@ -35,25 +32,23 @@ module_form_iface = Interface('module_form', commands=[
 module_dep_list_iface = ListInterface(
     'module_deps_list',
     columns=[
-        Column('dep_id', type=intColumnType),
-        Column('visible_as', stringColumnType),
-        Column('id', stringColumnType),
+        Column('dep_id', is_key=True),
+        Column('visible_as'),
+        Column('id'),
         ],
     commands=[
         ElementCommand('remove'),
-    ],
-    key_column='dep_id')
+    ])
 
 available_dep_list_iface = ListInterface(
     'available_deps_list',
     columns=[
-        Column('name', stringColumnType),
-        Column('id', stringColumnType),
+        Column('name'),
+        Column('id', is_key=True),
         ],
     commands=[
         ElementCommand('add'),
-    ],
-    key_column='id')
+    ])
 
 
 

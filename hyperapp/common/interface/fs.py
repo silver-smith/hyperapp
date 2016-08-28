@@ -5,7 +5,6 @@ from ..htypes import (
     OpenCommand,
     Interface,
     register_iface,
-    intColumnType,
     Column,
     ElementCommand,
     ElementOpenCommand,
@@ -14,15 +13,15 @@ from ..htypes import (
 
 
 file_iface = ListInterface('fs_file', columns=[
-    Column('idx', intColumnType),
+    Column('idx', tInt, is_key=True),
     Column('line'),
-    ], key_column='idx')
+    ])
 
 dir_iface = ListInterface('fs_dir', columns=[
-        Column('key'),
+        Column('key', is_key=True),
         Column('ftype'),
-        Column('ftime', intColumnType),
-        Column('fsize', intColumnType),
+        Column('ftime', tInt),
+        Column('fsize', tInt),
     ], commands=[
         OpenCommand('parent'),
         ElementOpenCommand('open'),

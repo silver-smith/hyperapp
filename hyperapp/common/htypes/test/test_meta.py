@@ -22,8 +22,6 @@ from hyperapp.common.htypes import (
     OpenCommand,
     Interface,
     Column,
-    StringColumnType,
-    IntColumnType,
     ListInterface,
     tMetaType,
     t_named,
@@ -144,15 +142,14 @@ class MetaTypeTest(unittest.TestCase):
             OpenCommand('request_open'),
             ]), t)
 
-    @unittest.skip
     def test_list_interface( self ):
         type_names = builtin_type_registry()
         data = t_list_interface_meta('unit_test_list_iface', commands=[
                 t_command_meta('request', 'request_open', [],
-                           [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
+                               [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
             ], columns=[
-                t_column_meta(True, 'key', 'int'),
-                t_column_meta(False, 'text', 'string'),
+                t_column_meta('key', t_named('int'), is_key=True),
+                t_column_meta('text', t_named('string'), is_key=False),
             ])
         data.iface_id = data.iface_id + '_new_list'  # hack to prevent tObject etc registration dup
         t = self.meta_type_registry.resolve(type_names, data)
@@ -160,6 +157,6 @@ class MetaTypeTest(unittest.TestCase):
         self.assertEqual(ListInterface('unit_test_list_iface', commands=[
                 OpenCommand('request_open'),
             ], columns=[
-                Column('key', IntColumnType()),
-                Column('text', StringColumnType()),
+                Column('key', tInt, is_key=True),
+                Column('text', tString),
             ]), t)

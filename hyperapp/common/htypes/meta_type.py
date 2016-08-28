@@ -144,22 +144,12 @@ tColumnMeta = TRecord([
     Field('column_type', tString),
     ])
 
-tListInterfaceMeta = tMetaType.register('list_interface', base=tInterfaceMeta, fields=[
-    Field('columns', TList(tColumnMeta)),
-    ])
-
 def t_command_meta( request_type, command_id, params_fields, result_fields=None ):
     assert request_type in [IfaceCommand.rt_request, IfaceCommand.rt_notification], repr(request_type)
     return tIfaceCommandMeta(request_type, command_id, params_fields, result_fields or [])
 
 def t_interface_meta( iface_id, commands ):
     return tInterfaceMeta(tInterfaceMeta.id, iface_id, commands)
-
-def t_column_meta( is_key, name, column_type ):
-    return tColumnMeta(is_key, name, column_type)
-
-def t_list_interface_meta( iface_id, commands, columns ):
-    return tListInterfaceMeta(tInterfaceMeta.id, iface_id, commands, columns)
 
 def command_from_data( meta_registry, type_registry, rec ):
     params_fields = field_list_from_data(meta_registry, type_registry, rec.params_fields)
@@ -224,31 +214,3 @@ class MetaTypeRegistry(object):
         factory = self._registry.get(rec.type_id)
         assert factory, 'Unknown type_id: %r' % rec.type_id
         return factory(self, type_registry, rec)
-
-
-def make_meta_type_registry():
-    registry = MetaTypeRegistry()
-    registry.register('named', named_from_data)
-    registry.register('optional', optional_from_data)
-    registry.register('list', list_from_data)
-    registry.register('record', record_from_data)
-    registry.register('hierarchy', hierarchy_from_data)
-    registry.register('hierarchy_class', hierarchy_class_from_data)
-    registry.register('interface', interface_from_data)
-    return registry
-
-def builtin_type_registry():
-    registry = TypeRegistry()
-    for t in [
-        tNone,
-        tString,
-        tBinary,
-        tInt,
-        tBool,
-        tDateTime,
-        ]:
-        registry.register(t.type_name, t)
-    registry.register('handle', tHandle)
-    registry.register('object', tObject)
-    registry.register('base_object', tBaseObject)
-    return registry

@@ -41,19 +41,19 @@ def resolve_typedefs( meta_registry, type_registry, typedefs ):
         module._add_type(typedef.name, t)
     return module
 
-def load_typedefs_from_types_file( meta_registry, type_registry, fpath ):
-    with open(fpath, 'r') as f:
-        contents = f.read()
-    typedefs, loaded_types = parse_type_module(meta_registry, type_registry, fpath, contents)
-    module = TypeModule()
-    for name, t in loaded_types.items():
-        module._add_type(name, t)
-    return module
-
 def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):
     typedefs = load_typedefs_from_yaml_file(fpath)
     return resolve_typedefs(meta_registry, type_registry, typedefs)
 
-def resolve_typedefs_from_types_file( meta_registry, type_registry, fpath ):
-    module = load_typedefs_from_types_file(fpath)
+def load_types_file( meta_registry, type_registry, fpath ):
+    with open(fpath, 'r') as f:
+        contents = f.read()
+    typedefs, loaded_types = parse_type_module(meta_registry, type_registry, fpath, contents)
+    return (typedefs, loaded_types)
+
+def load_module_from_types_file( meta_registry, type_registry, fpath ):
+    typedefs, loaded_types = load_types_file(meta_registry, type_registry, fpath)
+    module = TypeModule()
+    for name, t in loaded_types.items():
+        module._add_type(name, t)
     return module

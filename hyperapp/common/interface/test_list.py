@@ -6,7 +6,6 @@ from ..htypes import (
     RequestCmd,
     OpenCommand,
     Interface,
-    intColumnType,
     Column,
     ListInterface,
     )
@@ -18,7 +17,7 @@ params_form_iface = Interface('test_list_params', commands=[
     ])
 
 test_list_iface = ListInterface('test_list', columns=[
-        Column('key', type=intColumnType),
+        Column('key', tInt, is_key=True),
         Column('field_1'),
         Column('field_2'),
         Column('field_3'),
