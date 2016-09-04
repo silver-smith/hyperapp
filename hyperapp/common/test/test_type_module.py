@@ -17,7 +17,7 @@ from hyperapp.common.htypes import (
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module import (
     resolve_typedefs_from_yaml_file,
-    load_typedefs_from_types_file,
+    load_module_from_types_file,
     resolve_typedefs,
     )
 
@@ -45,7 +45,7 @@ class TypeModuleTest(unittest.TestCase):
     def test_types_module( self ):
         type_registry = builtin_type_registry()
         fpath = os.path.join(os.path.dirname(__file__), 'test_module1.types')
-        module = load_typedefs_from_types_file(self.meta_type_registry, type_registry, fpath)
+        module = load_module_from_types_file(self.meta_type_registry, type_registry, fpath)
 
         self.assertTrue(hasattr(module, 'some_int'))
         self.assertEqual(tInt, module.some_int)
