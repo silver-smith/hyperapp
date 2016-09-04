@@ -1,6 +1,7 @@
 import os.path
 from ..common.htypes import iface_registry
 from ..common.route_storage import RouteStorage
+from ..common.module_manager import ModuleManager
 from .module import Module
 from . import route_storage
 from .remoting import Remoting
@@ -16,13 +17,14 @@ class Services(object):
 
     def __init__( self ):
         self.iface_registry = iface_registry
-        server_dir = os.path.abspath(os.path.dirname(__file__))
+        self.server_dir = os.path.abspath(os.path.dirname(__file__))
         interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         dynamic_modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
-        self.resources_loader = ResourcesLoader(dict(interface=server_dir,
+        self.type_repository = TypeRepository(interface_dir)
+        self.module_manager = ModuleManager(self, self.type_repository)
+        self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
                                                      client_module=dynamic_modules_dir))
         self.route_storage_module = route_storage.ThisModule()
-        self.type_repository = TypeRepository(interface_dir)
         self.module_repository = ModuleRepository(dynamic_modules_dir)
         self.code_repository = CodeRepository(self.type_repository, self.module_repository, self.resources_loader)
         self._register_modules()
@@ -30,6 +32,7 @@ class Services(object):
         self.route_storage = RouteStorage(route_storage.DbRouteRepository(self.route_storage_module))
         self.remoting = Remoting(self.iface_registry)
         self._register_transports()
+        self._load_server_modules()
 
     def _register_modules( self ):
         for module in [code_repository]:
@@ -39,3 +42,11 @@ class Services(object):
     def _register_transports( self ):
         for module in [tcp_transport, encrypted_transport]:
             module.register_transports(self.remoting.transport_registry, self)
+
+    def _load_server_modules( self ):
+        for module_name in ['test_text_object']:
+            fpath = os.path.join(self.server_dir, module_name + '.py')
+            with open(fpath) as f:
+                source = f.read()
+            package = 'hyperapp.server'
+            module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)

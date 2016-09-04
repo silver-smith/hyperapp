@@ -1,8 +1,9 @@
 from ..common.util import is_list_inst, encode_path
 from ..common.htypes import tTypeModule
+from ..common import module_manager as common_module_manager
 
 
-class TypeRegistry(object):
+class TypeRegistry(common_module_manager.TypeModuleRegistry):
 
     def __init__( self ):
         self._name2module = {}  # module name -> tTypeModule
@@ -30,3 +31,6 @@ class TypeRegistry(object):
 
     def resolve( self, module_name ):
         return self._name2module[module_name]
+
+    def resolve_type_registry( self, name ):
+        assert 0  # todo
