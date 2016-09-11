@@ -207,12 +207,12 @@ class ListObject(Object):
         assert isinstance(sort_column_id, str), repr(sort_column_id)
         column = self._pick_column(sort_column_id)
         assert column, 'Unknown column: %r; known are: %r'\
-           % (sort_column_id, [column.id for column in self.iface.columns])
+           % (sort_column_id, [column.id for column in self.iface.get_columns()])
         assert direction in ['asc', 'desc'], repr(direction)
         return self.iface.Slice(sort_column_id, from_key, direction, elements, bof, eof)
             
     def _pick_column( self, column_id ):
-        for column in self.iface.columns:
+        for column in self.iface.get_columns():
             if column.id == column_id:
                 return column
         return None
@@ -222,7 +222,7 @@ class SmallListObject(ListObject):
 
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
         assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
-        elt2sort_key = attrgetter('row.%s' % self.iface.key_column)
+        elt2sort_key = attrgetter('row.%s' % self.iface.get_key_column_id())
         sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
         if from_key is None:
             idx = 0

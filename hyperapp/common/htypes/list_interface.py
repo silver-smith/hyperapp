@@ -155,6 +155,12 @@ class ListInterface(Interface):
         else:
             return command
 
+    def get_columns( self ):
+        return self._columns
+
+    def get_key_column_id( self ):
+        return self._key_column_id
+
     def get_default_contents_fields( self ):
         return Interface.get_default_contents_fields(self) + [
             Field('slice', self.tSlice()),
@@ -172,7 +178,7 @@ class ListInterface(Interface):
                ContentsCommand('subscribe_and_fetch_elements', fetch_params_fields)]
 
     def Row( self, *args, **kw ):
-        return self.tRowRecord(*args, **kw)
+        return self._tRowRecord(*args, **kw)
 
     def tElement( self ):
         return self._tElement
