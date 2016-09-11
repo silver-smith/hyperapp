@@ -17,7 +17,7 @@ from hyperapp.common.htypes import (
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module import (
     resolve_typedefs_from_yaml_file,
-    load_module_from_types_file,
+    load_types_file,
     resolve_typedefs,
     )
 
@@ -30,29 +30,29 @@ class TypeModuleTest(unittest.TestCase):
     def test_yaml_module( self ):
         type_registry = builtin_type_registry()
         fpath = os.path.join(os.path.dirname(__file__), 'test_module1.types.yaml')
-        module = resolve_typedefs_from_yaml_file(self.meta_type_registry, type_registry, fpath)
+        registry = resolve_typedefs_from_yaml_file(self.meta_type_registry, type_registry, fpath)
 
-        self.assertTrue(hasattr(module, 'some_int'))
-        self.assertEqual(tInt, module.some_int)
+        self.assertTrue(registry.has_name('some_int'))
+        self.assertEqual(tInt, registry.get_name('some_int'))
 
-        self.assertTrue(hasattr(module, 'simple_class'))
-        self.assertEqual(TClass(tObject, 'simple', TRecord([])), module.simple_class)
+        self.assertTrue(registry.has_name('simple_class'))
+        self.assertEqual(TClass(tObject, 'simple', TRecord([])), registry.get_name('simple_class'))
 
-        self.assertTrue(hasattr(module, 'text_object'))
+        self.assertTrue(registry.has_name('text_object'))
         self.assertEqual(TClass(tObject, 'text', TRecord(base=tBaseObject, fields=[Field('text', tString)])),
-                         module.text_object)
+                         registry.get_name('text_object'))
 
     def test_types_module( self ):
         type_registry = builtin_type_registry()
         fpath = os.path.join(os.path.dirname(__file__), 'test_module1.types')
-        module = load_module_from_types_file(self.meta_type_registry, type_registry, fpath)
+        typedefs, registry = load_types_file(self.meta_type_registry, type_registry, fpath)
 
-        self.assertTrue(hasattr(module, 'some_int'))
-        self.assertEqual(tInt, module.some_int)
+        self.assertTrue(registry.has_name('some_int'))
+        self.assertEqual(tInt, registry.get_name('some_int'))
 
-        self.assertTrue(hasattr(module, 'simple_class'))
-        self.assertEqual(TClass(tObject, 'simple_2', TRecord([])), module.simple_class)
+        self.assertTrue(registry.has_name('simple_class'))
+        self.assertEqual(TClass(tObject, 'simple_2', TRecord([])), registry.get_name('simple_class'))
 
-        self.assertTrue(hasattr(module, 'text_object'))
+        self.assertTrue(registry.has_name('text_object'))
         self.assertEqual(TClass(tObject, 'text_2', TRecord(base=tBaseObject, fields=[Field('text', tString)])),
-                         module.text_object)
+                         registry.get_name('text_object'))
