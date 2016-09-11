@@ -19,7 +19,6 @@ import hyperapp.server.server_management
 import hyperapp.server.admin
 import hyperapp.server.module_list
 import hyperapp.server.test_list
-import hyperapp.server.test_text_object
 import hyperapp.server.code_repository
 
 

@@ -1,13 +1,9 @@
 # test for returning non-proxy object to client, text object
 
 import os.path
-from .. common.htypes import tObjHandle, make_meta_type_registry, builtin_type_registry
-from .. common.type_module import load_module_from_types_file
+from .. common.htypes import tObjHandle
 from .module import Module, ModuleCommand
-
-text_object_types = load_module_from_types_file(
-    make_meta_type_registry(), builtin_type_registry(),
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface/text_object_types.types')))
+from . import text_object_types
 
 
 MODULE_NAME = 'test_text_object'

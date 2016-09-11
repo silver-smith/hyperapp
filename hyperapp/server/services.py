@@ -1,8 +1,8 @@
 import os.path
-from ..common.htypes import iface_registry
+from ..common.htypes import tModule, iface_registry
 from ..common.route_storage import RouteStorage
-from ..common.module_manager import ModuleManager
 from .module import Module
+from .module_manager import ModuleManager
 from . import route_storage
 from .remoting import Remoting
 from . import tcp_transport
@@ -50,3 +50,4 @@ class Services(object):
                 source = f.read()
             package = 'hyperapp.server'
             module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            self.module_manager.add_code_module(module)

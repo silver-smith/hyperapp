@@ -29,7 +29,7 @@ class ModuleManager(object):
         self._type_modules = {}  # module name -> ModuleType
 
     def _load_module( self, module, name=None ):
-        assert isisntance(module, tModule), repr(module)
+        assert isinstance(module, tModule), repr(module)
         if name is None:
             name = module.package + '.' + module.id.replace('-', '_')
         if name in sys.modules:
