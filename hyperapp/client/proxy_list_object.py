@@ -153,10 +153,10 @@ class ProxyListObject(ProxyObject, ListObject):
         self._notify_diff_applied(diff)
 
     def get_columns( self ):
-        return self.iface.columns
+        return self.iface.get_columns()
 
     def get_key_column_id( self ):
-        return self.iface.key_column
+        return self.iface.get_key_column_id()
 
     @asyncio.coroutine
     def fetch_elements( self, sort_column_id, from_key, direction, count ):

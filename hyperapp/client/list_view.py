@@ -49,8 +49,11 @@ class Model(QtCore.QAbstractTableModel):
             key = self.keys[index.row()]
             element = self._get_key_element(key)
             value = getattr(element.row, column.id)
-            return column.type.to_string(value)
+            return self._value_to_string(column, value)
         return None
+
+    def _value_to_string( self, column, value ):
+        return str(value)
 
     def headerData( self, section, orient, role ):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
