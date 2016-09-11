@@ -44,7 +44,7 @@ class Services(object):
             module.register_transports(self.remoting.transport_registry, self)
 
     def _load_server_modules( self ):
-        for module_name in ['test_text_object']:
+        for module_name in ['simple_text_object']:
             fpath = os.path.join(self.server_dir, module_name + '.py')
             with open(fpath) as f:
                 source = f.read()
