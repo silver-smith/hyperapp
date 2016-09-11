@@ -11,12 +11,12 @@ log = logging.getLogger(__name__)
 class TypeModuleRegistry(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def has_module( self, name ):
+    def has_module( self, module_name ):
         pass
 
     # must return TypeRegistry
     @abc.abstractmethod
-    def resolve_type_registry( self, name ):
+    def resolve_type_registry( self, module_name ):
         pass
 
 

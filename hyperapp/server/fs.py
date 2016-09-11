@@ -34,7 +34,7 @@ class File(FsObject):
         return [self.Element(self.Row(idx, line)) for idx, line in enumerate(self._load_lines())]
 
     def _load_lines( self, ofs=0 ):
-        with file(self.fspath) as f:
+        with open(self.fspath) as f:
             if ofs:
                 f.seek(ofs)
             return f.readlines()

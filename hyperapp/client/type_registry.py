@@ -1,5 +1,6 @@
 from ..common.util import is_list_inst, encode_path
-from ..common.htypes import tTypeModule
+from ..common.htypes import tTypeModule, make_meta_type_registry, builtin_type_registry
+from ..common.type_module import resolve_typedefs
 from ..common import module_manager as common_module_manager
 
 
@@ -8,6 +9,7 @@ class TypeRegistry(common_module_manager.TypeModuleRegistry):
     def __init__( self ):
         self._name2module = {}  # module name -> tTypeModule
         self._class2module = {}  # encoded hierarchy_id|class_id -> tTypeModule
+        self._module_name_to_type_registry = {}
 
     def register_all( self, type_modules ):
         assert is_list_inst(type_modules, tTypeModule), repr(type_modules)
@@ -32,5 +34,12 @@ class TypeRegistry(common_module_manager.TypeModuleRegistry):
     def resolve( self, module_name ):
         return self._name2module[module_name]
 
-    def resolve_type_registry( self, name ):
-        assert 0  # todo
+    def resolve_type_registry( self, module_name ):
+        registry = self._module_name_to_type_registry.get(module_name)
+        if registry:
+            return registry
+        module = self._name2module.get(module_name)
+        assert module, 'Unknown type module: %r' % module_name
+        registry = resolve_typedefs(make_meta_type_registry(), builtin_type_registry(), module.typedefs)
+        self._module_name_to_type_registry[module_name] = registry
+        return registry

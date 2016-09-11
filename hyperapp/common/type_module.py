@@ -15,15 +15,6 @@ from .type_module_parser import parse_type_module
 TYPEDEF_MODULE_ENCODING = 'yaml'
 
 
-class TypeModule(object):
-
-    def __init__( self ):
-        self._types = {}
-
-    def _add_type( self, name, t ):
-        self._types[name] = t
-        setattr(self, name, t)
-
 
 tFileContents = TList(tTypeDef)
 
@@ -33,13 +24,11 @@ def load_typedefs_from_yaml_file( fpath ):
     return packet_coders.decode(TYPEDEF_MODULE_ENCODING, contents, tFileContents)
 
 def resolve_typedefs( meta_registry, type_registry, typedefs ):
-    loaded_types = TypeRegistry(next=type_registry)
-    module = TypeModule()
+    resolved_registry = TypeRegistry(next=type_registry)
     for typedef in typedefs:
-        t = meta_registry.resolve(loaded_types, typedef.type)
-        loaded_types.register(typedef.name, t)
-        module._add_type(typedef.name, t)
-    return module
+        t = meta_registry.resolve(resolved_registry, typedef.type)
+        resolved_registry.register(typedef.name, t)
+    return resolved_registry
 
 def resolve_typedefs_from_yaml_file( meta_registry, type_registry, fpath ):
     typedefs = load_typedefs_from_yaml_file(fpath)
