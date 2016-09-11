@@ -55,7 +55,7 @@ class UserList(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__( self ):
+    def __init__( self, services ):
         PonyOrmModule.__init__(self, MODULE_NAME)
         self.User = self.make_entity('User',
                                      user_name=Required(str),
@@ -77,6 +77,3 @@ class ThisModule(PonyOrmModule):
         if command_id == 'user_list':
             return request.make_response_object(UserList())
         return PonyOrmModule.run_command(self, request, command_id)
-
-
-this_module = ThisModule()

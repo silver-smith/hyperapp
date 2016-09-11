@@ -28,11 +28,11 @@ class Services(object):
         self.module_repository = ModuleRepository(dynamic_modules_dir)
         self.code_repository = CodeRepository(self.type_repository, self.module_repository, self.resources_loader)
         self._register_modules()
+        self._load_server_modules()
         Module.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository(self.route_storage_module))
         self.remoting = Remoting(self.iface_registry)
         self._register_transports()
-        self._load_server_modules()
 
     def _register_modules( self ):
         for module in [code_repository]:
@@ -44,7 +44,10 @@ class Services(object):
             module.register_transports(self.remoting.transport_registry, self)
 
     def _load_server_modules( self ):
-        for module_name in ['simple_text_object']:
+        for module_name in [
+                'admin',
+                'simple_text_object',
+                ]:
             fpath = os.path.join(self.server_dir, module_name + '.py')
             with open(fpath) as f:
                 source = f.read()
