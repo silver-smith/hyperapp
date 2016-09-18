@@ -13,7 +13,7 @@ params_form_iface = interface test_list_params_2:
 
 test_list_iface = list_interface test_list_2:
   columns:
-    key: int
+    @key: int
     field_1: string
     field_2: string
     field_3: string
