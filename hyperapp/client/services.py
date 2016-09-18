@@ -55,7 +55,7 @@ class Services(object):
     def __init__( self ):
         self._dir = os.path.abspath(os.path.dirname(__file__))
         self.iface_registry = iface_registry
-        self.type_registry = TypeRegistry()
+        self.type_registry = TypeRegistry(self.iface_registry)
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)
