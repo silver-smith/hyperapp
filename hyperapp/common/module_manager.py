@@ -53,8 +53,9 @@ class ModuleManager(object):
 
     def _import( self, module_name, name, globals=None, locals=None, from_list=(), level=0 ):
         ## log.info('__import__ %r - %r %r %r %r %r', module_name, name, from_list, level, globals, locals)
-        if level == 1 and '.' not in name and self._type_module_registry.has_module(name):
-            result = self._import_type_module(name)
+        namel = name.split('.')
+        if level == 2 and namel[:-1] == ['common', 'interface'] and self._type_module_registry.has_module(namel[-1]):
+            result = self._import_type_module(namel[-1])
         else:
             result = __import__(name, globals, locals, from_list, level)
             for sub_name in from_list or []:
