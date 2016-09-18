@@ -104,19 +104,20 @@ class Application(QtGui.QApplication, view.View):
     def _resolve_requirements( self, requirements ):
         for registry_id, id in requirements:
             log.info('requirement for state: %s %r', registry_id, id)
-            if registry_id == 'object':
-                registry = self.services.objimpl_registry
-            elif registry_id == 'handle':
-                registry = self.services.view_registry
+            if registry_id == 'class':
+                module_id = self.services.type_module_registry.get_class_dynamic_module_id(id)
             elif registry_id == 'interface':
-                continue  # todo
-            elif registry_id == 'resources':
-                continue  # todo
-            elif registry_id == 'class':
-                registry = self.services.type_module_registry
+                module_id = self.services.type_module_registry.get_iface_dynamic_module_id(id)
             else:
-                assert False, repr(registry_id)  # unknown registry id
-            module_id = registry.get_dynamic_module_id(id)
+                if registry_id == 'object':
+                    registry = self.services.objimpl_registry
+                elif registry_id == 'handle':
+                    registry = self.services.view_registry
+                elif registry_id == 'resources':
+                    continue  # todo
+                else:
+                    assert False, repr(registry_id)  # unknown registry id
+                module_id = registry.get_dynamic_module_id(id)
             if module_id is not None:  # None for static module
                 log.info('dynamic module %r provides %s %r', module_id, registry_id, id)
                 yield module_id

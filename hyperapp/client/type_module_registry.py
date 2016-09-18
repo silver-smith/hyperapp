@@ -11,6 +11,7 @@ class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
         self._iface_registry = iface_registry
         self._name2module = {}  # module name -> tTypeModule
         self._class2module = {}  # encoded hierarchy_id|class_id -> tTypeModule
+        self._iface2module = {}  # iface_id -> tTypeModule
         self._module_name_to_type_registry = {}
 
     def register_all( self, type_modules ):
@@ -25,11 +26,19 @@ class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
             self._class2module[encode_path([rec.hierarchy_id, rec.class_id])] = type_module
         self._resolve_module(type_module)
 
-    def get_dynamic_module_id( self, id ):
+    def get_class_dynamic_module_id( self, id ):
         type_module = self._class2module.get(id)
-        if not type_module:
+        if type_module:
+            return type_module.module_name
+        else:
             return None
-        return type_module.module_name
+
+    def get_iface_dynamic_module_id( self, id ):
+        type_module = self._iface2module.get(id)
+        if type_module:
+            return type_module.module_name
+        else:
+            return None
 
     def has_module( self, module_name ):
         return module_name in self._name2module
@@ -48,10 +57,11 @@ class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
     def _resolve_module( self, module ):
         type_registry = resolve_typedefs(make_meta_type_registry(), builtin_type_registry(), module.typedefs)
         self._module_name_to_type_registry[module.module_name] = type_registry
-        self._register_ifaces(type_registry)
+        self._register_ifaces(module, type_registry)
         return type_registry
 
-    def _register_ifaces( self, type_registry ):
+    def _register_ifaces( self, module, type_registry ):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
             self._iface_registry.register(t)
+            self._iface2module[name] = module
