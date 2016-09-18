@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 class ModuleManager(common_module_manager.ModuleManager):
 
     def __init__( self, services ):
-        common_module_manager.ModuleManager.__init__(self, services, services.type_registry)
+        common_module_manager.ModuleManager.__init__(self, services, services.type_module_registry)
         self._id2module = {}
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry

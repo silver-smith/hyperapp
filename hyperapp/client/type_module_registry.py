@@ -4,7 +4,7 @@ from ..common.type_module import resolve_typedefs
 from ..common import module_manager as common_module_manager
 
 
-class TypeRegistry(common_module_manager.TypeModuleRegistry):
+class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
 
     def __init__( self, iface_registry ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
@@ -46,10 +46,10 @@ class TypeRegistry(common_module_manager.TypeModuleRegistry):
         return self._resolve_module(module)
 
     def _resolve_module( self, module ):
-        registry = resolve_typedefs(make_meta_type_registry(), builtin_type_registry(), module.typedefs)
-        self._module_name_to_type_registry[module.module_name] = registry
-        self._register_ifaces(registry)
-        return registry
+        type_registry = resolve_typedefs(make_meta_type_registry(), builtin_type_registry(), module.typedefs)
+        self._module_name_to_type_registry[module.module_name] = type_registry
+        self._register_ifaces(type_registry)
+        return type_registry
 
     def _register_ifaces( self, type_registry ):
         for name, t in type_registry.items():

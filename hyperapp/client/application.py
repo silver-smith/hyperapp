@@ -113,7 +113,7 @@ class Application(QtGui.QApplication, view.View):
             elif registry_id == 'resources':
                 continue  # todo
             elif registry_id == 'class':
-                registry = self.services.type_registry
+                registry = self.services.type_module_registry
             else:
                 assert False, repr(registry_id)  # unknown registry id
             module_id = registry.get_dynamic_module_id(id)
@@ -172,7 +172,7 @@ class Application(QtGui.QApplication, view.View):
             type_modules, new_code_modules, resources = self._loop.run_until_complete(self.services.code_repository.get_modules_by_ids(module_ids))
             if new_code_modules is not None:  # has code repositories?
                 code_modules = new_code_modules  # load new versions
-            self.services.type_registry.register_all(type_modules)
+            self.services.type_module_registry.register_all(type_modules)
             self.services.module_mgr.add_modules(code_modules)
             self.services.resources_manager.register_all(resources)
             state = packet_coders.decode('cdr', state_data, self.state_type)
