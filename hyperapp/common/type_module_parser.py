@@ -12,6 +12,8 @@ from .htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
+    t_column_meta,
+    t_list_interface_meta,
     TypeRegistry,
     )
 
@@ -39,6 +41,7 @@ token_types = [
     token.RPAR,
     token.COLON,
     token.COMMA,
+    token.AT,
     ]
 
 EXACT_TOKEN_TYPES = {
@@ -123,7 +126,7 @@ def p_interface_def( p ):
 
 def p_list_interface_def( p ):
     'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[7])
+    p[0] = t_list_interface_meta(p[2], p[7], p[6])
 
 def p_interface_command_defs( p ):
     'interface_command_defs : COMMANDS COLON NEWLINE BLOCK_BEGIN interface_command_list BLOCK_END'
@@ -173,8 +176,13 @@ def p_columns_defs_2( p ):
     p[0] = [p[1]]
 
 
-def p_column_def( p ):
+def p_column_def_1( p ):
     'column_def : NAME COLON type_expr'
+    p[0] = t_column_meta(p[1], p[3], is_key=False)
+
+def p_column_def_2( p ):
+    'column_def : AT NAME COLON type_expr'
+    p[0] = t_column_meta(p[2], p[4], is_key=True)
 
 
 def p_field_list_1( p ):

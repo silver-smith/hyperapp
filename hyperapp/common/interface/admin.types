@@ -1,6 +1,6 @@
 user_list = list_interface user_list:
   columns:
-    id: string
+    @id: string
     user_name: string
     public_key_id: string
   commands:

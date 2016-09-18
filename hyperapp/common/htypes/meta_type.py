@@ -138,11 +138,6 @@ tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
     Field('commands', TList(tIfaceCommandMeta)),
     ])
 
-tColumnMeta = TRecord([
-    Field('is_key', tBool),
-    Field('name', tString),
-    Field('column_type', tString),
-    ])
 
 def t_command_meta( request_type, command_id, params_fields, result_fields=None ):
     assert request_type in [IfaceCommand.rt_request, IfaceCommand.rt_notification], repr(request_type)
