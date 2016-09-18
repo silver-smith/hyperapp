@@ -3,11 +3,10 @@
 import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tObjHandle
+from ..common.interface import text_object_types
 from .command import open_command
 from .object import Object
 from . import text_object as original_text_object
-from . import text_object_types
-from .text_object_types import text_object
 
 log = logging.getLogger(__name__)
 
