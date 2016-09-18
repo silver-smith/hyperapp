@@ -94,14 +94,22 @@ class CodeRepository(Object):
         return (type_modules, code_modules)
 
     def get_modules_by_requirements( self, requirements ):
-        modules = []
+        type_modules = []
+        code_modules = []
         for registry, key in requirements:
-            module = self._code_module_repository.get_module_by_requirement(registry, key)
-            if module:
-                modules.append(module)
+            if registry == 'interface':
+                module = self._type_repository.get_type_module_by_requirement(key)
+                if module:
+                    type_modules.append(module)
+                else:
+                    log.info('Unknown type requirement: %s/%s', registry, key)  # May be statically loaded, ignore
             else:
-                log.info('Unknown requirement: %s/%s', registry, key)  # May be statically loaded, ignore
-        return modules
+                module = self._code_module_repository.get_module_by_requirement(registry, key)
+                if module:
+                    code_modules.append(module)
+                else:
+                    log.info('Unknown code requirement: %s/%s', registry, key)  # May be statically loaded, ignore
+        return (type_modules, code_modules)
 
     @command('get_modules_by_ids')
     def command_get_modules_by_ids( self, request ):
@@ -112,8 +120,8 @@ class CodeRepository(Object):
     @command('get_modules_by_requirements')
     def command_get_modules_by_requirements( self, request ):
         log.info('command_get_modules_by_requirements %r', request.params.requirements)
-        code_modules = self.get_modules_by_requirements(request.params.requirements)
-        return self._make_response(request, [], code_modules)
+        type_modules, code_modules = self.get_modules_by_requirements(request.params.requirements)
+        return self._make_response(request, type_modules, code_modules)
 
     def _make_response( self, request, type_modules, code_modules ):
         resources = flatten(self._load_module_resources(module) for module in code_modules)
