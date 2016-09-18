@@ -50,7 +50,7 @@ class Services(object):
         for module_name in [
                 'admin',
                 'simple_text_object',
-                'test_list',
+                'sample_list',
                 ]:
             fpath = os.path.join(self.server_dir, module_name + '.py')
             with open(fpath) as f:
