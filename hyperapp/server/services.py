@@ -20,7 +20,7 @@ class Services(object):
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         dynamic_modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
-        self.type_repository = TypeRepository(interface_dir)
+        self.type_repository = TypeRepository(interface_dir, self.iface_registry)
         self.module_manager = ModuleManager(self, self.type_repository)
         self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
                                                      client_module=dynamic_modules_dir))

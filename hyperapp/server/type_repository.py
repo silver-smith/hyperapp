@@ -3,6 +3,8 @@ import os.path
 import logging
 from ..common.util import is_list_inst, encode_path
 from ..common.htypes import (
+    Interface,
+    IfaceRegistry,
     tHierarchyMeta,
     tHierarchyClassMeta,
     tNamed,
@@ -35,7 +37,9 @@ class TypeRepository(common_module_manager.TypeModuleRegistry):
             assert isinstance(type_module, tTypeModule), repr(type_module)
             self.type_module = type_module
 
-    def __init__( self, dir ):
+    def __init__( self, dir, iface_registry ):
+        assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
+        self._iface_registry = iface_registry
         self._class2rec = {}  # str -> _Rec
         self._iface2rec = {}  # str -> _Rec
         self._id2rec = {}  # str -> _Rec
@@ -105,3 +109,9 @@ class TypeRepository(common_module_manager.TypeModuleRegistry):
                 log.info('    provides interface %r', typedef.name)
         module_rec.set_type_module(tTypeModule(name, provided_classes, typedefs))
         self._id2rec[name] = module_rec
+        self._register_ifaces(type_registry)
+
+    def _register_ifaces( self, type_registry ):
+        for name, t in type_registry.items():
+            if not isinstance(t, Interface): continue
+            self._iface_registry.register(t)
