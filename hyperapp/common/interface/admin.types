@@ -1,0 +1,7 @@
+user_list = list_interface user_list:
+  columns:
+    id: string
+    user_name: string
+    public_key_id: string
+  commands:
+    request add (user_name: string, public_key_der: binary) -> (handle: handle opt)

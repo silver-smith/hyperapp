@@ -81,7 +81,8 @@ class TypeRepository(common_module_manager.TypeModuleRegistry):
         classes = []
         for typedef in typedefs:
             t = typedef.type
+            log.info('    registered name %r', typedef.name)
             if not isinstance(t, tHierarchyClassMeta): continue
-            assert isinstance(t.hierarchy, tNamed), repr(name)  # tHierarchyClassMeta.hierarchy must be tNamed
+            assert isinstance(t.hierarchy, tNamed), repr(typedef.name)  # tHierarchyClassMeta.hierarchy must be tNamed
             classes.append(tProvidedClass(t.hierarchy.name, t.class_id))
         return classes

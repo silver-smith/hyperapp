@@ -1,6 +1,6 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.identity import PublicKey
-from ..common.interface.admin import user_list_iface
+from ..common.interface import admin as admin_iface
 from .module import ModuleCommand
 from .ponyorm_module import PonyOrmModule
 from .object import SmallListObject
@@ -11,7 +11,7 @@ MODULE_NAME = 'admin'
 
 class UserList(SmallListObject):
 
-    iface = user_list_iface
+    iface = admin_iface.user_list
     class_name = 'user_list'
     objimpl_id = 'proxy_list'
     default_sort_column_id = 'id'

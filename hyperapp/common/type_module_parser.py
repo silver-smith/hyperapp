@@ -245,7 +245,8 @@ class Lexer(object):
                 # first indent found, this is file tab size
                 assert '\t' not in tinfo.string, 'Tab intention is not supported'
                 self._tab_size = len(tinfo.string)
-            assert len(tinfo.string) % self._tab_size == 0, 'Invalid indent: %r (detected tab size: %d)' % (tinfo.string, self._tab_size)
+            assert len(tinfo.string) % self._tab_size == 0, \
+              'line %d: Invalid indent: %r (detected tab size: %d)' % (tinfo.start[0], tinfo.string, self._tab_size)
             assert len(tinfo.string)/self._tab_size == self._indent + 1, 'Invalid indent: %r (detected tab size: %d)' % (tinfo.string, self._tab_size)
             self._indent += 1
             t = BLOCK_BEGIN
