@@ -1,0 +1,12 @@
+params_form = interface params_form:
+  commands:
+    request submit (key: int, size: int) -> (handle: handle opt)
+
+test_list = list_interface test_list:
+  columns:
+    @key: int
+    field_1: string
+    field_2: string
+    field_3: string
+  commands:
+    request params () -> (handle: handle opt)

@@ -57,7 +57,8 @@ class ModuleManager(object):
         if level == 2 and namel[:-1] == ['common', 'interface'] and self._type_module_registry.has_module(namel[-1]):
             result = self._import_type_module(namel[-1])
         else:
-            result = __import__(name, globals, locals, from_list, level)
+            non_type_module_from_list = tuple(name for name in from_list or [] if not self._type_module_registry.has_module(name))
+            result = __import__(name, globals, locals, non_type_module_from_list, level)
             for sub_name in from_list or []:
                 ## print('  sub_name', sub_name, hasattr(result, sub_name), self._type_module_registry.has_module(sub_name))
                 if hasattr(result, sub_name): continue
@@ -67,13 +68,13 @@ class ModuleManager(object):
         return result
 
     def _import_type_module( self, module_name ):
-        log.info('importing type module %r', module_name)
+        log.info('    importing type module %r', module_name)
         if module_name in self._type_modules:
             return self._type_modules[module_name]
         type_registry = self._type_module_registry.resolve_type_registry(module_name)
         module = ModuleType('hyperapp.client.%s' % module_name, 'Hyperapp type module %s' % module_name)
         for name, t in type_registry.items():
             module.__dict__[name] = t
-            log.info('    resolved type %r -> %r', name, t)
+            log.info('        resolved type %r -> %r', name, t)
         self._type_modules[module_name] = module
         return module

@@ -1,4 +1,5 @@
 import os.path
+import logging
 from ..common.htypes import tModule, iface_registry
 from ..common.route_storage import RouteStorage
 from .module import Module
@@ -11,6 +12,8 @@ from . import code_repository
 from .code_repository import ModuleRepository, CodeRepository
 from .type_repository import TypeRepository
 from .resources_loader import ResourcesLoader
+
+log = logging.getLogger(__name__)
 
 
 class Services(object):

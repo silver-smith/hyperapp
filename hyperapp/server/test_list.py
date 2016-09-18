@@ -1,7 +1,7 @@
 import logging
 from ..common.htypes import Column
 from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
-from ..common.interface.test_list import params_form_iface, test_list_iface
+from ..common.interface import test_list as test_list_types
 from .util import path_part_to_str
 from .command import command
 from .object import Object, ListObject
@@ -18,7 +18,7 @@ MAX_ROWS_RETURNED = 100
 
 class ParamsForm(Object):
 
-    iface = params_form_iface
+    iface = test_list_types.params_form
     objimpl_id = 'proxy'
     class_name = 'params'
 
@@ -43,7 +43,7 @@ class ParamsForm(Object):
 
 class TestList(ListObject):
 
-    iface = test_list_iface
+    iface = test_list_types.test_list
     objimpl_id = 'proxy_list'
     class_name = 'list'
 

@@ -1,7 +1,0 @@
-id: 0df259a7-ca1c-43d5-b9fa-f787a7271db9
-name: test_iface
-package: hyperapp.common.interface
-source_path: ../hyperapp/common/interface/test_list.py
-satisfies:
- - interface/test_list
- - interface/test_list_params
