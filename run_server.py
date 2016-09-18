@@ -17,7 +17,6 @@ import hyperapp.server.article
 import hyperapp.server.blog
 import hyperapp.server.server_management
 import hyperapp.server.module_list
-import hyperapp.server.test_list
 import hyperapp.server.code_repository
 
 
