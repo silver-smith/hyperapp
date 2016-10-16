@@ -8,8 +8,8 @@ from . import route_storage
 from .remoting import Remoting
 from . import tcp_transport
 from . import encrypted_transport
-from . import code_repository
-from .code_repository import ModuleRepository, CodeRepository
+from . import client_code_repository
+from .client_code_repository import ClientModuleRepository, ClientCodeRepository
 from .type_repository import TypeRepository
 from .resources_loader import ResourcesLoader
 
@@ -28,8 +28,8 @@ class Services(object):
         self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
                                                      client_module=dynamic_modules_dir))
         self.route_storage_module = route_storage.ThisModule()
-        self.module_repository = ModuleRepository(dynamic_modules_dir)
-        self.code_repository = CodeRepository(self.type_repository, self.module_repository, self.resources_loader)
+        self.module_repository = ClientModuleRepository(dynamic_modules_dir)
+        self.client_code_repository = ClientCodeRepository(self.type_repository, self.module_repository, self.resources_loader)
         self._register_modules()
         self._load_server_modules()
         Module.init_phases()
@@ -38,7 +38,7 @@ class Services(object):
         self._register_transports()
 
     def _register_modules( self ):
-        for module in [code_repository]:
+        for module in [client_code_repository]:
             instance = module.ThisModule(self)  # will auto-register itself
             module.this_module = instance
         

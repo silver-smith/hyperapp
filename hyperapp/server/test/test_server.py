@@ -35,7 +35,7 @@ from hyperapp.common.route_storage import RouteStorage
 from hyperapp.server.module import Module
 from hyperapp.server import route_storage
 from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
-from hyperapp.server.code_repository import CodeRepository
+from hyperapp.server.client_code_repository import ClientCodeRepository
 from hyperapp.server.remoting import Remoting
 from hyperapp.server import tcp_transport
 from hyperapp.server import encrypted_transport
@@ -148,7 +148,7 @@ class Services(object):
         self.resources_loader = PhonyResourcesLoader()
         self.type_repository = PhonyTypeRepository()
         self.module_repository = PhonyModuleRepository()
-        self.code_repository = CodeRepository(self.type_repository, self.module_repository, self.resources_loader)
+        self.client_code_repository = ClientCodeRepository(self.type_repository, self.module_repository, self.resources_loader)
         self.remoting = Remoting(self.iface_registry)
         self._register_transports()
         

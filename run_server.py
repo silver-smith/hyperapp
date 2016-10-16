@@ -17,7 +17,7 @@ import hyperapp.server.article
 import hyperapp.server.blog
 import hyperapp.server.server_management
 import hyperapp.server.module_list
-import hyperapp.server.code_repository
+import hyperapp.server.client_code_repository
 
 
 DEFAULT_ADDR = 'localhost:8888'

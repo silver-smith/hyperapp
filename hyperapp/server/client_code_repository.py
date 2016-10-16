@@ -23,7 +23,7 @@ CODE_REPOSITORY_CLASS_NAME = 'code_repository'
 CODE_REPOSITORY_FACETS = [code_repository_iface, code_repository_browser_iface]
 
 
-class ModuleRepository(object):
+class ClientModuleRepository(object):
 
     def __init__( self, dynamic_modules_dir ):
         self._dynamic_modules_dir = dynamic_modules_dir
@@ -48,7 +48,7 @@ class ModuleRepository(object):
     def _load_dynamic_module( self, info_path ):
         with open(info_path) as f:
             info = yaml.load(f.read())
-        log.info('loaded module info: %r', info)
+        log.info('loaded client module info: %r', info)
         source_path = os.path.abspath(os.path.join(self._dynamic_modules_dir, info['source_path']))
         satisfies = [path.split('/') for path in info['satisfies']]
         module = self._load_module(info['id'], info['package'], satisfies, source_path)
@@ -63,7 +63,7 @@ class ModuleRepository(object):
         return tModule(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
 
 
-class CodeRepository(Object):
+class ClientCodeRepository(Object):
 
     iface = code_repository_iface
     facets = CODE_REPOSITORY_FACETS
@@ -135,7 +135,7 @@ class CodeRepository(Object):
         return self._resources_loader.load_resources(resource_id)
 
 
-class CodeRepositoryBrowser(SmallListObject):
+class ClientCodeRepositoryBrowser(SmallListObject):
 
     iface = code_repository_browser_iface
     facets = CODE_REPOSITORY_FACETS
@@ -172,14 +172,14 @@ class ThisModule(module_mod.Module):
     def __init__( self, services ):
         module_mod.Module.__init__(self, MODULE_NAME)
         self._module_repository = services.module_repository
-        self._code_repository = services.code_repository
+        self._code_repository = services.client_code_repository
 
     def resolve( self, iface, path ):
         objname = path.pop_str()
-        if objname == CodeRepository.class_name and iface is CodeRepository.iface:
+        if objname == ClientCodeRepository.class_name and iface is ClientCodeRepository.iface:
             return self._code_repository.resolve(path)
-        if objname == CodeRepositoryBrowser.class_name and iface is CodeRepositoryBrowser.iface:
-            return CodeRepositoryBrowser(self._module_repository).resolve(path)
+        if objname == ClientCodeRepositoryBrowser.class_name and iface is ClientCodeRepositoryBrowser.iface:
+            return ClientCodeRepositoryBrowser(self._module_repository).resolve(path)
         path.raise_not_found()
 
     def get_commands( self ):
@@ -187,5 +187,5 @@ class ThisModule(module_mod.Module):
 
     def run_command( self, request, command_id ):
         if command_id == 'code_repository':
-            return request.make_response_object(CodeRepositoryBrowser(self._module_repository))
+            return request.make_response_object(ClientCodeRepositoryBrowser(self._module_repository))
         return Module.run_command(self, request, command_id)

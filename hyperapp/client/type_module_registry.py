@@ -24,7 +24,7 @@ class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
         self._name2module[type_module.module_name] = type_module
         for rec in type_module.provided_classes:
             self._class2module[encode_path([rec.hierarchy_id, rec.class_id])] = type_module
-        self._resolve_module(type_module)
+        self._resolve_module_typedefs(type_module)
 
     def get_class_dynamic_module_id( self, id ):
         type_module = self._class2module.get(id)
@@ -52,9 +52,9 @@ class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
             return registry
         module = self._name2module.get(module_name)
         assert module, 'Unknown type module: %r' % module_name
-        return self._resolve_module(module)
+        return self._resolve_module_typedefs(module)
 
-    def _resolve_module( self, module ):
+    def _resolve_module_typedefs( self, module ):
         type_registry = resolve_typedefs(make_meta_type_registry(), builtin_type_registry(), module.typedefs)
         self._module_name_to_type_registry[module.module_name] = type_registry
         self._register_ifaces(module, type_registry)

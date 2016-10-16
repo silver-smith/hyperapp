@@ -19,7 +19,7 @@ class Transport(object):
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
         self._type_repository = services.type_repository
-        self._code_repository = services.code_repository
+        self._client_code_repository = services.client_code_repository
 
     def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
         request_rec = packet_coders.decode(payload_encoding, packet.payload, tClientPacket)
@@ -56,7 +56,7 @@ class Transport(object):
     def prepare_aux_info( self, response_or_notification ):
         requirements = RequirementsCollector().collect(tServerPacket, response_or_notification.to_data())
         type_modules = self._type_repository.get_modules_by_requirements(requirements)
-        modules = self._code_repository.get_modules_by_requirements(requirements)
+        modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
         server_pks = ServerPksCollector().collect_public_key_ders(tServerPacket, response_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
