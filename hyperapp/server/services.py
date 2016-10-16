@@ -49,6 +49,7 @@ class Services(object):
     def _load_server_modules( self ):
         for module_name in [
                 'admin',
+                'module_list',
                 'simple_text_object',
                 'sample_list',
                 ]:

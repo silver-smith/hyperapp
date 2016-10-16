@@ -32,11 +32,11 @@ class ModuleList(SmallListObject):
 
     @classmethod
     def get_path( cls ):
-        return module.make_path(cls.class_name)
+        return this_module.make_path(cls.class_name)
 
     @db_session
     def fetch_all_elements( self ):
-        return list(map(self.rec2element, module.Module.select().order_by(module.Module.id)))
+        return list(map(self.rec2element, this_module.Module.select().order_by(this_module.Module.id)))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -51,7 +51,7 @@ class ModuleList(SmallListObject):
     @db_session
     def command_delete( self, request ):
         id = request.params.element_key
-        module.Module[id].delete()
+        this_module.Module[id].delete()
         diff = self.Diff_delete(id)
         return request.make_response_update(self.iface, self.get_path(), diff)
 
@@ -70,7 +70,7 @@ class ModuleList(SmallListObject):
     @db_session
     def command_open( self, request ):
         id = request.params.element_key
-        rec = module.Module[id]
+        rec = this_module.Module[id]
         return request.make_response_handle(ModuleForm(rec.id).get_handle(request, name=rec.name))
 
 
@@ -91,7 +91,7 @@ class ModuleForm(Object):
         self.id = id or None
 
     def get_path( self ):
-        return module.make_path(self.class_name, self.id or '')
+        return this_module.make_path(self.class_name, self.id or '')
 
     def get_handle( self, request, name=None ):
         return tFormHandle('form', self.get(request), [
@@ -102,11 +102,11 @@ class ModuleForm(Object):
     @db_session
     def command_submit( self, request ):
         if self.id:
-            rec = module.Module[self.id]
+            rec = this_module.Module[self.id]
             rec.name = request.params.name
         else:
             id = str(uuid.uuid4())
-            rec = module.Module(id=id,
+            rec = this_module.Module(id=id,
                                 name=request.params.name)
         object = ModuleList()
         handle = ModuleList.ListHandle(object.get(request), key=rec.id)
@@ -132,11 +132,11 @@ class ModuleDepList(SmallListObject):
         self.module_id = module_id or None
 
     def get_path( self ):
-        return module.make_path(self.class_name, self.module_id)
+        return this_module.make_path(self.class_name, self.module_id)
 
     @db_session
     def fetch_all_elements( self ):
-        rec = module.Module[self.module_id]
+        rec = this_module.Module[self.module_id]
         return list(map(self.rec2element, rec.deps))
 
     @classmethod
@@ -148,7 +148,7 @@ class ModuleDepList(SmallListObject):
     @db_session
     def command_remove( self, request ):
         rec_id = request.params.element_key
-        rec = module.ModuleDep[rec_id]
+        rec = this_module.ModuleDep[rec_id]
         dep_module_rec = rec.dep
         rec.delete()
         available_list = AvailableDepList(self.module_id)
@@ -177,16 +177,16 @@ class AvailableDepList(SmallListObject):
         self.module_id = module_id or None
 
     def get_path( self ):
-        return module.make_path(self.class_name, self.module_id)
+        return this_module.make_path(self.class_name, self.module_id)
 
     @db_session
     def fetch_all_elements( self ):
-        dep_ids = set([dep.dep.id for dep in module.Module[self.module_id].deps])
+        dep_ids = set([dep.dep.id for dep in this_module.Module[self.module_id].deps])
         if dep_ids:
-            query = select(rec for rec in module.Module if rec.id not in dep_ids)
+            query = select(rec for rec in this_module.Module if rec.id not in dep_ids)
         else:
-            query = select(rec for rec in module.Module)
-        return list(map(self.rec2element, query.order_by(module.Module.id)))
+            query = select(rec for rec in this_module.Module)
+        return list(map(self.rec2element, query.order_by(this_module.Module.id)))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -197,9 +197,9 @@ class AvailableDepList(SmallListObject):
     @db_session
     def command_add( self, request ):
         module_id = request.params.element_key
-        dep_module = module.Module[module_id]
-        module_rec = module.Module[self.module_id]
-        rec = module.ModuleDep(module=module_rec, dep=dep_module, visible_as=dep_module.name)
+        dep_module = this_module.Module[module_id]
+        module_rec = this_module.Module[self.module_id]
+        rec = this_module.ModuleDep(module=module_rec, dep=dep_module, visible_as=dep_module.name)
         commit()  # generate rec.id
         dep_list = ModuleDepList(self.module_id)
         add_diff = dep_list.Diff_insert_one(rec.id, dep_list.rec2element(rec))
@@ -208,9 +208,9 @@ class AvailableDepList(SmallListObject):
         return request.make_response_update(self.iface, self.get_path(), remove_diff)
     
 
-class ModuleListModule(PonyOrmModule):
+class ThisModule(PonyOrmModule):
 
-    def __init__( self ):
+    def __init__( self, services ):
         PonyOrmModule.__init__(self, MODULE_NAME)
 
     def init_phase2( self ):
@@ -247,6 +247,3 @@ class ModuleListModule(PonyOrmModule):
         if command_id == 'open_module_list':
             return request.make_response_object(ModuleList())
         return PonyOrmModule.run_command(self, request, command_id)
-
-
-module = ModuleListModule()
