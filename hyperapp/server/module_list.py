@@ -2,12 +2,7 @@ import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
 from ..common.interface.form import tFormField, tFormHandle
 from ..common.interface.splitter import tSplitterHandle
-from ..common.interface.module_list import (
-    module_list_iface,
-    module_form_iface,
-    module_dep_list_iface,
-    available_dep_list_iface,
-    )
+from ..common.interface import module_list as module_list_types
 from .ponyorm_module import PonyOrmModule
 from .command import command
 from .object import Object, SmallListObject, subscription
@@ -20,7 +15,7 @@ MODULE_NAME = 'module_list'
 
 class ModuleList(SmallListObject):
 
-    iface = module_list_iface
+    iface = module_list_types.module_list
     objimpl_id = 'proxy_list'
     class_name = 'module_list'
     default_sort_column_id = 'id'
@@ -76,7 +71,7 @@ class ModuleList(SmallListObject):
 
 class ModuleForm(Object):
 
-    iface = module_form_iface
+    iface = module_list_types.module_form
     objimpl_id = 'proxy'
     class_name = 'module_form'
 
@@ -115,7 +110,7 @@ class ModuleForm(Object):
 
 class ModuleDepList(SmallListObject):
 
-    iface = module_dep_list_iface
+    iface = module_list_types.module_dep_list
     objimpl_id = 'proxy_list'
     class_name = 'module_dep_list'
     default_sort_column_id = 'id'
@@ -160,7 +155,7 @@ class ModuleDepList(SmallListObject):
 
 class AvailableDepList(SmallListObject):
 
-    iface = available_dep_list_iface
+    iface = module_list_types.available_dep_list
     objimpl_id = 'proxy_list'
     class_name = 'available_dep_list'
     default_sort_column_id = 'id'
