@@ -12,7 +12,6 @@ log = logging.getLogger(__name__)
 
 # self-registering modules:
 import hyperapp.server.ponyorm_module
-import hyperapp.server.fs
 import hyperapp.server.article
 import hyperapp.server.blog
 import hyperapp.server.server_management

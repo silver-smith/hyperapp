@@ -18,7 +18,7 @@ class FsObject(SmallListObject):
         self.fspath = os.path.abspath(fspath)
 
     def get_path( self ):
-        return module.make_path(self.fspath)
+        return this_module.make_path(self.fspath)
 
 
 class File(FsObject):
@@ -92,14 +92,14 @@ class Dir(FsObject):
     def command_open( self, request ):
         fname = request.params.element_key
         fspath = os.path.join(self.fspath, fname)
-        return request.make_response_object(module.open(fspath))
+        return request.make_response_object(this_module.open(fspath))
 
     @command('parent')
     def command_parent( self, request ):
         fspath = self.get_parent_dir()
         if fspath is None: return None
         key = os.path.basename(self.fspath)
-        handle = self.ListNarrowerHandle(module.open(fspath).get(request), 'key', key)
+        handle = self.ListNarrowerHandle(this_module.open(fspath).get(request), 'key', key)
         return request.make_response_handle(handle)
 
     def get_parent_dir( self ):
@@ -109,9 +109,9 @@ class Dir(FsObject):
         return dir
 
 
-class FileModule(Module):
+class ThisModule(Module):
 
-    def __init__( self ):
+    def __init__( self, services ):
         Module.__init__(self, MODULE_NAME)
 
     def resolve( self, iface, path ):
@@ -143,6 +143,3 @@ def fsname2uni( v ):
         return v
     else:
        return str(v, fs_encoding)
-
-
-module = FileModule()

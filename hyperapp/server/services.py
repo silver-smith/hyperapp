@@ -50,6 +50,7 @@ class Services(object):
         for module_name in [
                 'admin',
                 'module_list',
+                'fs',
                 'simple_text_object',
                 'sample_list',
                 ]:
