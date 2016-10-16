@@ -1,0 +1,15 @@
+
+file = list_interface file:
+    columns:
+        @idx: int
+        line: string
+
+dir = list_interface dir:
+    columns:
+        @key: string
+        ftype: string
+        ftime: int
+        fsize: int
+    commands:
+        request parent () -> (handle: handle opt)
+        request open (element_key: string) -> (handle: handle opt)

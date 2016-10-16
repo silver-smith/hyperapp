@@ -124,9 +124,13 @@ def p_interface_def( p ):
     'interface_def : INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[6])
 
-def p_list_interface_def( p ):
+def p_list_interface_def_1( p ):
     'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
     p[0] = t_list_interface_meta(p[2], p[7], p[6])
+
+def p_list_interface_def_2( p ):
+    'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_columns_defs BLOCK_END'
+    p[0] = t_list_interface_meta(p[2], [], p[6])
 
 def p_interface_command_defs( p ):
     'interface_command_defs : COMMANDS COLON NEWLINE BLOCK_BEGIN interface_command_list BLOCK_END'

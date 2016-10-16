@@ -2,7 +2,7 @@ import sys
 import os.path
 import stat
 from ..common.htypes import Column
-from ..common.interface.fs import file_iface, dir_iface
+from ..common.interface import fs as fs_types
 from .command import command
 from .object import SmallListObject
 from .module import Module, ModuleCommand
@@ -23,7 +23,7 @@ class FsObject(SmallListObject):
 
 class File(FsObject):
 
-    iface = file_iface
+    iface = fs_types.file
     objimpl_id = 'proxy_list'
     default_sort_column_id = 'idx'
 
@@ -42,7 +42,7 @@ class File(FsObject):
 
 class Dir(FsObject):
 
-    iface = dir_iface
+    iface = fs_types.dir
     objimpl_id = 'proxy_list'
 
     def fetch_all_elements( self ):

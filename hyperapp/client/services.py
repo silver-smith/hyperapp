@@ -2,7 +2,6 @@ import os.path
 
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
-import hyperapp.common.interface.fs
 import hyperapp.common.interface.blog
 import hyperapp.common.interface.article
 
