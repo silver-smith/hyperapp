@@ -1,7 +1,10 @@
+import logging
 from ..common.util import is_list_inst, encode_path
 from ..common.htypes import Interface, tTypeModule, make_meta_type_registry, builtin_type_registry, IfaceRegistry
 from ..common.type_module import resolve_typedefs
 from ..common import module_manager as common_module_manager
+
+log = logging.getLogger(__name__)
 
 
 class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
@@ -21,6 +24,7 @@ class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
 
     def register( self, type_module ):
         assert isinstance(type_module, tTypeModule), repr(type_module)
+        log.info('type module registry: registering type module %r', type_module.module_name)
         self._name2module[type_module.module_name] = type_module
         for rec in type_module.provided_classes:
             self._class2module[encode_path([rec.hierarchy_id, rec.class_id])] = type_module
