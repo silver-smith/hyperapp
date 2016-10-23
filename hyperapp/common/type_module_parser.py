@@ -121,8 +121,8 @@ def p_interface_def( p ):
     p[0] = t_interface_meta(p[2], p[5])
 
 def p_list_interface_def_1( p ):
-    'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
-    p[0] = t_list_interface_meta(p[2], p[6], p[5])
+    'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs STMT_SEP interface_command_defs BLOCK_END'
+    p[0] = t_list_interface_meta(p[2], p[7], p[5])
 
 def p_list_interface_def_2( p ):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
@@ -162,7 +162,7 @@ def p_command_field( p ):
 
 
 def p_interface_columns_defs( p ):
-    'interface_columns_defs : COLUMNS COLON BLOCK_BEGIN columns_defs BLOCK_END STMT_SEP'
+    'interface_columns_defs : COLUMNS COLON BLOCK_BEGIN columns_defs BLOCK_END'
     p[0] = p[4]
 
 
