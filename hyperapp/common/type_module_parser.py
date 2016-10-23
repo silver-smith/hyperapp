@@ -29,6 +29,7 @@ tok_name = dict(token.tok_name,
 
 NEWLINE = tok_name[token.NEWLINE]
 NL = tok_name[tokenize.NL]
+ENDMARKER = tok_name[token.ENDMARKER]
 
 ignored_tokens = [NL]
 
@@ -69,14 +70,8 @@ def syntax_error( p, token_num, msg ):
 
 
 def p_module( p ):
-    'module : ENCODING typedef_list eom'
+    'module : ENCODING typedef_list ENDMARKER'
     p[0] = p[2]
-
-def p_eom_1( p ):
-    'eom : STMT_SEP ENDMARKER'
-
-def p_eom_2( p ):
-    'eom : ENDMARKER'
 
 def p_typedef_list_1( p ):
     'typedef_list : typedef_list STMT_SEP typedef'
@@ -241,8 +236,12 @@ class Lexer(object):
             return tok
         while True:
             next = self._get_next_token()
+            if tok.type == STMT_SEP and next and next.type == STMT_SEP:
+                continue  # merge separators
             if not next or not next.type in ignored_tokens:
                 break
+        if tok.type == STMT_SEP and next and next.type == ENDMARKER:
+            tok, next = next, None  # remove STMT_SEP before ENDMARKER
         if tok.type == STMT_SEP and next and next.type == BLOCK_END:
             tok, next = next, tok  # swap STMT_SEP and BLOCK_END - parser is straightforward then
         self._next_token = next
@@ -256,7 +255,7 @@ class Lexer(object):
         if tinfo.type == token.INDENT:
             if not self._tab_size:
                 # first indent found, this is file tab size
-                assert '\t' not in tinfo.string, 'Tab intention is not supported'
+                assert '\t' not in tinfo.string, 'Tab indentation is not supported'
                 self._tab_size = len(tinfo.string)
             assert len(tinfo.string) % self._tab_size == 0, \
               'line %d: Invalid indent: %r (detected tab size: %d)' % (tinfo.start[0], tinfo.string, self._tab_size)
