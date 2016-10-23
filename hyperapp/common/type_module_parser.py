@@ -20,6 +20,7 @@ from .htypes import (
 
 keywords = ['opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns']
 
+STMT_SEP = 'STMT_SEP'  # NEWLINEs converted to this one
 BLOCK_BEGIN = 'BLOCK_BEGIN'
 BLOCK_END = 'BLOCK_END'
 ARROW = 'ARROW'
@@ -34,7 +35,6 @@ ignored_tokens = [NL]
 token_types = [
     tokenize.ENCODING,
     token.ENDMARKER,
-    token.NEWLINE,
     token.NAME,
     token.EQUAL,
     token.LPAR,
@@ -48,6 +48,7 @@ EXACT_TOKEN_TYPES = {
     '->':  ARROW,
     }
 tokens = [tok_name[t] for t in token_types] + [
+    STMT_SEP,
     BLOCK_BEGIN,
     BLOCK_END,
     ARROW,
@@ -72,13 +73,13 @@ def p_module( p ):
     p[0] = p[2]
 
 def p_eom_1( p ):
-    'eom : NEWLINE ENDMARKER'
+    'eom : STMT_SEP ENDMARKER'
 
 def p_eom_2( p ):
     'eom : ENDMARKER'
 
 def p_typedef_list_1( p ):
-    'typedef_list : typedef_list NEWLINE typedef'
+    'typedef_list : typedef_list STMT_SEP typedef'
     p[0] = p[1] + [p[3]]
 
 def p_typedef_list_2( p ):
@@ -112,7 +113,7 @@ def p_class_base_def_2( p ):
 
 
 def p_class_fields_def_1( p ):
-    'class_fields_def : COLON NEWLINE BLOCK_BEGIN field_list BLOCK_END'
+    'class_fields_def : COLON STMT_SEP BLOCK_BEGIN field_list BLOCK_END'
     p[0] = p[4]
     
 def p_class_fields_def_2( p ):
@@ -121,23 +122,23 @@ def p_class_fields_def_2( p ):
 
 
 def p_interface_def( p ):
-    'interface_def : INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_command_defs BLOCK_END'
+    'interface_def : INTERFACE NAME COLON STMT_SEP BLOCK_BEGIN interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[6])
 
 def p_list_interface_def_1( p ):
-    'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
+    'interface_def : LIST_INTERFACE NAME COLON STMT_SEP BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
     p[0] = t_list_interface_meta(p[2], p[7], p[6])
 
 def p_list_interface_def_2( p ):
-    'interface_def : LIST_INTERFACE NAME COLON NEWLINE BLOCK_BEGIN interface_columns_defs BLOCK_END'
+    'interface_def : LIST_INTERFACE NAME COLON STMT_SEP BLOCK_BEGIN interface_columns_defs BLOCK_END'
     p[0] = t_list_interface_meta(p[2], [], p[6])
 
 def p_interface_command_defs( p ):
-    'interface_command_defs : COMMANDS COLON NEWLINE BLOCK_BEGIN interface_command_list BLOCK_END'
+    'interface_command_defs : COMMANDS COLON STMT_SEP BLOCK_BEGIN interface_command_list BLOCK_END'
     p[0] = p[5]
 
 def p_interface_command_list_1( p ):
-    'interface_command_list : interface_command_list NEWLINE interface_command'
+    'interface_command_list : interface_command_list STMT_SEP interface_command'
     p[0] = p[1] + [p[3]]
 
 def p_interface_command_list_3( p ):
@@ -166,12 +167,12 @@ def p_command_field( p ):
 
 
 def p_interface_columns_defs( p ):
-    'interface_columns_defs : COLUMNS COLON NEWLINE BLOCK_BEGIN columns_defs BLOCK_END NEWLINE'
+    'interface_columns_defs : COLUMNS COLON STMT_SEP BLOCK_BEGIN columns_defs BLOCK_END STMT_SEP'
     p[0] = p[5]
 
 
 def p_columns_defs_1( p ):
-    'columns_defs : columns_defs NEWLINE column_def'
+    'columns_defs : columns_defs STMT_SEP column_def'
     p[0] = p[1] + [p[3]]
 
     
@@ -190,7 +191,7 @@ def p_column_def_2( p ):
 
 
 def p_field_list_1( p ):
-    'field_list : field_list NEWLINE field_def'
+    'field_list : field_list STMT_SEP field_def'
     p[0] = p[1] + [p[3]]
 
 def p_field_list_2( p ):
@@ -242,8 +243,8 @@ class Lexer(object):
             next = self._get_next_token()
             if not next or not next.type in ignored_tokens:
                 break
-        if tok.type == NEWLINE and next and next.type == BLOCK_END:
-            tok, next = next, tok  # swap NEWLINE and BLOCK_END - parser is straightforward then
+        if tok.type == STMT_SEP and next and next.type == BLOCK_END:
+            tok, next = next, tok  # swap STMT_SEP and BLOCK_END - parser is straightforward then
         self._next_token = next
         return tok
 
@@ -265,6 +266,8 @@ class Lexer(object):
         elif tinfo.type == token.DEDENT:
             self._indent -= 1
             t = BLOCK_END
+        elif tinfo.type == token.NEWLINE:
+            t = STMT_SEP
         elif tinfo.type == token.OP and tinfo.string in EXACT_TOKEN_TYPES:
             t = EXACT_TOKEN_TYPES[tinfo.string]
         elif tinfo.string in keywords:
