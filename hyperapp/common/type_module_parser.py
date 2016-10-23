@@ -108,8 +108,8 @@ def p_class_base_def_2( p ):
 
 
 def p_class_fields_def_1( p ):
-    'class_fields_def : COLON STMT_SEP BLOCK_BEGIN field_list BLOCK_END'
-    p[0] = p[4]
+    'class_fields_def : COLON BLOCK_BEGIN field_list BLOCK_END'
+    p[0] = p[3]
     
 def p_class_fields_def_2( p ):
     'class_fields_def : empty'
@@ -117,20 +117,20 @@ def p_class_fields_def_2( p ):
 
 
 def p_interface_def( p ):
-    'interface_def : INTERFACE NAME COLON STMT_SEP BLOCK_BEGIN interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[6])
+    'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[5])
 
 def p_list_interface_def_1( p ):
-    'interface_def : LIST_INTERFACE NAME COLON STMT_SEP BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
-    p[0] = t_list_interface_meta(p[2], p[7], p[6])
+    'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs interface_command_defs BLOCK_END'
+    p[0] = t_list_interface_meta(p[2], p[6], p[5])
 
 def p_list_interface_def_2( p ):
-    'interface_def : LIST_INTERFACE NAME COLON STMT_SEP BLOCK_BEGIN interface_columns_defs BLOCK_END'
-    p[0] = t_list_interface_meta(p[2], [], p[6])
+    'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
+    p[0] = t_list_interface_meta(p[2], [], p[5])
 
 def p_interface_command_defs( p ):
-    'interface_command_defs : COMMANDS COLON STMT_SEP BLOCK_BEGIN interface_command_list BLOCK_END'
-    p[0] = p[5]
+    'interface_command_defs : COMMANDS COLON BLOCK_BEGIN interface_command_list BLOCK_END'
+    p[0] = p[4]
 
 def p_interface_command_list_1( p ):
     'interface_command_list : interface_command_list STMT_SEP interface_command'
@@ -162,8 +162,8 @@ def p_command_field( p ):
 
 
 def p_interface_columns_defs( p ):
-    'interface_columns_defs : COLUMNS COLON STMT_SEP BLOCK_BEGIN columns_defs BLOCK_END STMT_SEP'
-    p[0] = p[5]
+    'interface_columns_defs : COLUMNS COLON BLOCK_BEGIN columns_defs BLOCK_END STMT_SEP'
+    p[0] = p[4]
 
 
 def p_columns_defs_1( p ):
@@ -242,6 +242,8 @@ class Lexer(object):
                 break
         if tok.type == STMT_SEP and next and next.type == ENDMARKER:
             tok, next = next, None  # remove STMT_SEP before ENDMARKER
+        if tok.type == STMT_SEP and next and next.type == BLOCK_BEGIN:
+            tok, next = next, None  # remove STMT_SEP before BLOCK_BEGIN
         if tok.type == STMT_SEP and next and next.type == BLOCK_END:
             tok, next = next, tok  # swap STMT_SEP and BLOCK_END - parser is straightforward then
         self._next_token = next
