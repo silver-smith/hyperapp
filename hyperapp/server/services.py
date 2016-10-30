@@ -51,6 +51,7 @@ class Services(object):
                 'admin',
                 'module_list',
                 'fs',
+                'blog',
                 'simple_text_object',
                 'sample_list',
                 ]:

@@ -21,20 +21,20 @@ class BlogEntry(article.Article):
     objimpl_id = 'proxy.text'
 
     def get_path( self ):
-        return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
+        return this_module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
 
-    @command('parent')    
+    @command('parent')
     def command_parent( self, request ):
         return request.make_response_object(Blog())
 
     @db_session
     def do_save( self, request, text ):
         if self.article_id is not None:
-            entry_rec = module.BlogEntry[self.article_id]
+            entry_rec = this_module.BlogEntry[self.article_id]
             entry_rec.text = text
             is_insertion = False
         else:
-            entry_rec = module.BlogEntry(
+            entry_rec = this_module.BlogEntry(
                 text=text,
                 created_at=utcnow())
             is_insertion = True
@@ -64,7 +64,7 @@ class Blog(SmallListObject):
 
     @classmethod
     def get_path( cls ):
-        return module.make_path(cls.class_name)
+        return this_module.make_path(cls.class_name)
 
     @command('add')
     def command_add( self, request ):
@@ -72,7 +72,7 @@ class Blog(SmallListObject):
 
     @db_session
     def fetch_all_elements( self ):
-        return list(map(self.rec2element, module.BlogEntry.select().order_by(desc(module.BlogEntry.created_at))))
+        return list(map(self.rec2element, this_module.BlogEntry.select().order_by(desc(this_module.BlogEntry.created_at))))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -88,14 +88,14 @@ class Blog(SmallListObject):
     @db_session
     def command_delete( self, request ):
         article_id = request.params.element_key
-        module.BlogEntry[article_id].delete()
+        this_module.BlogEntry[article_id].delete()
         diff = self.Diff_delete(article_id)
         subscription.distribute_update(self.iface, self.get_path(), diff)
 
 
-class BlogModule(PonyOrmModule):
+class ThisModule(PonyOrmModule):
 
-    def __init__( self ):
+    def __init__( self, services ):
         PonyOrmModule.__init__(self, MODULE_NAME)
         self.article_module = article.module
 
@@ -125,6 +125,3 @@ class BlogModule(PonyOrmModule):
         if command_id == 'open_blog':
             return request.make_response_object(Blog())
         return PonyOrmModule.run_command(self, request, command_id)
-
-
-module = BlogModule()
