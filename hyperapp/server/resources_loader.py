@@ -16,7 +16,7 @@ class ResourcesLoader(object):
     def load_resources( self, resource_id ):
         dir = self._dir_map.get(resource_id[0])
         assert dir, 'Unknown resource type: %r' % resource_id[0]
-        log.info('loading resources for %r' % encode_path(resource_id))
+        log.info('loading resources for %r from %r', encode_path(resource_id), dir)
         for fpath in glob.glob(os.path.join(dir, '%s.resources.*.yaml' % resource_id[1])):
             locale = fpath.split('.')[-2]
             log.info('  found resources for locale %r' % locale)

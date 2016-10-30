@@ -1,10 +1,10 @@
 
-file = list_interface file:
+fs_file = list_interface fs_file:
     columns:
         @idx: int
         line: string
 
-dir = list_interface dir:
+fs_dir = list_interface fs_dir:
     columns:
         @key: string
         ftype: string

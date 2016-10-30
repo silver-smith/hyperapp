@@ -23,7 +23,7 @@ class FsObject(SmallListObject):
 
 class File(FsObject):
 
-    iface = fs_types.file
+    iface = fs_types.fs_file
     objimpl_id = 'proxy_list'
     default_sort_column_id = 'idx'
 
@@ -42,7 +42,7 @@ class File(FsObject):
 
 class Dir(FsObject):
 
-    iface = fs_types.dir
+    iface = fs_types.fs_dir
     objimpl_id = 'proxy_list'
 
     def fetch_all_elements( self ):
