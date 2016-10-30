@@ -53,19 +53,32 @@ class ModuleManager(object):
 
     def _import( self, module_name, name, globals=None, locals=None, from_list=(), level=0 ):
         ## log.info('__import__ %r - %r %r %r %r %r', module_name, name, from_list, level, globals, locals)
-        namel = name.split('.')
-        if level == 2 and namel[:-1] == ['common', 'interface'] and self._type_module_registry.has_module(namel[-1]):
-            result = self._import_type_module(namel[-1])
+        name_list = list(filter(None, name.split('.')))  # remove possible empty name at the end
+        module_name_list = module_name.split('.')
+        if level:
+            full_name_list = module_name_list[:len(module_name_list) - level] + name_list
         else:
-            non_type_module_from_list = tuple(name for name in from_list or [] if not self._type_module_registry.has_module(name))
-            result = __import__(name, globals, locals, non_type_module_from_list, level)
-            for sub_name in from_list or []:
-                ## print('  sub_name', sub_name, hasattr(result, sub_name), self._type_module_registry.has_module(sub_name))
-                if hasattr(result, sub_name): continue
-                if self._type_module_registry.has_module(sub_name):
-                    setattr(result, sub_name, self._import_type_module(sub_name))
+            full_name_list = name_list
+        log.debug('%r %r %r %r %r', module_name, level, name, full_name_list, from_list)
+        module = self._import_module(full_name_list, globals, locals)
+        for sub_name in from_list or []:
+            log.debug('  %r : %r %r', sub_name, module, hasattr(module, sub_name))
+            if hasattr(module, sub_name): continue
+            sub_module = self._import_module(full_name_list + [sub_name], globals, locals)
+            setattr(module, sub_name, sub_module)
         ## log.info('  -> %r', result)
-        return result
+        return module
+
+    def _import_module( self, name_list, globals, locals ):
+        if (name_list[:3] == ['hyperapp', 'common', 'interface']
+            and len(name_list) == 4
+            and self._type_module_registry.has_module(name_list[3])):
+            return self._import_type_module(name_list[3])
+        module = __import__('.'.join(name_list), globals, locals, (), 0)
+        return module
+        for name in name_list[1:]:  # __import__ returns top-level module
+            module = getattr(module, name)
+        return module
 
     def _import_type_module( self, module_name ):
         log.info('    importing type module %r', module_name)

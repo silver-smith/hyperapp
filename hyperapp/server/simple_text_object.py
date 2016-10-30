@@ -2,8 +2,8 @@
 
 import os.path
 from .. common.htypes import tObjHandle
+from .. common.interface import text_object_types
 from .module import Module, ModuleCommand
-from . import text_object_types
 
 
 MODULE_NAME = 'test_text_object'
