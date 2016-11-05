@@ -30,6 +30,7 @@ class Services(object):
         self.route_storage_module = route_storage.ThisModule()
         self.module_repository = ClientModuleRepository(dynamic_modules_dir)
         self.client_code_repository = ClientCodeRepository(self.type_repository, self.module_repository, self.resources_loader)
+        self.module_manager.register_meta_hook()
         self._register_modules()
         self._load_server_modules()
         Module.init_phases()

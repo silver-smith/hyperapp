@@ -11,7 +11,7 @@ class ModuleManager(common_module_manager.ModuleManager):
 
     def add_code_module( self, module ):
         log.info('loading server code module %r package=%r fpath=%r', module.id, module.package, module.fpath)
-        self._load_module(module)
+        self.load_code_module(module)
 
     def _register_provided_services( self, module, module_dict ):
         this_module_class = module_dict.get('ThisModule')
