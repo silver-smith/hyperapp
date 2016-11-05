@@ -68,6 +68,7 @@ class Services(object):
         self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
         self.bookmarks = Bookmarks(FileNamedUrlRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
+        self.module_mgr.register_meta_hook()
         self._register_transports()
         self._register_modules()
         self._load_resources()

@@ -26,7 +26,7 @@ class ModuleManager(common_module_manager.ModuleManager):
     def add_module( self, module ):
         log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
         self._id2module[module.id] = module
-        self._load_module(module)
+        self.load_code_module(module)
 
     def resolve_ids( self, module_ids ):
         modules = []
