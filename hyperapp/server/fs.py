@@ -7,9 +7,6 @@ from .command import command
 from .object import SmallListObject
 from .module import Module, ModuleCommand
 
-print(os)
-print(os.path)
-
 MODULE_NAME = 'file'
 
 
