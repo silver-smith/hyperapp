@@ -69,7 +69,7 @@ class ModuleManager(object):
     def _exec_code_module( self, module, code_module ):
         ast = compile(code_module.source, code_module.fpath, 'exec')  # using compile allows to associate file path with loaded module
         exec(ast, module.__dict__)
-        self._register_provided_services(module, module_inst.__dict__)
+        self._register_provided_services(code_module, module.__dict__)
 
     def _exec_type_module( self, module, module_name ):
         log.info('    importing type module %r', module_name)
