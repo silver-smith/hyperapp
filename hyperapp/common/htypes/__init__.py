@@ -34,4 +34,6 @@ def builtin_type_registry():
     registry.register('handle', tHandle)
     registry.register('object', tObject)
     registry.register('base_object', tBaseObject)
+    registry.register('view_handle', tViewHandle)
+    registry.register('obj_handle', tObjHandle)
     return registry

@@ -128,18 +128,24 @@ class MetaTypeTest(unittest.TestCase):
                             t_field_meta('noti_param2', t_named('datetime'))]),
             t_command_meta('request', 'request_open', [],
                            [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
+            ], contents_fields=[
+                t_field_meta('text', t_named('string')),
             ])
         data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
         t = self.meta_type_registry.resolve(type_names, data)
         t.iface_id = 'unit_test_iface'  # hack it back for comparision
-        self.assertEqual(Interface('unit_test_iface', commands=[
-            RequestCmd('request_one',
-                       [Field('req_param1', tString)],
-                       [Field('req_result1', TList(tInt))]),
-            NotificationCmd('notification_one',
-                            [Field('noti_param1', TOptional(tBool)),
-                             Field('noti_param2', tDateTime)]),
-            OpenCommand('request_open'),
+        self.assertEqual(Interface('unit_test_iface',
+            contents_fields=[
+                Field('text', tString),
+            ],
+            commands=[
+                RequestCmd('request_one',
+                           [Field('req_param1', tString)],
+                           [Field('req_result1', TList(tInt))]),
+                NotificationCmd('notification_one',
+                                [Field('noti_param1', TOptional(tBool)),
+                                 Field('noti_param2', tDateTime)]),
+                OpenCommand('request_open'),
             ]), t)
 
     def test_list_interface( self ):
@@ -150,11 +156,17 @@ class MetaTypeTest(unittest.TestCase):
             ], columns=[
                 t_column_meta('key', t_named('int'), is_key=True),
                 t_column_meta('text', t_named('string'), is_key=False),
+            ], contents_fields=[
+                t_field_meta('text', t_named('string')),
             ])
         data.iface_id = data.iface_id + '_new_list'  # hack to prevent tObject etc registration dup
         t = self.meta_type_registry.resolve(type_names, data)
         t.iface_id = 'unit_test_list_iface'  # hack it back for comparision
-        self.assertEqual(ListInterface('unit_test_list_iface', commands=[
+        self.assertEqual(ListInterface('unit_test_list_iface',
+            contents_fields=[
+                Field('text', tString),
+            ],
+            commands=[
                 OpenCommand('request_open'),
             ], columns=[
                 Column('key', tInt, is_key=True),

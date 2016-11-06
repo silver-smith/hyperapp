@@ -14,7 +14,7 @@ from .htypes import (
     tResourceId,
     )
 from .hierarchy import THierarchy
-from .meta_type import tMetaType, tInterfaceMeta, command_from_data
+from .meta_type import tMetaType, tInterfaceMeta, field_list_from_data, command_from_data
 from .interface import RequestCmd, OpenCommand, ContentsCommand, tHandle, tObjHandle, Interface
 
 
@@ -77,13 +77,14 @@ tListInterface = tMetaType.register('list_interface', base=tInterfaceMeta, field
 def t_column_meta( id, type, is_key ):
     return tColumn(id, type, is_key)
 
-def t_list_interface_meta( iface_id, commands, columns ):
-    return tListInterface(tListInterface.id, iface_id, commands, columns)
+def t_list_interface_meta( iface_id, commands, columns, contents_fields=None ):
+    return tListInterface(tListInterface.id, iface_id, contents_fields or [], commands, columns)
 
 def list_interface_from_data( meta_registry, type_registry, rec ):
+    contents_fields = field_list_from_data(meta_registry, type_registry, rec.contents_fields)
     commands = [command_from_data(meta_registry, type_registry, command) for command in rec.commands]
     columns = [Column.from_data(meta_registry, type_registry, column) for column in rec.columns]
-    return ListInterface(rec.iface_id, commands=commands, columns=columns)
+    return ListInterface(rec.iface_id, contents_fields=contents_fields, commands=commands, columns=columns)
 
 
 stringColumnType = tSimpleColumnType('string')

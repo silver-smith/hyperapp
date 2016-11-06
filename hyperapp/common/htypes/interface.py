@@ -141,6 +141,7 @@ class Interface(object):
     def __eq__( self, other ):
         return (isinstance(other, Interface) and
                 other.iface_id == self.iface_id and
+                other.contents_fields == self.contents_fields and
                 other.commands == self.commands)
 
     def get_object_type( self ):
