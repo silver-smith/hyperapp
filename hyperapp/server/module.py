@@ -24,7 +24,6 @@ class Module(object):
         self.name = name
         self.module_registry.append(self)  # preserves import order
         self.module_by_name[name] = self
-        log.debug('Module.__init__: %s', name)
 
     def init_phase2( self ):
         pass

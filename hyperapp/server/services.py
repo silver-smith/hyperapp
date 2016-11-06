@@ -56,7 +56,7 @@ class Services(object):
                 'simple_text_object',
                 'sample_list',
                 ]:
-            fpath = os.path.join(self.server_dir, module_name + '.py')
+            fpath = os.path.join(self.server_dir, module_name + '.dyn.py')
             with open(fpath) as f:
                 source = f.read()
             package = 'hyperapp.server'

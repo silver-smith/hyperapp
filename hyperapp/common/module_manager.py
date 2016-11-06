@@ -32,7 +32,7 @@ class ModuleManager(object):
         self._code_modules = {}  # fullname -> tModule
 
     def register_meta_hook( self ):
-        sys.meta_path.insert(0, self)
+        sys.meta_path.append(self)
 
     def find_spec( self, fullname, path, target=None ):
         if fullname in self._code_modules:
@@ -62,14 +62,12 @@ class ModuleManager(object):
         assert isinstance(module, tModule), repr(module)
         if fullname is None:
             fullname = module.package + '.' + module.id.replace('-', '_')
-        log.debug('load_code_module: %s', fullname)
         if fullname in sys.modules:
             return  # already loaded
         self._code_modules[fullname] = module
         importlib.import_module(fullname)
 
     def _exec_code_module( self, module, code_module ):
-        #log.debug('_exec_code_module: %s', module)
         ast = compile(code_module.source, code_module.fpath, 'exec')  # using compile allows to associate file path with loaded module
         exec(ast, module.__dict__)
         self._register_provided_services(code_module, module.__dict__)
