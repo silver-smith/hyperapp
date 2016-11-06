@@ -18,7 +18,7 @@ from .htypes import (
     )
 
 
-keywords = ['opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns', 'contents']
+keywords = ['opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns', 'contents', 'diff_type']
 
 STMT_SEP = 'STMT_SEP'  # NEWLINEs converted to this one
 BLOCK_BEGIN = 'BLOCK_BEGIN'
@@ -124,6 +124,10 @@ def p_interface_def_2( p ):
     'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[7], contents_fields=p[5])
 
+def p_interface_def_3( p ):
+    'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_diff_type_def STMT_SEP interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[9], contents_fields=p[7], diff_type=p[5])
+
 
 def p_list_interface_def_1( p ):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs STMT_SEP interface_command_defs BLOCK_END'
@@ -132,6 +136,11 @@ def p_list_interface_def_1( p ):
 def p_list_interface_def_2( p ):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
     p[0] = t_list_interface_meta(p[2], [], p[5])
+
+
+def p_interface_diff_type_def( p ):
+    'interface_diff_type_def : DIFF_TYPE COLON type_expr'
+    p[0] = p[3]
 
 
 def p_interface_contents_defs( p ):

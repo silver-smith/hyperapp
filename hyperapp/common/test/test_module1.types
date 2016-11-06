@@ -8,6 +8,7 @@ text_object = object class text_2(base_object):
   text: string
 
 params_form_iface = interface test_list_params_2:
+  diff_type: string
   contents:
     contents_1: string
     contents_2: int
