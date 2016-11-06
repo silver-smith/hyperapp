@@ -142,6 +142,7 @@ class Interface(object):
         return (isinstance(other, Interface) and
                 other.iface_id == self.iface_id and
                 other.contents_fields == self.contents_fields and
+                other.diff_type == self.diff_type and
                 other.commands == self.commands)
 
     def get_object_type( self ):

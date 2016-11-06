@@ -130,7 +130,8 @@ class MetaTypeTest(unittest.TestCase):
                            [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
             ], contents_fields=[
                 t_field_meta('text', t_named('string')),
-            ])
+            ], diff_type=t_named('string')
+            )
         data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
         t = self.meta_type_registry.resolve(type_names, data)
         t.iface_id = 'unit_test_iface'  # hack it back for comparision
@@ -138,6 +139,7 @@ class MetaTypeTest(unittest.TestCase):
             contents_fields=[
                 Field('text', tString),
             ],
+            diff_type=tString,
             commands=[
                 RequestCmd('request_one',
                            [Field('req_param1', tString)],

@@ -35,7 +35,8 @@ def test_yacc( fpaths ):
         print('typedefs:', typedefs)
         for name, t in type_registry.items():
             print('type %s: %s' % (name, t))
-        pprint(TList(tTypeDef), typedefs)
+        if typedefs:
+            pprint(TList(tTypeDef), typedefs)
 
 
 def main():
