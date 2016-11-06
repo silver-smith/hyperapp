@@ -54,12 +54,12 @@ class Article(Object):
         self.mode = mode
 
     def get_path( self ):
-        return module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
+        return this_module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
         
     @db_session
     def get_contents( self, **kw ):
         if self.article_id is not None:
-            rec = module.Article[self.article_id]
+            rec = this_module.Article[self.article_id]
             text = rec.text
         else:
             text = None
@@ -83,7 +83,7 @@ class Article(Object):
     @db_session
     def command_open_ref( self, request ):
         ref_id = request.params.ref_id
-        rec = module.ArticleRef[ref_id]
+        rec = this_module.ArticleRef[ref_id]
         iface = iface_registry.resolve(rec.iface)
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
@@ -91,16 +91,16 @@ class Article(Object):
             target_url = Url(iface, public_key, path)
             return request.make_response_handle(tRedirectHandle(redirect_to=target_url.to_data()))
         else:
-            target = module.run_resolver(iface, path)
+            target = this_module.run_resolver(iface, path)
             return request.make_response_object(target)
 
     @db_session
     def do_save( self, request, text ):
         if self.article_id is not None:
-            article_rec = module.Article[self.article_id]
+            article_rec = this_module.Article[self.article_id]
             article_rec.text = text
         else:
-            article_rec = module.Article(text=text)
+            article_rec = this_module.Article(text=text)
         commit()
         self.article_id = article_rec.id  # now may have new get_path()
         log.info('Article is saved, article_id = %r', self.article_id)
@@ -125,12 +125,12 @@ class ArticleRefList(SmallListObject):
         self.article_id = article_id
 
     def get_path( self ):
-        return module.make_path(self.class_name, path_part_to_str(self.article_id))
+        return this_module.make_path(self.class_name, path_part_to_str(self.article_id))
 
     @command('parent')
     @db_session
     def command_parent( self, request ):
-        rec = module.Article[self.article_id]
+        rec = this_module.Article[self.article_id]
         return request.make_response_object(Article.from_rec(rec))
 
     @command('add')
@@ -141,7 +141,7 @@ class ArticleRefList(SmallListObject):
             server_public_key_pem = ''
         else:
             server_public_key_pem = url.public_key.to_pem()
-        rec = module.ArticleRef(article=module.Article[self.article_id],
+        rec = this_module.ArticleRef(article=this_module.Article[self.article_id],
                                 server_public_key_pem=server_public_key_pem.strip(),
                                 iface=url.iface.iface_id,
                                 path=encode_path(url.path))
@@ -159,15 +159,15 @@ class ArticleRefList(SmallListObject):
     @db_session
     def command_delete( self, request ):
         ref_id = request.params.element_key
-        module.ArticleRef[ref_id].delete()
+        this_module.ArticleRef[ref_id].delete()
         diff = self.Diff_delete(ref_id)
         subscription.distribute_update(self.iface, self.get_path(), diff)
 
     @db_session
     def fetch_all_elements( self ):
-        return list(map(self.rec2element, select(ref for ref in module.ArticleRef
-            if ref.article==module.Article[self.article_id]) \
-            .order_by(module.ArticleRef.id)))
+        return list(map(self.rec2element, select(ref for ref in this_module.ArticleRef
+            if ref.article==this_module.Article[self.article_id]) \
+            .order_by(this_module.ArticleRef.id)))
 
     @classmethod
     def rec2element( cls, rec ):
@@ -198,7 +198,7 @@ class RefSelector(Object):
         self.ref_id = ref_id
 
     def get_path( self ):
-        return module.make_path(self.class_name, path_part_to_str(self.article_id), path_part_to_str(self.ref_id))
+        return this_module.make_path(self.class_name, path_part_to_str(self.article_id), path_part_to_str(self.ref_id))
 
     @command('choose')
     @db_session
@@ -209,12 +209,12 @@ class RefSelector(Object):
         else:
             server_public_key_pem = url.public_key.to_pem()
         if self.ref_id is None:
-            rec = module.ArticleRef(article=module.Article[self.article_id],
+            rec = this_module.ArticleRef(article=this_module.Article[self.article_id],
                                     server_public_key_pem=server_public_key_pem,
                                     iface=url.iface.iface_id,
                                     path=encode_path(url.path))
         else:
-            rec = module.ArticleRef[self.ref_id]
+            rec = this_module.ArticleRef[self.ref_id]
             rec.server_public_key_pem = server_public_key_pem
             rec.iface = url.iface.iface_id
             rec.path = encode_path(url.path)
@@ -230,7 +230,7 @@ class RefSelector(Object):
     @db_session
     def make_handle( self, request ):
         assert self.ref_id is not None  # why can it be?
-        rec = module.ArticleRef[self.ref_id]
+        rec = this_module.ArticleRef[self.ref_id]
         iface = iface_registry.resolve(rec.iface)
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
@@ -238,14 +238,14 @@ class RefSelector(Object):
             target_url = Url(iface, public_key, path)
             target_handle = tRedirectHandle(target_url.to_data())
         else:
-            target_obj = module.run_resolver(iface, path)
+            target_obj = this_module.run_resolver(iface, path)
             target_handle = target_obj.get_handle(request)
         return tObjSelectorHandle('object_selector', self.get(request), target_handle)
 
 
-class ArticleModule(PonyOrmModule):
+class ThisModule(PonyOrmModule):
 
-    def __init__( self ):
+    def __init__( self, services ):
         PonyOrmModule.__init__(self, MODULE_NAME)
         self.article_fields = dict(text=Required(str),
                                    refs=Set('ArticleRef'))
@@ -280,6 +280,3 @@ class ArticleModule(PonyOrmModule):
 
     def add_article_fields( self, **fields ):
         self.article_fields.update(fields)
-
-
-module = ArticleModule()

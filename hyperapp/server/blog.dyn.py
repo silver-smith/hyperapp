@@ -97,7 +97,7 @@ class ThisModule(PonyOrmModule):
 
     def __init__( self, services ):
         PonyOrmModule.__init__(self, MODULE_NAME)
-        self.article_module = article.module
+        self.article_module = article.this_module
 
     def init_phase2( self ):
         self.Article = self.article_module.Article
