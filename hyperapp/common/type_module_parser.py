@@ -18,7 +18,7 @@ from .htypes import (
     )
 
 
-keywords = ['opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns']
+keywords = ['opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns', 'contents']
 
 STMT_SEP = 'STMT_SEP'  # NEWLINEs converted to this one
 BLOCK_BEGIN = 'BLOCK_BEGIN'
@@ -116,9 +116,14 @@ def p_class_fields_def_2( p ):
     p[0] = []
 
 
-def p_interface_def( p ):
+def p_interface_def_1( p ):
     'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[5])
+
+def p_interface_def_2( p ):
+    'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[7], contents_fields=p[5])
+
 
 def p_list_interface_def_1( p ):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs STMT_SEP interface_command_defs BLOCK_END'
@@ -127,6 +132,24 @@ def p_list_interface_def_1( p ):
 def p_list_interface_def_2( p ):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
     p[0] = t_list_interface_meta(p[2], [], p[5])
+
+
+def p_interface_contents_defs( p ):
+    'interface_contents_defs : CONTENTS COLON BLOCK_BEGIN contents_field_list BLOCK_END'
+    p[0] = p[4]
+
+def p_contents_field_list_1( p ):
+    'contents_field_list : contents_field_list STMT_SEP contents_field'
+    p[0] = p[1] + [p[3]]
+
+def p_contents_field_list_2( p ):
+    'contents_field_list : contents_field'
+    p[0] = [p[1]]
+
+def p_contents_field( p ):
+    'contents_field : NAME COLON type_expr'
+    p[0] = t_field_meta(p[1], p[3])
+
 
 def p_interface_command_defs( p ):
     'interface_command_defs : COMMANDS COLON BLOCK_BEGIN interface_command_list BLOCK_END'
@@ -165,16 +188,13 @@ def p_interface_columns_defs( p ):
     'interface_columns_defs : COLUMNS COLON BLOCK_BEGIN columns_defs BLOCK_END'
     p[0] = p[4]
 
-
 def p_columns_defs_1( p ):
     'columns_defs : columns_defs STMT_SEP column_def'
     p[0] = p[1] + [p[3]]
 
-    
 def p_columns_defs_2( p ):
     'columns_defs : column_def'
     p[0] = [p[1]]
-
 
 def p_column_def_1( p ):
     'column_def : NAME COLON type_expr'
