@@ -13,10 +13,10 @@ from ..htypes import (
     ElementOpenCommand,
     ListInterface,
     )
-from .article import article_iface
+from . import article as article_types
 
 
-blog_entry_iface = Interface('blog_entry', base=article_iface,
+blog_entry_iface = Interface('blog_entry', base=article_types.article,
                              commands=[
                                  OpenCommand('parent'),
                                  ])

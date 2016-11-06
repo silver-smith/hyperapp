@@ -2,12 +2,7 @@ import logging
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
 from ..common.htypes import Column, tObjHandle, tRedirectHandle, iface_registry
-from ..common.interface.article import (
-    tObjSelectorHandle,
-    article_iface,
-    ref_list_iface,
-    object_selector_iface,
-    )
+from ..common.interface import article as article_types
 from ..common.identity import PublicKey
 from ..common.url import Url
 from .util import path_part_to_str
@@ -27,7 +22,7 @@ class Article(Object):
     mode_view = object()
     mode_edit = object()
 
-    iface = article_iface
+    iface = article_types.article
     objimpl_id = 'proxy.text'
     class_name = 'article'
 
@@ -110,7 +105,7 @@ class Article(Object):
 
 class ArticleRefList(SmallListObject):
 
-    iface = ref_list_iface
+    iface = article_types.article_ref_list
     objimpl_id = 'ref_list'
     default_sort_column_id = 'ref_id'
     class_name = 'ref_list'
@@ -182,7 +177,7 @@ class ArticleRefList(SmallListObject):
 
 class RefSelector(Object):
 
-    iface = object_selector_iface
+    iface = article_types.article_object_selector
     objimpl_id = 'proxy'
     class_name = 'object_selector'
 
@@ -240,7 +235,7 @@ class RefSelector(Object):
         else:
             target_obj = this_module.run_resolver(iface, path)
             target_handle = target_obj.get_handle(request)
-        return tObjSelectorHandle('object_selector', self.get(request), target_handle)
+        return article_types.obj_selector_handle('object_selector', self.get(request), target_handle)
 
 
 class ThisModule(PonyOrmModule):

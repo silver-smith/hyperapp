@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.interface.article import tObjSelectorHandle
+from import ..common.interface.article as article_types tObjSelectorHandle
 from .util import uni2str
 from .proxy_object import ProxyObject
 from . import view
@@ -40,7 +40,7 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(l)
 
     def get_state( self ):
-        return tObjSelectorHandle(self.view_id, self.ref.get_state(), self.target_view.get_state())
+        return article_types.obj_selector_handle(self.view_id, self.ref.get_state(), self.target_view.get_state())
 
     def get_current_child( self ):
         return self.target_view

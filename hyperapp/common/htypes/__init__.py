@@ -37,4 +37,5 @@ def builtin_type_registry():
     registry.register('view_handle', tViewHandle)
     registry.register('obj_handle', tObjHandle)
     registry.register('path', tPath)
+    registry.register('url', tUrl)
     return registry

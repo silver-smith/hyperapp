@@ -1,0 +1,26 @@
+obj_selector_handle = handle class obj_selector(view_handle):
+    ref: object
+    target: handle
+
+article = interface article:
+    diff_type: string
+    contents:
+        text: string opt
+    commands:
+        request save (text: string) -> (new_path: path)
+        request refs () -> (handle: handle opt)
+        request open (ref_id: string) -> (handle: handle opt)
+
+article_ref_list = list_interface article_ref_list:
+    columns:
+        @ref_id: int
+        url: string
+    commands:
+        request parent () -> (handle: handle opt)
+        request add (target_url: url) -> (handle: handle opt)
+        request open (element_key: string) -> (handle: handle opt)
+        request delete (element_key: string) -> ()
+
+article_object_selector = interface article_object_selector:
+    commands:
+        request choose (target_url: url) -> (handle: handle opt)
