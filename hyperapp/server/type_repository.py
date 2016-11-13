@@ -91,9 +91,10 @@ class TypeRepository(object):
                 log.info('    provides interface %r', typedef.name)
         type_module = tTypeModule(name, provided_classes, used_modules, typedefs)
         self._class2type_module.update({
-            encode_path([pclass.hierarchy_id, pclass.class_id]): type_module
-            for pclass in provided_classes})
-        self._iface2type_module.update({name: type_module for name in provided_ifaces})
+            encode_path([pc.hierarchy_id, pc.class_id]): type_module
+            for pc in provided_classes})
+        self._iface2type_module.update({
+            name: type_module for name in provided_ifaces})
         self._type_registry_registry.register(name, type_registry)
         self._register_ifaces(type_registry)
 
