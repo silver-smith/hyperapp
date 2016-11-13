@@ -31,7 +31,8 @@ def test_yacc( fpaths ):
         with open(fpath) as f:
             input = f.read()
         print('parsing:')
-        typedefs, type_registry = parse_type_module(make_meta_type_registry(), builtin_type_registry(), fpath, input, debug=True)
+        used_modules, typedefs, type_registry = parse_type_module(make_meta_type_registry(), builtin_type_registry(), fpath, input, debug=True)
+        print('used modules:', used_modules)
         print('typedefs:', typedefs)
         for name, t in type_registry.items():
             print('type %s: %s' % (name, t))

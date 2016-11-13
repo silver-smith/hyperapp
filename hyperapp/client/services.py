@@ -11,7 +11,7 @@ from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .remoting import Remoting
 from .named_url_file_repository import FileNamedUrlRepository
-from .type_module_registry import TypeModuleRegistry
+from .type_module_registry import TypeRegistryRegistry
 from . import code_repository
 from .code_repository import CodeRepository
 from .resources_manager import ResourcesRegistry, ResourcesManager
@@ -51,7 +51,7 @@ class Services(object):
     def __init__( self ):
         self._dir = os.path.abspath(os.path.dirname(__file__))
         self.iface_registry = iface_registry
-        self.type_module_registry = TypeModuleRegistry(self.iface_registry)
+        self.type_registry_registry = TypeRegistryRegistry(self.iface_registry)
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)

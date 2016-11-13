@@ -34,6 +34,7 @@ tTypeDef = TRecord([
 tTypeModule = TRecord([
     Field('module_name', tString),
     Field('provided_classes', TList(tProvidedClass)),
+    Field('used_modules', TList(tString)),
     Field('typedefs', TList(tTypeDef)),
     ])
 
@@ -213,3 +214,20 @@ class MetaTypeRegistry(object):
         factory = self._registry.get(rec.type_id)
         assert factory, 'Unknown type_id: %r' % rec.type_id
         return factory(self, type_registry, rec)
+
+
+class TypeRegistryRegistry(object):
+
+    def __init__( self ):
+        self._registry = {}  # str -> TypeRegistry
+
+    def register( self, module_name, type_registry ):
+        assert isinstance(module_name, str), repr(module_name)
+        assert isinstance(type_registry, TypeRegistry), repr(type_registry)
+        self._registry[module_name] = type_registry
+
+    def has_type_registry( self, module_name ):
+        return module_name in self._registry
+
+    def resolve_type_registry( self, module_name ):
+        return self._registry[module_name]

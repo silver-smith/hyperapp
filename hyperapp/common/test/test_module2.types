@@ -1,0 +1,2 @@
+from test_module1 import some_bool_list, test_object, test_list_iface
+

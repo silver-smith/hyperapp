@@ -13,7 +13,7 @@ from hyperapp.common.visual_rep import pprint
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
-from hyperapp.client.type_module_registry import TypeModuleRegistry
+from hyperapp.client.type_module_registry import TypeRegistryRegistry
 from hyperapp.client.code_repository import CodeRepository
 from hyperapp.client.module_manager import ModuleManager
 from hyperapp.client.remoting import Remoting
@@ -68,7 +68,7 @@ class Services(object):
     def __init__( self ):
         self.iface_registry = IfaceRegistry()
         self._register_interfaces()
-        self.type_module_registry = TypeModuleRegistry(self.iface_registry)
+        self.type_registry_registry = TypeRegistryRegistry(self.iface_registry)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)

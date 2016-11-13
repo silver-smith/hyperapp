@@ -5,29 +5,17 @@ from types import ModuleType
 import abc
 import importlib
 import importlib.machinery
-from .htypes import TypeRegistry, tModule
+from .htypes import TypeRegistry, TypeRegistryRegistry, tModule
 
 log = logging.getLogger(__name__)
 
 
-class TypeModuleRegistry(object, metaclass=abc.ABCMeta):
-
-    @abc.abstractmethod
-    def has_module( self, module_name ):
-        pass
-
-    # must return TypeRegistry
-    @abc.abstractmethod
-    def resolve_type_registry( self, module_name ):
-        pass
-
-
 class ModuleManager(object):
 
-    def __init__( self, services, type_module_registry ):
-        assert isinstance(type_module_registry, TypeModuleRegistry), repr(type_module_registry)
+    def __init__( self, services, type_registry_registry ):
+        assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
         self._services = services
-        self._type_module_registry = type_module_registry
+        self._type_registry_registry = type_registry_registry
         self._type_modules = {}  # fullname -> ModuleType
         self._code_modules = {}  # fullname -> tModule
 
@@ -39,7 +27,7 @@ class ModuleManager(object):
             return importlib.machinery.ModuleSpec(fullname, self)
         if fullname.startswith('hyperapp.common.interface.'):
             l = fullname.split('.')
-            if len(l) == 4 and self._type_module_registry.has_module(l[-1]):
+            if len(l) == 4 and self._type_registry_registry.has_type_registry(l[-1]):
                 return importlib.machinery.ModuleSpec(fullname, self)
 
     def exec_module(self, module):
@@ -50,7 +38,7 @@ class ModuleManager(object):
             return
         if module.__name__.startswith('hyperapp.common.interface.'):
             l = module.__name__.split('.')
-            if len(l) == 4 and self._type_module_registry.has_module(l[-1]):
+            if len(l) == 4 and self._type_registry_registry.has_type_registry(l[-1]):
                 self._exec_type_module(module, l[-1])
             return
         assert False, repr(module.__name__)
@@ -74,7 +62,7 @@ class ModuleManager(object):
 
     def _exec_type_module( self, module, module_name ):
         log.info('    importing type module %r', module_name)
-        type_registry = self._type_module_registry.resolve_type_registry(module_name)
+        type_registry = self._type_registry_registry.resolve_type_registry(module_name)
         for name, t in type_registry.items():
             module.__dict__[name] = t
             log.info('        resolved type %r -> %r', name, t)

@@ -12,6 +12,7 @@ from ..common.htypes import (
     tTypeModule,
     tInterfaceMeta,
     TypeRegistry,
+    TypeRegistryRegistry,
     make_meta_type_registry,
     builtin_type_registry,
     )
@@ -25,31 +26,23 @@ log = logging.getLogger(__name__)
 TYPE_MODULE_EXT = '.types'
 
 
-class TypeRepository(common_module_manager.TypeModuleRegistry):
+class TypeRepository(object):
 
-    class _Rec(object):
-
-        def __init__( self, type_registry ):
-            assert isinstance(type_registry, TypeRegistry), repr(type_registry)
-            self.type_registry = type_registry
-
-        def set_type_module( self, type_module ):
-            assert isinstance(type_module, tTypeModule), repr(type_module)
-            self.type_module = type_module
-
-    def __init__( self, dir, iface_registry ):
+    def __init__( self, dir, iface_registry, type_registry_registry ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
+        assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
         self._iface_registry = iface_registry
-        self._class2rec = {}  # str -> _Rec
-        self._iface2rec = {}  # str -> _Rec
-        self._id2rec = {}  # str -> _Rec
+        self._type_registry_registry = type_registry_registry
+        self._class2type_module = {}  # str -> tTypeModule
+        self._iface2type_module = {}  # str -> tTypeModule
+        self._id2type_module = {}  # str -> tTypeModule
         self._load_modules(dir)
 
     def has_module_id( self, module_id ):
-        return module_id in self._id2rec
+        return module_id in self._id2type_module
 
     def get_module_by_id( self, module_id ):
-        return self._id2rec[module_id].type_module
+        return self._id2type_module[module_id]
 
     def get_modules_by_requirements( self, requirements ):
         class_paths = set(requirement[1] for requirement in requirements)
@@ -66,22 +59,13 @@ class TypeRepository(common_module_manager.TypeModuleRegistry):
         return list(modules)
 
     def get_class_module_by_requirement( self, key ):
-        if key in self._class2rec:
-            return self._class2rec[key].type_module
-        else:
-            return None
+        return self._class2type_module.get(key)
 
     def get_type_module_by_requirement( self, key ):
-        if key in self._iface2rec:
-            return self._iface2rec[key].type_module
-        else:
-            return None
+        return self._iface2type_module.get(key)
     
     def has_module( self, module_name ):
         return self.has_module_id(module_name)
-
-    def resolve_type_registry( self, name ):
-        return self._id2rec[name].type_registry
 
     def _load_modules( self, dir ):
         for fname in os.listdir(dir):
@@ -91,9 +75,9 @@ class TypeRepository(common_module_manager.TypeModuleRegistry):
 
     def _load_module( self, name, fpath ):
         log.info('loading type module %r from %r', name, fpath)
-        typedefs, type_registry = load_types_file(make_meta_type_registry(), builtin_type_registry(), fpath)
-        module_rec = self._Rec(type_registry)
+        used_modules, typedefs, type_registry = load_types_file(make_meta_type_registry(), builtin_type_registry(), fpath)
         provided_classes = []
+        provided_ifaces = []
         for typedef in typedefs:
             t = typedef.type
             log.info('    registered name %r: %r', typedef.name, t.type_id)
@@ -101,14 +85,16 @@ class TypeRepository(common_module_manager.TypeModuleRegistry):
                 assert isinstance(t.hierarchy, tNamed), repr(typedef.name)  # tHierarchyClassMeta.hierarchy must be tNamed
                 pclass = tProvidedClass(t.hierarchy.name, t.class_id)
                 provided_classes.append(pclass)
-                path = encode_path([pclass.hierarchy_id, pclass.class_id])
-                self._class2rec[path] = module_rec
                 log.info('    provides class %s:%s', pclass.hierarchy_id, pclass.class_id)
             if isinstance(t, tInterfaceMeta):
-                self._iface2rec[typedef.name] = module_rec
+                provided_ifaces.append(typedef.name)
                 log.info('    provides interface %r', typedef.name)
-        module_rec.set_type_module(tTypeModule(name, provided_classes, typedefs))
-        self._id2rec[name] = module_rec
+        type_module = tTypeModule(name, provided_classes, used_modules, typedefs)
+        self._class2type_module.update({
+            encode_path([pclass.hierarchy_id, pclass.class_id]): type_module
+            for pclass in provided_classes})
+        self._iface2type_module.update({name: type_module for name in provided_ifaces})
+        self._type_registry_registry.register(name, type_registry)
         self._register_ifaces(type_registry)
 
     def _register_ifaces( self, type_registry ):

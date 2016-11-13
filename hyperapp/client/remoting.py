@@ -25,7 +25,7 @@ class Transport(metaclass=abc.ABCMeta):
     def __init__( self, services ):
         self._module_mgr = services.module_mgr
         self._iface_registry = services.iface_registry
-        self._type_module_registry = services.type_module_registry
+        self._type_registry_registry = services.type_registry_registry
         self._route_storage = services.route_storage
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
@@ -73,8 +73,8 @@ class Transport(metaclass=abc.ABCMeta):
             log.info('received type module %r with %d typedefs, provided %r',
                       type_module.module_name, len(type_module.typedefs),
                       ', '.join('%s:%s' % (rec.hierarchy_id, rec.class_id) for rec in type_module.provided_classes))
-            if not self._type_module_registry.has_module(type_module.module_name):
-                self._type_module_registry.register(type_module)
+            if not self._type_registry_registry.has_type_registry(type_module.module_name):
+                self._type_registry_registry.register(type_module)
 
     def _add_routes( self, routes ):
         for srv_routes in routes:

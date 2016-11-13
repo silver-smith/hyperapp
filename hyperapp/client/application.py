@@ -105,9 +105,9 @@ class Application(QtGui.QApplication, view.View):
         for registry_id, id in requirements:
             log.info('requirement for state: %s %r', registry_id, id)
             if registry_id == 'class':
-                module_id = self.services.type_module_registry.get_class_dynamic_module_id(id)
+                module_id = self.services.type_registry_registry.get_class_dynamic_module_id(id)
             elif registry_id == 'interface':
-                module_id = self.services.type_module_registry.get_iface_dynamic_module_id(id)
+                module_id = self.services.type_registry_registry.get_iface_dynamic_module_id(id)
             else:
                 if registry_id == 'object':
                     registry = self.services.objimpl_registry
@@ -174,7 +174,7 @@ class Application(QtGui.QApplication, view.View):
                 self.services.code_repository.get_modules_by_ids(list(set(module_ids))))
             if new_code_modules is not None:  # has code repositories?
                 code_modules = new_code_modules  # load new versions
-            self.services.type_module_registry.register_all(type_modules)
+            self.services.type_registry_registry.register_all(type_modules)
             self.services.module_mgr.add_modules(code_modules)
             self.services.resources_manager.register_all(resources)
             state = packet_coders.decode('cdr', state_data, self.state_type)

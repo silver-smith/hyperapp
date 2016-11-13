@@ -7,7 +7,7 @@ from ..common import module_manager as common_module_manager
 log = logging.getLogger(__name__)
 
 
-class TypeModuleRegistry(common_module_manager.TypeModuleRegistry):
+class TypeRegistryRegistry(common_module_manager.TypeRegistryRegistry):
 
     def __init__( self, iface_registry ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)

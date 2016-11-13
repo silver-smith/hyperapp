@@ -18,7 +18,7 @@ from .htypes import (
     )
 
 
-keywords = ['opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns', 'contents', 'diff_type']
+keywords = ['import', 'from', 'opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns', 'contents', 'diff_type']
 
 STMT_SEP = 'STMT_SEP'  # NEWLINEs converted to this one
 BLOCK_BEGIN = 'BLOCK_BEGIN'
@@ -70,8 +70,47 @@ def syntax_error( p, token_num, msg ):
 
 
 def p_module( p ):
-    'module : ENCODING typedef_list ENDMARKER'
-    p[0] = p[2]
+    'module : ENCODING import_list_opt typedef_list_opt ENDMARKER'
+    p[0] = (p[2], p[3])
+
+
+def p_import_list_opt_1( p ):
+    'import_list_opt : empty'
+    p[0] = []
+
+def p_import_list_opt_2( p ):
+    'import_list_opt : import_list'
+    p[0] = p[1]
+
+def p_import_list_1( p ):
+    'import_list : import_list STMT_SEP import_def'
+    p[0] = p[1] + [p[3]]
+
+def p_import_list_2( p ):
+    'import_list : import_def'
+    p[0] = [p[1]]
+
+
+def p_import_def( p ):
+    'import_def : FROM NAME IMPORT name_list'
+    p[0] = [p[2]]
+
+def p_name_list_1( p ):
+    'name_list : NAME'
+    p[0] = [p[1]]
+
+def p_name_list_2( p ):
+    'name_list : name_list COMMA NAME'
+    p[0] = p[1] + [p[3]]
+
+
+def p_typedef_list_opt_1( p ):
+    'typedef_list_opt : empty'
+    p[0] = []
+
+def p_typedef_list_opt_2( p ):
+    'typedef_list_opt : typedef_list'
+    p[0] = p[1]
 
 def p_typedef_list_1( p ):
     'typedef_list : typedef_list STMT_SEP typedef'
@@ -319,8 +358,8 @@ def parse_type_module( meta_registry, type_registry, fname, contents, debug=Fals
     parser.lines = contents.splitlines()
     parser.meta_registry = meta_registry
     parser.type_registry = TypeRegistry(next=type_registry)
-    typedefs = parser.parse(contents, lexer=Lexer())
-    return (typedefs, parser.type_registry)
+    used_modules, typedefs = parser.parse(contents, lexer=Lexer())
+    return (used_modules, typedefs, parser.type_registry)
  
 
 if __name__ == '__main__':
