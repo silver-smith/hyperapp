@@ -39,3 +39,6 @@ def builtin_type_registry():
     registry.register('path', tPath)
     registry.register('url', tUrl)
     return registry
+
+def builtin_type_registry_registry():
+    return TypeRegistryRegistry(dict(builtins=builtin_type_registry()))

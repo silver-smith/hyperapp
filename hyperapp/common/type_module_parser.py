@@ -15,6 +15,7 @@ from .htypes import (
     t_column_meta,
     t_list_interface_meta,
     TypeRegistry,
+    TypeResolver,
     )
 
 
@@ -58,8 +59,8 @@ tokens = [tok_name[t] for t in token_types] + [
 
 def register_typedef( parser, name, type ):
     typedef = tTypeDef(name=name, type=type)
-    t = parser.meta_registry.resolve(parser.type_registry, typedef.type)
-    parser.type_registry.register(typedef.name, t)
+    t = parser.meta_registry.resolve(parser.resolver, typedef.type)
+    parser.new_type_registry.register(typedef.name, t)
     return typedef
 
 def syntax_error( p, token_num, msg ):
@@ -269,7 +270,7 @@ def p_field_def( p ):
 def p_type_expr_1( p ):
     'type_expr : NAME'
     name = p[1]
-    if not p.parser.type_registry.has_name(name):
+    if not p.parser.resolver.has_name(name):
         syntax_error(p, 1, 'Unknown name: %r' % name)
     p[0] = t_named(name)
 
@@ -352,14 +353,18 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module( meta_registry, type_registry, fname, contents, debug=False ):
+def parse_type_module( meta_registry, type_registry_registry, fname, contents, debug=False ):
     parser = yacc.yacc(debug=debug)
     parser.fname = fname
     parser.lines = contents.splitlines()
     parser.meta_registry = meta_registry
-    parser.type_registry = TypeRegistry(next=type_registry)
+    parser.imported_type_registry = TypeRegistry()
+    parser.new_type_registry = TypeRegistry()
+    parser.resolver = TypeResolver([type_registry_registry.resolve_type_registry('builtins'),
+                                    parser.imported_type_registry,
+                                    parser.new_type_registry])
     used_modules, typedefs = parser.parse(contents, lexer=Lexer())
-    return (used_modules, typedefs, parser.type_registry)
+    return (used_modules, typedefs, parser.new_type_registry)
  
 
 if __name__ == '__main__':
