@@ -221,12 +221,6 @@ class TypeRegistryRegistry(object):
 
     def __init__( self, registries=None ):
         self._registry = registries or {}  # str -> TypeRegistry
-
-    ## def resolve_name( self, name ):
-    ##     for registry_name, registry in self._registry.items():
-    ##         if registry.has_name(name):
-    ##             return (registry_name, registry.resolve(name))
-    ##     raise KeyError('Unknown type: %r' % name)
             
     def register( self, module_name, type_registry ):
         assert isinstance(module_name, str), repr(module_name)
