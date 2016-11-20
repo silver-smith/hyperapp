@@ -11,6 +11,7 @@ class TypeRegistryRegistry(common_module_manager.TypeRegistryRegistry):
 
     def __init__( self, iface_registry ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
+        common_module_manager.TypeRegistryRegistry.__init__(self)
         self._iface_registry = iface_registry
         self._name2module = {}  # module name -> tTypeModule
         self._class2module = {}  # encoded hierarchy_id|class_id -> tTypeModule
@@ -49,6 +50,9 @@ class TypeRegistryRegistry(common_module_manager.TypeRegistryRegistry):
 
     def resolve( self, module_name ):
         return self._name2module[module_name]
+
+    def has_type_registry( self, module_name ):
+        return module_name in self._module_name_to_type_registry
 
     def resolve_type_registry( self, module_name ):
         registry = self._module_name_to_type_registry.get(module_name)
