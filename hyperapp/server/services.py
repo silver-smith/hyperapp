@@ -1,6 +1,6 @@
 import os.path
 import logging
-from ..common.htypes import TypeRegistryRegistry, tModule, iface_registry
+from ..common.htypes import TypeRegistryRegistry, tModule, iface_registry, builtin_type_registry
 from ..common.route_storage import RouteStorage
 from .module import Module
 from .module_manager import ModuleManager
@@ -23,7 +23,7 @@ class Services(object):
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         dynamic_modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
-        self.type_registry_registry = TypeRegistryRegistry()
+        self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
         self.type_repository = TypeRepository(interface_dir, self.iface_registry, self.type_registry_registry)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,

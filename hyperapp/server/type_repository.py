@@ -75,7 +75,7 @@ class TypeRepository(object):
 
     def _load_module( self, name, fpath ):
         log.info('loading type module %r from %r', name, fpath)
-        used_modules, typedefs, type_registry = load_types_file(make_meta_type_registry(), builtin_type_registry(), fpath)
+        used_modules, typedefs, type_registry = load_types_file(make_meta_type_registry(), self._type_registry_registry, fpath)
         provided_classes = []
         provided_ifaces = []
         for typedef in typedefs:
