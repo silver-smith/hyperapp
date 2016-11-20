@@ -13,6 +13,8 @@ from hyperapp.common.htypes import (
     t_named,
     make_meta_type_registry,
     builtin_type_registry,
+    builtin_type_registry_registry,
+    TypeResolver,
     )
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module import (
@@ -31,9 +33,9 @@ class TypeModuleTest(unittest.TestCase):
         return os.path.join(os.path.dirname(__file__), module_name)
 
     def test_yaml_module( self ):
-        type_registry = builtin_type_registry()
+        type_resolver = TypeResolver([builtin_type_registry()])
         fpath = self.make_fpath('test_module1.types.yaml')
-        registry = resolve_typedefs_from_yaml_file(self.meta_type_registry, type_registry, fpath)
+        registry = resolve_typedefs_from_yaml_file(self.meta_type_registry, type_resolver, fpath)
 
         self.assertTrue(registry.has_name('some_int'))
         self.assertEqual(tInt, registry.get_name('some_int'))
@@ -46,8 +48,9 @@ class TypeModuleTest(unittest.TestCase):
                          registry.get_name('text_object'))
 
     def test_types_module( self ):
-        type_registry = builtin_type_registry()
-        used_modules1, typedefs1, registry1 = load_types_file(self.meta_type_registry, type_registry, self.make_fpath('test_module1.types'))
+        type_registry_registry = builtin_type_registry_registry()
+        used_modules1, typedefs1, registry1 = load_types_file(
+            self.meta_type_registry, type_registry_registry, self.make_fpath('test_module1.types'))
 
         self.assertTrue(registry1.has_name('some_int'))
         self.assertEqual(tInt, registry1.get_name('some_int'))
@@ -61,5 +64,8 @@ class TypeModuleTest(unittest.TestCase):
 
         self.assertEqual([], used_modules1)
 
-        used_modules2, typedefs2, registry2 = load_types_file(self.meta_type_registry, type_registry, self.make_fpath('test_module2.types'))
+        type_registry_registry.register('test_module1', registry1)
+
+        used_modules2, typedefs2, registry2 = load_types_file(
+            self.meta_type_registry, type_registry_registry, self.make_fpath('test_module2.types'))
 

@@ -242,18 +242,23 @@ class TypeRegistryRegistry(object):
 
 class TypeResolver(object):
 
-    def __init__( self, type_registry_list ):
-        assert is_list_inst(type_registry_list, TypeRegistry), repr(type_registry_list)
-        self._type_registry_list = type_registry_list
+    def __init__( self, type_registry_list=None, next=None ):
+        assert is_list_inst(type_registry_list or [], TypeRegistry), repr(type_registry_list)
+        self._type_registry_list = type_registry_list or []
+        self._next = next
 
     def has_name( self, name ):
         for registry in self._type_registry_list:
             if registry.has_name(name):
                 return True
+        if self._next and self._next.has_name(name):
+            return True
         return False
 
     def resolve( self, name ):
         for registry in self._type_registry_list:
             if registry.has_name(name):
                 return registry.resolve(name)
+        if self._next:
+            return self._next.resolve(name)
         raise KeyError('Unknown type: %r' % name)

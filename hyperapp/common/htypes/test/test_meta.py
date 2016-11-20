@@ -37,6 +37,7 @@ from hyperapp.common.htypes import (
     t_list_interface_meta,
     make_meta_type_registry,
     builtin_type_registry,
+    TypeResolver,
     tHandle,
     )
 from hyperapp.common.visual_rep import pprint
@@ -62,20 +63,23 @@ class MetaTypeTest(unittest.TestCase):
         self.meta_type_registry = make_meta_type_registry()
 
     def test_named( self ):
+        resolver = TypeResolver([builtin_type_registry()])
         data = t_named('int')
-        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(t, tInt)
         self.assertIs(t, tInt)  # must resolve to same instance
 
     def test_optional( self ):
+        resolver = TypeResolver([builtin_type_registry()])
         data = t_optional_meta(t_named('string'))
-        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(t, TOptional(tString))
         self.assertIs(t.base_t, tString)
 
     def test_list( self ):
+        resolver = TypeResolver([builtin_type_registry()])
         data = t_list_meta(t_optional_meta(t_named('datetime')))
-        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(TList(TOptional(tDateTime)), t)
 
     ## def test_indexed_list( self ):
@@ -84,12 +88,13 @@ class MetaTypeTest(unittest.TestCase):
     ##         self.check_type(t)
 
     def test_record( self ):
+        resolver = TypeResolver([builtin_type_registry()])
         data = t_record_meta([
             t_field_meta('int_field', t_named('int')),
             t_field_meta('string_list_field', t_list_meta(t_named('string'))),
             t_field_meta('bool_optional_field', t_optional_meta(t_named('bool'))),
             ])
-        t = self.meta_type_registry.resolve(builtin_type_registry(), data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(TRecord([
             Field('int_field', tInt),
             Field('string_list_field', TList(tString)),
@@ -99,8 +104,9 @@ class MetaTypeTest(unittest.TestCase):
 
     def test_hierarchy( self ):
         type_names = builtin_type_registry()
+        resolver = TypeResolver([type_names])
         hdata = t_hierarchy_meta('test_hierarchy')
-        hierarchy = self.meta_type_registry.resolve(type_names, hdata)
+        hierarchy = self.meta_type_registry.resolve(resolver, hdata)
         type_names.register('my_test_hierarchy', hierarchy)
 
         cdata_a = t_hierarchy_class_meta('my_test_hierarchy', 'class_a', base_name=None, fields=[
@@ -110,15 +116,16 @@ class MetaTypeTest(unittest.TestCase):
             t_field_meta('field_b_1', t_list_meta(t_named('int'))),
             ])
         self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
-        class_a = self.meta_type_registry.resolve(type_names, cdata_a)
+        class_a = self.meta_type_registry.resolve(resolver, cdata_a)
         type_names.register('my_class_a', class_a)
-        class_b = self.meta_type_registry.resolve(type_names, cdata_b)
+        class_b = self.meta_type_registry.resolve(resolver, cdata_b)
         self.assertEqual(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])), class_a)
         self.assertEqual(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
                                                                Field('field_b_1', TList(tInt))])), class_b)
 
     def test_interface( self ):
         type_names = builtin_type_registry()
+        resolver = TypeResolver([type_names])
         data = t_interface_meta('unit_test_iface', [
             t_command_meta('request', 'request_one',
                            [t_field_meta('req_param1', t_named('string'))],
@@ -133,7 +140,7 @@ class MetaTypeTest(unittest.TestCase):
             ], diff_type=t_named('string')
             )
         data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
-        t = self.meta_type_registry.resolve(type_names, data)
+        t = self.meta_type_registry.resolve(resolver, data)
         t.iface_id = 'unit_test_iface'  # hack it back for comparision
         self.assertEqual(Interface('unit_test_iface',
             contents_fields=[
@@ -152,6 +159,7 @@ class MetaTypeTest(unittest.TestCase):
 
     def test_list_interface( self ):
         type_names = builtin_type_registry()
+        resolver = TypeResolver([type_names])
         data = t_list_interface_meta('unit_test_list_iface', commands=[
                 t_command_meta('request', 'request_open', [],
                                [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
@@ -162,7 +170,7 @@ class MetaTypeTest(unittest.TestCase):
                 t_field_meta('text', t_named('string')),
             ])
         data.iface_id = data.iface_id + '_new_list'  # hack to prevent tObject etc registration dup
-        t = self.meta_type_registry.resolve(type_names, data)
+        t = self.meta_type_registry.resolve(resolver, data)
         t.iface_id = 'unit_test_list_iface'  # hack it back for comparision
         self.assertEqual(ListInterface('unit_test_list_iface',
             contents_fields=[
