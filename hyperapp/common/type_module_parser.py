@@ -63,6 +63,11 @@ def register_typedef( parser, name, type ):
     parser.new_type_registry.register(typedef.name, t)
     return typedef
 
+def import_names( parser, module_name, names ):
+    registry = parser.type_registry_registry.resolve_type_registry(module_name)
+    for name in names:
+        parser.imported_type_registry.register(name, registry.resolve(name))
+
 def syntax_error( p, token_num, msg ):
     line_num = p.lineno(token_num)
     print(p.parser.lines[line_num - 1])
@@ -71,17 +76,17 @@ def syntax_error( p, token_num, msg ):
 
 
 def p_module( p ):
-    'module : ENCODING import_list_opt typedef_list_opt ENDMARKER'
-    p[0] = (p[2], p[3])
+    'module : ENCODING module_contents ENDMARKER'
+    p[0] = p[2]
 
+def p_module_contents_1( p ):
+    'module_contents : import_list STMT_SEP typedef_list'
+    p[0] = (p[1], p[3])
 
-def p_import_list_opt_1( p ):
-    'import_list_opt : empty'
-    p[0] = []
+def p_module_contents_2( p ):
+    'module_contents : typedef_list_opt'
+    p[0] = ([], p[1])
 
-def p_import_list_opt_2( p ):
-    'import_list_opt : import_list'
-    p[0] = p[1]
 
 def p_import_list_1( p ):
     'import_list : import_list STMT_SEP import_def'
@@ -95,6 +100,7 @@ def p_import_list_2( p ):
 def p_import_def( p ):
     'import_def : FROM NAME IMPORT name_list'
     p[0] = [p[2]]
+    import_names(p.parser, p[2], p[4])
 
 def p_name_list_1( p ):
     'name_list : NAME'
@@ -358,6 +364,7 @@ def parse_type_module( meta_registry, type_registry_registry, fname, contents, d
     parser.fname = fname
     parser.lines = contents.splitlines()
     parser.meta_registry = meta_registry
+    parser.type_registry_registry = type_registry_registry
     parser.imported_type_registry = TypeRegistry()
     parser.new_type_registry = TypeRegistry()
     parser.resolver = TypeResolver([type_registry_registry.resolve_type_registry('builtins'),

@@ -1,2 +1,7 @@
-from test_module1 import some_bool_list, test_object, test_list_iface
+from test_module1 import some_bool_list, text_object, test_list_iface
+
+some_bool_list_opt = some_bool_list opt
+
+text_object_2 = object class text_object_2(text_object):
+  additional_field: int
 

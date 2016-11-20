@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os.path
 import logging
 import argparse
 from hyperapp.common.htypes import (
@@ -26,19 +27,23 @@ def test_lex( fpaths ):
                 break
 
 def test_yacc( fpaths ):
+    type_registry_registry = builtin_type_registry_registry()
     for fpath in fpaths:
         print('%s:' % fpath)
+        dir, fname = os.path.split(fpath)
+        module_name = os.path.splitext(fname)[0]
         with open(fpath) as f:
             input = f.read()
         print('parsing:')
         used_modules, typedefs, type_registry = parse_type_module(
-            make_meta_type_registry(), builtin_type_registry_registry(), fpath, input, debug=True)
+            make_meta_type_registry(), type_registry_registry, fpath, input, debug=True)
         print('used modules:', used_modules)
         print('typedefs:', typedefs)
         for name, t in type_registry.items():
             print('type %s: %s' % (name, t))
         if typedefs:
             pprint(TList(tTypeDef), typedefs)
+        type_registry_registry.register(module_name, type_registry)
 
 
 def main():
