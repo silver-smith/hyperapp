@@ -1,0 +1,16 @@
+from article import article
+
+
+blog_entry = interface blog_entry(article):
+    commands:
+        request parent () -> (handle: handle opt)
+
+blog = list_interface blog:
+    columns:
+        @id: int
+        created_at: datetime
+    commands:
+        request open (element_key: int) -> (handle: handle opt)
+        request delete (element_key: int) -> ()
+        request add () -> (handle: handle opt)
+

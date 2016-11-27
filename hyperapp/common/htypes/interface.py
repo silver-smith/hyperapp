@@ -110,7 +110,7 @@ class ContentsCommand(RequestCmd):
 
 class Interface(object):
 
-    def __init__( self, iface_id, base=None, contents_fields=None, diff_type=tNone, commands=None ):
+    def __init__( self, iface_id, base=None, contents_fields=None, diff_type=None, commands=None ):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(contents_fields or [], Field), repr(contents_fields)
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
@@ -122,7 +122,7 @@ class Interface(object):
         if base:
             self.contents_fields = base.contents_fields + self.contents_fields
             self.commands = base.commands + self.commands
-            assert diff_type is tNone, repr(diff_type)  # Inherited from base
+            assert diff_type is None, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
         self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
         self._register_types()

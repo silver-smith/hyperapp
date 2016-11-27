@@ -2,7 +2,6 @@ import os.path
 
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
-#import hyperapp.common.interface.blog
 
 from ..common.htypes import tLocaleResources, iface_registry
 from ..common.packet_coders import packet_coders

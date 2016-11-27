@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 from pony.orm import db_session, commit, desc, Required, Set
-from ..common.interface.blog import blog_entry_iface, blog_iface
+from ..common.interface import blog as blog_types
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
 from .command import command
@@ -17,7 +17,7 @@ MODULE_NAME = 'blog'
 
 class BlogEntry(article.Article):
 
-    iface = blog_entry_iface
+    iface = blog_types.blog_entry
     objimpl_id = 'proxy.text'
 
     def get_path( self ):
@@ -44,13 +44,13 @@ class BlogEntry(article.Article):
         subscription.distribute_update(self.iface, self.get_path(), text)
         if is_insertion:
             diff = Blog.Diff_insert_one(entry_rec.id, Blog.rec2element(entry_rec))
-            subscription.distribute_update(blog_iface, Blog.get_path(), diff)
+            subscription.distribute_update(Blog.iface, Blog.get_path(), diff)
         return request.make_response_result(new_path=self.get_path())
 
 
 class Blog(SmallListObject):
 
-    iface = blog_iface
+    iface = blog_types.blog
     objimpl_id = 'proxy_list'
     class_name = 'blog'
     default_sort_column_id = 'id'

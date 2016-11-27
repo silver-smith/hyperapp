@@ -16,15 +16,19 @@ from .resources_loader import ResourcesLoader
 log = logging.getLogger(__name__)
 
 
+TYPE_MODULE_EXT = '.types'
+DYN_MODULE_EXT = '.dyn.py'
+
+
 class Services(object):
 
     def __init__( self ):
         self.iface_registry = iface_registry
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
-        interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
+        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         dynamic_modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
-        self.type_repository = TypeRepository(interface_dir, self.iface_registry, self.type_registry_registry)
+        self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
                                                      client_module=dynamic_modules_dir))
@@ -33,6 +37,7 @@ class Services(object):
         self.client_code_repository = ClientCodeRepository(self.type_repository, self.module_repository, self.resources_loader)
         self.module_manager.register_meta_hook()
         self._register_modules()
+        self._load_type_modules()
         self._load_server_modules()
         Module.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository(self.route_storage_module))
@@ -48,6 +53,19 @@ class Services(object):
         for module in [tcp_transport, encrypted_transport]:
             module.register_transports(self.remoting.transport_registry, self)
 
+    def _load_type_modules( self ):
+        for module_name in [
+                'admin',
+                'article',
+                'blog',
+                'fs',
+                'module_list',
+                'test_list',
+                'text_object_types',
+                ]:
+            fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
+            self.type_repository.load_module(module_name, fpath)
+
     def _load_server_modules( self ):
         for module_name in [
                 'admin',
@@ -58,7 +76,7 @@ class Services(object):
                 'simple_text_object',
                 'sample_list',
                 ]:
-            fpath = os.path.join(self.server_dir, module_name + '.dyn.py')
+            fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
                 source = f.read()
             package = 'hyperapp.server'

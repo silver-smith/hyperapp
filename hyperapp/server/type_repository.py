@@ -23,9 +23,6 @@ from ..common import module_manager as common_module_manager
 log = logging.getLogger(__name__)
 
 
-TYPE_MODULE_EXT = '.types'
-
-
 class TypeRepository(object):
 
     def __init__( self, dir, iface_registry, type_registry_registry ):
@@ -36,7 +33,6 @@ class TypeRepository(object):
         self._class2type_module = {}  # str -> tTypeModule
         self._iface2type_module = {}  # str -> tTypeModule
         self._id2type_module = {}  # str -> tTypeModule
-        self._load_modules(dir)
 
     def has_module_id( self, module_id ):
         return module_id in self._id2type_module
@@ -67,13 +63,7 @@ class TypeRepository(object):
     def has_module( self, module_name ):
         return self.has_module_id(module_name)
 
-    def _load_modules( self, dir ):
-        for fname in os.listdir(dir):
-            if fname.endswith(TYPE_MODULE_EXT):
-                name = fname.split('.')[0]
-                self._load_module(name, os.path.join(dir, fname))
-
-    def _load_module( self, name, fpath ):
+    def load_module( self, name, fpath ):
         log.info('loading type module %r from %r', name, fpath)
         used_modules, typedefs, type_registry = load_types_file(make_meta_type_registry(), self._type_registry_registry, fpath)
         provided_classes = []

@@ -99,7 +99,7 @@ def p_import_list_2( p ):
 
 def p_import_def( p ):
     'import_def : FROM NAME IMPORT name_list'
-    p[0] = [p[2]]
+    p[0] = p[2]
     import_names(p.parser, p[2], p[4])
 
 def p_name_list_1( p ):

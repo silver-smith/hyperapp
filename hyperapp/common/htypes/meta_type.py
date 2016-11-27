@@ -157,10 +157,11 @@ def command_from_data( meta_registry, name_resolver, rec ):
     return IfaceCommand(rec.request_type, rec.command_id, params_fields, result_fields)
 
 def interface_from_data( meta_registry, name_resolver, rec ):
+    base_iface = name_resolver.resolve(rec.base_iface_id) if rec.base_iface_id else None
     contents_fields = field_list_from_data(meta_registry, name_resolver, rec.contents_fields)
     diff_type = meta_registry.resolve(name_resolver, rec.diff_type)  if rec.diff_type is not None else None
     commands = [command_from_data(meta_registry, name_resolver, command) for command in rec.commands]
-    return Interface(rec.iface_id, contents_fields=contents_fields, diff_type=diff_type, commands=commands)
+    return Interface(rec.iface_id, base_iface, contents_fields=contents_fields, diff_type=diff_type, commands=commands)
 
 
 class TypeRegistry(object):
