@@ -163,25 +163,34 @@ def p_class_fields_def_2( p ):
 
 
 def p_interface_def_1( p ):
-    'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[5])
+    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[3], p[6])
 
 def p_interface_def_2( p ):
-    'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[7], contents_fields=p[5])
+    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[3], p[8], contents_fields=p[6])
 
 def p_interface_def_3( p ):
-    'interface_def : INTERFACE NAME COLON BLOCK_BEGIN interface_diff_type_def STMT_SEP interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[9], contents_fields=p[7], diff_type=p[5])
+    'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_diff_type_def STMT_SEP interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
+    p[0] = t_interface_meta(p[2], p[3], p[10], contents_fields=p[8], diff_type=p[6])
+
+
+def p_interface_parent_def_1( p ):
+    'interface_parent_def : LPAR NAME RPAR'
+    p[0] = p[2]
+
+def p_interface_parent_def_2( p ):
+    'interface_parent_def : empty'
+    p[0] = None
 
 
 def p_list_interface_def_1( p ):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_list_interface_meta(p[2], p[7], p[5])
+    p[0] = t_list_interface_meta(p[2], None, p[7], p[5])
 
 def p_list_interface_def_2( p ):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
-    p[0] = t_list_interface_meta(p[2], [], p[5])
+    p[0] = t_list_interface_meta(p[2], None, [], p[5])
 
 
 def p_interface_diff_type_def( p ):

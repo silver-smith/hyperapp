@@ -77,8 +77,8 @@ tListInterface = tMetaType.register('list_interface', base=tInterfaceMeta, field
 def t_column_meta( id, type, is_key ):
     return tColumn(id, type, is_key)
 
-def t_list_interface_meta( iface_id, commands, columns, contents_fields=None, diff_type=None ):
-    return tListInterface(tListInterface.id, iface_id, contents_fields or [], diff_type, commands, columns)
+def t_list_interface_meta( iface_id, base_iface_id, commands, columns, contents_fields=None, diff_type=None ):
+    return tListInterface(tListInterface.id, iface_id, base_iface_id, contents_fields or [], diff_type, commands, columns)
 
 def list_interface_from_data( meta_registry, type_registry, rec ):
     contents_fields = field_list_from_data(meta_registry, type_registry, rec.contents_fields)

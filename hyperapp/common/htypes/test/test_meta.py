@@ -126,7 +126,7 @@ class MetaTypeTest(unittest.TestCase):
     def test_interface( self ):
         type_names = builtin_type_registry()
         resolver = TypeResolver([type_names])
-        data = t_interface_meta('unit_test_iface', [
+        data = t_interface_meta('unit_test_iface', None, [
             t_command_meta('request', 'request_one',
                            [t_field_meta('req_param1', t_named('string'))],
                            [t_field_meta('req_result1', t_list_meta(t_named('int')))]),
@@ -160,7 +160,7 @@ class MetaTypeTest(unittest.TestCase):
     def test_list_interface( self ):
         type_names = builtin_type_registry()
         resolver = TypeResolver([type_names])
-        data = t_list_interface_meta('unit_test_list_iface', commands=[
+        data = t_list_interface_meta('unit_test_list_iface', None, commands=[
                 t_command_meta('request', 'request_open', [],
                                [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
             ], columns=[

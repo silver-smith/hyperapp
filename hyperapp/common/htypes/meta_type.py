@@ -137,6 +137,7 @@ tIfaceCommandMeta = TRecord([
 
 tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
     Field('iface_id', tString),
+    Field('base_iface_id', TOptional(tString)),
     Field('contents_fields', TList(tFieldMeta)),
     Field('diff_type', TOptional(tMetaType)),
     Field('commands', TList(tIfaceCommandMeta)),
@@ -147,8 +148,8 @@ def t_command_meta( request_type, command_id, params_fields, result_fields=None 
     assert request_type in [IfaceCommand.rt_request, IfaceCommand.rt_notification], repr(request_type)
     return tIfaceCommandMeta(request_type, command_id, params_fields, result_fields or [])
 
-def t_interface_meta( iface_id, commands, contents_fields=None, diff_type=None ):
-    return tInterfaceMeta(tInterfaceMeta.id, iface_id, contents_fields or [], diff_type, commands)
+def t_interface_meta( iface_id, base_iface_id, commands, contents_fields=None, diff_type=None,  ):
+    return tInterfaceMeta(tInterfaceMeta.id, iface_id, base_iface_id, contents_fields or [], diff_type, commands)
 
 def command_from_data( meta_registry, name_resolver, rec ):
     params_fields = field_list_from_data(meta_registry, name_resolver, rec.params_fields)
