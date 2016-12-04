@@ -9,7 +9,7 @@ article = interface article:
     commands:
         request save (text: string) -> (new_path: path)
         request refs () -> (handle: handle opt)
-        request open (ref_id: string) -> (handle: handle opt)
+        request open_ref (ref_id: string) -> (handle: handle opt)
 
 article_ref_list = list_interface article_ref_list:
     columns:
