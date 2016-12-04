@@ -25,6 +25,7 @@ def load_typedefs_from_yaml_file( fpath ):
     return packet_coders.decode(TYPEDEF_MODULE_ENCODING, contents, tFileContents)
 
 def resolve_typedefs( meta_registry, name_resolver, typedefs ):
+    assert isinstance(name_resolver, TypeResolver), repr(name_resolver)
     resolved_registry = TypeRegistry()
     resolver = TypeResolver([resolved_registry], next=name_resolver)
     for typedef in typedefs:

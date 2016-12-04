@@ -1,17 +1,18 @@
 import logging
 from ..common.util import is_list_inst, encode_path
-from ..common.htypes import Interface, tTypeModule, make_meta_type_registry, builtin_type_registry, IfaceRegistry
+from ..common import htypes
+from ..common.htypes import Interface, tTypeModule, make_meta_type_registry, builtin_type_registry, IfaceRegistry, TypeResolver
 from ..common.type_module import resolve_typedefs
 from ..common import module_manager as common_module_manager
 
 log = logging.getLogger(__name__)
 
 
-class TypeRegistryRegistry(common_module_manager.TypeRegistryRegistry):
+class TypeRegistryRegistry(htypes.TypeRegistryRegistry):
 
     def __init__( self, iface_registry ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
-        common_module_manager.TypeRegistryRegistry.__init__(self)
+        htypes.TypeRegistryRegistry.__init__(self)
         self._iface_registry = iface_registry
         self._name2module = {}  # module name -> tTypeModule
         self._class2module = {}  # encoded hierarchy_id|class_id -> tTypeModule
@@ -63,7 +64,8 @@ class TypeRegistryRegistry(common_module_manager.TypeRegistryRegistry):
         return self._resolve_module_typedefs(module)
 
     def _resolve_module_typedefs( self, module ):
-        type_registry = resolve_typedefs(make_meta_type_registry(), builtin_type_registry(), module.typedefs)
+        resolver = TypeResolver([builtin_type_registry()] + list(self._module_name_to_type_registry.values()))
+        type_registry = resolve_typedefs(make_meta_type_registry(), resolver, module.typedefs)
         self._module_name_to_type_registry[module.module_name] = type_registry
         self._register_ifaces(module, type_registry)
         return type_registry
