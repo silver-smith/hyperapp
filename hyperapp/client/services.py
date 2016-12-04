@@ -10,7 +10,7 @@ from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .remoting import Remoting
 from .named_url_file_repository import FileNamedUrlRepository
-from .type_module_registry import TypeRegistryRegistry
+from .type_registry_registry import TypeRegistryRegistry
 from . import code_repository
 from .code_repository import CodeRepository
 from .resources_manager import ResourcesRegistry, ResourcesManager
