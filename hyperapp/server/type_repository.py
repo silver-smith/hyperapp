@@ -38,6 +38,7 @@ class TypeRepository(object):
         return module_id in self._id2type_module
 
     def get_module_by_id( self, module_id ):
+        assert self.has_module_id(module_id), 'Unknown module id: %r; known are: %r' % (module_id, list(self._id2type_module.keys()))
         return self._id2type_module[module_id]
 
     def get_modules_by_requirements( self, requirements ):
@@ -52,7 +53,7 @@ class TypeRepository(object):
                 continue
             if module:
                 modules.add(module)
-        return list(modules)
+        return self._get_dep_modules(modules) + list(modules)
 
     def get_class_module_by_requirement( self, key ):
         return self._class2type_module.get(key)
@@ -85,8 +86,16 @@ class TypeRepository(object):
             for pc in provided_classes})
         self._iface2type_module.update({
             name: type_module for name in provided_ifaces})
+        self._id2type_module[name] = type_module
         self._type_registry_registry.register(name, type_registry)
         self._register_ifaces(type_registry)
+
+    def _get_dep_modules( self, modules ):
+        if not modules: return []
+        dep_modules = []
+        for module in modules:
+            dep_modules += [self.get_module_by_id(module_id) for module_id in module.used_modules]
+        return self._get_dep_modules(dep_modules) + dep_modules
 
     def _register_ifaces( self, type_registry ):
         for name, t in type_registry.items():
