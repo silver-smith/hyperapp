@@ -22,7 +22,8 @@ class TypeRegistryRegistry(htypes.TypeRegistryRegistry):
     def register_all( self, type_modules ):
         assert is_list_inst(type_modules, tTypeModule), repr(type_modules)
         for type_module in type_modules:
-            self.register(type_module)
+            if not self.has_module(type_module.module_name):
+                self.register(type_module)
 
     def register( self, type_module ):
         assert isinstance(type_module, tTypeModule), repr(type_module)
