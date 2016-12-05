@@ -2,14 +2,13 @@ import logging
 import asyncio
 import abc
 from ..common.util import is_list_inst, encode_route
-from ..common.htypes import tServerRoutes, tClientPacket, tAuxInfo, tPacket
+from ..common.htypes import tServerRoutes, tClientPacket, tAuxInfo, tPacket, tRequirement
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from ..common.server_public_key_collector import ServerPksCollector
 from ..common.identity import PublicKey
 from ..common.url import Url, UrlWithRoutes
 from ..common.transport_packet import tTransportPacket
-from ..common.interface.code_repository import tRequirement
 from ..common.route_storage import RouteStorage
 from .request import Request, ClientNotification, Response
 from .module_manager import ModuleManager
