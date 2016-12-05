@@ -2,8 +2,8 @@ import os.path
 import logging
 import yaml
 from ..common.util import flatten
+from ..common.htypes import tModule
 from ..common.interface.code_repository import (
-    tModule,
     code_repository_iface,
     code_repository_browser_iface,
     )
