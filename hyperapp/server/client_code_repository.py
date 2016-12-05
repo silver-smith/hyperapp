@@ -88,7 +88,7 @@ class ClientCodeRepository(Object):
         code_modules = []
         for module_id in module_ids:
             if self._type_repository.has_module_id(module_id):
-                type_modules.append(self._type_repository.get_module_by_id(module_id))
+                type_modules += self._type_repository.get_module_by_id_with_deps(module_id)
             else:
                 code_modules.append(self._code_module_repository.get_module_by_id(module_id))
         return (type_modules, code_modules)

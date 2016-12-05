@@ -41,6 +41,10 @@ class TypeRepository(object):
         assert self.has_module_id(module_id), 'Unknown module id: %r; known are: %r' % (module_id, list(self._id2type_module.keys()))
         return self._id2type_module[module_id]
 
+    def get_module_by_id_with_deps( self, module_id ):
+        module = self.get_module_by_id(module_id)
+        return self._get_dep_modules([module]) + [module]
+    
     def get_modules_by_requirements( self, requirements ):
         class_paths = set(requirement[1] for requirement in requirements)
         modules = set()
