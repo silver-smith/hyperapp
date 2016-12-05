@@ -20,9 +20,10 @@ from .htypes import (
     tCommand,
     tServerRoutes,
     tUrl,
+    tModule,
+    tRequirement,
     )
 from .identity import PublicKey
-from .interface.code_repository import tModule, tRequirement
 
 log = logging.getLogger(__name__)
 
