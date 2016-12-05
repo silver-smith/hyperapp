@@ -4,6 +4,7 @@ import os.path
 import hyperapp.common.interface.server_management
 
 from ..common.htypes import tLocaleResources, iface_registry
+from ..common.type_repository import TypeRepository
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from .objimpl_registry import ObjImplRegistry
@@ -50,7 +51,9 @@ class Services(object):
     def __init__( self ):
         self._dir = os.path.abspath(os.path.dirname(__file__))
         self.iface_registry = iface_registry
+        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.type_registry_registry = TypeRegistryRegistry(self.iface_registry)
+        self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)
