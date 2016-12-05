@@ -1,8 +1,8 @@
 import os
 import os.path
 import logging
-from ..common.util import is_list_inst, encode_path
-from ..common.htypes import (
+from .util import is_list_inst, encode_path
+from .htypes import (
     Interface,
     IfaceRegistry,
     tHierarchyMeta,
@@ -16,8 +16,7 @@ from ..common.htypes import (
     make_meta_type_registry,
     builtin_type_registry,
     )
-from ..common.type_module import load_types_file
-from ..common import module_manager as common_module_manager
+from .type_module import load_types_file
 
 
 log = logging.getLogger(__name__)

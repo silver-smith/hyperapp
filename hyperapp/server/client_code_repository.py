@@ -11,7 +11,6 @@ from . import module as module_mod
 from .module import ModuleCommand
 from .command import command
 from .object import Object, SmallListObject
-from .type_repository import TypeRepository
 from .resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)

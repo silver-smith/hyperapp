@@ -2,6 +2,7 @@ import os.path
 import logging
 from ..common.htypes import TypeRegistryRegistry, tModule, iface_registry, builtin_type_registry
 from ..common.route_storage import RouteStorage
+from ..common.type_repository import TypeRepository
 from .module import Module
 from .module_manager import ModuleManager
 from . import route_storage
@@ -10,7 +11,6 @@ from . import tcp_transport
 from . import encrypted_transport
 from . import client_code_repository
 from .client_code_repository import ClientModuleRepository, ClientCodeRepository
-from .type_repository import TypeRepository
 from .resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)
