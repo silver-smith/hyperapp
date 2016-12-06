@@ -38,8 +38,8 @@ class ModuleManager(common_module_manager.ModuleManager):
 
     def _register_provided_services( self, module, module_dict ):
         this_module_class = module_dict.get('ThisModule')
-        assert this_module_class, 'Client dynamic module %r does not provide "ThisModule"' % module
-        module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
+        if this_module_class:
+            module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
         register_object_implementations = module_dict.get('register_object_implementations')
         if register_object_implementations:
             register_object_implementations(DynamicModuleRegistryProxy(self._objimpl_registry, module.id), self._services)

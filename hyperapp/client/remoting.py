@@ -50,7 +50,7 @@ class Transport(metaclass=abc.ABCMeta):
         if not unfulfilled_requirements: return
         type_modules, code_modules, resources = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
         self._add_type_modules(type_modules or [])  # modules is None if there is no code repositories
-        self._module_manager.add_modules(code_modules or [])  # modules is None if there is no code repositories
+        self._module_manager.add_code_modules(code_modules or [])  # modules is None if there is no code repositories
         self._resources_manager.register_all(resources or [])
         
     def _is_unfulfilled_requirement( self, requirement ):
