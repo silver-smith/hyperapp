@@ -174,7 +174,7 @@ class ThisModule(module_mod.Module):
     def resolve( self, iface, path ):
         objname = path.pop_str()
         if objname == ClientCodeRepository.class_name and iface is ClientCodeRepository.iface:
-            return self._code_repository.resolve(path)
+            return self._client_code_repository.resolve(path)
         if objname == ClientCodeRepositoryBrowser.class_name and iface is ClientCodeRepositoryBrowser.iface:
             return ClientCodeRepositoryBrowser(self._module_repository).resolve(path)
         path.raise_not_found()
