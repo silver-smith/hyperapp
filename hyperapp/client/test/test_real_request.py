@@ -4,20 +4,21 @@ import logging
 import asyncio
 import unittest
 from hyperapp.common.htypes import (
+    tModule,
     tClientPacket,
     tRequest,
     IfaceRegistry,
+    builtin_type_registry,
     )
 from hyperapp.common.url import UrlWithRoutes
 from hyperapp.common.visual_rep import pprint
+from hyperapp.common.type_repository import TypeRepository
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
 from hyperapp.common.interface.server_management import server_management_iface
-from hyperapp.common.interface import code_repository as code_repository_types
 from hyperapp.common.test.util import PhonyRouteRepository
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
 from hyperapp.client.type_registry_registry import TypeRegistryRegistry
-from hyperapp.client.code_repository import CodeRepository
 from hyperapp.client.module_manager import ModuleManager
 from hyperapp.client.remoting import Remoting
 from hyperapp.client.objimpl_registry import ObjImplRegistry
@@ -29,8 +30,14 @@ from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
 
 
+TYPE_MODULE_EXT = '.types'
+DYN_MODULE_EXT = '.dyn.py'
+
+
 class PhonyCacheRepository(object):
-    pass
+
+    def load_value( self, key, t ):
+        return []
 
 
 class PhonyNamedUrlRepository(NamedUrlRepository):
@@ -66,9 +73,12 @@ class PhonyResourcesManager(object):
 class Services(object):
 
     def __init__( self ):
+        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
+        self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.iface_registry = IfaceRegistry()
         self._register_interfaces()
-        self.type_registry_registry = TypeRegistryRegistry(self.iface_registry)
+        self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()), self.iface_registry)
+        self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)
@@ -77,14 +87,33 @@ class Services(object):
         self.module_manager = ModuleManager(self)
         self.identity_controller = IdentityController(PhonyIdentityRepository())
         self.cache_repository = PhonyCacheRepository()
-        self.code_repository = CodeRepository(
-            self.iface_registry, self.remoting, self.cache_repository, PhonyNamedUrlRepository())
         self.resources_manager = PhonyResourcesManager()
+        self.module_manager.register_meta_hook()
+        self._load_type_modules()
+        self._load_modules()
+        self.code_repository.set_url_repository(PhonyNamedUrlRepository())
         self._register_transports()
+
+    def _load_type_modules( self ):
+        for module_name in [
+                'code_repository',
+                ]:
+            fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
+            self.type_repository.load_module(module_name, fpath)
+
+    def _load_modules( self ):
+        for module_name in [
+                'code_repository',
+                ]:
+            fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
+            with open(fpath) as f:
+                source = f.read()
+            package = 'hyperapp.client'
+            module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            self.module_manager.add_code_module(module)
 
     def _register_interfaces( self ):
         self.iface_registry.register(server_management_iface)
-        self.iface_registry.register(code_repository_types.code_repository)
 
     def _register_transports( self ):
         tcp_transport.register_transports(self.remoting.transport_registry, self)

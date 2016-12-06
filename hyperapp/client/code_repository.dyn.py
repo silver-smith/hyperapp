@@ -43,6 +43,9 @@ class CodeRepository(object):
         self._url_repository = url_repository
         self._items = list(self._url_repository.enumerate())  # NamedUrl list
 
+    def set_url_repository( self, url_repository ):
+        self._url_repository = url_repository
+
     def get_items( self ):
         return self._items
 
@@ -190,7 +193,7 @@ class ThisModule(Module):
         Module.__init__(self, services)
         services.code_repository = CodeRepository(
             services.iface_registry, services.remoting, services.cache_repository,
-            FileNamedUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+            FileNamedUrlRepository(services.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
 
     @open_command('repository_list')
     def command_repository_list( self ):
