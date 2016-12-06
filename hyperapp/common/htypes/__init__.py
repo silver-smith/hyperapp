@@ -38,6 +38,10 @@ def builtin_type_registry():
     registry.register('obj_handle', tObjHandle)
     registry.register('path', tPath)
     registry.register('url', tUrl)
+    registry.register('requirement', tRequirement)
+    registry.register('type_module', tTypeModule)
+    registry.register('module', tModule)
+    registry.register('resources', tResources)
     return registry
 
 def builtin_type_registry_registry():

@@ -11,6 +11,9 @@ from hyperapp.common.htypes import (
 from hyperapp.common.url import UrlWithRoutes
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
+from hyperapp.common.interface.server_management import server_management_iface
+from hyperapp.common.interface import code_repository as code_repository_types
+from hyperapp.common.test.util import PhonyRouteRepository
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
 from hyperapp.client.type_registry_registry import TypeRegistryRegistry
@@ -22,11 +25,8 @@ from hyperapp.client.named_url_file_repository import NamedUrlRepository
 from hyperapp.client.proxy_registry import ProxyRegistry
 from hyperapp.client.view_registry import ViewRegistry
 from hyperapp.client.identity import IdentityRepository, IdentityController
-from hyperapp.common.interface.server_management import server_management_iface
-from hyperapp.common.interface.code_repository import code_repository_iface
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
-from hyperapp.common.test.util import PhonyRouteRepository
 
 
 class PhonyCacheRepository(object):
@@ -84,7 +84,7 @@ class Services(object):
 
     def _register_interfaces( self ):
         self.iface_registry.register(server_management_iface)
-        self.iface_registry.register(code_repository_iface)
+        self.iface_registry.register(code_repository_types.code_repository)
 
     def _register_transports( self ):
         tcp_transport.register_transports(self.remoting.transport_registry, self)

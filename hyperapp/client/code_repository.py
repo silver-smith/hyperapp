@@ -12,7 +12,7 @@ from ..common.htypes import (
     Column,
     list_handle_type,
     )
-from ..common.interface.code_repository import code_repository_iface, code_repository_browser_iface
+from ..common.interface import code_repository as code_repository_types
 from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
 from ..common.url import Url
 from .module import Module
@@ -46,7 +46,7 @@ class CodeRepository(object):
         return self._items
 
     def add( self, name, url ):
-        assert url.iface is code_repository_iface, repr(url.iface.iface_id)
+        assert url.iface is code_repository_types.code_repository, repr(url.iface.iface_id)
         id = str(uuid.uuid4())
         item = NamedUrl(id, name, url)
         self._items.append(item)
@@ -80,7 +80,7 @@ class CodeRepositoryProxy(ProxyObject):
         return cls(iface_registry, cache_repository, server, url.path, url.iface)
         
     def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):
-        assert iface is code_repository_iface, repr(iface.iface_id)
+        assert iface is code_repository_types.code_repository, repr(iface.iface_id)
         ProxyObject.__init__(self, iface_registry, cache_repository, server, path, iface, facets)
 
     @asyncio.coroutine
@@ -190,12 +190,12 @@ class ThisModule(Module):
         return make_code_repository_list()
 
     def get_object_commands( self, object ):
-        if code_repository_iface in object.get_facets():
+        if code_repository_types.code_repository in object.get_facets():
             return [self.object_command_add_to_repository_list]
         return []
 
     @open_command('add_to_repository_list', kind='object')
     def object_command_add_to_repository_list( self, object ):
-        assert code_repository_iface in object.get_facets()
-        url = object.get_url().clone(iface=code_repository_iface)
+        assert code_repository_types.code_repository in object.get_facets()
+        url = object.get_url().clone(iface=code_repository_types.code_repository)
         return make_code_repository_form(url.to_str())

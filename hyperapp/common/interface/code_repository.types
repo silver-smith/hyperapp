@@ -1,0 +1,12 @@
+
+code_repository = interface code_repository:
+    commands:
+        request get_modules_by_ids (module_ids: string list) -> (type_modules: type_module list, code_modules: module list, resources: resources)
+        request get_modules_by_requirements (requirements: requirement list) -> (type_modules: type_module list, code_modules: module list, resources: resources)
+        
+code_repository_blowser = list_interface code_repository_blowser:
+    columns:
+        @id: string
+        fname: string
+        package: string
+        satisfies: string

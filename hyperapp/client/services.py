@@ -71,6 +71,7 @@ class Services(object):
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self.module_mgr.register_meta_hook()
         self._register_transports()
+        self._load_type_modules()
         self._register_modules()
         self._load_resources()
         self._register_object_implementations()
@@ -79,6 +80,12 @@ class Services(object):
     def _register_transports( self ):
         tcp_transport.register_transports(self.remoting.transport_registry, self)
         encrypted_transport.register_transports(self.remoting.transport_registry, self)
+
+    def _load_type_modules( self ):
+        for module_name in [
+                ]:
+            fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
+            self.type_repository.load_module(module_name, fpath)
 
     def _register_modules( self ):
         for module in [

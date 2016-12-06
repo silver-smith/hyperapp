@@ -17,5 +17,5 @@ class ModuleManager(common_module_manager.ModuleManager):
         #log.debug('_register_provided_services: %s', module_dict)
         this_module_class = module_dict.get('ThisModule')
         if this_module_class:
-            module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registation
+            module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
 

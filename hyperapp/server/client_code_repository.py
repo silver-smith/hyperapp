@@ -3,10 +3,7 @@ import logging
 import yaml
 from ..common.util import flatten
 from ..common.htypes import tModule
-from ..common.interface.code_repository import (
-    code_repository_iface,
-    code_repository_browser_iface,
-    )
+from ..common.interface import code_repository as code_repository_types
 from . import module as module_mod
 from .module import ModuleCommand
 from .command import command
@@ -19,7 +16,7 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'code_repository'
 DYNAMIC_MODULE_INFO_EXT = '.module.yaml'
 CODE_REPOSITORY_CLASS_NAME = 'code_repository'
-CODE_REPOSITORY_FACETS = [code_repository_iface, code_repository_browser_iface]
+CODE_REPOSITORY_FACETS = [code_repository_types.code_repository, code_repository_types.code_repository_browser]
 
 
 class ClientModuleRepository(object):
@@ -64,7 +61,7 @@ class ClientModuleRepository(object):
 
 class ClientCodeRepository(Object):
 
-    iface = code_repository_iface
+    iface = code_repository_types.code_repository
     facets = CODE_REPOSITORY_FACETS
     class_name = CODE_REPOSITORY_CLASS_NAME
 
@@ -136,7 +133,7 @@ class ClientCodeRepository(Object):
 
 class ClientCodeRepositoryBrowser(SmallListObject):
 
-    iface = code_repository_browser_iface
+    iface = code_repository_types.code_repository_browser
     facets = CODE_REPOSITORY_FACETS
     class_name = CODE_REPOSITORY_CLASS_NAME
     objimpl_id = 'proxy_list'
