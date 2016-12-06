@@ -53,7 +53,6 @@ class ClientModuleRepository(object):
             self._requirement2module[(registry, key)] = module
 
     def _load_module( self, id, package, satisfies, fpath ):
-        fpath = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', fpath))
         with open(fpath) as f:
             source = f.read()
         return tModule(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
@@ -167,8 +166,10 @@ class ThisModule(module_mod.Module):
 
     def __init__( self, services ):
         module_mod.Module.__init__(self, MODULE_NAME)
-        self._module_repository = services.module_repository
-        self._code_repository = services.client_code_repository
+        self._module_repository = ClientModuleRepository(services.dynamic_modules_dir)
+        self._client_code_repository = ClientCodeRepository(services.type_repository, self._module_repository, services.resources_loader)
+        services.module_repository = self._module_repository
+        services.client_code_repository = self._client_code_repository
 
     def resolve( self, iface, path ):
         objname = path.pop_str()
