@@ -21,8 +21,8 @@ CODE_REPOSITORY_FACETS = [code_repository_types.code_repository, code_repository
 
 class ClientModuleRepository(object):
 
-    def __init__( self, dynamic_modules_dir ):
-        self._dynamic_modules_dir = dynamic_modules_dir
+    def __init__( self, dynamic_module_dir ):
+        self._dynamic_module_dir = dynamic_module_dir
         self._id2module = {}           # module id -> tModule
         self._requirement2module = {}  # (registry, key) -> tModule
         self._load_dynamic_modules()
@@ -37,15 +37,15 @@ class ClientModuleRepository(object):
         return self._requirement2module.get((registry, key))
 
     def _load_dynamic_modules( self ):
-        for fname in os.listdir(self._dynamic_modules_dir):
+        for fname in os.listdir(self._dynamic_module_dir):
             if fname.endswith(DYNAMIC_MODULE_INFO_EXT):
-                self._load_dynamic_module(os.path.join(self._dynamic_modules_dir, fname))
+                self._load_dynamic_module(os.path.join(self._dynamic_module_dir, fname))
 
     def _load_dynamic_module( self, info_path ):
         with open(info_path) as f:
             info = yaml.load(f.read())
         log.info('loaded client module info: %r', info)
-        source_path = os.path.abspath(os.path.join(self._dynamic_modules_dir, info['source_path']))
+        source_path = os.path.abspath(os.path.join(self._dynamic_module_dir, info['source_path']))
         satisfies = [path.split('/') for path in info['satisfies']]
         module = self._load_module(info['id'], info['package'], satisfies, source_path)
         for registry, key in satisfies:
@@ -166,7 +166,7 @@ class ThisModule(module_mod.Module):
 
     def __init__( self, services ):
         module_mod.Module.__init__(self, MODULE_NAME)
-        self._module_repository = ClientModuleRepository(services.dynamic_modules_dir)
+        self._module_repository = ClientModuleRepository(services.dynamic_module_dir)
         self._client_code_repository = ClientCodeRepository(services.type_repository, self._module_repository, services.resources_loader)
         services.module_repository = self._module_repository
         services.client_code_repository = self._client_code_repository

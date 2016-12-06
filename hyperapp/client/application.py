@@ -93,7 +93,7 @@ class Application(QtGui.QApplication, view.View):
     def save_state( self, state ):
         requirements = RequirementsCollector().collect(self.state_type, state)
         module_ids = list(self._resolve_requirements(requirements))
-        modules = self.services.module_mgr.resolve_ids(module_ids)
+        modules = self.services.module_manager.resolve_ids(module_ids)
         for module in modules:
             log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
         state_data = packet_coders.encode('cdr', state, self.state_type)
@@ -129,9 +129,9 @@ class Application(QtGui.QApplication, view.View):
     ##         return state
     ##     module_ids, modules, pickled_handles = state
     ##     for module in modules:
-    ##         self._module_mgr.add_module(module)
+    ##         self._module_manager.add_code_module(module)
     ##         print '-- module is loaded from state: %r (satisfies %s)' % (module.id, module.satisfies)
-    ##     for module in self._module_mgr.resolve_ids(module_ids):
+    ##     for module in self._module_manager.resolve_ids(module_ids):
     ##         print 'loading cached module required for state: %r' % module.id
     ##         load_client_module(module)
     ##     return pickler.loads(pickled_handles)
@@ -174,8 +174,8 @@ class Application(QtGui.QApplication, view.View):
                 self.services.code_repository.get_modules_by_ids(list(set(module_ids))))
             if new_code_modules is not None:  # has code repositories?
                 code_modules = new_code_modules  # load new versions
-            self.services.type_registry_registry.register_all(type_modules)
-            self.services.module_mgr.add_modules(code_modules)
+            self.services.type_registry_registry.register_all_type_modules(type_modules)
+            self.services.module_manager.add_code_modules(code_modules)
             self.services.resources_manager.register_all(resources)
             state = packet_coders.decode('cdr', state_data, self.state_type)
             log.info('-->8 -- loaded state  ------')

@@ -24,12 +24,12 @@ class Services(object):
         self.iface_registry = iface_registry
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
-        self.dynamic_modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
+        self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
         self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
-                                                     client_module=self.dynamic_modules_dir))
+                                                     client_module=self.dynamic_module_dir))
         self.route_storage_module = route_storage.ThisModule()
         self.module_manager.register_meta_hook()
         self._load_type_modules()

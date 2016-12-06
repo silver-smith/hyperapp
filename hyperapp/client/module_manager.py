@@ -19,11 +19,11 @@ class ModuleManager(common_module_manager.ModuleManager):
         self._meta_type_registry = make_meta_type_registry()
         self._builtin_type_registry = builtin_type_registry()
 
-    def add_modules( self, modules ):
+    def add_code_modules( self, modules ):
         for module in modules:
-            self.add_module(module)
+            self.add_code_module(module)
 
-    def add_module( self, module ):
+    def add_code_module( self, module ):
         log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
         self._id2module[module.id] = module
         self.load_code_module(module)
@@ -37,6 +37,9 @@ class ModuleManager(common_module_manager.ModuleManager):
         return modules
 
     def _register_provided_services( self, module, module_dict ):
+        this_module_class = module_dict.get('ThisModule')
+        assert this_module_class, 'Client dynamic module %r does not provide "ThisModule"' % module
+        module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
         register_object_implementations = module_dict.get('register_object_implementations')
         if register_object_implementations:
             register_object_implementations(DynamicModuleRegistryProxy(self._objimpl_registry, module.id), self._services)

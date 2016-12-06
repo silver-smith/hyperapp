@@ -22,7 +22,7 @@ log = logging.getLogger(__name__)
 class Transport(metaclass=abc.ABCMeta):
 
     def __init__( self, services ):
-        self._module_mgr = services.module_mgr
+        self._module_manager = services.module_manager
         self._iface_registry = services.iface_registry
         self._type_registry_registry = services.type_registry_registry
         self._route_storage = services.route_storage
@@ -31,7 +31,7 @@ class Transport(metaclass=abc.ABCMeta):
         self._code_repository = services.code_repository
         self._identity_controller = services.identity_controller
         self._resources_manager = services.resources_manager
-        assert isinstance(self._module_mgr, ModuleManager), repr(self._module_mgr)
+        assert isinstance(self._module_manager, ModuleManager), repr(self._module_manager)
         #assert isinstance(code_repository, CodeRepository), repr(code_repository)
         assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)
 
@@ -50,7 +50,7 @@ class Transport(metaclass=abc.ABCMeta):
         if not unfulfilled_requirements: return
         type_modules, code_modules, resources = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
         self._add_type_modules(type_modules or [])  # modules is None if there is no code repositories
-        self._module_mgr.add_modules(code_modules or [])  # modules is None if there is no code repositories
+        self._module_manager.add_modules(code_modules or [])  # modules is None if there is no code repositories
         self._resources_manager.register_all(resources or [])
         
     def _is_unfulfilled_requirement( self, requirement ):
@@ -73,7 +73,7 @@ class Transport(metaclass=abc.ABCMeta):
                       type_module.module_name, len(type_module.typedefs),
                       ', '.join('%s:%s' % (rec.hierarchy_id, rec.class_id) for rec in type_module.provided_classes))
             if not self._type_registry_registry.has_type_registry(type_module.module_name):
-                self._type_registry_registry.register(type_module)
+                self._type_registry_registry.register_type_module(type_module)
 
     def _add_routes( self, routes ):
         for srv_routes in routes:

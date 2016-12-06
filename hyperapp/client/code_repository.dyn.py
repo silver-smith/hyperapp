@@ -1,5 +1,6 @@
 # code repository proxy
 
+import os
 import logging
 import asyncio
 import uuid
@@ -22,7 +23,7 @@ from .proxy_object import ProxyObject
 from .command import open_command
 from .object import Object
 from .list_object import Element, Slice, ListObject
-from .named_url_file_repository import NamedUrl, NamedUrlRepository
+from .named_url_file_repository import NamedUrl, NamedUrlRepository, FileNamedUrlRepository
 
 log = logging.getLogger(__name__)
 
@@ -184,6 +185,12 @@ def make_code_repository_list( key=None ):
 
 
 class ThisModule(Module):
+
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        services.code_repository = CodeRepository(
+            services.iface_registry, services.remoting, services.cache_repository,
+            FileNamedUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
 
     @open_command('repository_list')
     def command_repository_list( self ):

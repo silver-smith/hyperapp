@@ -74,7 +74,7 @@ class Services(object):
         self.remoting = Remoting(self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.remoting)
-        self.module_mgr = ModuleManager(self)
+        self.module_manager = ModuleManager(self)
         self.identity_controller = IdentityController(PhonyIdentityRepository())
         self.cache_repository = PhonyCacheRepository()
         self.code_repository = CodeRepository(

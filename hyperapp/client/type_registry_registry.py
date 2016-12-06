@@ -10,22 +10,25 @@ log = logging.getLogger(__name__)
 
 class TypeRegistryRegistry(htypes.TypeRegistryRegistry):
 
-    def __init__( self, iface_registry ):
+    def __init__( self, registries, iface_registry ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         htypes.TypeRegistryRegistry.__init__(self)
         self._iface_registry = iface_registry
         self._name2module = {}  # module name -> tTypeModule
         self._class2module = {}  # encoded hierarchy_id|class_id -> tTypeModule
         self._iface2module = {}  # iface_id -> tTypeModule
-        self._module_name_to_type_registry = {}
+        self._module_name_to_type_registry = registries or {}
 
-    def register_all( self, type_modules ):
+    def register_all_type_modules( self, type_modules ):
         assert is_list_inst(type_modules, tTypeModule), repr(type_modules)
         for type_module in type_modules:
             if not self.has_module(type_module.module_name):
-                self.register(type_module)
+                self.register_type_module(type_module)
 
-    def register( self, type_module ):
+    def register( self, module_name, type_registry ):
+        self._module_name_to_type_registry[module_name] = type_registry
+
+    def register_type_module( self, type_module ):
         assert isinstance(type_module, tTypeModule), repr(type_module)
         log.info('type module registry: registering type module %r', type_module.module_name)
         self._name2module[type_module.module_name] = type_module

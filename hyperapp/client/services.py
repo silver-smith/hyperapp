@@ -3,7 +3,7 @@ import os.path
 # self-registering ifaces:
 import hyperapp.common.interface.server_management
 
-from ..common.htypes import tLocaleResources, iface_registry
+from ..common.htypes import tModule, tLocaleResources, iface_registry, builtin_type_registry
 from ..common.type_repository import TypeRepository
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
@@ -12,8 +12,6 @@ from .view_registry import ViewRegistry
 from .remoting import Remoting
 from .named_url_file_repository import FileNamedUrlRepository
 from .type_registry_registry import TypeRegistryRegistry
-from . import code_repository
-from .code_repository import CodeRepository
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
 from .file_route_repository import FileRouteRepository
@@ -44,6 +42,8 @@ from . import proxy_list_object
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
 CACHE_CONTENTS_ENCODING = 'json_pretty'
 CACHE_FILE_EXT = '.json'
+TYPE_MODULE_EXT = '.types'
+DYN_MODULE_EXT = '.dyn.py'
 
 
 class Services(object):
@@ -52,27 +52,26 @@ class Services(object):
         self._dir = os.path.abspath(os.path.dirname(__file__))
         self.iface_registry = iface_registry
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
-        self.type_registry_registry = TypeRegistryRegistry(self.iface_registry)
+        self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+        self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()), self.iface_registry)
         self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.remoting)
-        self.module_mgr = ModuleManager(self)
+        self.module_manager = ModuleManager(self)
         self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
-        self.code_repository = CodeRepository(
-            self.iface_registry, self.remoting, self.cache_repository,
-            FileNamedUrlRepository(iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
         self.resources_registry = ResourcesRegistry()
         self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
         self.bookmarks = Bookmarks(FileNamedUrlRepository(
             self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
-        self.module_mgr.register_meta_hook()
-        self._register_transports()
+        self.module_manager.register_meta_hook()
         self._load_type_modules()
+        self._load_modules()
         self._register_modules()
+        self._register_transports()
         self._load_resources()
         self._register_object_implementations()
         self._register_views()
@@ -83,6 +82,7 @@ class Services(object):
 
     def _load_type_modules( self ):
         for module_name in [
+                'code_repository',
                 ]:
             fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
             self.type_repository.load_module(module_name, fpath)
@@ -90,11 +90,21 @@ class Services(object):
     def _register_modules( self ):
         for module in [
             identity,
-            code_repository,
             bookmarks,
             url_clipboard,
             ]:
             module.ThisModule(self)  # will auto-register itself
+
+    def _load_modules( self ):
+        for module_name in [
+                'code_repository',
+                ]:
+            fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
+            with open(fpath) as f:
+                source = f.read()
+            package = 'hyperapp.client'
+            module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            self.module_manager.add_code_module(module)
 
     def _load_resources( self ):
         for module in [
@@ -126,7 +136,6 @@ class Services(object):
                 proxy_object,
                 proxy_list_object,
                 navigator,
-                code_repository,
                 identity,
                 bookmarks,
                 ]:
