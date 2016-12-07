@@ -30,7 +30,6 @@ from . import navigator
 from . import splitter
 from . import list_view
 from . import narrower
-from . import text_edit
 from . import form_view
 
 from . import text_object
@@ -100,6 +99,7 @@ class Services(object):
         for module_name in [
                 'code_repository',
                 'text_view',
+                'text_edit',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
@@ -149,7 +149,6 @@ class Services(object):
                 splitter,
                 list_view,
                 narrower,
-                text_edit,
                 form_view,
                 ]:
             module.register_views(self.view_registry, self)

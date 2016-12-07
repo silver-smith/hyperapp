@@ -2,13 +2,11 @@ import logging
 import asyncio
 from PySide import QtCore, QtGui
 from ..common.htypes import tObjHandle
+from .module import Module
 from . import view
 from .text_object import TextObject
 
 log = logging.getLogger(__name__)
-
-
-state_type = tObjHandle
 
 
 def register_views( registry, services ):
@@ -23,6 +21,10 @@ class View(view.View, QtGui.QTextEdit):
         object = objimpl_registry.resolve(state.object)
         return cls(object, parent)
 
+    @staticmethod
+    def get_state_type():
+        return this_module.state_type
+
     def __init__( self, object, parent ):
         QtGui.QTextEdit.__init__(self)
         view.View.__init__(self, parent)
@@ -33,7 +35,7 @@ class View(view.View, QtGui.QTextEdit):
         self.object.subscribe(self)
 
     def get_state( self ):
-        return state_type('text_edit', self.object.get_state())
+        return this_module.state_type('text_edit', self.object.get_state())
 
     def get_title( self ):
         return self.object.get_title()
@@ -59,3 +61,10 @@ class View(view.View, QtGui.QTextEdit):
 
     def __del__( self ):
         log.info('~text_edit %r', self)
+
+
+class ThisModule(Module):
+
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        self.state_type = tObjHandle
