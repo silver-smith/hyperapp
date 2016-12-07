@@ -21,9 +21,9 @@ DYN_MODULE_EXT = '.dyn.py'
 class Services(object):
 
     def __init__( self ):
-        self.iface_registry = iface_registry
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
+        self.iface_registry = iface_registry
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
         self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
