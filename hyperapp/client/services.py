@@ -82,6 +82,7 @@ class Services(object):
     def _load_type_modules( self ):
         for module_name in [
                 'code_repository',
+                'text_object_types',
                 ]:
             fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
             self.type_repository.load_module(module_name, fpath)

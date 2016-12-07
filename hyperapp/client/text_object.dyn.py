@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tObjHandle
-from ..common.interface.text_object import tTextObject
+from ..common.interface import text_object_types
 from .module import Module
 from .command import open_command
 from .object import Object
@@ -66,4 +66,4 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
-        self.state_type = tTextObject
+        self.state_type = text_object_types.text_object
