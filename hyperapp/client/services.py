@@ -28,7 +28,6 @@ from . import navigator
 from . import splitter
 from . import list_view
 from . import narrower
-from . import form_view
 
 from . import proxy_object
 from . import proxy_list_object
@@ -100,6 +99,7 @@ class Services(object):
                 'text_object',
                 'text_view',
                 'text_edit',
+                'form_view',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
@@ -148,6 +148,5 @@ class Services(object):
                 splitter,
                 list_view,
                 narrower,
-                form_view,
                 ]:
             module.register_views(self.view_registry, self)
