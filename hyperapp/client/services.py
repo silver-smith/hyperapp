@@ -30,7 +30,6 @@ from . import navigator
 from . import splitter
 from . import list_view
 from . import narrower
-from . import text_view
 from . import text_edit
 from . import form_view
 
@@ -61,6 +60,8 @@ class Services(object):
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.remoting)
         self.module_manager = ModuleManager(self)
+        self.modules = self.module_manager.modules
+        self.interfaces = self.module_manager.interfaces
         self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.resources_registry = ResourcesRegistry()
@@ -98,6 +99,7 @@ class Services(object):
     def _load_modules( self ):
         for module_name in [
                 'code_repository',
+                'text_view',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
@@ -147,7 +149,6 @@ class Services(object):
                 splitter,
                 list_view,
                 narrower,
-                text_view,
                 text_edit,
                 form_view,
                 ]:

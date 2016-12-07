@@ -15,7 +15,6 @@ from . import text_object
 from . import view
 from . import window
 from . import tab_view
-from . import text_view
 from . import navigator
 from .services import Services
 
@@ -145,7 +144,8 @@ class Application(QtGui.QApplication, view.View):
             return None
 
     def get_default_state( self ):
-        text_handle = text_view.state_type('text_view', text_object.state_type('text', 'hello'))
+        view_state_t = self.services.modules.text_view.View.get_state_type()
+        text_handle = view_state_t('text_view', text_object.state_type('text', 'hello'))
         navigator_state = navigator.state_type(
             view_id=navigator.View.view_id,
             history=[navigator.item_type('sample text', text_handle)],
@@ -171,7 +171,8 @@ class Application(QtGui.QApplication, view.View):
             module_ids, code_modules, state_data = contents
             log.info('-- code_modules loaded from state: ids=%r, code_modules=%r', module_ids, [module.fpath for module in code_modules])
             type_modules, new_code_modules, resources = self._loop.run_until_complete(
-                self.services.code_repository.get_modules_by_ids(list(set(module_ids))))
+                self.services.code_repository.get_modules_by_ids(
+                    [module_id for module_id in set(module_ids) if not self.services.module_manager.has_module(module_id)]))
             if new_code_modules is not None:  # has code repositories?
                 code_modules = new_code_modules  # load new versions
             self.services.type_registry_registry.register_all_type_modules(type_modules)

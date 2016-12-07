@@ -12,12 +12,18 @@ log = logging.getLogger(__name__)
 
 class ModuleManager(object):
 
+    class Modules(object):
+        pass
+
     def __init__( self, services, type_registry_registry ):
         assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
         self._services = services
         self._type_registry_registry = type_registry_registry
         self._type_modules = {}  # fullname -> ModuleType
         self._code_modules = {}  # fullname -> tModule
+        self._name2code_module = {}  # name -> tModule
+        self.modules = self.Modules()
+        self.interfaces = self.Modules()
 
     def register_meta_hook( self ):
         sys.meta_path.append(self)
@@ -46,6 +52,9 @@ class ModuleManager(object):
     def _register_provided_services( self, module, module_dict ):
         pass
 
+    def has_module( self, module_name ):
+        return (module_name in self._name2code_module)
+
     def load_code_module( self, module, fullname=None ):
         assert isinstance(module, tModule), repr(module)
         if fullname is None:
@@ -53,12 +62,14 @@ class ModuleManager(object):
         if fullname in sys.modules:
             return  # already loaded
         self._code_modules[fullname] = module
+        self._name2code_module[fullname.split('.')[-1]] = module
         importlib.import_module(fullname)
 
     def _exec_code_module( self, module, code_module ):
         ast = compile(code_module.source, code_module.fpath, 'exec')  # using compile allows to associate file path with loaded module
         exec(ast, module.__dict__)
         self._register_provided_services(code_module, module.__dict__)
+        setattr(self.modules, module.__name__.split('.')[-1], module)
 
     def _exec_type_module( self, module, module_name ):
         log.info('    importing type module %r', module_name)
@@ -67,3 +78,4 @@ class ModuleManager(object):
             module.__dict__[name] = t
             log.info('        resolved type %r -> %r', name, t)
         self._type_modules[module.__name__] = module
+        setattr(self.interfaces, module.__name__.split('.')[-1], module)
