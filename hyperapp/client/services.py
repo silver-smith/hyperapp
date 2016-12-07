@@ -32,7 +32,6 @@ from . import list_view
 from . import narrower
 from . import form_view
 
-from . import text_object
 from . import proxy_object
 from . import proxy_list_object
 
@@ -98,6 +97,7 @@ class Services(object):
     def _load_modules( self ):
         for module_name in [
                 'code_repository',
+                'text_object',
                 'text_view',
                 'text_edit',
                 ]:
@@ -134,7 +134,6 @@ class Services(object):
 
     def _register_object_implementations( self ):
         for module in [
-                text_object,
                 proxy_object,
                 proxy_list_object,
                 navigator,

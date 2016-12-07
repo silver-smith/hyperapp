@@ -2,13 +2,11 @@ import logging
 import asyncio
 from ..common.htypes import tString, tObject, Field, tBaseObject, tObjHandle
 from ..common.interface.text_object import tTextObject
+from .module import Module
 from .command import open_command
 from .object import Object
 
 log = logging.getLogger(__name__)
-
-
-state_type = tTextObject
 
 
 def register_object_implementations( registry, serevices ):
@@ -26,6 +24,10 @@ class TextObject(Object):
     def from_state( cls, state, server=None ):
         return cls(state.text)
 
+    @staticmethod
+    def get_state_type():
+        return this_module.state_type
+
     def __init__( self, text ):
         Object.__init__(self)
         self.text = text
@@ -34,7 +36,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def get_state( self ):
-        return tTextObject(self.objimpl_id, self.text)
+        return this_module.state_type(self.objimpl_id, self.text)
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
@@ -58,3 +60,10 @@ class TextObject(Object):
 
     def __del__( self ):
         log.info('~text_object %r', self)
+
+
+class ThisModule(Module):
+
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        self.state_type = tTextObject

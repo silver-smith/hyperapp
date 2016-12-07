@@ -11,7 +11,6 @@ from ..common.packet_coders import packet_coders
 from .server import Server
 from .command import command
 from .proxy_object import execute_get_request
-from . import text_object
 from . import view
 from . import window
 from . import tab_view
@@ -145,7 +144,8 @@ class Application(QtGui.QApplication, view.View):
 
     def get_default_state( self ):
         view_state_t = self.services.modules.text_view.View.get_state_type()
-        text_handle = view_state_t('text_view', text_object.state_type('text', 'hello'))
+        text_object_state_t = self.services.modules.text_object.TextObject.get_state_type()
+        text_handle = view_state_t('text_view', text_object_state_t('text', 'hello'))
         navigator_state = navigator.state_type(
             view_id=navigator.View.view_id,
             history=[navigator.item_type('sample text', text_handle)],
