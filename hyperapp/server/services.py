@@ -28,6 +28,7 @@ class Services(object):
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
         self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
+        self.modules = self.module_manager.modules
         self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
                                                      client_module=self.dynamic_module_dir))
         self.route_storage_module = route_storage.ThisModule()
@@ -59,6 +60,7 @@ class Services(object):
 
     def _load_server_modules( self ):
         for module_name in [
+                'server_management',
                 'client_code_repository',
                 'admin',
                 'module_list',

@@ -17,7 +17,7 @@ class CommandList(SmallListObject):
 
     @classmethod
     def get_path( cls ):
-        return module.make_path()
+        return this_module.make_path()
 
     def __init__( self ):
         SmallListObject.__init__(self)
@@ -37,9 +37,9 @@ class CommandList(SmallListObject):
         return module.run_command(request, command_id)
 
 
-class ManagementModule(Module):
+class ThisModule(Module):
 
-    def __init__( self ):
+    def __init__( self, services ):
         Module.__init__(self, MODULE_NAME)
 
     def resolve( self, iface, path ):
@@ -49,6 +49,3 @@ class ManagementModule(Module):
 
 def get_management_url( public_key ):
     return Url(CommandList.iface, public_key, CommandList.get_path())
-
-
-module = ManagementModule()
