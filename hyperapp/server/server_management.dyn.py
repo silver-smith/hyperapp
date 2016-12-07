@@ -1,6 +1,6 @@
 # server management module: used to expose module commands in one list
 
-from ..common.interface.server_management import server_management_iface
+from ..common.interface import server_management as server_management_types
 from ..common.url import Url
 from .object import SmallListObject
 from .module import Module
@@ -12,7 +12,7 @@ MODULE_NAME = 'management'
 
 class CommandList(SmallListObject):
 
-    iface = server_management_iface
+    iface = server_management_types.server_management
     objimpl_id = 'proxy_list'
 
     @classmethod

@@ -1,7 +1,5 @@
 import os.path
 
-# self-registering ifaces:
-import hyperapp.common.interface.server_management
 
 from ..common.htypes import tModule, tLocaleResources, iface_registry, builtin_type_registry
 from ..common.type_repository import TypeRepository
@@ -64,11 +62,11 @@ class Services(object):
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.resources_registry = ResourcesRegistry()
         self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
-        self.bookmarks = Bookmarks(FileNamedUrlRepository(
-            self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self.module_manager.register_meta_hook()
         self._load_type_modules()
         self._load_modules()
+        self.bookmarks = Bookmarks(FileNamedUrlRepository(
+            self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_modules()
         self._register_transports()
         self._load_resources()
@@ -81,6 +79,7 @@ class Services(object):
 
     def _load_type_modules( self ):
         for module_name in [
+                'server_management',
                 'code_repository',
                 'text_object_types',
                 ]:

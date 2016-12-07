@@ -1,0 +1,8 @@
+server_management = list_interface server_management:
+    columns:
+        @key: string
+        module: string
+        text: string
+        desc:string
+    commands:
+        request open (element_key: string) -> (handle: handle opt)

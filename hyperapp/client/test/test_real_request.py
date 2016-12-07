@@ -14,7 +14,6 @@ from hyperapp.common.url import UrlWithRoutes
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_repository import TypeRepository
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
-from hyperapp.common.interface.server_management import server_management_iface
 from hyperapp.common.test.util import PhonyRouteRepository
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
@@ -76,7 +75,6 @@ class Services(object):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.iface_registry = IfaceRegistry()
-        self._register_interfaces()
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()), self.iface_registry)
         self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
         self.route_storage = RouteStorage(PhonyRouteRepository())
@@ -96,6 +94,7 @@ class Services(object):
 
     def _load_type_modules( self ):
         for module_name in [
+                'server_management',
                 'code_repository',
                 ]:
             fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
@@ -111,9 +110,6 @@ class Services(object):
             package = 'hyperapp.client'
             module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
-
-    def _register_interfaces( self ):
-        self.iface_registry.register(server_management_iface)
 
     def _register_transports( self ):
         tcp_transport.register_transports(self.remoting.transport_registry, self)

@@ -46,6 +46,7 @@ class Services(object):
 
     def _load_type_modules( self ):
         for module_name in [
+                'server_management',
                 'code_repository',
                 'admin',
                 'article',
