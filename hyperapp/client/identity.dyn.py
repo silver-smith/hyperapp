@@ -174,6 +174,11 @@ def make_identity_list( key=None ):
 
 class ThisModule(Module):
 
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        services.identity_controller = IdentityController(
+            FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
+
     @open_command('identity_list')
     def command_identity_list( self ):
         return make_identity_list()

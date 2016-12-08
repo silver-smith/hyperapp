@@ -23,7 +23,7 @@ class ModuleManager(object):
         self._code_modules = {}  # fullname -> tModule
         self._name2code_module = {}  # name -> tModule
         self.modules = self.Modules()
-        self.interfaces = self.Modules()
+        self.types = self.Modules()
 
     def register_meta_hook( self ):
         sys.meta_path.append(self)
@@ -78,4 +78,4 @@ class ModuleManager(object):
             module.__dict__[name] = t
             log.info('        resolved type %r -> %r', name, t)
         self._type_modules[module.__name__] = module
-        setattr(self.interfaces, module.__name__.split('.')[-1], module)
+        setattr(self.types, module.__name__.split('.')[-1], module)

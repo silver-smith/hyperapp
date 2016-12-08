@@ -13,8 +13,6 @@ from ..common.route_storage import RouteStorage
 from .request import Request, ClientNotification, Response
 from .module_manager import ModuleManager
 from .proxy_registry import ProxyRegistry
-from .identity import IdentityController
-#from .code_repository import CodeRepository  # circular dep
 
 log = logging.getLogger(__name__)
 
@@ -32,8 +30,8 @@ class Transport(metaclass=abc.ABCMeta):
         self._identity_controller = services.identity_controller
         self._resources_manager = services.resources_manager
         assert isinstance(self._module_manager, ModuleManager), repr(self._module_manager)
-        #assert isinstance(code_repository, CodeRepository), repr(code_repository)
-        assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)
+        ## assert isinstance(code_repository, CodeRepository), repr(code_repository)  # circular import dep
+        ## assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)  # from dynamic module
 
     @asyncio.coroutine
     def process_aux_info( self, aux_info ):

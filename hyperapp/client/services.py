@@ -13,8 +13,6 @@ from .type_registry_registry import TypeRegistryRegistry
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
 from .file_route_repository import FileRouteRepository
-from . import identity
-from .identity import FileIdentityRepository, IdentityController
 from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
 from . import bookmarks
@@ -56,8 +54,7 @@ class Services(object):
         self.view_registry = ViewRegistry(self.remoting)
         self.module_manager = ModuleManager(self)
         self.modules = self.module_manager.modules
-        self.interfaces = self.module_manager.interfaces
-        self.identity_controller = IdentityController(FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
+        self.types = self.module_manager.types
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.resources_registry = ResourcesRegistry()
         self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
@@ -87,7 +84,6 @@ class Services(object):
 
     def _register_modules( self ):
         for module in [
-            identity,
             bookmarks,
             url_clipboard,
             ]:
@@ -96,6 +92,7 @@ class Services(object):
     def _load_modules( self ):
         for module_name in [
                 'code_repository',
+                'identity',
                 'text_object',
                 'text_view',
                 'text_edit',
@@ -137,7 +134,6 @@ class Services(object):
                 proxy_object,
                 proxy_list_object,
                 navigator,
-                identity,
                 bookmarks,
                 ]:
             module.register_object_implementations(self.objimpl_registry, self)
