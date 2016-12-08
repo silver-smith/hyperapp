@@ -1,12 +1,12 @@
 import logging
 from ..common.htypes import Column
-from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
+from ..common.interface.form import tFormField, tFormHandle
 from ..common.interface import test_list as test_list_types
 from .util import path_part_to_str
 from .command import command
 from .object import Object, ListObject
 from .module import Module, ModuleCommand
-from .form import stringFieldHandle, intFieldHandle
+from .form import intFieldHandle
 
 log = logging.getLogger(__name__)
 

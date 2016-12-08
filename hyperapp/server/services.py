@@ -63,6 +63,7 @@ class Services(object):
         for module_name in [
                 'server_management',
                 'client_code_repository',
+                'form',
                 'admin',
                 'module_list',
                 'fs',
