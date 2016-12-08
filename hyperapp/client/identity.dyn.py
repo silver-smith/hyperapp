@@ -68,7 +68,7 @@ class FileIdentityRepository(IdentityRepository):
 class IdentityController(object):
 
     def __init__( self, repository ):
-        assert isinstance(repository, IdentityRepository), repr(repository)
+        ## assert isinstance(repository, IdentityRepository), repr(repository)
         self._repository = repository
         self._items = list(self._repository.enumerate())  # IdentityItem list
 
@@ -176,8 +176,9 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
-        services.identity_controller = IdentityController(
-            FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
+        repository = (getattr(services, 'identity_repository', None)  # override by test
+                      or FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
+        services.identity_controller = IdentityController(repository)
 
     @open_command('identity_list')
     def command_identity_list( self ):

@@ -24,7 +24,6 @@ from hyperapp.client.objimpl_registry import ObjImplRegistry
 from hyperapp.client.named_url_file_repository import NamedUrlRepository
 from hyperapp.client.proxy_registry import ProxyRegistry
 from hyperapp.client.view_registry import ViewRegistry
-from hyperapp.client.identity import IdentityRepository, IdentityController
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
 
@@ -48,7 +47,7 @@ class PhonyNamedUrlRepository(NamedUrlRepository):
         pass
 
 
-class PhonyIdentityRepository(IdentityRepository):
+class PhonyIdentityRepository(object):
 
     def add( self, identity_item ):
         pass
@@ -83,7 +82,7 @@ class Services(object):
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.remoting)
         self.module_manager = ModuleManager(self)
-        self.identity_controller = IdentityController(PhonyIdentityRepository())
+        self.identity_repository = PhonyIdentityRepository()
         self.cache_repository = PhonyCacheRepository()
         self.resources_manager = PhonyResourcesManager()
         self.module_manager.register_meta_hook()
@@ -103,6 +102,7 @@ class Services(object):
     def _load_modules( self ):
         for module_name in [
                 'code_repository',
+                'identity',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
