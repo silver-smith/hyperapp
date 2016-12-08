@@ -9,6 +9,8 @@ from .htypes import (
     t_field_meta,
     t_optional_meta,
     t_list_meta,
+    t_record_meta,
+    t_hierarchy_meta,
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
@@ -19,7 +21,21 @@ from .htypes import (
     )
 
 
-keywords = ['import', 'from', 'opt', 'list', 'class', 'interface', 'list_interface', 'commands', 'columns', 'contents', 'diff_type']
+keywords = [
+    'import',
+    'from',
+    'opt',
+    'list',
+    'record',
+    'hierarchy',
+    'class',
+    'interface',
+    'list_interface',
+    'commands',
+    'columns',
+    'contents',
+    'diff_type',
+    ]
 
 STMT_SEP = 'STMT_SEP'  # NEWLINEs converted to this one
 BLOCK_BEGIN = 'BLOCK_BEGIN'
@@ -132,12 +148,30 @@ def p_typedef_1( p ):
     p[0] = register_typedef(p.parser, p[1], p[3])
 
 def p_typedef_2( p ):
-    'typedef : NAME EQUAL class_def'
+    'typedef : NAME EQUAL record_def'
     p[0] = register_typedef(p.parser, p[1], p[3])
 
 def p_typedef_3( p ):
+    'typedef : NAME EQUAL class_def'
+    p[0] = register_typedef(p.parser, p[1], p[3])
+
+def p_typedef_4( p ):
+    'typedef : NAME EQUAL hierarchy_def'
+    p[0] = register_typedef(p.parser, p[1], p[3])
+
+def p_typedef_5( p ):
     'typedef : NAME EQUAL interface_def'
     p[0] = register_typedef(p.parser, p[1], p[3])
+
+
+def p_record_def( p ):
+    'record_def : RECORD COLON BLOCK_BEGIN field_list BLOCK_END'
+    p[0] = t_record_meta(p[4])
+
+
+def p_hierarchy_def( p ):
+    'hierarchy_def : HIERARCHY NAME'
+    p[0] = t_hierarchy_meta(p[2])
 
 
 def p_class_def( p ):
