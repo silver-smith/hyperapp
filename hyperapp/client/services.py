@@ -77,6 +77,7 @@ class Services(object):
         for module_name in [
                 'server_management',
                 'code_repository',
+                'form',
                 'text_object_types',
                 ]:
             fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
@@ -91,6 +92,7 @@ class Services(object):
 
     def _load_modules( self ):
         for module_name in [
+                'form',
                 'code_repository',
                 'identity',
                 'text_object',

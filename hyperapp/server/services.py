@@ -48,6 +48,7 @@ class Services(object):
         for module_name in [
                 'server_management',
                 'code_repository',
+                'form',
                 'admin',
                 'article',
                 'blog',

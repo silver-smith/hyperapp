@@ -1,12 +1,12 @@
 import logging
 from ..common.htypes import Column
-from ..common.interface.form import tFormField, tFormHandle
+from ..common.interface import form as form_types
 from ..common.interface import test_list as test_list_types
 from .util import path_part_to_str
 from .command import command
 from .object import Object, ListObject
 from .module import Module, ModuleCommand
-from .form import intFieldHandle
+from .form import intFieldHandle, formHandle
 
 log = logging.getLogger(__name__)
 
@@ -29,9 +29,10 @@ class ParamsForm(Object):
         return self.make_handle(request)  # todo: form data must be preserved somehow
 
     def make_handle( self, request, key=0, size=DEFAULT_SIZE ):
-        return tFormHandle('form', self.get(request), [
-            tFormField('key', intFieldHandle(key)),
-            tFormField('size', intFieldHandle(size))])
+        return formHandle(self.get(request), [
+            form_types.form_field('key', intFieldHandle(key)),
+            form_types.form_field('size', intFieldHandle(size)),
+            ])
 
     @command('submit')
     def command_submit( self, request ):

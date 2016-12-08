@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.interface.form import tStringFieldHandle, tIntFieldHandle, tFormField, tFormHandle
+from ..common.interface.form import string_field_handle, int_field_handle, form_field, form_handle
 from .util import call_after
 from .command import command
 from . import view
@@ -34,7 +34,7 @@ class LineEditField(view.View, QtGui.QLineEdit):
 class StringField(LineEditField):
 
     field_view_id = 'string'
-    handle_type = tStringFieldHandle
+    handle_type = string_field_handle
 
     def get_value( self ):
         return self.text()
@@ -46,7 +46,7 @@ class StringField(LineEditField):
 class IntField(LineEditField):
 
     field_view_id = 'int'
-    handle_type = tIntFieldHandle
+    handle_type = int_field_handle
 
     def __init__( self, parent, value ):
         # todo: input mask
@@ -98,8 +98,8 @@ class View(view.View, QtGui.QWidget):
         for idx, (name, field) in enumerate(self.fields):
             if field.has_focus():
                 focused_idx = idx
-            fields.append(tFormField(name, field.get_state()))
-        return tFormHandle(self.view_id, self.object.get_state(), fields, focused_idx)
+            fields.append(form_field(name, field.get_state()))
+        return form_handle(self.view_id, self.object.get_state(), fields, focused_idx)
 
     def get_object( self ):
         return self.object

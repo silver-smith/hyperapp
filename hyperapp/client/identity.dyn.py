@@ -10,12 +10,13 @@ from ..common.htypes import (
     list_handle_type,
     Column,
     )
-from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
+from ..common.interface import form as form_types
 from ..common.identity import Identity
 from .command import open_command
 from .module import Module
 from .object import Object
 from .list_object import Element, Slice, ListObject
+from .form import formHandle
 
 log = logging.getLogger(__name__)
 
@@ -113,8 +114,8 @@ class IdentityFormObject(Object):
 
 
 def make_identity_form():
-    return tFormHandle('form', IdentityFormObject.get_state(), [
-        tFormField('name', tStringFieldHandle('string', 'anonymous')),
+    return formHandle(IdentityFormObject.get_state(), [
+        form_types.form_field('name', form_types.string_field_handle('string', 'anonymous')),
         ])
 
 
@@ -176,7 +177,7 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
-        repository = (getattr(services, 'identity_repository', None)  # override by test
+        repository = (getattr(services, 'identity_repository', None)  # overriden by test
                       or FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
         services.identity_controller = IdentityController(repository)
 

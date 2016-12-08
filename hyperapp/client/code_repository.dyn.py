@@ -14,7 +14,7 @@ from ..common.htypes import (
     list_handle_type,
     )
 from ..common.interface import code_repository as code_repository_types
-from ..common.interface.form import tStringFieldHandle, tFormField, tFormHandle
+from ..common.interface import form as form_types
 from ..common.url import Url
 from .module import Module
 from .request import Request
@@ -23,6 +23,7 @@ from .proxy_object import ProxyObject
 from .command import open_command
 from .object import Object
 from .list_object import Element, Slice, ListObject
+from .form import formHandle
 from .named_url_file_repository import NamedUrl, NamedUrlRepository, FileNamedUrlRepository
 
 log = logging.getLogger(__name__)
@@ -130,9 +131,9 @@ class CodeRepositoryFormObject(Object):
 
 def make_code_repository_form( url_str ):
     object = CodeRepositoryFormObject.get_state()
-    return tFormHandle('form', object, [
-        tFormField('name', tStringFieldHandle('string', 'default repository')),
-        tFormField('url', tStringFieldHandle('string', url_str)),
+    return formHandle(object, [
+        form_types.form_field('name', form_types.string_field_handle('string', 'default repository')),
+        form_types.form_field('url', form_types.string_field_handle('string', url_str)),
         ])
 
 

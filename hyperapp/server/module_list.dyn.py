@@ -1,13 +1,13 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
-from ..common.interface.form import tFormField, tFormHandle
+from ..common.interface import form as form_types
 from ..common.interface.splitter import tSplitterHandle
 from ..common.interface import module_list as module_list_types
 from .ponyorm_module import PonyOrmModule
 from .command import command
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
-from .form import stringFieldHandle
+from .form import stringFieldHandle, formHandle
 
 
 MODULE_NAME = 'module_list'
@@ -89,8 +89,8 @@ class ModuleForm(Object):
         return this_module.make_path(self.class_name, self.id or '')
 
     def get_handle( self, request, name=None ):
-        return tFormHandle('form', self.get(request), [
-            tFormField('name', stringFieldHandle(name)),
+        return formHandle(self.get(request), [
+            form_types.form_field('name', stringFieldHandle(name)),
             ])
 
     @command('submit', is_default_command=True)

@@ -1,0 +1,20 @@
+
+field_handle = hierarchy form_field
+
+field_handle_base = field_handle class base:
+    field_view_id: string
+
+string_field_handle = field_handle class string(field_handle_base):
+    value: string
+
+int_field_handle = field_handle class int(field_handle_base):
+    value: int
+
+
+form_field = record:
+    name: string
+    field_handle: field_handle
+
+form_handle = handle class form(obj_handle):
+    fields: form_field list
+    current_field: int
