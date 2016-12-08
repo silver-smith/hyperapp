@@ -15,11 +15,11 @@ module_form = interface module_form:
 
 module_dep_list = list_interface module_dep_list:
     columns:
-        @dep_id: string
+        @dep_id: int
         visible_as: string
         id: string
     commands:
-        request remove (element_key: string) -> ()
+        request remove (element_key: int) -> ()
 
 available_dep_list = list_interface available_dep_list:
     columns:
