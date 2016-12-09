@@ -201,10 +201,15 @@ class Interface(object):
         return tUpdate(self.iface_id, path, diff)
         
 
+# all interfaces support this one too:        
+get_iface = Interface('base_get')
+
+
 class IfaceRegistry(object):
 
     def __init__( self ):
         self.registry = {}  # iface id -> Interface
+        self.register(get_iface)
 
     def register( self, iface ):
         assert isinstance(iface, Interface), repr(iface)
@@ -215,18 +220,3 @@ class IfaceRegistry(object):
 
     def resolve( self, iface_id ):
         return self.registry[iface_id]
-
-
-iface_registry = IfaceRegistry()
-
-def register_iface( iface ):
-    iface_registry.register(iface)
-
-def resolve_iface( iface_id ):
-    return iface_registry.resolve(iface_id)
-
-
-# all interfaces support this one too:        
-get_iface = Interface('base_get')
-
-register_iface(get_iface)

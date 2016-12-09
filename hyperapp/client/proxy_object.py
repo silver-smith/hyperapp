@@ -16,7 +16,6 @@ from ..common.htypes import (
     tProxyObjectWithContents,
     tViewHandle,
     tPath,
-    resolve_iface,
     )
 from ..common.identity import PublicKey
 from ..common.url import Url

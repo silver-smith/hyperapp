@@ -1,7 +1,7 @@
 import os.path
 
 
-from ..common.htypes import tModule, tLocaleResources, iface_registry, builtin_type_registry
+from ..common.htypes import tModule, tLocaleResources, IfaceRegistry, builtin_type_registry
 from ..common.type_repository import TypeRepository
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
@@ -42,7 +42,7 @@ class Services(object):
 
     def __init__( self ):
         self._dir = os.path.abspath(os.path.dirname(__file__))
-        self.iface_registry = iface_registry
+        self.iface_registry = IfaceRegistry()
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()), self.iface_registry)
