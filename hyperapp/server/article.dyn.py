@@ -1,7 +1,7 @@
 import logging
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
-from ..common.htypes import Column, tObjHandle, tRedirectHandle, iface_registry
+from ..common.htypes import Column, tObjHandle, tRedirectHandle
 from ..common.interface import article as article_types
 from ..common.identity import PublicKey
 from ..common.url import Url
@@ -79,7 +79,7 @@ class Article(Object):
     def command_open_ref( self, request ):
         ref_id = request.params.ref_id
         rec = this_module.ArticleRef[ref_id]
-        iface = iface_registry.resolve(rec.iface)
+        iface = this_module.iface_registry.resolve(rec.iface)
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
@@ -131,7 +131,7 @@ class ArticleRefList(SmallListObject):
     @command('add')
     @db_session
     def command_add( self, request ):
-        url = Url.from_data(iface_registry, request.params.target_url)
+        url = Url.from_data(this_module.iface_registry, request.params.target_url)
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
@@ -198,7 +198,7 @@ class RefSelector(Object):
     @command('choose')
     @db_session
     def command_choose( self, request ):
-        url = Url.from_data(iface_registry, request.params.target_url)
+        url = Url.from_data(this_module.iface_registry, request.params.target_url)
         if request.me.is_mine_url(url):
             server_public_key_pem = ''
         else:
@@ -226,7 +226,7 @@ class RefSelector(Object):
     def make_handle( self, request ):
         assert self.ref_id is not None  # why can it be?
         rec = this_module.ArticleRef[self.ref_id]
-        iface = iface_registry.resolve(rec.iface)
+        iface = this_module.iface_registry.resolve(rec.iface)
         path = decode_path(rec.path)
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
@@ -242,6 +242,7 @@ class ThisModule(PonyOrmModule):
 
     def __init__( self, services ):
         PonyOrmModule.__init__(self, MODULE_NAME)
+        self.iface_registry = services.iface_registry
         self.article_fields = dict(text=Required(str),
                                    refs=Set('ArticleRef'))
 
