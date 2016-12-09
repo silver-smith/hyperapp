@@ -77,6 +77,7 @@ class Services(object):
         for module_name in [
                 'server_management',
                 'code_repository',
+                'splitter',
                 'form',
                 'text_object_types',
                 ]:

@@ -1,7 +1,7 @@
 import logging
 import sys
 from functools import partial
-from types import ModuleType
+from types import SimpleNamespace
 import abc
 import importlib
 import importlib.machinery
@@ -12,9 +12,6 @@ log = logging.getLogger(__name__)
 
 class ModuleManager(object):
 
-    class Modules(object):
-        pass
-
     def __init__( self, services, type_registry_registry ):
         assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
         self._services = services
@@ -22,8 +19,8 @@ class ModuleManager(object):
         self._type_modules = {}  # fullname -> ModuleType
         self._code_modules = {}  # fullname -> tModule
         self._name2code_module = {}  # name -> tModule
-        self.modules = self.Modules()
-        self.types = self.Modules()
+        self.modules = SimpleNamespace()
+        self.types = SimpleNamespace()
 
     def register_meta_hook( self ):
         sys.meta_path.append(self)

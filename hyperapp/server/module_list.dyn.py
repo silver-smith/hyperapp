@@ -1,7 +1,7 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
 from ..common.interface import form as form_types
-from ..common.interface.splitter import tSplitterHandle
+from ..common.interface import splitter as splitter_types
 from ..common.interface import module_list as module_list_types
 from .ponyorm_module import PonyOrmModule
 from .command import command
@@ -11,6 +11,10 @@ from .form import stringFieldHandle, formHandle
 
 
 MODULE_NAME = 'module_list'
+
+
+def splitter_handle( x, y ):
+    return splitter_types.splitter_handle('splitter', x, y, orientation='horizontal', focused=0, sizes=[])
 
 
 class ModuleList(SmallListObject):
@@ -59,7 +63,7 @@ class ModuleList(SmallListObject):
         dep_list.subscribe(request)
         available_list.subscribe(request)
         return request.make_response_handle(
-            tSplitterHandle('splitter', dep_list.get_handle(request), available_list.get_handle(request)))
+            splitter_handle(dep_list.get_handle(request), available_list.get_handle(request)))
 
     @command('open', kind='element', is_default_command=True)
     @db_session

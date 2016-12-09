@@ -1,7 +1,7 @@
 import logging
 import asyncio
+import importlib
 from PySide import QtCore, QtGui
-from ..common.interface.splitter import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
 from .module import Module
 from . import view
@@ -70,7 +70,6 @@ class View(QtGui.QSplitter, view.View):
             log.info('*** splitter.handle self=%r focused=%r focused-widget=%r',
                      self, self._focused, self._get_view(self._focused).get_widget() if self._focused is not None else None)
         return this_module.splitter_handle(
-            view_id=self.view_id,
             x=self._x.get_state(),
             y=self._y.get_state(),
             orientation=qt2orient(self.orientation()),
@@ -172,9 +171,9 @@ class View(QtGui.QSplitter, view.View):
 
 def map_current( handle, mapper ):
     if handle.focused == 0:
-        return this_module.splitter_handle(View.view_id, mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
+        return this_module.splitter_handle(mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
     elif handle.focused == 1:
-        return this_module.splitter_handle(View.view_id, handle.x, mapper(handle.y), handle.orientation, handle.focused, handle.sizes)
+        return this_module.splitter_handle(handle.x, mapper(handle.y), handle.orientation, handle.focused, handle.sizes)
     else:
         assert False, repr(handle.focused)  # 0 or 1 is expected
 
@@ -183,7 +182,7 @@ def split( orient ):
         if handle.view_id == View.view_id:
             return map_current(handle, mapper)
         else:
-            return this_module.splitter_handle(View.view_id, handle, handle, orient)
+            return this_module.splitter_handle(handle, handle, orient)
     return mapper
 
 def unsplit( handle ):
@@ -202,4 +201,7 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
-        self.splitter_handle = tSplitterHandle
+        self.splitter_types = importlib.import_module('hyperapp.common.interface.splitter')
+
+    def splitter_handle( self, x, y, orientation, focused=0, sizes=None ):
+        return self.splitter_types.splitter_handle(View.view_id, x, y, orientation='horizontal', focused=0, sizes=sizes or [])

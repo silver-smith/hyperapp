@@ -1,0 +1,6 @@
+splitter_handle = handle class splitter(view_handle):
+    x: handle
+    y: handle
+    orientation: string
+    focused: int
+    sizes: int list
