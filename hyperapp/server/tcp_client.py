@@ -3,7 +3,6 @@ import logging
 import traceback
 import time
 import select
-from ..common.htypes import iface_registry
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from .remoting import Remoting
@@ -98,7 +97,7 @@ class TcpClient(object):
     def _process_packet( self, request_data ):
         request_packet = decode_transport_packet(request_data)
         log.info('%r packet from %s:%d:', request_packet.transport_id, self._addr[0], self._addr[1])
-        response_packets = self._remoting.process_packet(iface_registry, self._server, self._session_list, request_packet)
+        response_packets = self._remoting.process_packet(self._remoting.iface_registry, self._server, self._session_list, request_packet)
         if not response_packets:
             log.info('no response')
         for response_packet in response_packets:

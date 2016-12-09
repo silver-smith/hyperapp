@@ -91,7 +91,7 @@ class TransportRegistry(object):
 class Remoting(object):
 
     def __init__( self, iface_registry ):
-        self._iface_registry = iface_registry
+        self.iface_registry = iface_registry
         self.transport_registry = TransportRegistry()
 
     def process_packet( self, iface_registry, server, session_list, request_packet ):
