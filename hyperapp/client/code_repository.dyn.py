@@ -9,7 +9,6 @@ from ..common.htypes import (
     tString,
     tObject,
     tBaseObject,
-    iface_registry,
     Column,
     list_handle_type,
     )

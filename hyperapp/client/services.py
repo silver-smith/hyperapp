@@ -51,7 +51,7 @@ class Services(object):
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
-        self.view_registry = ViewRegistry(self.remoting)
+        self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
         self.module_manager = ModuleManager(self)
         self.modules = self.module_manager.modules
         self.types = self.module_manager.types
