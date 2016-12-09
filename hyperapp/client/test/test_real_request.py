@@ -93,6 +93,7 @@ class Services(object):
 
     def _load_type_modules( self ):
         for module_name in [
+                'form',
                 'server_management',
                 'code_repository',
                 ]:
@@ -101,6 +102,7 @@ class Services(object):
 
     def _load_modules( self ):
         for module_name in [
+                'form',
                 'code_repository',
                 'identity',
                 ]:
