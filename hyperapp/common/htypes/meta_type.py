@@ -15,7 +15,7 @@ from .htypes import (
     TList,
     )
 from .hierarchy import TClass, THierarchy
-from .interface import tHandle, tObject, tBaseObject, IfaceCommand, Interface
+from .interface import IfaceCommand, Interface
 
 
 tMetaType = THierarchy('type')
