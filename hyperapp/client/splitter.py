@@ -3,6 +3,7 @@ import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface.splitter import tSplitterHandle
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
+from .module import Module
 from . import view
 
 log = logging.getLogger(__name__)
@@ -68,7 +69,7 @@ class View(QtGui.QSplitter, view.View):
         if DEBUG_FOCUS:
             log.info('*** splitter.handle self=%r focused=%r focused-widget=%r',
                      self, self._focused, self._get_view(self._focused).get_widget() if self._focused is not None else None)
-        return tSplitterHandle(
+        return this_module.splitter_handle(
             view_id=self.view_id,
             x=self._x.get_state(),
             y=self._y.get_state(),
@@ -171,9 +172,9 @@ class View(QtGui.QSplitter, view.View):
 
 def map_current( handle, mapper ):
     if handle.focused == 0:
-        return tSplitterHandle(View.view_id, mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
+        return this_module.splitter_handle(View.view_id, mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
     elif handle.focused == 1:
-        return tSplitterHandle(View.view_id, handle.x, mapper(handle.y), handle.orientation, handle.focused, handle.sizes)
+        return this_module.splitter_handle(View.view_id, handle.x, mapper(handle.y), handle.orientation, handle.focused, handle.sizes)
     else:
         assert False, repr(handle.focused)  # 0 or 1 is expected
 
@@ -182,7 +183,7 @@ def split( orient ):
         if handle.view_id == View.view_id:
             return map_current(handle, mapper)
         else:
-            return tSplitterHandle(View.view_id, handle, handle, orient)
+            return this_module.splitter_handle(View.view_id, handle, handle, orient)
     return mapper
 
 def unsplit( handle ):
@@ -195,3 +196,10 @@ def unsplit( handle ):
     if child.view_id != View.view_id:
         return child
     return map_current(handle, unsplit)
+
+
+class ThisModule(Module):
+
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        self.splitter_handle = tSplitterHandle

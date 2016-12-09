@@ -85,10 +85,11 @@ class Services(object):
 
     def _register_modules( self ):
         for module in [
-            bookmarks,
-            url_clipboard,
+                splitter,
+                bookmarks,
+                url_clipboard,
             ]:
-            module.ThisModule(self)  # will auto-register itself
+            module.__dict__['this_module'] = module.ThisModule(self)  # will auto-register itself
 
     def _load_modules( self ):
         for module_name in [
