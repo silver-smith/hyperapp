@@ -1,5 +1,5 @@
 import asyncio
-from ..common.htypes import tClientPacket, tServerPacket, iface_registry, tAuxInfo, tPacket
+from ..common.htypes import tClientPacket, tServerPacket, tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
@@ -49,4 +49,4 @@ class TcpTransport(Transport):
         yield from self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(self.encoding, packet.payload, tServerPacket)
         pprint(tServerPacket, response_or_notification_rec)
-        return ResponseBase.from_data(server_public_key, iface_registry, response_or_notification_rec)
+        return ResponseBase.from_data(server_public_key, self._iface_registry, response_or_notification_rec)

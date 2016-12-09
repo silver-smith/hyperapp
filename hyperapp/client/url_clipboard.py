@@ -1,6 +1,5 @@
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.htypes import iface_registry
 from ..common.url import UrlWithRoutes
 from .command import command
 from .module import Module
@@ -11,6 +10,7 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
+        self._iface_registry = services.iface_registry
         self._remoting = services.remoting
 
     def get_object_commands( self, object ):
@@ -22,7 +22,7 @@ class ThisModule(Module):
     @asyncio.coroutine
     def command_url_from_clipboard( self ):
         url_str = QtGui.QApplication.clipboard().text()
-        url = UrlWithRoutes.from_str(iface_registry, url_str)
+        url = UrlWithRoutes.from_str(self._iface_registry, url_str)
         self._remoting.add_routes(url.public_key, url.routes)
         return execute_get_request(self._remoting, url)
 
