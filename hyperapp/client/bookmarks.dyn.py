@@ -1,3 +1,4 @@
+import os.path
 import asyncio
 import uuid
 from PySide import QtCore, QtGui
@@ -10,6 +11,7 @@ from ..common.htypes import (
     )
 from ..common.url import Url
 from .module import Module
+from .named_url_file_repository import FileNamedUrlRepository
 from .command import command, open_command
 from .remoting import Remoting
 from .list_object import Element, Slice, ListObject
@@ -120,7 +122,9 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
-        self.bookmarks = services.bookmarks
+        self.bookmarks = Bookmarks(FileNamedUrlRepository(
+            services.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
+        services.bookmarks = self.bookmarks
 
     def get_object_commands( self, object ):
         if object.get_url() is not None:

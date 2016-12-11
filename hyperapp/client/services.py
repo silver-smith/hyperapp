@@ -8,15 +8,12 @@ from ..common.route_storage import RouteStorage
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .remoting import Remoting
-from .named_url_file_repository import FileNamedUrlRepository
 from .type_registry_registry import TypeRegistryRegistry
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
-from . import bookmarks
-from .bookmarks import Bookmarks
 from . import url_clipboard
 
 from . import tcp_transport
@@ -60,8 +57,6 @@ class Services(object):
         self.module_manager.register_meta_hook()
         self._load_type_modules()
         self._load_modules()
-        self.bookmarks = Bookmarks(FileNamedUrlRepository(
-            self.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         self._register_modules()
         self._register_transports()
         self._load_resources()
@@ -86,7 +81,6 @@ class Services(object):
     def _register_modules( self ):
         for module in [
                 splitter,
-                bookmarks,
                 url_clipboard,
             ]:
             module.__dict__['this_module'] = module.ThisModule(self)  # will auto-register itself
@@ -101,6 +95,7 @@ class Services(object):
                 'text_edit',
                 'form_view',
                 'narrower',
+                'bookmarks',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
@@ -138,7 +133,6 @@ class Services(object):
                 proxy_object,
                 proxy_list_object,
                 navigator,
-                bookmarks,
                 ]:
             module.register_object_implementations(self.objimpl_registry, self)
 
