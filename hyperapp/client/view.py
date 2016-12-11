@@ -8,7 +8,8 @@ from .qt_keys import print_key_event
 from .util import DEBUG_FOCUS, make_action, focused_index
 from .module import Module
 from .object import ObjectObserver
-from .command import ViewCommand, Commander
+from .command_class import Commander
+from .command import ViewCommand
 
 log = logging.getLogger(__name__)
 

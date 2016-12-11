@@ -1,6 +1,6 @@
 import asyncio
 import weakref
-from .command import Commander, Command
+from .command_class import Commander, Command
 
 
 class Module(Commander):

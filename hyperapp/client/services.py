@@ -19,6 +19,7 @@ from . import url_clipboard
 from . import tcp_transport
 from . import encrypted_transport
 
+from . import command
 from . import navigator
 from . import splitter
 from . import list_view
@@ -80,6 +81,7 @@ class Services(object):
 
     def _register_modules( self ):
         for module in [
+                command,
                 splitter,
                 url_clipboard,
             ]:

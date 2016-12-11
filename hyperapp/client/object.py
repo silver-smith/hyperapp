@@ -2,7 +2,7 @@ import asyncio
 import weakref
 import traceback
 from .util import WeakSetWithCallback
-from .command import Commander
+from .command_class import Commander
 
 
 class ObjectObserver(object):
