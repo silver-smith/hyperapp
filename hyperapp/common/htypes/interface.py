@@ -163,10 +163,6 @@ class Interface(object):
         command = self.id2command[command_id]
         return command.request_type
 
-    def is_open_command( self, command_id ):
-        command = self.id2command[command_id]
-        return command.get_result_field_type('handle') is tHandle
-
     def _get_command( self, command_id ):
         cmd = self.id2command.get(command_id)
         if not cmd:

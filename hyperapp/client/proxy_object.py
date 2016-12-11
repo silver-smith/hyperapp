@@ -14,7 +14,6 @@ from ..common.htypes import (
     tObject,
     tProxyObject,
     tProxyObjectWithContents,
-    tViewHandle,
     tPath,
     )
 from ..common.identity import PublicKey

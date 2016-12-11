@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import intColumnType, Column, tHandle
+from hyperapp.common.htypes import intColumnType, Column
 from ..command import command
 from ..list_object import Element, Slice, ListObject
 from .htypes import item_type, history_list_type

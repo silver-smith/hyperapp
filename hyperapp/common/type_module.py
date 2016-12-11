@@ -1,11 +1,6 @@
 from .htypes import (
-    tString,
-    Field,
-    TRecord,
     TList,
-    tMetaType,
     tTypeDef,
-    tTypeModule,
     TypeRegistry,
     TypeResolver,
     )

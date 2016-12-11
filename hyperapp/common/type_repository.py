@@ -5,7 +5,6 @@ from .util import is_list_inst, encode_path
 from .htypes import (
     Interface,
     IfaceRegistry,
-    tHierarchyMeta,
     tHierarchyClassMeta,
     tNamed,
     tProvidedClass,
@@ -14,7 +13,6 @@ from .htypes import (
     TypeRegistry,
     TypeRegistryRegistry,
     make_meta_type_registry,
-    builtin_type_registry,
     )
 from .type_module import load_types_file
 
