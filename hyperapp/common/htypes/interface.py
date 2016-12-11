@@ -116,24 +116,23 @@ class Interface(object):
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
         assert is_list_inst(commands or [], IfaceCommand), repr(commands)
         self.iface_id = iface_id
-        self.contents_fields = contents_fields or []
-        self.diff_type = diff_type
-        self.commands = commands or []
+        self._contents_fields = contents_fields or []
+        self._diff_type = diff_type
+        self._commands = commands or []
         if base:
-            self.contents_fields = base.contents_fields + self.contents_fields
-            self.commands = base.commands + self.commands
+            self._contents_fields = base._contents_fields + self._contents_fields
+            self._commands = base._commands + self._commands
             assert diff_type is None, repr(diff_type)  # Inherited from base
-            self.diff_type = base.diff_type
-        self.id2command = dict((cmd.command_id, cmd) for cmd in self.commands + self.get_basic_commands())
-        self._register_types()
+            self._diff_type = base._diff_type
+        self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands())
 
-    def _register_types( self ):
-        self._tContents = TRecord(self.get_contents_fields())
-        self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self.id2command.items())
-        self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self.id2command.items())
+    def register_types( self ):
+        self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
         self._tObject = tObject.register(self.iface_id, base=tProxyObjectWithContents, fields=[Field('contents', self._tContents)])
-        tUpdate.register((self.iface_id,), self.diff_type)
-        for command in self.id2command.values():
+        tUpdate.register((self.iface_id,), self._diff_type)
+        self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self._id2command.items())
+        self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self._id2command.items())
+        for command in self._id2command.values():
             cmd_id = command.command_id
             tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
             tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
@@ -141,9 +140,9 @@ class Interface(object):
     def __eq__( self, other ):
         return (isinstance(other, Interface) and
                 other.iface_id == self.iface_id and
-                other.contents_fields == self.contents_fields and
-                other.diff_type == self.diff_type and
-                other.commands == self.commands)
+                other._contents_fields == self._contents_fields and
+                other._diff_type == self._diff_type and
+                other._commands == self._commands)
 
     def get_object_type( self ):
         return self._tObject
@@ -159,12 +158,12 @@ class Interface(object):
             ]
 
     def get_request_type( self, command_id ):
-        assert command_id in self.id2command, repr(command_id)  # Unknown command id
-        command = self.id2command[command_id]
+        assert command_id in self._id2command, repr(command_id)  # Unknown command id
+        command = self._id2command[command_id]
         return command.request_type
 
     def _get_command( self, command_id ):
-        cmd = self.id2command.get(command_id)
+        cmd = self._id2command.get(command_id)
         if not cmd:
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         return cmd
@@ -185,7 +184,7 @@ class Interface(object):
         return [Field('commands', TList(tCommand))]
 
     def get_contents_fields( self ):
-        return self.get_default_contents_fields() + self.contents_fields
+        return self.get_default_contents_fields() + self._contents_fields
 
     def Object( self, **kw ):
         return self._tObject(**kw)

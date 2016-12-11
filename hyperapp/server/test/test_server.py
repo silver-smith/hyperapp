@@ -197,6 +197,7 @@ class ServerTest(unittest.TestCase):
     def setUp( self ):
         self.services = Services()
         self.iface_registry = self.services.iface_registry
+        test_iface.register_types()
         self.iface_registry.register(test_iface)
         self.remoting = self.services.remoting
         self.test_module = TestModule()  # self-registering

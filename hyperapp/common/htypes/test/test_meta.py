@@ -139,9 +139,7 @@ class MetaTypeTest(unittest.TestCase):
                 t_field_meta('text', t_named('string')),
             ], diff_type=t_named('string')
             )
-        data.iface_id = data.iface_id + '_new'  # hack to prevent tObject etc registration dup
         t = self.meta_type_registry.resolve(resolver, data)
-        t.iface_id = 'unit_test_iface'  # hack it back for comparision
         self.assertEqual(Interface('unit_test_iface',
             contents_fields=[
                 Field('text', tString),
@@ -169,9 +167,7 @@ class MetaTypeTest(unittest.TestCase):
             ], contents_fields=[
                 t_field_meta('text', t_named('string')),
             ])
-        data.iface_id = data.iface_id + '_new_list'  # hack to prevent tObject etc registration dup
         t = self.meta_type_registry.resolve(resolver, data)
-        t.iface_id = 'unit_test_list_iface'  # hack it back for comparision
         self.assertEqual(ListInterface('unit_test_list_iface',
             contents_fields=[
                 Field('text', tString),

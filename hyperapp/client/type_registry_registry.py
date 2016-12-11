@@ -77,5 +77,6 @@ class TypeRegistryRegistry(htypes.TypeRegistryRegistry):
     def _register_ifaces( self, module, type_registry ):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
+            t.register_types()
             self._iface_registry.register(t)
             self._iface2module[name] = module
