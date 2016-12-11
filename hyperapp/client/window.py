@@ -5,6 +5,7 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, Field, TRecord, Interface
 from .util import DEBUG_FOCUS, call_after
+from .module import Module
 from .command import command
 from . import view
 from . import composite
@@ -17,26 +18,12 @@ log = logging.getLogger(__name__)
 
 LOCALE = 'en'
 
-
 DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-point_type = TRecord([
-    Field('x', tInt),
-    Field('y', tInt),
-    ])
-
-size_type = TRecord([
-    Field('w', tInt),
-    Field('h', tInt),
-    ])
-
-state_type = TRecord([
-    Field('tab_view', tab_view.state_type),
-    Field('size', size_type),
-    Field('pos', point_type),
-    ])
+def get_state_type():
+    return this_module.state_type
 
 
 class Window(composite.Composite, QtGui.QMainWindow):
@@ -83,10 +70,10 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._parent().window_closed(self)
 
     def get_state( self ):
-        return state_type(
+        return this_module.state_type(
             tab_view=self._view.get_state(),
-            size=size_type(w=self.width(), h=self.height()),
-            pos=point_type(x=self.x(), y=self.y()),
+            size=this_module.size_type(w=self.width(), h=self.height()),
+            pos=this_module.point_type(x=self.x(), y=self.y()),
             )
 
     def get_current_child( self ):
@@ -136,3 +123,24 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     def __del__( self ):
         log.info('~window')
+
+
+class ThisModule(Module):
+
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        self.point_type = TRecord([
+            Field('x', tInt),
+            Field('y', tInt),
+            ])
+        self.size_type = TRecord([
+            Field('w', tInt),
+            Field('h', tInt),
+            ])
+        self.state_type = TRecord([
+            Field('tab_view', tab_view.get_state_type()),
+            Field('size', self.size_type),
+            Field('pos', self.point_type),
+            ])
+
+

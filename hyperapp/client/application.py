@@ -25,13 +25,12 @@ STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 class Application(QtGui.QApplication, view.View):
 
-    state_type = TList(window.state_type)
-
     def __init__( self, sys_argv ):
         QtGui.QApplication.__init__(self, sys_argv)
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
         self.services = Services()
+        self.state_type = TList(window.get_state_type())
         self._windows = []
         self._loop = asyncio.get_event_loop()
         self._loop.set_debug(True)
@@ -150,8 +149,8 @@ class Application(QtGui.QApplication, view.View):
             view_id=navigator.View.view_id,
             history=[navigator.item_type('sample text', text_handle)],
             current_pos=0)
-        tabs_state = tab_view.state_type(tabs=[navigator_state], current_tab=0)
-        window_state = window.state_type(
+        tabs_state = tab_view.get_state_type()(tabs=[navigator_state], current_tab=0)
+        window_state = window.get_state_type()(
             tab_view=tabs_state,
             size=window.size_type(600, 500),
             pos=window.point_type(100, 100))

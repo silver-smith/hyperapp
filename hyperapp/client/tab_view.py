@@ -4,6 +4,7 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, TList, Field, TRecord, tHandle
 from .util import DEBUG_FOCUS, call_after, key_match
+from .module import Module
 from .command import command
 from . import view
 from . import splitter
@@ -11,10 +12,8 @@ from . import splitter
 log = logging.getLogger(__name__)
 
 
-state_type = TRecord([
-    Field('tabs', TList(tHandle)),
-    Field('current_tab', tInt),
-    ])
+def get_state_type():
+    return this_module.state_type
 
 
 class View(QtGui.QTabWidget, view.View):
@@ -31,7 +30,7 @@ class View(QtGui.QTabWidget, view.View):
     @staticmethod    
     def map_current( state, mapper ):
         idx = state.current_tab
-        return state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
+        return this_module.state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
     def __init__( self, locale, view_registry, children, current_idx ):
         assert is_list_inst(children, view.View), repr(children)
@@ -50,7 +49,7 @@ class View(QtGui.QTabWidget, view.View):
         self.currentChanged.connect(self._on_current_changed)
 
     def get_state( self ):
-        return state_type([view.get_state() for view in self._children], self.currentIndex())
+        return this_module.state_type([view.get_state() for view in self._children], self.currentIndex())
 
     def get_current_child( self ):
         idx = self.currentIndex()
@@ -142,3 +141,13 @@ class View(QtGui.QTabWidget, view.View):
 
     def __del__( self ):
         log.info('~tab_view')
+
+
+class ThisModule(Module):
+
+    def __init__( self, services ):
+        Module.__init__(self, services)
+        self.state_type = TRecord([
+            Field('tabs', TList(tHandle)),
+            Field('current_tab', tInt),
+            ])
