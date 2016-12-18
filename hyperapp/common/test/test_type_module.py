@@ -7,8 +7,6 @@ from hyperapp.common.htypes import (
     TRecord,
     TList,
     TClass,
-    tObject,
-    tBaseObject,
     tTypeDef,
     t_named,
     make_meta_type_registry,
@@ -63,10 +61,11 @@ class TypeModuleTest(unittest.TestCase):
         object_t = registry1.get_name('object')
 
         self.assertTrue(registry1.has_name('simple_class'))
-        self.assertEqual(TClass(object_t, 'simple_2', TRecord([])), registry1.get_name('simple_class'))
+        simple_class = registry1.get_name('simple_class')
+        self.assertEqual(TClass(object_t, 'simple_2', TRecord([])), simple_class)
 
         self.assertTrue(registry1.has_name('text_object'))
-        self.assertEqual(TClass(object_t, 'text_2', TRecord(base=tBaseObject, fields=[Field('text', tString)])),
+        self.assertEqual(TClass(object_t, 'text_2', TRecord(base=simple_class, fields=[Field('text', tString)])),
                          registry1.get_name('text_object'))
 
         self.assertEqual([], used_modules1)

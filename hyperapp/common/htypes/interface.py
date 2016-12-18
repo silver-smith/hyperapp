@@ -18,26 +18,6 @@ from .hierarchy import THierarchy
 from .request import tUpdate, tClientNotificationRec, tResponseRec
 
 
-tObject = THierarchy('object')
-tBaseObject = tObject.register('object', fields=[Field('objimpl_id', tString)])
-
-tProxyObject = tObject.register('proxy', base=tBaseObject, fields=[
-    Field('public_key_der', tBinary),
-    Field('iface', tIfaceId),
-    Field('facets', TList(tIfaceId)),
-    Field('path', tPath),
-    ])
-
-tProxyObjectWithContents = tObject.register('proxy_with_contents', base=tProxyObject)
-
-
-tHandle = THierarchy('handle')
-tViewHandle = tHandle.register('handle', fields=[Field('view_id', tString)])
-tObjHandle = tHandle.register('obj_handle', base=tViewHandle, fields=[Field('object', tObject)])
-
-tRedirectHandle = tHandle.register('redirect', fields=[Field('redirect_to', tUrl)])
-
-
 class IfaceCommand(object):
 
     # client request types
@@ -124,9 +104,9 @@ class Interface(object):
             self._commands = base._commands + self._commands
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self._diff_type = base._diff_type
-        self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands())
 
     def register_types( self ):
+        self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands())
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
         self._tObject = tObject.register(self.iface_id, base=tProxyObjectWithContents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self._diff_type)
@@ -196,15 +176,15 @@ class Interface(object):
         return tUpdate(self.iface_id, path, diff)
         
 
-# all interfaces support this one too:        
-get_iface = Interface('base_get')
+# all interfaces support this one too:
+## get_iface = Interface('base_get')
 
 
 class IfaceRegistry(object):
 
     def __init__( self ):
         self.registry = {}  # iface id -> Interface
-        self.register(get_iface)
+        ## self.register(get_iface)
 
     def register( self, iface ):
         assert isinstance(iface, Interface), repr(iface)

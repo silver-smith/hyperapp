@@ -38,7 +38,6 @@ from hyperapp.common.htypes import (
     make_meta_type_registry,
     builtin_type_registry,
     TypeResolver,
-    tHandle,
     )
 from hyperapp.common.visual_rep import pprint
 
@@ -152,7 +151,8 @@ class MetaTypeTest(unittest.TestCase):
                 NotificationCmd('notification_one',
                                 [Field('noti_param1', TOptional(tBool)),
                                  Field('noti_param2', tDateTime)]),
-                OpenCommand('request_open'),
+                RequestCmd('request_open', [],
+                           [Field('result', TOptional(tInt))]),
             ]), t)
 
     def test_list_interface( self ):
@@ -173,7 +173,7 @@ class MetaTypeTest(unittest.TestCase):
                 Field('text', tString),
             ],
             commands=[
-                OpenCommand('request_open'),
+                RequestCmd('request_open', [], [Field('result', TOptional(tInt))]),
             ], columns=[
                 Column('key', tInt, is_key=True),
                 Column('text', tString),

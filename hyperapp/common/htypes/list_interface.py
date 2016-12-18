@@ -15,10 +15,8 @@ from .htypes import (
     )
 from .hierarchy import THierarchy
 from .meta_type import tMetaType, tInterfaceMeta, t_named, field_list_from_data, command_from_data
-from .interface import RequestCmd, OpenCommand, ContentsCommand, tHandle, tObjHandle, Interface
+from .interface import RequestCmd, OpenCommand, ContentsCommand, Interface
 
-
-tListHandleBase = tHandle.register('list_handle', base=tObjHandle)
 
 def list_handle_type( id, key_type ):
     fields = [
