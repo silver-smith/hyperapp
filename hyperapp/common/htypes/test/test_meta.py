@@ -134,7 +134,7 @@ class MetaTypeTest(unittest.TestCase):
                            [t_field_meta('noti_param1', t_optional_meta(t_named('bool'))),
                             t_field_meta('noti_param2', t_named('datetime'))]),
             t_command_meta('request', 'request_open', [],
-                           [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
+                           [t_field_meta('result', t_optional_meta(t_named('int')))]),
             ], contents_fields=[
                 t_field_meta('text', t_named('string')),
             ], diff_type=t_named('string')
@@ -160,7 +160,7 @@ class MetaTypeTest(unittest.TestCase):
         resolver = TypeResolver([type_names])
         data = t_list_interface_meta('unit_test_list_iface', None, commands=[
                 t_command_meta('request', 'request_open', [],
-                               [t_field_meta('handle', t_optional_meta(t_named('handle')))]),
+                               [t_field_meta('result', t_optional_meta(t_named('int')))]),
             ], columns=[
                 t_column_meta('key', t_named('int'), is_key=True),
                 t_column_meta('text', t_named('string'), is_key=False),

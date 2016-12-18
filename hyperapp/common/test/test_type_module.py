@@ -40,11 +40,15 @@ class TypeModuleTest(unittest.TestCase):
         self.assertTrue(registry.has_name('some_int'))
         self.assertEqual(tInt, registry.get_name('some_int'))
 
+        self.assertTrue(registry.has_name('object'))
+        object_t = registry.get_name('object')
+
         self.assertTrue(registry.has_name('simple_class'))
-        self.assertEqual(TClass(tObject, 'simple', TRecord([])), registry.get_name('simple_class'))
+        simple_class = registry.get_name('simple_class')
+        self.assertEqual(TClass(object_t, 'simple', TRecord([])), simple_class)
 
         self.assertTrue(registry.has_name('text_object'))
-        self.assertEqual(TClass(tObject, 'text', TRecord(base=tBaseObject, fields=[Field('text', tString)])),
+        self.assertEqual(TClass(object_t, 'text', TRecord(base=simple_class, fields=[Field('text', tString)])),
                          registry.get_name('text_object'))
 
     def test_types_module( self ):
@@ -55,11 +59,14 @@ class TypeModuleTest(unittest.TestCase):
         self.assertTrue(registry1.has_name('some_int'))
         self.assertEqual(tInt, registry1.get_name('some_int'))
 
+        self.assertTrue(registry1.has_name('object'))
+        object_t = registry1.get_name('object')
+
         self.assertTrue(registry1.has_name('simple_class'))
-        self.assertEqual(TClass(tObject, 'simple_2', TRecord([])), registry1.get_name('simple_class'))
+        self.assertEqual(TClass(object_t, 'simple_2', TRecord([])), registry1.get_name('simple_class'))
 
         self.assertTrue(registry1.has_name('text_object'))
-        self.assertEqual(TClass(tObject, 'text_2', TRecord(base=tBaseObject, fields=[Field('text', tString)])),
+        self.assertEqual(TClass(object_t, 'text_2', TRecord(base=tBaseObject, fields=[Field('text', tString)])),
                          registry1.get_name('text_object'))
 
         self.assertEqual([], used_modules1)

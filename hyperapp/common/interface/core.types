@@ -1,0 +1,25 @@
+
+object = hierarchy object
+
+object_base = object class base:
+	objimpl_id: string
+
+proxy_object = object class proxy(object_base):
+	public_key_der: binary
+	iface: iface_id
+	facets: iface_id list
+	path: path
+
+proxy_object_with_contents = object class proxy_with_contents(object_base)
+
+
+handle = hierarchy handle
+
+view_handle = handle class view:
+	view_id: string
+
+obj_handle = handle class obj_handle(view_handle):
+	object: object
+
+redirect_handle = handle class redirect:
+	redirect_to: url

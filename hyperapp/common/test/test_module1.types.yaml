@@ -5,6 +5,12 @@
     type_id: named
     name: int
 -
+  name: object
+  type:
+    _class_id: hierarchy
+    type_id: hierarchy
+    hierarchy_id: object
+-
   name: simple_class
   type:
     _class_id: hierarchy_class
@@ -29,7 +35,7 @@
     base:
       _class_id: named
       type_id: named
-      name: base_object
+      name: simple_class
     fields:
     - name: text
       type:

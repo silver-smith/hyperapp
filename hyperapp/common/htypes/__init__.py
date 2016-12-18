@@ -31,11 +31,7 @@ def builtin_type_registry():
         tDateTime,
         ]:
         registry.register(t.type_name, t)
-    registry.register('handle', tHandle)
-    registry.register('object', tObject)
-    registry.register('base_object', tBaseObject)
-    registry.register('view_handle', tViewHandle)
-    registry.register('obj_handle', tObjHandle)
+    registry.register('iface_id', tIfaceId)
     registry.register('path', tPath)
     registry.register('url', tUrl)
     registry.register('requirement', tRequirement)
