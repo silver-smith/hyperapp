@@ -4,13 +4,14 @@ from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import intColumnType, Column
 from ..command import command
 from ..list_object import Element, Slice, ListObject
-from .htypes import item_type, history_list_type
+from .module import get_this_module
 
 log = logging.getLogger(__name__)
 
 
 def register_object_implementations( registry, services ):
-    registry.register(HistoryList.objimpl_id, HistoryList.from_state)
+    this_module = get_this_module()
+    registry.register(HistoryList.objimpl_id, HistoryList.from_state, this_module)
 
 
 class HistoryList(ListObject):
@@ -25,17 +26,18 @@ class HistoryList(ListObject):
     objimpl_id = 'history_list'
 
     @classmethod
-    def from_state( cls, state ):
-        assert isinstance(state, history_list_type), repr(state)  # using same state as navigator
-        return cls(state.history)
+    def from_state( cls, state, this_module ):
+        assert isinstance(state, this_module.history_list_type), repr(state)  # using same state as navigator
+        return cls(state.history, this_module)
 
-    def __init__( self, history ):
-        assert is_list_inst(history, item_type), repr(history)
+    def __init__( self, history, this_module ):
+        assert is_list_inst(history, this_module.item_type), repr(history)
         ListObject.__init__(self)
+        self._this_module = this_module
         self._history = history
 
     def get_state( self ):
-        return history_list_type(self.objimpl_id, self._history)
+        return self._this_module.history_list_type(self.objimpl_id, self._history)
 
     def get_title( self ):
         return 'Navigation history'

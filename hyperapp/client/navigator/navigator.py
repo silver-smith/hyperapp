@@ -4,13 +4,12 @@ import logging
 import asyncio
 from PySide import QtCore, QtGui
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import tInt, list_handle_type
 from ..util import key_match, key_match_any
 from ..command import command
 from ..import view
 from ..import composite
 from ..import list_view
-from .htypes import item_type, state_type, history_list_type, history_list_handle_type
+from .module import get_this_module
 from .history_list import HistoryList
 
 log = logging.getLogger(__name__)
@@ -20,27 +19,28 @@ MAX_HISTORY_SIZE = 100
 
 
 def register_views( registry, services ):
-    registry.register('navigator', View.from_state, services.view_registry)
+    this_module = get_this_module()
+    registry.register('navigator', View.from_state, services.view_registry, this_module)
 
 
 class View(composite.Composite):
 
     view_id = 'navigator'
-    history_handle_type = list_handle_type('navigator_history', tInt)
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, locale, state, parent, view_registry ):
+    def from_state( cls, locale, state, parent, view_registry, this_module ):
         child = yield from view_registry.resolve(locale, state.history[state.current_pos].handle)
-        return cls(locale, parent, view_registry, child,
+        return cls(locale, parent, view_registry, this_module, child,
                    state.history[:state.current_pos],
                    list(reversed(state.history[state.current_pos + 1:])))
 
-    def __init__( self, locale, parent, view_registry, child, backward_history=None, forward_history=None ):
+    def __init__( self, locale, parent, view_registry, this_module, child, backward_history=None, forward_history=None ):
         assert isinstance(child, view.View), repr(child)
-        assert backward_history is None or is_list_inst(backward_history, item_type), repr(backward_history)
-        assert forward_history is None or is_list_inst(forward_history, item_type), repr(forward_history)
+        assert backward_history is None or is_list_inst(backward_history, this_module.item_type), repr(backward_history)
+        assert forward_history is None or is_list_inst(forward_history, this_module.item_type), repr(forward_history)
         composite.Composite.__init__(self, parent)
+        self._this_module = this_module
         self._locale = locale
         self._view_registry = view_registry
         self._backward_history = backward_history or []     # item_type list
@@ -50,9 +50,9 @@ class View(composite.Composite):
 
     def get_state( self ):
         history = self._backward_history \
-           + [item_type(self._child.get_title(), self._child.get_state())] \
+           + [self._this_module.item_type(self._child.get_title(), self._child.get_state())] \
            + list(reversed(self._forward_history))
-        return state_type(self.view_id, history, current_pos=len(self._backward_history))
+        return self._this_module.state_type(self.view_id, history, current_pos=len(self._backward_history))
 
     def get_widget( self ):
         if self._child is None: return None  # constructing right now
@@ -105,7 +105,7 @@ class View(composite.Composite):
     def _add2history( self, history, view ):
         if isinstance(view, list_view.View) and isinstance(view.get_object(), HistoryList):
             return  # do not add history list itself to history
-        history.append(item_type(view.get_title(), view.get_state()))
+        history.append(self._this_module.item_type(view.get_title(), view.get_state()))
 
     def _pop_history( self, history ):
         item = history.pop()
@@ -114,8 +114,8 @@ class View(composite.Composite):
     @command('open_history')
     def open_history( self ):
         state = self.get_state()
-        object = history_list_type(HistoryList.objimpl_id, state.history)
-        self.open(history_list_handle_type('list', object, sort_column_id='idx', key=state.current_pos))
+        object = self._this_module.history_list_type(HistoryList.objimpl_id, state.history)
+        self.open(self._this_module.history_list_handle_type('list', object, sort_column_id='idx', key=state.current_pos))
 
     def __del__( self ):
         log.info('~navigator')
