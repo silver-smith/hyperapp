@@ -101,5 +101,5 @@ class TypeRepository(object):
     def _register_ifaces( self, type_registry ):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
-            t.register_types()
+            t.register_types(self._type_registry_registry)
             self._iface_registry.register(t)

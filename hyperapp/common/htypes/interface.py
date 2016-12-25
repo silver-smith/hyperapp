@@ -72,13 +72,6 @@ class NotificationCmd(IfaceCommand):
         IfaceCommand.__init__(self, self.rt_notification, command_id, params_fields)
 
 
-class OpenCommand(IfaceCommand):
-
-    def __init__( self, command_id, params_fields=None, result_fields=None ):
-        result_fields = [Field('handle', TOptional(tHandle))] + (result_fields or [])
-        IfaceCommand.__init__(self, self.rt_request, command_id, params_fields, result_fields)
-
-
 class ContentsCommand(RequestCmd):
 
     def __init__( self, command_id, params_fields=None ):
@@ -105,8 +98,9 @@ class Interface(object):
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self._diff_type = base._diff_type
 
-    def register_types( self ):
-        self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands())
+    def register_types( self, type_registry_registry ):
+        core_types = type_registry_registry.resolve_type_registry('core')
+        self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands(core_types))
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
         self._tObject = tObject.register(self.iface_id, base=tProxyObjectWithContents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self._diff_type)
@@ -130,12 +124,16 @@ class Interface(object):
     def get_contents_type( self ):
         return self._tContents
 
-    def get_basic_commands( self ):
+    def get_basic_commands( self, core_types ):
         return [
-            OpenCommand('get'),
+            self._make_open_command(core_types, 'get'),
             ContentsCommand('subscribe'),
             NotificationCmd('unsubscribe'),
             ]
+
+    def _make_open_command( self, core_types, command_id, params_fields=None, result_fields=None ):
+        result_fields = [Field('handle', TOptional(core_types.resolve('handle')))] + (result_fields or [])
+        return RequestCmd(command_id, params_fields, result_fields)
 
     def get_request_type( self, command_id ):
         assert command_id in self._id2command, repr(command_id)  # Unknown command id

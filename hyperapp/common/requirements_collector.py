@@ -1,12 +1,5 @@
 from .util import encode_path
-from .htypes import (
-    tCommand,
-    tObject,
-    tProxyObject,
-    tHandle,
-    tViewHandle,
-    tListHandleBase,
-    )
+from .htypes import tCommand
 from .visitor import Visitor
 
 

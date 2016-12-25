@@ -1,8 +1,4 @@
 from .visitor import Visitor
-from .htypes import (
-    tObject,
-    tProxyObject,
-    )
 
 
 class ObjectPathCollector(Visitor):

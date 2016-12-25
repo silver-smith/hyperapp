@@ -15,7 +15,7 @@ from .htypes import (
     )
 from .hierarchy import THierarchy
 from .meta_type import tMetaType, tInterfaceMeta, t_named, field_list_from_data, command_from_data
-from .interface import RequestCmd, OpenCommand, ContentsCommand, Interface
+from .interface import RequestCmd, ContentsCommand, Interface
 
 
 def list_handle_type( id, key_type ):
@@ -95,10 +95,6 @@ class ElementCommand(RequestCmd):
     pass
 
 
-class ElementOpenCommand(OpenCommand, ElementCommand):
-    pass
-
-
 class ListInterface(Interface):
         
     def __init__( self, iface_id, base=None, contents_fields=None, commands=None, columns=None ):
@@ -143,8 +139,8 @@ class ListInterface(Interface):
         assert key_column_id, 'No column with is_key is found'
         return key_column_id
 
-    def register_types( self ):
-        Interface.register_types(self)
+    def register_types( self, type_registry_registry ):
+        Interface.register_types(self, type_registry_registry)
         self._tListHandle = list_handle_type('%s.list' % self.iface_id, self._key_type)
         self._tListNarrowerHandle = list_narrower_handle_type('%s.list_narrower' % self.iface_id, self._key_type)
 
@@ -166,14 +162,14 @@ class ListInterface(Interface):
             Field('slice', self.tSlice()),
             ]
 
-    def get_basic_commands( self ):
+    def get_basic_commands( self, core_types ):
         fetch_params_fields = [
             Field('sort_column_id', tString),
             Field('from_key', TOptional(self._key_type)),
             Field('direction', tString),  # asc/desc; todo: enum
             Field('count', tInt),
             ]
-        return Interface.get_basic_commands(self) \
+        return Interface.get_basic_commands(self, core_types) \
             + [ContentsCommand('fetch_elements', fetch_params_fields),
                ContentsCommand('subscribe_and_fetch_elements', fetch_params_fields)]
 
