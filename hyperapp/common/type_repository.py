@@ -31,6 +31,9 @@ class TypeRepository(object):
         self._iface2type_module = {}  # str -> tTypeModule
         self._id2type_module = {}  # str -> tTypeModule
 
+    def set_core_types( self, core_types ):
+        self._core_types = core_types
+
     def has_module_id( self, module_id ):
         return module_id in self._id2type_module
 
@@ -101,5 +104,5 @@ class TypeRepository(object):
     def _register_ifaces( self, type_registry ):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
-            t.register_types(self._type_registry_registry)
+            t.register_types(self._core_types)
             self._iface_registry.register(t)

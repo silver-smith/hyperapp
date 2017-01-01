@@ -20,6 +20,7 @@ class Transport(object):
         self._resources_loader = services.resources_loader
         self._type_repository = services.type_repository
         self._client_code_repository = services.client_code_repository
+        self._core_types = services.core_types
 
     def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
         request_rec = packet_coders.decode(payload_encoding, packet.payload, tClientPacket)
@@ -54,7 +55,7 @@ class Transport(object):
         raise NotImplementedError(self.__class__)
 
     def prepare_aux_info( self, response_or_notification ):
-        requirements = RequirementsCollector().collect(tServerPacket, response_or_notification.to_data())
+        requirements = RequirementsCollector(self._core_types).collect(tServerPacket, response_or_notification.to_data())
         type_modules = self._type_repository.get_modules_by_requirements(requirements)
         modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository

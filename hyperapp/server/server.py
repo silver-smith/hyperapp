@@ -14,8 +14,9 @@ log = logging.getLogger(__name__)
 
 class Server(object):
 
-    def __init__( self, identity, test_delay_sec=None ):
+    def __init__( self, core_types, identity, test_delay_sec=None ):
         assert isinstance(identity, Identity), repr(identity)
+        self._core_types = core_types
         self.identity = identity
         self.test_delay_sec = test_delay_sec  # float
 
@@ -50,7 +51,7 @@ class Server(object):
         return module.Module.run_resolver(iface, path)
 
     def _subscribe_objects( self, peer_channel, response ):
-        collector = ObjectPathCollector()
+        collector = ObjectPathCollector(self._core_types)
         object_paths = collector.collect(tServerPacket, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)

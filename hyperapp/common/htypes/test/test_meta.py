@@ -19,7 +19,6 @@ from hyperapp.common.htypes import (
     THierarchy,
     RequestCmd,
     NotificationCmd,
-    OpenCommand,
     Interface,
     Column,
     ListInterface,

@@ -1,3 +1,4 @@
+import logging
 from ..util import is_list_inst
 from .htypes import (
     join_path,
@@ -16,6 +17,8 @@ from .htypes import (
     )
 from .hierarchy import THierarchy
 from .request import tUpdate, tClientNotificationRec, tResponseRec
+
+log = logging.getLogger(__name__)
 
 
 class IfaceCommand(object):
@@ -98,11 +101,11 @@ class Interface(object):
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self._diff_type = base._diff_type
 
-    def register_types( self, type_registry_registry ):
-        core_types = type_registry_registry.resolve_type_registry('core')
+    def register_types( self, core_types ):
         self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands(core_types))
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
-        self._tObject = tObject.register(self.iface_id, base=tProxyObjectWithContents, fields=[Field('contents', self._tContents)])
+        self._tObject = core_types.object.register(
+            self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
         tUpdate.register((self.iface_id,), self._diff_type)
         self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self._id2command.items())
         self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self._id2command.items())
@@ -132,7 +135,7 @@ class Interface(object):
             ]
 
     def _make_open_command( self, core_types, command_id, params_fields=None, result_fields=None ):
-        result_fields = [Field('handle', TOptional(core_types.resolve('handle')))] + (result_fields or [])
+        result_fields = [Field('handle', TOptional(core_types.handle))] + (result_fields or [])
         return RequestCmd(command_id, params_fields, result_fields)
 
     def get_request_type( self, command_id ):

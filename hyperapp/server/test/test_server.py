@@ -1,6 +1,7 @@
 import os
 import logging
 import unittest
+import importlib
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from hyperapp.common.htypes import (
@@ -162,17 +163,22 @@ class Services(object):
         self.resources_loader = PhonyResourcesLoader()
         self.remoting = Remoting(self.iface_registry)
         self.module_manager.register_meta_hook()
+        self._load_type_module('core')
+        self.core_types = importlib.import_module('hyperapp.common.interface.core')
+        self.type_repository.set_core_types(self.core_types)
         self._load_type_modules()
         self._load_server_modules()
         self._register_transports()
         
     def _load_type_modules( self ):
         for module_name in [
-                'core',
                 'code_repository',
                 ]:
-            fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
-            self.type_repository.load_module(module_name, fpath)
+            self._load_type_module(module_name)
+
+    def _load_type_module( self, module_name ):
+        fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
+        self.type_repository.load_module(module_name, fpath)
 
     def _load_server_modules( self ):
         for module_name in [
@@ -198,11 +204,11 @@ class ServerTest(unittest.TestCase):
     def setUp( self ):
         self.services = Services()
         self.iface_registry = self.services.iface_registry
-        test_iface.register_types()
+        test_iface.register_types(self.services.core_types)
         self.iface_registry.register(test_iface)
         self.remoting = self.services.remoting
         self.test_module = TestModule()  # self-registering
-        self.server = Server(server_identity)
+        self.server = Server(self.services.core_types, server_identity)
         self.session_list = TransportSessionList()
 
     def test_simple_request( self ):
