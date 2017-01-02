@@ -25,6 +25,9 @@ class ModuleManager(object):
     def register_meta_hook( self ):
         sys.meta_path.append(self)
 
+    def unregister_meta_hook( self ):
+        sys.meta_path.remove(self)
+
     def find_spec( self, fullname, path, target=None ):
         if fullname in self._code_modules:
             return importlib.machinery.ModuleSpec(fullname, self)

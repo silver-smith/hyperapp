@@ -1,5 +1,6 @@
 import os
 import logging
+import sys
 import unittest
 import importlib
 from cryptography.hazmat.backends import default_backend
@@ -163,12 +164,21 @@ class Services(object):
         self.resources_loader = PhonyResourcesLoader()
         self.remoting = Remoting(self.iface_registry)
         self.module_manager.register_meta_hook()
-        self._load_type_module('core')
-        self.core_types = importlib.import_module('hyperapp.common.interface.core')
-        self.type_repository.set_core_types(self.core_types)
-        self._load_type_modules()
-        self._load_server_modules()
-        self._register_transports()
+        try:
+            self._load_type_module('core')
+            core_types = sys.modules.get('hyperapp.common.interface.core')
+            if core_types:
+                self.core_types = importlib.reload(core_types)
+            else:
+                self.core_types = importlib.import_module('hyperapp.common.interface.core')
+            assert self.core_types.object is self.type_registry_registry.resolve_type_registry('core').resolve('object')
+            self.type_repository.set_core_types(self.core_types)
+            self._load_type_modules()
+            self._load_server_modules()
+            self._register_transports()
+        except:
+            self.module_manager.unregister_meta_hook()
+            raise
         
     def _load_type_modules( self ):
         for module_name in [
@@ -210,6 +220,9 @@ class ServerTest(unittest.TestCase):
         self.test_module = TestModule()  # self-registering
         self.server = Server(self.services.core_types, server_identity)
         self.session_list = TransportSessionList()
+
+    def tearDown( self ):
+        self.services.module_manager.unregister_meta_hook()
 
     def test_simple_request( self ):
         request_data = tRequest(
