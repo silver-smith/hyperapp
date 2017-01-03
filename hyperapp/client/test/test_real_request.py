@@ -12,6 +12,7 @@ from hyperapp.common.url import UrlWithRoutes
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_repository import TypeRepository
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
+from hyperapp.common.services import ServicesBase
 from hyperapp.common.test.util import PhonyRouteRepository
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
@@ -66,14 +67,12 @@ class PhonyResourcesManager(object):
         return None
 
 
-class Services(object):
+class Services(ServicesBase):
 
     def __init__( self ):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        self.iface_registry = IfaceRegistry()
-        self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()), self.iface_registry)
-        self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
+        ServicesBase.__init__(self)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.route_storage, self.proxy_registry)
@@ -84,19 +83,20 @@ class Services(object):
         self.cache_repository = PhonyCacheRepository()
         self.resources_manager = PhonyResourcesManager()
         self.module_manager.register_meta_hook()
-        self._load_type_modules()
-        self._load_modules()
-        self.code_repository.set_url_repository(PhonyNamedUrlRepository())
-        self._register_transports()
-
-    def _load_type_modules( self ):
-        for module_name in [
-                'form',
-                'server_management',
-                'code_repository',
-                ]:
-            fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
-            self.type_repository.load_module(module_name, fpath)
+        try:
+            self._load_core_type_module()
+            self.type_repository.set_core_types(self.core_types)
+            self._load_type_modules([
+                    'form',
+                    'server_management',
+                    'code_repository',
+                    ])
+            self._load_modules()
+            self.code_repository.set_url_repository(PhonyNamedUrlRepository())
+            self._register_transports()
+        except:
+            self.module_manager.unregister_meta_hook()
+            raise
 
     def _load_modules( self ):
         for module_name in [
@@ -120,6 +120,9 @@ class RealRequestTest(unittest.TestCase):
 
     def setUp( self ):
         self.services = Services()
+
+    def tearDown( self ):
+        self.services.module_manager.unregister_meta_hook()
 
     def test_get_request( self ):
         loop = asyncio.get_event_loop()

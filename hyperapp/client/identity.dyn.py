@@ -5,11 +5,10 @@ import glob
 import logging
 from ..common.htypes import (
     tString,
-    tObject,
-    tBaseObject,
     list_handle_type,
     Column,
     )
+from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.identity import Identity
 from .command import open_command
@@ -83,7 +82,7 @@ class IdentityController(object):
         self._repository.add(item)
 
 
-tIdentityFormObject = tObject.register('identity_form', base=tBaseObject)
+tIdentityFormObject = core_types.object.register('identity_form', base=core_types.object_base)
 
 
 class IdentityFormObject(Object):
@@ -119,8 +118,8 @@ def make_identity_form():
         ])
 
 
-identity_list_type = tBaseObject
-identity_list_handle_type = list_handle_type('identity_list', tString)
+identity_list_type = core_types.object_base
+identity_list_handle_type = list_handle_type(core_types, 'identity_list', tString)
 
 
 class IdentityList(ListObject):

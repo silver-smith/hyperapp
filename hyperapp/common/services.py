@@ -28,6 +28,7 @@ class ServicesBase(object):
             self.core_types = importlib.reload(core_types)
         else:
             self.core_types = importlib.import_module('hyperapp.common.interface.core')
+        # fails if previous ModuleManager import hook was not unregistered
         assert self.core_types.object is self.type_registry_registry.resolve_type_registry('core').resolve('object')
 
     def _load_type_module( self, module_name ):

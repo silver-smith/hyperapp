@@ -7,11 +7,10 @@ import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
     tString,
-    tObject,
-    tBaseObject,
     Column,
     list_handle_type,
     )
+from ..common.interface import core as core_types
 from ..common.interface import code_repository as code_repository_types
 from ..common.interface import form as form_types
 from ..common.url import Url
@@ -98,7 +97,7 @@ class CodeRepositoryProxy(ProxyObject):
         return (result.type_modules, result.code_modules, result.resources)
 
 
-tFormObject = tObject.register('code_repository_form', base=tBaseObject)
+tFormObject = core_types.object.register('code_repository_form', base=core_types.object_base)
 
 class CodeRepositoryFormObject(Object):
 
@@ -136,8 +135,8 @@ def make_code_repository_form( url_str ):
         ])
 
 
-code_repository_list_type = tBaseObject
-code_repository_list_handle_type = list_handle_type('code_repository_list', tString)
+code_repository_list_type = core_types.object_base
+code_repository_list_handle_type = list_handle_type(core_types, 'code_repository_list', tString)
 
 
 class CodeRepositoryList(ListObject):
