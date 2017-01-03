@@ -10,7 +10,7 @@ proxy_object = object class proxy(object_base):
     facets: iface_id list
     path: path
 
-proxy_object_with_contents = object class proxy_with_contents(object_base)
+proxy_object_with_contents = object class proxy_with_contents(proxy_object)
 
 
 handle = hierarchy handle
