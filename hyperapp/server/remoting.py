@@ -48,8 +48,8 @@ class Transport(object):
     def make_notification_packet( self, payload_encoding, notification ):
         aux_info = self.prepare_aux_info(notification)
         pprint(tAuxInfo, aux_info)
-        pprint(tServerPacket, notification.to_data())
-        payload = packet_coders.encode(payload_encoding, notification.to_data(), tServerPacket)
+        pprint(self._request_types.tServerPacket, notification.to_data())
+        payload = packet_coders.encode(payload_encoding, notification.to_data(), self._request_types.tServerPacket)
         return tPacket(aux_info, payload)
 
     def process_packet( self, server, peer, transport_packet_data ):

@@ -141,6 +141,12 @@ class PhonyModuleRepository(object):
         return None
 
 
+class PhonyClientCodeRepository(object):
+
+    def get_modules_by_requirements( self, requirements ):
+        return []
+
+
 class TestSession(TransportSession):
 
     def pull_notification_transport_packets( self ):
@@ -161,6 +167,7 @@ class Services(object):
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
         self.remoting = Remoting(self.iface_registry)
+        self.client_code_repository = PhonyClientCodeRepository()
         self.module_manager.register_meta_hook()
         try:
             self._load_type_module('core')
@@ -224,19 +231,19 @@ class ServerTest(unittest.TestCase):
         self.services.module_manager.unregister_meta_hook()
 
     def test_simple_request( self ):
-        request_data = tRequest(
+        request_data = self.request_types.tRequest(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, '1'],
             command_id='echo',
             params=test_iface.get_request_params_type('echo')(test_param='hello'),
             request_id='001',
             )
-        pprint(tClientPacket, request_data)
-        request = RequestBase.from_data(None, Peer(PhonyChannel()), self.iface_registry, request_data)
+        pprint(self.request_types.tClientPacket, request_data)
+        request = RequestBase.from_data(None, Peer(PhonyChannel()), self.request_types, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
 
-        pprint(tServerPacket, response.to_data())
+        pprint(self.request_types.tServerPacket, response.to_data())
         self.assertEqual('hello to you too', response.result.test_result)
 
     def transport_id2encoding( self, transport_id ):
@@ -299,17 +306,17 @@ class ServerTest(unittest.TestCase):
         return transport_request
 
     def make_tcp_transport_notification( self, session_list, transport_id, obj_id, command_id, **kw ):
-        request = tClientNotification(
+        request = self.request_types.tClientNotification(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
             params=test_iface.get_request_params_type(command_id)(**kw),
             )
         log.info('Sending client notification:')
-        pprint(tClientPacket, request)
+        pprint(self.request_types.tClientPacket, request)
         request_packet = tPacket(
             aux_info=tAuxInfo(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
-            payload=self.encode_packet(transport_id, request, tClientPacket))
+            payload=self.encode_packet(transport_id, request, self.request_types.tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(
             transport_id=transport_id,
