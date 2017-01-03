@@ -1,8 +1,6 @@
 import os
 import logging
-import sys
 import unittest
-import importlib
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from hyperapp.common.htypes import (
@@ -12,11 +10,7 @@ from hyperapp.common.htypes import (
     tPacket,
     RequestCmd,
     Interface,
-    make_request_types,
     tModule,
-    TypeRegistryRegistry,
-    IfaceRegistry,
-    builtin_type_registry,
     )
 from hyperapp.common.transport_packet import tTransportPacket
 from hyperapp.common.identity import Identity, PublicKey
@@ -32,8 +26,8 @@ from hyperapp.common.encrypted_packet import (
     )
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.type_repository import TypeRepository
 from hyperapp.common.route_storage import RouteStorage
+from hyperapp.common.services import ServicesBase
 from hyperapp.server.module_manager import ModuleManager
 from hyperapp.server.module import Module
 from hyperapp.server import route_storage
@@ -51,7 +45,6 @@ from hyperapp.common.test.util import PhonyRouteRepository
 log = logging.getLogger(__name__)
 
 
-TYPE_MODULE_EXT = '.types'
 DYN_MODULE_EXT = '.dyn.py'
 
 
@@ -152,16 +145,13 @@ class TestSession(TransportSession):
         return []
 
 
-class Services(object):
+class Services(ServicesBase):
 
     def __init__( self ):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../dynamic_modules'))
-        self.request_types = make_request_types()
-        self.iface_registry = IfaceRegistry()
-        self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
-        self.type_repository = TypeRepository(self.interface_dir, self.request_types, self.iface_registry, self.type_registry_registry)
+        ServicesBase.__init__(self)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
@@ -171,31 +161,12 @@ class Services(object):
         try:
             self._load_core_type_module()
             self.type_repository.set_core_types(self.core_types)
-            self._load_type_modules()
+            self._load_type_modules(['code_repository'])
             self._load_server_modules()
             self._register_transports()
         except:
             self.module_manager.unregister_meta_hook()
             raise
-
-    def _load_core_type_module( self ):
-        self._load_type_module('core')
-        core_types = sys.modules.get('hyperapp.common.interface.core')
-        if core_types:
-            self.core_types = importlib.reload(core_types)
-        else:
-            self.core_types = importlib.import_module('hyperapp.common.interface.core')
-        assert self.core_types.object is self.type_registry_registry.resolve_type_registry('core').resolve('object')
-        
-    def _load_type_modules( self ):
-        for module_name in [
-                'code_repository',
-                ]:
-            self._load_type_module(module_name)
-
-    def _load_type_module( self, module_name ):
-        fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
-        self.type_repository.load_module(module_name, fpath)
 
     def _load_server_modules( self ):
         for module_name in [
