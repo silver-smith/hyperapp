@@ -12,10 +12,7 @@ from hyperapp.common.htypes import (
     tPacket,
     RequestCmd,
     Interface,
-    tClientPacket,
-    tServerPacket,
-    tRequest,
-    tClientNotification,
+    make_request_types,
     tModule,
     TypeRegistryRegistry,
     IfaceRegistry,
@@ -156,9 +153,10 @@ class Services(object):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../dynamic_modules'))
+        self.request_types = make_request_types()
         self.iface_registry = IfaceRegistry()
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
-        self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
+        self.type_repository = TypeRepository(self.interface_dir, self.request_types, self.iface_registry, self.type_registry_registry)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
@@ -213,12 +211,13 @@ class ServerTest(unittest.TestCase):
 
     def setUp( self ):
         self.services = Services()
+        self.request_types = self.services.request_types
         self.iface_registry = self.services.iface_registry
-        test_iface.register_types(self.services.core_types)
+        test_iface.register_types(self.request_types, self.services.core_types)
         self.iface_registry.register(test_iface)
         self.remoting = self.services.remoting
         self.test_module = TestModule()  # self-registering
-        self.server = Server(self.services.core_types, server_identity)
+        self.server = Server(self.request_types, self.services.core_types, server_identity)
         self.session_list = TransportSessionList()
 
     def tearDown( self ):
@@ -281,7 +280,7 @@ class ServerTest(unittest.TestCase):
         return None  # no response
 
     def make_tcp_transport_request( self, session_list, transport_id, obj_id, command_id, **kw ):
-        request = tRequest(
+        request = self.request_types.tRequest(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
@@ -289,10 +288,10 @@ class ServerTest(unittest.TestCase):
             request_id='001',
             )
         log.info('Sending request:')
-        pprint(tClientPacket, request)
+        pprint(self.request_types.tClientPacket, request)
         request_packet = tPacket(
             aux_info=tAuxInfo(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
-            payload=self.encode_packet(transport_id, request, tClientPacket))
+            payload=self.encode_packet(transport_id, request, self.request_types.tClientPacket))
         request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
         transport_request = tTransportPacket(
             transport_id=transport_id,
@@ -324,8 +323,8 @@ class ServerTest(unittest.TestCase):
         response_packet = self.decode_packet(transport_id, packet_data, tPacket)
         log.info('Received response:')
         pprint(tPacket, response_packet)
-        response = self.decode_packet(transport_id, response_packet.payload, tServerPacket)
-        pprint(tServerPacket, response)
+        response = self.decode_packet(transport_id, response_packet.payload, self.request_types.tServerPacket)
+        pprint(self.request_types.tServerPacket, response)
         return response
 
     def execute_tcp_request( self, transport_id, obj_id, command_id, session_list=None, **kw ):

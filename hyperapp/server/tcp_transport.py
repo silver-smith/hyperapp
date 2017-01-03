@@ -1,6 +1,6 @@
 import logging
 from queue import Queue
-from ..common.htypes import tUpdate, tAuxInfo, tPacket
+from ..common.htypes import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint

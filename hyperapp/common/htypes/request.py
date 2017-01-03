@@ -1,3 +1,4 @@
+from types import SimpleNamespace
 from .htypes import (
     tString,
     Field,
@@ -10,40 +11,34 @@ from .hierarchy import THierarchy
 from .switched import tSwitched, TSwitchedRec
 
 
-tUpdate = TSwitchedRec(['iface'], fields=[
-    Field('iface', tIfaceId),
-    Field('path', tPath),
-    Field('diff', tSwitched),
-    ])
-
-
-tClientPacket = THierarchy('client_packet')
-
-tClientNotificationRec = TSwitchedRec(['iface', 'command_id'], fields=[
-    Field('iface', tIfaceId),
-    Field('path', tPath),
-    Field('command_id', tString),
-    Field('params', tSwitched),
-    ])
-
-tClientNotification = tClientPacket.register('notification', tClientNotificationRec)
-
-tRequest = tClientPacket.register('request', TSwitchedRec(base=tClientNotificationRec, fields=[
-    Field('request_id', tString),
-    ]))
-
-
-tServerPacket = THierarchy('server_packet')
-
-tServerNotification = tServerPacket.register('notification', fields=[
-    Field('updates', TList(tUpdate)),
-    ])
-
-tResponseRec = TSwitchedRec(['iface', 'command_id'],
-                            base=tServerNotification, fields=[
+def make_request_types():
+    types = SimpleNamespace()
+    types.tUpdate = TSwitchedRec(['iface'], fields=[
+        Field('iface', tIfaceId),
+        Field('path', tPath),
+        Field('diff', tSwitched),
+        ])
+    types.tClientPacket = THierarchy('client_packet')
+    types.tClientNotificationRec = TSwitchedRec(['iface', 'command_id'], fields=[
+        Field('iface', tIfaceId),
+        Field('path', tPath),
+        Field('command_id', tString),
+        Field('params', tSwitched),
+        ])
+    types.tClientNotification = types.tClientPacket.register('notification', types.tClientNotificationRec)
+    types.tRequest = types.tClientPacket.register('request', TSwitchedRec(base=types.tClientNotificationRec, fields=[
+        Field('request_id', tString),
+        ]))
+    types.tServerPacket = THierarchy('server_packet')
+    types.tServerNotification = types.tServerPacket.register('notification', fields=[
+        Field('updates', TList(types.tUpdate)),
+        ])
+    types.tResponseRec = TSwitchedRec(['iface', 'command_id'],
+                            base=types.tServerNotification, fields=[
                                 Field('iface', tIfaceId),
                                 Field('command_id', tString),
                                 Field('request_id', tString),
                                 Field('result', tSwitched),
                                 ])
-tResponse = tServerPacket.register('response', tResponseRec)
+    types.tResponse = types.tServerPacket.register('response', types.tResponseRec)
+    return types

@@ -1,5 +1,4 @@
 from ..common.util import is_list_inst
-from ..common.htypes import tUpdate, tClientPacket, tClientNotification, tRequest, tServerNotification, tResponse
 from ..common.identity import PublicKey
 
 
@@ -34,17 +33,18 @@ class Peer(object):
 class RequestBase(object):
 
     @classmethod
-    def from_data( cls, me, peer, iface_registry, rec ):
+    def from_data( cls, me, peer, request_types, iface_registry, rec ):
         assert isinstance(peer, Peer), repr(peer)
-        assert isinstance(rec, tClientPacket), repr(rec)
+        assert isinstance(rec, request_types.tClientPacket), repr(rec)
         iface = iface_registry.resolve(rec.iface)
-        if isinstance(rec, tRequest):
-            return Request(me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
+        if isinstance(rec, request_types.tRequest):
+            return Request(request_types, me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
-            assert isinstance(rec, tClientNotification), repr(rec)
-            return ClientNotification(me, peer, iface, rec.path, rec.command_id, rec.params)
+            assert isinstance(rec, request_types.tClientNotification), repr(rec)
+            return ClientNotification(request_types, me, peer, iface, rec.path, rec.command_id, rec.params)
 
-    def __init__( self, me, peer, iface, path, command_id, params ):
+    def __init__( self, request_types, me, peer, iface, path, command_id, params ):
+        self._request_types = request_types
         self.me = me      # Server instance
         self.peer = peer
         self.iface = iface
@@ -59,8 +59,8 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__( self, me, peer, iface, path, command_id, request_id, params ):
-        RequestBase.__init__(self, me, peer, iface, path, command_id, params)
+    def __init__( self, request_types, me, peer, iface, path, command_id, request_id, params ):
+        RequestBase.__init__(self, request_types, me, peer, iface, path, command_id, params)
         self.request_id = request_id
 
     def make_response( self, result=None ):
@@ -69,7 +69,7 @@ class Request(RequestBase):
             result = result_type()
         assert isinstance(result, result_type), \
           '%s.Request.%s.result is expected to be %r, but is %r' % (self.iface.iface_id, self.command_id, result_type, result)
-        return Response(self.peer, self.iface, self.command_id, self.request_id, result)
+        return Response(self._request_types, self.peer, self.iface, self.command_id, self.request_id, result)
 
     def make_response_object( self, obj ):
         return self.make_response_handle(obj.get_handle(self))
@@ -89,25 +89,26 @@ class Request(RequestBase):
 
 class ResponseBase(object):
 
-    def __init__( self ):
+    def __init__( self, request_types ):
+        self._request_types = request_types
         self.updates = []
 
     def add_update( self, update ):
-        assert isinstance(update, tUpdate), repr(update)
+        assert isinstance(update, self._request_types.tUpdate), repr(update)
         self.updates.append(update)
 
 
 class ServerNotification(ResponseBase):
 
     def to_data( self ):
-        return tServerNotification(self.updates)
+        return self._request_types.tServerNotification(self.updates)
 
 
 class Response(ResponseBase):
 
-    def __init__( self, peer, iface, command_id, request_id, result ):
+    def __init__( self, request_types, peer, iface, command_id, request_id, result ):
         assert isinstance(peer, Peer), repr(peer)
-        ResponseBase.__init__(self)
+        ResponseBase.__init__(self, request_types)
         self.peer = peer
         self.iface = iface
         self.command_id = command_id
@@ -115,4 +116,4 @@ class Response(ResponseBase):
         self.result = result
 
     def to_data( self ):
-        return tResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
+        return self._request_types.tResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)

@@ -22,9 +22,10 @@ log = logging.getLogger(__name__)
 
 class TypeRepository(object):
 
-    def __init__( self, dir, iface_registry, type_registry_registry ):
+    def __init__( self, dir, request_types, iface_registry, type_registry_registry ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
+        self._request_types = request_types
         self._iface_registry = iface_registry
         self._type_registry_registry = type_registry_registry
         self._class2type_module = {}  # str -> tTypeModule
@@ -104,5 +105,5 @@ class TypeRepository(object):
     def _register_ifaces( self, type_registry ):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
-            t.register_types(self._core_types)
+            t.register_types(self._request_types, self._core_types)
             self._iface_registry.register(t)

@@ -139,8 +139,8 @@ class ListInterface(Interface):
         assert key_column_id, 'No column with is_key is found'
         return key_column_id
 
-    def register_types( self, core_types ):
-        Interface.register_types(self, core_types)
+    def register_types( self, request_types, core_types ):
+        Interface.register_types(self, request_types, core_types)
         self._tListHandle = list_handle_type(core_types, '%s.list' % self.iface_id, self._key_type)
         self._tListNarrowerHandle = list_narrower_handle_type(core_types, '%s.list_narrower' % self.iface_id, self._key_type)
 

@@ -1,6 +1,6 @@
 import logging
 from ..common.util import flatten, decode_path, encode_route
-from ..common.htypes import tServerRoutes, tAuxInfo, tPacket, tClientPacket, tServerPacket
+from ..common.htypes import tServerRoutes, tAuxInfo, tPacket
 from ..common.identity import PublicKey
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 class Transport(object):
 
     def __init__( self, services ):
+        self._request_types = services.request_types
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
         self._type_repository = services.type_repository
@@ -23,18 +24,18 @@ class Transport(object):
         self._core_types = services.core_types
 
     def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
-        request_rec = packet_coders.decode(payload_encoding, packet.payload, tClientPacket)
+        request_rec = packet_coders.decode(payload_encoding, packet.payload, self._request_types.tClientPacket)
         pprint(tAuxInfo, packet.aux_info)
-        pprint(tClientPacket, request_rec)
+        pprint(self._request_types.tClientPacket, request_rec)
         self._add_routes(packet.aux_info.routes)
-        request = RequestBase.from_data(server, peer, iface_registry, request_rec)
+        request = RequestBase.from_data(server, peer, self._request_types, iface_registry, request_rec)
         response_or_notification = server.process_request(request)
         if response_or_notification is None:
             return None
         aux_info = self.prepare_aux_info(response_or_notification)
         pprint(tAuxInfo, aux_info)
-        pprint(tServerPacket, response_or_notification.to_data())
-        payload = packet_coders.encode(payload_encoding, response_or_notification.to_data(), tServerPacket)
+        pprint(self._request_types.tServerPacket, response_or_notification.to_data())
+        payload = packet_coders.encode(payload_encoding, response_or_notification.to_data(), self._request_types.tServerPacket)
         return tPacket(aux_info, payload)
 
     def _add_routes( self, routes ):
@@ -55,11 +56,11 @@ class Transport(object):
         raise NotImplementedError(self.__class__)
 
     def prepare_aux_info( self, response_or_notification ):
-        requirements = RequirementsCollector(self._core_types).collect(tServerPacket, response_or_notification.to_data())
+        requirements = RequirementsCollector(self._core_types).collect(self._request_types.tServerPacket, response_or_notification.to_data())
         type_modules = self._type_repository.get_modules_by_requirements(requirements)
         modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
-        server_pks = ServerPksCollector().collect_public_key_ders(tServerPacket, response_or_notification.to_data())
+        server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tServerPacket, response_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         resources = flatten([self._load_resource(id) for (registry, id)
                              in requirements if registry == 'resources'])

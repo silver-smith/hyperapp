@@ -16,7 +16,6 @@ from .htypes import (
     tCommand,
     )
 from .hierarchy import THierarchy
-from .request import tUpdate, tClientNotificationRec, tResponseRec
 
 log = logging.getLogger(__name__)
 
@@ -101,18 +100,19 @@ class Interface(object):
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self._diff_type = base._diff_type
 
-    def register_types( self, core_types ):
+    def register_types( self, request_types, core_types ):
         self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands(core_types))
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
         self._tObject = core_types.object.register(
             self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
-        tUpdate.register((self.iface_id,), self._diff_type)
+        request_types.tUpdate.register((self.iface_id,), self._diff_type)
         self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self._id2command.items())
         self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self._id2command.items())
         for command in self._id2command.values():
             cmd_id = command.command_id
-            tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
-            tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
+            request_types.tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
+            request_types.tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
+        self.tUpdate = request_types.tUpdate
 
     def __eq__( self, other ):
         return (isinstance(other, Interface) and
@@ -174,7 +174,7 @@ class Interface(object):
         return self._tContents(**kw)
 
     def Update( self, path, diff ):
-        return tUpdate(self.iface_id, path, diff)
+        return self.tUpdate(self.iface_id, path, diff)
         
 
 # all interfaces support this one too:

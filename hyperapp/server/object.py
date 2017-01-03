@@ -4,7 +4,6 @@ from ..common.util import is_list_inst, encode_path
 from ..common.htypes import (
     tString,
     Field,
-    tUpdate,
     Interface,
     )
 from ..common.visual_rep import pprint
@@ -33,7 +32,7 @@ class Subscription(object):
     def distribute_update( self, iface, path, diff ):
         update = iface.Update(path, diff)
         log.info('-- distributing update:')
-        pprint(tUpdate, update)
+        pprint(iface.tUpdate, update)
         for peer_channel in self.path2channel.get(encode_path(path)):
             log.info('-- sending update to %r', peer_channel.get_id())
             peer_channel.send_update(update)

@@ -1,7 +1,6 @@
 import time
 import logging
 from ..common.util import encode_path
-from ..common.htypes import tServerPacket
 from ..common.identity import Identity
 from ..common.url import Url
 from ..common.object_path_collector import ObjectPathCollector
@@ -14,8 +13,9 @@ log = logging.getLogger(__name__)
 
 class Server(object):
 
-    def __init__( self, core_types, identity, test_delay_sec=None ):
+    def __init__( self, request_types, core_types, identity, test_delay_sec=None ):
         assert isinstance(identity, Identity), repr(identity)
+        self._request_types = request_types
         self._core_types = core_types
         self.identity = identity
         self.test_delay_sec = test_delay_sec  # float
@@ -52,7 +52,7 @@ class Server(object):
 
     def _subscribe_objects( self, peer_channel, response ):
         collector = ObjectPathCollector(self._core_types)
-        object_paths = collector.collect(tServerPacket, response.to_data())
+        object_paths = collector.collect(self._request_types.tServerPacket, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)
 
