@@ -75,7 +75,7 @@ class Services(ServicesBase):
         ServicesBase.__init__(self)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.proxy_registry = ProxyRegistry()
-        self.remoting = Remoting(self.route_storage, self.proxy_registry)
+        self.remoting = Remoting(self.request_types, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
         self.module_manager = ModuleManager(self)
@@ -120,6 +120,7 @@ class RealRequestTest(unittest.TestCase):
 
     def setUp( self ):
         self.services = Services()
+        self.request_types = self.services.request_types
 
     def tearDown( self ):
         self.services.module_manager.unregister_meta_hook()
@@ -138,13 +139,14 @@ class RealRequestTest(unittest.TestCase):
     def run_get_request( self ):
         url = self.load_url_from_file()
         request = Request(
+            request_types=self.request_types,
             iface=url.iface,
             path=url.path,
             command_id='get',
             request_id='test-001',
             params=url.iface.get_request_params_type('get')(),
             )
-        pprint(tClientPacket, request.to_data())
+        pprint(self.request_types.tClientPacket, request.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = yield from (asyncio.wait_for(server.execute_request(request), timeout=0.5))
         self.assertIsInstance(response, Response)

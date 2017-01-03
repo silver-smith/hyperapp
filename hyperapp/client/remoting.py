@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 class Transport(metaclass=abc.ABCMeta):
 
     def __init__( self, services ):
+        self._request_types = services.request_types
         self._module_manager = services.module_manager
         self._iface_registry = services.iface_registry
         self._type_registry_registry = services.type_registry_registry
@@ -86,10 +87,10 @@ class Transport(metaclass=abc.ABCMeta):
             self._resources_manager.register(rec.resource_id, rec.locale, rec.resources)
 
     def make_request_packet( self, encoding, request_or_notification ):
-        server_pks = ServerPksCollector().collect_public_key_ders(tClientPacket, request_or_notification.to_data())
+        server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tClientPacket, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         aux_info = tAuxInfo(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
-        payload = packet_coders.encode(encoding, request_or_notification.to_data(), tClientPacket)
+        payload = packet_coders.encode(encoding, request_or_notification.to_data(), self._request_types.tClientPacket)
         return tPacket(aux_info, payload)
 
     @asyncio.coroutine
@@ -119,10 +120,11 @@ class TransportRegistry(object):
 
 class Remoting(object):
 
-    def __init__( self, route_storage, proxy_registry ):
+    def __init__( self, request_types, route_storage, proxy_registry ):
         assert isinstance(route_storage, RouteStorage), repr(route_storage)
         assert isinstance(proxy_registry, ProxyRegistry), repr(proxy_registry)
         self.transport_registry = TransportRegistry()
+        self._request_types = request_types
         self._route_storage = route_storage
         self._proxy_registry = proxy_registry
         self._futures = {}  # request id -> future for response
@@ -157,7 +159,7 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification( self, public_key, request_or_notification ):
-        pprint(tClientPacket, request_or_notification.to_data())
+        pprint(self._request_types.tClientPacket, request_or_notification.to_data())
         for route in self._route_storage.get_routes(public_key) or []:
             transport_id = route[0]
             transport = self.transport_registry.resolve(transport_id)
