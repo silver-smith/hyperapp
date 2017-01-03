@@ -1,5 +1,5 @@
 import asyncio
-from ..common.htypes import tClientPacket, tServerPacket, tAuxInfo, tPacket
+from ..common.htypes import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders

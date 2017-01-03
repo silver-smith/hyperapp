@@ -1,9 +1,4 @@
 from ..common.htypes import (
-    tClientNotification,
-    tRequest,
-    tServerPacket,
-    tServerNotification,
-    tResponse,
     Interface,
     IfaceRegistry,
     )

@@ -3,7 +3,7 @@ import logging
 import asyncio
 import bisect
 from PySide import QtCore, QtGui
-from ..common.htypes import Type, tHandle
+from ..common.htypes import Type
 from .util import uni2str, key_match, key_match_any, make_async_action
 from .command import Command, ViewCommand
 from .list_object import ListObserver, ListDiff, Slice, ListObject

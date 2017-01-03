@@ -1,7 +1,7 @@
 import logging
 import asyncio
 import weakref
-from ..common.htypes import Field, TRecord, tHandle
+from ..common.htypes import Field, TRecord
 from .command_class import Command, UnboundCommand
 from .module import Module
 

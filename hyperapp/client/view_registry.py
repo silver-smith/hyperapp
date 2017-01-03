@@ -1,6 +1,5 @@
 import logging
 import asyncio
-from ..common.htypes import tHandle, tRedirectHandle
 from ..common.url import Url
 from .registry import Registry
 from .view import View

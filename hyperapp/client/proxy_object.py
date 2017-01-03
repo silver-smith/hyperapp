@@ -11,9 +11,6 @@ from ..common.htypes import (
     tString,
     TRecord,
     tCommand,
-    tObject,
-    tProxyObject,
-    tProxyObjectWithContents,
     tPath,
     )
 from ..common.identity import PublicKey

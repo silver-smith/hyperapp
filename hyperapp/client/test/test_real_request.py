@@ -5,8 +5,6 @@ import asyncio
 import unittest
 from hyperapp.common.htypes import (
     tModule,
-    tClientPacket,
-    tRequest,
     IfaceRegistry,
     builtin_type_registry,
     )
