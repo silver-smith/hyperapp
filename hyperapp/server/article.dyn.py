@@ -1,10 +1,11 @@
 import logging
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
-from ..common.htypes import Column, tObjHandle, tRedirectHandle
+from ..common.htypes import Column
 from ..common.interface import article as article_types
 from ..common.identity import PublicKey
 from ..common.url import Url
+from ..common.interface import core as core_types
 from .util import path_part_to_str
 from .command import command
 from .object import Object, SmallListObject, subscription
@@ -62,9 +63,9 @@ class Article(Object):
 
     def get_handle( self, request ):
         if self.mode == self.mode_view:
-            return tObjHandle('text_view', self.get(request))
+            return core_types.obj_handle('text_view', self.get(request))
         else:
-            return tObjHandle('text_edit', self.get(request))
+            return core_types.obj_handle('text_edit', self.get(request))
 
     @command('save')
     def command_save( self, request ):
@@ -84,7 +85,7 @@ class Article(Object):
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             target_url = Url(iface, public_key, path)
-            return request.make_response_handle(tRedirectHandle(redirect_to=target_url.to_data()))
+            return request.make_response_handle(core_types.redirect_handle(redirect_to=target_url.to_data()))
         else:
             target = this_module.run_resolver(iface, path)
             return request.make_response_object(target)
