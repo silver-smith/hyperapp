@@ -74,38 +74,39 @@ class ProxyObject(Object):
 
     @classmethod
     def register( cls, registry, services ):
-        registry.register(cls.objimpl_id, cls.from_state, services.iface_registry, services.remoting,
+        registry.register(cls.objimpl_id, cls.from_state, services.request_types, services.iface_registry, services.remoting,
                           services.proxy_registry, services.cache_repository)
 
     @classmethod
-    def from_state( cls, state, iface_registry, remoting, proxy_registry, cache_repository ):
+    def from_state( cls, state, request_types, iface_registry, remoting, proxy_registry, cache_repository ):
         assert isinstance(state, tProxyObject), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
         server = Server.from_public_key(remoting, server_public_key)
         iface = iface_registry.resolve(state.iface)
         facets = [iface_registry.resolve(facet) for facet in state.facets]
-        object = cls.produce_obj(iface_registry, proxy_registry, cache_repository, server, state.path, iface, facets)
+        object = cls.produce_obj(request_types, iface_registry, proxy_registry, cache_repository, server, state.path, iface, facets)
         if isinstance(state, tProxyObjectWithContents):  # is it a response?
             object.set_contents(state.contents)
         return object
 
     # we avoid making proxy objects with same server+path
     @classmethod
-    def produce_obj( cls, iface_registry, proxy_registry, cache_repository, server, path, iface, facets ):
+    def produce_obj( cls, request_types, iface_registry, proxy_registry, cache_repository, server, path, iface, facets ):
         object = proxy_registry.resolve(server, path)
         if object is not None:
             log.info('> proxy object is resolved from registry: %r', object)
             return object
-        object = cls(iface_registry, cache_repository, server, path, iface, facets)
+        object = cls(request_types, iface_registry, cache_repository, server, path, iface, facets)
         proxy_registry.register(server, path, object)
         log.info('< proxy object is registered in registry: %r', object)
         return object
 
-    def __init__( self, iface_registry, cache_repository, server, path, iface, facets=None ):
+    def __init__( self, request_types, iface_registry, cache_repository, server, path, iface, facets=None ):
         assert is_list_inst(path, str), repr(path)
         assert isinstance(iface, Interface), repr(iface)
         assert facets is None or is_list_inst(facets, Interface), repr(facets)
         Object.__init__(self)
+        self._request_types = request_types
         self.iface_registry = iface_registry
         self.server = server
         self.path = path
@@ -166,7 +167,7 @@ class ProxyObject(Object):
     def prepare_request( self, command_id, *args, **kw ):
         request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
-        return Request(self.iface, self.path, command_id, request_id, params)
+        return Request(self._request_types, self.iface, self.path, command_id, request_id, params)
 
     @asyncio.coroutine
     def send_notification( self, command_id, *args, **kw ):

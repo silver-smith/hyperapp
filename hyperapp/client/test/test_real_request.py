@@ -67,6 +67,14 @@ class PhonyResourcesManager(object):
         return None
 
 
+class PhonyCodeRepository(object):
+    pass
+
+
+class PhonyIdentityController(object):
+    pass
+
+
 class Services(ServicesBase):
 
     def __init__( self ):
@@ -83,6 +91,8 @@ class Services(ServicesBase):
         self.cache_repository = PhonyCacheRepository()
         self.resources_manager = PhonyResourcesManager()
         self.module_manager.register_meta_hook()
+        self.code_repository = PhonyCodeRepository()
+        self.identity_controller = PhonyIdentityController()
         try:
             self._load_core_type_module()
             self.type_repository.set_core_types(self.core_types)
@@ -92,7 +102,7 @@ class Services(ServicesBase):
                     'code_repository',
                     ])
             self._load_modules()
-            self.code_repository.set_url_repository(PhonyNamedUrlRepository())
+            #self.code_repository.set_url_repository(PhonyNamedUrlRepository())
             self._register_transports()
         except:
             self.module_manager.unregister_meta_hook()
@@ -157,12 +167,13 @@ class RealRequestTest(unittest.TestCase):
     def run_unsubscribe_notification( self ):
         url = self.load_url_from_file()
         notification = ClientNotification(
+            request_types=self.request_types,
             iface=url.iface,
             path=url.path,
             command_id='unsubscribe',
             params=url.iface.get_request_params_type('unsubscribe')(),
             )
-        pprint(tClientPacket, notification.to_data())
+        pprint(self.request_types.tClientPacket, notification.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = yield from (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
         self.assertEqual(None, response)
