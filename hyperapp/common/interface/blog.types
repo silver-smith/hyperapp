@@ -1,3 +1,4 @@
+from core import handle
 from article import article
 
 

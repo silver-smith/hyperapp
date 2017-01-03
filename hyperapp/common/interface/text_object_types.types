@@ -1,2 +1,5 @@
-text_object = object class text(base_object):
+from core import object, object_base
+
+
+text_object = object class text(object_base):
   text: string

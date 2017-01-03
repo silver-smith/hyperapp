@@ -236,6 +236,14 @@ class TypeRegistryRegistry(object):
         return self._registry[module_name]
 
 
+
+class UnknownTypeError(KeyError):
+
+    def __init__( self, name ):
+        KeyError.__init__(self, 'Unknown type: %r' % name)
+        self.name = name
+
+
 class TypeResolver(object):
 
     def __init__( self, type_registry_list=None, next=None ):
@@ -257,4 +265,4 @@ class TypeResolver(object):
                 return registry.resolve(name)
         if self._next:
             return self._next.resolve(name)
-        raise KeyError('Unknown type: %r' % name)
+        raise UnknownTypeError(name)

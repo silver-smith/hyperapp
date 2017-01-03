@@ -16,7 +16,6 @@ from hyperapp.common.htypes import (
     tModule,
     TypeRegistryRegistry,
     IfaceRegistry,
-#    register_iface,
     builtin_type_registry,
     )
 from hyperapp.common.transport_packet import tTransportPacket
@@ -170,13 +169,7 @@ class Services(object):
         self.client_code_repository = PhonyClientCodeRepository()
         self.module_manager.register_meta_hook()
         try:
-            self._load_type_module('core')
-            core_types = sys.modules.get('hyperapp.common.interface.core')
-            if core_types:
-                self.core_types = importlib.reload(core_types)
-            else:
-                self.core_types = importlib.import_module('hyperapp.common.interface.core')
-            assert self.core_types.object is self.type_registry_registry.resolve_type_registry('core').resolve('object')
+            self._load_core_type_module()
             self.type_repository.set_core_types(self.core_types)
             self._load_type_modules()
             self._load_server_modules()
@@ -184,6 +177,15 @@ class Services(object):
         except:
             self.module_manager.unregister_meta_hook()
             raise
+
+    def _load_core_type_module( self ):
+        self._load_type_module('core')
+        core_types = sys.modules.get('hyperapp.common.interface.core')
+        if core_types:
+            self.core_types = importlib.reload(core_types)
+        else:
+            self.core_types = importlib.import_module('hyperapp.common.interface.core')
+        assert self.core_types.object is self.type_registry_registry.resolve_type_registry('core').resolve('object')
         
     def _load_type_modules( self ):
         for module_name in [

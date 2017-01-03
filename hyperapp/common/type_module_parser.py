@@ -18,6 +18,7 @@ from .htypes import (
     t_list_interface_meta,
     TypeRegistry,
     TypeResolver,
+    UnknownTypeError,
     )
 
 
@@ -73,9 +74,23 @@ tokens = [tok_name[t] for t in token_types] + [
     ] + [keyword.upper() for keyword in keywords]
 
 
-def register_typedef( parser, name, type ):
+
+def syntax_error( p, token_num, msg ):
+    line_num = p.lineno(token_num)
+    print(p.parser.lines[line_num - 1])
+    print('%s:%d: %s' % (p.parser.fname, line_num, msg))
+    raise SyntaxError(msg)
+
+def unknown_name_error( p, token_num, name ):
+    syntax_error(p, token_num, 'Unknown name: %r' % name)
+
+def register_typedef( p, name_token_num, name, type ):
+    parser = p.parser
     typedef = tTypeDef(name=name, type=type)
-    t = parser.meta_registry.resolve(parser.resolver, typedef.type)
+    try:
+        t = parser.meta_registry.resolve(parser.resolver, typedef.type)
+    except UnknownTypeError as x:
+        syntax_error(p, name_token_num, 'Unknown type: %r' % x.name)
     parser.new_type_registry.register(typedef.name, t)
     return typedef
 
@@ -83,12 +98,6 @@ def import_names( parser, module_name, names ):
     registry = parser.type_registry_registry.resolve_type_registry(module_name)
     for name in names:
         parser.imported_type_registry.register(name, registry.resolve(name))
-
-def syntax_error( p, token_num, msg ):
-    line_num = p.lineno(token_num)
-    print(p.parser.lines[line_num - 1])
-    print('%s:%d: %s' % (p.parser.fname, line_num, msg))
-    raise SyntaxError(msg)
 
 
 def p_module( p ):
@@ -145,23 +154,23 @@ def p_typedef_list_2( p ):
 
 def p_typedef_1( p ):
     'typedef : NAME EQUAL type_expr'
-    p[0] = register_typedef(p.parser, p[1], p[3])
+    p[0] = register_typedef(p, 1, p[1], p[3])
 
 def p_typedef_2( p ):
     'typedef : NAME EQUAL record_def'
-    p[0] = register_typedef(p.parser, p[1], p[3])
+    p[0] = register_typedef(p, 1, p[1], p[3])
 
 def p_typedef_3( p ):
     'typedef : NAME EQUAL class_def'
-    p[0] = register_typedef(p.parser, p[1], p[3])
+    p[0] = register_typedef(p, 1, p[1], p[3])
 
 def p_typedef_4( p ):
     'typedef : NAME EQUAL hierarchy_def'
-    p[0] = register_typedef(p.parser, p[1], p[3])
+    p[0] = register_typedef(p, 1, p[1], p[3])
 
 def p_typedef_5( p ):
     'typedef : NAME EQUAL interface_def'
-    p[0] = register_typedef(p.parser, p[1], p[3])
+    p[0] = register_typedef(p, 1, p[1], p[3])
 
 
 def p_record_def( p ):
@@ -320,7 +329,7 @@ def p_type_expr_1( p ):
     'type_expr : NAME'
     name = p[1]
     if not p.parser.resolver.has_name(name):
-        syntax_error(p, 1, 'Unknown name: %r' % name)
+        unknown_name_error(p, 1, name)
     p[0] = t_named(name)
 
 def p_type_expr_2( p ):

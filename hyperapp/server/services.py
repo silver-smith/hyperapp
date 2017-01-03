@@ -1,6 +1,8 @@
 import os.path
+import sys
 import logging
-from ..common.htypes import IfaceRegistry, TypeRegistryRegistry, tModule, builtin_type_registry
+import importlib
+from ..common.htypes import IfaceRegistry, TypeRegistryRegistry, tModule, make_request_types, builtin_type_registry
 from ..common.route_storage import RouteStorage
 from ..common.type_repository import TypeRepository
 from .module import Module
@@ -23,16 +25,19 @@ class Services(object):
     def __init__( self ):
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
+        self.request_types = make_request_types()
         self.iface_registry = IfaceRegistry()
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
-        self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
+        self.type_repository = TypeRepository(self.interface_dir, self.request_types, self.iface_registry, self.type_registry_registry)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.modules = self.module_manager.modules
         self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
                                                      client_module=self.dynamic_module_dir))
         self.route_storage_module = route_storage.ThisModule()
         self.module_manager.register_meta_hook()
+        self._load_core_type_module()
+        self.type_repository.set_core_types(self.core_types)
         self._load_type_modules()
         self._load_server_modules()
         Module.init_phases()
@@ -43,6 +48,15 @@ class Services(object):
     def _register_transports( self ):
         for module in [tcp_transport, encrypted_transport]:
             module.register_transports(self.remoting.transport_registry, self)
+
+    def _load_core_type_module( self ):
+        self._load_type_module('core')
+        core_types = sys.modules.get('hyperapp.common.interface.core')
+        if core_types:
+            self.core_types = importlib.reload(core_types)
+        else:
+            self.core_types = importlib.import_module('hyperapp.common.interface.core')
+        assert self.core_types.object is self.type_registry_registry.resolve_type_registry('core').resolve('object')
 
     def _load_type_modules( self ):
         for module_name in [
@@ -58,8 +72,11 @@ class Services(object):
                 'test_list',
                 'text_object_types',
                 ]:
-            fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
-            self.type_repository.load_module(module_name, fpath)
+            self._load_type_module(module_name)
+
+    def _load_type_module( self, module_name ):
+        fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
+        self.type_repository.load_module(module_name, fpath)
 
     def _load_server_modules( self ):
         for module_name in [

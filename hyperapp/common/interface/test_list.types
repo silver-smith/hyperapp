@@ -1,3 +1,6 @@
+from core import handle
+
+
 params_form = interface params_form:
   commands:
     request submit (key: int, size: int) -> (handle: handle opt)

@@ -1,3 +1,6 @@
+from core import object, handle, view_handle
+
+
 obj_selector_handle = handle class obj_selector(view_handle):
     ref: object
     target: handle

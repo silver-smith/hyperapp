@@ -1,3 +1,6 @@
+from core import handle
+
+
 user_list = list_interface user_list:
   columns:
     @id: string

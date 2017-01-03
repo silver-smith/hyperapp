@@ -1,3 +1,6 @@
+from core import handle, view_handle
+
+
 splitter_handle = handle class splitter(view_handle):
     x: handle
     y: handle
