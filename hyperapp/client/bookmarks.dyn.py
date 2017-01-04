@@ -21,7 +21,7 @@ from .named_url_file_repository import NamedUrl, NamedUrlRepository
 
 def register_object_implementations( registry, services ):
     registry.register(BookmarkList.objimpl_id, BookmarkList.from_state,
-                      services.iface_registry, services.remoting, services.bookmarks)
+                      services.request_types, services.iface_registry, services.remoting, services.bookmarks)
 
 
 class Bookmarks(object):
@@ -56,14 +56,15 @@ class BookmarkList(ListObject):
     objimpl_id = 'bookmark_list'
 
     @classmethod
-    def from_state( cls, state, iface_registry, remoting, bookmarks ):
-        return cls(iface_registry, remoting, bookmarks)
+    def from_state( cls, state, request_types, iface_registry, remoting, bookmarks ):
+        return cls(request_types, iface_registry, remoting, bookmarks)
     
-    def __init__( self, iface_registry, remoting, bookmarks ):
+    def __init__( self, request_types, iface_registry, remoting, bookmarks ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(remoting, Remoting), repr(remoting)
         assert isinstance(bookmarks, Bookmarks), repr(bookmarks)
         ListObject.__init__(self)
+        self._request_types = request_types
         self._iface_registry = iface_registry
         self._remoting = remoting
         self._bookmarks = bookmarks
@@ -79,7 +80,7 @@ class BookmarkList(ListObject):
     @asyncio.coroutine
     def command_open_bookmark( self, element_key ):
         item = self._bookmarks.get_item(element_key)
-        return (yield from execute_get_request(self._remoting, item.url))
+        return (yield from execute_get_request(self._request_types, self._remoting, item.url))
 
     @open_command('add')
     @asyncio.coroutine

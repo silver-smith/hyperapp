@@ -17,7 +17,7 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 
 
 def register_views( registry, services ):
-    registry.register('list', View.from_state, services.objimpl_registry, services.resources_manager)
+    registry.register('list', View.from_state, services.core_types, services.objimpl_registry, services.resources_manager)
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -191,8 +191,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, locale, state, parent, objimpl_registry, resources_manager ):
-        data_type = tHandle.resolve_obj(state)
+    def from_state( cls, locale, state, parent, core_types, objimpl_registry, resources_manager ):
+        data_type = core_types.handle.resolve_obj(state)
         object = objimpl_registry.resolve(state.object)
         return cls(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)
 

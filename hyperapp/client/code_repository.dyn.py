@@ -80,11 +80,11 @@ class CodeRepositoryProxy(ProxyObject):
     def from_url( cls, iface_registry, remoting, cache_repository, url ):
         assert isinstance(url, Url), repr(url)
         server = Server.from_public_key(remoting, url.public_key)
-        return cls(this_module.request_types, iface_registry, cache_repository, server, url.path, url.iface)
+        return cls(this_module.request_types, core_types, iface_registry, cache_repository, server, url.path, url.iface)
         
-    def __init__( self, request_types, iface_registry, cache_repository, server, path, iface, facets=None ):
+    def __init__( self, request_types, core_types, iface_registry, cache_repository, server, path, iface, facets=None ):
         assert iface is code_repository_types.code_repository, repr(iface.iface_id)
-        ProxyObject.__init__(self, request_types, iface_registry, cache_repository, server, path, iface, facets)
+        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository, server, path, iface, facets)
 
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):

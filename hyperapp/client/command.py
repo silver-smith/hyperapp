@@ -34,7 +34,7 @@ class ViewCommand(Command):
         if not view: return
         log.debug('ViewCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
         handle = (yield from self._base_cmd.run(*args, **kw)).handle
-        assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
+        ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
             view.open(handle)
 
@@ -65,7 +65,7 @@ class WindowCommand(Command):
         if not window: return
         log.debug('WindowCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
         handle = (yield from self._base_cmd.run(*args, **kw)).handle
-        assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
+        ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:
             window.get_current_view().open(handle)
 
