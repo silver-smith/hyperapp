@@ -80,7 +80,7 @@ class Services(ServicesBase):
     def __init__( self ):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        ServicesBase.__init__(self)
+        ServicesBase.init_services(self)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.request_types, self.route_storage, self.proxy_registry)

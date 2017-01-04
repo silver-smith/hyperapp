@@ -15,7 +15,7 @@ TYPE_MODULE_EXT = '.types'
 
 class ServicesBase(object):
 
-    def __init__( self ):
+    def init_services( self ):
         self.request_types = make_request_types()
         self.iface_registry = IfaceRegistry()
         self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))

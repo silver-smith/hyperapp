@@ -1,10 +1,15 @@
 import os.path
-
-
-from ..common.htypes import tModule, tLocaleResources, IfaceRegistry, builtin_type_registry
+from ..common.htypes import (
+    tModule,
+    tLocaleResources,
+    IfaceRegistry,
+    builtin_type_registry,
+    make_request_types,
+    )
 from ..common.type_repository import TypeRepository
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
+from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .remoting import Remoting
@@ -37,18 +42,19 @@ TYPE_MODULE_EXT = '.types'
 DYN_MODULE_EXT = '.dyn.py'
 
 
-class Services(object):
+class Services(ServicesBase):
 
     def __init__( self ):
         self._dir = os.path.abspath(os.path.dirname(__file__))
-        self.iface_registry = IfaceRegistry()
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-        self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()), self.iface_registry)
-        self.type_repository = TypeRepository(self.interface_dir, self.iface_registry, self.type_registry_registry)
+        self.request_types = make_request_types()
+        self.iface_registry = IfaceRegistry()
+        self.type_registry_registry = TypeRegistryRegistry(self.request_types, self.iface_registry, dict(builtins=builtin_type_registry()))
+        self.type_repository = TypeRepository(self.interface_dir, self.request_types, self.iface_registry, self.type_registry_registry)
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
-        self.remoting = Remoting(self.route_storage, self.proxy_registry)
+        self.remoting = Remoting(self.request_types, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
         self.module_manager = ModuleManager(self)
@@ -58,7 +64,16 @@ class Services(object):
         self.resources_registry = ResourcesRegistry()
         self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
         self.module_manager.register_meta_hook()
-        self._load_type_modules()
+        self._load_core_type_module()
+        self.type_registry_registry.set_core_types(self.core_types)
+        self.type_repository.set_core_types(self.core_types)
+        self._load_type_modules([
+                'server_management',
+                'code_repository',
+                'splitter',
+                'form',
+                'text_object_types',
+            ])
         self._load_modules()
         self._register_modules()
         self._register_transports()
@@ -69,17 +84,6 @@ class Services(object):
     def _register_transports( self ):
         tcp_transport.register_transports(self.remoting.transport_registry, self)
         encrypted_transport.register_transports(self.remoting.transport_registry, self)
-
-    def _load_type_modules( self ):
-        for module_name in [
-                'server_management',
-                'code_repository',
-                'splitter',
-                'form',
-                'text_object_types',
-                ]:
-            fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
-            self.type_repository.load_module(module_name, fpath)
 
     def _register_modules( self ):
         for module in [

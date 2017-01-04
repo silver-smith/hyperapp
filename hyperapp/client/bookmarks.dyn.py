@@ -4,11 +4,11 @@ import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
     tString,
-    tBaseObject,
     IfaceRegistry,
     Column,
     list_handle_type,
     )
+from ..common.interface import core as core_types
 from ..common.url import Url
 from .module import Module
 from .named_url_file_repository import FileNamedUrlRepository
@@ -47,8 +47,8 @@ class Bookmarks(object):
         return item
 
 
-bookmark_list_type = tBaseObject
-bookmark_list_handle_type = list_handle_type('bookmark_list', tString)
+bookmark_list_type = core_types.object_base
+bookmark_list_handle_type = list_handle_type(core_types, 'bookmark_list', tString)
 
 
 class BookmarkList(ListObject):

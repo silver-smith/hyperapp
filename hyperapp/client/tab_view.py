@@ -2,7 +2,7 @@ import logging
 import asyncio
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
-from ..common.htypes import tInt, TList, Field, TRecord, tHandle
+from ..common.htypes import tInt, TList, Field, TRecord
 from .util import DEBUG_FOCUS, call_after, key_match
 from .module import Module
 from .command import command
@@ -148,6 +148,6 @@ class ThisModule(Module):
     def __init__( self, services ):
         Module.__init__(self, services)
         self.state_type = TRecord([
-            Field('tabs', TList(tHandle)),
+            Field('tabs', TList(services.core_types.handle)),
             Field('current_tab', tInt),
             ])

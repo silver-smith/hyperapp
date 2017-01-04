@@ -10,14 +10,19 @@ log = logging.getLogger(__name__)
 
 class TypeRegistryRegistry(htypes.TypeRegistryRegistry):
 
-    def __init__( self, registries, iface_registry ):
+    def __init__( self, request_types, iface_registry, registries ):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         htypes.TypeRegistryRegistry.__init__(self)
+        self._request_types = request_types
         self._iface_registry = iface_registry
+        self._core_types = None  # set by set_core_types
         self._name2module = {}  # module name -> tTypeModule
         self._class2module = {}  # encoded hierarchy_id|class_id -> tTypeModule
         self._iface2module = {}  # iface_id -> tTypeModule
         self._module_name_to_type_registry = registries or {}
+
+    def set_core_types( self, core_types ):
+        self._core_types = core_types
 
     def register_all_type_modules( self, type_modules ):
         assert is_list_inst(type_modules, tTypeModule), repr(type_modules)
@@ -77,6 +82,6 @@ class TypeRegistryRegistry(htypes.TypeRegistryRegistry):
     def _register_ifaces( self, module, type_registry ):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
-            t.register_types()
+            t.register_types(self._request_types, self._core_types)
             self._iface_registry.register(t)
             self._iface2module[name] = module

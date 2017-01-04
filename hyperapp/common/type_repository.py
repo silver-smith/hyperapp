@@ -28,6 +28,7 @@ class TypeRepository(object):
         self._request_types = request_types
         self._iface_registry = iface_registry
         self._type_registry_registry = type_registry_registry
+        self._core_types = None  # set by set_core_types
         self._class2type_module = {}  # str -> tTypeModule
         self._iface2type_module = {}  # str -> tTypeModule
         self._id2type_module = {}  # str -> tTypeModule

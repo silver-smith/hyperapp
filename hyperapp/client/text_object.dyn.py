@@ -1,6 +1,7 @@
 import logging
 import asyncio
-from ..common.htypes import tString, tObject, Field, tBaseObject, tObjHandle
+from ..common.htypes import tString, Field
+from ..common.interface import core as core_types
 from ..common.interface import text_object_types
 from .module import Module
 from .command import open_command
@@ -48,11 +49,11 @@ class TextObject(Object):
 
     @open_command('edit')
     def command_edit( self ):
-        return tObjHandle('text_edit', self.get_state())
+        return core_types.obj_handle('text_edit', self.get_state())
 
     @open_command('view')
     def command_view( self ):
-        return tObjHandle('text_view', self.get_state())
+        return core_types.obj_handle('text_view', self.get_state())
 
     @asyncio.coroutine
     def open_ref( self, ref_id ):

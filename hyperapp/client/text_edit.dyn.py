@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.htypes import tObjHandle
+from ..common.interface import core as core_types
 from .module import Module
 from . import view
 from .text_object import TextObject
@@ -67,4 +67,4 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
-        self.state_type = tObjHandle
+        self.state_type = core_types.obj_handle
