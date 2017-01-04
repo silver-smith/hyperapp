@@ -88,7 +88,7 @@ class Application(QtGui.QApplication, view.View):
         self._loop.stop()
 
     def save_state( self, state ):
-        requirements = RequirementsCollector().collect(self.state_type, state)
+        requirements = RequirementsCollector(self.services.core_types).collect(self.state_type, state)
         module_ids = list(self._resolve_requirements(requirements))
         modules = self.services.module_manager.resolve_ids(module_ids)
         for module in modules:

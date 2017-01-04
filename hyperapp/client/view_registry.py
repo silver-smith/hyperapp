@@ -14,12 +14,16 @@ class ViewRegistry(Registry):
         Registry.__init__(self)
         self._iface_registry = iface_registry
         self._remoting = remoting
+        self._core_types = None
+
+    def set_core_types( self, core_types ):
+        self._core_types = core_types
 
     @asyncio.coroutine
     def resolve( self, locale, handle, parent=None ):
         assert isinstance(locale, str), repr(locale)
-        assert isinstance(handle, tHandle), repr(handle)
-        if isinstance(handle, tRedirectHandle):
+        assert isinstance(handle, self._core_types.handle), repr(handle)
+        if isinstance(handle, self._core_types.redirect_handle):
             url = Url.from_data(self._iface_registry, handle.redirect_to)
             handle = yield from execute_get_request(self._remoting, url)
         rec = self._resolve(handle.view_id)

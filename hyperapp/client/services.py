@@ -67,6 +67,7 @@ class Services(ServicesBase):
         self._load_core_type_module()
         self.type_registry_registry.set_core_types(self.core_types)
         self.type_repository.set_core_types(self.core_types)
+        self.view_registry.set_core_types(self.core_types)
         self._load_type_modules([
                 'server_management',
                 'code_repository',
