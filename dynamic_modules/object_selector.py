@@ -3,7 +3,6 @@ import asyncio
 from PySide import QtCore, QtGui
 from import ..common.interface.article as article_types tObjSelectorHandle
 from .util import uni2str
-from .proxy_object import ProxyObject
 from . import view
 from .command import command, ViewCommand
 

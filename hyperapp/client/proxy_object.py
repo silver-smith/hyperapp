@@ -163,7 +163,7 @@ class ProxyObject(Object):
     # prepare request which does not require/expect response
     def prepare_notification( self, command_id, *args, **kw ):
         params = self.iface.make_params(command_id, *args, **kw)
-        return ClientNotification(self.iface, self.path, command_id, params=params)
+        return ClientNotification(self._request_types, self.iface, self.path, command_id, params=params)
 
     def prepare_request( self, command_id, *args, **kw ):
         request_id = str(uuid.uuid4())
