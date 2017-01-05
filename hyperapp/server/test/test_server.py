@@ -160,7 +160,7 @@ class Services(ServicesBase):
         self.module_manager.register_meta_hook()
         try:
             self._load_core_type_module()
-            self.type_repository.set_core_types(self.core_types)
+            self.type_module_repository.set_core_types(self.core_types)
             self._load_type_modules(['code_repository'])
             self._load_server_modules()
             self._register_transports()

@@ -2,7 +2,6 @@ import os.path
 import logging
 from ..common.htypes import IfaceRegistry, TypeRegistryRegistry, tModule, make_request_types, builtin_type_registry
 from ..common.route_storage import RouteStorage
-from ..common.type_repository import TypeRepository
 from ..common.services import ServicesBase
 from .module import Module
 from .module_manager import ModuleManager
@@ -32,7 +31,7 @@ class Services(ServicesBase):
         self.route_storage_module = route_storage.ThisModule()
         self.module_manager.register_meta_hook()
         self._load_core_type_module()
-        self.type_repository.set_core_types(self.core_types)
+        self.type_module_repository.set_core_types(self.core_types)
         self._load_type_modules([
                 'server_management',
                 'code_repository',

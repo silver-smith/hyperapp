@@ -10,13 +10,11 @@ from hyperapp.common.htypes import (
     )
 from hyperapp.common.url import UrlWithRoutes
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.type_repository import TypeRepository
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
 from hyperapp.common.services import ServicesBase
 from hyperapp.common.test.util import PhonyRouteRepository
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
-from hyperapp.client.type_registry_registry import TypeRegistryRegistry
 from hyperapp.client.module_manager import ModuleManager
 from hyperapp.client.remoting import Remoting
 from hyperapp.client.objimpl_registry import ObjImplRegistry
@@ -95,7 +93,7 @@ class Services(ServicesBase):
         self.identity_controller = PhonyIdentityController()
         try:
             self._load_core_type_module()
-            self.type_repository.set_core_types(self.core_types)
+            self.type_module_repository.set_core_types(self.core_types)
             self._load_type_modules([
                     'form',
                     'server_management',

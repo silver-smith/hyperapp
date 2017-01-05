@@ -235,6 +235,9 @@ class TypeRegistryRegistry(object):
     def resolve_type_registry( self, module_name ):
         return self._registry[module_name]
 
+    def get_all_type_registries( self ):
+        return list(self._registry.values())
+
 
 
 class UnknownTypeError(KeyError):

@@ -19,7 +19,7 @@ class Transport(object):
         self._request_types = services.request_types
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
-        self._type_repository = services.type_repository
+        self._type_module_repository = services.type_module_repository
         self._client_code_repository = services.client_code_repository
         self._core_types = services.core_types
 
@@ -57,7 +57,7 @@ class Transport(object):
 
     def prepare_aux_info( self, response_or_notification ):
         requirements = RequirementsCollector(self._core_types).collect(self._request_types.tServerPacket, response_or_notification.to_data())
-        type_modules = self._type_repository.get_modules_by_requirements(requirements)
+        type_modules = self._type_module_repository.get_type_modules_by_requirements(requirements)
         modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
         server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tServerPacket, response_or_notification.to_data())

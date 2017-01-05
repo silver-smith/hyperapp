@@ -105,6 +105,7 @@ class Interface(object):
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
         self._tObject = core_types.object.register(
             self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
+        log.debug('### registered object %r in %r', self.iface_id, id(core_types.object))
         request_types.tUpdate.register((self.iface_id,), self._diff_type)
         self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self._id2command.items())
         self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self._id2command.items())

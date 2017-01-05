@@ -2,18 +2,14 @@ import os.path
 from ..common.htypes import (
     tModule,
     tLocaleResources,
-    IfaceRegistry,
-    builtin_type_registry,
-    make_request_types,
+    TypeRegistryRegistry,
     )
-from ..common.type_repository import TypeRepository
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .remoting import Remoting
-from .type_registry_registry import TypeRegistryRegistry
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
 from .file_route_repository import FileRouteRepository
@@ -48,10 +44,7 @@ class Services(ServicesBase):
         self._dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-        self.request_types = make_request_types()
-        self.iface_registry = IfaceRegistry()
-        self.type_registry_registry = TypeRegistryRegistry(self.request_types, self.iface_registry, dict(builtins=builtin_type_registry()))
-        self.type_repository = TypeRepository(self.interface_dir, self.request_types, self.iface_registry, self.type_registry_registry)
+        ServicesBase.init_services(self)
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self.remoting = Remoting(self.request_types, self.route_storage, self.proxy_registry)
@@ -65,8 +58,7 @@ class Services(ServicesBase):
         self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
         self.module_manager.register_meta_hook()
         self._load_core_type_module()
-        self.type_registry_registry.set_core_types(self.core_types)
-        self.type_repository.set_core_types(self.core_types)
+        self.type_module_repository.set_core_types(self.core_types)
         self.view_registry.set_core_types(self.core_types)
         self._load_type_modules([
                 'server_management',

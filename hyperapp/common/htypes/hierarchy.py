@@ -96,10 +96,12 @@ class THierarchy(Type):
             return False
         return rec._class.hierarchy is self
 
-    def resolve( self, id ):
-        assert isinstance(id, str), repr(id)
-        assert id in self.registry, 'Unknown class id: %r. Known are: %r' % (id, sorted(self.registry.keys()))
-        return self.registry[id]
+    def resolve( self, class_id ):
+        assert isinstance(class_id, str), repr(class_idid)
+        assert class_id in self.registry, ('Unknown hierarchy %r class id: %r. Known are: %r, hierarchy id = %r'
+            % (self.hierarchy_id, class_id, sorted(self.registry.keys()), id(self)))
+        assert class_id in self.registry, 'Unknown hierarchy %r class id: %r. Known are: %r' % (self.hierarchy_id, class_id, sorted(self.registry.keys()))
+        return self.registry[class_id]
 
     def resolve_obj( self, rec ):
         assert isinstance(rec, TClassRecord), repr(rec)

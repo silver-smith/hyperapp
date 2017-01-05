@@ -68,11 +68,11 @@ class ClientCodeRepository(Object):
     def get_path( cls ):
         return this_module.make_path(cls.class_name)
 
-    def __init__( self, type_repository, code_module_repository, resources_loader ):
+    def __init__( self, type_module_repository, code_module_repository, resources_loader ):
         Object.__init__(self)
         self._code_module_repository = code_module_repository
         self._resources_loader = resources_loader
-        self._type_repository = type_repository
+        self._type_module_repository = type_module_repository
 
     def resolve( self, path ):
         path.check_empty()
@@ -82,8 +82,8 @@ class ClientCodeRepository(Object):
         type_modules = []
         code_modules = []
         for module_id in module_ids:
-            if self._type_repository.has_module_id(module_id):
-                type_modules += self._type_repository.get_module_by_id_with_deps(module_id)
+            if self._type_module_repository.has_type_module(module_id):
+                type_modules += self._type_module_repository.get_type_module_by_id_with_deps(module_id)
             else:
                 code_modules.append(self._code_module_repository.get_module_by_id(module_id))
         return (type_modules, code_modules)
@@ -93,7 +93,7 @@ class ClientCodeRepository(Object):
         code_modules = []
         for registry, key in requirements:
             if registry == 'interface':
-                module = self._type_repository.get_type_module_by_requirement(key)
+                module = self._type_module_repository.get_type_module_by_interface_id(key)
                 if module:
                     type_modules.append(module)
                 else:
@@ -167,7 +167,7 @@ class ThisModule(module_mod.Module):
     def __init__( self, services ):
         module_mod.Module.__init__(self, MODULE_NAME)
         self._module_repository = ClientModuleRepository(services.dynamic_module_dir)
-        self._client_code_repository = ClientCodeRepository(services.type_repository, self._module_repository, services.resources_loader)
+        self._client_code_repository = ClientCodeRepository(services.type_module_repository, self._module_repository, services.resources_loader)
         services.module_repository = self._module_repository
         services.client_code_repository = self._client_code_repository
 
