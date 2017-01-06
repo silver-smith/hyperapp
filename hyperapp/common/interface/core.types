@@ -21,7 +21,7 @@ view_handle = handle class view:
 obj_handle = handle class obj_handle(view_handle):
     object: object
 
-redirect_handle = handle class redirect:
+redirect_handle = handle class redirect(view_handle):
     redirect_to: url
 
 list_handle_base = handle class list_handle(obj_handle)

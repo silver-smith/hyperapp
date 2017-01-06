@@ -212,7 +212,8 @@ class ServerTest(unittest.TestCase):
             request_id='001',
             )
         pprint(self.request_types.tClientPacket, request_data)
-        request = RequestBase.from_data(None, Peer(PhonyChannel()), self.request_types, self.iface_registry, request_data)
+        request = RequestBase.from_data(None, Peer(PhonyChannel()),
+                                        self.request_types, self.services.core_types, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
 

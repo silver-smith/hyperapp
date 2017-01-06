@@ -10,6 +10,7 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
+        self._request_types = services.request_types
         self._iface_registry = services.iface_registry
         self._remoting = services.remoting
 
@@ -24,7 +25,7 @@ class ThisModule(Module):
         url_str = QtGui.QApplication.clipboard().text()
         url = UrlWithRoutes.from_str(self._iface_registry, url_str)
         self._remoting.add_routes(url.public_key, url.routes)
-        return execute_get_request(self._remoting, url)
+        return execute_get_request(self._request_types, self._remoting, url)
 
     @command('url_to_clipboard', kind='object')
     def command_url_to_clipboard( self, object ):

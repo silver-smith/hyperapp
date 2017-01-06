@@ -94,6 +94,7 @@ class Services(ServicesBase):
                 'form',
                 'code_repository',
                 'identity',
+                'redirect_handle',
                 'text_object',
                 'text_view',
                 'text_edit',

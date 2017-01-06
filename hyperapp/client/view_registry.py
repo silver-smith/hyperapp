@@ -1,11 +1,12 @@
 import logging
 import asyncio
-from ..common.url import Url
 from .registry import Registry
 from .view import View
-from .proxy_object import execute_get_request
 
 log = logging.getLogger(__name__)
+
+
+MAX_REDIRECT_COUNT = 10
 
 
 class ViewRegistry(Registry):
@@ -23,11 +24,12 @@ class ViewRegistry(Registry):
     def resolve( self, locale, handle, parent=None ):
         assert isinstance(locale, str), repr(locale)
         assert isinstance(handle, self._core_types.handle), repr(handle)
-        if isinstance(handle, self._core_types.redirect_handle):
-            url = Url.from_data(self._iface_registry, handle.redirect_to)
-            handle = yield from execute_get_request(self._remoting, url)
-        rec = self._resolve(handle.view_id)
-        log.info('producing view %r using %s(%s, %s)', handle.view_id, rec.factory, rec.args, rec.kw)
-        view = yield from rec.factory(locale, handle, parent, *rec.args, **rec.kw)
-        assert isinstance(view, View), repr((handle.view_id, view))  # must resolve to View
-        return view
+        for i in range(MAX_REDIRECT_COUNT):
+            rec = self._resolve(handle.view_id)
+            log.info('producing view %r using %s(%s, %s)', handle.view_id, rec.factory, rec.args, rec.kw)
+            view_or_handle = yield from rec.factory(locale, handle, parent, *rec.args, **rec.kw)
+            assert isinstance(view_or_handle, (self._core_types.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
+            if isinstance(view_or_handle, View):
+                return view_or_handle
+            handle = view_or_handle
+        assert False, 'Too much redirections: %d' % i

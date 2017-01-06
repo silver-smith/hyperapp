@@ -85,7 +85,7 @@ class Article(Object):
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             target_url = Url(iface, public_key, path)
-            return request.make_response_handle(core_types.redirect_handle(redirect_to=target_url.to_data()))
+            return request.make_response_redirect(target_url)
         else:
             target = this_module.run_resolver(iface, path)
             return request.make_response_object(target)

@@ -1,5 +1,6 @@
 from ..common.util import is_list_inst
 from ..common.identity import PublicKey
+from ..common.url import Url
 
 
 class NotAuthorizedError(Exception):
@@ -33,18 +34,19 @@ class Peer(object):
 class RequestBase(object):
 
     @classmethod
-    def from_data( cls, me, peer, request_types, iface_registry, rec ):
+    def from_data( cls, me, peer, request_types, core_types, iface_registry, rec ):
         assert isinstance(peer, Peer), repr(peer)
         assert isinstance(rec, request_types.tClientPacket), repr(rec)
         iface = iface_registry.resolve(rec.iface)
         if isinstance(rec, request_types.tRequest):
-            return Request(request_types, me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
+            return Request(request_types, core_types, me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
             assert isinstance(rec, request_types.tClientNotification), repr(rec)
-            return ClientNotification(request_types, me, peer, iface, rec.path, rec.command_id, rec.params)
+            return ClientNotification(request_types, core_types, me, peer, iface, rec.path, rec.command_id, rec.params)
 
-    def __init__( self, request_types, me, peer, iface, path, command_id, params ):
+    def __init__( self, request_types, core_types, me, peer, iface, path, command_id, params ):
         self._request_types = request_types
+        self._core_types = core_types
         self.me = me      # Server instance
         self.peer = peer
         self.iface = iface
@@ -59,8 +61,8 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__( self, request_types, me, peer, iface, path, command_id, request_id, params ):
-        RequestBase.__init__(self, request_types, me, peer, iface, path, command_id, params)
+    def __init__( self, request_types, core_types, me, peer, iface, path, command_id, request_id, params ):
+        RequestBase.__init__(self, request_types, core_types, me, peer, iface, path, command_id, params)
         self.request_id = request_id
 
     def make_response( self, result=None ):
@@ -85,6 +87,10 @@ class Request(RequestBase):
         response.add_update(iface.Update(path, diff))
         return response
 
+    def make_response_redirect( self, url ):
+        assert isinstance(url, Url), repr(url)
+        return self.make_response_handle(self._core_types.redirect_handle(
+            view_id='redirect', redirect_to=url.to_data()))
 
 
 class ResponseBase(object):

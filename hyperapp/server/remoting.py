@@ -17,18 +17,18 @@ class Transport(object):
 
     def __init__( self, services ):
         self._request_types = services.request_types
+        self._core_types = services.core_types
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
         self._type_module_repository = services.type_module_repository
         self._client_code_repository = services.client_code_repository
-        self._core_types = services.core_types
 
     def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
         request_rec = packet_coders.decode(payload_encoding, packet.payload, self._request_types.tClientPacket)
         pprint(tAuxInfo, packet.aux_info)
         pprint(self._request_types.tClientPacket, request_rec)
         self._add_routes(packet.aux_info.routes)
-        request = RequestBase.from_data(server, peer, self._request_types, iface_registry, request_rec)
+        request = RequestBase.from_data(server, peer, self._request_types, self._core_types, iface_registry, request_rec)
         response_or_notification = server.process_request(request)
         if response_or_notification is None:
             return None
