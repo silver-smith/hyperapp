@@ -3,7 +3,7 @@ import binascii
 import base64
 from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
-from ..common.htypes import tUrl, tUrlWithRoutes, Interface
+from ..common.htypes import tUrl, tUrlWithRoutes, Interface, IfaceRegistry
 from ..common.packet_coders import packet_coders
 
 
@@ -18,6 +18,7 @@ class Url(object):
 
     @classmethod
     def from_data( cls, iface_registry, rec ):
+        assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         iface = iface_registry.resolve(rec.iface)
         public_key = PublicKey.from_der(rec.public_key_der)
         return cls(iface, public_key, rec.path)

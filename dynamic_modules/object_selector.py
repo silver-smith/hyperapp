@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from import ..common.interface.article as article_types tObjSelectorHandle
+from ..common.interface import article as article_types
 from .util import uni2str
 from . import view
 from .command import command, ViewCommand
@@ -62,7 +62,7 @@ class View(view.View, QtGui.QWidget):
             view.View.open(self, handle)  # do not wrap in our handle
 
     def open( self, handle ):
-        handle = tObjSelectorHandle(self.view_id, self.ref.get_state(), handle)
+        handle = article_types.obj_selector_handle(self.view_id, self.ref.get_state(), handle)
         view.View.open(self, handle)
 
     def __del__( self ):

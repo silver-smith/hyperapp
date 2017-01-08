@@ -139,9 +139,9 @@ class ArticleRefList(SmallListObject):
         else:
             server_public_key_pem = url.public_key.to_pem()
         rec = this_module.ArticleRef(article=this_module.Article[self.article_id],
-                                server_public_key_pem=server_public_key_pem.strip(),
-                                iface=url.iface.iface_id,
-                                path=encode_path(url.path))
+                                     server_public_key_pem=server_public_key_pem.strip(),
+                                     iface=url.iface.iface_id,
+                                     path=encode_path(url.path))
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
@@ -190,7 +190,7 @@ class RefSelector(Object):
         return cls(article_id, ref_id)
 
     def __init__( self, article_id, ref_id ):
-        Object.__init__(self)
+        Object.__init__(self, core_types)
         self.article_id = article_id
         self.ref_id = ref_id
 
@@ -233,7 +233,7 @@ class RefSelector(Object):
         if rec.server_public_key_pem:
             public_key = PublicKey.from_pem(rec.server_public_key_pem)
             target_url = Url(iface, public_key, path)
-            target_handle = tRedirectHandle(target_url.to_data())
+            target_handle = self._core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
         else:
             target_obj = this_module.run_resolver(iface, path)
             target_handle = target_obj.get_handle(request)
