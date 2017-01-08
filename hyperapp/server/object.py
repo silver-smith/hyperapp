@@ -3,8 +3,10 @@ from operator import attrgetter
 from ..common.util import is_list_inst, encode_path
 from ..common.htypes import (
     tString,
+    tInt,
     Field,
     Interface,
+    categorize_list_handle_type,
     )
 from ..common.visual_rep import pprint
 from .util import WeakValueMultiDict
@@ -45,8 +47,9 @@ class Object(Commander):
 
     facets = None
 
-    def __init__( self ):
+    def __init__( self, core_types=None ):
         Commander.__init__(self, commands_kind='object')
+        self._core_types = core_types
 
     def get_path( self ):
         raise NotImplementedError(self.__class__)
@@ -108,6 +111,9 @@ class ListObject(Object):
 
     default_sort_column_id = 'key'
     default_direction = 'asc'
+    iface = None  # define in subclass
+    resource_id = None  # define in subclass
+    categories = None  # define in subclass
 
     @classmethod
     def Row( cls, *args, **kw ):
@@ -155,17 +161,8 @@ class ListObject(Object):
         resource_id = ['interface', cls.iface.iface_id]
         return cls.iface.ListHandle('list', object, resource_id, sort_column_id, key)
 
-    @classmethod
-    def ListNarrowerHandle( cls, object, sort_column_id=None, key=None, narrow_field_id=None ):
-        if sort_column_id is None:
-            sort_column_id = cls.default_sort_column_id
-        if narrow_field_id is None:
-            narrow_field_id = sort_column_id
-        resource_id = ['interface', cls.iface.iface_id]
-        return cls.iface.ListNarrowerHandle('list_narrower', object, resource_id, sort_column_id, key, narrow_field_id)
-
-    def __init__( self ):
-        Object.__init__(self)
+    def __init__( self, core_types=None ):
+        Object.__init__(self, core_types)
 
     def get_contents( self, **kw ):
         slice = self.fetch_elements(self.default_sort_column_id, None, self.default_direction, MIN_ROWS_RETURNED)
@@ -215,6 +212,15 @@ class ListObject(Object):
             if column.id == column_id:
                 return column
         return None
+
+    def CategorizedListHandle( self, object, sort_column_id=None, key=None ):
+        assert self.categories, '%s.categories is not defined' % self.__class__.__name__
+        assert self.iface, '%s.iface is not defined' % self.__class__.__name__
+        handle_t = categorize_list_handle_type(self._core_types, self.iface.get_key_type())
+        if sort_column_id is None:
+            sort_column_id = self.default_sort_column_id
+        resource_id = ['interface', self.iface.iface_id]
+        return handle_t('categorized_list', object, self.categories, resource_id, sort_column_id, key)
 
 
 class SmallListObject(ListObject):

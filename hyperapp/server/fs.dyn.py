@@ -2,6 +2,7 @@ import sys
 import os.path
 import stat
 from ..common.htypes import Column
+from ..common.interface import core as core_types
 from ..common.interface import fs as fs_types
 from .command import command
 from .object import SmallListObject
@@ -13,7 +14,7 @@ MODULE_NAME = 'file'
 class FsObject(SmallListObject):
 
     def __init__( self, fspath ):
-        SmallListObject.__init__(self)
+        SmallListObject.__init__(self, core_types)
         self.fspath = os.path.abspath(fspath)
 
     def get_path( self ):
@@ -43,6 +44,7 @@ class Dir(FsObject):
 
     iface = fs_types.fs_dir
     objimpl_id = 'proxy_list'
+    categories = [['initial', 'fs']]
 
     def fetch_all_elements( self ):
         dirs  = []
@@ -85,7 +87,7 @@ class Dir(FsObject):
         return self.Element(row, commands=[self.command_open])
 
     def get_handle( self, request ):
-        return self.ListNarrowerHandle(self.get(request), 'key')
+        return self.CategorizedListHandle(self.get(request))
 
     @command('open', kind='element', is_default_command=True)
     def command_open( self, request ):
@@ -98,7 +100,7 @@ class Dir(FsObject):
         fspath = self.get_parent_dir()
         if fspath is None: return None
         key = os.path.basename(self.fspath)
-        handle = self.ListNarrowerHandle(this_module.open(fspath).get(request), 'key', key)
+        handle = self.CategorizedListHandle(this_module.open(fspath).get(request), key=key)
         return request.make_response_handle(handle)
 
     def get_parent_dir( self ):

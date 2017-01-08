@@ -37,6 +37,7 @@ def builtin_type_registry():
     registry.register('requirement', tRequirement)
     registry.register('type_module', tTypeModule)
     registry.register('module', tModule)
+    registry.register('resource_id', tResourceId)
     registry.register('resources', tResources)
     return registry
 

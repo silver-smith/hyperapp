@@ -18,10 +18,33 @@ handle = hierarchy handle
 view_handle = handle class view:
     view_id: string
 
-obj_handle = handle class obj_handle(view_handle):
+obj_handle = handle class obj(view_handle):
     object: object
+
+category_list = string list list
+
+categorized_obj_handle = handle class categorized_obj(obj_handle):
+    categories: category_list
 
 redirect_handle = handle class redirect(view_handle):
     redirect_to: url
 
-list_handle_base = handle class list_handle(obj_handle)
+list_handle_base = handle class list_base(obj_handle):
+    resource_id: resource_id
+    sort_column_id: string
+
+string_list_handle = handle class string_list(list_handle_base):
+    key: string opt
+
+int_list_handle = handle class int_list(list_handle_base):
+    key: int opt
+
+categorized_list_handle_base = handle class categorized_list(categorized_obj_handle):
+    resource_id: resource_id
+    sort_column_id: string
+
+categorized_string_list_handle = handle class categorized_string_list(categorized_list_handle_base):
+    key: string opt
+
+categorized_int_list_handle = handle class categorized_int_list(categorized_list_handle_base):
+    key: int opt
