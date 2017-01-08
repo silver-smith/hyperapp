@@ -1,5 +1,6 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
+from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.interface import splitter as splitter_types
 from ..common.interface import module_list as module_list_types
@@ -32,6 +33,9 @@ class ModuleList(SmallListObject):
     @classmethod
     def get_path( cls ):
         return this_module.make_path(cls.class_name)
+
+    def __init__( self ):
+        SmallListObject.__init__(self, core_types)
 
     @db_session
     def fetch_all_elements( self ):
@@ -127,7 +131,7 @@ class ModuleDepList(SmallListObject):
         return cls(module_id)
 
     def __init__( self, module_id=None ):
-        Object.__init__(self)
+        SmallListObject.__init__(self, core_types)
         self.module_id = module_id or None
 
     def get_path( self ):
@@ -172,7 +176,7 @@ class AvailableDepList(SmallListObject):
         return cls(module_id)
 
     def __init__( self, module_id=None ):
-        Object.__init__(self)
+        SmallListObject.__init__(self, core_types)
         self.module_id = module_id or None
 
     def get_path( self ):

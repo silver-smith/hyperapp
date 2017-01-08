@@ -1,5 +1,6 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.identity import PublicKey
+from ..common.interface import core as core_types
 from ..common.interface import admin as admin_iface
 from .module import ModuleCommand
 from .ponyorm_module import PonyOrmModule
@@ -26,7 +27,7 @@ class UserList(SmallListObject):
         return this_module.make_path(cls.class_name)
 
     def __init__( self ):
-        SmallListObject.__init__(self)
+        SmallListObject.__init__(self, core_types)
 
     @db_session
     def fetch_all_elements( self ):

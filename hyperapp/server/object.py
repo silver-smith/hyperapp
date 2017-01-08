@@ -6,7 +6,8 @@ from ..common.htypes import (
     tInt,
     Field,
     Interface,
-    categorize_list_handle_type,
+    list_handle_type,
+    categorized_list_handle_type,
     )
 from ..common.visual_rep import pprint
 from .util import WeakValueMultiDict
@@ -154,14 +155,7 @@ class ListObject(Object):
     def Diff_delete( cls, key ):
         return cls.Diff(key, key, [])
 
-    @classmethod
-    def ListHandle( cls, object, sort_column_id=None, key=None ):
-        if sort_column_id is None:
-            sort_column_id = cls.default_sort_column_id
-        resource_id = ['interface', cls.iface.iface_id]
-        return cls.iface.ListHandle('list', object, resource_id, sort_column_id, key)
-
-    def __init__( self, core_types=None ):
+    def __init__( self, core_types ):
         Object.__init__(self, core_types)
 
     def get_contents( self, **kw ):
@@ -213,10 +207,18 @@ class ListObject(Object):
                 return column
         return None
 
+    def ListHandle( self, object, sort_column_id=None, key=None ):
+        assert self.iface, '%s.iface is not defined' % self.__class__.__name__
+        handle_t = list_handle_type(self._core_types, self.iface.get_key_type())
+        if sort_column_id is None:
+            sort_column_id = self.default_sort_column_id
+        resource_id = ['interface', self.iface.iface_id]
+        return handle_t('list', object, resource_id, sort_column_id, key)
+
     def CategorizedListHandle( self, object, sort_column_id=None, key=None ):
         assert self.categories, '%s.categories is not defined' % self.__class__.__name__
         assert self.iface, '%s.iface is not defined' % self.__class__.__name__
-        handle_t = categorize_list_handle_type(self._core_types, self.iface.get_key_type())
+        handle_t = categorized_list_handle_type(self._core_types, self.iface.get_key_type())
         if sort_column_id is None:
             sort_column_id = self.default_sort_column_id
         resource_id = ['interface', self.iface.iface_id]

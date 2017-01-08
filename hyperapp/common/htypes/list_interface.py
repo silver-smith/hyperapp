@@ -18,7 +18,7 @@ from .meta_type import tMetaType, tInterfaceMeta, t_named, field_list_from_data,
 from .interface import RequestCmd, ContentsCommand, Interface
 
 
-def categorize_list_handle_type( core_types, key_t ):
+def categorized_list_handle_type( core_types, key_t ):
     if key_t is tString:
         return core_types.categorized_string_list_handle
     if key_t is tInt:
@@ -136,10 +136,6 @@ class ListInterface(Interface):
         assert key_column_id, 'No column with is_key is found'
         return key_column_id
 
-    def register_types( self, request_types, core_types ):
-        Interface.register_types(self, request_types, core_types)
-        self._tListHandle = list_handle_type(core_types, self._key_type)
-
     def _resolve_command( self, command ):
         if isinstance(command, ElementCommand):
             params_fields = [Field('element_key', self._key_type)] + (command.params_fields or [])
@@ -192,9 +188,3 @@ class ListInterface(Interface):
 
     def Diff( self, *args, **kw ):
         return self.tDiff()(*args, **kw)
-
-    def tListHandle( self ):
-        return self._tListHandle
-
-    def ListHandle( self, *args, **kw ):
-        return self.tListHandle()(*args, **kw)

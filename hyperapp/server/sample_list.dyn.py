@@ -1,5 +1,6 @@
 import logging
 from ..common.htypes import Column
+from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.interface import test_list as test_list_types
 from .util import path_part_to_str
@@ -55,7 +56,7 @@ class TestList(ListObject):
         return cls(size)
 
     def __init__( self, size=DEFAULT_SIZE ):
-        ListObject.__init__(self)
+        ListObject.__init__(self, core_types)
         self.size = size
 
     def get_path( self ):

@@ -2,6 +2,7 @@ import logging
 from pony.orm import db_session, commit, Required, Optional, Set, select
 from ..common.util import encode_path, decode_path
 from ..common.htypes import Column
+from ..common.interface import core as core_types
 from ..common.interface import article as article_types
 from ..common.identity import PublicKey
 from ..common.url import Url
@@ -117,7 +118,7 @@ class ArticleRefList(SmallListObject):
         return cls(article_id)
 
     def __init__( self, article_id ):
-        SmallListObject.__init__(self)
+        SmallListObject.__init__(self, core_types)
         self.article_id = article_id
 
     def get_path( self ):

@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 from pony.orm import db_session, commit, desc, Required, Set
+from ..common.interface import core as core_types
 from ..common.interface import blog as blog_types
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
@@ -60,7 +61,7 @@ class Blog(SmallListObject):
         return cls()
 
     def __init__( self ):
-        SmallListObject.__init__(self)
+        SmallListObject.__init__(self, core_types)
 
     @classmethod
     def get_path( cls ):

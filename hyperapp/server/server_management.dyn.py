@@ -1,5 +1,6 @@
 # server management module: used to expose module commands in one list
 
+from ..common.interface import core as core_types
 from ..common.interface import server_management as server_management_types
 from ..common.url import Url
 from .object import SmallListObject
@@ -20,7 +21,7 @@ class CommandList(SmallListObject):
         return this_module.make_path()
 
     def __init__( self ):
-        SmallListObject.__init__(self)
+        SmallListObject.__init__(self, core_types)
 
     def fetch_all_elements( self ):
         return list(map(self.cmd2element, Module.get_all_modules_commands()))

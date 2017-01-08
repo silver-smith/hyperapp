@@ -3,6 +3,7 @@ import logging
 import yaml
 from ..common.util import flatten
 from ..common.htypes import tModule
+from ..common.interface import core as core_types
 from ..common.interface import code_repository as code_repository_types
 from . import module as module_mod
 from .module import ModuleCommand
@@ -143,7 +144,7 @@ class ClientCodeRepositoryBrowser(SmallListObject):
         return this_module.make_path(cls.class_name)
 
     def __init__( self, repository ):
-        SmallListObject.__init__(self)
+        SmallListObject.__init__(self, core_types)
         self._repository = repository
 
     def resolve( self, path ):
