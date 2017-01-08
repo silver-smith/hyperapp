@@ -1,3 +1,7 @@
+columns:
+- column_id: title
+  text: Title
+  desc: Handle title
 commands:
 - command_id: open
   text: Open

@@ -15,6 +15,7 @@ from .history_list import HistoryList
 log = logging.getLogger(__name__)
 
 
+HISTORY_LIST_RESOURCE_ID = ['client_module', 'history_list']
 MAX_HISTORY_SIZE = 100
 
 
@@ -115,7 +116,7 @@ class View(composite.Composite):
     def open_history( self ):
         state = self.get_state()
         object = self._this_module.history_list_type(HistoryList.objimpl_id, state.history)
-        self.open(self._this_module.history_list_handle_type('list', object, sort_column_id='idx', key=state.current_pos))
+        self.open(self._this_module.history_list_handle_type('list', object, resource_id=HISTORY_LIST_RESOURCE_ID, sort_column_id='idx', key=state.current_pos))
 
     def __del__( self ):
         log.info('~navigator')
