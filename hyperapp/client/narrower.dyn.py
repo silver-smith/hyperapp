@@ -1,6 +1,7 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
+from ..common.htypes import tString, tInt, TOptional, Field
 from ..common.interface import core as core_types
 from .util import uni2str, key_match, key_match_any
 from .list_object import ListObserver, Slice, ListObject
@@ -13,11 +14,36 @@ from . import list_view
 log = logging.getLogger(__name__)
 
 
+NARROWER_VIEW_ID = 'narrower_list'
 FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
 
 
 def register_views( registry, services ):
-    registry.register(View.view_id, View.from_state, services.objimpl_registry, services.resources_manager)
+    registry.register(NARROWER_VIEW_ID, View.from_state, services.objimpl_registry, services.resources_manager)
+
+
+tNarrowerListHandleBase = core_types.handle.register(
+    'narrower_list_base', base=core_types.list_handle_base, fields=[
+        Field('narrow_field_id', tString),
+        ])
+
+tStringNarrowerListHandle = core_types.handle.register(
+    'string_narrower_list', base=tNarrowerListHandleBase, fields=[
+        Field('key', TOptional(tString)),
+        ])
+
+tIntNarrowerListHandle = core_types.handle.register(
+    'int_narrower_list', base=tNarrowerListHandleBase, fields=[
+        Field('key', TOptional(tInt)),
+        ])
+
+
+def narrower_list_handle_type( key_t ):
+    if key_t is tString:
+        return tStringNarrowerListHandle
+    if key_t is tInt:
+        return tIntNarrowerListHandle
+    assert False, 'Unsupported list key type: %r' % key_t
 
 
 # todo: subscription
@@ -99,7 +125,7 @@ class FilteredListObj(ListObject, ListObserver):
 
 class View(LineListPanel):
 
-    view_id = 'list_narrower'
+    view_id = NARROWER_VIEW_ID
 
     @classmethod
     @asyncio.coroutine

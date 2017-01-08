@@ -31,15 +31,6 @@ def list_handle_type( core_types, id, key_type ):
         ]
     return core_types.handle.register(id, base=core_types.list_handle_base, fields=fields)
 
-def list_narrower_handle_type( core_types, id, key_type ):
-    fields = [
-        Field('resource_id', tResourceId),
-        Field('sort_column_id', tString),
-        Field('key', TOptional(key_type)),
-        Field('narrow_field_id', tString),
-        ]
-    return core_types.handle.register(id, base=core_types.obj_handle, fields=fields)
-
 
 class Column(object):
 

@@ -101,6 +101,7 @@ class Services(ServicesBase):
                 'form_view',
                 'narrower',
                 'bookmarks',
+                'categorized_list_view',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
