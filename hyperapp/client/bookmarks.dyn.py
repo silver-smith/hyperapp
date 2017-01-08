@@ -48,7 +48,7 @@ class Bookmarks(object):
 
 
 bookmark_list_type = core_types.object_base
-bookmark_list_handle_type = list_handle_type(core_types, 'bookmark_list', tString)
+bookmark_list_handle_type = list_handle_type(core_types, tString)
 
 
 class BookmarkList(ListObject):

@@ -32,5 +32,5 @@ class ThisModule(Module):
         self.history_list_type = core_types.object.register('history_list', base=core_types.object_base, fields=[
             Field('history', TList(self.item_type)),
             ])
-        self.history_list_handle_type = list_handle_type(core_types, 'history_list', tInt)
+        self.history_list_handle_type = list_handle_type(core_types, tInt)
         this_module = self

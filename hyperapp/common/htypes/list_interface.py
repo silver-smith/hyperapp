@@ -25,11 +25,12 @@ def categorize_list_handle_type( core_types, key_t ):
         return core_types.categorized_int_list_handle
     assert False, 'Unsupported list key type: %r' % key_t
 
-def list_handle_type( core_types, id, key_type ):
-    fields = [
-        Field('key', TOptional(key_type)),
-        ]
-    return core_types.handle.register(id, base=core_types.list_handle_base, fields=fields)
+def list_handle_type( core_types, key_t ):
+    if key_t is tString:
+        return core_types.string_list_handle
+    if key_t is tInt:
+        return core_types.int_list_handle
+    assert False, 'Unsupported list key type: %r' % key_t
 
 
 class Column(object):
@@ -137,7 +138,7 @@ class ListInterface(Interface):
 
     def register_types( self, request_types, core_types ):
         Interface.register_types(self, request_types, core_types)
-        self._tListHandle = list_handle_type(core_types, '%s.list' % self.iface_id, self._key_type)
+        self._tListHandle = list_handle_type(core_types, self._key_type)
 
     def _resolve_command( self, command ):
         if isinstance(command, ElementCommand):

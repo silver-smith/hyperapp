@@ -136,7 +136,7 @@ def make_code_repository_form( url_str ):
 
 
 code_repository_list_type = core_types.object_base
-code_repository_list_handle_type = list_handle_type(core_types, 'code_repository_list', tString)
+code_repository_list_handle_type = list_handle_type(core_types, tString)
 
 
 class CodeRepositoryList(ListObject):

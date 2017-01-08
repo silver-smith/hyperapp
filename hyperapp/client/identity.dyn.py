@@ -119,7 +119,7 @@ def make_identity_form():
 
 
 identity_list_type = core_types.object_base
-identity_list_handle_type = list_handle_type(core_types, 'identity_list', tString)
+identity_list_handle_type = list_handle_type(core_types, tString)
 
 
 class IdentityList(ListObject):
