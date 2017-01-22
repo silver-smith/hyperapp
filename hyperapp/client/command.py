@@ -33,10 +33,10 @@ class ViewCommand(Command):
         view = self._view_wr()
         if not view: return
         log.debug('ViewCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
-        handle = (yield from self._base_cmd.run(*args, **kw)).handle
+        result = (yield from self._base_cmd.run(*args, **kw))
         ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
-        if handle:
-            view.open(handle)
+        if result:
+            view.open(result.handle)
 
 
 class WindowCommand(Command):
