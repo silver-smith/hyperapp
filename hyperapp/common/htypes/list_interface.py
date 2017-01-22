@@ -11,7 +11,6 @@ from .htypes import (
     TList,
     TIndexedList,
     tCommand,
-    tResourceId,
     )
 from .hierarchy import THierarchy
 from .meta_type import tMetaType, tInterfaceMeta, t_named, field_list_from_data, command_from_data
