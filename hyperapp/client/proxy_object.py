@@ -58,7 +58,7 @@ class RemoteCommand(Command):
         return None
 
     def clone( self, args=None ):
-        args = self._args + args if args else self._args
+        args = self._args + (args or ())
         return RemoteCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._object_wr, args)
 
     @asyncio.coroutine
@@ -153,7 +153,7 @@ class ProxyObject(Object):
 
     @asyncio.coroutine
     def run_remote_command( self, command_id, *args, **kw ):
-        log.debug('running remote command %r (%s)', command_id, kw)
+        log.debug('running remote command %r (*%s, **%s)', command_id, args, kw)
         return (yield from self.execute_request(command_id, *args, **kw))
 
     def observers_gone( self ):
