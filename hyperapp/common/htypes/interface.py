@@ -144,6 +144,9 @@ class Interface(object):
         command = self._id2command[command_id]
         return command.request_type
 
+    def get_commands( self ):
+        return self._commands
+
     def _get_command( self, command_id ):
         cmd = self._id2command.get(command_id)
         if not cmd:

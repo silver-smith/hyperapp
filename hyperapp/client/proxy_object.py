@@ -5,10 +5,12 @@ import weakref
 import codecs
 from ..common.util import is_list_inst, encode_path
 from ..common.htypes import (
+    IfaceCommand,
     Interface,
     TList,
     Field,
     tString,
+    TOptional,
     TRecord,
     tCommand,
     tPath,
@@ -115,7 +117,8 @@ class ProxyObject(Object):
         self.facets = facets or []
         self.cache_repository = cache_repository
         cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
-        self._remote_commands = list(map(self._command_from_data, cached_commands or []))
+        self._remote_commands = [self._remote_command_from_iface_command(cmd) for cmd in self.iface.get_commands()
+                                 if self._is_plain_open_handle_request(cmd)]
 
     def __repr__( self ):
         return 'ProxyObject(%s, %s, %s)' % (self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
@@ -142,7 +145,7 @@ class ProxyObject(Object):
         self._notify_object_changed()
 
     def set_contents( self, contents ):
-        self._remote_commands = list(map(self._command_from_data, contents.commands))
+        #self._remote_commands = list(map(self._command_from_data, contents.commands))
         self.cache_repository.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
 
     def get_title( self ):
@@ -187,6 +190,20 @@ class ProxyObject(Object):
     def _command_from_data( self, rec ):
         return RemoteCommand(rec.command_id, rec.kind, rec.resource_id,
                              is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
+
+    def _is_plain_open_handle_request( self, cmd ):
+        t_open_result = TRecord([
+            Field('handle', TOptional(self._core_types.handle)),
+            ])
+        return (cmd.request_type == IfaceCommand.rt_request
+                and cmd.get_params_type(self.iface).get_fields() == []
+                and cmd.get_result_type(self.iface) == t_open_result)
+
+    def _remote_command_from_iface_command( self, cmd ):
+        kind = 'object'
+        resource_id = ['interface', self.iface.iface_id, cmd.command_id]
+        return RemoteCommand(cmd.command_id, kind, resource_id,
+                             is_default_command=False, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):
         return self.make_cache_key('commands')
