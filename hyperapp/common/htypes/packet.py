@@ -5,9 +5,9 @@ from .htypes import (
     TRecord,
     TList,
     tServerRoutes,
-    tResources,
     )
 from .meta_type import tTypeModule
+from .resource_type import tResourceList
 
 
 tRequirement = TList(tString)  # [hierarchy id, class id]
@@ -31,7 +31,7 @@ tAuxInfo = TRecord([
     Field('type_modules', TList(tTypeModule)),
     Field('modules', TList(tModule)),
     Field('routes', TList(tServerRoutes)),
-    Field('resources', TList(tResources)),
+    Field('resources', TList(tResourceList)),
     ])
 
 tPacket = TRecord([

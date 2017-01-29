@@ -1,7 +1,8 @@
 from .htypes import *
 from .hierarchy import *
 from .switched import *
-from .meta_type import *
+from .meta_type import*
+from .resource_type import *
 from .packet import *
 from .request import *
 from .interface import *
@@ -38,7 +39,7 @@ def builtin_type_registry():
     registry.register('type_module', tTypeModule)
     registry.register('module', tModule)
     registry.register('resource_id', tResourceId)
-    registry.register('resources', tResources)
+    registry.register('resource_list', tResourceList)
     return registry
 
 def builtin_type_registry_registry():

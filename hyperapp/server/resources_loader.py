@@ -2,10 +2,37 @@ import os.path
 import glob
 import logging
 from ..common.util import encode_path
-from ..common.htypes import tLocaleResources, tResources
+from ..common.htypes import (
+    tString,
+    tBool,
+    TOptional,
+    TList,
+    Field,
+    TRecord,
+    tResource,
+    tResourceList,
+    )
 from ..common.packet_coders import packet_coders
 
 log = logging.getLogger(__name__)
+
+
+command_rec_t = TRecord([
+    Field('is_default', tBool),
+    Field('text', tString),
+    Field('description', tString),
+    Field('shortcuts', TList(tString)),
+    ])
+
+column_rec_t = TRecord([
+    Field('text', tString),
+    Field('description', TOptional(tString)),
+    ])
+
+interface_resources_t = TRecord([
+    Field('commands', TOptional(TList(command_rec_t))),
+    Field('columns', TOptional(TList(column_rec_t))),
+    ])
 
 
 class ResourcesLoader(object):
