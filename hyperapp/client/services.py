@@ -1,7 +1,6 @@
 import os.path
 from ..common.htypes import (
     tModule,
-    tLocaleResources,
     TypeRegistryRegistry,
     )
 from ..common.packet_coders import packet_coders
@@ -128,11 +127,12 @@ class Services(ServicesBase):
                 ]:
             with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
                 try:
-                    resources = packet_coders.decode('yaml', f.read(), tLocaleResources)
+                    #resources = packet_coders.decode('yaml', f.read(), tLocaleResources)
+                    pass
                 except Exception as x:
                     raise RuntimeError('Error loading resource %r: %s' % (module, x))
-                resource_id = ['client_module', module]
-                self.resources_manager.register(resource_id, 'en', resources)
+                #resource_id = ['client_module', module]
+                #self.resources_manager.register(resource_id, 'en', resources)
 
     def _register_object_implementations( self ):
         for module in [

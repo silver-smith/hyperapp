@@ -75,7 +75,7 @@ class MenuBar(object):
         pass
         
     def _make_action( self, menu, cmd ):
-        resources = self._resources_manager.resolve(cmd.resource_id, self._locale)
+        resources = self._resources_manager.resolve(cmd.resource_id + [self._locale])
         if resources:
             for res in resources.commands:
                 if res.command_id == cmd.id:

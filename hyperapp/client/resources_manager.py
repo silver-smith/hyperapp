@@ -1,6 +1,6 @@
 import logging
 from ..common.util import is_list_inst
-from ..common.htypes import tLocaleResources, tResources
+from ..common.htypes import tResource, tResourceList
 
 log = logging.getLogger(__name__)
 
@@ -10,13 +10,14 @@ class ResourcesRegistry(object):
     def __init__( self ):
         self._registry = {}
 
-    def register( self, id, locale, resources ):
-        assert isinstance(resources, tLocaleResources), repr(resources)
-        log.debug('Resource registry: registering %r' % id)
-        self._registry[(tuple(id), locale)] = resources
+    def register( self, resource_list ):
+        assert isinstance(resource_list, tResourceList), repr(resource_list)
+        for rec in resource_list:
+            log.debug('Resource registry: registering %r', rec.id)
+            self._registry[tuple(rec.id)] = rec.resource
 
-    def resolve( self, id, locale ):
-        return self._registry.get((tuple(id), locale))
+    def resolve( self, id ):
+        return self._registry.get(tuple(id))
 
 
 class ResourcesManager(object):
@@ -25,24 +26,20 @@ class ResourcesManager(object):
         self._resources_registry = resources_registry
         self._cache_repository = cache_repository
 
-    def register_all( self, resources_list ):
-        assert is_list_inst(resources_list, tResources), repr(resources_list)
-        for rec in resources_list:
-            self.register(rec.resource_id, rec.locale, rec.resources)
+    def register( self, resource_list ):
+        assert is_list_inst(resource_list, tResourceList), repr(resource_list)
+        self._resources_registry.register(resource_list)
+        for rec in resource_list:
+            self._cache_repository.store_value(self._cache_key(rec.id), rec.resource, self._cache_type())
 
-    def register( self, id, locale, resources ):
-        assert isinstance(resources, tLocaleResources), repr(resources)
-        self._resources_registry.register(id, locale, resources)
-        self._cache_repository.store_value(self._cache_key(id, locale), resources, self._cache_type())
+    def resolve( self, id ):
+        resource = self._resources_registry.resolve(id)
+        if resource is None:
+            resource = self._cache_repository.load_value(self._cache_key(id), self._cache_type())
+        return resource
 
-    def resolve( self, id, locale ):
-        resources = self._resources_registry.resolve(id, locale)
-        if resources is None:
-            resources = self._cache_repository.load_value(self._cache_key(id, locale), self._cache_type())
-        return resources
-
-    def _cache_key( self, id, locale ):
-        return ['resources'] + id + [locale]
+    def _cache_key( self, id ):
+        return ['resources'] + id
 
     def _cache_type( self ):
-        return tLocaleResources
+        return tResource

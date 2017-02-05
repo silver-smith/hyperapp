@@ -48,6 +48,9 @@ class ResourcesLoader(object):
         self._load_iface_resources()
 
     def load_resources( self, resource_id ):
+        if resource_id[0] == 'interface':
+            return self._iface_resources.get(resource_id[1], [])
+        return []  # todo: client module resource loading
         dir = self._dir_map.get(resource_id[0])
         assert dir, 'Unknown resource type: %r' % resource_id[0]
         log.info('loading resources for %r from %r', encode_path(resource_id), dir)
@@ -78,7 +81,7 @@ class ResourcesLoader(object):
                 elif item_type == 'columns':
                     resource = self._dict2column_resource(items)
                 else:
-                    assert 0, '%s: Unknown resource type: %r' % (iface_id, item_type)
+                    assert False, '%s: Unknown resource type: %r' % (iface_id, item_type)
                 log.info('    loaded resource %s: %s', encode_path(resource_id), resource)
                 yield tResourceRec(resource_id, resource)
 

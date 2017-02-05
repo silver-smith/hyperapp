@@ -82,7 +82,7 @@ class Model(QtCore.QAbstractTableModel):
     def set_object( self, object, sort_column_id ):
         self._object = object
         self._columns = object.get_columns()
-        resource = self._resources_manager.resolve(self._resource_id, self._locale)
+        resource = self._resources_manager.resolve(self._resource_id + [self._locale])
         assert resource, repr(self._resource_id)  # columns resource is missing
         self._columns_resource = dict((rec.column_id, rec) for rec in resource.columns)
         self._visible_columns = [column for column in self._columns if column.id in self._columns_resource]

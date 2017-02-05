@@ -176,7 +176,7 @@ class Application(QtGui.QApplication, view.View):
                 code_modules = new_code_modules  # load new versions
             self.services.type_module_repository.add_all_type_modules(type_modules)
             self.services.module_manager.add_code_modules(code_modules)
-            self.services.resources_manager.register_all(resources)
+            self.services.resources_manager.register(resources)
             state = packet_coders.decode('cdr', state_data, self.state_type)
             log.info('-->8 -- loaded state  ------')
             pprint(self.state_type, state)
