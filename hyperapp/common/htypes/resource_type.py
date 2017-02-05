@@ -14,13 +14,13 @@ tResource = THierarchy('resource')
 tCommandResource = tResource.register('command', fields=[
     Field('is_default', tBool),
     Field('text', tString),
-    Field('desc', TOptional(tString)),
+    Field('description', TOptional(tString)),
     Field('shortcuts', TList(tString), default=[]),
     ])
 
 tColumnResource = tResource.register('column', fields=[
     Field('text', tString),
-    Field('desc', TOptional(tString)),
+    Field('description', TOptional(tString)),
     ])
 
 tResourceId = TList(tString)

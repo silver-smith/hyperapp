@@ -26,8 +26,8 @@ class Services(ServicesBase):
         ServicesBase.init_services(self)
         self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.modules = self.module_manager.modules
-        self.resources_loader = ResourcesLoader(dict(interface=self.server_dir,
-                                                     client_module=self.dynamic_module_dir))
+        self.resources_loader = ResourcesLoader(iface_resources_dir=self.server_dir,
+                                                client_modules_resources_dir=self.dynamic_module_dir)
         self.route_storage_module = route_storage.ThisModule()
         self.module_manager.register_meta_hook()
         self._load_core_type_module()

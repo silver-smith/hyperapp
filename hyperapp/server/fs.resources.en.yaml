@@ -1,0 +1,23 @@
+fs_dir:
+  commands:
+    open:
+      is_default: true
+      text: Open
+      description: Open file or directory
+      shortcuts: []
+    parent:
+      text: Open parent
+      description: Open parent directory
+      shortcuts:
+      - Ctrl+Backspace
+  columns:
+    key:
+      text: File Name
+    ftype:
+      text: File type
+    ftime:
+      text: Modification time
+      description: File Modification time
+    fsize:
+      text: File size
+  

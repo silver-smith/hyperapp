@@ -1,5 +1,7 @@
 import os.path
+import re
 import glob
+import yaml
 import logging
 from ..common.util import encode_path
 from ..common.htypes import (
@@ -9,7 +11,9 @@ from ..common.htypes import (
     TList,
     Field,
     TRecord,
-    tResource,
+    tCommandResource,
+    tColumnResource,
+    tResourceRec,
     tResourceList,
     )
 from ..common.packet_coders import packet_coders
@@ -37,8 +41,11 @@ interface_resources_t = TRecord([
 
 class ResourcesLoader(object):
 
-    def __init__( self, dir_map ):
-        self._dir_map = dir_map  # resource prefix -> dir
+    def __init__( self, iface_resources_dir, client_modules_resources_dir ):
+        self._iface_resources_dir = iface_resources_dir
+        self._client_modules_resources_dir = client_modules_resources_dir
+        self._iface_resources = {}  # iface_id -> tResourceList
+        self._load_iface_resources()
 
     def load_resources( self, resource_id ):
         dir = self._dir_map.get(resource_id[0])
@@ -50,3 +57,37 @@ class ResourcesLoader(object):
             with open(fpath, 'rb') as f:
                 localeResources =  packet_coders.decode('yaml', f.read(), tLocaleResources)
                 yield tResources(resource_id, locale, localeResources)
+
+    def _load_iface_resources( self ):
+        for fpath in glob.glob(os.path.join(self._iface_resources_dir, '*.resources.*.yaml')):
+            lang = re.match(r'[^.]+\.[^.]+\.([^.]+)\.yaml', os.path.basename(fpath)).group(1)
+            log.info('Loading resources for language %r from %s', lang, fpath)
+            with open(fpath) as f:
+                iface_items = yaml.load(f)
+                for iface_id, items in iface_items.items():
+                    resources = list(self._decode_iface_resource_items(iface_id, lang, items))
+                    self._iface_resources[iface_id] = resources
+                    log.info('  loaded %d resources for interface %r', len(resources), iface_id)
+
+    def _decode_iface_resource_items( self, iface_id, lang, resource_items ):
+        for item_type, item_elements in resource_items.items():
+            for command_id, items in item_elements.items():
+                resource_id = ['interface', iface_id, 'command', lang, command_id]
+                if item_type == 'commands':
+                    resource = self._dict2command_resource(items)
+                elif item_type == 'columns':
+                    resource = self._dict2column_resource(items)
+                else:
+                    assert 0, '%s: Unknown resource type: %r' % (iface_id, item_type)
+                log.info('    loaded resource %s: %s', encode_path(resource_id), resource)
+                yield tResourceRec(resource_id, resource)
+
+    def _dict2command_resource( self, d ):
+        return tCommandResource(is_default=d.get('is_default', False),
+                                text=d.get('text'),
+                                description=d.get('description') or d.get('text'),
+                                shortcuts=d.get('shortcuts'))
+
+    def _dict2column_resource( self, d ):
+        return tColumnResource(text=d.get('text'),
+                               description=d.get('description') or d.get('text'))
