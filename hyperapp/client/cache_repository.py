@@ -2,9 +2,13 @@
 # Each value stored in separate file, key mapped to file path
 
 import os.path
+import logging
 import re
 from ..common.util import is_list_inst
 from ..common.packet_coders import packet_coders
+
+
+log = logging.getLogger(__name__)
 
 
 class CacheRepository(object):
@@ -43,6 +47,7 @@ class CacheRepository(object):
 
     def load_value( self, key, t ):
         data = self.load_data(key)
+        log.debug('### CacheRepository.load_value %s -> %s', key, data)
         if data is None:
             return None
         return packet_coders.decode(self._contents_encoding, data, t)

@@ -1,7 +1,7 @@
 import logging
 import asyncio
 import abc
-from ..common.util import is_list_inst, encode_route
+from ..common.util import is_list_inst, encode_path, encode_route
 from ..common.htypes import tAuxInfo, tPacket, tRequirement
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
@@ -40,7 +40,7 @@ class Transport(metaclass=abc.ABCMeta):
         self._add_type_modules(aux_info.type_modules)  # types must be added before requirements - modules may use them
         yield from self._resolve_requirements(aux_info.requirements)
         self._add_routes(aux_info.routes)
-        self._add_resources(aux_info.resources)
+        self._resources_manager.register(aux_info.resources)
         
     @asyncio.coroutine
     def _resolve_requirements( self, requirements ):
@@ -80,11 +80,6 @@ class Transport(metaclass=abc.ABCMeta):
             log.info('received routes for %s: %s',
                      public_key.get_short_id_hex(), ', '.join(encode_route(route) for route in srv_routes.routes))
             self._route_storage.add_routes(public_key, srv_routes.routes)
-
-    def _add_resources( self, resources ):
-        for rec in resources:
-            log.info('received %r resources for %r', rec.locale, rec.resource_id)
-            self._resources_manager.register(rec.resource_id, rec.locale, rec.resources)
 
     def make_request_packet( self, encoding, request_or_notification ):
         server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tClientPacket, request_or_notification.to_data())

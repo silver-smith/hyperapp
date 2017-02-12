@@ -88,7 +88,7 @@ class Model(QtCore.QAbstractTableModel):
         self._object = object
         self._columns = object.get_columns()
         self._column2resource = {
-            column.id: self._resources_manager.resolve(self._resource_id + [self._locale, column.id])
+            column.id: self._resources_manager.resolve(self._resource_id + ['column', self._locale, column.id])
             for column in self._columns}
         self._visible_columns = [column for column in self._columns if self._is_column_visible(column.id)]
         self._key_column_id = object.get_key_column_id()
@@ -108,9 +108,6 @@ class Model(QtCore.QAbstractTableModel):
 
     def _resolve_resource( self ):
         return 
-
-    def _get_column_resource( self, column_id ):
-        return self._resources_manager
 
     def _wanted_last_row( self, first_visible_row, visible_row_count ):
         wanted_last_row = first_visible_row + visible_row_count

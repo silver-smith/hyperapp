@@ -50,6 +50,7 @@ class ResourcesLoader(object):
     def load_resources( self, resource_id ):
         if resource_id[0] == 'interface':
             return self._iface_resources.get(resource_id[1], [])
+        log.warning('### Unknown resource; todo')
         return []  # todo: client module resource loading
         dir = self._dir_map.get(resource_id[0])
         assert dir, 'Unknown resource type: %r' % resource_id[0]
@@ -59,7 +60,7 @@ class ResourcesLoader(object):
             log.info('  found resources for locale %r' % locale)
             with open(fpath, 'rb') as f:
                 localeResources =  packet_coders.decode('yaml', f.read(), tLocaleResources)
-                yield tResources(resource_id, locale, localeResources)
+                #yield tResources(resource_id, locale, localeResources)
 
     def _load_iface_resources( self ):
         for fpath in glob.glob(os.path.join(self._iface_resources_dir, '*.resources.*.yaml')):
@@ -73,15 +74,17 @@ class ResourcesLoader(object):
                     log.info('  loaded %d resources for interface %r', len(resources), iface_id)
 
     def _decode_iface_resource_items( self, iface_id, lang, resource_items ):
-        for item_type, item_elements in resource_items.items():
-            for command_id, items in item_elements.items():
-                resource_id = ['interface', iface_id, 'command', lang, command_id]
-                if item_type == 'commands':
+        for section_type, item_elements in resource_items.items():
+            for item_id, items in item_elements.items():
+                if section_type == 'commands':
                     resource = self._dict2command_resource(items)
-                elif item_type == 'columns':
+                    item_type = 'command'
+                elif section_type == 'columns':
                     resource = self._dict2column_resource(items)
+                    item_type = 'column'
                 else:
-                    assert False, '%s: Unknown resource type: %r' % (iface_id, item_type)
+                    assert False, '%s: Unknown resource section type: %r' % (iface_id, section_type)
+                resource_id = ['interface', iface_id, item_type, lang, item_id]
                 log.info('    loaded resource %s: %s', encode_path(resource_id), resource)
                 yield tResourceRec(resource_id, resource)
 

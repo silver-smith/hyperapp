@@ -31,7 +31,7 @@ tAuxInfo = TRecord([
     Field('type_modules', TList(tTypeModule)),
     Field('modules', TList(tModule)),
     Field('routes', TList(tServerRoutes)),
-    Field('resources', TList(tResourceList)),
+    Field('resources', tResourceList),
     ])
 
 tPacket = TRecord([

@@ -1,5 +1,5 @@
 import logging
-from ..common.util import is_list_inst
+from ..common.util import encode_path
 from ..common.htypes import tResource, tResourceList
 
 log = logging.getLogger(__name__)
@@ -13,10 +13,11 @@ class ResourcesRegistry(object):
     def register( self, resource_list ):
         assert isinstance(resource_list, tResourceList), repr(resource_list)
         for rec in resource_list:
-            log.debug('Resource registry: registering %r', rec.id)
+            log.debug('Resource registry: registering %s: %s', encode_path(rec.id), rec.resource)
             self._registry[tuple(rec.id)] = rec.resource
 
     def resolve( self, id ):
+        log.debug('### Resource registry: resolving %s -> %s', encode_path(id), self._registry.get(tuple(id)))
         return self._registry.get(tuple(id))
 
 
@@ -27,7 +28,7 @@ class ResourcesManager(object):
         self._cache_repository = cache_repository
 
     def register( self, resource_list ):
-        assert is_list_inst(resource_list, tResourceList), repr(resource_list)
+        assert isinstance(resource_list, tResourceList), repr(resource_list)
         self._resources_registry.register(resource_list)
         for rec in resource_list:
             self._cache_repository.store_value(self._cache_key(rec.id), rec.resource, self._cache_type())
