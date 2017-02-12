@@ -57,7 +57,12 @@ class Model(QtCore.QAbstractTableModel):
 
     def headerData( self, section, orient, role ):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            return self._columns_resource[self._visible_columns[section].id].text
+            column_id = self._visible_columns[section].id
+            resource = self._column2resource.get(column_id)
+            if resource:
+                return resource.text
+            else:
+                return column_id
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def rowCount( self, parent ):
@@ -82,10 +87,10 @@ class Model(QtCore.QAbstractTableModel):
     def set_object( self, object, sort_column_id ):
         self._object = object
         self._columns = object.get_columns()
-        resource = self._resources_manager.resolve(self._resource_id + [self._locale])
-        assert resource, repr(self._resource_id)  # columns resource is missing
-        self._columns_resource = dict((rec.column_id, rec) for rec in resource.columns)
-        self._visible_columns = [column for column in self._columns if column.id in self._columns_resource]
+        self._column2resource = {
+            column.id: self._resources_manager.resolve(self._resource_id + [self._locale, column.id])
+            for column in self._columns}
+        self._visible_columns = [column for column in self._columns if self._is_column_visible(column.id)]
         self._key_column_id = object.get_key_column_id()
         self._current_order = sort_column_id or self._current_order
         self.keys = []
@@ -93,6 +98,13 @@ class Model(QtCore.QAbstractTableModel):
         self.eof = False
         self.reset()
         self._fetch_pending = False
+
+    def _is_column_visible( self, column_id ):
+        resource = self._column2resource.get(column_id)
+        if resource:  # .visible
+            return True
+        else:
+            return True
 
     def _resolve_resource( self ):
         return 
