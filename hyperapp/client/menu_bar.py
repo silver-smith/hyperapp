@@ -75,17 +75,14 @@ class MenuBar(object):
         pass
         
     def _make_action( self, menu, cmd ):
-        resources = self._resources_manager.resolve(cmd.resource_id + [self._locale])
-        if resources:
-            for res in resources.commands:
-                if res.command_id == cmd.id:
-                    break
-            else:
-                print([rc.id for rc in resources.commands])
-                assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
-            action = make_async_action(menu, res.text, res.shortcuts, cmd.run)
+        resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
+        if resource:
+            text = resource.text
+            shortcuts = resource.shortcuts
         else:
-            action = make_async_action(menu, '%s/%s' % (cmd.resource_id, cmd.id), None, cmd.run)
+            text = '%s/%s' % (cmd.resource_id, cmd.id)
+            shortcuts = None
+        action = make_async_action(menu, text, shortcuts, cmd.run)
         action.setEnabled(cmd.is_enabled())
         return action
 
