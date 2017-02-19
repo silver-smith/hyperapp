@@ -88,7 +88,7 @@ class Model(QtCore.QAbstractTableModel):
         self._object = object
         self._columns = object.get_columns()
         self._column2resource = {
-            column.id: self._resources_manager.resolve(self._resource_id + ['column', self._locale, column.id])
+            column.id: self._resources_manager.resolve(self._resource_id + ['column', column.id, self._locale])
             for column in self._columns}
         self._visible_columns = [column for column in self._columns if self._is_column_visible(column.id)]
         self._key_column_id = object.get_key_column_id()

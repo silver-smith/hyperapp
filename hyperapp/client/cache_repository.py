@@ -47,7 +47,6 @@ class CacheRepository(object):
 
     def load_value( self, key, t ):
         data = self.load_data(key)
-        log.debug('### CacheRepository.load_value %s -> %s', key, data)
         if data is None:
             return None
         return packet_coders.decode(self._contents_encoding, data, t)

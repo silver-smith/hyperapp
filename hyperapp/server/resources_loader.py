@@ -44,10 +44,12 @@ class ResourcesLoader(object):
     def __init__( self, iface_resources_dir, client_modules_resources_dir ):
         self._iface_resources_dir = iface_resources_dir
         self._client_modules_resources_dir = client_modules_resources_dir
-        self._iface_resources = {}  # iface_id -> tResourceList
+        self._resources = []  # tResourceRec list
         self._load_iface_resources()
 
     def load_resources( self, resource_id ):
+        return [rec for rec in self._resources
+                if rec.id[:len(resource_id)] == resource_id]
         if resource_id[0] == 'interface':
             return self._iface_resources.get(resource_id[1], [])
         log.warning('### Unknown resource; todo')
@@ -63,18 +65,23 @@ class ResourcesLoader(object):
                 #yield tResources(resource_id, locale, localeResources)
 
     def _load_iface_resources( self ):
-        for fpath in glob.glob(os.path.join(self._iface_resources_dir, '*.resources.*.yaml')):
-            lang = re.match(r'[^.]+\.[^.]+\.([^.]+)\.yaml', os.path.basename(fpath)).group(1)
+        for rec in self._load_resources_from_dir(self._iface_resources_dir):
+            id = ['interface'] + rec.id[1:]  # skip module name from id
+            log.info('    loaded resource %s: %s', encode_path(id), rec.resource)
+            self._resources.append(tResourceRec(id, rec.resource))
+
+    def _load_resources_from_dir( self, dir ):
+        for fpath in glob.glob(os.path.join(dir, '*.resources.*.yaml')):
+            module_name, lang = re.match(r'([^.]+)\.resources\.([^.]+)\.yaml', os.path.basename(fpath)).groups()
             log.info('Loading resources for language %r from %s', lang, fpath)
             with open(fpath) as f:
                 iface_items = yaml.load(f)
-                for iface_id, items in iface_items.items():
-                    resources = list(self._decode_iface_resource_items(iface_id, lang, items))
-                    self._iface_resources[iface_id] = resources
-                    log.info('  loaded %d resources for interface %r', len(resources), iface_id)
+                for object_id, sections in iface_items.items():
+                    return (tResourceRec([module_name, object_id] + rec.id + [lang], rec.resource)
+                            for rec in self._decode_resource_sections(sections))
 
-    def _decode_iface_resource_items( self, iface_id, lang, resource_items ):
-        for section_type, item_elements in resource_items.items():
+    def _decode_resource_sections( self, sections ):
+        for section_type, item_elements in sections.items():
             for item_id, items in item_elements.items():
                 if section_type == 'commands':
                     resource = self._dict2command_resource(items)
@@ -83,9 +90,8 @@ class ResourcesLoader(object):
                     resource = self._dict2column_resource(items)
                     item_type = 'column'
                 else:
-                    assert False, '%s: Unknown resource section type: %r' % (iface_id, section_type)
-                resource_id = ['interface', iface_id, item_type, lang, item_id]
-                log.info('    loaded resource %s: %s', encode_path(resource_id), resource)
+                    assert False, 'Unknown resource section type: %r' % section_type
+                resource_id = [item_type, item_id]
                 yield tResourceRec(resource_id, resource)
 
     def _dict2command_resource( self, d ):
