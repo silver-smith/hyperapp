@@ -1,6 +1,7 @@
-commands:
-- command_id: duplicate_window
-  text: Duplicate window
-  desc: Duplicate window including it's contents
-  shortcuts:
-  - Alt+Shift+W
+Window:
+  commands:
+    duplicate_window:
+      text: Duplicate window
+      description: Duplicate window including it's contents
+      shortcuts:
+      - Alt+Shift+W
