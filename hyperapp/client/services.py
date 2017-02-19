@@ -5,6 +5,7 @@ from ..common.htypes import (
     )
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
+from ..common.resources_loader import ResourcesLoader
 from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
@@ -54,7 +55,7 @@ class Services(ServicesBase):
         self.types = self.module_manager.types
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.resources_registry = ResourcesRegistry()
-        self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository)
+        self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository, self._dir)
         self.module_manager.register_meta_hook()
         self._load_core_type_module()
         self.type_module_repository.set_core_types(self.core_types)
@@ -69,7 +70,6 @@ class Services(ServicesBase):
         self._load_modules()
         self._register_modules()
         self._register_transports()
-        self._load_resources()
         self._register_object_implementations()
         self._register_views()
 
@@ -108,31 +108,6 @@ class Services(ServicesBase):
             package = 'hyperapp.client'
             module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
-
-    def _load_resources( self ):
-        for module in [
-                'application',
-                'window',
-                'tab_view',
-                'navigator',
-                'code_repository',
-                'code_repository_list',
-                'identity_list',
-                'bookmarks',
-                'identity',
-                'url_clipboard',
-                'narrower',
-                'history_list',
-                'text_object',
-                ]:
-            with open(os.path.join(self._dir, '%s.resources.en.yaml' % module), 'rb') as f:
-                try:
-                    #resources = packet_coders.decode('yaml', f.read(), tLocaleResources)
-                    pass
-                except Exception as x:
-                    raise RuntimeError('Error loading resource %r: %s' % (module, x))
-                #resource_id = ['client_module', module]
-                #self.resources_manager.register(resource_id, 'en', resources)
 
     def _register_object_implementations( self ):
         for module in [

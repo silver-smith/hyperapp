@@ -15,7 +15,7 @@ from .history_list import HistoryList
 log = logging.getLogger(__name__)
 
 
-HISTORY_LIST_RESOURCE_ID = ['client_module', 'history_list']
+HISTORY_LIST_RESOURCE_ID = ['client_module', 'navigator', 'HistoryList']
 MAX_HISTORY_SIZE = 100
 
 

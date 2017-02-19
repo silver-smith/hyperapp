@@ -1,6 +1,7 @@
 import logging
 from ..common.util import encode_path
-from ..common.htypes import tResource, tResourceList
+from ..common.htypes import tResource, tResourceRec, tResourceList
+from ..common.resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ class ResourcesRegistry(object):
     def register( self, resource_list ):
         assert isinstance(resource_list, tResourceList), repr(resource_list)
         for rec in resource_list:
-            log.debug('Resource registry: registering %s: %s', encode_path(rec.id), rec.resource)
+            log.debug('    Resource registry: registering %s: %s', encode_path(rec.id), rec.resource)
             self._registry[tuple(rec.id)] = rec.resource
 
     def resolve( self, id ):
@@ -23,9 +24,14 @@ class ResourcesRegistry(object):
 
 class ResourcesManager(object):
 
-    def __init__( self, resources_registry, cache_repository ):
+    def __init__( self, resources_registry, cache_repository, client_modules_resources_dir ):
         self._resources_registry = resources_registry
         self._cache_repository = cache_repository
+        self._load_client_modules_resources(client_modules_resources_dir)
+
+    def _load_client_modules_resources( self, dir ):
+        self.register([tResourceRec(['client_module'] + rec.id, rec.resource)
+                       for rec in ResourcesLoader().load_resources_from_dir(dir)])
 
     def register( self, resource_list ):
         assert isinstance(resource_list, tResourceList), repr(resource_list)

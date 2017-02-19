@@ -1,17 +1,28 @@
-commands:
-- command_id: go_back
-  text: Go back
-  desc: Go backward to previous page
-  shortcuts:
-  - Escape
-  - Alt+Left
-- command_id: go_forward
-  text: Go forward
-  desc: Go forward to next page
-  shortcuts:
-  - Alt+Right
-- command_id: open_history
-  text: History
-  desc: Open history
-  shortcuts:
-  - Ctrl+H
+View:
+  commands:
+    go_back:
+      text: Go back
+      description: Go backward to previous page
+      shortcuts:
+      - Escape
+      - Alt+Left
+    go_forward:
+      text: Go forward
+      description: Go forward to next page
+      shortcuts:
+      - Alt+Right
+    open_history:
+      text: History
+      description: Open history
+      shortcuts:
+      - Ctrl+H
+HistoryList:
+  columns:
+    title:
+      text: Title
+      description: Handle title
+  commands:
+    open:
+      text: Open
+      description: Open selected item
+      shortcuts: []
