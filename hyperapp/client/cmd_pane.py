@@ -66,24 +66,18 @@ class View(QtGui.QDockWidget):
             self.elts_buttons.append(button)
 
     def _make_button( self, cmd ):
-        desc = ''
-        resources = self._resources_manager.resolve(cmd.resource_id + [self._locale])
-        if resources:
-            for res in resources.commands:
-                if res.command_id == cmd.id:
-                    if res.shortcuts:
-                        text = '%s (%s)' % (res.text, res.shortcuts[0])
-                    else:
-                        text = res.text
-                    desc = res.desc
-                    break
+        resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
+        if resource:
+            if resource.shortcuts:
+                text = '%s (%s)' % (resource.text, resource.shortcuts[0])
             else:
-                print([rc.id for rc in resources.commands])
-                assert False, 'Resource %r does not contain command %r' % (cmd.resource_id, cmd.id)
+                text = resource.text
+                description = resource.description
         else:
             text = '%s/%s' % (cmd.resource_id, cmd.id)
+            description = None
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
-        button.setToolTip(desc)
+        button.setToolTip(description)
         button.setEnabled(cmd.is_enabled())
         return button
 

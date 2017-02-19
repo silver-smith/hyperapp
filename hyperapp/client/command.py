@@ -84,9 +84,9 @@ class command(object):
         self.enabled = enabled
 
     def __call__( self, class_method ):
-        module_name = class_method.__module__.split('.')[-1]
+        module_name = class_method.__module__.split('.')[2]   # hyperapp.client.module [.submodule]
         class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
-        resource_id = ['client_module', module_name, class_name, self.id]
+        resource_id = ['client_module', module_name, class_name, 'command', self.id]
         return UnboundCommand(self.id, self.kind, resource_id,
                               self.is_default_command, self.enabled, self.wrap_method(class_method))
 
