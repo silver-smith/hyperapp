@@ -4,6 +4,7 @@ import logging
 import asyncio
 import weakref
 from PySide import QtCore, QtGui
+from ..common.util import encode_path
 from .command import Command
 
 log = logging.getLogger(__name__)
@@ -72,10 +73,10 @@ class View(QtGui.QDockWidget):
                 text = '%s (%s)' % (resource.text, resource.shortcuts[0])
             else:
                 text = resource.text
-                description = resource.description
+            description = resource.description
         else:
-            text = '%s/%s' % (cmd.resource_id, cmd.id)
-            description = None
+            text = cmd.id
+            description = encode_path(cmd.resource_id)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(description)
         button.setEnabled(cmd.is_enabled())

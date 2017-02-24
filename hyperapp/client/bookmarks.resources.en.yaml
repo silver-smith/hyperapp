@@ -1,24 +1,27 @@
-commands:
-- command_id: bookmark_list
-  text: Bookmarks
-  desc: Open bookmark list
-  shortcuts:
-  - Alt+B
-- command_id: bookmark
-  text: Bookmark
-  desc: Add this url to bookmarks
-  shortcuts:
-  - Ctrl+D
-- command_id: open
-  text: Open
-  desc: Open selected bookmark
-  shortcuts: []
-- command_id: add
-  text: Add
-  desc: Add url from clipboard
-  shortcuts:
-  - Ins
-columns:
-- column_id: name
-  text: Bookmark name
-  desc: Bookmark name
+BookmarkList:
+  columns:
+    name:
+      text: Bookmark name
+      description: Bookmark name
+  commands:
+    open:
+      text: Open
+      description: Open selected bookmark
+      shortcuts: []
+    add:
+      text: Add
+      description: Add url from clipboard
+      shortcuts:
+      - Ins
+ThisModule:
+  commands:
+    bookmark_list:
+      text: Bookmarks
+      description: Open bookmark list
+      shortcuts:
+      - Alt+B
+    bookmark:
+      text: Bookmark
+      descriptoin: Add this url to bookmarks
+      shortcuts:
+      - Ctrl+D

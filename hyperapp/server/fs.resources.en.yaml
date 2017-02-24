@@ -1,4 +1,14 @@
 fs_dir:
+  columns:
+    key:
+      text: File Name
+    ftype:
+      text: File type
+    ftime:
+      text: Modification time
+      description: File Modification time
+    fsize:
+      text: File size
   commands:
     open:
       is_default: true
@@ -10,14 +20,3 @@ fs_dir:
       description: Open parent directory
       shortcuts:
       - Ctrl+Backspace
-  columns:
-    key:
-      text: File Name
-    ftype:
-      text: File type
-    ftime:
-      text: Modification time
-      description: File Modification time
-    fsize:
-      text: File size
-  
