@@ -101,8 +101,8 @@ class Model(QtCore.QAbstractTableModel):
 
     def _is_column_visible( self, column_id ):
         resource = self._column2resource.get(column_id)
-        if resource:  # .visible
-            return True
+        if resource:
+            return resource.visible
         else:
             return True
 

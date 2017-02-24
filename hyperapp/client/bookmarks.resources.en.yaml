@@ -1,5 +1,7 @@
 BookmarkList:
   columns:
+    id:
+      visible: no
     name:
       text: Bookmark name
       description: Bookmark name

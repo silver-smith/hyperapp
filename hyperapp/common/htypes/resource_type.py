@@ -19,7 +19,8 @@ tCommandResource = tResource.register('command', fields=[
     ])
 
 tColumnResource = tResource.register('column', fields=[
-    Field('text', tString),
+    Field('visible', tBool),
+    Field('text', TOptional(tString)),
     Field('description', TOptional(tString)),
     ])
 
