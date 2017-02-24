@@ -1,5 +1,4 @@
 import asyncio
-from ..common.htypes import tAuxInfo, tPacket
 from ..common.encrypted_packet import (
     tEncryptedPacket,
     tSubsequentEncryptedPacket,

@@ -16,12 +16,9 @@ from .htypes import (
     THierarchy,
     Interface,
     tPath,
-    tResourceId,
     tCommand,
     tServerRoutes,
     tUrl,
-    tModule,
-    tRequirement,
     )
 from .identity import PublicKey
 

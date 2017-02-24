@@ -2,7 +2,8 @@ import logging
 import asyncio
 import weakref
 import abc
-from ..common.htypes import tResourceId
+from ..common.util import is_list_inst
+
 
 log = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ class Command(object, metaclass=abc.ABCMeta):
     def __init__( self, id, kind, resource_id, is_default_command=False, enabled=True ):
         assert isinstance(id, str), repr(id)
         assert isinstance(kind, str), repr(kind)
-        assert isinstance(resource_id, tResourceId), repr(resource_id)
+        assert is_list_inst(resource_id, str), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
@@ -92,7 +93,7 @@ class UnboundCommand(object):
     def __init__( self, id, kind, resource_id, is_default_command, enabled, class_method ):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(resource_id, tResourceId), repr(resource_id)
+        assert is_list_inst(resource_id, str), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id

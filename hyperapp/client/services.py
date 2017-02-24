@@ -5,7 +5,6 @@ from ..common.htypes import (
     )
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
-from ..common.resources_loader import ResourcesLoader
 from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry

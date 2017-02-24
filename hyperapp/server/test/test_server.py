@@ -6,11 +6,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from hyperapp.common.htypes import (
     tString,
     Field,
-    tAuxInfo,
-    tPacket,
     RequestCmd,
     Interface,
-    tModule,
     )
 from hyperapp.common.transport_packet import tTransportPacket
 from hyperapp.common.identity import Identity, PublicKey

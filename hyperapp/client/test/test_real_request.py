@@ -4,7 +4,6 @@ import logging
 import asyncio
 import unittest
 from hyperapp.common.htypes import (
-    tModule,
     IfaceRegistry,
     builtin_type_registry,
     )

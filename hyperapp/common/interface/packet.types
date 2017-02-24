@@ -1,0 +1,27 @@
+from resource import resource_rec_list
+
+
+requirement = string list
+
+module_dep = record:
+    module_id: string
+	visible_at: string
+
+module = record:
+    id: string  # uuid
+    package: string  # like 'hyperapp.client'
+    deps: module_dep list
+    satisfies: requirement list
+    source: string
+    fpath: string
+
+aux_info = record:
+    requirements: requirement list
+    type_modules: type_module list
+    modules: module list
+    routes: server_routes list
+    resources: resource_rec_list
+
+packet = record:
+    aux_info: aux_info
+    payload: binary

@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import abc
 import importlib
 import importlib.machinery
-from .htypes import TypeRegistry, TypeRegistryRegistry, tModule
+from .htypes import TypeRegistry, TypeRegistryRegistry
 
 log = logging.getLogger(__name__)
 

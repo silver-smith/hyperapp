@@ -2,8 +2,6 @@ from .htypes import *
 from .hierarchy import *
 from .switched import *
 from .meta_type import*
-from .resource_type import *
-from .packet import *
 from .request import *
 from .interface import *
 from .list_interface import *
@@ -35,11 +33,8 @@ def builtin_type_registry():
     registry.register('iface_id', tIfaceId)
     registry.register('path', tPath)
     registry.register('url', tUrl)
-    registry.register('requirement', tRequirement)
     registry.register('type_module', tTypeModule)
-    registry.register('module', tModule)
-    registry.register('resource_id', tResourceId)
-    registry.register('resource_list', tResourceList)
+    registry.register('server_routes', tServerRoutes)
     return registry
 
 def builtin_type_registry_registry():

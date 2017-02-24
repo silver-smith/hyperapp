@@ -2,7 +2,6 @@ import logging
 import asyncio
 import abc
 from ..common.util import is_list_inst, encode_path, encode_route
-from ..common.htypes import tAuxInfo, tPacket, tRequirement
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from ..common.server_public_key_collector import ServerPksCollector

@@ -17,6 +17,7 @@ class ResourcesLoader(resources_loader.ResourcesLoader):
     def load_resources( self, resource_id ):
         return [rec for rec in self._resources
                 if rec.id[:len(resource_id)] == resource_id]
+
     def _load_iface_resources( self, dir ):
         for rec in self.load_resources_from_dir(dir):
             id = ['interface'] + rec.id[1:]  # skip module name from id
