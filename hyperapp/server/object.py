@@ -212,7 +212,7 @@ class ListObject(Object):
         handle_t = list_handle_type(self._core_types, self.iface.get_key_type())
         if sort_column_id is None:
             sort_column_id = self.default_sort_column_id
-        resource_id = ['interface', self.iface.iface_id, 'column']
+        resource_id = ['interface', self.iface.iface_id]
         return handle_t('list', object, resource_id, sort_column_id, key)
 
     def CategorizedListHandle( self, object, sort_column_id=None, key=None ):

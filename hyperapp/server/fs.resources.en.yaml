@@ -20,3 +20,9 @@ fs_dir:
       description: Open parent directory
       shortcuts:
       - Ctrl+Backspace
+fs_file:
+  columns:
+    idx:
+      text: Index
+    line:
+      text: Line

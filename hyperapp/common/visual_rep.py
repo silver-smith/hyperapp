@@ -74,9 +74,10 @@ class VisualRepEncoder(object):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
         if t is tModule:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
-        children = self.encode_record_fields(t, value)
         if t is tCommand:
-            return RepNode('command: %s' % ', '.join(child.text for child in children))
+            return RepNode('command: command_id=%r, kind=%r, resource_id=%s, is_default_command=%s'
+                           % (value.command_id, value.kind, encode_path(value.resource_id), value.is_default_command))
+        children = self.encode_record_fields(t, value)
         if t is tServerRoutes:
             public_key = PublicKey.from_der(value.public_key_der)
             return RepNode('server routes: %s -> %r'

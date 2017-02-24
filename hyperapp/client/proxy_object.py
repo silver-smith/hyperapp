@@ -201,7 +201,7 @@ class ProxyObject(Object):
 
     def _remote_command_from_iface_command( self, cmd ):
         kind = 'object'
-        resource_id = ['interface', self.iface.iface_id, cmd.command_id]
+        resource_id = ['interface', self.iface.iface_id, 'command', cmd.command_id]
         return RemoteCommand(cmd.command_id, kind, resource_id,
                              is_default_command=False, enabled=True, object_wr=weakref.ref(self))
 

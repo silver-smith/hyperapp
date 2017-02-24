@@ -86,7 +86,7 @@ class CommanderMetaClass(type):
             if not isinstance(attr, UnboundCommand): continue
             iface = getattr(cls, 'iface', None)
             assert iface, '"iface" attribute is not set for class %r' % cls.__name__
-            attr.resource_id = ['interface', iface.iface_id]
+            attr.resource_id = ['interface', iface.iface_id, 'command', attr.id]
         return cls
 
 
