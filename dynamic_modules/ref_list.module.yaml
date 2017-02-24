@@ -1,5 +1,4 @@
-id: 18245d69-7e64-4c93-b4c6-815e7df328da
-name: ref_list
+id: ref_list
 package: hyperapp.client
 source_path: ref_list.py
 satisfies:

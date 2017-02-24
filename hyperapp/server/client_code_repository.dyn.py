@@ -127,7 +127,7 @@ class ClientCodeRepository(Object):
             resources=resources)
 
     def _load_module_resources( self, module ):
-        resource_id = ['client_module', module.id.replace('-', '_')]
+        resource_id = ['client_module', module.id]
         return self._resources_loader.load_resources(resource_id)
 
 
