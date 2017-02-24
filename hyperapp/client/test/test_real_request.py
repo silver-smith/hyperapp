@@ -58,10 +58,10 @@ class PhonyResourcesManager(object):
     def register_all( self, resources ):
         pass
 
-    def register( self, id, locale, resources ):
+    def register( self, resources ):
         pass
 
-    def resolve( self, id, locale ):
+    def resolve( self, id ):
         return None
 
 
