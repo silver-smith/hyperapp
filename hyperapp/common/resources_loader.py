@@ -43,7 +43,7 @@ class ResourcesLoader(object):
         return tCommandResource(is_default=d.get('is_default', False),
                                 text=d.get('text'),
                                 description=d.get('description') or d.get('text'),
-                                shortcuts=d.get('shortcuts'))
+                                shortcuts=d.get('shortcuts', []))
 
     def _dict2column_resource( self, d ):
         return tColumnResource(visible=d.get('visible', True),

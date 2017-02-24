@@ -9,7 +9,7 @@ BookmarkList:
     open:
       text: Open
       description: Open selected bookmark
-      shortcuts: []
+      is_default: yes
     add:
       text: Add
       description: Add url from clipboard
