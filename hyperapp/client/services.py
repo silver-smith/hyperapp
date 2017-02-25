@@ -43,10 +43,6 @@ class Services(ServicesBase):
         ServicesBase.init_services(self)
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
-        self.remoting = Remoting(self.request_types, self.route_storage, self.proxy_registry)
-        self.objimpl_registry = ObjImplRegistry()
-        self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
-        self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self._load_type_modules([
                 'resource',
                 'core',
@@ -57,9 +53,13 @@ class Services(ServicesBase):
                 'form',
                 'text_object_types',
             ])
+        self.objimpl_registry = ObjImplRegistry()
+        self.remoting = Remoting(self.request_types, self.types.resource, self.types.packet, self.route_storage, self.proxy_registry)
+        self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
         self.module_manager = ModuleManager(self)
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()
+        self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.view_registry.set_core_types(self.types.core)
         self.resources_registry = ResourcesRegistry(self.types.resource)
         self.resources_manager = ResourcesManager(self.types.resource, self.resources_registry, self.cache_repository, self._dir)

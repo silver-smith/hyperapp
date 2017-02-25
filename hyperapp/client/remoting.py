@@ -20,6 +20,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     def __init__( self, services ):
         self._request_types = services.request_types
+        self._resource_types = services.types.resource
         self._packet_types = services.types.packet
         self._module_manager = services.module_manager
         self._iface_registry = services.iface_registry
@@ -115,11 +116,13 @@ class TransportRegistry(object):
 
 class Remoting(object):
 
-    def __init__( self, request_types, route_storage, proxy_registry ):
+    def __init__( self, request_types, resource_types, packet_types, route_storage, proxy_registry ):
         assert isinstance(route_storage, RouteStorage), repr(route_storage)
         assert isinstance(proxy_registry, ProxyRegistry), repr(proxy_registry)
         self.transport_registry = TransportRegistry()
         self._request_types = request_types
+        self._resource_types = resource_types
+        self._packet_types = packet_types
         self._route_storage = route_storage
         self._proxy_registry = proxy_registry
         self._futures = {}  # request id -> future for response
@@ -154,7 +157,7 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification( self, public_key, request_or_notification ):
-        pprint(self._request_types.tClientPacket, request_or_notification.to_data())
+        pprint(self._request_types.tClientPacket, request_or_notification.to_data(), self._resource_types, self._packet_types)
         for route in self._route_storage.get_routes(public_key) or []:
             transport_id = route[0]
             transport = self.transport_registry.resolve(transport_id)

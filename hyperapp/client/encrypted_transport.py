@@ -78,10 +78,10 @@ class EncryptedTransport(Transport):
     def _process_subsequent_encrypted_packet( self, server_public_key, session, encrypted_packet ):
         packet_data = decrypt_subsequent_packet(session.session_key, encrypted_packet)
         packet = packet_coders.decode(ENCODING, packet_data, self._packet_types.packet)
-        pprint(self._packet_types.packet, packet)
+        pprint(self._packet_types.packet, packet, self._resource_types, self._packet_types)
         yield from self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(ENCODING, packet.payload, self._request_types.tServerPacket)
-        pprint(self._request_types.tServerPacket, response_or_notification_rec)
+        pprint(self._request_types.tServerPacket, response_or_notification_rec, self._resource_types, self._packet_types)
         return ResponseBase.from_data(self._request_types, self._iface_registry, server_public_key, response_or_notification_rec)
 
     @asyncio.coroutine

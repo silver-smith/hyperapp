@@ -1,24 +1,26 @@
-commands:
-- command_id: edit
-  text: Edit
-  desc: Switch to edit mode
-  shortcuts:
-  - E
-- command_id: view
-  text: View
-  desc: Finish editing, switch to view mode
-  shortcuts:
-  - Ctrl+F
-- command_id: save
-  text: Save
-  desc: Save article
-  shortcuts: []
-- command_id: refs
-  text: Refs
-  desc: Open article references
-  shortcuts:
-  - Ctrl+R
-- command_id: open_ref
-  text: Open ref
-  desc: Open selected reference
-  shortcuts: []
+blog_entry:
+  commands:
+    edit:
+      text: Edit
+      description: Switch to edit mode
+      shortcuts:
+      - E
+    view:
+      text: View
+      description: Finish editing, switch to view mode
+      shortcuts:
+      - Ctrl+F
+    save:
+      text: Save
+      description: Save article
+      shortcuts: []
+    refs:
+      text: Refs
+      description: Open article references
+      shortcuts:
+      - Ctrl+R
+    open_ref:
+      text: Open ref
+      description: Open selected reference
+      shortcuts: []
+

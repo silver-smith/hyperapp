@@ -39,7 +39,8 @@ class RepNode(object):
 
 class VisualRepEncoder(object):
 
-    def __init__( self, packet_types=None ):
+    def __init__( self, resource_types=None, packet_types=None ):
+        self._resource_types = resource_types
         self._packet_types = packet_types
 
     def encode( self, t, value ):
@@ -118,7 +119,7 @@ class VisualRepEncoder(object):
             return self.encode_path(value)
         if self._packet_types and t is self._packet_types.requirement:
             return RepNode('requirement: %s' % '/'.join(value))
-        if self._packet_types and t is self._packet_types.resource_id:
+        if self._packet_types and t is self._resource_types.resource_id:
             return RepNode(encode_path(value))
         children = [self.dispatch(t.element_t, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
@@ -127,6 +128,6 @@ class VisualRepEncoder(object):
         return RepNode(encode_path(obj))
 
 
-def pprint( t, value ):
-    rep = VisualRepEncoder().encode(t, value)
+def pprint( t, value, resource_types=None, packet_types=None ):
+    rep = VisualRepEncoder(resource_types, packet_types).encode(t, value)
     rep.pprint()
