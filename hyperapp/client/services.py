@@ -1,8 +1,5 @@
 import os.path
-from ..common.htypes import (
-    tModule,
-    TypeRegistryRegistry,
-    )
+from ..common.htypes import TypeRegistryRegistry
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
@@ -49,23 +46,23 @@ class Services(ServicesBase):
         self.remoting = Remoting(self.request_types, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
-        self.module_manager = ModuleManager(self)
-        self.modules = self.module_manager.modules
-        self.types = self.module_manager.types
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
-        self.resources_registry = ResourcesRegistry()
-        self.resources_manager = ResourcesManager(self.resources_registry, self.cache_repository, self._dir)
-        self.module_manager.register_meta_hook()
-        self._load_core_type_module()
-        self.type_module_repository.set_core_types(self.core_types)
-        self.view_registry.set_core_types(self.core_types)
         self._load_type_modules([
+                'resource',
+                'core',
+                'packet',
                 'server_management',
                 'code_repository',
                 'splitter',
                 'form',
                 'text_object_types',
             ])
+        self.module_manager = ModuleManager(self)
+        self.modules = self.module_manager.modules
+        self.module_manager.register_meta_hook()
+        self.view_registry.set_core_types(self.types.core)
+        self.resources_registry = ResourcesRegistry(self.types.resource)
+        self.resources_manager = ResourcesManager(self.types.resource, self.resources_registry, self.cache_repository, self._dir)
         self._load_modules()
         self._register_modules()
         self._register_transports()
@@ -105,7 +102,7 @@ class Services(ServicesBase):
             with open(fpath) as f:
                 source = f.read()
             package = 'hyperapp.client'
-            module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
 
     def _register_object_implementations( self ):

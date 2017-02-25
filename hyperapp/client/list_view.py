@@ -17,7 +17,7 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 
 
 def register_views( registry, services ):
-    registry.register('list', View.from_state, services.core_types, services.objimpl_registry, services.resources_manager)
+    registry.register('list', View.from_state, services.types.core, services.objimpl_registry, services.resources_manager)
 
 
 class Model(QtCore.QAbstractTableModel):

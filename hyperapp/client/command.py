@@ -108,4 +108,4 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         Module.__init__(self, services)
-        self.open_command_result = TRecord([Field('handle', services.core_types.handle)])
+        self.open_command_result = TRecord([Field('handle', services.types.core.handle)])

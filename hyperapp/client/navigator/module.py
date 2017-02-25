@@ -19,7 +19,7 @@ class ThisModule(Module):
 
     def __init__( self, services ):
         global this_module
-        core_types = services.core_types
+        core_types = services.types.core
         Module.__init__(self, services)
         self.item_type = TRecord([
             Field('title', tString),

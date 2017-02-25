@@ -76,7 +76,7 @@ class ProxyObject(Object):
 
     @classmethod
     def register( cls, registry, services ):
-        registry.register(cls.objimpl_id, cls.from_state, services.request_types, services.core_types,
+        registry.register(cls.objimpl_id, cls.from_state, services.request_types, services.types.core,
                           services.iface_registry, services.remoting, services.proxy_registry, services.cache_repository)
 
     @classmethod

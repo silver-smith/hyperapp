@@ -148,6 +148,6 @@ class ThisModule(Module):
     def __init__( self, services ):
         Module.__init__(self, services)
         self.state_type = TRecord([
-            Field('tabs', TList(services.core_types.handle)),
+            Field('tabs', TList(services.types.core.handle)),
             Field('current_tab', tInt),
             ])
