@@ -39,6 +39,9 @@ class RepNode(object):
 
 class VisualRepEncoder(object):
 
+    def __init__( self, packet_types=None ):
+        self._packet_types = packet_types
+
     def encode( self, t, value ):
         return self.dispatch(t, value)
 
@@ -69,7 +72,7 @@ class VisualRepEncoder(object):
     @dispatch.register(TRecord)
     def encode_record( self, t, value ):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
-        if t is tModule:
+        if self._packet_types and t is self._packet_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
         if t is tCommand:
             return RepNode('command: command_id=%r, kind=%r, resource_id=%s, is_default_command=%s'
@@ -113,9 +116,9 @@ class VisualRepEncoder(object):
     def encode_list( self, t, value ):
         if t is tPath:
             return self.encode_path(value)
-        if t is tRequirement:
+        if self._packet_types and t is self._packet_types.requirement:
             return RepNode('requirement: %s' % '/'.join(value))
-        if t is tResourceId:
+        if self._packet_types and t is self._packet_types.resource_id:
             return RepNode(encode_path(value))
         children = [self.dispatch(t.element_t, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)

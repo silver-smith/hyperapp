@@ -2,7 +2,7 @@ import os.path
 import logging
 import yaml
 from ..common.util import flatten
-from ..common.htypes import tModule
+from ..common.interface import packet as packet_types
 from ..common.interface import core as core_types
 from ..common.interface import code_repository as code_repository_types
 from . import module as module_mod
@@ -56,7 +56,7 @@ class ClientModuleRepository(object):
     def _load_module( self, id, package, satisfies, fpath ):
         with open(fpath) as f:
             source = f.read()
-        return tModule(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
+        return packet_types.module(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
 
 
 class ClientCodeRepository(Object):

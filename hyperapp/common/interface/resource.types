@@ -1,24 +1,22 @@
-from core import handle
-
 
 resource = hierarchy resource
 
 resource_id = string list
 
-resource_rec = record
+resource_rec = record:
     id: resource_id
-	resource: resource
+    resource: resource
 
 resource_rec_list = resource_rec list
 
 
 command_resource = resource class command:
     is_default: bool
-	text: string opt
-	description: string opt
-	shortcuts: string list
+    text: string opt
+    description: string opt
+    shortcuts: string list
 
 column_resource = resource class column:
     visible: bool
-	text: string opt
-	description: string opt
+    text: string opt
+    description: string opt

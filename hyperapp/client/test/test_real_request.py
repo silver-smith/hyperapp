@@ -83,21 +83,22 @@ class Services(ServicesBase):
         self.remoting = Remoting(self.request_types, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
-        self.module_manager = ModuleManager(self)
         self.identity_repository = PhonyIdentityRepository()
         self.cache_repository = PhonyCacheRepository()
         self.resources_manager = PhonyResourcesManager()
-        self.module_manager.register_meta_hook()
         self.code_repository = PhonyCodeRepository()
         self.identity_controller = PhonyIdentityController()
+        self._load_type_modules([
+                'resource',
+                'core',
+                'packet',
+                'form',
+                'server_management',
+                'code_repository',
+                ])
+        self.module_manager = ModuleManager(self)
+        self.module_manager.register_meta_hook()
         try:
-            self._load_core_type_module()
-            self.type_module_repository.set_core_types(self.core_types)
-            self._load_type_modules([
-                    'form',
-                    'server_management',
-                    'code_repository',
-                    ])
             self._load_modules()
             #self.code_repository.set_url_repository(PhonyNamedUrlRepository())
             self._register_transports()

@@ -149,16 +149,19 @@ class Services(ServicesBase):
         self.server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../dynamic_modules'))
         ServicesBase.init_services(self)
-        self.module_manager = ModuleManager(self, self.type_registry_registry)
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
         self.remoting = Remoting(self.iface_registry)
         self.client_code_repository = PhonyClientCodeRepository()
+        self._load_type_modules([
+            'resource',
+            'core',
+            'packet',
+            'code_repository',
+            ])
+        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet)
         self.module_manager.register_meta_hook()
         try:
-            self._load_core_type_module()
-            self.type_module_repository.set_core_types(self.core_types)
-            self._load_type_modules(['code_repository'])
             self._load_server_modules()
             self._register_transports()
         except:
@@ -173,7 +176,7 @@ class Services(ServicesBase):
             with open(fpath) as f:
                 source = f.read()
             package = 'hyperapp.server'
-            module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
 
     def _register_transports( self ):
@@ -188,13 +191,14 @@ class ServerTest(unittest.TestCase):
 
     def setUp( self ):
         self.services = Services()
+        self.types = self.services.types
         self.request_types = self.services.request_types
         self.iface_registry = self.services.iface_registry
-        test_iface.register_types(self.request_types, self.services.core_types)
+        test_iface.register_types(self.request_types, self.services.types.core)
         self.iface_registry.register(test_iface)
         self.remoting = self.services.remoting
         self.test_module = TestModule()  # self-registering
-        self.server = Server(self.request_types, self.services.core_types, server_identity)
+        self.server = Server(self.request_types, self.services.types.core, server_identity)
         self.session_list = TransportSessionList()
 
     def tearDown( self ):
@@ -210,7 +214,7 @@ class ServerTest(unittest.TestCase):
             )
         pprint(self.request_types.tClientPacket, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
-                                        self.request_types, self.services.core_types, self.iface_registry, request_data)
+                                        self.request_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
 
@@ -267,10 +271,10 @@ class ServerTest(unittest.TestCase):
             )
         log.info('Sending request:')
         pprint(self.request_types.tClientPacket, request)
-        request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
+        request_packet = self.types.packet.packet(
+            aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
             payload=self.encode_packet(transport_id, request, self.request_types.tClientPacket))
-        request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
+        request_packet_data = self.encode_packet(transport_id, request_packet, self.types.packet.packet)
         transport_request = tTransportPacket(
             transport_id=transport_id,
             data=self.encrypt_packet(session_list, transport_id, request_packet_data))
@@ -285,10 +289,10 @@ class ServerTest(unittest.TestCase):
             )
         log.info('Sending client notification:')
         pprint(self.request_types.tClientPacket, request)
-        request_packet = tPacket(
-            aux_info=tAuxInfo(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
+        request_packet = self.types.packet.packet(
+            aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
             payload=self.encode_packet(transport_id, request, self.request_types.tClientPacket))
-        request_packet_data = self.encode_packet(transport_id, request_packet, tPacket)
+        request_packet_data = self.encode_packet(transport_id, request_packet, self.types.packet.packet)
         transport_request = tTransportPacket(
             transport_id=transport_id,
             data=self.encrypt_packet(session_list, transport_id, request_packet_data))
@@ -298,9 +302,9 @@ class ServerTest(unittest.TestCase):
         packet_data = self.decrypt_transport_response_packets(session_list, transport_id, response_transport_packets)
         if packet_data is None:
             return None  # no response
-        response_packet = self.decode_packet(transport_id, packet_data, tPacket)
+        response_packet = self.decode_packet(transport_id, packet_data, self.types.packet.packet)
         log.info('Received response:')
-        pprint(tPacket, response_packet)
+        pprint(self.types.packet.packet, response_packet)
         response = self.decode_packet(transport_id, response_packet.payload, self.request_types.tServerPacket)
         pprint(self.request_types.tServerPacket, response)
         return response

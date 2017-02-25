@@ -3,16 +3,15 @@ import re
 import glob
 import yaml
 import logging
-from ..common.htypes import (
-    tCommandResource,
-    tColumnResource,
-    tResourceRec,
-    )
+
 
 log = logging.getLogger(__name__)
 
 
 class ResourcesLoader(object):
+
+    def __init__( self, resource_types ):
+        self._resource_types = resource_types
 
     def load_resources_from_dir( self, dir ):
         for fpath in glob.glob(os.path.join(dir, '*.resources.*.yaml')):

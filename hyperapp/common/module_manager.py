@@ -12,15 +12,15 @@ log = logging.getLogger(__name__)
 
 class ModuleManager(object):
 
-    def __init__( self, services, type_registry_registry ):
+    def __init__( self, services, type_registry_registry, packet_types ):
         assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
         self._services = services
         self._type_registry_registry = type_registry_registry
+        self._packet_types = packet_types
         self._type_modules = {}  # fullname -> ModuleType
         self._code_modules = {}  # fullname -> tModule
         self._name2code_module = {}  # name -> tModule
         self.modules = SimpleNamespace()
-        self.types = SimpleNamespace()
 
     def register_meta_hook( self ):
         sys.meta_path.append(self)
@@ -56,7 +56,7 @@ class ModuleManager(object):
         return (module_name in self._name2code_module)
 
     def load_code_module( self, module, fullname=None ):
-        assert isinstance(module, tModule), repr(module)
+        assert isinstance(module, self._packet_types.module), repr(module)
         if fullname is None:
             fullname = module.package + '.' + module.id.replace('-', '_')
         if fullname in sys.modules:
@@ -78,4 +78,3 @@ class ModuleManager(object):
             module.__dict__[name] = t
             log.info('        resolved type %r -> %r', name, t)
         self._type_modules[module.__name__] = module
-        setattr(self.types, module.__name__.split('.')[-1], module)

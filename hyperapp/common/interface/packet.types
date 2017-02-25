@@ -5,7 +5,7 @@ requirement = string list
 
 module_dep = record:
     module_id: string
-	visible_at: string
+    visible_at: string
 
 module = record:
     id: string  # uuid

@@ -1,6 +1,7 @@
 import os
 import os.path
 import logging
+from types import SimpleNamespace
 from .util import is_list_inst, encode_path
 from .htypes import (
     Interface,
@@ -32,13 +33,10 @@ class TypeModuleRepository(object):
         self._request_types = request_types
         self._iface_registry = iface_registry
         self._type_registry_registry = type_registry_registry
-        self._core_types = None  # set by set_core_types
+        self._core_types = None  # set when 'core' types module is loaded
         self._class_id2type_module = {}  # str -> tTypeModule
         self._iface_id2type_module = {}  # str -> tTypeModule
         self._module_id2type_module = {}  # str -> tTypeModule
-
-    def set_core_types( self, core_types ):
-        self._core_types = core_types
 
     def has_type_module( self, module_id ):
         return module_id in self._module_id2type_module
@@ -93,6 +91,10 @@ class TypeModuleRepository(object):
                 log.info('    provides class %s:%s', pclass.hierarchy_id, pclass.class_id)
         module = tTypeModule(name, provided_classes, used_modules, typedefs)
         self._register_type_module(module, type_registry)
+        ns = SimpleNamespace(**dict(type_registry.items()))
+        if name == 'core':  # we need it
+            self._core_types = ns
+        return ns
 
     def add_all_type_modules( self, type_module_list ):
         assert is_list_inst(type_module_list, tTypeModule), repr(type_module_list)
@@ -132,5 +134,6 @@ class TypeModuleRepository(object):
     def _register_ifaces( self, type_registry ):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
+            assert self._core_types  # 'core' module must be loaded first
             t.register_types(self._request_types, self._core_types)
             self._iface_registry.register(t)

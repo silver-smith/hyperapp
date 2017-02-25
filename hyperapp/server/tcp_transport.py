@@ -1,6 +1,5 @@
 import logging
 from queue import Queue
-from ..common.htypes import tAuxInfo, tPacket
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
@@ -54,7 +53,7 @@ class TcpSession(TransportSession):
             notification.add_update(update)
         log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())
         notification_packet = self.transport.make_notification_packet(self.transport.encoding, notification)
-        packet_data = packet_coders.encode(self.transport.encoding, notification_packet, tPacket)
+        packet_data = packet_coders.encode(self.transport.encoding, notification_packet, self.transport._packet_types.packet)
         return [tTransportPacket(self.transport.get_transport_id(), packet_data)]
 
 
@@ -75,9 +74,9 @@ class TcpTransport(Transport):
         if session is None:
            session = TcpSession(self)
            session_list.set_transport_session(self.get_transport_id(), session) 
-        request_packet = packet_coders.decode(self.encoding, data, tPacket)
+        request_packet = packet_coders.decode(self.encoding, data, self._packet_types.packet)
         response_packet = self.process_request_packet(iface_registry, server, Peer(session.channel), self.encoding, request_packet)
         if response_packet is None:
             return []
-        packet_data = packet_coders.encode(self.encoding, response_packet, tPacket)
+        packet_data = packet_coders.encode(self.encoding, response_packet, self._packet_types.packet)
         return [packet_data]

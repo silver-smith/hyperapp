@@ -1,6 +1,5 @@
 import logging
 from ..common.util import encode_path
-from ..common.htypes import tResourceRec
 from ..common import resources_loader
 
 log = logging.getLogger(__name__)

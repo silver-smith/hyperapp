@@ -1,7 +1,7 @@
 import logging
 import weakref
 from ..common.util import is_list_inst
-from ..common.htypes import tCommand, tResourceId
+from ..common.htypes import tCommand
 
 log = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ class BoundCommand(object):
     def __init__( self, id, kind, resource_id, is_default_command, class_method, inst_wr, args=None ):
         assert isinstance(id, str), repr(id)
         assert isinstance(kind, str), repr(kind)
-        assert isinstance(resource_id, tResourceId), repr(resource_id)
+        assert is_list_inst(resource_id, str), repr(resource_id)
         assert isinstance(is_default_command, bool), repr(is_default_command)
         self.id = id
         self.kind = kind
