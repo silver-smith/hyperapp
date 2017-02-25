@@ -116,7 +116,7 @@ class Services(ServicesBase):
             with open(fpath) as f:
                 source = f.read()
             package = 'hyperapp.client'
-            module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
 
     def _register_transports( self ):

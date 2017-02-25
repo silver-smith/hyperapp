@@ -33,7 +33,7 @@ def main():
     identity = Identity.load_from_file(args.identity_fpath)
     host, port = parse_addr(args.addr)
     services = Services()
-    server = Server(services.request_types, services.core_types, identity, args.test_delay)
+    server = Server(services.request_types, services.types.core, identity, args.test_delay)
     tcp_server = TcpServer(services.remoting, server, host, port)
     management_url = services.modules.server_management.get_management_url(server.get_public_key())
     url_with_routes = management_url.clone_with_routes(tcp_server.get_routes())

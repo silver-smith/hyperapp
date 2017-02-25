@@ -20,7 +20,7 @@ class ResourcesLoader(object):
             with open(fpath) as f:
                 object_items = yaml.load(f)
                 for object_id, sections in object_items.items():
-                    for rec in (tResourceRec([module_name, object_id] + rec.id + [lang], rec.resource)
+                    for rec in (self._resource_types.resource_rec([module_name, object_id] + rec.id + [lang], rec.resource)
                                 for rec in self._decode_resource_sections(sections)):
                         yield rec
 
@@ -36,15 +36,15 @@ class ResourcesLoader(object):
                 else:
                     assert False, 'Unknown resource section type: %r' % section_type
                 resource_id = [item_type, item_id]
-                yield tResourceRec(resource_id, resource)
+                yield self._resource_types.resource_rec(resource_id, resource)
 
     def _dict2command_resource( self, d ):
-        return tCommandResource(is_default=d.get('is_default', False),
-                                text=d.get('text'),
-                                description=d.get('description') or d.get('text'),
-                                shortcuts=d.get('shortcuts', []))
+        return self._resource_types.command_resource(is_default=d.get('is_default', False),
+                                                     text=d.get('text'),
+                                                     description=d.get('description') or d.get('text'),
+                                                     shortcuts=d.get('shortcuts', []))
 
     def _dict2column_resource( self, d ):
-        return tColumnResource(visible=d.get('visible', True),
-                               text=d.get('text'),
-                               description=d.get('description'))
+        return self._resource_types.column_resource(visible=d.get('visible', True),
+                                                    text=d.get('text'),
+                                                    description=d.get('description'))

@@ -55,7 +55,7 @@ class EncryptedTransport(Transport):
     
     def _make_payload_packet( self, session, server_public_key, request_or_notification ):
         packet = self.make_request_packet(ENCODING, request_or_notification)
-        packet_data = packet_coders.encode(ENCODING, packet, tPacket)
+        packet_data = packet_coders.encode(ENCODING, packet, self._packet_types.packet)
         encrypted_packet = encrypt_initial_packet(session.session_key, server_public_key, packet_data)
         return self._make_transport_packet(encrypted_packet)
 
@@ -77,8 +77,8 @@ class EncryptedTransport(Transport):
     @asyncio.coroutine
     def _process_subsequent_encrypted_packet( self, server_public_key, session, encrypted_packet ):
         packet_data = decrypt_subsequent_packet(session.session_key, encrypted_packet)
-        packet = packet_coders.decode(ENCODING, packet_data, tPacket)
-        pprint(tPacket, packet)
+        packet = packet_coders.decode(ENCODING, packet_data, self._packet_types.packet)
+        pprint(self._packet_types.packet, packet)
         yield from self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(ENCODING, packet.payload, self._request_types.tServerPacket)
         pprint(self._request_types.tServerPacket, response_or_notification_rec)

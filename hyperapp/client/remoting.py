@@ -20,6 +20,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     def __init__( self, services ):
         self._request_types = services.request_types
+        self._packet_types = services.types.packet
         self._module_manager = services.module_manager
         self._iface_registry = services.iface_registry
         self._type_module_repository = services.type_module_repository
@@ -35,7 +36,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     @asyncio.coroutine
     def process_aux_info( self, aux_info ):
-        assert isinstance(aux_info, tAuxInfo), repr(aux_info)
+        assert isinstance(aux_info, self._packet_types.aux_info), repr(aux_info)
         self._add_type_modules(aux_info.type_modules)  # types must be added before requirements - modules may use them
         yield from self._resolve_requirements(aux_info.requirements)
         self._add_routes(aux_info.routes)
@@ -43,7 +44,7 @@ class Transport(metaclass=abc.ABCMeta):
         
     @asyncio.coroutine
     def _resolve_requirements( self, requirements ):
-        assert is_list_inst(requirements, tRequirement), repr(requirements)
+        assert is_list_inst(requirements, self._packet_types.requirement), repr(requirements)
         unfulfilled_requirements = list(filter(self._is_unfulfilled_requirement, requirements))
         if not unfulfilled_requirements: return
         type_modules, code_modules, resources = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
@@ -83,9 +84,9 @@ class Transport(metaclass=abc.ABCMeta):
     def make_request_packet( self, encoding, request_or_notification ):
         server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tClientPacket, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
-        aux_info = tAuxInfo(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
+        aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
         payload = packet_coders.encode(encoding, request_or_notification.to_data(), self._request_types.tClientPacket)
-        return tPacket(aux_info, payload)
+        return self._packet_types.packet(aux_info, payload)
 
     @asyncio.coroutine
     @abc.abstractmethod

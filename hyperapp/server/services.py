@@ -1,6 +1,6 @@
 import os.path
 import logging
-from ..common.htypes import IfaceRegistry, TypeRegistryRegistry, tModule, make_request_types, builtin_type_registry
+from ..common.htypes import IfaceRegistry, TypeRegistryRegistry, make_request_types, builtin_type_registry
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from .module import Module
@@ -24,15 +24,11 @@ class Services(ServicesBase):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         ServicesBase.init_services(self)
-        self.module_manager = ModuleManager(self, self.type_registry_registry)
-        self.modules = self.module_manager.modules
-        self.resources_loader = ResourcesLoader(iface_resources_dir=self.server_dir,
-                                                client_modules_resources_dir=self.dynamic_module_dir)
         self.route_storage_module = route_storage.ThisModule()
-        self.module_manager.register_meta_hook()
-        self._load_core_type_module()
-        self.type_module_repository.set_core_types(self.core_types)
         self._load_type_modules([
+                'resource',
+                'core',
+                'packet',
                 'server_management',
                 'code_repository',
                 'splitter',
@@ -45,6 +41,12 @@ class Services(ServicesBase):
                 'test_list',
                 'text_object_types',
                 ])
+        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet)
+        self.modules = self.module_manager.modules
+        self.module_manager.register_meta_hook()
+        self.resources_loader = ResourcesLoader(self.types.resource,
+                                                iface_resources_dir=self.server_dir,
+                                                client_modules_resources_dir=self.dynamic_module_dir)
         self._load_server_modules()
         Module.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository(self.route_storage_module))
@@ -72,5 +74,5 @@ class Services(ServicesBase):
             with open(fpath) as f:
                 source = f.read()
             package = 'hyperapp.server'
-            module = tModule(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
