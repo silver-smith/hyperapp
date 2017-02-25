@@ -48,8 +48,10 @@ tok_name = dict(token.tok_name,
 NEWLINE = tok_name[token.NEWLINE]
 NL = tok_name[tokenize.NL]
 ENDMARKER = tok_name[token.ENDMARKER]
+COMMENT = tok_name[tokenize.COMMENT]
 
-ignored_tokens = [NL]
+
+ignored_tokens = [NL, COMMENT]
 
 token_types = [
     tokenize.ENCODING,
