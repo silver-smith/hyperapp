@@ -47,6 +47,7 @@ class Services(ServicesBase):
                 'resource',
                 'core',
                 'packet',
+                'param_editor',
                 'server_management',
                 'code_repository',
                 'splitter',
@@ -62,7 +63,8 @@ class Services(ServicesBase):
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.view_registry.set_core_types(self.types.core)
         self.resources_registry = ResourcesRegistry(self.types.resource)
-        self.resources_manager = ResourcesManager(self.types.resource, self.resources_registry, self.cache_repository, self._dir)
+        self.resources_manager = ResourcesManager(
+            self.types.resource, self.types.param_editor, self.resources_registry, self.cache_repository, self._dir)
         self._load_modules()
         self._register_modules()
         self._register_transports()

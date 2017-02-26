@@ -29,13 +29,8 @@ class DecodeError(Exception): pass
 
 class DictDecoder(object, metaclass=abc.ABCMeta):
 
-    def decode( self, t, value, path='root' ):
-        assert isinstance(value, bytes), repr(value)
-        return self.dispatch(t, self._str_to_dict(value.decode()), path)
-
-    @abc.abstractmethod
-    def _str_to_dict( self, value ):
-        pass
+    def decode_dict( self, t, value, path='root' ):
+        return self.dispatch(t, value, path)
 
     def expect( self, path, expr, desc ):
         if not expr:
@@ -131,13 +126,25 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         return decoded_elts
 
 
-class JsonDecoder(DictDecoder):
+
+class DictDecoderBase(DictDecoder, metaclass=abc.ABCMeta):
+
+    def decode( self, t, value, path='root' ):
+        assert isinstance(value, bytes), repr(value)
+        return self.decode_dict(t, self._str_to_dict(value.decode()), path)
+
+    @abc.abstractmethod
+    def _str_to_dict( self, value ):
+        pass
+
+
+class JsonDecoder(DictDecoderBase):
 
     def _str_to_dict( self, value ):
         return json.loads(value)
 
 
-class YamlDecoder(DictDecoder):
+class YamlDecoder(DictDecoderBase):
 
     def _str_to_dict( self, value ):
         return yaml.load(value)

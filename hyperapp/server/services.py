@@ -29,6 +29,7 @@ class Services(ServicesBase):
                 'resource',
                 'core',
                 'packet',
+                'param_editor',
                 'server_management',
                 'code_repository',
                 'splitter',
@@ -45,6 +46,7 @@ class Services(ServicesBase):
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()
         self.resources_loader = ResourcesLoader(self.types.resource,
+                                                self.types.param_editor,
                                                 iface_resources_dir=self.server_dir,
                                                 client_modules_resources_dir=self.dynamic_module_dir)
         self._load_server_modules()

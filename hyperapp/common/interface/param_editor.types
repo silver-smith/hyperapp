@@ -1,0 +1,11 @@
+from resource import resource
+
+
+param_editor = hierarchy param_editor
+
+param_editor_impl = param_editor class impl:
+    impl_id: string
+
+
+param_editor_resource = resource class param_editor:
+    param_editor: param_editor

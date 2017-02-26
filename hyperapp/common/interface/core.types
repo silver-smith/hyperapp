@@ -1,4 +1,4 @@
-from resource import resource, resource_id
+from resource import resource_id
 
 
 object = hierarchy object
@@ -50,8 +50,3 @@ categorized_string_list_handle = handle class categorized_string_list(categorize
 
 categorized_int_list_handle = handle class categorized_int_list(categorized_list_handle_base):
     key: int opt
-
-
-
-param_editor_resource = resource class param_editor:
-    handle: handle

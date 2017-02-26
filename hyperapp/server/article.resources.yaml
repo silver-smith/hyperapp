@@ -1,0 +1,5 @@
+article:
+  param_editors:
+    add:
+      _class_id: impl
+      impl_id: object_selector

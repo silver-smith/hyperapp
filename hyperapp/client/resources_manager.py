@@ -24,16 +24,17 @@ class ResourcesRegistry(object):
 
 class ResourcesManager(object):
 
-    def __init__( self, resource_types, resources_registry, cache_repository, client_modules_resources_dir ):
+    def __init__( self, resource_types, param_editor_types, resources_registry, cache_repository, client_modules_resources_dir ):
         self._resource_types = resource_types
+        self._param_editor_types = param_editor_types
         self._resources_registry = resources_registry
         self._cache_repository = cache_repository
         self._load_client_modules_resources(client_modules_resources_dir)
 
     def _load_client_modules_resources( self, dir ):
-        loader = ResourcesLoader(self._resource_types)
+        loader = ResourcesLoader(self._resource_types, self._param_editor_types)
         self.register([self._resource_types.resource_rec(['client_module'] + rec.id, rec.resource)
-                       for rec in loader.load_resources_from_dir(dir)])
+                       for rec in loader.load_localized_resources_from_dir(dir)])
 
     def register( self, resource_list ):
         assert isinstance(resource_list, self._resource_types.resource_rec_list), repr(resource_list)
