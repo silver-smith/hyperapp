@@ -24,6 +24,7 @@ class RequirementsCollector(Visitor):
             if isinstance(value, self._core_types.proxy_object):
                 for iface in value.facets:
                     self._collected_requirements.add(('interface', iface))
+            self._collected_requirements.add(('resources', encode_path(['interface', iface])))
         if t is self._core_types.handle and isinstance(value, self._core_types.view_handle):
             self._collected_requirements.add(('handle', value.view_id))
         if t is self._core_types.handle and isinstance(value, self._core_types.list_handle_base):
