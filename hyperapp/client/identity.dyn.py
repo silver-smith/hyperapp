@@ -169,7 +169,7 @@ class IdentityList(ListObject):
 
 def make_identity_list( key=None ):
     object = IdentityList.get_state()
-    return identity_list_handle_type('list', object, ['client_module', 'identity_list'], sort_column_id='name', key=key)
+    return identity_list_handle_type('list', object, ['client_module', 'identity', 'IdentityList'], sort_column_id='name', key=key)
 
 
 class ThisModule(Module):
