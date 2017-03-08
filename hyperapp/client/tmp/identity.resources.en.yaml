@@ -1,0 +1,21 @@
+commands:
+- command_id: submit
+  text: Create
+  desc: Create new identity, generate private+public key pair
+  shortcuts:
+  - Return
+- command_id: create
+  text: Create
+  desc: Create new identity, generate private+public key pair
+  shortcuts:
+  - Ins
+- command_id: identity_list
+  text: Identities
+  desc: Open identity list
+  shortcuts:
+  - Alt+I
+- command_id: create_identity
+  text: Create identity
+  desc: Create new identity, public+private key pair
+  shortcuts:
+  - Alt+N
