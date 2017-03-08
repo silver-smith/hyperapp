@@ -27,14 +27,13 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        commands = ProxyObject.get_commands(self)
-        def pred( command ):
-            if mode is self.mode_view:
-                return command.id not in ['view', 'save']
-            if mode is self.mode_edit:
-                return command.id not in ['edit']
-        return list(filter(pred, commands))
+        return self.filter_mode_commands(ProxyObject.get_commands(self), mode)
 
+    def command_must_be_visible_for_mode( self, command, mode ):
+        if mode is self.mode_view and command.id == 'save':
+            return False
+        return TextObject.command_must_be_visible_for_mode(self, command, mode)
+    
     @command('save')
     @asyncio.coroutine
     def command_save( self ):

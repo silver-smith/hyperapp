@@ -41,7 +41,18 @@ class TextObject(Object):
 
     def get_commands( self, mode ):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        return Object.get_commands(self)
+        return self.filter_mode_commands(Object.get_commands(self), mode)
+
+    def filter_mode_commands( self, commands, mode ):
+        return [command for command in commands
+                if self.command_must_be_visible_for_mode(command, mode)]
+
+    def command_must_be_visible_for_mode( self, command, mode ):
+        if mode is self.mode_view:
+            return command.id != 'view'
+        if mode is self.mode_edit:
+            return command.id != 'edit'
+        assert False, repr(mode)  # Unknown mode
 
     def text_changed( self, new_text, emitter_view=None ):
         self.text = new_text
