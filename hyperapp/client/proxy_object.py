@@ -18,10 +18,12 @@ from ..common.htypes import (
 from ..common.identity import PublicKey
 from ..common.url import Url
 from .object import Object
-from .command import Command
+from .command_class import Command
 from .request import ClientNotification, Request
 from .server import Server
 from .view import View
+from .param_editor_factory import ParamEditorOpenCommand
+
 
 log = logging.getLogger(__name__)
 
@@ -44,9 +46,9 @@ def execute_get_request( request_types, remoting, url ):
 
 class RemoteCommand(Command):
 
-    def __init__( self, id, kind, module_name, is_default_command, enabled, object_wr, args=None ):
+    def __init__( self, id, kind, resource_id, is_default_command, enabled, object_wr, args=None ):
         assert isinstance(object_wr(), ProxyObject), repr(object_wr)
-        Command.__init__(self, id, kind, module_name, is_default_command, enabled)
+        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
         self._object_wr = object_wr
         self._args = args or ()
 
@@ -117,8 +119,7 @@ class ProxyObject(Object):
         self.facets = facets or []
         self.cache_repository = cache_repository
         cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
-        self._remote_commands = [self._remote_command_from_iface_command(cmd) for cmd in self.iface.get_commands()
-                                 if self._is_plain_open_handle_request(cmd)]
+        self._remote_commands = [self._remote_command_from_iface_command(command) for command in self.iface.get_commands()]
 
     def __repr__( self ):
         return 'ProxyObject(%s, %s, %s)' % (self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
@@ -191,19 +192,23 @@ class ProxyObject(Object):
         return RemoteCommand(rec.command_id, rec.kind, rec.resource_id,
                              is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
 
-    def _is_plain_open_handle_request( self, cmd ):
+    def _is_plain_open_handle_request( self, command ):
         t_open_result = TRecord([
             Field('handle', TOptional(self._core_types.handle)),
             ])
-        return (cmd.request_type == IfaceCommand.rt_request
-                and cmd.get_params_type(self.iface).get_fields() == []
-                and cmd.get_result_type(self.iface) == t_open_result)
+        return (command.request_type == IfaceCommand.rt_request
+                and command.get_params_type(self.iface).get_fields() == []
+                and command.get_result_type(self.iface) == t_open_result)
 
-    def _remote_command_from_iface_command( self, cmd ):
+    def _remote_command_from_iface_command( self, command ):
         kind = 'object'
-        resource_id = ['interface', self.iface.iface_id, 'command', cmd.command_id]
-        return RemoteCommand(cmd.command_id, kind, resource_id,
-                             is_default_command=False, enabled=True, object_wr=weakref.ref(self))
+        resource_id = ['interface', self.iface.iface_id, 'command', command.command_id]
+        if self._is_plain_open_handle_request(command):
+            return RemoteCommand(command.command_id, kind, resource_id,
+                                 is_default_command=False, enabled=True, object_wr=weakref.ref(self))
+        else:
+            return ParamEditorOpenCommand(command.command_id, kind, resource_id,
+                                          is_default_command=False, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):
         return self.make_cache_key('commands')
