@@ -1,4 +1,4 @@
-blog_entry:
+article_ref_list:
   param_editors:
     add:
       _class_id: impl

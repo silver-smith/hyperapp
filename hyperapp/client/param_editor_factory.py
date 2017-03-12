@@ -1,5 +1,6 @@
 import asyncio
 from .command_class import Command
+from .registry import Registry
 
 
 class ParamEditorOpenCommand(Command):
@@ -25,3 +26,9 @@ class ParamEditorOpenCommand(Command):
         object = self._object_wr()
         if not object: return
         assert 0  # todo
+
+
+class ParamEditorRegistry(Registry):
+
+    def resolve( self, state ):
+        pass
