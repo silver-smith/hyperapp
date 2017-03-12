@@ -17,8 +17,8 @@ class ProxyListObject(ProxyObject, ListObject):
 
     objimpl_id = 'proxy_list'
     
-    def __init__( self, request_types, core_types, iface_registry, cache_repository, server, path, iface, facets=None ):
-        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository, server, path, iface, facets)
+    def __init__( self, request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets=None ):
+        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets)
         ListObject.__init__(self)
         self._slices = []  # all slices are stored in ascending order, actual/up-do-date
         self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, out-of-date

@@ -79,33 +79,36 @@ class ProxyObject(Object):
     @classmethod
     def register( cls, registry, services ):
         registry.register(cls.objimpl_id, cls.from_state, services.request_types, services.types.core,
-                          services.iface_registry, services.remoting, services.proxy_registry, services.cache_repository)
+                          services.iface_registry, services.remoting, services.proxy_registry,
+                          services.cache_repository, services.resources_manager)
 
     @classmethod
-    def from_state( cls, state, request_types, core_types, iface_registry, remoting, proxy_registry, cache_repository ):
+    def from_state( cls, state, request_types, core_types, iface_registry, remoting, proxy_registry, cache_repository, resources_manager ):
         assert isinstance(state, core_types.proxy_object), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
         server = Server.from_public_key(remoting, server_public_key)
         iface = iface_registry.resolve(state.iface)
         facets = [iface_registry.resolve(facet) for facet in state.facets]
-        object = cls.produce_obj(request_types, core_types, iface_registry, proxy_registry, cache_repository, server, state.path, iface, facets)
+        object = cls.produce_obj(request_types, core_types, iface_registry, proxy_registry, cache_repository,
+                                 resources_manager, server, state.path, iface, facets)
         if isinstance(state, core_types.proxy_object_with_contents):  # is it a response?
             object.set_contents(state.contents)
         return object
 
     # we avoid making proxy objects with same server+path
     @classmethod
-    def produce_obj( cls, request_types, core_types, iface_registry, proxy_registry, cache_repository, server, path, iface, facets ):
+    def produce_obj( cls, request_types, core_types, iface_registry, proxy_registry, cache_repository,
+                     resources_manager, server, path, iface, facets ):
         object = proxy_registry.resolve(server, path)
         if object is not None:
             log.info('> proxy object is resolved from registry: %r', object)
             return object
-        object = cls(request_types, core_types, iface_registry, cache_repository, server, path, iface, facets)
+        object = cls(request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets)
         proxy_registry.register(server, path, object)
         log.info('< proxy object is registered in registry: %r', object)
         return object
 
-    def __init__( self, request_types, core_types, iface_registry, cache_repository, server, path, iface, facets=None ):
+    def __init__( self, request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets=None ):
         assert is_list_inst(path, str), repr(path)
         assert isinstance(iface, Interface), repr(iface)
         assert facets is None or is_list_inst(facets, Interface), repr(facets)
@@ -118,6 +121,7 @@ class ProxyObject(Object):
         self.iface = iface
         self.facets = facets or []
         self.cache_repository = cache_repository
+        self.resources_manager = resources_manager
         cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
         self._remote_commands = [self._remote_command_from_iface_command(command) for command in self.iface.get_commands()]
 
