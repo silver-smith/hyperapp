@@ -1,0 +1,23 @@
+blog:
+  columns:
+    id:
+      text: Article id
+      description: Article id
+    created_at:
+      text: Creation date
+      description: Creation date
+  commands:
+    add:
+      text: Add entry
+      description: Create new blog entry
+      shortcuts:
+      - Ins
+    open:
+      text: Open
+      description: Open blog entry
+      shortcuts: []
+    delete:
+      text: Delete
+      description: Delete blog entry
+      shortcuts:
+      - Del

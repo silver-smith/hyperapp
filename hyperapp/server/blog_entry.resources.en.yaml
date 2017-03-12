@@ -1,4 +1,4 @@
-article:
+blog_entry:
   commands:
     edit:
       text: Edit
@@ -23,32 +23,8 @@ article:
       text: Open ref
       description: Open selected reference
       shortcuts: []
-
-article_ref_list:
-  commands:
     parent:
       text: Parent
-      description: Open parent article
+      description: Return to blog
       shortcuts:
       - Ctrl+Backspace
-    add:
-      text: Add ref
-      description: Create new reference
-      shortcuts:
-      - Ins
-    open:
-      text: Open
-      description: Open reference selector
-      shortcuts: []
-    delete:
-      text: Delete
-      description: Delete article reference
-      shortcuts:
-      - Del
-  columns:
-    ref:
-      text: Id
-      description: Id
-    url:
-      text: Url
-      description: Url
