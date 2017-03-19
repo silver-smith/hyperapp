@@ -4,13 +4,26 @@ import weakref
 import bisect
 from ..common.htypes import TList
 from .list_object import ListDiff, Element, Slice, ListObject
-from .proxy_object import ProxyObject
+from .proxy_object import RemoteCommand, ProxyObject
 
 log = logging.getLogger(__name__)
 
 
 def register_object_implementations( registry, services ):
     ProxyListObject.register(registry, services)
+
+
+class RemoteElementCommand(RemoteCommand):
+
+    def clone( self, args=None ):
+        args = self._args + (args or ())
+        return RemoteElementCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._object_wr, args)
+
+    @asyncio.coroutine
+    def run( self, *args, **kw ):
+        object = self._object_wr()
+        if not object: return
+        return (yield from object.run_remote_element_command(self.id, *(self._args + args), **kw))
 
 
 class ProxyListObject(ProxyObject, ListObject):
@@ -38,6 +51,11 @@ class ProxyListObject(ProxyObject, ListObject):
     def server_subscribe( self ):
         pass
 
+    @asyncio.coroutine
+    def run_remote_element_command( self, command_id, *args, **kw ):
+        log.debug('running remote element command %r (*%s, **%s)', command_id, args, kw)
+        return (yield from self.execute_request(command_id, *args, **kw))
+
     def _slice_from_data( self, rec ):
         key_column_id = self.get_key_column_id()
         elements = [self._element_from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
@@ -52,8 +70,13 @@ class ProxyListObject(ProxyObject, ListObject):
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = [self._command_from_data(cmd) for cmd in  rec.commands]
+        commands = [self._element_command_from_data(cmd) for cmd in  rec.commands]
         return Element(key, rec.row, commands, order_key)
+
+    def _element_command_from_data( self, rec ):
+        return RemoteElementCommand(rec.command_id, rec.kind, rec.resource_id,
+                                    is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
+
 
     def _merge_in_slice( self, new_slice ):
         log.info('  -- merge_in_slice self=%r from_key=%r len(elements)=%r bof=%r', id(self), new_slice.from_key, len(new_slice.elements), new_slice.bof)

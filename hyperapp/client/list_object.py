@@ -114,6 +114,7 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
         pass
 
+    # currently unused
     @asyncio.coroutine
     def run_element_command( self, command_id, element_key ):
         return (yield from self.run_command(command_id, element_key=element_key))

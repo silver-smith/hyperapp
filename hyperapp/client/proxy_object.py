@@ -22,7 +22,6 @@ from .command_class import Command
 from .request import ClientNotification, Request
 from .server import Server
 from .view import View
-from .param_editor_registry import ParamEditorOpenCommand
 
 
 log = logging.getLogger(__name__)
@@ -154,7 +153,6 @@ class ProxyObject(Object):
         self._notify_object_changed()
 
     def set_contents( self, contents ):
-        #self._remote_commands = list(map(self._command_from_data, contents.commands))
         self.cache_repository.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
 
     def get_title( self ):
@@ -166,7 +164,13 @@ class ProxyObject(Object):
     @asyncio.coroutine
     def run_remote_command( self, command_id, *args, **kw ):
         log.debug('running remote command %r (*%s, **%s)', command_id, args, kw)
-        return (yield from self.execute_request(command_id, *args, **kw))
+        if self._is_plain_open_handle_request(self.iface.get_command(command_id)):
+            return (yield from self.execute_request(command_id, *args, **kw))
+        else:
+            param_editor_resource_id = ['interface', self.iface.iface_id, 'param_editor', command_id]
+            param_editor = self._resources_manager.resolve(param_editor_resource_id)
+            handle = self._param_editor_registry.resolve(param_editor, self, command_id)
+            return handle
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)
@@ -196,10 +200,6 @@ class ProxyObject(Object):
     def process_update( self, diff ):
         raise NotImplementedError(self.__class__)
 
-    def _command_from_data( self, rec ):
-        return RemoteCommand(rec.command_id, rec.kind, rec.resource_id,
-                             is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
-
     def _is_plain_open_handle_request( self, command ):
         t_open_result = TRecord([
             Field('handle', TOptional(self._core_types.handle)),
@@ -211,14 +211,8 @@ class ProxyObject(Object):
     def _remote_command_from_iface_command( self, command ):
         kind = 'object'
         resource_id = ['interface', self.iface.iface_id, 'command', command.command_id]
-        if self._is_plain_open_handle_request(command):
-            return RemoteCommand(command.command_id, kind, resource_id,
-                                 is_default_command=False, enabled=True, object_wr=weakref.ref(self))
-        else:
-            param_editor_resource_id = ['interface', self.iface.iface_id, 'param_editor', command.command_id]
-            param_editor = self._resources_manager.resolve(param_editor_resource_id)
-            return ParamEditorOpenCommand(command.command_id, kind, resource_id,
-                                          is_default_command=False, enabled=True, object_wr=weakref.ref(self))
+        return RemoteCommand(command.command_id, kind, resource_id,
+                             is_default_command=False, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key( self ):
         return self.make_cache_key('commands')

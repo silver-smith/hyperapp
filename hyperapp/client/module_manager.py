@@ -16,6 +16,7 @@ class ModuleManager(common_module_manager.ModuleManager):
         self._id2module = {}
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
+        self._param_editor_registry = services.param_editor_registry
         self._meta_type_registry = make_meta_type_registry()
         self._builtin_type_registry = builtin_type_registry()
 
@@ -40,9 +41,12 @@ class ModuleManager(common_module_manager.ModuleManager):
         this_module_class = module_dict.get('ThisModule')
         if this_module_class:
             module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
-        register_object_implementations = module_dict.get('register_object_implementations')
-        if register_object_implementations:
-            register_object_implementations(DynamicModuleRegistryProxy(self._objimpl_registry, module.id), self._services)
-        register_views = module_dict.get('register_views')
-        if register_views:
-            register_views(DynamicModuleRegistryProxy(self._view_registry, module.id), self._services)
+
+        def register(fn_name, registry):
+            fn = module_dict.get(fn_name)
+            if fn:
+                fn(DynamicModuleRegistryProxy(registry, module.id), self._services)
+
+        register('register_object_implementations', self._objimpl_registry)
+        register('register_views', self._view_registry)
+        register('register_param_editors', self._param_editor_registry)

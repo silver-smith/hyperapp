@@ -39,13 +39,13 @@ class ProxyTextObject(ProxyObject, TextObject):
     @command('save')
     @asyncio.coroutine
     def command_save( self ):
-        result = yield from self.run_remote_command('save', text=self.text)
+        result = yield from self.execute_request('save', text=self.text)
         self.path = result.new_path
         self._notify_object_changed()
 
     @asyncio.coroutine
     def open_ref( self, ref_id ):
-        return (yield from self.run_remote_command('open_ref', ref_id=ref_id))
+        return (yield from self.execute_request('open_ref', ref_id=ref_id))
         
     def process_update( self, new_text ):
         self.text_changed(new_text)
