@@ -157,6 +157,7 @@ class Services(ServicesBase):
             'resource',
             'core',
             'packet',
+            'param_editor',
             'code_repository',
             ])
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet)

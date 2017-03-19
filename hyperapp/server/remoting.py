@@ -19,6 +19,8 @@ class Transport(object):
         self._request_types = services.request_types
         self._core_types = services.types.core
         self._packet_types = services.types.packet
+        self._resource_types = services.types.resource
+        self._param_editor_types = services.types.param_editor
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
         self._type_module_repository = services.type_module_repository
@@ -57,21 +59,29 @@ class Transport(object):
         raise NotImplementedError(self.__class__)
 
     def prepare_aux_info( self, response_or_notification ):
-        requirements = RequirementsCollector(self._core_types).collect(self._request_types.tServerPacket, response_or_notification.to_data())
+        collector = RequirementsCollector(self._core_types, self._param_editor_types)
+        packet_requirements = collector.collect(self._request_types.tServerPacket, response_or_notification.to_data())
+        resources1 = self._load_required_resources(packet_requirements)
+        # resources themselves can contain requirements for more resources
+        resource_requirements = collector.collect(self._resource_types.resource_rec_list, resources1)
+        resources2 = self._load_required_resources(resource_requirements)
+        requirements = packet_requirements + resource_requirements
         type_modules = self._type_module_repository.get_type_modules_by_requirements(requirements)
         modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
         server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tServerPacket, response_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
-        resources = flatten([self._load_resource(id) for (registry, id)
-                             in requirements if registry == 'resources'])
         return self._packet_types.aux_info(
             requirements=requirements,
             type_modules=type_modules,
             modules=modules,
             routes=routes,
-            resources=resources,
+            resources=resources1 + resources2,
             )
+
+    def _load_required_resources( self, requirements ):
+        return flatten([self._load_resource(id) for (registry, id) in requirements
+                        if registry == 'resources'])
 
     def _load_resource( self, encoded_resource_id ):
         return list(self._resources_loader.load_resources(decode_path(encoded_resource_id)))

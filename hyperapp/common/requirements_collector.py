@@ -5,8 +5,9 @@ from .visitor import Visitor
 
 class RequirementsCollector(Visitor):
 
-    def __init__( self, core_types ):
+    def __init__( self, core_types, param_editor_types=None ):
         self._core_types = core_types
+        self._param_editor_types = param_editor_types
 
     def collect( self, t, value ):
         self._collected_requirements = set()
@@ -29,3 +30,6 @@ class RequirementsCollector(Visitor):
             self._collected_requirements.add(('handle', value.view_id))
         if t is self._core_types.handle and isinstance(value, self._core_types.list_handle_base):
             self._collected_requirements.add(('resources', encode_path(value.resource_id)))
+        if self._param_editor_types and isinstance(value, self._param_editor_types.param_editor_resource):
+            assert isinstance(value.param_editor, self._param_editor_types.param_editor_impl), repr(value.param_editor)
+            self._collected_requirements.add(('param_editor', value.param_editor.impl_id))
