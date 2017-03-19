@@ -28,6 +28,7 @@ class Transport(metaclass=abc.ABCMeta):
         self._route_storage = services.route_storage
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
+        self._param_editor_registry = services.param_editor_registry
         self._code_repository = services.code_repository
         self._identity_controller = services.identity_controller
         self._resources_manager = services.resources_manager
@@ -61,6 +62,8 @@ class Transport(metaclass=abc.ABCMeta):
             return not self._view_registry.is_registered(key)
         if registry == 'interface':
             return not self._iface_registry.is_registered(key)
+        if registry == 'param_editor':
+            return not self._param_editor_registry.is_registered(key)
         if registry == 'class':
             return False
         if registry == 'resources':
