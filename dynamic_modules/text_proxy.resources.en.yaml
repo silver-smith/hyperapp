@@ -1,0 +1,7 @@
+ProxyTextObject:
+  commands:
+    save:
+      text: Save
+      description: Save article
+      shortcuts:
+      - Ctrl+S
