@@ -1,0 +1,5 @@
+id: object_selector_param_editor
+package: hyperapp.client
+source_path: object_selector_param_editor.py
+satisfies:
+ - param_editor/object_selector

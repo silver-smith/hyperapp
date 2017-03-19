@@ -31,4 +31,5 @@ from .registry import Registry
 class ParamEditorRegistry(Registry):
 
     def resolve( self, state, proxy_object, command_id ):
-        assert 0, repr(state)
+        rec = self._resolve(state.impl_id)
+        assert 0, repr(rec.factory)

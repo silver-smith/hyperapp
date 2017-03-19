@@ -9,17 +9,19 @@ from .command import command, ViewCommand
 log = logging.getLogger(__name__)
 
 
-def register_views( registry, services ):
-    registry.register(View.view_id, View.from_state, services.objimpl_registry, services.view_registry)
+def register_param_editors( registry, services ):
+    registry.register(View.impl_id, View.from_state, services.objimpl_registry, services.view_registry)
 
 
 class View(view.View, QtGui.QWidget):
 
-    view_id = 'object_selector'
+    impl_id = 'object_selector'
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, locale, state, parent, objimpl_registry, view_registry ):
+    def from_state( cls, state, proxy_object, command_id, objimpl_registry, view_registry ):
+        print(repr(state), repr(proxy_object), repr(command_id))
+        assert 0, repr(proxy_object)
         ref = objimpl_registry.resolve(state.ref)
         target_view = yield from view_registry.resolve(locale, state.target)
         return cls(parent, ref, target_view)
