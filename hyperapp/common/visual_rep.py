@@ -19,6 +19,7 @@ from .htypes import (
     tCommand,
     tServerRoutes,
     tUrl,
+    tTypeModule,
     )
 from .identity import PublicKey
 
@@ -78,6 +79,8 @@ class VisualRepEncoder(object):
         if t is tCommand:
             return RepNode('command: command_id=%r, kind=%r, resource_id=%s, is_default_command=%s'
                            % (value.command_id, value.kind, encode_path(value.resource_id), value.is_default_command))
+        if t is tTypeModule:
+            return self._make_type_module_rep(value)
         children = self.encode_record_fields(t, value)
         if t is tServerRoutes:
             public_key = PublicKey.from_der(value.public_key_der)
@@ -91,6 +94,13 @@ class VisualRepEncoder(object):
             return RepNode('record', children)
         else:
             return RepNode('empty record')
+
+    def _make_type_module_rep( self, type_module ):
+        return RepNode('type module %r' % type_module.module_name, children=[
+            RepNode('provided: %s' % ', '.join('%s/%s' % (pc.hierarchy_id, pc.class_id) for pc in type_module.provided_classes)),
+            RepNode('used_modules: %s' % ', '.join(type_module.used_modules)),
+            RepNode('%d typedefs: %s' % (len(type_module.typedefs), ', '.join(typedef.name for typedef in type_module.typedefs))),
+            ])
 
     def encode_record_fields( self, t, value ):
         children = []
