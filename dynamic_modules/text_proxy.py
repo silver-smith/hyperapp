@@ -15,9 +15,11 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     objimpl_id = 'proxy.text'
 
-    def __init__( self, request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets=None ):
+    def __init__( self, request_types, core_types, iface_registry, cache_repository,
+                  resources_manager, param_editor_registry, server, path, iface, facets=None ):
         TextObject.__init__(self, text='')
-        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets)
+        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository,
+                             resources_manager, param_editor_registry, server, path, iface, facets)
         self.text = self._load_text_from_cache()
 
     def set_contents( self, contents ):

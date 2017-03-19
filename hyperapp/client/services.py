@@ -5,6 +5,7 @@ from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
+from .param_editor_registry import ParamEditorRegistry
 from .remoting import Remoting
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
@@ -57,6 +58,7 @@ class Services(ServicesBase):
         self.objimpl_registry = ObjImplRegistry()
         self.remoting = Remoting(self.request_types, self.types.resource, self.types.packet, self.route_storage, self.proxy_registry)
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
+        self.param_editor_registry = ParamEditorRegistry()
         self.module_manager = ModuleManager(self)
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()

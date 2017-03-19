@@ -20,6 +20,7 @@ from hyperapp.client.objimpl_registry import ObjImplRegistry
 from hyperapp.client.named_url_file_repository import NamedUrlRepository
 from hyperapp.client.proxy_registry import ProxyRegistry
 from hyperapp.client.view_registry import ViewRegistry
+from hyperapp.client.param_editor_registry import ParamEditorRegistry
 from hyperapp.client import tcp_transport
 from hyperapp.client import encrypted_transport
 
@@ -96,6 +97,7 @@ class Services(ServicesBase):
         self.remoting = Remoting(self.request_types, self.types.resource, self.types.packet, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
+        self.param_editor_registry = ParamEditorRegistry()
         self.module_manager = ModuleManager(self)
         self.module_manager.register_meta_hook()
         try:

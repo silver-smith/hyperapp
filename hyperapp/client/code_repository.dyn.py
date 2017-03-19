@@ -81,11 +81,13 @@ class CodeRepositoryProxy(ProxyObject):
         assert isinstance(url, Url), repr(url)
         server = Server.from_public_key(remoting, url.public_key)
         return cls(this_module.request_types, core_types, iface_registry, cache_repository,
-                   this_module.resources_manager, server, url.path, url.iface)
+                   this_module.resources_manager, this_module.param_editor_registry, server, url.path, url.iface)
         
-    def __init__( self, request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets=None ):
+    def __init__( self, request_types, core_types, iface_registry, cache_repository,
+                  resources_manager, param_editor_registry, server, path, iface, facets=None ):
         assert iface is code_repository_types.code_repository, repr(iface.iface_id)
-        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository, resources_manager, server, path, iface, facets)
+        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository,
+                             resources_manager, param_editor_registry, server, path, iface, facets)
 
     @asyncio.coroutine
     def get_modules_by_ids( self, module_ids ):
@@ -193,6 +195,7 @@ class ThisModule(Module):
         Module.__init__(self, services)
         self.request_types = services.request_types
         self.resources_manager = services.resources_manager
+        self.param_editor_registry = services.param_editor_registry
         services.code_repository = CodeRepository(
             services.iface_registry, services.remoting, services.cache_repository,
             FileNamedUrlRepository(services.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
