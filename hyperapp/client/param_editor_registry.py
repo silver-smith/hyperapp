@@ -32,4 +32,4 @@ class ParamEditorRegistry(Registry):
 
     def resolve( self, state, proxy_object, command_id ):
         rec = self._resolve(state.impl_id)
-        assert 0, repr(rec.factory)
+        return rec.factory(state, proxy_object, command_id, *rec.args, **rec.kw)

@@ -10,12 +10,20 @@ log = logging.getLogger(__name__)
 
 
 def register_param_editors( registry, services ):
-    registry.register(View.impl_id, View.from_state, services.objimpl_registry, services.view_registry)
+    registry.register(View.impl_id, View.resolve_param_editor, services.objimpl_registry, services.view_registry)
 
 
 class View(view.View, QtGui.QWidget):
 
     impl_id = 'object_selector'
+
+    @classmethod
+    def resolve_param_editor( cls, state, proxy_object, command_id, objimpl_registry, view_registry ):
+        print(repr(state), repr(proxy_object), repr(command_id))
+        assert 0, repr(proxy_object)
+        ref = objimpl_registry.resolve(state.ref)
+        #target_view = yield from view_registry.resolve(locale, state.target)
+        return cls(parent, ref, target_view)
 
     @classmethod
     @asyncio.coroutine
