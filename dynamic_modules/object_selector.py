@@ -9,8 +9,8 @@ from .command import command, ViewCommand
 log = logging.getLogger(__name__)
 
 
-def register_views( registry, services ):
-    registry.register(View.view_id, View.from_state, services.objimpl_registry, services.view_registry)
+#def register_views( registry, services ):
+#    registry.register(View.view_id, View.from_state, services.objimpl_registry, services.view_registry)
 
 
 class View(view.View, QtGui.QWidget):

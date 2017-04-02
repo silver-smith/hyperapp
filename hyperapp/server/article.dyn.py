@@ -237,7 +237,7 @@ class RefSelector(Object):
         else:
             target_obj = this_module.run_resolver(iface, path)
             target_handle = target_obj.get_handle(request)
-        return article_types.obj_selector_handle('object_selector', self.get(request), target_handle)
+        return article_types.object_selector_handle('object_selector', self.get(request), target_handle)
 
 
 class ThisModule(PonyOrmModule):

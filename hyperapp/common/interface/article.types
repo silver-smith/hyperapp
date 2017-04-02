@@ -1,9 +1,10 @@
 from core import object, handle, view_handle
 
 
-obj_selector_handle = handle class obj_selector(view_handle):
-    ref: object
+object_selector_handle = handle class object_selector(view_handle):
+    ref_list: object
     target: handle
+
 
 article = interface article:
     diff_type: string

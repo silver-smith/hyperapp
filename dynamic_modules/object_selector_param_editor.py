@@ -1,7 +1,9 @@
+import os.path
 import logging
 import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface import article as article_types
+from ..common.interface import core as core_types
 from .util import uni2str
 from . import view
 from .command import command, ViewCommand
@@ -10,26 +12,35 @@ log = logging.getLogger(__name__)
 
 
 def register_param_editors( registry, services ):
-    registry.register(View.impl_id, View.resolve_param_editor, services.objimpl_registry, services.view_registry)
+    registry.register(View.impl_id, View.resolve_param_editor, services.iface_registry)
+
+def register_views( registry, services ):
+    registry.register(View.view_id, View.from_state, services.objimpl_registry, services.view_registry)
 
 
+
+def get_default_url( server, iface_registry ):
+    iface = iface_registry.resolve('fs_dir')
+    return server.make_url(iface, ['file', os.path.expanduser('~')])
+
+    
 class View(view.View, QtGui.QWidget):
 
     impl_id = 'object_selector'
+    view_id = 'object_selector'
 
     @classmethod
-    def resolve_param_editor( cls, state, proxy_object, command_id, objimpl_registry, view_registry ):
+    def resolve_param_editor( cls, state, proxy_object, command_id, iface_registry ):
         print(repr(state), repr(proxy_object), repr(command_id))
-        assert 0, repr(proxy_object)
-        ref = objimpl_registry.resolve(state.ref)
-        #target_view = yield from view_registry.resolve(locale, state.target)
-        return cls(parent, ref, target_view)
+        ref_list = proxy_object.get_state()
+        target_url = get_default_url(proxy_object.server, iface_registry)
+        target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
+        return article_types.object_selector_handle(cls.view_id, ref_list, target_handle)
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, proxy_object, command_id, objimpl_registry, view_registry ):
-        print(repr(state), repr(proxy_object), repr(command_id))
-        assert 0, repr(proxy_object)
+    def from_state( cls, locale, state, parent, objimpl_registry, view_registry ):
+        assert 0, repr(state)
         ref = objimpl_registry.resolve(state.ref)
         target_view = yield from view_registry.resolve(locale, state.target)
         return cls(parent, ref, target_view)
@@ -49,7 +60,7 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(l)
 
     def get_state( self ):
-        return article_types.obj_selector_handle(self.view_id, self.ref.get_state(), self.target_view.get_state())
+        return article_types.object_selector_handle(self.view_id, self.ref.get_state(), self.target_view.get_state())
 
     def get_current_child( self ):
         return self.target_view
@@ -72,7 +83,7 @@ class View(view.View, QtGui.QWidget):
             view.View.open(self, handle)  # do not wrap in our handle
 
     def open( self, handle ):
-        handle = article_types.obj_selector_handle(self.view_id, self.ref.get_state(), handle)
+        handle = article_types.object_selector_handle(self.view_id, self.ref.get_state(), handle)
         view.View.open(self, handle)
 
     def __del__( self ):
