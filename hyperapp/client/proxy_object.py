@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from types import SimpleNamespace
 import uuid
 import weakref
 import codecs
@@ -170,7 +171,7 @@ class ProxyObject(Object):
             param_editor_resource_id = ['interface', self.iface.iface_id, 'param_editor', command_id]
             param_editor_resource = self._resources_manager.resolve(param_editor_resource_id)
             handle = self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id)
-            return handle
+            return SimpleNamespace(handle=handle)
 
     def observers_gone( self ):
         log.info('-- observers_gone: %r', self)

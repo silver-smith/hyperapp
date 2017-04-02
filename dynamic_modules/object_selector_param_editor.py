@@ -31,7 +31,6 @@ class View(view.View, QtGui.QWidget):
 
     @classmethod
     def resolve_param_editor( cls, state, proxy_object, command_id, iface_registry ):
-        print(repr(state), repr(proxy_object), repr(command_id))
         ref_list = proxy_object.get_state()
         target_url = get_default_url(proxy_object.server, iface_registry)
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
@@ -40,18 +39,17 @@ class View(view.View, QtGui.QWidget):
     @classmethod
     @asyncio.coroutine
     def from_state( cls, locale, state, parent, objimpl_registry, view_registry ):
-        assert 0, repr(state)
-        ref = objimpl_registry.resolve(state.ref)
+        ref_list = objimpl_registry.resolve(state.ref_list)
         target_view = yield from view_registry.resolve(locale, state.target)
-        return cls(parent, ref, target_view)
+        return cls(parent, ref_list, target_view)
 
-    def __init__( self, parent, ref, target_view ):
+    def __init__( self, parent, ref_list, target_view ):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
-        self.ref = ref
+        self.ref_list = ref_list
         self.target_view = target_view
         target_view.set_parent(self)
-        self.groupBox = QtGui.QGroupBox('Select object for %s' % self.ref.get_title())
+        self.groupBox = QtGui.QGroupBox('Select object for %s' % self.ref_list.get_title())
         gbl = QtGui.QVBoxLayout()
         gbl.addWidget(self.target_view.get_widget())
         self.groupBox.setLayout(gbl)
@@ -60,13 +58,13 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(l)
 
     def get_state( self ):
-        return article_types.object_selector_handle(self.view_id, self.ref.get_state(), self.target_view.get_state())
+        return article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), self.target_view.get_state())
 
     def get_current_child( self ):
         return self.target_view
 
     def get_object( self ):
-        return self.ref
+        return self.ref_list
 
     def get_commands( self, kinds ):
         return (self.target_view.get_commands(kinds)
@@ -78,12 +76,13 @@ class View(view.View, QtGui.QWidget):
     def object_command_choose( self ):
         url = self.target_view.get_url()
         if not url: return  # not a proxy - can not choose it
+        assert 0
         handle = (yield from self.ref.run_command('choose', target_url=url.to_data()))
         if handle:
             view.View.open(self, handle)  # do not wrap in our handle
 
     def open( self, handle ):
-        handle = article_types.object_selector_handle(self.view_id, self.ref.get_state(), handle)
+        handle = article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), handle)
         view.View.open(self, handle)
 
     def __del__( self ):
