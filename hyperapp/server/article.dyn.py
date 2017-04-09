@@ -145,7 +145,9 @@ class ArticleRefList(SmallListObject):
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
-        return request.make_response_handle(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
+        #return request.make_response_handle(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
+        handle = self.ListHandle(self.get(request), key=rec.id)
+        return request.make_response_handle(handle)
 
     @command('open', kind='element', is_default_command=True)
     def command_open( self, request ):

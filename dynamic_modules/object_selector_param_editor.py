@@ -76,10 +76,8 @@ class View(view.View, QtGui.QWidget):
     def object_command_choose( self ):
         url = self.target_view.get_url()
         if not url: return  # not a proxy - can not choose it
-        assert 0
-        handle = (yield from self.ref.run_command('choose', target_url=url.to_data()))
-        if handle:
-            view.View.open(self, handle)  # do not wrap in our handle
+        result = (yield from self.ref_list.run_command('add', target_url=url.to_data()))
+        view.View.open(self, result.handle)  # do not wrap in our handle
 
     def open( self, handle ):
         handle = article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), handle)
