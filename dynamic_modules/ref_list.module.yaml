@@ -1,5 +1,0 @@
-id: ref_list
-package: hyperapp.client
-source_path: ref_list.py
-satisfies:
- - object/ref_list

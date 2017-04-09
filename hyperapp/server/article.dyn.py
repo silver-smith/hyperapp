@@ -108,7 +108,7 @@ class Article(Object):
 class ArticleRefList(SmallListObject):
 
     iface = article_types.article_ref_list
-    objimpl_id = 'ref_list'
+    objimpl_id = 'proxy_list'
     default_sort_column_id = 'ref_id'
     class_name = 'ref_list'
 

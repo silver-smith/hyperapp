@@ -76,7 +76,7 @@ class View(view.View, QtGui.QWidget):
     def object_command_choose( self ):
         url = self.target_view.get_url()
         if not url: return  # not a proxy - can not choose it
-        result = (yield from self.ref_list.run_command('add', target_url=url.to_data()))
+        result = (yield from self.ref_list.execute_request('add', target_url=url.to_data()))
         view.View.open(self, result.handle)  # do not wrap in our handle
 
     def open( self, handle ):
