@@ -41,9 +41,11 @@ class SliceAlgorithm(object):
                 slice.eof = new_slice.eof
                 log.info('     > merged len(elements)=%r elements[0].key=%r elements[-1].key=%r', len(slice.elements), slice.elements[0].key, slice.elements[-1].key)
                 break
-            if not new_slice.elements:
-                continue
-            #if new_slice.elements[0].key
+            if not new_slice.elements: continue
+            if new_slice.elements[0].key > slice.elements[-1].key: continue
+            if new_slice.elements[-1].key < slice.elements[0].key: continue
+            # now we know we have an intersection
+            assert False, 'todo: implement slice intersections'
         else:
             slices.append(new_slice)
             log.info('     > added')
@@ -68,7 +70,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._log_slices('before set_contents')
         ProxyObject.set_contents(self, contents)
         slice = self._slice_from_data(contents.slice)
-        self._merge_in_slice(slice)
+        self._slices = [slice]
         # set_contents call means this object is returned from server and thus already subscribed
         self._subscribed = True
 
