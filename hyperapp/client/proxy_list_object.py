@@ -26,6 +26,26 @@ class RemoteElementCommand(RemoteCommand):
         return (yield from object.run_remote_element_command(self.id, *(self._args + args), **kw))
 
 
+
+class SliceAlgorithm(object):
+
+    def merge_in_slice( self, slices, new_slice ):
+        if new_slice.elements:
+            log.info('      elements[0].key=%r elements[-1].key=%r', new_slice.elements[0].key, new_slice.elements[-1].key)
+        for slice in slices:
+            if slice.sort_column_id != new_slice.sort_column_id: continue
+            assert new_slice.direction == 'asc'  # todo: desc direction
+            if new_slice.from_key == slice.elements[-1].key:
+                assert not new_slice.bof  # this is continuation for existing slice, bof is not possible
+                slice.elements.extend(new_slice.elements)
+                slice.eof = new_slice.eof
+                log.info('     > merged len(elements)=%r elements[0].key=%r elements[-1].key=%r', len(slice.elements), slice.elements[0].key, slice.elements[-1].key)
+                break
+        else:
+            slices.append(new_slice)
+            log.info('     > added')
+
+
 class ProxyListObject(ProxyObject, ListObject):
 
     objimpl_id = 'proxy_list'
@@ -35,12 +55,14 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository,
                              resources_manager, param_editor_registry, server, path, iface, facets)
         ListObject.__init__(self)
-        self._slices = []  # all slices are stored in ascending order, actual/up-do-date
-        self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, out-of-date
+        self._slice_algorithm = SliceAlgorithm()
+        self._slices = []  # all slices are stored in ascending order, guaranteed actual/up-do-date
+        self._slices_from_cache = {}  # key_column_id -> Slice list, slices loaded from cache, possibly out-of-date
         self._subscribed = False
         self._subscribe_pending = False  # subscribe method is called and response is not yet received
 
     def set_contents( self, contents ):
+        self._log_slices('before set_contents')
         ProxyObject.set_contents(self, contents)
         slice = self._slice_from_data(contents.slice)
         self._merge_in_slice(slice)
@@ -77,26 +99,20 @@ class ProxyListObject(ProxyObject, ListObject):
         return RemoteElementCommand(rec.command_id, rec.kind, rec.resource_id,
                                     is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
 
-
     def _merge_in_slice( self, new_slice ):
         log.info('  -- merge_in_slice self=%r from_key=%r len(elements)=%r bof=%r', id(self), new_slice.from_key, len(new_slice.elements), new_slice.bof)
-        if new_slice.elements:
-            log.info('      elements[0].key=%r elements[-1].key=%r', new_slice.elements[0].key, new_slice.elements[-1].key)
-        for slice in self._slices:
-            if slice.sort_column_id != new_slice.sort_column_id: continue
-            assert new_slice.direction == 'asc'  # todo: desc direction
-            if new_slice.from_key == slice.elements[-1].key:
-                assert not new_slice.bof  # this is continuation for existing slice, bof is not possible
-                slice.elements.extend(new_slice.elements)
-                slice.eof = new_slice.eof
-                log.info('     > merged len(elements)=%r elements[0].key=%r elements[-1].key=%r', len(slice.elements), slice.elements[0].key, slice.elements[-1].key)
-                break
-        else:
-            self._slices.append(new_slice)
-            log.info('     > added')
+        self._slice_algorithm.merge_in_slice(self._slices, new_slice)
+        self._log_slices('after _merge_in_slices')
         self._store_slices_to_cache(new_slice.sort_column_id)
 
+    def _log_slices( self, when ):
+        log.debug('  -- proxy list object %s has total %d slices %s:', id(self), len(self._slices), when)
+        for i, slice in enumerate(self._slices):
+            log.debug('    -- slice #%d has from_key=%r bof=%r eof=%r %d elements: %s',
+                      i, slice.from_key, slice.bof, slice.eof, len(slice.elements), ', '.join(str(element.key) for element in slice.elements))
+
     def _update_slices( self, diff ):
+        log.info('  -- update_slices self=%r diff: start_key=%r end_key=%r len(elements)=%r', id(self), diff.start_key, diff.end_key, len(diff.elements))
         for slice in self._slices:
             for idx in reversed(range(len(slice.elements))):
                 element = slice.elements[idx]
@@ -171,7 +187,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._merge_in_slice(slice)
 
     def process_update( self, diff ):
-        log.info('-- proxy process_update self=%r diff=%r start_key=%r end_key=%r elements=%r', self, diff, diff.start_key, diff.end_key, diff.elements)
+        log.info('-- proxy process_update self=%r diff=%r start_key=%r end_key=%r elements=%r', id(self), diff, diff.start_key, diff.end_key, diff.elements)
         key_column_id = self.get_key_column_id()
         diff = self._list_diff_from_data(key_column_id, diff)
         self._update_slices(diff)
@@ -185,7 +201,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     @asyncio.coroutine
     def fetch_elements( self, sort_column_id, from_key, direction, count ):
-        log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r count=%r', self, self._subscribed, from_key, count)
+        log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r count=%r', id(self), self._subscribed, from_key, count)
         slice = self._pick_slice(self._slices, sort_column_id, from_key, direction)
         if slice:
             log.info('   > cached actual, len(elements)=%r', len(slice.elements))
@@ -208,7 +224,7 @@ class ProxyListObject(ProxyObject, ListObject):
             # several views can call fetch_elements before response is received, and we do not want several subscribe... calls
             self._subscribe_pending = True
         result = yield from self.execute_request(command_id, sort_column_id, from_key, direction, count)
-        log.debug('proxy_list_object fetch_elements result self=%r len(result.slice.elements)=%r', self, len(result.slice.elements))
+        log.debug('proxy_list_object fetch_elements result self=%r len(result.slice.elements)=%r', id(self), len(result.slice.elements))
         if subscribing_now:
             self._subscribe_pending = False
             self._subscribed = True

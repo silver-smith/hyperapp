@@ -90,6 +90,16 @@ class Slice(object):
         self.bof = bof
         self.eof = eof
 
+    def __eq__( self, other ):
+        if not isinstance(other, Slice):
+            return False
+        return (self.sort_column_id == other.sort_column_id
+                and self.from_key == other.from_key
+                and self.direction == other.direction
+                and self.elements == other.elements
+                and self.bof = other.bof
+                and self.eof = other.eof)
+
     def to_data( self, iface ):
         assert isinstance(iface, ListInterface), repr(iface)
         elements = [elt.to_data(iface) for elt in self.elements]

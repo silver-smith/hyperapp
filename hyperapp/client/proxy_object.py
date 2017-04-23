@@ -102,12 +102,12 @@ class ProxyObject(Object):
                      resources_manager, param_editor_registry, server, path, iface, facets ):
         object = proxy_registry.resolve(server, path)
         if object is not None:
-            log.info('> proxy object is resolved from registry: %r', object)
+            log.info('> proxy object is resolved from registry: %r', id(object))
             return object
         object = cls(request_types, core_types, iface_registry, cache_repository,
                      resources_manager, param_editor_registry, server, path, iface, facets)
         proxy_registry.register(server, path, object)
-        log.info('< proxy object is registered in registry: %r', object)
+        log.info('< proxy object is registered in registry: %r', id(object))
         return object
 
     def __init__( self, request_types, core_types, iface_registry, cache_repository,
@@ -130,7 +130,7 @@ class ProxyObject(Object):
         self._remote_commands = [self._remote_command_from_iface_command(command) for command in self.iface.get_commands()]
 
     def __repr__( self ):
-        return 'ProxyObject(%s, %s, %s)' % (self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
+        return 'ProxyObject(%s, %s, %s, %s)' % (id(self), self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
 
     def get_state( self ):
         return self._core_types.proxy_object(
@@ -174,7 +174,7 @@ class ProxyObject(Object):
             return SimpleNamespace(handle=handle)
 
     def observers_gone( self ):
-        log.info('-- observers_gone: %r', self)
+        log.info('-- observers_gone: %r', id(self))
         asyncio.async(self.send_notification('unsubscribe'))
 
     # prepare request which does not require/expect response
@@ -225,4 +225,4 @@ class ProxyObject(Object):
         return TList(tCommand)
 
     def __del__( self ):
-        log.info('~ProxyObject %r path=%r', self, self.path)
+        log.info('~ProxyObject %r path=%r', id(self), self.path)
