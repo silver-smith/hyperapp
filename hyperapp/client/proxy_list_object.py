@@ -41,6 +41,9 @@ class SliceAlgorithm(object):
                 slice.eof = new_slice.eof
                 log.info('     > merged len(elements)=%r elements[0].key=%r elements[-1].key=%r', len(slice.elements), slice.elements[0].key, slice.elements[-1].key)
                 break
+            if not new_slice.elements:
+                continue
+            #if new_slice.elements[0].key
         else:
             slices.append(new_slice)
             log.info('     > added')

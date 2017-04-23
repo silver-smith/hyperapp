@@ -97,8 +97,13 @@ class Slice(object):
                 and self.from_key == other.from_key
                 and self.direction == other.direction
                 and self.elements == other.elements
-                and self.bof = other.bof
-                and self.eof = other.eof)
+                and self.bof == other.bof
+                and self.eof == other.eof)
+
+    def __repr__( self ):
+        return ('Slice(sort_column_id=%r from_key=%r direction=%r bof=%r eof=%r %d elements %s)'
+                % (self.sort_column_id, self.from_key, self.direction, self.bof, self.eof, len(self.elements),
+                   'from %r to %r' % (self.elements[0].key, self.elements[-1].key) if self.elements else ''))
 
     def to_data( self, iface ):
         assert isinstance(iface, ListInterface), repr(iface)
