@@ -127,7 +127,8 @@ class ProxyObject(Object):
         self._resources_manager = resources_manager
         self._param_editor_registry = param_editor_registry
         cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
-        self._remote_commands = [self._remote_command_from_iface_command(command) for command in self.iface.get_commands()]
+        self._remote_commands = [self._remote_command_from_iface_command(command) for command in self.iface.get_commands()
+                                 if self.is_iface_command_exposed(command)]
 
     def __repr__( self ):
         return 'ProxyObject(%s, %s, %s, %s)' % (id(self), self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
@@ -161,6 +162,9 @@ class ProxyObject(Object):
 
     def get_commands( self ):
         return Object.get_commands(self) + self._remote_commands
+
+    def is_iface_command_exposed(self, command):
+        return True
 
     @asyncio.coroutine
     def run_remote_command( self, command_id, *args, **kw ):

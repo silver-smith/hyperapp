@@ -2,7 +2,7 @@ import logging
 import asyncio
 import weakref
 import bisect
-from ..common.htypes import TList
+from ..common.htypes import TOptional, Field, TRecord, TList, IfaceCommand
 from .list_object import ListDiff, Element, Slice, ListObject
 from .proxy_object import RemoteCommand, ProxyObject
 
@@ -77,6 +77,16 @@ class ProxyListObject(ProxyObject, ListObject):
     @asyncio.coroutine
     def server_subscribe( self ):
         pass
+
+    def is_iface_command_exposed(self, command):
+        t_empty_result = TRecord([])
+        t_open_result = TRecord([
+            Field('handle', TOptional(self._core_types.handle)),
+            ])
+        element_field = Field('element_key', self.iface.get_key_type())
+        return not (command.request_type == IfaceCommand.rt_request
+                    and command.get_params_type(self.iface).get_fields() == [element_field]
+                    and command.get_result_type(self.iface) in [t_empty_result, t_open_result])
 
     @asyncio.coroutine
     def run_remote_element_command( self, command_id, *args, **kw ):
