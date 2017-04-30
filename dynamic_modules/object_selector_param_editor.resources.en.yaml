@@ -1,0 +1,7 @@
+View:
+  commands:
+    choose:
+      text: Choose
+      description: Choose current object
+      shortcuts:
+      - Ctrl+Return
