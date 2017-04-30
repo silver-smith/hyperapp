@@ -64,11 +64,10 @@ class View(view.View, QtGui.QWidget):
         return self.target_view
 
     def get_object( self ):
-        return self.ref_list
+        return None
 
     def get_commands( self, kinds ):
-        return (self.target_view.get_commands(kinds)
-                + view.View.get_commands(self, kinds)
+        return (view.View.get_commands(self, kinds)
                 + [self.object_command_choose])  # do not wrap in ViewCommand - we will open it ourselves
 
     @command('choose', kind='object')
