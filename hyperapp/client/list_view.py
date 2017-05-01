@@ -432,9 +432,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
         for cmd in element.commands:
             assert isinstance(cmd, Command), repr(cmd)
             assert cmd.kind == 'element', repr(cmd)
+            resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
             wrapped_cmd = self._wrap_element_command(element, cmd)
-            action = make_async_action( 
-                action_widget, '%s/%s' % (wrapped_cmd.resource_id, wrapped_cmd.id), None, wrapped_cmd.run)
+            action = make_async_action(
+                action_widget, '%s/%s' % (wrapped_cmd.resource_id, wrapped_cmd.id),
+                resource.shortcuts if resource else None, wrapped_cmd.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
