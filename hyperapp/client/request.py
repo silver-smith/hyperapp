@@ -7,7 +7,7 @@ from ..common.identity import PublicKey
 
 class RequestBase(object):
 
-    def __init__( self, request_types, iface, path, command_id, params ):
+    def __init__(self, request_types, iface, path, command_id, params):
         assert isinstance(iface, Interface), repr(iface)
         assert isinstance(command_id, str), repr(command_id)
         params_type = iface.get_request_params_type(command_id)
@@ -23,25 +23,25 @@ class RequestBase(object):
 
 class ClientNotification(RequestBase):
 
-    def to_data( self ):
+    def to_data(self):
         return self._request_types.tClientNotification(self.iface.iface_id, self.path, self.command_id, self.params)
 
 
 class Request(RequestBase):
 
-    def __init__( self, request_types, iface, path, command_id, request_id, params=None ):
+    def __init__(self, request_types, iface, path, command_id, request_id, params=None):
         assert isinstance(request_id, str), repr(request_id)
         RequestBase.__init__(self, request_types, iface, path, command_id, params)
         self.request_id = request_id
 
-    def to_data( self ):
+    def to_data(self):
         return self._request_types.tRequest(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
 
 
 class ResponseBase(object):
 
     @classmethod
-    def from_data( cls, request_types, iface_registry, server_public_key, rec ):
+    def from_data(cls, request_types, iface_registry, server_public_key, rec):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(rec, request_types.tServerPacket), repr(rec)
         
@@ -52,7 +52,7 @@ class ResponseBase(object):
             assert isinstance(rec, request_types.tServerNotification), repr(rec)
             return ServerNotification(request_types, server_public_key, rec.updates)
 
-    def __init__( self, request_types, server_public_key, updates ):
+    def __init__(self, request_types, server_public_key, updates):
         assert isinstance(server_public_key, PublicKey), repr(server_public_key)
         self._request_types = request_types
         self.server_public_key = server_public_key
@@ -65,7 +65,7 @@ class ServerNotification(ResponseBase):
 
 class Response(ResponseBase):
 
-    def __init__( self, request_types, server_public_key, updates, iface, command_id, request_id, result ):
+    def __init__(self, request_types, server_public_key, updates, iface, command_id, request_id, result):
         ResponseBase.__init__(self, request_types, server_public_key, updates)
         self.iface = iface
         self.command_id = command_id

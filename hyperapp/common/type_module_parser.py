@@ -77,16 +77,16 @@ tokens = [tok_name[t] for t in token_types] + [
 
 
 
-def syntax_error( p, token_num, msg ):
+def syntax_error(p, token_num, msg):
     line_num = p.lineno(token_num)
     print(p.parser.lines[line_num - 1])
     print('%s:%d: %s' % (p.parser.fname, line_num, msg))
     raise SyntaxError(msg)
 
-def unknown_name_error( p, token_num, name ):
+def unknown_name_error(p, token_num, name):
     syntax_error(p, token_num, 'Unknown name: %r' % name)
 
-def register_typedef( p, name_token_num, name, type ):
+def register_typedef(p, name_token_num, name, type):
     parser = p.parser
     typedef = tTypeDef(name=name, type=type)
     try:
@@ -96,267 +96,267 @@ def register_typedef( p, name_token_num, name, type ):
     parser.new_type_registry.register(typedef.name, t)
     return typedef
 
-def import_names( parser, module_name, names ):
+def import_names(parser, module_name, names):
     registry = parser.type_registry_registry.resolve_type_registry(module_name)
     for name in names:
         parser.imported_type_registry.register(name, registry.resolve(name))
 
 
-def p_module( p ):
+def p_module(p):
     'module : ENCODING module_contents ENDMARKER'
     p[0] = p[2]
 
-def p_module_contents_1( p ):
+def p_module_contents_1(p):
     'module_contents : import_list STMT_SEP typedef_list'
     p[0] = (p[1], p[3])
 
-def p_module_contents_2( p ):
+def p_module_contents_2(p):
     'module_contents : typedef_list_opt'
     p[0] = ([], p[1])
 
 
-def p_import_list_1( p ):
+def p_import_list_1(p):
     'import_list : import_list STMT_SEP import_def'
     p[0] = p[1] + [p[3]]
 
-def p_import_list_2( p ):
+def p_import_list_2(p):
     'import_list : import_def'
     p[0] = [p[1]]
 
 
-def p_import_def( p ):
+def p_import_def(p):
     'import_def : FROM NAME IMPORT name_list'
     p[0] = p[2]
     import_names(p.parser, p[2], p[4])
 
-def p_name_list_1( p ):
+def p_name_list_1(p):
     'name_list : NAME'
     p[0] = [p[1]]
 
-def p_name_list_2( p ):
+def p_name_list_2(p):
     'name_list : name_list COMMA NAME'
     p[0] = p[1] + [p[3]]
 
 
-def p_typedef_list_opt_1( p ):
+def p_typedef_list_opt_1(p):
     'typedef_list_opt : empty'
     p[0] = []
 
-def p_typedef_list_opt_2( p ):
+def p_typedef_list_opt_2(p):
     'typedef_list_opt : typedef_list'
     p[0] = p[1]
 
-def p_typedef_list_1( p ):
+def p_typedef_list_1(p):
     'typedef_list : typedef_list STMT_SEP typedef'
     p[0] = p[1] + [p[3]]
 
-def p_typedef_list_2( p ):
+def p_typedef_list_2(p):
     'typedef_list : typedef'
     p[0] = [p[1]]
 
-def p_typedef_1( p ):
+def p_typedef_1(p):
     'typedef : NAME EQUAL type_expr'
     p[0] = register_typedef(p, 1, p[1], p[3])
 
-def p_typedef_2( p ):
+def p_typedef_2(p):
     'typedef : NAME EQUAL record_def'
     p[0] = register_typedef(p, 1, p[1], p[3])
 
-def p_typedef_3( p ):
+def p_typedef_3(p):
     'typedef : NAME EQUAL class_def'
     p[0] = register_typedef(p, 1, p[1], p[3])
 
-def p_typedef_4( p ):
+def p_typedef_4(p):
     'typedef : NAME EQUAL hierarchy_def'
     p[0] = register_typedef(p, 1, p[1], p[3])
 
-def p_typedef_5( p ):
+def p_typedef_5(p):
     'typedef : NAME EQUAL interface_def'
     p[0] = register_typedef(p, 1, p[1], p[3])
 
 
-def p_record_def( p ):
+def p_record_def(p):
     'record_def : RECORD COLON BLOCK_BEGIN field_list BLOCK_END'
     p[0] = t_record_meta(p[4])
 
 
-def p_hierarchy_def( p ):
+def p_hierarchy_def(p):
     'hierarchy_def : HIERARCHY NAME'
     p[0] = t_hierarchy_meta(p[2])
 
 
-def p_class_def( p ):
+def p_class_def(p):
     'class_def : NAME CLASS NAME class_base_def class_fields_def'
     p[0] = t_hierarchy_class_meta(p[1], p[3], p[4], p[5])
 
-def p_class_base_def_1( p ):
+def p_class_base_def_1(p):
     'class_base_def : LPAR NAME RPAR'
     p[0] = p[2]
 
-def p_class_base_def_2( p ):
+def p_class_base_def_2(p):
     'class_base_def : empty'
     p[0] = None
 
 
-def p_class_fields_def_1( p ):
+def p_class_fields_def_1(p):
     'class_fields_def : COLON BLOCK_BEGIN field_list BLOCK_END'
     p[0] = p[3]
     
-def p_class_fields_def_2( p ):
+def p_class_fields_def_2(p):
     'class_fields_def : empty'
     p[0] = []
 
 
-def p_interface_def_1( p ):
+def p_interface_def_1(p):
     'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[3], p[6])
 
-def p_interface_def_2( p ):
+def p_interface_def_2(p):
     'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[3], p[8], contents_fields=p[6])
 
-def p_interface_def_3( p ):
+def p_interface_def_3(p):
     'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_diff_type_def STMT_SEP interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
     p[0] = t_interface_meta(p[2], p[3], p[10], contents_fields=p[8], diff_type=p[6])
 
 
-def p_interface_parent_def_1( p ):
+def p_interface_parent_def_1(p):
     'interface_parent_def : LPAR NAME RPAR'
     p[0] = p[2]
 
-def p_interface_parent_def_2( p ):
+def p_interface_parent_def_2(p):
     'interface_parent_def : empty'
     p[0] = None
 
 
-def p_list_interface_def_1( p ):
+def p_list_interface_def_1(p):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs STMT_SEP interface_command_defs BLOCK_END'
     p[0] = t_list_interface_meta(p[2], None, p[7], p[5])
 
-def p_list_interface_def_2( p ):
+def p_list_interface_def_2(p):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
     p[0] = t_list_interface_meta(p[2], None, [], p[5])
 
 
-def p_interface_diff_type_def( p ):
+def p_interface_diff_type_def(p):
     'interface_diff_type_def : DIFF_TYPE COLON type_expr'
     p[0] = p[3]
 
 
-def p_interface_contents_defs( p ):
+def p_interface_contents_defs(p):
     'interface_contents_defs : CONTENTS COLON BLOCK_BEGIN contents_field_list BLOCK_END'
     p[0] = p[4]
 
-def p_contents_field_list_1( p ):
+def p_contents_field_list_1(p):
     'contents_field_list : contents_field_list STMT_SEP contents_field'
     p[0] = p[1] + [p[3]]
 
-def p_contents_field_list_2( p ):
+def p_contents_field_list_2(p):
     'contents_field_list : contents_field'
     p[0] = [p[1]]
 
-def p_contents_field( p ):
+def p_contents_field(p):
     'contents_field : NAME COLON type_expr'
     p[0] = t_field_meta(p[1], p[3])
 
 
-def p_interface_command_defs( p ):
+def p_interface_command_defs(p):
     'interface_command_defs : COMMANDS COLON BLOCK_BEGIN interface_command_list BLOCK_END'
     p[0] = p[4]
 
-def p_interface_command_list_1( p ):
+def p_interface_command_list_1(p):
     'interface_command_list : interface_command_list STMT_SEP interface_command'
     p[0] = p[1] + [p[3]]
 
-def p_interface_command_list_3( p ):
+def p_interface_command_list_3(p):
     'interface_command_list : interface_command'
     p[0] = [p[1]]
 
-def p_interface_command( p ):
+def p_interface_command(p):
     'interface_command : NAME NAME LPAR command_field_list RPAR ARROW LPAR command_field_list RPAR'
     p[0] = t_command_meta(p[1], p[2], p[4], p[8])
 
-def p_command_field_list_1( p ):
+def p_command_field_list_1(p):
     'command_field_list : command_field_list COMMA command_field'
     p[0] = p[1] + [p[3]]
 
-def p_command_field_list_2( p ):
+def p_command_field_list_2(p):
     'command_field_list : command_field'
     p[0] = [p[1]]
 
-def p_command_field_list_3( p ):
+def p_command_field_list_3(p):
     'command_field_list : empty'
     p[0] = []
 
-def p_command_field( p ):
+def p_command_field(p):
     'command_field : NAME COLON type_expr'
     p[0] = t_field_meta(p[1], p[3])
 
 
-def p_interface_columns_defs( p ):
+def p_interface_columns_defs(p):
     'interface_columns_defs : COLUMNS COLON BLOCK_BEGIN columns_defs BLOCK_END'
     p[0] = p[4]
 
-def p_columns_defs_1( p ):
+def p_columns_defs_1(p):
     'columns_defs : columns_defs STMT_SEP column_def'
     p[0] = p[1] + [p[3]]
 
-def p_columns_defs_2( p ):
+def p_columns_defs_2(p):
     'columns_defs : column_def'
     p[0] = [p[1]]
 
-def p_column_def_1( p ):
+def p_column_def_1(p):
     'column_def : NAME COLON type_expr'
     p[0] = t_column_meta(p[1], p[3], is_key=False)
 
-def p_column_def_2( p ):
+def p_column_def_2(p):
     'column_def : AT NAME COLON type_expr'
     p[0] = t_column_meta(p[2], p[4], is_key=True)
 
 
-def p_field_list_1( p ):
+def p_field_list_1(p):
     'field_list : field_list STMT_SEP field_def'
     p[0] = p[1] + [p[3]]
 
-def p_field_list_2( p ):
+def p_field_list_2(p):
     'field_list : field_def'
     p[0] = [p[1]]
 
-def p_field_def( p ):
+def p_field_def(p):
     'field_def : NAME COLON type_expr'
     p[0] = t_field_meta(p[1], p[3])
 
 
-def p_type_expr_1( p ):
+def p_type_expr_1(p):
     'type_expr : NAME'
     name = p[1]
     if not p.parser.resolver.has_name(name):
         unknown_name_error(p, 1, name)
     p[0] = t_named(name)
 
-def p_type_expr_2( p ):
+def p_type_expr_2(p):
     'type_expr : type_expr OPT'
     p[0] = t_optional_meta(p[1])
 
-def p_type_expr_3( p ):
+def p_type_expr_3(p):
     'type_expr : type_expr LIST'
     p[0] = t_list_meta(p[1])
 
 
-def p_empty( p ):
+def p_empty(p):
     'empty :'
     pass
 
 
 class Lexer(object):
 
-    def input( self, input ):
+    def input(self, input):
         self._tokenizer = tokenize.tokenize(BytesIO(input.encode('utf-8')).readline)
         self._tab_size = None
         self._indent = 0
         self._next_token = None  # looked-ahead
 
-    def token( self ):
+    def token(self):
         if self._next_token:
             tok = self._next_token
         else:
@@ -378,7 +378,7 @@ class Lexer(object):
         self._next_token = next
         return tok
 
-    def _get_next_token( self ):
+    def _get_next_token(self):
         try:
             tinfo = self._tokenizer.__next__()
         except StopIteration:
@@ -413,7 +413,7 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module( meta_registry, type_registry_registry, fname, contents, debug=False ):
+def parse_type_module(meta_registry, type_registry_registry, fname, contents, debug=False):
     parser = yacc.yacc(debug=debug)
     parser.fname = fname
     parser.lines = contents.splitlines()

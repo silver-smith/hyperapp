@@ -435,17 +435,17 @@ key_modifiers = {
     QtCore.Qt.MetaModifier: 'Meta',
     }
 
-def modifiers2str( modifiers ):
+def modifiers2str(modifiers):
     prefix = ''
     for mod_id, mod_name in key_modifiers.items():
         if modifiers & mod_id:
             prefix += mod_name + '+'
     return prefix
 
-def key_evt2str( evt ):
+def key_evt2str(evt):
     return modifiers2str(evt.modifiers()) + key2name[evt.key()]
 
-def print_key_event( evt, prefix ):
+def print_key_event(evt, prefix):
     if DEBUG_KEYS \
         and evt.type() == QtCore.QEvent.Type.KeyPress \
         and evt.key() not in [QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Alt]:

@@ -57,35 +57,35 @@ class MetaTypeTest(unittest.TestCase):
         tDateTime,
         ]
 
-    def setUp( self ):
+    def setUp(self):
         self.meta_type_registry = make_meta_type_registry()
 
-    def test_named( self ):
+    def test_named(self):
         resolver = TypeResolver([builtin_type_registry()])
         data = t_named('int')
         t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(t, tInt)
         self.assertIs(t, tInt)  # must resolve to same instance
 
-    def test_optional( self ):
+    def test_optional(self):
         resolver = TypeResolver([builtin_type_registry()])
         data = t_optional_meta(t_named('string'))
         t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(t, TOptional(tString))
         self.assertIs(t.base_t, tString)
 
-    def test_list( self ):
+    def test_list(self):
         resolver = TypeResolver([builtin_type_registry()])
         data = t_list_meta(t_optional_meta(t_named('datetime')))
         t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(TList(TOptional(tDateTime)), t)
 
-    ## def test_indexed_list( self ):
+    ## def test_indexed_list(self):
     ##     for element_t in self.primitive_types:
     ##         t = TIndexedList(element_t)
     ##         self.check_type(t)
 
-    def test_record( self ):
+    def test_record(self):
         resolver = TypeResolver([builtin_type_registry()])
         data = t_record_meta([
             t_field_meta('int_field', t_named('int')),
@@ -100,7 +100,7 @@ class MetaTypeTest(unittest.TestCase):
             ]),
             t)
 
-    def test_hierarchy( self ):
+    def test_hierarchy(self):
         type_names = builtin_type_registry()
         resolver = TypeResolver([type_names])
         hdata = t_hierarchy_meta('test_hierarchy')
@@ -121,7 +121,7 @@ class MetaTypeTest(unittest.TestCase):
         self.assertEqual(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
                                                                Field('field_b_1', TList(tInt))])), class_b)
 
-    def test_interface( self ):
+    def test_interface(self):
         type_names = builtin_type_registry()
         resolver = TypeResolver([type_names])
         data = t_interface_meta('unit_test_iface', None, [
@@ -154,7 +154,7 @@ class MetaTypeTest(unittest.TestCase):
                            [Field('result', TOptional(tInt))]),
             ]), t)
 
-    def test_list_interface( self ):
+    def test_list_interface(self):
         type_names = builtin_type_registry()
         resolver = TypeResolver([type_names])
         data = t_list_interface_meta('unit_test_list_iface', None, commands=[

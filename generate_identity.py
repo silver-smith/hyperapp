@@ -9,7 +9,7 @@ from hyperapp.common.identity import RSA_KEY_SIZE_SAFE, Identity
 log = logging.getLogger(__name__)
 
 
-def create_identity( fpath, overwrite ):
+def create_identity(fpath, overwrite):
     private_fpath = fpath + '.identity.pem'
     public_fpath = fpath + '.public.pem'
     if os.path.exists(private_fpath) and not overwrite:

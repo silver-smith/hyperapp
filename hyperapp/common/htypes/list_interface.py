@@ -17,14 +17,14 @@ from .meta_type import tMetaType, tInterfaceMeta, t_named, field_list_from_data,
 from .interface import RequestCmd, ContentsCommand, Interface
 
 
-def categorized_list_handle_type( core_types, key_t ):
+def categorized_list_handle_type(core_types, key_t):
     if key_t is tString:
         return core_types.categorized_string_list_handle
     if key_t is tInt:
         return core_types.categorized_int_list_handle
     assert False, 'Unsupported list key type: %r' % key_t
 
-def list_handle_type( core_types, key_t ):
+def list_handle_type(core_types, key_t):
     if key_t is tString:
         return core_types.string_list_handle
     if key_t is tInt:
@@ -35,11 +35,11 @@ def list_handle_type( core_types, key_t ):
 class Column(object):
 
     @classmethod
-    def from_data( cls, meta_registry, type_registry, rec ):
+    def from_data(cls, meta_registry, type_registry, rec):
         t = meta_registry.resolve(type_registry, rec.type)
         return cls(rec.id, t, rec.is_key)
 
-    def __init__( self, id, type=tString, is_key=False ):
+    def __init__(self, id, type=tString, is_key=False):
         assert isinstance(id, str), repr(id)
         assert isinstance(type, Type), repr(type)
         assert isinstance(is_key, bool), repr(is_key)
@@ -47,7 +47,7 @@ class Column(object):
         self.type = type
         self.is_key = is_key
 
-    def __eq__( self, other ):
+    def __eq__(self, other):
         assert isinstance(other, Column), repr(other)
         return (other.id == self.id and
                 other.type == self.type and
@@ -68,13 +68,13 @@ tListInterface = tMetaType.register('list_interface', base=tInterfaceMeta, field
     ])
 
 
-def t_column_meta( id, type, is_key ):
+def t_column_meta(id, type, is_key):
     return tColumn(id, type, is_key)
 
-def t_list_interface_meta( iface_id, base_iface_id, commands, columns, contents_fields=None, diff_type=None ):
+def t_list_interface_meta(iface_id, base_iface_id, commands, columns, contents_fields=None, diff_type=None):
     return tListInterface(tListInterface.id, iface_id, base_iface_id, contents_fields or [], diff_type, commands, columns)
 
-def list_interface_from_data( meta_registry, type_registry, rec ):
+def list_interface_from_data(meta_registry, type_registry, rec):
     contents_fields = field_list_from_data(meta_registry, type_registry, rec.contents_fields)
     assert rec.diff_type is None, repr(rec.diff_type)  # list interface makes it's own diff type
     commands = [command_from_data(meta_registry, type_registry, command) for command in rec.commands]
@@ -93,7 +93,7 @@ class ElementCommand(RequestCmd):
 
 class ListInterface(Interface):
         
-    def __init__( self, iface_id, base=None, contents_fields=None, commands=None, columns=None ):
+    def __init__(self, iface_id, base=None, contents_fields=None, commands=None, columns=None):
         assert is_list_inst(columns, Column), repr(columns)
         self._id2column = dict((column.id, column) for column in columns)
         self._columns = columns
@@ -120,13 +120,13 @@ class ListInterface(Interface):
         commands = [self._resolve_command(command) for command in commands or []]
         Interface.__init__(self, iface_id, base, contents_fields, self._tDiff, commands)
 
-    def __eq__( self, other ):
+    def __eq__(self, other):
         return (isinstance(other, ListInterface) and
                 Interface.__eq__(self, other) and
                 other._columns == self._columns and
                 other._key_column_id == self._key_column_id)
 
-    def _pick_key_column_id( self ):
+    def _pick_key_column_id(self):
         key_column_id = None
         for column in self._columns:
             if column.is_key:
@@ -135,28 +135,28 @@ class ListInterface(Interface):
         assert key_column_id, 'No column with is_key is found'
         return key_column_id
 
-    def _resolve_command( self, command ):
+    def _resolve_command(self, command):
         if isinstance(command, ElementCommand):
             params_fields = [Field('element_key', self._key_type)] + (command.params_fields or [])
             return RequestCmd(command.command_id, params_fields, command.result_fields)
         else:
             return command
 
-    def get_key_type( self ):
+    def get_key_type(self):
         return self._key_type
 
-    def get_columns( self ):
+    def get_columns(self):
         return self._columns
 
-    def get_key_column_id( self ):
+    def get_key_column_id(self):
         return self._key_column_id
 
-    def get_default_contents_fields( self ):
+    def get_default_contents_fields(self):
         return Interface.get_default_contents_fields(self) + [
             Field('slice', self.tSlice()),
             ]
 
-    def get_basic_commands( self, core_types ):
+    def get_basic_commands(self, core_types):
         fetch_params_fields = [
             Field('sort_column_id', tString),
             Field('from_key', TOptional(self._key_type)),
@@ -167,23 +167,23 @@ class ListInterface(Interface):
             + [ContentsCommand('fetch_elements', fetch_params_fields),
                ContentsCommand('subscribe_and_fetch_elements', fetch_params_fields)]
 
-    def Row( self, *args, **kw ):
+    def Row(self, *args, **kw):
         return self._tRowRecord(*args, **kw)
 
-    def tElement( self ):
+    def tElement(self):
         return self._tElement
 
-    def Element( self, row, commands=None ):
+    def Element(self, row, commands=None):
         return self.tElement()(row, commands or [])
 
-    def tSlice( self ):
+    def tSlice(self):
         return self._tSlice
 
-    def Slice( self, *args, **kw ):
+    def Slice(self, *args, **kw):
         return self.tSlice()(*args, **kw)
 
-    def tDiff( self ):
+    def tDiff(self):
         return self._tDiff
 
-    def Diff( self, *args, **kw ):
+    def Diff(self, *args, **kw):
         return self.tDiff()(*args, **kw)

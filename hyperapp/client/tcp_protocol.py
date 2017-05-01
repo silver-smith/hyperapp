@@ -15,7 +15,7 @@ class TcpProtocol(asyncio.Protocol):
 
     @classmethod
     @asyncio.coroutine
-    def produce( cls, remoting, server_public_key, host, port ):
+    def produce(cls, remoting, server_public_key, host, port):
         assert isinstance(remoting, Remoting), repr(remoting)
         key = (server_public_key.get_id(), host, port)
         protocol = cls._connections.get(key)
@@ -27,10 +27,10 @@ class TcpProtocol(asyncio.Protocol):
         return protocol
 
     @staticmethod
-    def _make_key( server_public_key, host, port ):
+    def _make_key(server_public_key, host, port):
         return (server_public_key.get_id(), host, port)
 
-    def __init__( self, remoting, server_public_key, host, port ):
+    def __init__(self, remoting, server_public_key, host, port):
         assert isinstance(server_public_key, PublicKey), repr(server_public_key)
         self._remoting = remoting
         self._server_public_key = server_public_key
@@ -39,11 +39,11 @@ class TcpProtocol(asyncio.Protocol):
         self.session_list = TransportSessionList()
         self._recv_buf = b''
 
-    def connection_made( self, transport ):
+    def connection_made(self, transport):
         log.info('tcp connection made')
         self.transport = transport
 
-    def data_received( self, data ):
+    def data_received(self, data):
         self._log('%d bytes is received' % len(data))
         self._recv_buf += data
         while has_full_tcp_packet(self._recv_buf):
@@ -54,13 +54,13 @@ class TcpProtocol(asyncio.Protocol):
             self._recv_buf = self._recv_buf[packet_size:]
             self._log('consumed %d bytes, remained %d' % (packet_size, len(self._recv_buf)))
 
-    def send_packet( self, packet ):
+    def send_packet(self, packet):
         assert isinstance(packet, tTransportPacket), repr(packet)
         contents = encode_transport_packet(packet)
         data = encode_tcp_packet(contents)
         self._log('sending data, size=%d' % len(data))
         self.transport.write(data)
 
-    def _log( self, msg ):
+    def _log(self, msg):
         log.info('tcp to %s at %s:%d: %s', self._server_public_key.get_short_id_hex(), self._host, self._port, msg)
         

@@ -18,7 +18,7 @@ NARROWER_VIEW_ID = 'narrower_list'
 FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
 
 
-def register_views( registry, services ):
+def register_views(registry, services):
     registry.register(NARROWER_VIEW_ID, View.from_state, services.objimpl_registry, services.resources_manager)
 
 
@@ -38,7 +38,7 @@ tIntNarrowerListHandle = core_types.handle.register(
         ])
 
 
-def narrower_list_handle_type( key_t ):
+def narrower_list_handle_type(key_t):
     if key_t is tString:
         return tStringNarrowerListHandle
     if key_t is tInt:
@@ -49,7 +49,7 @@ def narrower_list_handle_type( key_t ):
 # todo: subscription
 class FilteredListObj(ListObject, ListObserver):
 
-    def __init__( self, base, narrow_field_id, prefix ):
+    def __init__(self, base, narrow_field_id, prefix):
         assert isinstance(base, ListObject), repr(base)
         ListObject.__init__(self)
         self._base = base
@@ -58,30 +58,30 @@ class FilteredListObj(ListObject, ListObserver):
         self._cached_elements = []
         self._base.subscribe(self)
 
-    def __repr__( self ):
+    def __repr__(self):
         return 'FilteredListObj(%r/%r/%r)' % (self._narrow_field_id, self._prefix, len(self._cached_elements))
 
-    def get_title( self ):
+    def get_title(self):
         return self._base.get_title()
 
-    def get_url( self ):
+    def get_url(self):
         return self._base.get_url()
 
-    def get_commands( self ):
+    def get_commands(self):
         return self._base.get_commands()
 
-    def get_columns( self ):
+    def get_columns(self):
         return self._base.get_columns()
 
-    def get_key_column_id( self ):
+    def get_key_column_id(self):
         return self._base.get_key_column_id()
     
     @asyncio.coroutine
-    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
+    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         log.info('-- narrower.fetch_elements sort_column_id=%r key=%r desc_count=%r asc_count=%r', sort_column_id, key, desc_count, asc_count)
         yield from self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
 
-    def process_fetch_result( self, result ):
+    def process_fetch_result(self, result):
         log.info('-- narrower.process_fetch_result sort_column_id=%r bof=%r eof=%r elements-len=%r', result.sort_column_id, result.bof, result.eof, len(result.elements))
         elements = list(filter(self._element_matched, result.elements))
         filtered = result.clone_with_elements(elements)
@@ -96,16 +96,16 @@ class FilteredListObj(ListObject, ListObserver):
             self._notify_fetch_result(filtered)
         self._cached_elements.extend(elements)  # may has duplicates now, it's ok
 
-    def _element_matched( self, element ):
+    def _element_matched(self, element):
         value = self._get_filter_field(element)
         return value.lower().startswith(self._prefix.lower())
 
     @asyncio.coroutine
-    def run_command( self, command_id, **kw ):
+    def run_command(self, command_id, **kw):
         return (yield from self._base.run_command(command_id, **kw))
 
     # we find only in cached elements, that is elements we have seen; do not issue additional fetch command
-    def find_common_prefix( self ):
+    def find_common_prefix(self):
         elements = self._cached_elements
         if not elements:
             return None
@@ -116,10 +116,10 @@ class FilteredListObj(ListObject, ListObserver):
                 common = common[:-1]
         return common
 
-    def _get_filter_field( self, element ):
+    def _get_filter_field(self, element):
         return getattr(element.row, self._narrow_field_id)
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~FilteredListObj narrow_field_id=%r prefix=%r', self._narrow_field_id, self._prefix)
 
 
@@ -129,7 +129,7 @@ class View(LineListPanel):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, locale, state, parent, objimpl_registry, resources_manager ):
+    def from_state(cls, locale, state, parent, objimpl_registry, resources_manager):
         data_type = core_types.handle.resolve_obj(state)
         object = objimpl_registry.resolve(state.object)
         return cls(locale, parent, data_type, object, resources_manager, state.resource_id,
@@ -149,7 +149,7 @@ class View(LineListPanel):
         self._line_edit.textEdited.connect(self._on_text_edited)
         self.cancel_narrowing.set_enabled(bool(prefix))
 
-    def get_state( self ):
+    def get_state(self):
         return self._data_type(
             view_id=self.view_id,
             object=self._base_obj.get_state(),
@@ -160,27 +160,27 @@ class View(LineListPanel):
             # lvs.first_visible_row, lvs.select_first, self._line_edit.text()
             )
 
-    def get_commands( self, kinds=None ):
+    def get_commands(self, kinds=None):
         return LineListPanel.get_commands(self, ['view', 'object'])
 
-    def _set_prefix( self, prefix ):
+    def _set_prefix(self, prefix):
         self._line_edit.setText('')
         self._update_prefix('')
 
-    def _make_filtered_obj( self, prefix ):
+    def _make_filtered_obj(self, prefix):
         return FilteredListObj(self._base_obj, self._narrow_field_id, prefix)
 
-    def _update_prefix( self, text ):
+    def _update_prefix(self, text):
         key = self._list_view.get_current_key()
         object = self._make_filtered_obj(text)
         self._list_view.set_object(object)
         self._list_view.set_current_key(key, select_first=True)
         self.cancel_narrowing.set_enabled(text != '')
 
-    def _on_text_edited( self, text ):
+    def _on_text_edited(self, text):
         self._update_prefix(text)
 
-    def is_list_event( self, evt ):
+    def is_list_event(self, evt):
         if key_match_any(evt, [
             'Period',
             'Slash',
@@ -192,21 +192,21 @@ class View(LineListPanel):
         return LineListPanel.is_list_event(self, evt)
 
     @command('wider', kind='object', enabled=False)
-    def cancel_narrowing( self ):
+    def cancel_narrowing(self):
         if self._line_edit.text():
             self._set_prefix('')
 
-    def eventFilter( self, obj, evt ):
+    def eventFilter(self, obj, evt):
         if self._line_edit.text() and key_match(evt, 'Space'):
             self._fill_common_prefix()
             return True
         return LineListPanel.eventFilter(self, obj, evt)
 
-    def _fill_common_prefix( self ):
+    def _fill_common_prefix(self):
         common_prefix = self._list_view.get_object().find_common_prefix()
         if not common_prefix:
             return
         self._line_edit.setText(common_prefix)
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~narrower title=%r self=%r', self._base_obj.get_title(), self)

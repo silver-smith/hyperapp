@@ -14,18 +14,18 @@ horizontal = 'horizontal'
 vertical = 'vertical'
 
 
-def register_views( registry, services ):
+def register_views(registry, services):
     registry.register(View.view_id, View.from_state, services.view_registry)
 
 
-def orient2qt( orient ):
+def orient2qt(orient):
     if orient == horizontal:
         return QtCore.Qt.Horizontal
     if orient == vertical:
         return QtCore.Qt.Vertical
     assert False, repr(orient)  # vertical or horizontal is expected
 
-def qt2orient( orient ):
+def qt2orient(orient):
     if orient == QtCore.Qt.Horizontal:
         return horizontal
     if orient == QtCore.Qt.Vertical:
@@ -39,12 +39,12 @@ class View(QtGui.QSplitter, view.View):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, locale, state, parent, view_registry ):
+    def from_state(cls, locale, state, parent, view_registry):
         x = yield from view_registry.resolve(locale, state.x)
         y = yield from view_registry.resolve(locale, state.y)
         return cls(parent, x, y, state.orientation, state.focused, state.sizes)
 
-    def __init__( self, parent, x, y, orient, focused, sizes ):
+    def __init__(self, parent, x, y, orient, focused, sizes):
         QtGui.QSplitter.__init__(self, orient2qt(orient))
         view.View.__init__(self, parent)
         self._to_focus = focused  # will be used when become set visible
@@ -57,7 +57,7 @@ class View(QtGui.QSplitter, view.View):
             self.setSizes(sizes)
         QtGui.QApplication.instance().focusChanged.connect(self._on_focus_changed)
 
-    def _set_child( self, idx, view, focus=False ):
+    def _set_child(self, idx, view, focus=False):
         view.set_parent(self)
         w = view.get_widget()
         self.insertWidget(idx, w)
@@ -65,7 +65,7 @@ class View(QtGui.QSplitter, view.View):
             if DEBUG_FOCUS: log.info('*** splitter: focusing new child self=%r view=%r w=%r', self, view, w)
             view.ensure_has_focus()
 
-    def get_state( self ):
+    def get_state(self):
         if DEBUG_FOCUS:
             log.info('*** splitter.handle self=%r focused=%r focused-widget=%r',
                      self, self._focused, self._get_view(self._focused).get_widget() if self._focused is not None else None)
@@ -76,14 +76,14 @@ class View(QtGui.QSplitter, view.View):
             focused=self._focused or 0,
             sizes=self.sizes())
 
-    def get_current_child( self ):
+    def get_current_child(self):
         if DEBUG_FOCUS: log.info('  * splitter.get_current_child self=%r focused=%r', self, self._focused)
         if self._focused is not None:
             return self._get_view(self._focused)
         else:
             return None
 
-    def view_changed( self, child ):
+    def view_changed(self, child):
         if DEBUG_FOCUS:
             log.info('*** splitter.view_changed self=%r child=%r x/y=%r child-widget=%r', self, child, 0 if child == self._x else 1, child.get_widget())
         if self._x is None or self._y is None: return  # constructing right now
@@ -106,11 +106,11 @@ class View(QtGui.QSplitter, view.View):
             assert False, child  # Unknown child view
         view.View.view_changed(self)
 
-    def open( self, handle ):
+    def open(self, handle):
         focused = self._focused_index()
         self._get_view(focused).open(handle)
 
-    def pick_arg( self, kind ):
+    def pick_arg(self, kind):
         if self._focused is None: return
         another_view = self._get_view(1 - self._focused)
         obj = another_view.get_object()
@@ -119,7 +119,7 @@ class View(QtGui.QSplitter, view.View):
         else:
             return None
 
-    def _on_focus_changed( self, old, new ):
+    def _on_focus_changed(self, old, new):
         if not self.isVisible(): return
         focused = self._focused_index(default=None)
         if focused is not None and focused != self._focused:
@@ -127,10 +127,10 @@ class View(QtGui.QSplitter, view.View):
             self._focused = focused
             view.View.view_changed(self)
 
-    def _focused_index( self, default=0 ):
+    def _focused_index(self, default=0):
         return focused_index(self, [self._x.get_widget(), self._y.get_widget()], default)
 
-    def _get_view( self, idx ):
+    def _get_view(self, idx):
         if idx == 0:
             return self._x
         elif idx == 1:
@@ -138,7 +138,7 @@ class View(QtGui.QSplitter, view.View):
         else:
             assert False, idx  # expected 0 or 1
 
-    def setVisible( self, visible ):
+    def setVisible(self, visible):
         if DEBUG_FOCUS:
             log.info('*** splitter.setVisible self=%r visible=%r self._to_focus=%r to-focus-widget=%r actual-focus=%r focused-widget=%r',
                       self, visible, self._to_focus, self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None,
@@ -152,24 +152,24 @@ class View(QtGui.QSplitter, view.View):
             self._focused = self._to_focus
             self._to_focus = None
 
-    def focusInEvent( self, evt ):
+    def focusInEvent(self, evt):
         if DEBUG_FOCUS:
             log.info('*** splitter.focusInEvent self=%r to_focus=%r to-focus-widget=%r',
                      self, self._to_focus, self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None)
         QtGui.QSplitter.focusInEvent(self, evt)
 
-    def focusOutEvent( self, evt ):
+    def focusOutEvent(self, evt):
         if DEBUG_FOCUS: log.info('*** splitter.focusOutEvent self=%r', self)
         QtGui.QSplitter.focusOutEvent(self, evt)
 
 
 ## class MonolithView(View):
 
-##     def open( self, handle ):
+##     def open(self, handle):
 ##         return view.View.open(self, handle)
 
 
-def map_current( handle, mapper ):
+def map_current(handle, mapper):
     if handle.focused == 0:
         return this_module.splitter_handle(mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
     elif handle.focused == 1:
@@ -177,15 +177,15 @@ def map_current( handle, mapper ):
     else:
         assert False, repr(handle.focused)  # 0 or 1 is expected
 
-def split( orient ):
-    def mapper( handle ):
+def split(orient):
+    def mapper(handle):
         if handle.view_id == View.view_id:
             return map_current(handle, mapper)
         else:
             return this_module.splitter_handle(handle, handle, orient)
     return mapper
 
-def unsplit( handle ):
+def unsplit(handle):
     if handle.view_id != View.view_id:
         return None
     if handle.focused == 0:
@@ -199,9 +199,9 @@ def unsplit( handle ):
 
 class ThisModule(Module):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         Module.__init__(self, services)
         self.splitter_types = importlib.import_module('hyperapp.common.interface.splitter')
 
-    def splitter_handle( self, x, y, orientation, focused=0, sizes=None ):
+    def splitter_handle(self, x, y, orientation, focused=0, sizes=None):
         return self.splitter_types.splitter_handle(View.view_id, x, y, orientation='horizontal', focused=0, sizes=sizes or [])

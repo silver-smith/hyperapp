@@ -31,37 +31,37 @@ DYN_MODULE_EXT = '.dyn.py'
 
 class PhonyCacheRepository(object):
 
-    def load_value( self, key, t ):
+    def load_value(self, key, t):
         return []
 
 
 class PhonyNamedUrlRepository(NamedUrlRepository):
 
-    def enumerate( self ):
+    def enumerate(self):
         return []
 
-    def add( self, item ):
+    def add(self, item):
         pass
 
 
 class PhonyIdentityRepository(object):
 
-    def add( self, identity_item ):
+    def add(self, identity_item):
         pass
 
-    def enumerate( self ):
+    def enumerate(self):
         return []
 
 
 class PhonyResourcesManager(object):
 
-    def register_all( self, resources ):
+    def register_all(self, resources):
         pass
 
-    def register( self, resources ):
+    def register(self, resources):
         pass
 
-    def resolve( self, id ):
+    def resolve(self, id):
         return None
 
 
@@ -75,7 +75,7 @@ class PhonyIdentityController(object):
 
 class Services(ServicesBase):
 
-    def __init__( self ):
+    def __init__(self):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         ServicesBase.init_services(self)
@@ -108,7 +108,7 @@ class Services(ServicesBase):
             self.module_manager.unregister_meta_hook()
             raise
 
-    def _load_modules( self ):
+    def _load_modules(self):
         for module_name in [
                 'form',
                 'code_repository',
@@ -121,32 +121,32 @@ class Services(ServicesBase):
             module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
 
-    def _register_transports( self ):
+    def _register_transports(self):
         tcp_transport.register_transports(self.remoting.transport_registry, self)
         encrypted_transport.register_transports(self.remoting.transport_registry, self)
 
 
 class RealRequestTest(unittest.TestCase):
 
-    def setUp( self ):
+    def setUp(self):
         self.services = Services()
         self.request_types = self.services.request_types
 
-    def tearDown( self ):
+    def tearDown(self):
         self.services.module_manager.unregister_meta_hook()
 
-    def test_get_request( self ):
+    def test_get_request(self):
         loop = asyncio.get_event_loop()
         loop.set_debug(True)
         loop.run_until_complete(self.run_get_request())
 
-    def test_unsubscribe_notification( self ):
+    def test_unsubscribe_notification(self):
         loop = asyncio.get_event_loop()
         loop.set_debug(True)
         loop.run_until_complete(self.run_unsubscribe_notification())
 
     @asyncio.coroutine
-    def run_get_request( self ):
+    def run_get_request(self):
         url = self.load_url_from_file()
         request = Request(
             request_types=self.request_types,
@@ -164,7 +164,7 @@ class RealRequestTest(unittest.TestCase):
         self.assertEqual('test-001', response.request_id)
 
     @asyncio.coroutine
-    def run_unsubscribe_notification( self ):
+    def run_unsubscribe_notification(self):
         url = self.load_url_from_file()
         notification = ClientNotification(
             request_types=self.request_types,
@@ -178,7 +178,7 @@ class RealRequestTest(unittest.TestCase):
         response = yield from (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
         self.assertEqual(None, response)
 
-    def load_url_from_file( self ):
+    def load_url_from_file(self):
         url = UrlWithRoutes.load_from_file(self.services.iface_registry, os.path.expanduser('~/tmp/url'))
         self.services.remoting.add_routes_from_url(url)
         return url

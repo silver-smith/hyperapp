@@ -13,11 +13,11 @@ MODULE_NAME = 'file'
 
 class FsObject(SmallListObject):
 
-    def __init__( self, fspath ):
+    def __init__(self, fspath):
         SmallListObject.__init__(self, core_types)
         self.fspath = os.path.abspath(fspath)
 
-    def get_path( self ):
+    def get_path(self):
         return this_module.make_path(self.fspath)
 
 
@@ -27,13 +27,13 @@ class File(FsObject):
     objimpl_id = 'proxy_list'
     default_sort_column_id = 'idx'
 
-    def get_commands( self ):
+    def get_commands(self):
         return []
 
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         return [self.Element(self.Row(idx, line)) for idx, line in enumerate(self._load_lines())]
 
-    def _load_lines( self, ofs=0 ):
+    def _load_lines(self, ofs=0):
         with open(self.fspath) as f:
             if ofs:
                 f.seek(ofs)
@@ -46,7 +46,7 @@ class Dir(FsObject):
     objimpl_id = 'proxy_list'
     categories = [['initial', 'fs']]
 
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         dirs  = []
         files = []
         try:
@@ -62,11 +62,11 @@ class Dir(FsObject):
                 dirs.append(finfo)
             else:
                 files.append(finfo)
-        def key( finfo ):
+        def key(finfo):
             return finfo['key']
         return list(map(self.make_elt, sorted(dirs, key=key) + sorted(files, key=key)))
 
-    def get_file_info( self, fname, fspath ):
+    def get_file_info(self, fname, fspath):
         try:
             s = os.stat(fspath)
         except OSError:
@@ -82,28 +82,28 @@ class Dir(FsObject):
             fsize=s[stat.ST_SIZE],
             )
  
-    def make_elt( self, finfo ):
+    def make_elt(self, finfo):
         row = self.Row(key=finfo['key'], ftype=finfo['ftype'], ftime=finfo['ftime'], fsize=finfo['fsize'])
         return self.Element(row, commands=[self.command_open])
 
-    def get_handle( self, request ):
+    def get_handle(self, request):
         return self.CategorizedListHandle(self.get(request))
 
     @command('open', kind='element', is_default_command=True)
-    def command_open( self, request ):
+    def command_open(self, request):
         fname = request.params.element_key
         fspath = os.path.join(self.fspath, fname)
         return request.make_response_object(this_module.open(fspath))
 
     @command('parent')
-    def command_parent( self, request ):
+    def command_parent(self, request):
         fspath = self.get_parent_dir()
         if fspath is None: return None
         key = os.path.basename(self.fspath)
         handle = self.CategorizedListHandle(this_module.open(fspath).get(request), key=key)
         return request.make_response_handle(handle)
 
-    def get_parent_dir( self ):
+    def get_parent_dir(self):
         dir = os.path.dirname(self.fspath)
         if dir == self.fspath:
             return None  # already root
@@ -112,22 +112,22 @@ class Dir(FsObject):
 
 class ThisModule(Module):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         fspath = path.pop_str()
         return self.open(fspath)
 
-    def get_commands( self ):
+    def get_commands(self):
         return [ModuleCommand('home', 'Home', 'Open home directory', ['Alt+H'], self.name)]
 
-    def run_command( self, request, command_id ):
+    def run_command(self, request, command_id):
         if command_id == 'home':
             return request.make_response_object(self.open(os.path.expanduser('~')))
         return Module.run_command(self, request, command_id)
 
-    def open( self, fspath ):
+    def open(self, fspath):
         if os.path.isdir(fspath):
             return Dir(fspath)
         else:
@@ -139,7 +139,7 @@ if sys.platform == 'win32':
 else:
     fs_encoding = 'utf-8'
 
-def fsname2uni( v ):
+def fsname2uni(v):
     if type(v) is str:
         return v
     else:

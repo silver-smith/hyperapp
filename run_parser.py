@@ -13,7 +13,7 @@ from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module_parser import Lexer, parse_type_module
 
 
-def test_lex( fpaths ):
+def test_lex(fpaths):
     for fpath in fpaths:
         print('%s:' % fpath)
         lexer = Lexer()
@@ -26,7 +26,7 @@ def test_lex( fpaths ):
             if not tok:
                 break
 
-def test_yacc( fpaths ):
+def test_yacc(fpaths):
     type_registry_registry = builtin_type_registry_registry()
     for fpath in fpaths:
         print('%s:' % fpath)

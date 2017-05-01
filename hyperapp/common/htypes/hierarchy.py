@@ -4,46 +4,46 @@ from .htypes import join_path, Type, tString, Field, Record, TRecord, TList
 
 class TClassRecord(Record):
 
-    def __init__( self, trec, tclass ):
+    def __init__(self, trec, tclass):
         Record.__init__(self, trec)
         self._class = tclass
 
 
 class TClass(TRecord):
 
-    def __init__( self, hierarchy, id, trec ):
+    def __init__(self, hierarchy, id, trec):
         TRecord.__init__(self)
         self.hierarchy = hierarchy
         self.id = id
         self.trec = trec
 
-    def __repr__( self ):
+    def __repr__(self):
         return 'TClass(%s: %s)' % (self.id, ', '.join(map(repr, self.get_fields())))
 
-    def __eq__( self, other ):
+    def __eq__(self, other):
         assert isinstance(other, TClass), repr(other)
         return other.hierarchy is self.hierarchy and other.id == self.id and other.trec == self.trec
 
-    def get_trecord( self ):
+    def get_trecord(self):
         return self.trec
 
-    def get_fields( self ):
+    def get_fields(self):
         return self.trec.get_fields()
 
-    def get_field( self, name ):
+    def get_field(self, name):
         return self.trec.get_field(name)
 
-    def __instancecheck__( self, obj ):
+    def __instancecheck__(self, obj):
         if not isinstance(obj, TClassRecord):
             return False
         return issubclass(obj._class, self)
 
-    def instantiate( self, *args, **kw ):
+    def instantiate(self, *args, **kw):
         rec = TClassRecord(self.trec, self)
         self.trec.instantiate_impl(rec, *args, **kw)
         return rec
 
-    def __subclasscheck__( self, tclass ):
+    def __subclasscheck__(self, tclass):
         if not isinstance(tclass, TClass):
             return False
         if tclass is self:
@@ -55,24 +55,24 @@ class TClass(TRecord):
 
 class THierarchy(Type):
 
-    def __init__( self, hierarchy_id ):
+    def __init__(self, hierarchy_id):
         Type.__init__(self)
         self.hierarchy_id = hierarchy_id
         self.registry = {}  # id -> TClass
 
-    def __repr__( self ):
+    def __repr__(self):
         return 'THierarchy(%s)' % self.hierarchy_id
 
-    def __eq__( self, other ):
+    def __eq__(self, other):
         return other is self  # there must be only one (with same hierarchy_id)
 
-    def matches( self, other ):
+    def matches(self, other):
         return (isinstance(other, THierarchy) and
                 other.hierarchy_id == self.hierarchy_id and
                 sorted(other.registry.values(), key=lambda cls: cls.id) ==
                 sorted(self.registry.values(), key=lambda cls: cls.id))
 
-    def register( self, id, trec=None, fields=None, base=None ):
+    def register(self, id, trec=None, fields=None, base=None):
         assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         if trec is not None:
@@ -91,18 +91,18 @@ class THierarchy(Type):
         #print('registered %s %s' % (self.hierarchy_id, id))
         return tclass
 
-    def __instancecheck__( self, rec ):
+    def __instancecheck__(self, rec):
         if not isinstance(rec, TClassRecord):
             return False
         return rec._class.hierarchy is self
 
-    def resolve( self, class_id ):
+    def resolve(self, class_id):
         assert isinstance(class_id, str), repr(class_idid)
         assert class_id in self.registry, ('Unknown hierarchy %r class id: %r. Known are: %r, hierarchy id = %r'
             % (self.hierarchy_id, class_id, sorted(self.registry.keys()), id(self)))
         assert class_id in self.registry, 'Unknown hierarchy %r class id: %r. Known are: %r' % (self.hierarchy_id, class_id, sorted(self.registry.keys()))
         return self.registry[class_id]
 
-    def resolve_obj( self, rec ):
+    def resolve_obj(self, rec):
         assert isinstance(rec, TClassRecord), repr(rec)
         return rec._class

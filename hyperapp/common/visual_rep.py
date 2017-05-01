@@ -28,11 +28,11 @@ log = logging.getLogger(__name__)
 
 class RepNode(object):
 
-    def __init__( self, text, children=None ):
+    def __init__(self, text, children=None):
         self.text = text
         self.children = children or []
 
-    def pprint( self, indent=0 ):
+    def pprint(self, indent=0):
         log.info('%s%s' % ('  ' * indent, self.text))
         for node in self.children:
             node.pprint(indent + 1)
@@ -40,39 +40,39 @@ class RepNode(object):
 
 class VisualRepEncoder(object):
 
-    def __init__( self, resource_types=None, packet_types=None ):
+    def __init__(self, resource_types=None, packet_types=None):
         self._resource_types = resource_types
         self._packet_types = packet_types
 
-    def encode( self, t, value ):
+    def encode(self, t, value):
         return self.dispatch(t, value)
 
     @method_dispatch
-    def dispatch( self, t, value ):
+    def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
 
     @dispatch.register(TString)
     @dispatch.register(TInt)
     @dispatch.register(TBool)
-    def encode_primitive( self, t, value ):
+    def encode_primitive(self, t, value):
         return RepNode(repr(value))
 
     @dispatch.register(TBinary)
-    def encode_binary( self, t, value ):
+    def encode_binary(self, t, value):
         return RepNode('binary, len=%d' % len(value))
 
     @dispatch.register(TDateTime)
-    def encode_datetime( self, t, value ):
+    def encode_datetime(self, t, value):
         return RepNode(value.isoformat())
 
     @dispatch.register(TOptional)
-    def encode_optional( self, t, value ):
+    def encode_optional(self, t, value):
         if value is None:
             return RepNode('None')
         return self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
-    def encode_record( self, t, value ):
+    def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
         if self._packet_types and t is self._packet_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
@@ -95,14 +95,14 @@ class VisualRepEncoder(object):
         else:
             return RepNode('empty record')
 
-    def _make_type_module_rep( self, type_module ):
+    def _make_type_module_rep(self, type_module):
         return RepNode('type module %r' % type_module.module_name, children=[
             RepNode('provided: %s' % ', '.join('%s/%s' % (pc.hierarchy_id, pc.class_id) for pc in type_module.provided_classes)),
             RepNode('used_modules: %s' % ', '.join(type_module.used_modules)),
             RepNode('%d typedefs: %s' % (len(type_module.typedefs), ', '.join(typedef.name for typedef in type_module.typedefs))),
             ])
 
-    def encode_record_fields( self, t, value ):
+    def encode_record_fields(self, t, value):
         children = []
         fields = {}
         for field in t.get_static_fields():
@@ -114,17 +114,17 @@ class VisualRepEncoder(object):
         return children
 
     @dispatch.register(THierarchy)
-    def encode_hierarchy_obj( self, t, value ):
+    def encode_hierarchy_obj(self, t, value):
         tclass = t.resolve_obj(value)
         children = self.encode_record_fields(tclass.get_trecord(), value)
         return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
 
-    def field_rep( self, field, value ):
+    def field_rep(self, field, value):
         rep = self.dispatch(field.type, getattr(value, field.name))
         return RepNode('%s=%s' % (field.name, rep.text), rep.children)
 
     @dispatch.register(TList)
-    def encode_list( self, t, value ):
+    def encode_list(self, t, value):
         if t is tPath:
             return self.encode_path(value)
         if self._packet_types and t is self._packet_types.requirement:
@@ -134,10 +134,10 @@ class VisualRepEncoder(object):
         children = [self.dispatch(t.element_t, elt) for elt in value]
         return RepNode('list (with %d elements)' % len(value), children)
 
-    def encode_path( self, obj ):
+    def encode_path(self, obj):
         return RepNode(encode_path(obj))
 
 
-def pprint( t, value, resource_types=None, packet_types=None ):
+def pprint(t, value, resource_types=None, packet_types=None):
     rep = VisualRepEncoder(resource_types, packet_types).encode(t, value)
     rep.pprint()

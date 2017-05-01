@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 
 class View(QtGui.QDockWidget):
 
-    def __init__( self, window, locale, resources_manager ):
+    def __init__(self, window, locale, resources_manager):
         QtGui.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
         self.window = weakref.ref(window)
@@ -28,17 +28,17 @@ class View(QtGui.QDockWidget):
         self.dir_buttons = []
         self.elts_buttons = []
 
-    def view_changed( self, window ):
+    def view_changed(self, window):
         dir = window.get_object()
         self._update_dir_commands(window)
         self._update_elt_commands(window)
         self.current_dir = dir
 
-    def view_commands_changed( self, window, command_kinds ):
+    def view_commands_changed(self, window, command_kinds):
         if 'element' in command_kinds:
             self._update_elt_commands(window)
 
-    def _update_dir_commands( self, window ):
+    def _update_dir_commands(self, window):
         for btn in self.dir_buttons:
             btn.deleteLater()
         self.dir_buttons = []
@@ -53,7 +53,7 @@ class View(QtGui.QDockWidget):
             self.dir_buttons.append(button)
             idx += 1
 
-    def _update_elt_commands( self, window ):
+    def _update_elt_commands(self, window):
         for btn in self.elts_buttons:
             btn.deleteLater()
         self.elts_buttons = []
@@ -66,7 +66,7 @@ class View(QtGui.QDockWidget):
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 
-    def _make_button( self, cmd ):
+    def _make_button(self, cmd):
         resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
         if resource:
             if resource.shortcuts:
@@ -82,5 +82,5 @@ class View(QtGui.QDockWidget):
         button.setEnabled(cmd.is_enabled())
         return button
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~cmd_pane')

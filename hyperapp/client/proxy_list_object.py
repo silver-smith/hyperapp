@@ -9,18 +9,18 @@ from .proxy_object import RemoteCommand, ProxyObject
 log = logging.getLogger(__name__)
 
 
-def register_object_implementations( registry, services ):
+def register_object_implementations(registry, services):
     ProxyListObject.register(registry, services)
 
 
 class RemoteElementCommand(RemoteCommand):
 
-    def clone( self, args=None ):
+    def clone(self, args=None):
         args = self._args + (args or ())
         return RemoteElementCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._object_wr, args)
 
     @asyncio.coroutine
-    def run( self, *args, **kw ):
+    def run(self, *args, **kw):
         object = self._object_wr()
         if not object: return
         return (yield from object.run_remote_element_command(self.id, *(self._args + args), **kw))
@@ -29,7 +29,7 @@ class RemoteElementCommand(RemoteCommand):
 
 class SliceAlgorithm(object):
 
-    def merge_in_slice( self, slices, new_slice ):
+    def merge_in_slice(self, slices, new_slice):
         if new_slice.elements:
             log.info('      elements[0].key=%r elements[-1].key=%r', new_slice.elements[0].key, new_slice.elements[-1].key)
         for slice in slices:
@@ -66,7 +66,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._subscribed = False
         self._subscribe_pending = False  # subscribe method is called and response is not yet received
 
-    def set_contents( self, contents ):
+    def set_contents(self, contents):
         self._log_slices('before set_contents')
         ProxyObject.set_contents(self, contents)
         slice = self._slice_from_data(contents.slice)
@@ -75,7 +75,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._subscribed = True
 
     @asyncio.coroutine
-    def server_subscribe( self ):
+    def server_subscribe(self):
         pass
 
     def is_iface_command_exposed(self, command):
@@ -89,19 +89,19 @@ class ProxyListObject(ProxyObject, ListObject):
                     and command.get_result_type(self.iface) in [t_empty_result, t_open_result])
 
     @asyncio.coroutine
-    def run_remote_element_command( self, command_id, *args, **kw ):
+    def run_remote_element_command(self, command_id, *args, **kw):
         log.debug('running remote element command %r (*%s, **%s)', command_id, args, kw)
         return (yield from self.execute_request(command_id, *args, **kw))
 
-    def _slice_from_data( self, rec ):
+    def _slice_from_data(self, rec):
         key_column_id = self.get_key_column_id()
         elements = [self._element_from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
         return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
 
-    def _list_diff_from_data( self, key_column_id, rec ):
+    def _list_diff_from_data(self, key_column_id, rec):
         return ListDiff(rec.start_key, rec.end_key, [self._element_from_data(key_column_id, None, elt) for elt in rec.elements])
 
-    def _element_from_data( self, key_column_id, sort_column_id, rec ):
+    def _element_from_data(self, key_column_id, sort_column_id, rec):
         key = getattr(rec.row, key_column_id)
         if sort_column_id is None:
             order_key = None
@@ -110,23 +110,23 @@ class ProxyListObject(ProxyObject, ListObject):
         commands = [self._element_command_from_data(cmd) for cmd in  rec.commands]
         return Element(key, rec.row, commands, order_key)
 
-    def _element_command_from_data( self, rec ):
+    def _element_command_from_data(self, rec):
         return RemoteElementCommand(rec.command_id, rec.kind, rec.resource_id,
                                     is_default_command=rec.is_default_command, enabled=True, object_wr=weakref.ref(self))
 
-    def _merge_in_slice( self, new_slice ):
+    def _merge_in_slice(self, new_slice):
         log.info('  -- merge_in_slice self=%r from_key=%r len(elements)=%r bof=%r', id(self), new_slice.from_key, len(new_slice.elements), new_slice.bof)
         self._slice_algorithm.merge_in_slice(self._slices, new_slice)
         self._log_slices('after _merge_in_slices')
         self._store_slices_to_cache(new_slice.sort_column_id)
 
-    def _log_slices( self, when ):
+    def _log_slices(self, when):
         log.debug('  -- proxy list object %s has total %d slices %s:', id(self), len(self._slices), when)
         for i, slice in enumerate(self._slices):
             log.debug('    -- slice #%d has from_key=%r bof=%r eof=%r %d elements: %s',
                       i, slice.from_key, slice.bof, slice.eof, len(slice.elements), ', '.join(str(element.key) for element in slice.elements))
 
-    def _update_slices( self, diff ):
+    def _update_slices(self, diff):
         log.info('  -- update_slices self=%r diff: start_key=%r end_key=%r len(elements)=%r', id(self), diff.start_key, diff.end_key, len(diff.elements))
         for slice in self._slices:
             for idx in reversed(range(len(slice.elements))):
@@ -156,7 +156,7 @@ class ProxyListObject(ProxyObject, ListObject):
                         slice.elements.append(new_elt)
                         log.info('-- slice with sort %r: element is appended to the end of slice', slice.sort_column_id)
                     
-    def _pick_slice( self, slices, sort_column_id, from_key, direction ):
+    def _pick_slice(self, slices, sort_column_id, from_key, direction):
         log.info('  -- pick_slice self=%r sort_column_id=%r from_key=%r direction=%r', id(self), sort_column_id, from_key, direction)
         assert direction == 'asc'  # todo: desc direction
         for slice in slices:
@@ -179,43 +179,43 @@ class ProxyListObject(ProxyObject, ListObject):
         log.info('     > none found')
         return None  # none found
 
-    def _get_slice_cache_key( self, sort_column_id ):
+    def _get_slice_cache_key(self, sort_column_id):
         return self.make_cache_key('slices-%s' % sort_column_id)
 
-    def _get_slices_cache_type( self ):
+    def _get_slices_cache_type(self):
         return TList(self.iface.tSlice())
 
-    def _store_slices_to_cache( self, sort_column_id ):
+    def _store_slices_to_cache(self, sort_column_id):
         key = self._get_slice_cache_key(sort_column_id)
         slices = [slice.to_data(self.iface) for slice in self._slices if slice.sort_column_id == sort_column_id]
         self.cache_repository.store_value(key, slices, self._get_slices_cache_type())
 
-    def _load_slices_from_cache( self, sort_column_id ):
+    def _load_slices_from_cache(self, sort_column_id):
         if sort_column_id in self._slices_from_cache: return  # already loaded
         key = self._get_slice_cache_key(sort_column_id)
         slice_recs = self.cache_repository.load_value(key, self._get_slices_cache_type())
         self._slices_from_cache[sort_column_id] = list(map(self._slice_from_data, slice_recs or []))
 
-    def put_back_slice( self, slice ):
+    def put_back_slice(self, slice):
         log.info('-- proxy put_back_slice self=%r len(elements)=%r', self, len(slice.elements))
         assert isinstance(slice, Slice), repr(slice)
         self._merge_in_slice(slice)
 
-    def process_update( self, diff ):
+    def process_update(self, diff):
         log.info('-- proxy process_update self=%r diff=%r start_key=%r end_key=%r elements=%r', id(self), diff, diff.start_key, diff.end_key, diff.elements)
         key_column_id = self.get_key_column_id()
         diff = self._list_diff_from_data(key_column_id, diff)
         self._update_slices(diff)
         self._notify_diff_applied(diff)
 
-    def get_columns( self ):
+    def get_columns(self):
         return self.iface.get_columns()
 
-    def get_key_column_id( self ):
+    def get_key_column_id(self):
         return self.iface.get_key_column_id()
 
     @asyncio.coroutine
-    def fetch_elements( self, sort_column_id, from_key, direction, count ):
+    def fetch_elements(self, sort_column_id, from_key, direction, count):
         log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r count=%r', id(self), self._subscribed, from_key, count)
         slice = self._pick_slice(self._slices, sort_column_id, from_key, direction)
         if slice:
@@ -247,10 +247,10 @@ class ProxyListObject(ProxyObject, ListObject):
             self._notify_object_changed()
         self._process_fetch_elements_result(result)
 
-    def _process_fetch_elements_result( self, result ):
+    def _process_fetch_elements_result(self, result):
         slice = self._slice_from_data(result.slice)
         self._merge_in_slice(slice)
         self._notify_fetch_result(slice)
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~ProxyListObject self=%r path=%r', self, self.path)

@@ -11,30 +11,30 @@ from .htypes import (
 
 class Visitor(object):
 
-    def visit( self, t, value ):
+    def visit(self, t, value):
         self.dispatch(t, value)
 
-    def visit_record( self, t, value ):
+    def visit_record(self, t, value):
         pass
 
-    def visit_hierarchy_obj( self, t, tclass, value ):
+    def visit_hierarchy_obj(self, t, tclass, value):
         pass
 
     @method_dispatch
-    def dispatch( self, t, value ):
+    def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
 
     @dispatch.register(TPrimitive)
-    def process_primitive( self, t, value ):
+    def process_primitive(self, t, value):
         pass
 
     @dispatch.register(TOptional)
-    def process_optional( self, t, value ):
+    def process_optional(self, t, value):
         if value is not None:
             self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
-    def process_record( self, t, value ):
+    def process_record(self, t, value):
         self.visit_record(t, value)
         fields = {}
         for field in t.get_static_fields():
@@ -46,15 +46,15 @@ class Visitor(object):
             self.dispatch(field.type, getattr(value, field.name))
             
     @dispatch.register(THierarchy)
-    def process_hierarchy_obj( self, t, value ):
+    def process_hierarchy_obj(self, t, value):
         tclass = t.resolve_obj(value)
         self.visit_hierarchy_obj(t, tclass, value)
         self.dispatch(tclass.get_trecord(), value)
 
-    def process_field( self, field, value ):
+    def process_field(self, field, value):
         self.dispatch(field.type, getattr(value, field.name))
 
     @dispatch.register(TList)
-    def process_list( self, t, value ):
+    def process_list(self, t, value):
         for elt in value:
             self.dispatch(t.element_t, elt)

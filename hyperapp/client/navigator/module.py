@@ -17,7 +17,7 @@ def get_this_module():
 
 class ThisModule(Module):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         global this_module
         core_types = services.types.core
         Module.__init__(self, services)

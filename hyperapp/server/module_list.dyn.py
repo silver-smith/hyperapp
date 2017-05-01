@@ -14,7 +14,7 @@ from .form import stringFieldHandle, formHandle
 MODULE_NAME = 'module_list'
 
 
-def splitter_handle( x, y ):
+def splitter_handle(x, y):
     return splitter_types.splitter_handle('splitter', x, y, orientation='horizontal', focused=0, sizes=[])
 
 
@@ -26,33 +26,33 @@ class ModuleList(SmallListObject):
     default_sort_column_id = 'id'
 
     @classmethod
-    def resolve( cls, path ):
+    def resolve(cls, path):
         path.check_empty()
         return cls()
 
     @classmethod
-    def get_path( cls ):
+    def get_path(cls):
         return this_module.make_path(cls.class_name)
 
-    def __init__( self ):
+    def __init__(self):
         SmallListObject.__init__(self, core_types)
 
     @db_session
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         return list(map(self.rec2element, this_module.Module.select().order_by(this_module.Module.id)))
 
     @classmethod
-    def rec2element( cls, rec ):
+    def rec2element(cls, rec):
         commands = [cls.command_open, cls.command_deps, cls.command_delete]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
     @command('add')
-    def command_add( self, request ):
+    def command_add(self, request):
         return request.make_response_object(ModuleForm())
 
     @command('delete', kind='element')
     @db_session
-    def command_delete( self, request ):
+    def command_delete(self, request):
         id = request.params.element_key
         this_module.Module[id].delete()
         diff = self.Diff_delete(id)
@@ -60,7 +60,7 @@ class ModuleList(SmallListObject):
 
     @command('deps', kind='element')
     @db_session
-    def command_deps( self, request ):
+    def command_deps(self, request):
         module_id = request.params.element_key
         dep_list = ModuleDepList(module_id)
         available_list = AvailableDepList(module_id)
@@ -71,7 +71,7 @@ class ModuleList(SmallListObject):
 
     @command('open', kind='element', is_default_command=True)
     @db_session
-    def command_open( self, request ):
+    def command_open(self, request):
         id = request.params.element_key
         rec = this_module.Module[id]
         return request.make_response_handle(ModuleForm(rec.id).get_handle(request, name=rec.name))
@@ -84,26 +84,26 @@ class ModuleForm(Object):
     class_name = 'module_form'
 
     @classmethod
-    def resolve( cls, path ):
+    def resolve(cls, path):
         id = path.pop_str()
         path.check_empty()
         return cls(id)
 
-    def __init__( self, id=None ):
+    def __init__(self, id=None):
         Object.__init__(self)
         self.id = id or None
 
-    def get_path( self ):
+    def get_path(self):
         return this_module.make_path(self.class_name, self.id or '')
 
-    def get_handle( self, request, name=None ):
+    def get_handle(self, request, name=None):
         return formHandle(self.get(request), [
             form_types.form_field('name', stringFieldHandle(name)),
             ])
 
     @command('submit', is_default_command=True)
     @db_session
-    def command_submit( self, request ):
+    def command_submit(self, request):
         if self.id:
             rec = this_module.Module[self.id]
             rec.name = request.params.name
@@ -124,32 +124,32 @@ class ModuleDepList(SmallListObject):
     default_sort_column_id = 'id'
 
     @classmethod
-    def resolve( cls, path ):
+    def resolve(cls, path):
         module_id = path.pop_str()
         assert module_id, repr(module_id)
         path.check_empty()
         return cls(module_id)
 
-    def __init__( self, module_id=None ):
+    def __init__(self, module_id=None):
         SmallListObject.__init__(self, core_types)
         self.module_id = module_id or None
 
-    def get_path( self ):
+    def get_path(self):
         return this_module.make_path(self.class_name, self.module_id)
 
     @db_session
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         rec = this_module.Module[self.module_id]
         return list(map(self.rec2element, rec.deps))
 
     @classmethod
-    def rec2element( cls, rec ):
+    def rec2element(cls, rec):
         commands = [cls.command_remove]
         return cls.Element(cls.Row(rec.id, rec.visible_as, rec.dep.id), commands)
 
     @command('remove', kind='element')
     @db_session
-    def command_remove( self, request ):
+    def command_remove(self, request):
         rec_id = request.params.element_key
         rec = this_module.ModuleDep[rec_id]
         dep_module_rec = rec.dep
@@ -169,21 +169,21 @@ class AvailableDepList(SmallListObject):
     default_sort_column_id = 'id'
 
     @classmethod
-    def resolve( cls, path ):
+    def resolve(cls, path):
         module_id = path.pop_str()
         assert module_id, repr(module_id)
         path.check_empty()
         return cls(module_id)
 
-    def __init__( self, module_id=None ):
+    def __init__(self, module_id=None):
         SmallListObject.__init__(self, core_types)
         self.module_id = module_id or None
 
-    def get_path( self ):
+    def get_path(self):
         return this_module.make_path(self.class_name, self.module_id)
 
     @db_session
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         dep_ids = set([dep.dep.id for dep in this_module.Module[self.module_id].deps])
         if dep_ids:
             query = select(rec for rec in this_module.Module if rec.id not in dep_ids)
@@ -192,13 +192,13 @@ class AvailableDepList(SmallListObject):
         return list(map(self.rec2element, query.order_by(this_module.Module.id)))
 
     @classmethod
-    def rec2element( cls, rec ):
+    def rec2element(cls, rec):
         commands = [cls.command_add]
         return cls.Element(cls.Row(rec.name, rec.id), commands)
 
     @command('add', kind='element')
     @db_session
-    def command_add( self, request ):
+    def command_add(self, request):
         module_id = request.params.element_key
         dep_module = this_module.Module[module_id]
         module_rec = this_module.Module[self.module_id]
@@ -213,10 +213,10 @@ class AvailableDepList(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
 
-    def init_phase2( self ):
+    def init_phase2(self):
         self.Module = self.make_entity('Module',
                                        id=PrimaryKey(str),
                                        name=Required(str),
@@ -229,7 +229,7 @@ class ThisModule(PonyOrmModule):
                                           visible_as=Required(str),
                                           )
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         objname = path.pop_str()
         if objname == ModuleList.class_name:
             return ModuleList.resolve(path)
@@ -241,12 +241,12 @@ class ThisModule(PonyOrmModule):
             return AvailableDepList.resolve(path)
         path.raise_not_found()
 
-    def get_commands( self ):
+    def get_commands(self):
         return [
             ModuleCommand('open_module_list', 'Modules', 'Open module list', 'Alt+M', self.name),
             ]
 
-    def run_command( self, request, command_id ):
+    def run_command(self, request, command_id):
         if command_id == 'open_module_list':
             return request.make_response_object(ModuleList())
         return PonyOrmModule.run_command(self, request, command_id)

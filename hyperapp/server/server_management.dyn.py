@@ -17,22 +17,22 @@ class CommandList(SmallListObject):
     objimpl_id = 'proxy_list'
 
     @classmethod
-    def get_path( cls ):
+    def get_path(cls):
         return this_module.make_path()
 
-    def __init__( self ):
+    def __init__(self):
         SmallListObject.__init__(self, core_types)
 
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         return list(map(self.cmd2element, Module.get_all_modules_commands()))
 
-    def cmd2element( self, cmd ):
+    def cmd2element(self, cmd):
         commands = [self.command_open]
         id = '%s.%s' % (cmd.module_name, cmd.id)
         return self.Element(self.Row(id, cmd.module_name, cmd.text, cmd.desc), commands)
 
     @command('open', kind='element', is_default_command=True)
-    def command_open( self, request ):
+    def command_open(self, request):
         module_name, command_id = request.params.element_key.split('.')
         module = Module.get_module_by_name(module_name)
         return module.run_command(request, command_id)
@@ -40,13 +40,13 @@ class CommandList(SmallListObject):
 
 class ThisModule(Module):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         path.check_empty()
         return CommandList()
 
 
-def get_management_url( public_key ):
+def get_management_url(public_key):
     return Url(CommandList.iface, public_key, CommandList.get_path())

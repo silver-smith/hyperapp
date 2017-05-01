@@ -64,27 +64,27 @@ class TestObject(Object):
     class_name = 'test_object'
     iface = test_iface
 
-    def __init__( self, module, id ):
+    def __init__(self, module, id):
         Object.__init__(self)
         self.module = module
         self.id = id
 
-    def get_path( self ):
+    def get_path(self):
         return self.module.make_path(self.class_name, self.id)
 
     @command('echo')
-    def command_echo( self, request ):
+    def command_echo(self, request):
         return request.make_response_result(test_result=request.params.test_param + ' to you too')
 
     @command('required_auth')
-    def command_required_auth( self, request ):
+    def command_required_auth(self, request):
         pk = authorized_peer_identity.get_public_key()
         if pk not in request.peer.public_keys:
             raise NotAuthorizedError(pk)
         return request.make_response_result(test_result='ok')
 
     @command('broadcast')
-    def command_broadcast( self, request ):
+    def command_broadcast(self, request):
         subscription.distribute_update(self.iface, self.get_path(), request.params.message)
 
 
@@ -92,10 +92,10 @@ class TestModule(module_mod.Module):
 
     name = 'test_module'
 
-    def __init__( self ):
+    def __init__(self):
         module_mod.Module.__init__(self, self.name)
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         objname = path.pop_str()
         if objname == TestObject.class_name:
             obj_id = path.pop_str()
@@ -105,46 +105,46 @@ class TestModule(module_mod.Module):
         
 class PhonyChannel(PeerChannel):
 
-    def send_update( self ):
+    def send_update(self):
         pass
 
-    def pop_updates( self ):
+    def pop_updates(self):
         return None
 
 
 class PhonyResourcesLoader(object):
 
-    def load_resources( self, resource_id ):
+    def load_resources(self, resource_id):
         return []
 
 
 class PhonyTypeRepository(object):
 
-    def get_modules_by_requirements( self, requirements ):
+    def get_modules_by_requirements(self, requirements):
         return []
 
 
 class PhonyModuleRepository(object):
 
-    def get_module_by_requirement( self, registry, key ):
+    def get_module_by_requirement(self, registry, key):
         return None
 
 
 class PhonyClientCodeRepository(object):
 
-    def get_modules_by_requirements( self, requirements ):
+    def get_modules_by_requirements(self, requirements):
         return []
 
 
 class TestSession(TransportSession):
 
-    def pull_notification_transport_packets( self ):
+    def pull_notification_transport_packets(self):
         return []
 
 
 class Services(ServicesBase):
 
-    def __init__( self ):
+    def __init__(self):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../dynamic_modules'))
@@ -169,7 +169,7 @@ class Services(ServicesBase):
             self.module_manager.unregister_meta_hook()
             raise
 
-    def _load_server_modules( self ):
+    def _load_server_modules(self):
         for module_name in [
                 'client_code_repository',
                 ]:
@@ -180,7 +180,7 @@ class Services(ServicesBase):
             module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
 
-    def _register_transports( self ):
+    def _register_transports(self):
         for module in [tcp_transport, encrypted_transport]:
             module.register_transports(self.remoting.transport_registry, self)
 
@@ -190,7 +190,7 @@ server_identity = Identity.generate(fast=True)
 
 class ServerTest(unittest.TestCase):
 
-    def setUp( self ):
+    def setUp(self):
         self.services = Services()
         self.types = self.services.types
         self.request_types = self.services.request_types
@@ -202,10 +202,10 @@ class ServerTest(unittest.TestCase):
         self.server = Server(self.request_types, self.services.types.core, server_identity)
         self.session_list = TransportSessionList()
 
-    def tearDown( self ):
+    def tearDown(self):
         self.services.module_manager.unregister_meta_hook()
 
-    def test_simple_request( self ):
+    def test_simple_request(self):
         request_data = self.request_types.tRequest(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, '1'],
@@ -222,19 +222,19 @@ class ServerTest(unittest.TestCase):
         pprint(self.request_types.tServerPacket, response.to_data())
         self.assertEqual('hello to you too', response.result.test_result)
 
-    def transport_id2encoding( self, transport_id ):
+    def transport_id2encoding(self, transport_id):
         if transport_id in ['tcp.cdr', 'tcp.json']:
             return transport_id.split('.')[1]
         else:
             return 'cdr'
 
-    def encode_packet( self, transport_id, rec, type ):
+    def encode_packet(self, transport_id, rec, type):
         return packet_coders.encode(self.transport_id2encoding(transport_id), rec, type)
 
-    def decode_packet( self, transport_id, data, type ):
+    def decode_packet(self, transport_id, data, type):
         return packet_coders.decode(self.transport_id2encoding(transport_id), data, type)
 
-    def encrypt_packet( self, session_list, transport_id, data ):
+    def encrypt_packet(self, session_list, transport_id, data):
         if transport_id != 'encrypted_tcp':
             return data
         session = session_list.get_transport_session('test.encrypted_tcp')
@@ -245,7 +245,7 @@ class ServerTest(unittest.TestCase):
         packet = encrypt_initial_packet(session.session_key, server_identity.get_public_key(), data)
         return self.encode_packet(transport_id, packet, tEncryptedPacket)
 
-    def decrypt_transport_response_packets( self, session_list, transport_id, packets ):
+    def decrypt_transport_response_packets(self, session_list, transport_id, packets):
         if transport_id != 'encrypted_tcp':
             if len(packets) == 0:
                 return None  # no response
@@ -262,7 +262,7 @@ class ServerTest(unittest.TestCase):
                 return packet_data
         return None  # no response
 
-    def make_tcp_transport_request( self, session_list, transport_id, obj_id, command_id, **kw ):
+    def make_tcp_transport_request(self, session_list, transport_id, obj_id, command_id, **kw):
         request = self.request_types.tRequest(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
@@ -281,7 +281,7 @@ class ServerTest(unittest.TestCase):
             data=self.encrypt_packet(session_list, transport_id, request_packet_data))
         return transport_request
 
-    def make_tcp_transport_notification( self, session_list, transport_id, obj_id, command_id, **kw ):
+    def make_tcp_transport_notification(self, session_list, transport_id, obj_id, command_id, **kw):
         request = self.request_types.tClientNotification(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
@@ -299,7 +299,7 @@ class ServerTest(unittest.TestCase):
             data=self.encrypt_packet(session_list, transport_id, request_packet_data))
         return transport_request
 
-    def decode_tcp_transport_response( self, session_list, transport_id, response_transport_packets ):
+    def decode_tcp_transport_response(self, session_list, transport_id, response_transport_packets):
         packet_data = self.decrypt_transport_response_packets(session_list, transport_id, response_transport_packets)
         if packet_data is None:
             return None  # no response
@@ -310,7 +310,7 @@ class ServerTest(unittest.TestCase):
         pprint(self.request_types.tServerPacket, response)
         return response
 
-    def execute_tcp_request( self, transport_id, obj_id, command_id, session_list=None, **kw ):
+    def execute_tcp_request(self, transport_id, obj_id, command_id, session_list=None, **kw):
         if session_list is None:
             session_list = self.session_list
         transport_request = self.make_tcp_transport_request(session_list, transport_id, obj_id, command_id, **kw)
@@ -318,7 +318,7 @@ class ServerTest(unittest.TestCase):
         response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packets)
         return response
 
-    def execute_tcp_notification( self, transport_id, obj_id, command_id, session_list=None, **kw ):
+    def execute_tcp_notification(self, transport_id, obj_id, command_id, session_list=None, **kw):
         if session_list is None:
             session_list = self.session_list
         transport_request = self.make_tcp_transport_notification(session_list, transport_id, obj_id, command_id, **kw)
@@ -326,29 +326,29 @@ class ServerTest(unittest.TestCase):
         response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packets)
         self.assertIsNone(response)
 
-    def test_tcp_cdr_echo_request( self ):
+    def test_tcp_cdr_echo_request(self):
         self._test_tcp_echo_request('tcp.cdr')
 
-    def test_tcp_json_echo_request( self ):
+    def test_tcp_json_echo_request(self):
         self._test_tcp_echo_request('tcp.json')
 
-    def test_encrypted_tcp_echo_request( self ):
+    def test_encrypted_tcp_echo_request(self):
         self._test_tcp_echo_request('encrypted_tcp')
 
-    def _test_tcp_echo_request( self, transport_id ):
+    def _test_tcp_echo_request(self, transport_id):
         response = self.execute_tcp_request(transport_id, obj_id='1', command_id='echo', test_param='hello')
         self.assertEqual('hello to you too', response.result.test_result)
 
-    def test_tcp_cdr_broadcast_request( self ):
+    def test_tcp_cdr_broadcast_request(self):
         self._test_broadcast_tcp_request('tcp.cdr')
 
-    def test_tcp_json_broadcast_request( self ):
+    def test_tcp_json_broadcast_request(self):
         self._test_broadcast_tcp_request('tcp.json')
 
-    def test_encrypted_tcp_broadcast_request( self ):
+    def test_encrypted_tcp_broadcast_request(self):
         self._test_broadcast_tcp_request('encrypted_tcp')
 
-    def _test_broadcast_tcp_request( self, transport_id ):
+    def _test_broadcast_tcp_request(self, transport_id):
         message = 'hi, all!'
         obj_id = '1'
 
@@ -361,30 +361,30 @@ class ServerTest(unittest.TestCase):
         self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
         self.assertEqual(message, update.diff)
 
-    def test_tcp_cdr_unsubscribe_notification_request( self ):
+    def test_tcp_cdr_unsubscribe_notification_request(self):
         self._test_unsubscribe_notification_tcp_request('tcp.cdr')
 
-    def test_tcp_json_unsubscribe_notification_request( self ):
+    def test_tcp_json_unsubscribe_notification_request(self):
         self._test_unsubscribe_notification_tcp_request('tcp.json')
 
-    def test_encrypted_tcp_unsubscribe_notification_request( self ):
+    def test_encrypted_tcp_unsubscribe_notification_request(self):
         self._test_unsubscribe_notification_tcp_request('encrypted_tcp')
 
-    def _test_unsubscribe_notification_tcp_request( self, transport_id ):
+    def _test_unsubscribe_notification_tcp_request(self, transport_id):
         obj_id = '1'
         response = self.execute_tcp_request(transport_id, obj_id=obj_id, command_id='subscribe')
         response = self.execute_tcp_notification(transport_id, obj_id=obj_id, command_id='unsubscribe')
 
-    def test_tcp_cdr_server_notification( self ):
+    def test_tcp_cdr_server_notification(self):
         self._test_tcp_server_notification('tcp.cdr')
 
-    def test_tcp_json_server_notification( self ):
+    def test_tcp_json_server_notification(self):
         self._test_tcp_server_notification('tcp.json')
 
-    def test_encrypted_tcp_server_notification( self ):
+    def test_encrypted_tcp_server_notification(self):
         self._test_tcp_server_notification('encrypted_tcp')
 
-    def _test_tcp_server_notification( self, transport_id ):
+    def _test_tcp_server_notification(self, transport_id):
         message = 'hi, all!'
         obj_id = '1'
         session1 = TransportSessionList()
@@ -407,19 +407,19 @@ class ServerTest(unittest.TestCase):
         self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
         self.assertEqual(message, update.diff)
 
-    def pick_pop_channelge_from_responses( self, transport_id, response_transport_packets ):
+    def pick_pop_channelge_from_responses(self, transport_id, response_transport_packets):
         for packet in response_transport_packets:
             encrypted_packet = self.decode_packet(transport_id, packet.data, tEncryptedPacket)
             if isinstance(encrypted_packet, tPopChallengePacket):
                 return encrypted_packet.challenge
         self.fail('No challenge packet in response')
 
-    def encode_pop_transport_request( self, transport_id, challenge, pop_records ):
+    def encode_pop_transport_request(self, transport_id, challenge, pop_records):
         pop_packet = tProofOfPossessionPacket(challenge, pop_records)
         pop_packet_data = self.encode_packet(transport_id, pop_packet, tEncryptedPacket)
         return tTransportPacket(transport_id=transport_id, data=pop_packet_data)
 
-    def test_proof_of_possession( self ):
+    def test_proof_of_possession(self):
         transport_id = 'encrypted_tcp'
         transport_request = self.make_tcp_transport_request(self.session_list, transport_id, obj_id='1', command_id='echo', test_param='hi')
         response_transport_packets = self.remoting.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
@@ -443,7 +443,7 @@ class ServerTest(unittest.TestCase):
         self.assertNotIn(identity_2.get_public_key(), session.peer_public_keys)
 
     # when NotAuthorizedError raised in first request before pop is returned, that request must be reprocessed when pop is processed
-    def test_unauthorized_request_reprocess( self ):
+    def test_unauthorized_request_reprocess(self):
         transport_id = 'encrypted_tcp'
         transport_request = self.make_tcp_transport_request(self.session_list, transport_id, obj_id='1', command_id='required_auth')
         response_transport_packets = self.remoting.process_packet(

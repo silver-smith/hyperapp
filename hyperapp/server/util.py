@@ -11,25 +11,25 @@ class XPathNotFound(RuntimeError):
 
 class Path(object):
 
-    def __init__( self, path ):
+    def __init__(self, path):
         assert is_list_inst(path, str), repr(path)
         self.path = path
 
-    def raise_not_found( self ):
+    def raise_not_found(self):
         raise XPathNotFound(self.path)
 
-    def check_empty( self ):
+    def check_empty(self):
         if self.path:
             self.raise_not_found()
 
-    def pop_str( self ):
+    def pop_str(self):
         if not self.path:
             self.raise_not_found()
         part = self.path[0]
         self.path = self.path[1:]
         return part
 
-    def pop_int_opt( self, none_str='' ):
+    def pop_int_opt(self, none_str=''):
         s = self.pop_str()
         if s == none_str:
             return None
@@ -38,14 +38,14 @@ class Path(object):
         except ValueError:
             self.raise_not_found()
 
-    def pop_int( self ):
+    def pop_int(self):
         v = self.pop_int_opt()
         if v is None:
             self.raise_not_found()
         return v
 
 
-def path_part_to_str( val, none_str='' ):
+def path_part_to_str(val, none_str=''):
     if val is None:
         return none_str
     else:
@@ -59,7 +59,7 @@ class _KeyedRef(weakref.ref):
 
     __slots__ = "key",
 
-    def __new__( type, ob, callback, key ):
+    def __new__(type, ob, callback, key):
         self = weakref.ref.__new__(type, ob, callback)
         self.key = key
         return self
@@ -70,15 +70,15 @@ class _KeyedRef(weakref.ref):
 
 class WeakValueMultiDict(object):
 
-    def __init__( self ):
+    def __init__(self):
         self.data = {}  # key -> _KeyedRef list
 
-    def add( self, key, value ):
+    def add(self, key, value):
         l = self.data.setdefault(key, [])
         wr = _KeyedRef(value, partial(self._remove, weakref.ref(self)), key)
         l.append(wr)
 
-    def remove( self, key, value ):
+    def remove(self, key, value):
         cleaned = []
         for wr in self.data.get(key, []):
             v = wr()
@@ -86,7 +86,7 @@ class WeakValueMultiDict(object):
                 cleaned.append(wr)
         self.data[key] = cleaned
         
-    def get( self, key ):
+    def get(self, key):
         l = []
         for wr in self.data.get(key, []):
             value = wr()
@@ -94,7 +94,7 @@ class WeakValueMultiDict(object):
                 l.append(value)
         return l
 
-    def items( self ):
+    def items(self):
         for key, value in self.data.items():
             for wr in value:
                 item = wr()
@@ -102,7 +102,7 @@ class WeakValueMultiDict(object):
                     yield (key, item)
             
     @staticmethod
-    def _remove( self_wr, wr ):
+    def _remove(self_wr, wr):
         self = self_wr()
         if self:
             l = self.data.get(wr.key)
@@ -114,21 +114,21 @@ class WeakValueMultiDict(object):
 
 class MultiDict(object):
 
-    def __init__( self ):
+    def __init__(self):
         self.data = {}  # key -> value list
 
-    def add( self, key, value ):
+    def add(self, key, value):
         l = self.data.setdefault(key, [])
         l.append(value)
 
-    def remove( self, key, value ):
+    def remove(self, key, value):
         l = self.data[key]
         l.remove(value)
         
-    def get( self, key ):
+    def get(self, key):
         return self.data[key]
 
-    def items( self ):
+    def items(self):
         for key, values in self.data.items():
             for value in value:
                 yield (key, value)

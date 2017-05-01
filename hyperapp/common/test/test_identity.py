@@ -4,7 +4,7 @@ from hyperapp.common.identity import Identity
 
 class IdentityTest(unittest.TestCase):
 
-    def test_signature( self ):
+    def test_signature(self):
         identity = Identity.generate(fast=True)
         message = b'test message'
         signature = identity.sign(message)

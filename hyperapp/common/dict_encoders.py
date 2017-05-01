@@ -21,39 +21,39 @@ from .htypes import (
 
 class DictEncoder(object, metaclass=abc.ABCMeta):
 
-    def encode( self, t, value ):
+    def encode(self, t, value):
         return self._dict_to_str(self.dispatch(t, value)).encode()
 
     @abc.abstractmethod
-    def _dict_to_str( self, value ):
+    def _dict_to_str(self, value):
         pass
 
     @method_dispatch
-    def dispatch( self, t, value ):
+    def dispatch(self, t, value):
         assert False, repr((t, value))  # Unknown type
 
     @dispatch.register(TString)
     @dispatch.register(TInt)
     @dispatch.register(TBool)
-    def encode_primitive( self, t, value ):
+    def encode_primitive(self, t, value):
         return value
 
     @dispatch.register(TBinary)
-    def encode_primitive( self, t, value ):
+    def encode_primitive(self, t, value):
         return str(base64.b64encode(value), 'ascii')
 
     @dispatch.register(TDateTime)
-    def encode_datetime( self, t, value ):
+    def encode_datetime(self, t, value):
         return value.isoformat()
 
     @dispatch.register(TOptional)
-    def encode_optional( self, t, value ):
+    def encode_optional(self, t, value):
         if value is None:
             return None
         return self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
-    def encode_record( self, t, value ):
+    def encode_record(self, t, value):
         fields = {}
         for field in t.get_fields():
             attr = getattr(value, field.name)
@@ -61,7 +61,7 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
         return fields
 
     @dispatch.register(TSwitchedRec)
-    def encode_switched_record( self, t, value ):
+    def encode_switched_record(self, t, value):
         fields = {}
         for field in t.get_static_fields():
             attr = getattr(value, field.name)
@@ -72,26 +72,26 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
         return fields
 
     @dispatch.register(THierarchy)
-    def encode_hierarchy_obj( self, t, value ):
+    def encode_hierarchy_obj(self, t, value):
         tclass = t.resolve_obj(value)
         return dict(self.dispatch(tclass.get_trecord(), value),
                     _class_id=self.dispatch(tString, tclass.id))
 
     @dispatch.register(TList)
-    def encode_list( self, t, value ):
+    def encode_list(self, t, value):
         return [self.dispatch(t.element_t, elt) for elt in value]
 
 
 class JsonEncoder(DictEncoder):
 
-    def __init__( self, pretty=False ):
+    def __init__(self, pretty=False):
         self.pretty = pretty
 
-    def _dict_to_str( self, value ):
+    def _dict_to_str(self, value):
         return json.dumps(value, indent=4 if self.pretty else None)
 
 
 class YamlEncoder(DictEncoder):
 
-    def _dict_to_str( self, value ):
+    def _dict_to_str(self, value):
         return yaml.dump(value)

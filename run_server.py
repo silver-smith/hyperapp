@@ -16,7 +16,7 @@ import hyperapp.server.ponyorm_module
 DEFAULT_ADDR = 'localhost:8888'
 
 
-def parse_addr( addr ):
+def parse_addr(addr):
     host, port_str = addr.split(':')
     port = int(port_str)
     return (host, port)

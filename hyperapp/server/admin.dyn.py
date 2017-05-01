@@ -18,33 +18,33 @@ class UserList(SmallListObject):
     default_sort_column_id = 'id'
 
     @classmethod
-    def resolve( cls, path ):
+    def resolve(cls, path):
         path.check_empty()
         return cls()
 
     @classmethod
-    def get_path( cls ):
+    def get_path(cls):
         return this_module.make_path(cls.class_name)
 
-    def __init__( self ):
+    def __init__(self):
         SmallListObject.__init__(self, core_types)
 
     @db_session
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         return list(map(self.rec2element, this_module.User.select()))
 
     @classmethod
-    def rec2element( cls, rec ):
+    def rec2element(cls, rec):
         commands = []
         public_key = PublicKey.from_pem(rec.public_key_pem)
         return cls.Element(cls.Row(rec.id, rec.user_name, public_key.get_short_id_hex()), commands)
 
-    def process_request( self, request ):
+    def process_request(self, request):
         if request.command_id == 'add':
             return self.run_command_add(request)
         return SmallListObject.process_request(self, request)
 
-    def run_command_add( self, request ):
+    def run_command_add(self, request):
         public_key = PublicKey.from_der(request.params.public_key_der)
         rec = this_module.User(user_name=request.params.user_name,
                                public_key_pem=public_key.to_pem())
@@ -56,25 +56,25 @@ class UserList(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
         self.User = self.make_entity('User',
                                      user_name=Required(str),
                                      public_key_pem=Required(str),
                                      )
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         objname = path.pop_str()
         if objname == UserList.class_name:
             return UserList.resolve(path)
         path.raise_not_found()
 
-    def get_commands( self ):
+    def get_commands(self):
         return [
             ModuleCommand('user_list', 'User list', 'Open user list', 'Alt+U', self.name),
             ]
 
-    def run_command( self, request, command_id ):
+    def run_command(self, request, command_id):
         if command_id == 'user_list':
             return request.make_response_object(UserList())
         return PonyOrmModule.run_command(self, request, command_id)

@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 class ObjImplRegistry(Registry):
 
-    def resolve( self, state ):
+    def resolve(self, state):
         rec = self._resolve(state.objimpl_id)
         log.info('producing object %r using %s(%s, %s)', state.objimpl_id, rec.factory, rec.args, rec.kw)
         return rec.factory(state, *rec.args, **rec.kw)

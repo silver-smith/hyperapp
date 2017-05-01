@@ -21,15 +21,15 @@ class BlogEntry(article.Article):
     iface = blog_types.blog_entry
     objimpl_id = 'proxy.text'
 
-    def get_path( self ):
+    def get_path(self):
         return this_module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
 
     @command('parent')
-    def command_parent( self, request ):
+    def command_parent(self, request):
         return request.make_response_object(Blog())
 
     @db_session
-    def do_save( self, request, text ):
+    def do_save(self, request, text):
         if self.article_id is not None:
             entry_rec = this_module.BlogEntry[self.article_id]
             entry_rec.text = text
@@ -57,37 +57,37 @@ class Blog(SmallListObject):
     default_sort_column_id = 'id'
 
     @classmethod
-    def resolve( cls, path ):
+    def resolve(cls, path):
         return cls()
 
-    def __init__( self ):
+    def __init__(self):
         SmallListObject.__init__(self, core_types)
 
     @classmethod
-    def get_path( cls ):
+    def get_path(cls):
         return this_module.make_path(cls.class_name)
 
     @command('add')
-    def command_add( self, request ):
+    def command_add(self, request):
         return request.make_response_object(BlogEntry(mode=BlogEntry.mode_edit))
 
     @db_session
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         return list(map(self.rec2element, this_module.BlogEntry.select().order_by(desc(this_module.BlogEntry.created_at))))
 
     @classmethod
-    def rec2element( cls, rec ):
+    def rec2element(cls, rec):
         commands = [cls.command_open, cls.command_delete]
         return cls.Element(cls.Row(rec.id, rec.created_at), commands)
 
     @command('open', kind='element', is_default_command=True)
-    def command_open( self, request ):
+    def command_open(self, request):
         article_id = request.params.element_key
         return request.make_response_object(BlogEntry(article_id))
     
     @command('delete', kind='element')
     @db_session
-    def command_delete( self, request ):
+    def command_delete(self, request):
         article_id = request.params.element_key
         this_module.BlogEntry[article_id].delete()
         diff = self.Diff_delete(article_id)
@@ -96,17 +96,17 @@ class Blog(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
         self.article_module = article.this_module
 
-    def init_phase2( self ):
+    def init_phase2(self):
         self.Article = self.article_module.Article
         self.BlogEntry = self.make_inherited_entity('BlogEntry', self.Article,
                                                     created_at=Required(datetime))
         BlogEntry.register_class(self.BlogEntry)
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         objname = path.pop_str()
         if objname == BlogEntry.class_name:
             return BlogEntry.resolve(path)
@@ -114,13 +114,13 @@ class ThisModule(PonyOrmModule):
             return Blog.resolve(path)
         path.raise_not_found()
 
-    def get_commands( self ):
+    def get_commands(self):
         return [
             ModuleCommand('create', 'Create entry', 'Create new blog entry', None, self.name),
             ModuleCommand('open_blog', 'Blog', 'Open blog', 'Alt+B', self.name),
             ]
 
-    def run_command( self, request, command_id ):
+    def run_command(self, request, command_id):
         if command_id == 'create':
             return request.make_response_object(BlogEntry())
         if command_id == 'open_blog':

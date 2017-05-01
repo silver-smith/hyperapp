@@ -16,7 +16,7 @@ TRANSPORT_ID = 'encrypted_tcp'
 
 class TcpServer(object):
 
-    def __init__( self, remoting, server, host, port ):
+    def __init__(self, remoting, server, host, port):
         self._remoting = remoting
         self._server = server
         self._host = host
@@ -29,11 +29,11 @@ class TcpServer(object):
         self._socket.listen(5)
         log.info('listening on %s:%d', self._host, self._port)
 
-    def get_routes( self ):
+    def get_routes(self):
         route = [TRANSPORT_ID, self._host, str(self._port)]
         return [route]
 
-    def run( self ):
+    def run(self):
         try:
             self.accept_loop()
         except KeyboardInterrupt:
@@ -41,7 +41,7 @@ class TcpServer(object):
             self.stop()
         log.info('Stopped')
 
-    def accept_loop( self ):
+    def accept_loop(self):
         while True:
             select.select([self._socket], [], [self._socket])
             cln_socket, cln_addr = self._socket.accept()
@@ -52,20 +52,20 @@ class TcpServer(object):
             self._client2thread[client] = thread
             self.join_finished_threads()
 
-    def stop( self ):
+    def stop(self):
         for client in self._client2thread.keys():
             client.stop()
         while self._client2thread:
             time.sleep(0.1)  # hacky
         self.join_finished_threads()
 
-    def join_finished_threads( self ):
+    def join_finished_threads(self):
         for thread in self._finished_threads:
             thread.join()
         self._finished_threads = []
 
     # called from client thread
-    def on_client_closed( self, client ):
+    def on_client_closed(self, client):
         self._finished_threads.append(self._client2thread[client])
         del self._client2thread[client]
         log.info('client %s:%d is gone' % client.get_addr())

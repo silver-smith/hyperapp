@@ -3,7 +3,7 @@ from hyperapp.client.list_object import ListDiff, Element, Slice, ListObject
 from hyperapp.client.proxy_list_object import SliceAlgorithm
 
 
-def make_slice( elements_range ):
+def make_slice(elements_range):
     start, stop = elements_range
     elements = [Element(key=idx, order_key=idx, row=None, commands=[]) for idx in range(start, stop)]
     return Slice(sort_column_id='id', from_key=None, direction='asc', elements=elements, bof=True, eof=True)

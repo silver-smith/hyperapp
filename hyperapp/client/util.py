@@ -20,13 +20,13 @@ class Thread(QtCore.QThread):
     # we must keep refs to running threads
     _threads = set()
 
-    def __init__( self, target, tearDowns ):
+    def __init__(self, target, tearDowns):
         QtCore.QThread.__init__(self)
         self._target    = target     # (fn, args, kw) tuple
         self._tearDowns = tearDowns  # (fn, args, kw) tuple list
         self._threads.add(self)
 
-    def run( self ):
+    def run(self):
         fn, args, kw = self._target
         try:
             fn(*args, **kw)
@@ -36,7 +36,7 @@ class Thread(QtCore.QThread):
             invoke_in_main_thread(self._threads.remove, self)
 
 
-def start_thread( fn, *args, **kw ):
+def start_thread(fn, *args, **kw):
     thread = Thread((fn, args, kw), [])
     thread.start(QtCore.QThread.LowPriority)
 
@@ -45,12 +45,12 @@ def start_thread( fn, *args, **kw ):
 # WARNING: uses undocumented WeakSet implementation details
 class WeakSetWithCallback(weakref.WeakSet):
 
-    def __init__( self, on_remove, data=None ):
+    def __init__(self, on_remove, data=None):
         weakref.WeakSet.__init__(self, data)
         self._orig_remove = self._remove
         self._on_remove = on_remove
 
-        def remove( item, self_ref=weakref.ref(self) ):
+        def remove(item, self_ref=weakref.ref(self)):
             self = self_ref()
             if self is None: return
             self._orig_remove(item)
@@ -84,14 +84,14 @@ def invoke_in_main_thread(fn, *args, **kwargs):
     QtCore.QCoreApplication.postEvent(_invoker,
         InvokeEvent(fn, *args, **kwargs))
 
-def call_after( fn, *args, **kw ):
+def call_after(fn, *args, **kw):
     ## print 'call_after', fn, args, kw
     QtCore.QTimer.singleShot(0, lambda: fn(*args, **kw))
 
-def call_after_2( fn, *args, **kw ):
+def call_after_2(fn, *args, **kw):
     call_after(call_after, fn, *args, **kw)
 
-def call_in_future( time_ms, fn, *args, **kw ):
+def call_in_future(time_ms, fn, *args, **kw):
     ## print 'call_in_future', time_ms, fn, args, kw
     QtCore.QTimer.singleShot(time_ms, lambda: fn(*args, **kw))
 
@@ -112,7 +112,7 @@ class cached_property(object):
         return result
 
 
-def uni2str( v ):
+def uni2str(v):
     if isinstance(v, str):
         return v.encode('utf-8')
     else:
@@ -121,7 +121,7 @@ def uni2str( v ):
 def utcnow():
     return datetime.now(tzutc())
 
-def key_match( evt, key_str ):
+def key_match(evt, key_str):
     tokens = key_str.split('+')
     mods = tokens[:-1]
     key = getattr(QtCore.Qt, 'Key_' + tokens[-1], None)
@@ -141,13 +141,13 @@ def key_match( evt, key_str ):
             return False
     return True
 
-def key_match_any( evt, keys ):
+def key_match_any(evt, keys):
     for key in keys:
         if key_match(evt, key):
             return True
     return False
 
-def make_async_action( widget, text, shortcuts, fn, *args, **kw ):
+def make_async_action(widget, text, shortcuts, fn, *args, **kw):
     assert isinstance(text, str), repr(text)
     assert shortcuts is None or is_list_inst(shortcuts, str), repr(shortcuts)
     assert callable(fn), repr(fn)
@@ -156,7 +156,7 @@ def make_async_action( widget, text, shortcuts, fn, *args, **kw ):
         asyncio.async(fn(*args, **kw))
     return make_action(widget, text, shortcuts, run)
 
-def make_action( widget, text, shortcuts, fn, *args, **kw ):
+def make_action(widget, text, shortcuts, fn, *args, **kw):
     assert isinstance(text, str), repr(text)
     assert shortcuts is None or is_list_inst(shortcuts, str), repr(shortcuts)
     assert callable(fn), repr(fn)
@@ -169,7 +169,7 @@ def make_action( widget, text, shortcuts, fn, *args, **kw ):
     action.triggered.connect(run)
     return action
 
-def focused_index( parent, children, default=None ):
+def focused_index(parent, children, default=None):
     if parent:
         w = parent.focusWidget()
     else:

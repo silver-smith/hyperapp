@@ -11,17 +11,17 @@ MAX_REDIRECT_COUNT = 10
 
 class ViewRegistry(Registry):
 
-    def __init__( self, iface_registry, remoting ):
+    def __init__(self, iface_registry, remoting):
         Registry.__init__(self)
         self._iface_registry = iface_registry
         self._remoting = remoting
         self._core_types = None
 
-    def set_core_types( self, core_types ):
+    def set_core_types(self, core_types):
         self._core_types = core_types
 
     @asyncio.coroutine
-    def resolve( self, locale, handle, parent=None ):
+    def resolve(self, locale, handle, parent=None):
         assert isinstance(locale, str), repr(locale)
         assert isinstance(handle, self._core_types.handle), repr(handle)
         for i in range(MAX_REDIRECT_COUNT):

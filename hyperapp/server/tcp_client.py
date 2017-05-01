@@ -20,14 +20,14 @@ class Error(Exception): pass
 
 class TcpConnection(object):
 
-    def __init__( self, socket ):
+    def __init__(self, socket):
         self.socket = socket
         self.recv_buf = b''
 
-    def close( self ):
+    def close(self):
         self.socket.close()
 
-    def send( self, contents ):
+    def send(self, contents):
         data = encode_tcp_packet(contents)
         ofs = 0
         while ofs < len(data):
@@ -37,7 +37,7 @@ class TcpConnection(object):
                 raise Error('Socket is closed')
             ofs += sent_size
 
-    def receive( self, timeout ):
+    def receive(self, timeout):
         while not has_full_tcp_packet(self.recv_buf):
             ## print '  receiving...'
             rd, wr, xc = select.select([self.socket], [], [self.socket], timeout)
@@ -57,7 +57,7 @@ class TcpConnection(object):
 
 class TcpClient(object):
 
-    def __init__( self, remoting, server, tcp_server, socket, addr, on_close ):
+    def __init__(self, remoting, server, tcp_server, socket, addr, on_close):
         assert isinstance(remoting, Remoting), repr(remoting)
         self._remoting = remoting
         self._server = server
@@ -68,16 +68,16 @@ class TcpClient(object):
         self._stop_flag = False
         self._session_list = TransportSessionList()
 
-    def get_addr( self ):
+    def get_addr(self):
         return self._addr
 
-    def send_update( self, update ):
+    def send_update(self, update):
         self.updates_queue.put(update)
 
-    def stop( self ):
+    def stop(self):
         self._stop_flag = True
 
-    def serve( self ):
+    def serve(self):
         try:
             while not self._stop_flag:
                 packet_data = self._connection.receive(NOTIFICATION_DELAY_TIME)
@@ -94,7 +94,7 @@ class TcpClient(object):
         self._connection.close()
         self._on_close(self)
 
-    def _process_packet( self, request_data ):
+    def _process_packet(self, request_data):
         request_packet = decode_transport_packet(request_data)
         log.info('%r packet from %s:%d:', request_packet.transport_id, self._addr[0], self._addr[1])
         response_packets = self._remoting.process_packet(self._remoting.iface_registry, self._server, self._session_list, request_packet)
@@ -105,7 +105,7 @@ class TcpClient(object):
             response_data = encode_transport_packet(response_packet)
             self._connection.send(response_data)
 
-    def _send_notification( self, transport_packet ):
+    def _send_notification(self, transport_packet):
         log.info('%d bytes to %s:%d', len(transport_packet.data), self._addr[0], self._addr[1])
         data = encode_transport_packet(transport_packet)
         self._connection.send(data)

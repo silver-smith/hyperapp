@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 class Transport(object):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         self._request_types = services.request_types
         self._core_types = services.types.core
         self._packet_types = services.types.packet
@@ -26,7 +26,7 @@ class Transport(object):
         self._type_module_repository = services.type_module_repository
         self._client_code_repository = services.client_code_repository
 
-    def process_request_packet( self, iface_registry, server, peer, payload_encoding, packet ):
+    def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
         request_rec = packet_coders.decode(payload_encoding, packet.payload, self._request_types.tClientPacket)
         pprint(self._packet_types.aux_info, packet.aux_info)
         pprint(self._request_types.tClientPacket, request_rec)
@@ -41,24 +41,24 @@ class Transport(object):
         payload = packet_coders.encode(payload_encoding, response_or_notification.to_data(), self._request_types.tServerPacket)
         return self._packet_types.packet(aux_info, payload)
 
-    def _add_routes( self, routes ):
+    def _add_routes(self, routes):
         for srv_routes in routes:
             public_key = PublicKey.from_der(srv_routes.public_key_der)
             log.info('received routes for %s: %s',
                      public_key.get_short_id_hex(), ', '.join(encode_route(route) for route in srv_routes.routes))
             self._route_storage.add_routes(public_key, srv_routes.routes)
 
-    def make_notification_packet( self, payload_encoding, notification ):
+    def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)
         pprint(self._packet_types.aux_info, aux_info)
         pprint(self._request_types.tServerPacket, notification.to_data())
         payload = packet_coders.encode(payload_encoding, notification.to_data(), self._request_types.tServerPacket)
         return self._packet_types.packet(aux_info, payload)
 
-    def process_packet( self, server, peer, transport_packet_data ):
+    def process_packet(self, server, peer, transport_packet_data):
         raise NotImplementedError(self.__class__)
 
-    def prepare_aux_info( self, response_or_notification ):
+    def prepare_aux_info(self, response_or_notification):
         collector = RequirementsCollector(self._core_types, self._param_editor_types)
         packet_requirements = collector.collect(self._request_types.tServerPacket, response_or_notification.to_data())
         resources1 = self._load_required_resources(packet_requirements)
@@ -79,35 +79,35 @@ class Transport(object):
             resources=resources1 + resources2,
             )
 
-    def _load_required_resources( self, requirements ):
+    def _load_required_resources(self, requirements):
         return flatten([self._load_resource(id) for (registry, id) in requirements
                         if registry == 'resources'])
 
-    def _load_resource( self, encoded_resource_id ):
+    def _load_resource(self, encoded_resource_id):
         return list(self._resources_loader.load_resources(decode_path(encoded_resource_id)))
 
 
 class TransportRegistry(object):
 
-    def __init__( self ):
+    def __init__(self):
         self._id2transport = {}
 
-    def register( self, id, transport ):
+    def register(self, id, transport):
         assert isinstance(id, str), repr(id)
         assert isinstance(transport, Transport), repr(transport)
         self._id2transport[id] = transport
 
-    def resolve( self, id ):
+    def resolve(self, id):
         return self._id2transport[id]
 
 
 class Remoting(object):
 
-    def __init__( self, iface_registry ):
+    def __init__(self, iface_registry):
         self.iface_registry = iface_registry
         self.transport_registry = TransportRegistry()
 
-    def process_packet( self, iface_registry, server, session_list, request_packet ):
+    def process_packet(self, iface_registry, server, session_list, request_packet):
         assert isinstance(session_list, TransportSessionList), repr(session_list)
         assert isinstance(request_packet, tTransportPacket), repr(request_packet)
         transport = self.transport_registry.resolve(request_packet.transport_id)

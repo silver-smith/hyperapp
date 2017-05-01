@@ -50,7 +50,7 @@ tProofOfPossessionPacket = tEncryptedPacket.register('pop', fields=[
 def make_session_key():
     return os.urandom(AES_KEY_SIZE//8)
 
-def encrypt_initial_packet( session_key, server_public_key, plain_contents ):
+def encrypt_initial_packet(session_key, server_public_key, plain_contents):
     assert isinstance(session_key, bytes), repr(session_key)
     assert isinstance(server_public_key, PublicKey), repr(server_public_key)
     assert isinstance(plain_contents, bytes), repr(plain_contents)
@@ -59,13 +59,13 @@ def encrypt_initial_packet( session_key, server_public_key, plain_contents ):
     cbc_iv, encrypted_contents, hash = _encrypt(session_key, plain_contents)
     return tInitialEncryptedPacket(cbc_iv, encrypted_contents, hash, encrypted_session_key)
 
-def encrypt_subsequent_packet( session_key, plain_contents ):
+def encrypt_subsequent_packet(session_key, plain_contents):
     assert isinstance(session_key, bytes), repr(session_key)
     assert isinstance(plain_contents, bytes), repr(plain_contents)
     cbc_iv, encrypted_contents, hash = _encrypt(session_key, plain_contents)
     return tSubsequentEncryptedPacket(cbc_iv, encrypted_contents, hash)
 
-def _encrypt( session_key, plain_contents ):
+def _encrypt(session_key, plain_contents):
     assert isinstance(session_key, bytes), repr(session_key)
     assert isinstance(plain_contents, bytes), repr(plain_contents)
     # pad plaintext to block size
@@ -84,7 +84,7 @@ def _encrypt( session_key, plain_contents ):
     # done
     return (cbc_iv, encrypted_contents, hash)
 
-def decrypt_packet( identity, session_key, encrypted_packet ):
+def decrypt_packet(identity, session_key, encrypted_packet):
     assert isinstance(identity, Identity), repr(identity)
     assert isinstance(encrypted_packet, tEncryptedPacket), repr(encrypted_packet)
     if isinstance(encrypted_packet, tInitialEncryptedPacket):
@@ -95,14 +95,14 @@ def decrypt_packet( identity, session_key, encrypted_packet ):
     plain_text = _decrypt(session_key, encrypted_packet)
     return (session_key, plain_text)
 
-def decrypt_subsequent_packet( session_key, encrypted_packet ):
+def decrypt_subsequent_packet(session_key, encrypted_packet):
     assert isinstance(encrypted_packet, tEncryptedPacket), repr(encrypted_packet)
     assert not isinstance(encrypted_packet, tInitialEncryptedPacket)
     assert session_key is not None  # session_key must be passed for subsequent packet
     plain_text = _decrypt(session_key, encrypted_packet)
     return plain_text
 
-def _decrypt( session_key, encrypted_packet ):
+def _decrypt(session_key, encrypted_packet):
     assert isinstance(session_key, bytes), repr(session_key)
     # check hash first
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())

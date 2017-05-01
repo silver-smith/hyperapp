@@ -21,18 +21,18 @@ MIN_ROWS_RETURNED = 100
 
 class Subscription(object):
 
-    def __init__( self ):
+    def __init__(self):
         self.path2channel = WeakValueMultiDict()  # path -> Channel
 
-    def add( self, path, peer_channel ):
+    def add(self, path, peer_channel):
         log.info('-- subscribing %r %r', path, peer_channel.get_id())
         self.path2channel.add(encode_path(path), peer_channel)
 
-    def remove( self, path, peer_channel ):
+    def remove(self, path, peer_channel):
         log.info('-- unsubscribing %r %r', path, peer_channel.get_id())
         self.path2channel.remove(encode_path(path), peer_channel)
 
-    def distribute_update( self, iface, path, diff ):
+    def distribute_update(self, iface, path, diff):
         update = iface.Update(path, diff)
         log.info('-- distributing update:')
         pprint(iface.tUpdate, update)
@@ -48,20 +48,20 @@ class Object(Commander):
 
     facets = None
 
-    def __init__( self, core_types=None ):
+    def __init__(self, core_types=None):
         Commander.__init__(self, commands_kind='object')
         self._core_types = core_types
 
-    def get_path( self ):
+    def get_path(self):
         raise NotImplementedError(self.__class__)
 
-    def get_facets( self ):
+    def get_facets(self):
         if self.facets is None:
             return [self.iface]
         else:
             return self.facets
 
-    def get( self, request ):
+    def get(self, request):
         path = self.get_path()
         assert is_list_inst(path, str), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
         return self.iface.Object(
@@ -73,15 +73,15 @@ class Object(Commander):
             contents=self.get_contents(),
             )
 
-    def get_contents( self, **kw ):
+    def get_contents(self, **kw):
         return self.iface.Contents(
             commands=[cmd.to_data() for cmd in self.get_commands()],
             **kw)
 
-    def get_handle( self, request ):
+    def get_handle(self, request):
         raise NotImplementedError(self.__class__)
 
-    def process_request( self, request ):
+    def process_request(self, request):
         command_id = request.command_id
         if command_id == 'get':
             return self.process_request_get(request)
@@ -94,17 +94,17 @@ class Object(Commander):
             assert command, repr(command_id)  # Unknown command
             return command.run(request)
 
-    def process_request_get( self, request ):
+    def process_request_get(self, request):
         return request.make_response_handle(self.get_handle(request))
 
-    def process_request_subscribe( self, request ):
+    def process_request_subscribe(self, request):
         self.subscribe(request)
         return request.make_response(self.get_contents())
 
-    def subscribe( self, request ):
+    def subscribe(self, request):
         subscription.add(self.get_path(), request.peer.channel)
 
-    def unsubscribe( self, request ):
+    def unsubscribe(self, request):
         subscription.remove(self.get_path(), request.peer.channel)
 
 
@@ -117,58 +117,58 @@ class ListObject(Object):
     categories = None  # define in subclass
 
     @classmethod
-    def Row( cls, *args, **kw ):
+    def Row(cls, *args, **kw):
         return cls.iface.Row(*args, **kw)
 
     @classmethod
-    def Element( cls, row, commands=None ):
+    def Element(cls, row, commands=None):
         for cmd in commands or []:
             assert cmd.kind == 'element', ('%s: command %r must has "element" kind, but has kind %r'
                                            % (cls.__name__, cmd.id, cmd.kind))
         return cls.iface.Element(row, [cmd.to_data() for cmd in commands or []])
 
     @classmethod
-    def Diff( cls, *args, **kw ):
+    def Diff(cls, *args, **kw):
         return cls.iface.Diff(*args, **kw)
 
     @classmethod
-    def Diff_replace( cls, key, element ):
+    def Diff_replace(cls, key, element):
         return cls.Diff(key, key, [element])
 
     @classmethod
-    def Diff_insert_one( cls, key, element ):
+    def Diff_insert_one(cls, key, element):
         return cls.Diff_insert_many(key, [element])
 
     @classmethod
-    def Diff_add_one( cls, element ):
+    def Diff_add_one(cls, element):
         return cls.Diff_insert_one(None, element)
 
     @classmethod
-    def Diff_insert_many( cls, key, elements ):
+    def Diff_insert_many(cls, key, elements):
         return cls.Diff(key, key, elements)
 
     @classmethod
-    def Diff_add_many( cls, elements ):
+    def Diff_add_many(cls, elements):
         return cls.Diff.insert_many(None, elements)
 
     @classmethod
-    def Diff_delete( cls, key ):
+    def Diff_delete(cls, key):
         return cls.Diff(key, key, [])
 
-    def __init__( self, core_types ):
+    def __init__(self, core_types):
         Object.__init__(self, core_types)
 
-    def get_contents( self, **kw ):
+    def get_contents(self, **kw):
         slice = self.fetch_elements(self.default_sort_column_id, None, self.default_direction, MIN_ROWS_RETURNED)
         assert isinstance(slice, self.iface.tSlice()), \
           'Invalid result returned from fetch_elements, use: return self.Slice(...); returned: %r, expected: %r' \
             % (slice, self.iface.tSlice())
         return Object.get_contents(self, slice=slice, **kw)
 
-    def get_handle( self, request ):
+    def get_handle(self, request):
         return self.ListHandle(self.get(request))
 
-    def process_request( self, request ):
+    def process_request(self, request):
         if request.command_id == 'fetch_elements':
             return self.process_request_fetch_elements(request)
         if request.command_id == 'subscribe_and_fetch_elements':
@@ -179,7 +179,7 @@ class ListObject(Object):
         else:
             return Object.process_request(self, request)
 
-    def process_request_fetch_elements( self, request ):
+    def process_request_fetch_elements(self, request):
         params = request.params
         slice = self.fetch_elements(params.sort_column_id, params.from_key, params.direction, params.count)
         assert isinstance(slice, self.iface.tSlice()), \
@@ -187,13 +187,13 @@ class ListObject(Object):
         return request.make_response(Object.get_contents(self, slice=slice))
 
     # must return Slice, construct using self.Slice(...)
-    def fetch_elements( self, sort_column_id, key, desc_count, asc_count ):
+    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         raise NotImplementedError(self.__class__)
 
-    def run_element_command( self, request, command_id, element_key ):
+    def run_element_command(self, request, command_id, element_key):
         assert False, repr(command_id)  # Unexpected command_id
 
-    def Slice( self, sort_column_id, from_key, direction, elements, bof, eof ):
+    def Slice(self, sort_column_id, from_key, direction, elements, bof, eof):
         assert isinstance(sort_column_id, str), repr(sort_column_id)
         column = self._pick_column(sort_column_id)
         assert column, 'Unknown column: %r; known are: %r'\
@@ -201,13 +201,13 @@ class ListObject(Object):
         assert direction in ['asc', 'desc'], repr(direction)
         return self.iface.Slice(sort_column_id, from_key, direction, elements, bof, eof)
             
-    def _pick_column( self, column_id ):
+    def _pick_column(self, column_id):
         for column in self.iface.get_columns():
             if column.id == column_id:
                 return column
         return None
 
-    def ListHandle( self, object, sort_column_id=None, key=None ):
+    def ListHandle(self, object, sort_column_id=None, key=None):
         assert self.iface, '%s.iface is not defined' % self.__class__.__name__
         handle_t = list_handle_type(self._core_types, self.iface.get_key_type())
         if sort_column_id is None:
@@ -215,7 +215,7 @@ class ListObject(Object):
         resource_id = ['interface', self.iface.iface_id]
         return handle_t('list', object, resource_id, sort_column_id, key)
 
-    def CategorizedListHandle( self, object, sort_column_id=None, key=None ):
+    def CategorizedListHandle(self, object, sort_column_id=None, key=None):
         assert self.categories, '%s.categories is not defined' % self.__class__.__name__
         assert self.iface, '%s.iface is not defined' % self.__class__.__name__
         handle_t = categorized_list_handle_type(self._core_types, self.iface.get_key_type())
@@ -227,7 +227,7 @@ class ListObject(Object):
 
 class SmallListObject(ListObject):
 
-    def fetch_elements( self, sort_column_id, from_key, direction, count ):
+    def fetch_elements(self, sort_column_id, from_key, direction, count):
         assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
         elt2sort_key = attrgetter('row.%s' % self.iface.get_key_column_id())
         sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
@@ -247,6 +247,6 @@ class SmallListObject(ListObject):
         return self.Slice(sort_column_id, from_key, direction, elements, bof, eof)
 
     # must return self.iface.Element list
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         raise NotImplementedError(self.__class__)
     

@@ -13,27 +13,27 @@ log = logging.getLogger(__name__)
 
 class Server(object):
 
-    def __init__( self, request_types, core_types, identity, test_delay_sec=None ):
+    def __init__(self, request_types, core_types, identity, test_delay_sec=None):
         assert isinstance(identity, Identity), repr(identity)
         self._request_types = request_types
         self._core_types = core_types
         self.identity = identity
         self.test_delay_sec = test_delay_sec  # float
 
-    def get_identity( self ):
+    def get_identity(self):
         return self.identity
 
-    def get_public_key( self ):
+    def get_public_key(self):
         return self.identity.get_public_key()
 
-    def make_url( self, iface, path ):
+    def make_url(self, iface, path):
         return Url(iface, self.identity.get_public_key(), path)
 
-    def is_mine_url( self, url ):
+    def is_mine_url(self, url):
         assert isinstance(url, Url), repr(url)
         return url.public_key == self.get_public_key()
 
-    def process_request( self, request ):
+    def process_request(self, request):
         assert isinstance(request, RequestBase), repr(request)
         object = self._resolve(request.iface, request.path)
         log.info('Object: %r', object)
@@ -47,16 +47,16 @@ class Server(object):
             self._subscribe_objects(request.peer.channel, response)
         return response
 
-    def _resolve( self, iface, path ):
+    def _resolve(self, iface, path):
         return module.Module.run_resolver(iface, path)
 
-    def _subscribe_objects( self, peer_channel, response ):
+    def _subscribe_objects(self, peer_channel, response):
         collector = ObjectPathCollector(self._core_types)
         object_paths = collector.collect(self._request_types.tServerPacket, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)
 
-    def _prepare_response( self, obj_class, request, response ):
+    def _prepare_response(self, obj_class, request, response):
         assert response is None or isinstance(response, Response), \
           'Server commands must return a response, but %s.%s command returned %r' % (obj_class.__name__, request.command_id, response)
         if response is None and isinstance(request, Request):

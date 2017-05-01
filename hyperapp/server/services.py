@@ -19,7 +19,7 @@ DYN_MODULE_EXT = '.dyn.py'
 
 class Services(ServicesBase):
 
-    def __init__( self ):
+    def __init__(self):
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
@@ -55,11 +55,11 @@ class Services(ServicesBase):
         self.remoting = Remoting(self.iface_registry)
         self._register_transports()
 
-    def _register_transports( self ):
+    def _register_transports(self):
         for module in [tcp_transport, encrypted_transport]:
             module.register_transports(self.remoting.transport_registry, self)
 
-    def _load_server_modules( self ):
+    def _load_server_modules(self):
         for module_name in [
                 'server_management',
                 'client_code_repository',

@@ -20,7 +20,7 @@ from .htypes import (
 MAX_SANE_LIST_SIZE = 1 << 60
 
 
-def join_path( *args ):
+def join_path(*args):
     return '.'.join([_f for _f in args if _f])
 
 
@@ -29,24 +29,24 @@ class DecodeError(Exception): pass
 
 class CdrDecoder(object):
 
-    def decode( self, t, value, path='root' ):
+    def decode(self, t, value, path='root'):
         assert isinstance(value, bytes), repr(value)
         self.data = value
         self.ofs = 0
         return self.dispatch(t, path)
 
-    def expect( self, path, expr, desc ):
+    def expect(self, path, expr, desc):
         if not expr:
             self.failure(path, desc)
 
-    def failure( self, path, desc ):
+    def failure(self, path, desc):
         raise DecodeError('%s: %s' % (path, desc))
 
     @method_dispatch
-    def dispatch( self, t, path ):
+    def dispatch(self, t, path):
         assert False, repr((t, path))  # Unknown type
 
-    def read( self, size, path ):
+    def read(self, size, path):
         if self.ofs + size > len(self.data):
             raise DecodeError('%s: Unexpected EOF while reading %d bytes from ofs %d. Total size is %d'
                               % (path, size, self.ofs, len(self.data)))
@@ -54,50 +54,50 @@ class CdrDecoder(object):
         self.ofs += size
         return result
     
-    def unpack( self, fmt, path ):
+    def unpack(self, fmt, path):
         fmt = '!' + fmt
         size = struct.calcsize(fmt)
         data = self.read(size, path)
         return struct.unpack(fmt, data)[0]
 
-    def read_int( self, path ):
+    def read_int(self, path):
         return self.unpack('q', path)
 
-    def read_bool( self, path ):
+    def read_bool(self, path):
         return self.unpack('?', path)
 
-    def read_binary( self, path ):
+    def read_binary(self, path):
         size = self.read_int(path)
         data = self.read(size, path)
         return data
 
-    def read_unicode( self, path ):
+    def read_unicode(self, path):
         size = self.read_int(path)
         data = self.read(size, path)
         return data.decode('utf-8')
 
     @dispatch.register(TBinary)
-    def decode_primitive( self, t, path ):
+    def decode_primitive(self, t, path):
         return self.read_binary(path)
 
     @dispatch.register(TString)
-    def decode_primitive( self, t, path ):
+    def decode_primitive(self, t, path):
         return self.read_unicode(path)
 
     @dispatch.register(TInt)
-    def decode_primitive( self, t, path ):
+    def decode_primitive(self, t, path):
         return self.read_int(path)
 
     @dispatch.register(TBool)
-    def decode_primitive( self, t, path ):
+    def decode_primitive(self, t, path):
         return self.read_bool(path)
 
     @dispatch.register(TDateTime)
-    def decode_datetime( self, t, path ):
+    def decode_datetime(self, t, path):
         return dateutil.parser.parse(self.read_unicode(path))
 
     @dispatch.register(TOptional)
-    def decode_optional( self, t, path ):
+    def decode_optional(self, t, path):
         value_present = self.read_bool(path)
         if value_present:
             return self.dispatch(t.base_t, path)
@@ -105,17 +105,17 @@ class CdrDecoder(object):
             return None
 
     @dispatch.register(TRecord)
-    def decode_record( self, t, path ):
+    def decode_record(self, t, path):
         fields = self.decode_record_fields(t, path)
         return t(**fields)
 
-    def decode_record_fields( self, t, path ):
+    def decode_record_fields(self, t, path):
         fields = self.decode_record_fields_impl(t.get_static_fields(), path)
         if isinstance(t, TSwitchedRec):
             fields.update(self.decode_record_fields_impl([t.get_dynamic_field(fields)], path))
         return fields
 
-    def decode_record_fields_impl( self, tfields, path ):
+    def decode_record_fields_impl(self, tfields, path):
         fields = {}
         for field in tfields:
             elt = self.dispatch(field.type, join_path(path, field.name))
@@ -123,14 +123,14 @@ class CdrDecoder(object):
         return fields
         
     @dispatch.register(THierarchy)
-    def decode_hierarchy_obj( self, t, path ):
+    def decode_hierarchy_obj(self, t, path):
         class_id = self.read_unicode(path)
         tclass = t.resolve(class_id)
         fields = self.decode_record_fields(tclass.get_trecord(), path)
         return tclass(**fields)
 
     @dispatch.register(TList)
-    def decode_list( self, t, path ):
+    def decode_list(self, t, path):
         size = self.read_int(path)
         elements = []
         if size > MAX_SANE_LIST_SIZE:
@@ -141,7 +141,7 @@ class CdrDecoder(object):
         return elements
 
     @dispatch.register(TIndexedList)
-    def decode_indexed_list( self, t, path ):
+    def decode_indexed_list(self, t, path):
         size = self.read_int(path)
         elements = []
         for idx in range(size):

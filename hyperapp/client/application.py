@@ -25,7 +25,7 @@ STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
 
 class Application(QtGui.QApplication, view.View):
 
-    def __init__( self, sys_argv ):
+    def __init__(self, sys_argv):
         QtGui.QApplication.__init__(self, sys_argv)
         self._response_mgr = None  # View constructor getattr call response_mgr
         view.View.__init__(self)
@@ -37,27 +37,27 @@ class Application(QtGui.QApplication, view.View):
         self._loop.set_debug(True)
 
     @property
-    def response_mgr( self ):
+    def response_mgr(self):
         return self._response_mgr
 
-    def get_state( self ):
+    def get_state(self):
         return [view.get_state() for view in self._windows]
 
     @asyncio.coroutine
-    def open_windows( self, state ):
+    def open_windows(self, state):
         for s in state or []:
             yield from window.Window.from_state(s, self, self.services.view_registry, self.services.resources_manager)
 
-    def pick_arg( self, kind ):
+    def pick_arg(self, kind):
         return None
 
-    def get_global_commands( self ):
+    def get_global_commands(self):
         return self._commands
 
-    def window_created( self, view ):
+    def window_created(self, view):
         self._windows.append(view)
 
-    def window_closed( self, view ):
+    def window_closed(self, view):
         state = self.get_state()
         self._windows.remove(view)
         if not self._windows:  # Was it the last window? Then it is time to exit
@@ -65,12 +65,12 @@ class Application(QtGui.QApplication, view.View):
             asyncio.async(self.stop_loop())  # call it async to allow all pending tasks to complete
 
     @asyncio.coroutine
-    def stop_loop( self ):
+    def stop_loop(self):
         self._loop.stop()
 
     @command('open_server')
     @asyncio.coroutine
-    def open_server( self ):
+    def open_server(self):
         window = self._windows[0]  # usually first window is the current one
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load url', os.getcwd(), 'Server url with routes (*.url)')
@@ -82,13 +82,13 @@ class Application(QtGui.QApplication, view.View):
         window.get_current_view().open(handle)
 
     @command('quit')
-    def quit( self ):
+    def quit(self):
         ## module.set_shutdown_flag()
         state = self.get_state()
         self.save_state(state)
         self._loop.stop()
 
-    def save_state( self, state ):
+    def save_state(self, state):
         requirements = RequirementsCollector(self._core_types).collect(self.state_type, state)
         module_ids = list(self._resolve_requirements(requirements))
         modules = self.services.module_manager.resolve_ids(module_ids)
@@ -99,7 +99,7 @@ class Application(QtGui.QApplication, view.View):
         with open(STATE_FILE_PATH, 'wb') as f:
             pickle.dump(contents, f)
 
-    def _resolve_requirements( self, requirements ):
+    def _resolve_requirements(self, requirements):
         for registry_id, id in requirements:
             log.info('requirement for state: %s %r', registry_id, id)
             if registry_id == 'class':
@@ -121,7 +121,7 @@ class Application(QtGui.QApplication, view.View):
                 yield module_id
     
 
-    ## def load_state_and_modules( self ):
+    ## def load_state_and_modules(self):
     ##     state = self.load_state_file()
     ##     if not state:
     ##         return state
@@ -134,7 +134,7 @@ class Application(QtGui.QApplication, view.View):
     ##         load_client_module(module)
     ##     return pickler.loads(pickled_handles)
 
-    def load_state_file( self ):
+    def load_state_file(self):
         try:
             with open(STATE_FILE_PATH, 'rb') as f:
                 return pickle.load(f)
@@ -142,7 +142,7 @@ class Application(QtGui.QApplication, view.View):
             log.info('Error loading state: %r', x)
             return None
 
-    def get_default_state( self ):
+    def get_default_state(self):
         view_state_t = self.services.modules.text_view.View.get_state_type()
         text_object_state_t = self.services.modules.text_object.TextObject.get_state_type()
         text_handle = view_state_t('text_view', text_object_state_t('text', 'hello'))
@@ -157,7 +157,7 @@ class Application(QtGui.QApplication, view.View):
             pos=window.this_module.point_type(100, 100))
         return [window_state]
 
-    def process_events_and_repeat( self ):
+    def process_events_and_repeat(self):
         while self.hasPendingEvents():
             self.processEvents()
             # although this event is documented as deprecated, it is essential for qt objects being destroyed:
@@ -165,7 +165,7 @@ class Application(QtGui.QApplication, view.View):
         self.sendPostedEvents(None, 0)
         self._loop.call_later(0.01, self.process_events_and_repeat)
 
-    def exec_( self ):
+    def exec_(self):
         contents = self.load_state_file()
         if contents:
             module_ids, code_modules, state_data = contents

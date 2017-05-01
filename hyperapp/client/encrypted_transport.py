@@ -21,13 +21,13 @@ TRANSPORT_ID = 'encrypted_tcp'
 ENCODING = 'cdr'
 
 
-def register_transports( registry, services ):
+def register_transports(registry, services):
     registry.register(TRANSPORT_ID, EncryptedTransport(services))
 
 
 class Session(object):
 
-    def __init__( self, session_key ):
+    def __init__(self, session_key):
         assert isinstance(session_key, bytes), repr(session_key)
         self.session_key = session_key
 
@@ -35,7 +35,7 @@ class Session(object):
 class EncryptedTransport(Transport):
 
     @asyncio.coroutine
-    def send_request_rec( self, remoting, public_key, route, request_or_notification ):
+    def send_request_rec(self, remoting, public_key, route, request_or_notification):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
@@ -45,7 +45,7 @@ class EncryptedTransport(Transport):
         protocol.send_packet(transport_packet)
         return True
 
-    def _produce_session( self, session_list ):
+    def _produce_session(self, session_list):
         session = session_list.get_transport_session(TRANSPORT_ID)
         if session is None:
             session_key = make_session_key()
@@ -53,18 +53,18 @@ class EncryptedTransport(Transport):
             session_list.set_transport_session(TRANSPORT_ID, session)
         return session
     
-    def _make_payload_packet( self, session, server_public_key, request_or_notification ):
+    def _make_payload_packet(self, session, server_public_key, request_or_notification):
         packet = self.make_request_packet(ENCODING, request_or_notification)
         packet_data = packet_coders.encode(ENCODING, packet, self._packet_types.packet)
         encrypted_packet = encrypt_initial_packet(session.session_key, server_public_key, packet_data)
         return self._make_transport_packet(encrypted_packet)
 
-    def _make_transport_packet( self, encrypted_packet ):
+    def _make_transport_packet(self, encrypted_packet):
         encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
         return tTransportPacket(TRANSPORT_ID, encrypted_packet_data)
 
     @asyncio.coroutine
-    def process_packet( self, protocol, session_list, server_public_key, data ):
+    def process_packet(self, protocol, session_list, server_public_key, data):
         session = session_list.get_transport_session(TRANSPORT_ID)
         assert session is not None  # must be created when sending request
         encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
@@ -75,7 +75,7 @@ class EncryptedTransport(Transport):
             return None  # not a response; packet processed by transport
 
     @asyncio.coroutine
-    def _process_subsequent_encrypted_packet( self, server_public_key, session, encrypted_packet ):
+    def _process_subsequent_encrypted_packet(self, server_public_key, session, encrypted_packet):
         packet_data = decrypt_subsequent_packet(session.session_key, encrypted_packet)
         packet = packet_coders.decode(ENCODING, packet_data, self._packet_types.packet)
         pprint(self._packet_types.packet, packet, self._resource_types, self._packet_types)
@@ -85,7 +85,7 @@ class EncryptedTransport(Transport):
         return ResponseBase.from_data(self._request_types, self._iface_registry, server_public_key, response_or_notification_rec)
 
     @asyncio.coroutine
-    def _process_pop_challenge_packet( self, protocol, server_public_key, session, encrypted_packet ):
+    def _process_pop_challenge_packet(self, protocol, server_public_key, session, encrypted_packet):
         challenge = encrypted_packet.challenge
         pop_records = []
         for item in self._identity_controller.get_items():

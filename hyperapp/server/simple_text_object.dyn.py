@@ -21,16 +21,16 @@ and more recently with desktop publishing software like Aldus PageMaker includin
 
 class TestTextObjectModule(Module):
 
-    def __init__( self ):
+    def __init__(self):
         Module.__init__(self, MODULE_NAME)
 
-    def get_commands( self ):
+    def get_commands(self):
         return [
             ModuleCommand('get_text_obj', 'Get text', 'Produce test text object', None, self.name),
             ModuleCommand('get_test_text_obj', 'Get test text', 'Produce test text object', None, self.name),
             ]
 
-    def run_command( self, request, command_id ):
+    def run_command(self, request, command_id):
         if command_id == 'get_text_obj':
             object = text_object_types.text_object('text', sample_text)
             handle = core_types.obj_handle('text_view', object)

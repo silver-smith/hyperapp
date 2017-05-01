@@ -15,15 +15,15 @@ MODULE_NAME = 'server_info'
 
 class DbRouteRepository(RouteRepository):
 
-    def __init__( self, this_module ):
+    def __init__(self, this_module):
         assert isinstance(this_module, ThisModule), repr(this_module)
         self.ServerRoute = this_module.ServerRoute
 
-    def enumerate( self ):
+    def enumerate(self):
         return []
 
     @db_session
-    def add( self, public_key, routes ):
+    def add(self, public_key, routes):
         assert isinstance(public_key, PublicKey), repr(public_key)
         assert is_list_list_inst(routes, str), repr(routes)
         public_key_pem = public_key.to_pem()
@@ -38,7 +38,7 @@ class DbRouteRepository(RouteRepository):
                 )
 
     @db_session
-    def get( self, public_key ):
+    def get(self, public_key):
         assert isinstance(public_key, PublicKey), repr(public_key)
         routes = []
         for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key.to_pem()):
@@ -49,10 +49,10 @@ class DbRouteRepository(RouteRepository):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__( self ):
+    def __init__(self):
         PonyOrmModule.__init__(self, MODULE_NAME)
 
-    def init_phase2( self ):
+    def init_phase2(self):
         self.ServerRoute = self.make_entity(
             'ServerRoute',
             public_key_pem=Required(str),

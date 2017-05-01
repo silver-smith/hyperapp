@@ -22,27 +22,27 @@ CODE_REPOSITORY_FACETS = [code_repository_types.code_repository, code_repository
 
 class ClientModuleRepository(object):
 
-    def __init__( self, dynamic_module_dir ):
+    def __init__(self, dynamic_module_dir):
         self._dynamic_module_dir = dynamic_module_dir
         self._id2module = {}           # module id -> tModule
         self._requirement2module = {}  # (registry, key) -> tModule
         self._load_dynamic_modules()
 
-    def get_module_list( self ):
+    def get_module_list(self):
         return sorted(list(self._id2module.values()), key=lambda module: module.id)
 
-    def get_module_by_id( self, module_id ):
+    def get_module_by_id(self, module_id):
         return self._id2module[module_id]
 
-    def get_module_by_requirement( self, registry, key ):
+    def get_module_by_requirement(self, registry, key):
         return self._requirement2module.get((registry, key))
 
-    def _load_dynamic_modules( self ):
+    def _load_dynamic_modules(self):
         for fname in os.listdir(self._dynamic_module_dir):
             if fname.endswith(DYNAMIC_MODULE_INFO_EXT):
                 self._load_dynamic_module(os.path.join(self._dynamic_module_dir, fname))
 
-    def _load_dynamic_module( self, info_path ):
+    def _load_dynamic_module(self, info_path):
         with open(info_path) as f:
             info = yaml.load(f.read())
         log.info('loaded client module info: %r', info)
@@ -53,7 +53,7 @@ class ClientModuleRepository(object):
             self._id2module[module.id] = module
             self._requirement2module[(registry, key)] = module
 
-    def _load_module( self, id, package, satisfies, fpath ):
+    def _load_module(self, id, package, satisfies, fpath):
         with open(fpath) as f:
             source = f.read()
         return packet_types.module(id=id, package=package, deps=[], satisfies=satisfies, source=source, fpath=fpath)
@@ -66,20 +66,20 @@ class ClientCodeRepository(Object):
     class_name = CODE_REPOSITORY_CLASS_NAME
 
     @classmethod
-    def get_path( cls ):
+    def get_path(cls):
         return this_module.make_path(cls.class_name)
 
-    def __init__( self, type_module_repository, code_module_repository, resources_loader ):
+    def __init__(self, type_module_repository, code_module_repository, resources_loader):
         Object.__init__(self)
         self._code_module_repository = code_module_repository
         self._resources_loader = resources_loader
         self._type_module_repository = type_module_repository
 
-    def resolve( self, path ):
+    def resolve(self, path):
         path.check_empty()
         return self
 
-    def get_modules_by_ids( self, module_ids ):
+    def get_modules_by_ids(self, module_ids):
         type_modules = []
         code_modules = []
         for module_id in module_ids:
@@ -89,7 +89,7 @@ class ClientCodeRepository(Object):
                 code_modules.append(self._code_module_repository.get_module_by_id(module_id))
         return (type_modules, code_modules)
 
-    def get_modules_by_requirements( self, requirements ):
+    def get_modules_by_requirements(self, requirements):
         type_modules = []
         code_modules = []
         for registry, key in requirements:
@@ -108,25 +108,25 @@ class ClientCodeRepository(Object):
         return (type_modules, code_modules)
 
     @command('get_modules_by_ids')
-    def command_get_modules_by_ids( self, request ):
+    def command_get_modules_by_ids(self, request):
         log.info('command_get_modules_by_ids %r', request.params.module_ids)
         type_modules, code_modules = self.get_modules_by_ids(request.params.module_ids)
         return self._make_response(request, type_modules, code_modules)
 
     @command('get_modules_by_requirements')
-    def command_get_modules_by_requirements( self, request ):
+    def command_get_modules_by_requirements(self, request):
         log.info('command_get_modules_by_requirements %r', request.params.requirements)
         type_modules, code_modules = self.get_modules_by_requirements(request.params.requirements)
         return self._make_response(request, type_modules, code_modules)
 
-    def _make_response( self, request, type_modules, code_modules ):
+    def _make_response(self, request, type_modules, code_modules):
         resources = flatten(self._load_module_resources(module) for module in code_modules)
         return request.make_response_result(
             type_modules=type_modules,
             code_modules=code_modules,
             resources=resources)
 
-    def _load_module_resources( self, module ):
+    def _load_module_resources(self, module):
         resource_id = ['client_module', module.id]
         return self._resources_loader.load_resources(resource_id)
 
@@ -140,21 +140,21 @@ class ClientCodeRepositoryBrowser(SmallListObject):
     default_sort_column_id = 'id'
 
     @classmethod
-    def get_path( cls ):
+    def get_path(cls):
         return this_module.make_path(cls.class_name)
 
-    def __init__( self, repository ):
+    def __init__(self, repository):
         SmallListObject.__init__(self, core_types)
         self._repository = repository
 
-    def resolve( self, path ):
+    def resolve(self, path):
         path.check_empty()
         return self
 
-    def fetch_all_elements( self ):
+    def fetch_all_elements(self):
         return [self._module2element(module) for module in self._repository.get_module_list()]
 
-    def _module2element( self, module ):
+    def _module2element(self, module):
         return self.Element(self.Row(
             module.id,
             os.path.basename(module.fpath),
@@ -165,14 +165,14 @@ class ClientCodeRepositoryBrowser(SmallListObject):
 
 class ThisModule(module_mod.Module):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         module_mod.Module.__init__(self, MODULE_NAME)
         self._module_repository = ClientModuleRepository(services.dynamic_module_dir)
         self._client_code_repository = ClientCodeRepository(services.type_module_repository, self._module_repository, services.resources_loader)
         services.module_repository = self._module_repository
         services.client_code_repository = self._client_code_repository
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         objname = path.pop_str()
         if objname == ClientCodeRepository.class_name and iface is ClientCodeRepository.iface:
             return self._client_code_repository.resolve(path)
@@ -180,10 +180,10 @@ class ThisModule(module_mod.Module):
             return ClientCodeRepositoryBrowser(self._module_repository).resolve(path)
         path.raise_not_found()
 
-    def get_commands( self ):
+    def get_commands(self):
         return [ModuleCommand('code_repository', 'Code repository', 'Browser code repository modules', 'Alt+R', self.name)]
 
-    def run_command( self, request, command_id ):
+    def run_command(self, request, command_id):
         if command_id == 'code_repository':
             return request.make_response_object(ClientCodeRepositoryBrowser(self._module_repository))
         return Module.run_command(self, request, command_id)

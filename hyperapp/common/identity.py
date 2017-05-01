@@ -15,18 +15,18 @@ RSA_KEY_SIZE_FAST = 1024  # used for testing
 class PublicKey(object):
 
     @classmethod
-    def from_pem( cls, pem ):
+    def from_pem(cls, pem):
         assert isinstance(pem, str), repr(pem)
         public_key = serialization.load_pem_public_key(pem.encode(), backend=default_backend())
         return cls('rsa', public_key)
 
     @classmethod
-    def from_der( cls, der ):
+    def from_der(cls, der):
         assert isinstance(der, bytes), repr(der)
         public_key = serialization.load_der_public_key(der, backend=default_backend())
         return cls('rsa', public_key)
 
-    def __init__( self, algorithm, public_key ):
+    def __init__(self, algorithm, public_key):
         assert isinstance(algorithm, str), repr(algorithm)
         self.algorithm = algorithm
         self.public_key = public_key
@@ -36,7 +36,7 @@ class PublicKey(object):
             ).decode()
         self._id = self._make_id()
 
-    def _make_id( self ):
+    def _make_id(self):
         pk_der = self.public_key.public_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
@@ -45,32 +45,32 @@ class PublicKey(object):
         digest.update(pk_der)
         return digest.finalize()
 
-    def get_id( self ):
+    def get_id(self):
         return self._id
 
-    def get_id_hex( self ):
+    def get_id_hex(self):
         return codecs.encode(self._id, 'hex').decode()
 
-    def get_short_id_hex( self ):
+    def get_short_id_hex(self):
         return codecs.encode(self._id[:4], 'hex').decode()
 
-    def to_pem( self ):
+    def to_pem(self):
         return self.public_pem
 
-    def to_der( self ):
+    def to_der(self):
         return self.public_key.public_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
 
-    def save_to_file( self, fpath ):
+    def save_to_file(self, fpath):
         with open(fpath, 'w') as f:
             f.write(self.public_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PublicFormat.SubjectPublicKeyInfo
                 ))
 
-    def encrypt( self, plain_text ):
+    def encrypt(self, plain_text):
         hash_alg = hashes.SHA1()
         cipher_text = self.public_key.encrypt(
             plain_text,
@@ -80,7 +80,7 @@ class PublicKey(object):
                 label=None))
         return cipher_text
 
-    def verify( self, message, signature ):
+    def verify(self, message, signature):
         sign_alg, hash_alg, sign = signature.split(b':', 2)
         assert sign_alg == b'rsa' and hash_alg == b'sha256', repr((sign_alg, hash_alg))
         hashalg = hashes.SHA256()
@@ -97,13 +97,13 @@ class PublicKey(object):
         except cryptography.exceptions.InvalidSignature:
             return False
 
-    def __eq__( self, other ):
+    def __eq__(self, other):
         return isinstance(other, PublicKey) and self.public_pem == other.public_pem
 
-    def __lt__( self, other ):
+    def __lt__(self, other):
         return isinstance(other, PublicKey) and self.public_pem < other.public_pem
 
-    def __hash__( self ):
+    def __hash__(self):
         return hash(self.public_pem)
 
 
@@ -111,13 +111,13 @@ class PublicKey(object):
 class Identity(object):
 
     @classmethod
-    def load_from_file( cls, fpath ):
+    def load_from_file(cls, fpath):
         with open(fpath, 'rb') as f:
             private_key = serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
         return cls('rsa', private_key)
 
     @classmethod
-    def generate( cls, fast=False ):
+    def generate(cls, fast=False):
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=RSA_KEY_SIZE_FAST if fast else RSA_KEY_SIZE_SAFE,
@@ -125,13 +125,13 @@ class Identity(object):
         )
         return cls('rsa', private_key)
 
-    def __init__( self, algorithm, private_key ):
+    def __init__(self, algorithm, private_key):
         assert isinstance(algorithm, str), repr(algorithm)
         assert algorithm == 'rsa', repr(algorithm)  # only algorithm supported for now
         self.algorithm = algorithm
         self.private_key = private_key
 
-    def save_to_file( self, fpath ):
+    def save_to_file(self, fpath):
         with open(fpath, 'wb') as f:
             f.write(self.private_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
@@ -139,10 +139,10 @@ class Identity(object):
                 encryption_algorithm=serialization.NoEncryption()
                 ))
 
-    def get_public_key( self ):
+    def get_public_key(self):
         return PublicKey(self.algorithm, self.private_key.public_key())
 
-    def decrypt( self, cipher_text ):
+    def decrypt(self, cipher_text):
         hash_alg = hashes.SHA1()
         plain_text = self.private_key.decrypt(
             cipher_text,
@@ -152,7 +152,7 @@ class Identity(object):
                 label=None))
         return plain_text
 
-    def sign( self, message ):
+    def sign(self, message):
         hashalg = hashes.SHA256()
         signer = self.private_key.signer(
             padding.PSS(

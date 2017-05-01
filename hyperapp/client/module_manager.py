@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 class ModuleManager(common_module_manager.ModuleManager):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         common_module_manager.ModuleManager.__init__(self, services, services.type_registry_registry, services.types.packet)
         self._id2module = {}
         self._objimpl_registry = services.objimpl_registry
@@ -20,16 +20,16 @@ class ModuleManager(common_module_manager.ModuleManager):
         self._meta_type_registry = make_meta_type_registry()
         self._builtin_type_registry = builtin_type_registry()
 
-    def add_code_modules( self, modules ):
+    def add_code_modules(self, modules):
         for module in modules:
             self.add_code_module(module)
 
-    def add_code_module( self, module ):
+    def add_code_module(self, module):
         log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
         self._id2module[module.id] = module
         self.load_code_module(module)
 
-    def resolve_ids( self, module_ids ):
+    def resolve_ids(self, module_ids):
         modules = []
         for id in module_ids:
             if self._type_registry_registry.has_type_registry(id): continue  # do not return type modules
@@ -37,7 +37,7 @@ class ModuleManager(common_module_manager.ModuleManager):
             modules.append(module)
         return modules
 
-    def _register_provided_services( self, module, module_dict ):
+    def _register_provided_services(self, module, module_dict):
         this_module_class = module_dict.get('ThisModule')
         if this_module_class:
             module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr

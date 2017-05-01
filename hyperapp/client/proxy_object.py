@@ -28,12 +28,12 @@ from .view import View
 log = logging.getLogger(__name__)
 
 
-def register_object_implementations( registry, services ):
+def register_object_implementations(registry, services):
     ProxyObject.register(registry, services)
 
 
 @asyncio.coroutine
-def execute_get_request( request_types, remoting, url ):
+def execute_get_request(request_types, remoting, url):
     assert isinstance(url, Url), repr(url)
     server = Server.from_public_key(remoting, url.public_key)
     request_id = str(uuid.uuid4())
@@ -46,27 +46,27 @@ def execute_get_request( request_types, remoting, url ):
 
 class RemoteCommand(Command):
 
-    def __init__( self, id, kind, resource_id, is_default_command, enabled, object_wr, args=None ):
+    def __init__(self, id, kind, resource_id, is_default_command, enabled, object_wr, args=None):
         assert isinstance(object_wr(), ProxyObject), repr(object_wr)
         Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
         self._object_wr = object_wr
         self._args = args or ()
 
-    def __repr__( self ):
+    def __repr__(self):
         return 'RemoteCommand(%r)' % self.id
 
-    def to_data( self ):
+    def to_data(self):
         return tCommand(self.id, self.kind, self.resource_id)
 
-    def get_view( self ):
+    def get_view(self):
         return None
 
-    def clone( self, args=None ):
+    def clone(self, args=None):
         args = self._args + (args or ())
         return RemoteCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._object_wr, args)
 
     @asyncio.coroutine
-    def run( self, *args, **kw ):
+    def run(self, *args, **kw):
         object = self._object_wr()
         if not object: return
         return (yield from object.run_remote_command(self.id, *(self._args + args), **kw))
@@ -77,7 +77,7 @@ class ProxyObject(Object):
     objimpl_id = 'proxy'
 
     @classmethod
-    def register( cls, registry, services ):
+    def register(cls, registry, services):
         registry.register(cls.objimpl_id, cls.from_state, services.request_types, services.types.core,
                           services.iface_registry, services.remoting, services.proxy_registry,
                           services.cache_repository, services.resources_manager, services.param_editor_registry)
@@ -130,10 +130,10 @@ class ProxyObject(Object):
         self._remote_commands = [self._remote_command_from_iface_command(command) for command in self.iface.get_commands()
                                  if self.is_iface_command_exposed(command)]
 
-    def __repr__( self ):
+    def __repr__(self):
         return 'ProxyObject(%s, %s, %s, %s)' % (id(self), self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
 
-    def get_state( self ):
+    def get_state(self):
         return self._core_types.proxy_object(
             objimpl_id=self.objimpl_id,
             public_key_der=self.server.public_key.to_der(),
@@ -142,32 +142,32 @@ class ProxyObject(Object):
             path=self.path,
             )
 
-    def get_url( self ):
+    def get_url(self):
         return self.server.make_url(self.iface, self.path)
 
-    def get_facets( self ):
+    def get_facets(self):
         return self.facets
 
     @asyncio.coroutine
-    def server_subscribe( self ):
+    def server_subscribe(self):
         result = yield from self.execute_request('subscribe')
         self.set_contents(result)
         self._notify_object_changed()
 
-    def set_contents( self, contents ):
+    def set_contents(self, contents):
         self.cache_repository.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
 
-    def get_title( self ):
+    def get_title(self):
         return '%s:%s' % (self.server.public_key.get_short_id_hex(), '|'.join(self.path))
 
-    def get_commands( self ):
+    def get_commands(self):
         return Object.get_commands(self) + self._remote_commands
 
     def is_iface_command_exposed(self, command):
         return True
 
     @asyncio.coroutine
-    def run_remote_command( self, command_id, *args, **kw ):
+    def run_remote_command(self, command_id, *args, **kw):
         log.debug('running remote command %r (*%s, **%s)', command_id, args, kw)
         if self._is_plain_open_handle_request(self.iface.get_command(command_id)):
             return (yield from self.execute_request(command_id, *args, **kw))
@@ -177,35 +177,35 @@ class ProxyObject(Object):
             handle = self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id)
             return SimpleNamespace(handle=handle)
 
-    def observers_gone( self ):
+    def observers_gone(self):
         log.info('-- observers_gone: %r', id(self))
         asyncio.async(self.send_notification('unsubscribe'))
 
     # prepare request which does not require/expect response
-    def prepare_notification( self, command_id, *args, **kw ):
+    def prepare_notification(self, command_id, *args, **kw):
         params = self.iface.make_params(command_id, *args, **kw)
         return ClientNotification(self._request_types, self.iface, self.path, command_id, params=params)
 
-    def prepare_request( self, command_id, *args, **kw ):
+    def prepare_request(self, command_id, *args, **kw):
         request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
         return Request(self._request_types, self.iface, self.path, command_id, request_id, params)
 
     @asyncio.coroutine
-    def send_notification( self, command_id, *args, **kw ):
+    def send_notification(self, command_id, *args, **kw):
         notification = self.prepare_notification(command_id, *args, **kw)
         yield from self.server.send_notification(notification)
 
     @asyncio.coroutine
-    def execute_request( self, command_id, *args, **kw ):
+    def execute_request(self, command_id, *args, **kw):
         request = self.prepare_request(command_id, *args, **kw)
         response = yield from self.server.execute_request(request)
         return response.result
 
-    def process_update( self, diff ):
+    def process_update(self, diff):
         raise NotImplementedError(self.__class__)
 
-    def _is_plain_open_handle_request( self, command ):
+    def _is_plain_open_handle_request(self, command):
         t_open_result = TRecord([
             Field('handle', TOptional(self._core_types.handle)),
             ])
@@ -213,20 +213,20 @@ class ProxyObject(Object):
                 and command.get_params_type(self.iface).get_fields() == []
                 and command.get_result_type(self.iface) == t_open_result)
 
-    def _remote_command_from_iface_command( self, command ):
+    def _remote_command_from_iface_command(self, command):
         kind = 'object'
         resource_id = ['interface', self.iface.iface_id, 'command', command.command_id]
         return RemoteCommand(command.command_id, kind, resource_id,
                              is_default_command=False, enabled=True, object_wr=weakref.ref(self))
 
-    def _get_commands_cache_key( self ):
+    def _get_commands_cache_key(self):
         return self.make_cache_key('commands')
 
-    def make_cache_key( self, name ):
+    def make_cache_key(self, name):
         return [self.objimpl_id, self.server.public_key.get_id_hex()] + self.path + [name]
 
-    def _get_commands_cache_type( self ):
+    def _get_commands_cache_type(self):
         return TList(tCommand)
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~ProxyObject %r path=%r', id(self), self.path)

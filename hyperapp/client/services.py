@@ -37,7 +37,7 @@ DYN_MODULE_EXT = '.dyn.py'
 
 class Services(ServicesBase):
 
-    def __init__( self ):
+    def __init__(self):
         self._dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
@@ -73,11 +73,11 @@ class Services(ServicesBase):
         self._register_object_implementations()
         self._register_views()
 
-    def _register_transports( self ):
+    def _register_transports(self):
         tcp_transport.register_transports(self.remoting.transport_registry, self)
         encrypted_transport.register_transports(self.remoting.transport_registry, self)
 
-    def _register_modules( self ):
+    def _register_modules(self):
         for module in [
                 command,
                 navigator,
@@ -88,7 +88,7 @@ class Services(ServicesBase):
             ]:
             module.__dict__['this_module'] = module.ThisModule(self)  # will auto-register itself
 
-    def _load_modules( self ):
+    def _load_modules(self):
         for module_name in [
                 'form',
                 'code_repository',
@@ -109,7 +109,7 @@ class Services(ServicesBase):
             module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.add_code_module(module)
 
-    def _register_object_implementations( self ):
+    def _register_object_implementations(self):
         for module in [
                 proxy_object,
                 proxy_list_object,
@@ -117,7 +117,7 @@ class Services(ServicesBase):
                 ]:
             module.register_object_implementations(self.objimpl_registry, self)
 
-    def _register_views( self ):
+    def _register_views(self):
         for module in [
                 navigator,
                 splitter,

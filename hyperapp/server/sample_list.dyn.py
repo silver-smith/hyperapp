@@ -23,20 +23,20 @@ class ParamsForm(Object):
     objimpl_id = 'proxy'
     class_name = 'params'
 
-    def get_path( self ):
+    def get_path(self):
         return module.make_path(self.class_name)
 
-    def get_handle( self, request ):
+    def get_handle(self, request):
         return self.make_handle(request)  # todo: form data must be preserved somehow
 
-    def make_handle( self, request, key=0, size=DEFAULT_SIZE ):
+    def make_handle(self, request, key=0, size=DEFAULT_SIZE):
         return formHandle(self.get(request), [
             form_types.form_field('key', intFieldHandle(key)),
             form_types.form_field('size', intFieldHandle(size)),
             ])
 
     @command('submit')
-    def command_submit( self, request ):
+    def command_submit(self, request):
         log.info('submitted: key=%r size=%r', request.params.key, request.params.size)
         object = TestList(request.params.size)
         handle = TestList.ListHandle(object.get(request), key=request.params.key)
@@ -50,23 +50,23 @@ class TestList(ListObject):
     class_name = 'list'
 
     @classmethod
-    def resolve( cls, path ):
+    def resolve(cls, path):
         size = path.pop_int()
         path.check_empty()
         return cls(size)
 
-    def __init__( self, size=DEFAULT_SIZE ):
+    def __init__(self, size=DEFAULT_SIZE):
         ListObject.__init__(self, core_types)
         self.size = size
 
-    def get_path( self ):
+    def get_path(self):
         return module.make_path(self.class_name, path_part_to_str(self.size))
 
     @command('params', is_default_command=True)
-    def command_params( self, request ):
+    def command_params(self, request):
         return request.make_response_handle(ParamsForm().make_handle(request, size=self.size))
 
-    def fetch_elements( self, sort_column_id, from_key, direction, count ):
+    def fetch_elements(self, sort_column_id, from_key, direction, count):
         assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
         assert from_key is None or isinstance(from_key, int), repr(from_key)
         if from_key is None:
@@ -85,10 +85,10 @@ class TestList(ListObject):
     
 class TestListModule(Module):
 
-    def __init__( self ):
+    def __init__(self):
         Module.__init__(self, MODULE_NAME)
 
-    def resolve( self, iface, path ):
+    def resolve(self, iface, path):
         class_name = path.pop_str()
         if class_name == ParamsForm.class_name:
             return ParamsForm()
@@ -96,10 +96,10 @@ class TestListModule(Module):
             return TestList.resolve(path)
         path.raise_not_found()
 
-    def get_commands( self ):
+    def get_commands(self):
         return [ModuleCommand('test_list', 'Test list', 'Open test list', 'Alt+T', self.name)]
 
-    def run_command( self, request, command_id ):
+    def run_command(self, request, command_id):
         if command_id == 'test_list':
             return request.make_response_object(TestList())
         return Module.run_command(self, request, command_id)

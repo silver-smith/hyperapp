@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 class MenuBar(object):
 
-    def __init__( self, app, window, locale, resources_manager ):
+    def __init__(self, app, window, locale, resources_manager):
         self.app = app
         self.window = window  # weakref.ref
         self._locale = locale
@@ -18,7 +18,7 @@ class MenuBar(object):
         self.current_dir = None
         self._build()
 
-    def _build( self ):
+    def _build(self):
         self.file_menu = self._build_global_menu('&File')
         self.dir_menu = QtGui.QMenu('&Dir')
         self.window_menu = QtGui.QMenu('&Window')
@@ -32,10 +32,10 @@ class MenuBar(object):
         menu_bar.addMenu(self.window_menu)
         menu_bar.addMenu(self.help_menu)
 
-    def add_action_to_menu( self, menu, text, shortcuts, fn, self_wr ):
+    def add_action_to_menu(self, menu, text, shortcuts, fn, self_wr):
         menu.addAction(make_action(menu, text, shortcuts, fn, self_wr))
 
-    def _build_global_menu( self, title ):
+    def _build_global_menu(self, title):
         menu = QtGui.QMenu(title)
         window = self.window()
         for cmd in Module.get_all_commands():
@@ -49,32 +49,32 @@ class MenuBar(object):
             menu.addAction(self._make_action(menu, cmd))
         return menu
 
-    def _current_view( self ):
+    def _current_view(self):
         return self.window().get_current_view()
 
     @staticmethod
-    def _open_dir_commands( self_wr ):
+    def _open_dir_commands(self_wr):
         self = self_wr()
         if self.current_dir is None: return
         assert 0  # todo
         ## self._current_view().open(cmd_view.Handle(None, [self.current_dir], take_dir_commands=True))
 
     @staticmethod
-    def _open_elt_commands( self_wr ):
+    def _open_elt_commands(self_wr):
         self = self_wr()
         assert 0  # todo
         ## self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
 
-    def view_changed( self, window ):
+    def view_changed(self, window):
         self.current_dir = dir = window.get_object()
         self.help_menu.setEnabled(dir is not None)
         self._update_dir_menu(window)
         self._update_window_menu(window)
 
-    def view_commands_changed( self, window, command_kinds ):
+    def view_commands_changed(self, window, command_kinds):
         pass
         
-    def _make_action( self, menu, cmd ):
+    def _make_action(self, menu, cmd):
         resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
         if resource:
             text = resource.text
@@ -86,7 +86,7 @@ class MenuBar(object):
         action.setEnabled(cmd.is_enabled())
         return action
 
-    def _update_dir_menu( self, window ):
+    def _update_dir_menu(self, window):
         self.dir_menu.clear()
         commands = window.get_commands()
         for cmd in commands:
@@ -96,7 +96,7 @@ class MenuBar(object):
             self.dir_menu.addAction(self._make_action(self.dir_menu, cmd))
         self.dir_menu.setEnabled(commands != [])
 
-    def _update_window_menu( self, window ):
+    def _update_window_menu(self, window):
         self.window_menu.clear()
         # remove duplicate shortcuts, with latter (from deeper views) commands overriding former ones
         commands = []  # in reversed order
@@ -122,5 +122,5 @@ class MenuBar(object):
             self.window_menu.addAction(self._make_action(self.window_menu, cmd))
             last_view = cmd.get_view()
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~menu_bar')

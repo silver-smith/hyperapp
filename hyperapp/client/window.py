@@ -30,14 +30,14 @@ class Window(composite.Composite, QtGui.QMainWindow):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, state, app, view_registry, resources_manager ):
+    def from_state(cls, state, app, view_registry, resources_manager):
         locale = LOCALE
         child = yield from tab_view.View.from_state(locale, state.tab_view, view_registry)
         return cls(locale, view_registry, resources_manager, app, child,
                    size=QtCore.QSize(state.size.w, state.size.h),
                    pos=QtCore.QPoint(state.pos.x, state.pos.y))
 
-    def __init__( self, locale, view_registry, resources_manager, app, child, size=None, pos=None ):
+    def __init__(self, locale, view_registry, resources_manager, app, child, size=None, pos=None):
         assert isinstance(child, tab_view.View), repr(child)
         QtGui.QMainWindow.__init__(self)
         composite.Composite.__init__(self, app)
@@ -64,38 +64,38 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self.show()
         self._parent().window_created(self)
 
-    def closeEvent( self, evt ):
+    def closeEvent(self, evt):
         QtGui.QMainWindow.closeEvent(self, evt)
         ## self.deleteLater()  # seems not required, at least when moved to QMainWindow from QWidget
         self._parent().window_closed(self)
 
-    def get_state( self ):
+    def get_state(self):
         return this_module.state_type(
             tab_view=self._view.get_state(),
             size=this_module.size_type(w=self.width(), h=self.height()),
             pos=this_module.point_type(x=self.x(), y=self.y()),
             )
 
-    def get_current_child( self ):
+    def get_current_child(self):
         return self._view
 
-    ## def replace_view( self, mapper ):
+    ## def replace_view(self, mapper):
     ##     handle = mapper(self._view.handle())
     ##     if handle:
     ##         self.set_child(handle)
 
-    def set_child( self, child ):
+    def set_child(self, child):
         self._view = child
         child.set_parent(self)
         self.view_changed(self._view)
 
-    def open( self, handle ):
+    def open(self, handle):
         self._view.open(handle)
 
-    def object_selected( self, obj ):
+    def object_selected(self, obj):
         return False
 
-    def view_changed( self, view ):
+    def view_changed(self, view):
         assert view is self._view
         w = self._view.get_widget()
         if w is not self._child_widget:
@@ -109,25 +109,25 @@ class Window(composite.Composite, QtGui.QMainWindow):
         self._cmd_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
-    def view_commands_changed( self, command_kinds ):
+    def view_commands_changed(self, command_kinds):
         self._menu_bar.view_commands_changed(self, command_kinds)
         self._cmd_pane.view_commands_changed(self, command_kinds)
         
     @command('duplicate_window')
     @asyncio.coroutine
-    def duplicate_window( self ):
+    def duplicate_window(self):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
         yield from self.from_state(state, self._app, self._view_registry, self._resources_manager)
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~window')
 
 
 class ThisModule(Module):
 
-    def __init__( self, services ):
+    def __init__(self, services):
         Module.__init__(self, services)
         self.point_type = TRecord([
             Field('x', tInt),

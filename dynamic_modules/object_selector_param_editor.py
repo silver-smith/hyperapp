@@ -11,15 +11,15 @@ from .command import command, ViewCommand
 log = logging.getLogger(__name__)
 
 
-def register_param_editors( registry, services ):
+def register_param_editors(registry, services):
     registry.register(View.impl_id, View.resolve_param_editor, services.iface_registry)
 
-def register_views( registry, services ):
+def register_views(registry, services):
     registry.register(View.view_id, View.from_state, services.objimpl_registry, services.view_registry)
 
 
 
-def get_default_url( server, iface_registry ):
+def get_default_url(server, iface_registry):
     iface = iface_registry.resolve('fs_dir')
     return server.make_url(iface, ['file', os.path.expanduser('~')])
 
@@ -30,7 +30,7 @@ class View(view.View, QtGui.QWidget):
     view_id = 'object_selector'
 
     @classmethod
-    def resolve_param_editor( cls, state, proxy_object, command_id, iface_registry ):
+    def resolve_param_editor(cls, state, proxy_object, command_id, iface_registry):
         ref_list = proxy_object.get_state()
         target_url = get_default_url(proxy_object.server, iface_registry)
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
@@ -38,12 +38,12 @@ class View(view.View, QtGui.QWidget):
 
     @classmethod
     @asyncio.coroutine
-    def from_state( cls, locale, state, parent, objimpl_registry, view_registry ):
+    def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
         ref_list = objimpl_registry.resolve(state.ref_list)
         target_view = yield from view_registry.resolve(locale, state.target)
         return cls(parent, ref_list, target_view)
 
-    def __init__( self, parent, ref_list, target_view ):
+    def __init__(self, parent, ref_list, target_view):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.ref_list = ref_list
@@ -57,30 +57,30 @@ class View(view.View, QtGui.QWidget):
         l.addWidget(self.groupBox)
         self.setLayout(l)
 
-    def get_state( self ):
+    def get_state(self):
         return article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), self.target_view.get_state())
 
-    def get_current_child( self ):
+    def get_current_child(self):
         return self.target_view
 
-    def get_object( self ):
+    def get_object(self):
         return None
 
-    def get_commands( self, kinds ):
+    def get_commands(self, kinds):
         return (view.View.get_commands(self, kinds)
                 + [self.object_command_choose])  # do not wrap in ViewCommand - we will open it ourselves
 
     @command('choose', kind='object')
     @asyncio.coroutine
-    def object_command_choose( self ):
+    def object_command_choose(self):
         url = self.target_view.get_url()
         if not url: return  # not a proxy - can not choose it
         result = (yield from self.ref_list.execute_request('add', target_url=url.to_data()))
         view.View.open(self, result.handle)  # do not wrap in our handle
 
-    def open( self, handle ):
+    def open(self, handle):
         handle = article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), handle)
         view.View.open(self, handle)
 
-    def __del__( self ):
+    def __del__(self):
         log.info('~object_selector.View')

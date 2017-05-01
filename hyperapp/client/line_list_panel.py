@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 class LineListPanel(Composite, QtGui.QWidget):
 
-    def __init__( self, parent, line_edit, list_view ):
+    def __init__(self, parent, line_edit, list_view):
         QtGui.QWidget.__init__(self)
         Composite.__init__(self, parent)
         self._line_edit = line_edit
@@ -23,16 +23,16 @@ class LineListPanel(Composite, QtGui.QWidget):
         self.setLayout(layout)
         self._line_edit.installEventFilter(self)
 
-    def get_current_child( self ):
+    def get_current_child(self):
         return self._list_view
 
-    def get_widget_to_focus( self ):
+    def get_widget_to_focus(self):
         return self._line_edit
 
-    def get_shortcut_ctx_widget( self, view ):
+    def get_shortcut_ctx_widget(self, view):
         return self._line_edit.get_widget()
 
-    def is_list_event( self, evt ):
+    def is_list_event(self, evt):
         if key_match(evt, 'Space'):
             return self._list_view.is_in_multi_selection_mode()
         return key_match_any(evt, [
@@ -49,17 +49,17 @@ class LineListPanel(Composite, QtGui.QWidget):
             ('Ctrl+End'),
             ])
 
-    def eventFilter( self, obj, evt ):
+    def eventFilter(self, obj, evt):
         if self.is_list_event(evt):
             self._list_view.keyPressEvent(evt)
             return True
         return QtGui.QWidget.eventFilter(self, obj, evt)
 
-    def focusInEvent( self, evt ):
+    def focusInEvent(self, evt):
         if DEBUG_FOCUS: log.info('*** line_list_panel.focusInEvent %r', self)
         QtGui.QWidget.focusInEvent(self, evt)
         ## self._line_edit.get_widget().setFocus()  # - now using setFocusProxy
 
-    def focusOutEvent( self, evt ):
+    def focusOutEvent(self, evt):
         if DEBUG_FOCUS: log.info('*** line_list_panel.focusOutEvent %r', self)
         QtGui.QWidget.focusOutEvent(self, evt)

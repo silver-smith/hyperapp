@@ -5,20 +5,20 @@ from .visitor import Visitor
 
 class RequirementsCollector(Visitor):
 
-    def __init__( self, core_types, param_editor_types=None ):
+    def __init__(self, core_types, param_editor_types=None):
         self._core_types = core_types
         self._param_editor_types = param_editor_types
 
-    def collect( self, t, value ):
+    def collect(self, t, value):
         self._collected_requirements = set()
         self.visit(t, value)
         return list([registry, key] for registry, key in self._collected_requirements)
 
-    def visit_record( self, t, value ):
+    def visit_record(self, t, value):
         if t is tCommand:
             self._collected_requirements.add(('resources', encode_path(value.resource_id)))
 
-    def visit_hierarchy_obj( self, t, tclass, value ):
+    def visit_hierarchy_obj(self, t, tclass, value):
         self._collected_requirements.add(('class', encode_path([value._class.hierarchy.hierarchy_id, value._class.id])))
         if t is self._core_types.object:
             self._collected_requirements.add(('object', value.objimpl_id))

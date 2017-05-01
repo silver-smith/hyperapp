@@ -24,13 +24,13 @@ from hyperapp.common.type_module import (
 
 class TypeModuleTest(unittest.TestCase):
 
-    def setUp( self ):
+    def setUp(self):
         self.meta_type_registry = make_meta_type_registry()
 
-    def make_fpath( self, module_name ):
+    def make_fpath(self, module_name):
         return os.path.join(os.path.dirname(__file__), module_name)
 
-    def test_yaml_module( self ):
+    def test_yaml_module(self):
         type_resolver = TypeResolver([builtin_type_registry()])
         fpath = self.make_fpath('test_module1.types.yaml')
         registry = resolve_typedefs_from_yaml_file(self.meta_type_registry, type_resolver, fpath)
@@ -49,7 +49,7 @@ class TypeModuleTest(unittest.TestCase):
         self.assertEqual(TClass(object_t, 'text', TRecord(base=simple_class, fields=[Field('text', tString)])),
                          registry.get_name('text_object'))
 
-    def test_types_module( self ):
+    def test_types_module(self):
         type_registry_registry = builtin_type_registry_registry()
         used_modules1, typedefs1, registry1 = load_types_file(
             self.meta_type_registry, type_registry_registry, self.make_fpath('test_module1.types'))
