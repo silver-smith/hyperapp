@@ -69,6 +69,7 @@ class RemoteCommand(Command):
     def run(self, *args, **kw):
         object = self._object_wr()
         if not object: return
+        log.debug('running remote command %r (*%s, **%s)', self.id, self._args + args, kw)
         return (yield from object.run_remote_command(self.id, *(self._args + args), **kw))
 
 
@@ -168,7 +169,6 @@ class ProxyObject(Object):
 
     @asyncio.coroutine
     def run_remote_command(self, command_id, *args, **kw):
-        log.debug('running remote command %r (*%s, **%s)', command_id, args, kw)
         if self._is_plain_open_handle_request(self.iface.get_command(command_id)):
             return (yield from self.execute_request(command_id, *args, **kw))
         else:

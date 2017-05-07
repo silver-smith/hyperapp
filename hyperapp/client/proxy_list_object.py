@@ -80,9 +80,12 @@ class ProxyListObject(ProxyObject, ListObject):
                 and command.get_result_type(self.iface) in [t_empty_result, t_open_result])
 
     @asyncio.coroutine
-    def run_remote_element_command(self, command_id, *args, **kw):
-        log.debug('running remote element command %r (*%s, **%s)', command_id, args, kw)
-        return (yield from self.execute_request(command_id, *args, **kw))
+    def run_remote_command(self, command_id, *args, **kw):
+        if self._is_element_command(self.iface.get_command(command_id)):
+            log.debug('running remote element command %r (*%s, **%s)', command_id, args, kw)
+            return (yield from self.execute_request(command_id, *args, **kw))
+        else:
+            return (yield from ProxyObject.run_remote_command(self, command_id, *args, **kw))
 
     def _slice_from_data(self, rec):
         key_column_id = self.get_key_column_id()
@@ -98,7 +101,7 @@ class ProxyListObject(ProxyObject, ListObject):
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = [self._element_command_from_data(cmd) for cmd in  rec.commands]
+        commands = [self._element_command_from_data(command_id) for command_id in  rec.commands]
         return Element(key, rec.row, commands, order_key)
 
     def _element_command_from_data(self, command_id):
