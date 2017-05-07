@@ -23,6 +23,7 @@ article_ref_list:
       shortcuts:
       - Ins
     open:
+      is_default: yes
       text: Open
       description: Open reference selector
       shortcuts: []

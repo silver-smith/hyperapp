@@ -13,6 +13,7 @@ blog:
       shortcuts:
       - Ins
     open:
+      is_default: yes
       text: Open
       description: Open blog entry
       shortcuts: []

@@ -404,7 +404,8 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def _on_activated(self, index):
         element = self.model().get_row_element(index.row())
         for cmd in element.commands:
-            if cmd.is_default_command:
+            resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
+            if resource and resource.is_default:
                 break
         else:
             return
