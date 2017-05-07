@@ -46,9 +46,9 @@ def execute_get_request(request_types, remoting, url):
 
 class RemoteCommand(Command):
 
-    def __init__(self, id, kind, resource_id, is_default_command, enabled, object_wr, args=None):
+    def __init__(self, id, kind, resource_id, enabled, object_wr, args=None):
         assert isinstance(object_wr(), ProxyObject), repr(object_wr)
-        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
+        Command.__init__(self, id, kind, resource_id, enabled)
         self._object_wr = object_wr
         self._args = args or ()
 
@@ -63,7 +63,7 @@ class RemoteCommand(Command):
 
     def clone(self, args=None):
         args = self._args + (args or ())
-        return RemoteCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._object_wr, args)
+        return RemoteCommand(self.id, self.kind, self.resource_id, self.enabled, self._object_wr, args)
 
     @asyncio.coroutine
     def run(self, *args, **kw):
@@ -215,8 +215,7 @@ class ProxyObject(Object):
 
     def remote_command_from_iface_command(self, command, kind='object'):
         resource_id = ['interface', self.iface.iface_id, 'command', command.command_id]
-        return RemoteCommand(command.command_id, kind, resource_id,
-                             is_default_command=False, enabled=True, object_wr=weakref.ref(self))
+        return RemoteCommand(command.command_id, kind, resource_id, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key(self):
         return self.make_cache_key('commands')

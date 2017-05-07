@@ -69,7 +69,7 @@ class ModuleList(SmallListObject):
         return request.make_response_handle(
             splitter_handle(dep_list.get_handle(request), available_list.get_handle(request)))
 
-    @command('open', kind='element', is_default_command=True)
+    @command('open', kind='element')
     @db_session
     def command_open(self, request):
         id = request.params.element_key
@@ -101,7 +101,7 @@ class ModuleForm(Object):
             form_types.form_field('name', stringFieldHandle(name)),
             ])
 
-    @command('submit', is_default_command=True)
+    @command('submit')
     @db_session
     def command_submit(self, request):
         if self.id:

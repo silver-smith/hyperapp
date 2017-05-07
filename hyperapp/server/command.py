@@ -8,15 +8,13 @@ log = logging.getLogger(__name__)
 
 class BoundCommand(object):
 
-    def __init__(self, id, kind, resource_id, is_default_command, class_method, inst_wr, args=None):
+    def __init__(self, id, kind, resource_id, class_method, inst_wr, args=None):
         assert isinstance(id, str), repr(id)
         assert isinstance(kind, str), repr(kind)
         assert is_list_inst(resource_id, str), repr(resource_id)
-        assert isinstance(is_default_command, bool), repr(is_default_command)
         self.id = id
         self.kind = kind
         self.resource_id = resource_id
-        self.is_default_command = is_default_command
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
@@ -25,14 +23,14 @@ class BoundCommand(object):
         return 'BoundCommand(%r/%r -> %r, args=%r)' % (self.id, self.kind, self._inst_wr, self._args)
 
     def to_data(self):
-        return tCommand(self.id, self.kind, self.resource_id, self.is_default_command)
+        return tCommand(self.id, self.kind, self.resource_id)
 
     def clone(self, args=None):
         if args is None:
             args = self._args
         else:
             args = self._args + args
-        return BoundCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._class_method, self._inst_wr, args)
+        return BoundCommand(self.id, self.kind, self.resource_id, self.enabled, self._class_method, self._inst_wr, args)
 
     def run(self, request, *args, **kw):
         inst = self._inst_wr()
@@ -43,39 +41,35 @@ class BoundCommand(object):
 
 class UnboundCommand(object):
 
-    def __init__(self, id, kind, is_default_command, class_method):
+    def __init__(self, id, kind, class_method):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(is_default_command, bool), repr(is_default_command)
         self.id = id
         self.kind = kind
         self.resource_id = None  # set by CommanderMetaClass
-        self.is_default_command = is_default_command
         self._class_method = class_method
 
     # Element may be returned from classmethod, for which commands are unbound
     def to_data(self):
-        return tCommand(self.id, self.kind, self.resource_id, self.is_default_command)
+        return tCommand(self.id, self.kind, self.resource_id)
 
     def bind(self, inst, kind):
         if self.kind is not None:
             kind = self.kind
-        return BoundCommand(self.id, kind, self.resource_id, self.is_default_command, self._class_method, weakref.ref(inst))
+        return BoundCommand(self.id, kind, self.resource_id, self._class_method, weakref.ref(inst))
 
 
 # decorator for object methods
 class command(object):
 
-    def __init__(self, id, kind=None, is_default_command=False):
+    def __init__(self, id, kind=None):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(is_default_command, bool), repr(is_default_command)
         self.id = id
         self.kind = kind
-        self.is_default_command = is_default_command
 
     def __call__(self, class_method):
-        return UnboundCommand(self.id, self.kind, self.is_default_command, class_method)
+        return UnboundCommand(self.id, self.kind, class_method)
 
 
 class CommanderMetaClass(type):

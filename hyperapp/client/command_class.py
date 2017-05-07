@@ -11,16 +11,14 @@ log = logging.getLogger(__name__)
 # returned from Object.get_commands
 class Command(object, metaclass=abc.ABCMeta):
 
-    def __init__(self, id, kind, resource_id, is_default_command=False, enabled=True):
+    def __init__(self, id, kind, resource_id, enabled=True):
         assert isinstance(id, str), repr(id)
         assert isinstance(kind, str), repr(kind)
         assert is_list_inst(resource_id, str), repr(resource_id)
-        assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind
         self.resource_id = resource_id
-        self.is_default_command = is_default_command
         self.enabled = enabled
 
     def __repr__(self):
@@ -58,8 +56,8 @@ class Command(object, metaclass=abc.ABCMeta):
 
 class BoundCommand(Command):
 
-    def __init__(self, id, kind, resource_id, is_default_command, enabled, class_method, inst_wr, args=None):
-        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
+    def __init__(self, id, kind, resource_id, enabled, class_method, inst_wr, args=None):
+        Command.__init__(self, id, kind, resource_id, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
@@ -75,7 +73,7 @@ class BoundCommand(Command):
             args = self._args
         else:
             args = self._args + args
-        return BoundCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._class_method, self._inst_wr, args)
+        return BoundCommand(self.id, self.kind, self.resource_id, self.enabled, self._class_method, self._inst_wr, args)
 
     @asyncio.coroutine
     def run(self, *args, **kw):
@@ -90,23 +88,21 @@ class BoundCommand(Command):
 
 class UnboundCommand(object):
 
-    def __init__(self, id, kind, resource_id, is_default_command, enabled, class_method):
+    def __init__(self, id, kind, resource_id, enabled, class_method):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
         assert is_list_inst(resource_id, str), repr(resource_id)
-        assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind
         self._resource_id = resource_id
-        self.is_default_command = is_default_command
         self.enabled = enabled
         self._class_method = class_method
 
     def bind(self, inst, kind):
         if self.kind is not None:
             kind = self.kind
-        return BoundCommand(self.id, kind, self._resource_id, self.is_default_command, self.enabled, self._class_method, weakref.ref(inst))
+        return BoundCommand(self.id, kind, self._resource_id, self.enabled, self._class_method, weakref.ref(inst))
 
 
 class Commander(object):

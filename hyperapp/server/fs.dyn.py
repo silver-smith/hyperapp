@@ -89,7 +89,7 @@ class Dir(FsObject):
     def get_handle(self, request):
         return self.CategorizedListHandle(self.get(request))
 
-    @command('open', kind='element', is_default_command=True)
+    @command('open', kind='element')
     def command_open(self, request):
         fname = request.params.element_key
         fspath = os.path.join(self.fspath, fname)

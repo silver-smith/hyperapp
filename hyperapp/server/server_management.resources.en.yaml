@@ -10,5 +10,6 @@ server_management:
       text: Description
   commands:
     open:
+      is_default: yes
       text: Open
       description: Open module

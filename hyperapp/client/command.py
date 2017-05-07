@@ -12,10 +12,10 @@ class ViewCommand(Command):
 
     @classmethod
     def from_command(cls, cmd, view):
-        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(view))
+        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.enabled, cmd, weakref.ref(view))
 
-    def __init__(self, id, kind, resource_id, is_default_command, enabled, base_cmd, view_wr):
-        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
+    def __init__(self, id, kind, resource_id, enabled, base_cmd, view_wr):
+        Command.__init__(self, id, kind, resource_id, enabled)
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
 
@@ -26,7 +26,7 @@ class ViewCommand(Command):
         return self._view_wr()
 
     def clone(self):
-        return ViewCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
+        return ViewCommand(self.id, self.kind, self.resource_id, self.enabled, self._base_cmd, self._window_wr)
 
     @asyncio.coroutine
     def run(self, *args, **kw):
@@ -43,10 +43,10 @@ class WindowCommand(Command):
 
     @classmethod
     def from_command(cls, cmd, window):
-        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.is_default_command, cmd.enabled, cmd, weakref.ref(window))
+        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.enabled, cmd, weakref.ref(window))
 
-    def __init__(self, id, kind, resource_id, is_default_command, enabled, base_cmd, window_wr):
-        Command.__init__(self, id, kind, resource_id, is_default_command, enabled)
+    def __init__(self, id, kind, resource_id, enabled, base_cmd, window_wr):
+        Command.__init__(self, id, kind, resource_id, enabled)
         self._base_cmd = base_cmd
         self._window_wr = window_wr  # weak ref to class instance
 
@@ -57,7 +57,7 @@ class WindowCommand(Command):
         return self._window_wr()
 
     def clone(self):
-        return WindowCommand(self.id, self.kind, self.resource_id, self.is_default_command, self.enabled, self._base_cmd, self._window_wr)
+        return WindowCommand(self.id, self.kind, self.resource_id, self.enabled, self._base_cmd, self._window_wr)
 
     @asyncio.coroutine
     def run(self, *args, **kw):
@@ -73,22 +73,19 @@ class WindowCommand(Command):
 # decorator for view methods
 class command(object):
 
-    def __init__(self, id, kind=None, enabled=True, is_default_command=False):
+    def __init__(self, id, kind=None, enabled=True):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(is_default_command, bool), repr(is_default_command)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind
-        self.is_default_command = is_default_command
         self.enabled = enabled
 
     def __call__(self, class_method):
         module_name = class_method.__module__.split('.')[2]   # hyperapp.client.module [.submodule]
         class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
         resource_id = ['client_module', module_name, class_name, 'command', self.id]
-        return UnboundCommand(self.id, self.kind, resource_id,
-                              self.is_default_command, self.enabled, self.wrap_method(class_method))
+        return UnboundCommand(self.id, self.kind, resource_id, self.enabled, self.wrap_method(class_method))
 
     def wrap_method(self, method):
         return method

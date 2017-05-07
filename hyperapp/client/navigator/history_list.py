@@ -46,7 +46,7 @@ class HistoryList(ListObject):
     def get_commands(self):
         return []
 
-    @command('open', kind='element', is_default_command=True)
+    @command('open', kind='element')
     def command_open(self, element_key):
         return SimpleNamespace(handle=self._history[element_key].handle)  # hacky, todo?
 

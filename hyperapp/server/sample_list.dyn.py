@@ -62,7 +62,7 @@ class TestList(ListObject):
     def get_path(self):
         return module.make_path(self.class_name, path_part_to_str(self.size))
 
-    @command('params', is_default_command=True)
+    @command('params')
     def command_params(self, request):
         return request.make_response_handle(ParamsForm().make_handle(request, size=self.size))
 

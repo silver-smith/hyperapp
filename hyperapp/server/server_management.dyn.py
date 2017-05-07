@@ -31,7 +31,7 @@ class CommandList(SmallListObject):
         id = '%s.%s' % (cmd.module_name, cmd.id)
         return self.Element(self.Row(id, cmd.module_name, cmd.text, cmd.desc), commands)
 
-    @command('open', kind='element', is_default_command=True)
+    @command('open', kind='element')
     def command_open(self, request):
         module_name, command_id = request.params.element_key.split('.')
         module = Module.get_module_by_name(module_name)

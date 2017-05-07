@@ -77,8 +77,8 @@ class VisualRepEncoder(object):
         if self._packet_types and t is self._packet_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
         if t is tCommand:
-            return RepNode('command: command_id=%r, kind=%r, resource_id=%s, is_default_command=%s'
-                           % (value.command_id, value.kind, encode_path(value.resource_id), value.is_default_command))
+            return RepNode('command: command_id=%r, kind=%r, resource_id=%s'
+                           % (value.command_id, value.kind, encode_path(value.resource_id)))
         if t is tTypeModule:
             return self._make_type_module_rep(value)
         children = self.encode_record_fields(t, value)

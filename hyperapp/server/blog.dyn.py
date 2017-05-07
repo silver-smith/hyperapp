@@ -80,7 +80,7 @@ class Blog(SmallListObject):
         commands = [cls.command_open, cls.command_delete]
         return cls.Element(cls.Row(rec.id, rec.created_at), commands)
 
-    @command('open', kind='element', is_default_command=True)
+    @command('open', kind='element')
     def command_open(self, request):
         article_id = request.params.element_key
         return request.make_response_object(BlogEntry(article_id))

@@ -265,5 +265,4 @@ tCommand = TRecord([
     Field('command_id', tString),
     Field('kind', tString),
     Field('resource_id', TList(tString)),
-    Field('is_default_command', tBool, default=False),
     ])

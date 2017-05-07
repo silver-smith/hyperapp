@@ -149,7 +149,7 @@ class ArticleRefList(SmallListObject):
         handle = self.ListHandle(self.get(request), key=rec.id)
         return request.make_response_handle(handle)
 
-    @command('open', kind='element', is_default_command=True)
+    @command('open', kind='element')
     def command_open(self, request):
         return request.make_response_handle(
             RefSelector(self.article_id, ref_id=request.params.element_key).make_handle(request))

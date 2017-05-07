@@ -76,7 +76,7 @@ class BookmarkList(ListObject):
     def get_title(self):
         return 'Bookmarks'
 
-    @command('open', kind='element', is_default_command=True)
+    @command('open', kind='element')
     @asyncio.coroutine
     def command_open_bookmark(self, element_key):
         item = self._bookmarks.get_item(element_key)
