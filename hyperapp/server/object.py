@@ -125,7 +125,7 @@ class ListObject(Object):
         for cmd in commands or []:
             assert cmd.kind == 'element', ('%s: command %r must has "element" kind, but has kind %r'
                                            % (cls.__name__, cmd.id, cmd.kind))
-        return cls.iface.Element(row, [cmd.to_data() for cmd in commands or []])
+        return cls.iface.Element(row, [cmd.id for cmd in commands or []])
 
     @classmethod
     def Diff(cls, *args, **kw):

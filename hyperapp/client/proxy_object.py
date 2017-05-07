@@ -127,7 +127,7 @@ class ProxyObject(Object):
         self._resources_manager = resources_manager
         self._param_editor_registry = param_editor_registry
         cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
-        self._remote_commands = [self._remote_command_from_iface_command(command) for command in self.iface.get_commands()
+        self._remote_commands = [self.remote_command_from_iface_command(command) for command in self.iface.get_commands()
                                  if self.is_iface_command_exposed(command)]
 
     def __repr__(self):
@@ -213,8 +213,7 @@ class ProxyObject(Object):
                 and command.get_params_type(self.iface).get_fields() == []
                 and command.get_result_type(self.iface) == t_open_result)
 
-    def _remote_command_from_iface_command(self, command):
-        kind = 'object'
+    def remote_command_from_iface_command(self, command, kind='object'):
         resource_id = ['interface', self.iface.iface_id, 'command', command.command_id]
         return RemoteCommand(command.command_id, kind, resource_id,
                              is_default_command=False, enabled=True, object_wr=weakref.ref(self))

@@ -10,7 +10,6 @@ from .htypes import (
     TRecord,
     TList,
     TIndexedList,
-    tCommand,
     )
 from .hierarchy import THierarchy
 from .meta_type import tMetaType, tInterfaceMeta, t_named, field_list_from_data, command_from_data
@@ -102,7 +101,7 @@ class ListInterface(Interface):
         self._tRowRecord = TRecord([Field(column.id, column.type) for column in columns])
         self._tElement = TRecord([
             Field('row', self._tRowRecord),
-            Field('commands', TList(tCommand)),
+            Field('commands', TList(tString)),
             ])
         self._tDiff = TRecord([
             Field('start_key', self._key_type),          # replace elements from this one

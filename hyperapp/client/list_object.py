@@ -58,7 +58,7 @@ class Element(object):
 
     def to_data(self, iface):
         assert isinstance(iface, ListInterface), repr(iface)
-        return iface.Element(self.row, [cmd.to_data() for cmd in self.commands])
+        return iface.Element(self.row, [cmd.id for cmd in self.commands])
 
     def __eq__(self, other):
         if isinstance(other, Element):
