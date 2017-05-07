@@ -17,16 +17,21 @@ article_ref_list:
       description: Open parent article
       shortcuts:
       - Ctrl+Backspace
-    add:
-      text: Add ref
-      description: Create new reference
-      shortcuts:
-      - Ins
     open:
       is_default: yes
       text: Open
       description: Open reference selector
       shortcuts: []
+    add:
+      text: Add ref
+      description: Create new reference
+      shortcuts:
+      - Ins
+    update:
+      text: Change
+      description: Change reference for selected element
+      shortcuts:
+      - Space
     delete:
       text: Delete
       description: Delete article reference

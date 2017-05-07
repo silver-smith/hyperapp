@@ -21,8 +21,9 @@ article_ref_list = list_interface article_ref_list:
         url: string
     commands:
         request parent () -> (handle: handle opt)
-        request add (target_url: url) -> (handle: handle opt)
         request open (element_key: int) -> (handle: handle opt)
+        request add (target_url: url) -> (handle: handle opt)
+        request update (element_key: int, target_url: url) -> (handle: handle opt)
         request delete (element_key: int) -> ()
 
 article_object_selector = interface article_object_selector:

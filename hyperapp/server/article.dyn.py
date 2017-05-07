@@ -130,6 +130,11 @@ class ArticleRefList(SmallListObject):
         rec = this_module.Article[self.article_id]
         return request.make_response_object(Article.from_rec(rec))
 
+    @command('open', kind='element')
+    def command_open(self, request):
+        return request.make_response_handle(
+            RefSelector(self.article_id, ref_id=request.params.element_key).make_handle(request))
+
     @command('add')
     @db_session
     def command_add(self, request):
@@ -149,10 +154,10 @@ class ArticleRefList(SmallListObject):
         handle = self.ListHandle(self.get(request), key=rec.id)
         return request.make_response_handle(handle)
 
-    @command('open', kind='element')
-    def command_open(self, request):
-        return request.make_response_handle(
-            RefSelector(self.article_id, ref_id=request.params.element_key).make_handle(request))
+    @command('update', kind='element')
+    @db_session
+    def command_update(self, request):
+        assert 0  # todo
 
     @command('delete', kind='element')
     @db_session
@@ -170,7 +175,7 @@ class ArticleRefList(SmallListObject):
 
     @classmethod
     def rec2element(cls, rec):
-        commands = [cls.command_open, cls.command_delete]
+        commands = [cls.command_open, cls.command_update, cls.command_delete]
         if not rec.server_public_key_pem:
             url = '<local>:%s' % rec.path
         else:
