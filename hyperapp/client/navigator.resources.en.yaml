@@ -23,6 +23,7 @@ HistoryList:
       description: Handle title
   commands:
     open:
+      is_default: yes
       text: Open
       description: Open selected item
       shortcuts: []
