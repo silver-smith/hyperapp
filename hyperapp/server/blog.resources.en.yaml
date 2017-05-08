@@ -22,3 +22,19 @@ blog:
       description: Delete blog entry
       shortcuts:
       - Del
+blog_entry:
+  commands:
+    refs:
+      text: Refs
+      description: Open article references
+      shortcuts:
+      - Ctrl+R
+    open_ref:
+      text: Open ref
+      description: Open selected reference
+      shortcuts: []
+    parent:
+      text: Parent
+      description: Return to blog
+      shortcuts:
+      - Ctrl+Backspace
