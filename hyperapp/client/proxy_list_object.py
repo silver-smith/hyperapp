@@ -20,7 +20,6 @@ class SliceAlgorithm(object):
             log.info('      elements[0].key=%r elements[-1].key=%r', new_slice.elements[0].key, new_slice.elements[-1].key)
         for slice in slices:
             if slice.sort_column_id != new_slice.sort_column_id: continue
-            assert new_slice.direction == 'asc'  # todo: desc direction
             if new_slice.from_key == slice.elements[-1].key:
                 assert not new_slice.bof  # this is continuation for existing slice, bof is not possible
                 slice.elements.extend(new_slice.elements)
@@ -97,7 +96,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def _slice_from_data(self, rec):
         key_column_id = self.get_key_column_id()
         elements = [self._element_from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
-        return Slice(rec.sort_column_id, rec.from_key, rec.direction, elements, rec.bof, rec.eof)
+        return Slice(rec.sort_column_id, rec.from_key, elements, rec.bof, rec.eof)
 
     def _list_diff_from_data(self, key_column_id, rec):
         return ListDiff(rec.start_key, rec.end_key, [self._element_from_data(key_column_id, None, elt) for elt in rec.elements])
@@ -156,9 +155,8 @@ class ProxyListObject(ProxyObject, ListObject):
                         slice.elements.append(new_elt)
                         log.info('-- slice with sort %r: element is appended to the end of slice', slice.sort_column_id)
                     
-    def _pick_slice(self, slices, sort_column_id, from_key, direction):
-        log.info('  -- pick_slice self=%r sort_column_id=%r from_key=%r direction=%r', id(self), sort_column_id, from_key, direction)
-        assert direction == 'asc'  # todo: desc direction
+    def _pick_slice(self, slices, sort_column_id, from_key):
+        log.info('  -- pick_slice self=%r sort_column_id=%r from_key=%r', id(self), sort_column_id, from_key)
         for slice in slices:
             if slice.sort_column_id != sort_column_id: continue
             if from_key == None and slice.bof:
@@ -215,9 +213,10 @@ class ProxyListObject(ProxyObject, ListObject):
         return self.iface.get_key_column_id()
 
     @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, from_key, direction, count):
-        log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r count=%r', id(self), self._subscribed, from_key, count)
-        slice = self._pick_slice(self._slices, sort_column_id, from_key, direction)
+    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+        log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r desc_count=%r asc_count=%r',
+                 id(self), self._subscribed, from_key, desc_count, asc_count)
+        slice = self._pick_slice(self._slices, sort_column_id, from_key)
         if slice:
             log.info('   > cached actual, len(elements)=%r', len(slice.elements))
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
@@ -227,7 +226,7 @@ class ProxyListObject(ProxyObject, ListObject):
         else:
             self._load_slices_from_cache(sort_column_id)
             cached_slices = self._slices_from_cache.get(sort_column_id, [])
-            slice = self._pick_slice(cached_slices, sort_column_id, from_key, direction)
+            slice = self._pick_slice(cached_slices, sort_column_id, from_key)
             if slice:
                 log.info('   > cached outdated, len(elements)=%r', len(slice.elements))
                 self._notify_fetch_result(slice)
@@ -238,7 +237,7 @@ class ProxyListObject(ProxyObject, ListObject):
         if subscribing_now:
             # several views can call fetch_elements before response is received, and we do not want several subscribe... calls
             self._subscribe_pending = True
-        result = yield from self.execute_request(command_id, sort_column_id, from_key, direction, count)
+        result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
         log.debug('proxy_list_object fetch_elements result self=%r len(result.slice.elements)=%r', id(self), len(result.slice.elements))
         if subscribing_now:
             self._subscribe_pending = False

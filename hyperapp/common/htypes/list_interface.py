@@ -111,7 +111,6 @@ class ListInterface(Interface):
         self._tSlice = TRecord([
             Field('sort_column_id', tString),
             Field('from_key', TOptional(self._key_type)),
-            Field('direction', tString),  # asc/desc; todo: enum
             Field('elements', TList(self._tElement)),
             Field('bof', tBool),
             Field('eof', tBool),
@@ -159,8 +158,8 @@ class ListInterface(Interface):
         fetch_params_fields = [
             Field('sort_column_id', tString),
             Field('from_key', TOptional(self._key_type)),
-            Field('direction', tString),  # asc/desc; todo: enum
-            Field('count', tInt),
+            Field('desc_count', tInt),
+            Field('asc_count', tInt),
             ]
         return Interface.get_basic_commands(self, core_types) \
             + [ContentsCommand('fetch_elements', fetch_params_fields),

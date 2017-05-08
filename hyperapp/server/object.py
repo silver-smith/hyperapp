@@ -111,7 +111,6 @@ class Object(Commander):
 class ListObject(Object):
 
     default_sort_column_id = 'key'
-    default_direction = 'asc'
     iface = None  # define in subclass
     resource_id = None  # define in subclass
     categories = None  # define in subclass
@@ -159,7 +158,7 @@ class ListObject(Object):
         Object.__init__(self, core_types)
 
     def get_contents(self, **kw):
-        slice = self.fetch_elements(self.default_sort_column_id, None, self.default_direction, MIN_ROWS_RETURNED)
+        slice = self.fetch_elements(self.default_sort_column_id, None, 1, MIN_ROWS_RETURNED)
         assert isinstance(slice, self.iface.tSlice()), \
           'Invalid result returned from fetch_elements, use: return self.Slice(...); returned: %r, expected: %r' \
             % (slice, self.iface.tSlice())
@@ -181,7 +180,7 @@ class ListObject(Object):
 
     def process_request_fetch_elements(self, request):
         params = request.params
-        slice = self.fetch_elements(params.sort_column_id, params.from_key, params.direction, params.count)
+        slice = self.fetch_elements(params.sort_column_id, params.from_key, params.desc_count, params.asc_count)
         assert isinstance(slice, self.iface.tSlice()), \
           'Invalid result is returned from fetch_elements: %r; use: return self.Slice(...)' % slice
         return request.make_response(Object.get_contents(self, slice=slice))
@@ -193,13 +192,12 @@ class ListObject(Object):
     def run_element_command(self, request, command_id, element_key):
         assert False, repr(command_id)  # Unexpected command_id
 
-    def Slice(self, sort_column_id, from_key, direction, elements, bof, eof):
+    def Slice(self, sort_column_id, from_key, elements, bof, eof):
         assert isinstance(sort_column_id, str), repr(sort_column_id)
         column = self._pick_column(sort_column_id)
         assert column, 'Unknown column: %r; known are: %r'\
            % (sort_column_id, [column.id for column in self.iface.get_columns()])
-        assert direction in ['asc', 'desc'], repr(direction)
-        return self.iface.Slice(sort_column_id, from_key, direction, elements, bof, eof)
+        return self.iface.Slice(sort_column_id, from_key, elements, bof, eof)
             
     def _pick_column(self, column_id):
         for column in self.iface.get_columns():
@@ -227,8 +225,8 @@ class ListObject(Object):
 
 class SmallListObject(ListObject):
 
-    def fetch_elements(self, sort_column_id, from_key, direction, count):
-        assert direction == 'asc', repr(direction)  # Descending direction is not yet supported
+    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+        assert desc_count == 1, repr(desc_count)  # Not yet supported
         elt2sort_key = attrgetter('row.%s' % self.iface.get_key_column_id())
         sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
         if from_key is None:
@@ -239,12 +237,12 @@ class SmallListObject(ListObject):
                     break
             else:
                 idx = len(sorted_elements)
-        if count < MIN_ROWS_RETURNED:
-            count = MIN_ROWS_RETURNED
-        elements = sorted_elements[idx : idx+count]
+        if asc_count < MIN_ROWS_RETURNED:
+            asc_count = MIN_ROWS_RETURNED
+        elements = sorted_elements[idx : idx+asc_count]
         bof = idx == 0
-        eof = idx + count >= len(sorted_elements)
-        return self.Slice(sort_column_id, from_key, direction, elements, bof, eof)
+        eof = idx + asc_count >= len(sorted_elements)
+        return self.Slice(sort_column_id, from_key, elements, bof, eof)
 
     # must return self.iface.Element list
     def fetch_all_elements(self):

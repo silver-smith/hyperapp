@@ -79,13 +79,11 @@ class Element(object):
 
 class Slice(object):
 
-    def __init__(self, sort_column_id, from_key, direction, elements, bof, eof):
+    def __init__(self, sort_column_id, from_key, elements, bof, eof):
         assert isinstance(sort_column_id, str), repr(sort_column_id)
-        assert direction in ['asc', 'desc'], repr(direction)
         assert is_list_inst(elements, Element), repr(elements)
         self.sort_column_id = sort_column_id
         self.from_key = from_key
-        self.direction = direction
         self.elements = elements
         self.bof = bof
         self.eof = eof
@@ -95,23 +93,22 @@ class Slice(object):
             return False
         return (self.sort_column_id == other.sort_column_id
                 and self.from_key == other.from_key
-                and self.direction == other.direction
                 and self.elements == other.elements
                 and self.bof == other.bof
                 and self.eof == other.eof)
 
     def __repr__(self):
-        return ('Slice(sort_column_id=%r from_key=%r direction=%r bof=%r eof=%r %d elements %s)'
-                % (self.sort_column_id, self.from_key, self.direction, self.bof, self.eof, len(self.elements),
+        return ('Slice(sort_column_id=%r from_key=%r bof=%r eof=%r %d elements %s)'
+                % (self.sort_column_id, self.from_key, self.bof, self.eof, len(self.elements),
                    'from %r to %r' % (self.elements[0].key, self.elements[-1].key) if self.elements else ''))
 
     def to_data(self, iface):
         assert isinstance(iface, ListInterface), repr(iface)
         elements = [elt.to_data(iface) for elt in self.elements]
-        return iface.Slice(self.sort_column_id, self.from_key, self.direction, elements, self.bof, self.eof)
+        return iface.Slice(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
 
     def clone_with_elements(self, elements):
-        return Slice(self.sort_column_id, self.from_key, self.direction, elements, self.bof, self.eof)
+        return Slice(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
 
 
 class ListObject(Object, metaclass=abc.ABCMeta):

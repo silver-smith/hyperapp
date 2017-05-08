@@ -90,7 +90,7 @@ class FilteredListObj(ListObject, ListObserver):
         if not filtered.elements and result.elements and not result.eof:
             log.info('   > all filtered out, fetching more')
             asyncio.async(self._base.fetch_elements(
-                result.sort_column_id, result.elements[-1].key, result.direction, FETCH_ELEMENT_COUNT))
+                result.sort_column_id, result.elements[-1].key, 1, FETCH_ELEMENT_COUNT))
         else:
             log.info('   > notify with %r elements', len(filtered.elements))
             self._notify_fetch_result(filtered)
