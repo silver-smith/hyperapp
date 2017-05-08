@@ -64,7 +64,7 @@ class HistoryList(ListObject):
         self._notify_fetch_result(self._get_slice())
 
     def _get_slice(self):
-        return Slice('idx', None, 'asc', list(map(self._item2element, enumerate(self._history))), bof=True, eof=True)
+        return Slice('idx', None, list(map(self._item2element, enumerate(self._history))), bof=True, eof=True)
 
     def _item2element(self, idx_and_item):
         idx, item = idx_and_item

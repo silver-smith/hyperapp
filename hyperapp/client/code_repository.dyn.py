@@ -177,7 +177,7 @@ class CodeRepositoryList(ListObject):
 
     def _get_slice(self):
         items = self.code_repository.get_items()
-        return Slice('name', None, 'asc', list(map(self._item2element, items)), bof=True, eof=True)
+        return Slice('name', None, list(map(self._item2element, items)), bof=True, eof=True)
 
     def _item2element(self, item):
         assert isinstance(item, NamedUrl), repr(item)
