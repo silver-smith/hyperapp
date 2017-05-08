@@ -218,7 +218,7 @@ class ProxyListObject(ProxyObject, ListObject):
                  id(self), self._subscribed, from_key, desc_count, asc_count)
         slice = self._pick_slice(self._slices, sort_column_id, from_key)
         if slice:
-            log.info('   > cached actual, len(elements)=%r', len(slice.elements))
+            log.info('   > cached actual: %r', slice)
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
             self._notify_fetch_result(slice)
             if self._subscribed:  # otherwise our _slices may already be invalid, need to subscribe and refetch anyway
@@ -238,7 +238,7 @@ class ProxyListObject(ProxyObject, ListObject):
             # several views can call fetch_elements before response is received, and we do not want several subscribe... calls
             self._subscribe_pending = True
         result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
-        log.debug('proxy_list_object fetch_elements result self=%r len(result.slice.elements)=%r', id(self), len(result.slice.elements))
+        log.debug('proxy_list_object fetch_elements result self=%r, slice: %r', id(self), slice)
         if subscribing_now:
             self._subscribe_pending = False
             self._subscribed = True

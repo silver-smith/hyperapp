@@ -133,9 +133,7 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def fetch_element(self, key):
         sort_column_id = self.get_key_column_id()
         slice = yield from self.fetch_elements(sort_column_id, key, 1, 1)
-        print(slice.elements)
         matched_elements = [element for element in slice.elements if element.key == key]
-        print(matched_elements)
         assert len(matched_elements) == 1, repr(matched_elements)  # exactly one element with this key is expected
         return matched_elements[0]
 
