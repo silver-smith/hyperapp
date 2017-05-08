@@ -45,6 +45,7 @@ class ModuleManager(common_module_manager.ModuleManager):
         def register(fn_name, registry):
             fn = module_dict.get(fn_name)
             if fn:
+                log.debug('ModuleManager: module %s: registering %s...', module.id, fn_name)
                 fn(DynamicModuleRegistryProxy(registry, module.id), self._services)
 
         register('register_object_implementations', self._objimpl_registry)

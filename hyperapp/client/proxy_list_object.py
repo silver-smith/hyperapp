@@ -222,7 +222,7 @@ class ProxyListObject(ProxyObject, ListObject):
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
             self._notify_fetch_result(slice)
             if self._subscribed:  # otherwise our _slices may already be invalid, need to subscribe and refetch anyway
-                return
+                return slice
         else:
             self._load_slices_from_cache(sort_column_id)
             cached_slices = self._slices_from_cache.get(sort_column_id, [])
@@ -244,12 +244,13 @@ class ProxyListObject(ProxyObject, ListObject):
             self._subscribed = True
             ProxyObject.set_contents(self, result)
             self._notify_object_changed()
-        self._process_fetch_elements_result(result)
+        return self._process_fetch_elements_result(result)
 
     def _process_fetch_elements_result(self, result):
         slice = self._slice_from_data(result.slice)
         self._merge_in_slice(slice)
         self._notify_fetch_result(slice)
+        return slice
 
     def __del__(self):
         log.info('~ProxyListObject self=%r path=%r', self, self.path)

@@ -32,6 +32,7 @@ class View(view.View, QtGui.QWidget):
     view_id = 'object_selector'
 
     @classmethod
+    @asyncio.coroutine
     def resolve_param_editor(cls, state, proxy_object, command_id, element_key, action, iface_registry):
         assert action in ['add', 'update'], repr(action)
         ref_list = proxy_object.get_state()
@@ -40,7 +41,7 @@ class View(view.View, QtGui.QWidget):
             target_url = get_default_url(proxy_object.server, iface_registry)
         else:
             assert element_key is not None  # an element key is expected for update operation
-            element = proxy_object.fetch_element(element_key)
+            element = yield from proxy_object.fetch_element(element_key)
             target_url = element.row.url
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
         return article_types.object_selector_handle(cls.view_id, ref_list, target_handle)

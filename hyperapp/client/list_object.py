@@ -56,6 +56,9 @@ class Element(object):
         if order_key is not None:
             self.order_key = order_key
 
+    def __repr__(self):
+        return '<Element #%r %r>' % (self.key, self.row)
+
     def to_data(self, iface):
         assert isinstance(iface, ListInterface), repr(iface)
         return iface.Element(self.row, [cmd.id for cmd in self.commands])
@@ -126,9 +129,13 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         pass
 
+    @asyncio.coroutine
     def fetch_element(self, key):
-        elements = self.fetch_elements(None, key, 1, 1)
-        matched_elements = [element for element in elements if element.key == key]
+        sort_column_id = self.get_key_column_id()
+        slice = yield from self.fetch_elements(sort_column_id, key, 1, 1)
+        print(slice.elements)
+        matched_elements = [element for element in slice.elements if element.key == key]
+        print(matched_elements)
         assert len(matched_elements) == 1, repr(matched_elements)  # exactly one element with this key is expected
         return matched_elements[0]
 

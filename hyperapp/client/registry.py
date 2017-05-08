@@ -17,6 +17,7 @@ class Registry(object):
         self._registry = {}  # id -> _Rec
 
     def register(self, id, factory, *args, **kw):
+        log.debug('%s: registering %r -> %s(*%r, **%r)', self.__class__.__name__, id, factory, args, kw)
         self.register_provided_by_dynamic_module(None, id, factory, *args, **kw)
 
     def register_provided_by_dynamic_module(self, dynamic_module_id, id, factory, *args, **kw):
