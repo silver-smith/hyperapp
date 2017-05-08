@@ -129,6 +129,12 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         pass
 
+    def fetch_element(self, key):
+        elements = self.fetch_elements(None, key, 1, 1)
+        matched_elements = [element for element in elements if element.key == key]
+        assert len(matched_elements) == 1, repr(matched_elements)  # exactly one element with this key is expected
+        return matched_elements[0]
+
     # currently unused
     @asyncio.coroutine
     def run_element_command(self, command_id, element_key):

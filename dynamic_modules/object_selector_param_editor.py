@@ -39,8 +39,9 @@ class View(view.View, QtGui.QWidget):
             assert element_key is None, repr(element_key)
             target_url = get_default_url(proxy_object.server, iface_registry)
         else:
-            target_url = element_key
-            assert 0 # todo
+            assert element_key is not None  # an element key is expected for update operation
+            element = proxy_object.fetch_element(element_key)
+            target_url = element.row.url
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
         return article_types.object_selector_handle(cls.view_id, ref_list, target_handle)
 
