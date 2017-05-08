@@ -30,6 +30,6 @@ from .registry import Registry
 
 class ParamEditorRegistry(Registry):
 
-    def resolve(self, state, proxy_object, command_id):
+    def resolve(self, state, proxy_object, command_id, *args, **kw):
         rec = self._resolve(state.impl_id)
-        return rec.factory(state, proxy_object, command_id, *rec.args, **rec.kw)
+        return rec.factory(state, proxy_object, command_id, *(args + rec.args), **(dict(rec.kw, **kw)))

@@ -12,7 +12,8 @@ log = logging.getLogger(__name__)
 
 
 def register_param_editors(registry, services):
-    registry.register(View.impl_id, View.resolve_param_editor, services.iface_registry)
+    registry.register(View.param_editor_add_id, View.resolve_param_editor, None, 'add', services.iface_registry)
+    registry.register(View.param_editor_update_id, View.resolve_param_editor, 'update', services.iface_registry)
 
 def register_views(registry, services):
     registry.register(View.view_id, View.from_state, services.objimpl_registry, services.view_registry)
@@ -26,13 +27,20 @@ def get_default_url(server, iface_registry):
     
 class View(view.View, QtGui.QWidget):
 
-    impl_id = 'object_selector'
+    param_editor_add_id = 'object_selector_add'
+    param_editor_update_id = 'object_selector_update'
     view_id = 'object_selector'
 
     @classmethod
-    def resolve_param_editor(cls, state, proxy_object, command_id, iface_registry):
+    def resolve_param_editor(cls, state, proxy_object, command_id, element_key, action, iface_registry):
+        assert action in ['add', 'update'], repr(action)
         ref_list = proxy_object.get_state()
-        target_url = get_default_url(proxy_object.server, iface_registry)
+        if action == 'add':
+            assert element_key is None, repr(element_key)
+            target_url = get_default_url(proxy_object.server, iface_registry)
+        else:
+            target_url = element_key
+            assert 0 # todo
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
         return article_types.object_selector_handle(cls.view_id, ref_list, target_handle)
 

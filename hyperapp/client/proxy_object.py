@@ -174,7 +174,7 @@ class ProxyObject(Object):
         else:
             param_editor_resource_id = ['interface', self.iface.iface_id, 'param_editor', command_id]
             param_editor_resource = self._resources_manager.resolve(param_editor_resource_id)
-            handle = self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id)
+            handle = self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id, *args, **kw)
             return SimpleNamespace(handle=handle)
 
     def observers_gone(self):
