@@ -30,7 +30,7 @@ class UserList(SmallListObject):
         SmallListObject.__init__(self, core_types)
 
     @db_session
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         return list(map(self.rec2element, this_module.User.select()))
 
     @classmethod

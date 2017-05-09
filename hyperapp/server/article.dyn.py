@@ -54,13 +54,13 @@ class Article(Object):
         return this_module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
         
     @db_session
-    def get_contents(self, **kw):
+    def get_contents(self, request, **kw):
         if self.article_id is not None:
             rec = this_module.Article[self.article_id]
             text = rec.text
         else:
             text = None
-        return Object.get_contents(self, text=text, **kw)
+        return Object.get_contents(self, request, text=text, **kw)
 
     def get_handle(self, request):
         if self.mode == self.mode_view:
@@ -168,7 +168,7 @@ class ArticleRefList(SmallListObject):
         subscription.distribute_update(self.iface, self.get_path(), diff)
 
     @db_session
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         return list(map(self.rec2element, select(ref for ref in this_module.ArticleRef
             if ref.article==this_module.Article[self.article_id]) \
             .order_by(this_module.ArticleRef.id)))

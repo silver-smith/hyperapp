@@ -70,10 +70,10 @@ class Object(Commander):
             iface=self.iface.iface_id,
             facets=[facet.iface_id for facet in self.get_facets()],
             path=path,
-            contents=self.get_contents(),
+            contents=self.get_contents(request),
             )
 
-    def get_contents(self, **kw):
+    def get_contents(self, request, **kw):
         return self.iface.Contents(
             commands=[cmd.to_data() for cmd in self.get_commands()],
             **kw)
@@ -99,7 +99,7 @@ class Object(Commander):
 
     def process_request_subscribe(self, request):
         self.subscribe(request)
-        return request.make_response(self.get_contents())
+        return request.make_response(self.get_contents(request))
 
     def subscribe(self, request):
         subscription.add(self.get_path(), request.peer.channel)
@@ -157,12 +157,12 @@ class ListObject(Object):
     def __init__(self, core_types):
         Object.__init__(self, core_types)
 
-    def get_contents(self, **kw):
-        slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
+    def get_contents(self, request, **kw):
+        slice = self.fetch_elements(request, self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
         assert isinstance(slice, self.iface.tSlice()), \
           'Invalid result returned from fetch_elements, use: return self.Slice(...); returned: %r, expected: %r' \
             % (slice, self.iface.tSlice())
-        return Object.get_contents(self, slice=slice, **kw)
+        return Object.get_contents(self, request, slice=slice, **kw)
 
     def get_handle(self, request):
         return self.ListHandle(self.get(request))
@@ -180,13 +180,13 @@ class ListObject(Object):
 
     def process_request_fetch_elements(self, request):
         params = request.params
-        slice = self.fetch_elements(params.sort_column_id, params.from_key, params.desc_count, params.asc_count)
+        slice = self.fetch_elements(request, params.sort_column_id, params.from_key, params.desc_count, params.asc_count)
         assert isinstance(slice, self.iface.tSlice()), \
           'Invalid result is returned from fetch_elements: %r; use: return self.Slice(...)' % slice
-        return request.make_response(Object.get_contents(self, slice=slice))
+        return request.make_response(Object.get_contents(self, request, slice=slice))
 
     # must return Slice, construct using self.Slice(...)
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    def fetch_elements(self, request, sort_column_id, key, desc_count, asc_count):
         raise NotImplementedError(self.__class__)
 
     def run_element_command(self, request, command_id, element_key):
@@ -225,10 +225,10 @@ class ListObject(Object):
 
 class SmallListObject(ListObject):
 
-    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    def fetch_elements(self, request, sort_column_id, from_key, desc_count, asc_count):
         assert desc_count == 0, repr(desc_count)  # Not yet supported
         elt2sort_key = attrgetter('row.%s' % self.iface.get_key_column_id())
-        sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
+        sorted_elements = sorted(self.fetch_all_elements(request), key=elt2sort_key)
         if from_key is None:
             idx = 0
         else:
@@ -245,6 +245,6 @@ class SmallListObject(ListObject):
         return self.Slice(sort_column_id, from_key, elements, bof, eof)
 
     # must return self.iface.Element list
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         raise NotImplementedError(self.__class__)
     

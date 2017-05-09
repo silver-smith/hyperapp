@@ -72,7 +72,7 @@ class Blog(SmallListObject):
         return request.make_response_object(BlogEntry(mode=BlogEntry.mode_edit))
 
     @db_session
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         return list(map(self.rec2element, this_module.BlogEntry.select().order_by(desc(this_module.BlogEntry.created_at))))
 
     @classmethod

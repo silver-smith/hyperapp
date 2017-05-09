@@ -30,7 +30,7 @@ class File(FsObject):
     def get_commands(self):
         return []
 
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         return [self.Element(self.Row(idx, line)) for idx, line in enumerate(self._load_lines())]
 
     def _load_lines(self, ofs=0):
@@ -46,7 +46,7 @@ class Dir(FsObject):
     objimpl_id = 'proxy_list'
     categories = [['initial', 'fs']]
 
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         dirs  = []
         files = []
         try:

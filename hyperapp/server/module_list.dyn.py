@@ -38,7 +38,7 @@ class ModuleList(SmallListObject):
         SmallListObject.__init__(self, core_types)
 
     @db_session
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         return list(map(self.rec2element, this_module.Module.select().order_by(this_module.Module.id)))
 
     @classmethod
@@ -138,7 +138,7 @@ class ModuleDepList(SmallListObject):
         return this_module.make_path(self.class_name, self.module_id)
 
     @db_session
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         rec = this_module.Module[self.module_id]
         return list(map(self.rec2element, rec.deps))
 
@@ -183,7 +183,7 @@ class AvailableDepList(SmallListObject):
         return this_module.make_path(self.class_name, self.module_id)
 
     @db_session
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         dep_ids = set([dep.dep.id for dep in this_module.Module[self.module_id].deps])
         if dep_ids:
             query = select(rec for rec in this_module.Module if rec.id not in dep_ids)

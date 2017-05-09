@@ -151,7 +151,7 @@ class ClientCodeRepositoryBrowser(SmallListObject):
         path.check_empty()
         return self
 
-    def fetch_all_elements(self):
+    def fetch_all_elements(self, request):
         return [self._module2element(module) for module in self._repository.get_module_list()]
 
     def _module2element(self, module):
