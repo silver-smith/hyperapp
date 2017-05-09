@@ -158,7 +158,7 @@ class ListObject(Object):
         Object.__init__(self, core_types)
 
     def get_contents(self, **kw):
-        slice = self.fetch_elements(self.default_sort_column_id, None, 1, MIN_ROWS_RETURNED)
+        slice = self.fetch_elements(self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
         assert isinstance(slice, self.iface.tSlice()), \
           'Invalid result returned from fetch_elements, use: return self.Slice(...); returned: %r, expected: %r' \
             % (slice, self.iface.tSlice())
@@ -226,7 +226,7 @@ class ListObject(Object):
 class SmallListObject(ListObject):
 
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
-        assert desc_count == 1, repr(desc_count)  # Not yet supported
+        assert desc_count == 0, repr(desc_count)  # Not yet supported
         elt2sort_key = attrgetter('row.%s' % self.iface.get_key_column_id())
         sorted_elements = sorted(self.fetch_all_elements(), key=elt2sort_key)
         if from_key is None:

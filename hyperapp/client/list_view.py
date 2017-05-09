@@ -127,7 +127,7 @@ class Model(QtCore.QAbstractTableModel):
         if wanted_rows > 0 and not self.eof:
             log.info('   fetch_elements object=%r key=%r wanted_rows=%r', self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
-            yield from self._object.fetch_elements(self._current_order, key, 1, wanted_rows)
+            yield from self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
 
     def process_fetch_result(self, slice):
         log.info('-- list_view.Model.process_fetch_result self=%r object=%r len(slice.elements)=%r', id(self), self._object, len(slice.elements))
