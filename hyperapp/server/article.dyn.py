@@ -157,7 +157,19 @@ class ArticleRefList(SmallListObject):
     @command('update', kind='element')
     @db_session
     def command_update(self, request):
-        assert 0  # todo
+        ref_id = request.params.element_key
+        url = Url.from_data(this_module.iface_registry, request.params.target_url)
+        if request.me.is_mine_url(url):
+            server_public_key_pem = ''
+        else:
+            server_public_key_pem = url.public_key.to_pem()
+        rec = this_module.ArticleRef[ref_id]
+        rec.server_public_key_pem = server_public_key_pem.strip()
+        rec.path = encode_path(url.path)
+        diff = self.Diff_replace(rec.id, self.rec2element(request, rec))
+        subscription.distribute_update(self.iface, self.get_path(), diff)
+        handle = self.ListHandle(self.get(request), key=rec.id)
+        return request.make_response_handle(handle)
 
     @command('delete', kind='element')
     @db_session
