@@ -55,6 +55,7 @@ class SliceAlgorithm(object):
                 log.info('     - exact key idx=%r', idx)
                 if idx < len(slice.elements):
                     log.info('     > middle found idx=%r len(elements)=%r len(elements[idx:])=%r', idx, len(slice.elements), len(slice.elements[idx:]))
+                    idx = max(idx - desc_count, 0)
                     return slice.clone_with_elements(slice.elements[idx:])
         log.info('     > none found')
         return None  # none found
