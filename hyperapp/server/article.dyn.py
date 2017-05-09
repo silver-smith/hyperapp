@@ -131,9 +131,20 @@ class ArticleRefList(SmallListObject):
         return request.make_response_object(Article.from_rec(rec))
 
     @command('open', kind='element')
+    @db_session
     def command_open(self, request):
-        return request.make_response_handle(
-            RefSelector(self.article_id, ref_id=request.params.element_key).make_handle(request))
+        ref_id = request.params.element_key
+        rec = this_module.ArticleRef[ref_id]
+        iface = this_module.iface_registry.resolve(rec.iface)
+        path = decode_path(rec.path)
+        if rec.server_public_key_pem:
+            public_key = PublicKey.from_pem(rec.server_public_key_pem)
+            target_url = Url(iface, public_key, path)
+            target_handle = self._core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
+        else:
+            target_obj = this_module.run_resolver(iface, path)
+            target_handle = target_obj.get_handle(request)
+        return request.make_response_handle(target_handle)
 
     @command('add')
     @db_session
