@@ -56,6 +56,19 @@ def test_nonintersecting_slices_should_be_added(nonintersecting_slices):
 
 def test_pick_slice_with_empty_key_should_return_bof_slice():
     slices = [make_slice((20, 30), bof=False),
-              make_slice((0, 10), bof=True)]
+              make_slice((0, 10), bof=True),
+              make_slice((10, 20), bof=False)]
     result = SliceAlgorithm().pick_slice(slices, sort_column_id='id', from_key=None, desc_count=0, asc_count=10)
     assert result == slices[1]
+
+
+@pytest.mark.parametrize("slices_range, from_key, desc_count, asc_count, expected_slice_range", [
+    ([(0, 10), (20, 30), (40, 50)], 25, 0, 10, (26, 30)),
+    ([(0, 10), (20, 30), (40, 50)], 0, 0, 10, (1, 10)),
+    ([(0, 10), (20, 30), (40, 50)], 48, 0, 10, (49, 50)),
+    ])
+def test_pick_slice_should_return_proper_elements(slices_range, from_key, desc_count, asc_count, expected_slice_range):
+    slices = list(map(make_slice, slices_range))
+    expected_slice = make_slice(expected_slice_range)
+    result = SliceAlgorithm().pick_slice(slices, sort_column_id='id', from_key=from_key, desc_count=desc_count, asc_count=asc_count)
+    assert result == expected_slice
