@@ -139,14 +139,11 @@ class ArticleRefList(SmallListObject):
     @db_session
     def command_add(self, request):
         url = Url.from_data(this_module.iface_registry, request.params.target_url)
-        if request.me.is_mine_url(url):
-            server_public_key_pem = ''
-        else:
-            server_public_key_pem = url.public_key.to_pem()
+        server_public_key_pem, path = self._make_article_ref_url_fields(request, url)
         rec = this_module.ArticleRef(article=this_module.Article[self.article_id],
-                                     server_public_key_pem=server_public_key_pem.strip(),
                                      iface=url.iface.iface_id,
-                                     path=encode_path(url.path))
+                                     server_public_key_pem=server_public_key_pem,
+                                     path=path)
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(request, rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
@@ -159,17 +156,21 @@ class ArticleRefList(SmallListObject):
     def command_update(self, request):
         ref_id = request.params.element_key
         url = Url.from_data(this_module.iface_registry, request.params.target_url)
-        if request.me.is_mine_url(url):
-            server_public_key_pem = ''
-        else:
-            server_public_key_pem = url.public_key.to_pem()
         rec = this_module.ArticleRef[ref_id]
-        rec.server_public_key_pem = server_public_key_pem.strip()
-        rec.path = encode_path(url.path)
+        server_public_key_pem, path = self._make_article_ref_url_fields(request, url)
+        rec.server_public_key_pem = server_public_key_pem
+        rec.path = path
         diff = self.Diff_replace(rec.id, self.rec2element(request, rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
         handle = self.ListHandle(self.get(request), key=rec.id)
         return request.make_response_handle(handle)
+
+    def _make_article_ref_url_fields(self, request, url):
+        if request.me.is_mine_url(url):
+            server_public_key_pem = ''
+        else:
+            server_public_key_pem = url.public_key.to_pem()
+        return (server_public_key_pem.strip(), encode_path(url.path))
 
     @command('delete', kind='element')
     @db_session
