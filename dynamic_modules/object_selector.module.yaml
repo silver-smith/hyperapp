@@ -1,6 +1,6 @@
-id: object_selector_param_editor
+id: object_selector
 package: hyperapp.client
-source_path: object_selector_param_editor.py
+source_path: object_selector.py
 satisfies:
  - param_editor/object_selector_add
  - param_editor/object_selector_update
