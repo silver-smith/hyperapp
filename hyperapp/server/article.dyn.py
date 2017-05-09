@@ -158,7 +158,6 @@ class ArticleRefList(SmallListObject):
         commit()
         diff = self.Diff_insert_one(rec.id, self.rec2element(request, rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
-        #return request.make_response_handle(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
         handle = self.ListHandle(self.get(request), key=rec.id)
         return request.make_response_handle(handle)
 
@@ -213,69 +212,6 @@ class ArticleRefList(SmallListObject):
         return cls.Element(cls.Row(rec.id, url.to_str(), url_title), commands)
 
 
-class RefSelector(Object):
-
-    iface = article_types.article_object_selector
-    objimpl_id = 'proxy'
-    class_name = 'object_selector'
-
-    @classmethod
-    def resolve(cls, path):
-        article_id = path.pop_int()
-        ref_id = path.pop_int()
-        return cls(article_id, ref_id)
-
-    def __init__(self, article_id, ref_id):
-        Object.__init__(self, core_types)
-        self.article_id = article_id
-        self.ref_id = ref_id
-
-    def get_path(self):
-        return this_module.make_path(self.class_name, path_part_to_str(self.article_id), path_part_to_str(self.ref_id))
-
-    @command('choose')
-    @db_session
-    def command_choose(self, request):
-        url = Url.from_data(this_module.iface_registry, request.params.target_url)
-        if request.me.is_mine_url(url):
-            server_public_key_pem = ''
-        else:
-            server_public_key_pem = url.public_key.to_pem()
-        if self.ref_id is None:
-            rec = this_module.ArticleRef(article=this_module.Article[self.article_id],
-                                    server_public_key_pem=server_public_key_pem,
-                                    iface=url.iface.iface_id,
-                                    path=encode_path(url.path))
-        else:
-            rec = this_module.ArticleRef[self.ref_id]
-            rec.server_public_key_pem = server_public_key_pem
-            rec.iface = url.iface.iface_id
-            rec.path = encode_path(url.path)
-        commit()
-        log.info('Saved article#%d reference#%d path: %r, server_public_key_pem=%r',
-                 rec.article.id, rec.id, rec.path, rec.server_public_key_pem)
-        ref_list_obj = ArticleRefList(self.article_id)
-        diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(request, rec))
-        subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
-        handle = ArticleRefList.ListHandle(ref_list_obj.get(request), key=rec.id)
-        return request.make_response_handle(handle)
-
-    @db_session
-    def make_handle(self, request):
-        assert self.ref_id is not None  # why can it be?
-        rec = this_module.ArticleRef[self.ref_id]
-        iface = this_module.iface_registry.resolve(rec.iface)
-        path = decode_path(rec.path)
-        if rec.server_public_key_pem:
-            public_key = PublicKey.from_pem(rec.server_public_key_pem)
-            target_url = Url(iface, public_key, path)
-            target_handle = self._core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
-        else:
-            target_obj = this_module.run_resolver(iface, path)
-            target_handle = target_obj.get_handle(request)
-        return article_types.object_selector_handle('object_selector', self.get(request), target_handle)
-
-
 class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
@@ -300,8 +236,6 @@ class ThisModule(PonyOrmModule):
             return Article.resolve(path)
         if objname == ArticleRefList.class_name:
             return ArticleRefList.resolve(path)
-        if objname == RefSelector.class_name:
-            return RefSelector.resolve(path)
         path.raise_not_found()
 
     def get_commands(self):

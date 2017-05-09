@@ -1,5 +1,0 @@
-id: object_selector
-package: hyperapp.client
-source_path: object_selector.py
-satisfies:
- - handle/object_selector
