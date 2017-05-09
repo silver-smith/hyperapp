@@ -9,7 +9,7 @@ def make_slice(elements_range, bof=False):
     return Slice(sort_column_id='id', from_key=None, elements=elements, bof=bof, eof=False)
 
 
-@pytest.fixture(params=[
+@pytest.mark.parametrize("slice_range, new_slice_range, expected_slice_range", [
     # existing, new, expected result
     ((0, 5), (0, 6), (0, 6)),
     ((0, 6), (0, 5), (0, 6)),
@@ -20,36 +20,24 @@ def make_slice(elements_range, bof=False):
     ((0, 5), (4, 10), (0, 10)),
     ((4, 10), (0, 5), (0, 10)),
     ])
-def intersecting_slices(request):
-    existing, new, expected = request.param
-    return (
-        [make_slice(existing)],
-        make_slice(new),
-        [make_slice(expected)],
-        )
-
 @pytest.mark.xfail
-def test_intersecting_slices_should_be_properly_merged(intersecting_slices):
-    slices, new_slice, expected_slices = intersecting_slices
+def test_intersecting_slices_should_be_properly_merged(slice_range, new_slice_range, expected_slice_range):
+    slices = [make_slice(slice_range)]
+    new_slice = make_slice(new_slice_range)
+    expected_slices = [make_slice(expected_slice_range)]
     SliceAlgorithm().merge_in_slice(slices, new_slice)
     assert slices == expected_slices
 
 
-@pytest.fixture(params=[
+@pytest.mark.parametrize("slice_range, new_slice_range", [
     ((0, 5), (10, 15)),
     ((0, 5), (6, 10)),  # adjacent
     ((10, 15), (0, 5)),
     ((6, 10), (0, 5)),  # adjacent
     ])
-def nonintersecting_slices(request):
-    existing, new = request.param
-    return (
-        [make_slice(existing)],
-        make_slice(new),
-        )
-
-def test_nonintersecting_slices_should_be_added(nonintersecting_slices):
-    slices, new_slice = nonintersecting_slices
+def test_nonintersecting_slices_should_be_added(slice_range, new_slice_range):
+    slices = [make_slice(slice_range)]
+    new_slice = make_slice(new_slice_range)
     SliceAlgorithm().merge_in_slice(slices, new_slice)
     assert len(slices) == 2
 
