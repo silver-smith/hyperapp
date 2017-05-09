@@ -134,7 +134,7 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         sort_column_id = self.get_key_column_id()
         slice = yield from self.fetch_elements(sort_column_id, key, 1, 1)
         matched_elements = [element for element in slice.elements if element.key == key]
-        assert len(matched_elements) == 1, repr(matched_elements)  # exactly one element with this key is expected
+        assert matched_elements, repr(matched_elements)  # at least one element with this key is expected
         return matched_elements[0]
 
     # currently unused
