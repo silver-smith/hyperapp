@@ -41,6 +41,8 @@ article_ref_list:
     ref:
       text: Id
       description: Id
-    url:
+    url_title:
       text: Url
       description: Url
+    url:
+      visible: no

@@ -19,6 +19,7 @@ article_ref_list = list_interface article_ref_list:
     columns:
         @ref_id: int
         url: string
+        url_title: string
     commands:
         request parent () -> (handle: handle opt)
         request open (element_key: int) -> (handle: handle opt)

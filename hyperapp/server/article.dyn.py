@@ -148,7 +148,7 @@ class ArticleRefList(SmallListObject):
                                      iface=url.iface.iface_id,
                                      path=encode_path(url.path))
         commit()
-        diff = self.Diff_insert_one(rec.id, self.rec2element(rec))
+        diff = self.Diff_insert_one(rec.id, self.rec2element(request, rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
         #return request.make_response_handle(RefSelector(self.article_id, ref_id=rec.id).make_handle(request))
         handle = self.ListHandle(self.get(request), key=rec.id)
@@ -169,19 +169,24 @@ class ArticleRefList(SmallListObject):
 
     @db_session
     def fetch_all_elements(self, request):
-        return list(map(self.rec2element, select(ref for ref in this_module.ArticleRef
-            if ref.article==this_module.Article[self.article_id]) \
-            .order_by(this_module.ArticleRef.id)))
+        return [self.rec2element(request, rec) for rec in
+                select(ref for ref in this_module.ArticleRef
+                       if ref.article==this_module.Article[self.article_id])
+                       .order_by(this_module.ArticleRef.id)]
 
     @classmethod
-    def rec2element(cls, rec):
+    def rec2element(cls, request, rec):
         commands = [cls.command_open, cls.command_update, cls.command_delete]
         if not rec.server_public_key_pem:
-            url = '<local>:%s' % rec.path
+            public_key = request.me.get_public_key()
+            url_title = '<local>:%s' % rec.path
         else:
-            pk = PublicKey.from_pem(rec.server_public_key_pem)
-            url = '%s:%s' % (pk.get_short_id_hex(), rec.path)
-        return cls.Element(cls.Row(rec.id, url), commands)
+            public_key = PublicKey.from_pem(rec.server_public_key_pem)
+            url_title = '%s:%s' % (public_key.get_short_id_hex(), rec.path)
+        iface = this_module.iface_registry.resolve(rec.iface)
+        path = decode_path(rec.path)
+        url = Url(iface, public_key, path)
+        return cls.Element(cls.Row(rec.id, url.to_str(), url_title), commands)
 
 
 class RefSelector(Object):
@@ -226,7 +231,7 @@ class RefSelector(Object):
         log.info('Saved article#%d reference#%d path: %r, server_public_key_pem=%r',
                  rec.article.id, rec.id, rec.path, rec.server_public_key_pem)
         ref_list_obj = ArticleRefList(self.article_id)
-        diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(rec))
+        diff = ref_list_obj.Diff_replace(rec.id, ref_list_obj.rec2element(request, rec))
         subscription.distribute_update(ref_list_obj.iface, ref_list_obj.get_path(), diff)
         handle = ArticleRefList.ListHandle(ref_list_obj.get(request), key=rec.id)
         return request.make_response_handle(handle)

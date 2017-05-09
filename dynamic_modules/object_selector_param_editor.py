@@ -4,6 +4,7 @@ import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface import article as article_types
 from ..common.interface import core as core_types
+from ..common.url import Url
 from .util import uni2str
 from . import view
 from .command import command, ViewCommand
@@ -42,7 +43,7 @@ class View(view.View, QtGui.QWidget):
         else:
             assert element_key is not None  # an element key is expected for update operation
             element = yield from proxy_object.fetch_element(element_key)
-            target_url = element.row.url
+            target_url = Url.from_str(iface_registry, element.row.url)
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
         return article_types.object_selector_handle(cls.view_id, ref_list, target_handle)
 
