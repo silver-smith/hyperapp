@@ -35,6 +35,27 @@ class SliceAlgorithm(object):
             slices.append(new_slice)
             log.info('     > added')
 
+    def pick_slice(self, slices, sort_column_id, from_key):
+        for slice in slices:
+            if slice.sort_column_id != sort_column_id: continue
+            if from_key == None and slice.bof:
+                log.info('     > bof found, len(elements)=%r', len(slice.elements))
+                return slice
+            log.info('       - checking len(elements)=%r elements[0].order_key=%r elements[-1].order_key=%r', len(slice.elements), slice.elements[0].order_key, slice.elements[-1].order_key)
+            # here we assume sort_column_id == key_column_id, other sort order is todo:
+            if slice.elements[0].order_key <= from_key <= slice.elements[-1].order_key:
+                idx = bisect.bisect_left(slice.elements, from_key)  # must be from_order_key
+                log.info('     - bisecting idx=%r', idx)
+                while slice.elements[idx].order_key <= from_key:  # from_order_key
+                    idx += 1
+                    if slice.elements[idx-1].key == from_key: break  # from_order_key
+                log.info('     - exact key idx=%r', idx)
+                if idx < len(slice.elements):
+                    log.info('     > middle found idx=%r len(elements)=%r len(elements[idx:])=%r', idx, len(slice.elements), len(slice.elements[idx:]))
+                    return slice.clone_with_elements(slice.elements[idx:])
+        log.info('     > none found')
+        return None  # none found
+
 
 class ProxyListObject(ProxyObject, ListObject):
 
@@ -157,25 +178,7 @@ class ProxyListObject(ProxyObject, ListObject):
                     
     def _pick_slice(self, slices, sort_column_id, from_key):
         log.info('  -- pick_slice self=%r sort_column_id=%r from_key=%r', id(self), sort_column_id, from_key)
-        for slice in slices:
-            if slice.sort_column_id != sort_column_id: continue
-            if from_key == None and slice.bof:
-                log.info('     > bof found, len(elements)=%r', len(slice.elements))
-                return slice
-            log.info('       - checking len(elements)=%r elements[0].order_key=%r elements[-1].order_key=%r', len(slice.elements), slice.elements[0].order_key, slice.elements[-1].order_key)
-            # here we assume sort_column_id == key_column_id:
-            if slice.elements[0].order_key <= from_key and from_key <= slice.elements[-1].order_key:
-                idx = bisect.bisect_left(slice.elements, from_key)  # must be from_order_key
-                log.info('     - bisecting idx=%r', idx)
-                while slice.elements[idx].order_key <= from_key:  # from_order_key
-                    idx += 1
-                    if slice.elements[idx-1].key == from_key: break  # from_order_key
-                log.info('     - exact key idx=%r', idx)
-                if idx < len(slice.elements):
-                    log.info('     > middle found idx=%r len(elements)=%r len(elements[idx:])=%r', idx, len(slice.elements), len(slice.elements[idx:]))
-                    return slice.clone_with_elements(slice.elements[idx:])
-        log.info('     > none found')
-        return None  # none found
+        return SliceAlgorithm().pick_slice(slices, sort_column_id, from_key)
 
     def _get_slice_cache_key(self, sort_column_id):
         return self.make_cache_key('slices-%s' % sort_column_id)
@@ -188,7 +191,7 @@ class ProxyListObject(ProxyObject, ListObject):
         slices = [slice.to_data(self.iface) for slice in self._slices if slice.sort_column_id == sort_column_id]
         self.cache_repository.store_value(key, slices, self._get_slices_cache_type())
 
-    def _load_slices_from_cache(self, sort_column_id):
+    def _ensure_slices_from_cache_loaded(self, sort_column_id):
         if sort_column_id in self._slices_from_cache: return  # already loaded
         key = self._get_slice_cache_key(sort_column_id)
         slice_recs = self.cache_repository.load_value(key, self._get_slices_cache_type())
@@ -224,7 +227,7 @@ class ProxyListObject(ProxyObject, ListObject):
             if self._subscribed:  # otherwise our _slices may already be invalid, need to subscribe and refetch anyway
                 return slice
         else:
-            self._load_slices_from_cache(sort_column_id)
+            self._ensure_slices_from_cache_loaded(sort_column_id)
             cached_slices = self._slices_from_cache.get(sort_column_id, [])
             slice = self._pick_slice(cached_slices, sort_column_id, from_key)
             if slice:
@@ -235,7 +238,7 @@ class ProxyListObject(ProxyObject, ListObject):
         subscribing_now = not self._subscribed and not self._subscribe_pending
         command_id = 'subscribe_and_fetch_elements' if subscribing_now else 'fetch_elements'
         if subscribing_now:
-            # several views can call fetch_elements before response is received, and we do not want several subscribe... calls
+            # several views can call fetch_elements before response is received, and we do not want several subscribe_xxx calls
             self._subscribe_pending = True
         result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
         log.debug('proxy_list_object fetch_elements result self=%r, slice: %r', id(self), slice)
