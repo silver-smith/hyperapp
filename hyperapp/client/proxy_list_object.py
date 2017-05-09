@@ -35,12 +35,15 @@ class SliceAlgorithm(object):
             slices.append(new_slice)
             log.info('     > added')
 
-    def pick_slice(self, slices, sort_column_id, from_key):
+    def pick_slice(self, slices, sort_column_id, from_key, desc_count, asc_count):
         for slice in slices:
             if slice.sort_column_id != sort_column_id: continue
-            if from_key == None and slice.bof:
-                log.info('     > bof found, len(elements)=%r', len(slice.elements))
-                return slice
+            if from_key == None:
+                if slice.bof:
+                    log.info('     > bof found, len(elements)=%r', len(slice.elements))
+                    return slice
+                else:
+                    continue
             log.info('       - checking len(elements)=%r elements[0].order_key=%r elements[-1].order_key=%r', len(slice.elements), slice.elements[0].order_key, slice.elements[-1].order_key)
             # here we assume sort_column_id == key_column_id, other sort order is todo:
             if slice.elements[0].order_key <= from_key <= slice.elements[-1].order_key:
@@ -176,9 +179,9 @@ class ProxyListObject(ProxyObject, ListObject):
                         slice.elements.append(new_elt)
                         log.info('-- slice with sort %r: element is appended to the end of slice', slice.sort_column_id)
                     
-    def _pick_slice(self, slices, sort_column_id, from_key):
+    def _pick_slice(self, slices, sort_column_id, from_key, desc_count, asc_count):
         log.info('  -- pick_slice self=%r sort_column_id=%r from_key=%r', id(self), sort_column_id, from_key)
-        return SliceAlgorithm().pick_slice(slices, sort_column_id, from_key)
+        return SliceAlgorithm().pick_slice(slices, sort_column_id, from_key, desc_count, asc_count)
 
     def _get_slice_cache_key(self, sort_column_id):
         return self.make_cache_key('slices-%s' % sort_column_id)
@@ -219,7 +222,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r desc_count=%r asc_count=%r',
                  id(self), self._subscribed, from_key, desc_count, asc_count)
-        slice = self._pick_slice(self._slices, sort_column_id, from_key)
+        slice = self._pick_slice(self._slices, sort_column_id, from_key, desc_count, asc_count)
         if slice:
             log.info('   > cached actual: %r', slice)
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
@@ -229,7 +232,7 @@ class ProxyListObject(ProxyObject, ListObject):
         else:
             self._ensure_slices_from_cache_loaded(sort_column_id)
             cached_slices = self._slices_from_cache.get(sort_column_id, [])
-            slice = self._pick_slice(cached_slices, sort_column_id, from_key)
+            slice = self._pick_slice(cached_slices, sort_column_id, from_key, desc_count, asc_count)
             if slice:
                 log.info('   > cached outdated, len(elements)=%r', len(slice.elements))
                 self._notify_fetch_result(slice)

@@ -3,10 +3,10 @@ from hyperapp.client.list_object import ListDiff, Element, Slice, ListObject
 from hyperapp.client.proxy_list_object import SliceAlgorithm
 
 
-def make_slice(elements_range):
+def make_slice(elements_range, bof=False):
     start, stop = elements_range
     elements = [Element(key=idx, order_key=idx, row=None, commands=[]) for idx in range(start, stop)]
-    return Slice(sort_column_id='id', from_key=None, elements=elements, bof=False, eof=False)
+    return Slice(sort_column_id='id', from_key=None, elements=elements, bof=bof, eof=False)
 
 
 @pytest.fixture(params=[
@@ -52,3 +52,10 @@ def test_nonintersecting_slices_should_be_added(nonintersecting_slices):
     slices, new_slice = nonintersecting_slices
     SliceAlgorithm().merge_in_slice(slices, new_slice)
     assert len(slices) == 2
+
+
+def test_pick_slice_with_empty_key_should_return_bof_slice():
+    slices = [make_slice((20, 30), bof=False),
+              make_slice((0, 10), bof=True)]
+    result = SliceAlgorithm().pick_slice(slices, sort_column_id='id', from_key=None, desc_count=0, asc_count=10)
+    assert result == slices[1]
