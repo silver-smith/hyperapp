@@ -3,6 +3,7 @@ from core import object, handle, view_handle
 
 object_selector_handle = handle class object_selector(view_handle):
     ref_list: object
+    ref_id: int opt
     target: handle
 
 

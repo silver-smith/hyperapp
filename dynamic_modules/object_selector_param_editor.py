@@ -39,25 +39,28 @@ class View(view.View, QtGui.QWidget):
         ref_list = proxy_object.get_state()
         if action == 'add':
             assert element_key is None, repr(element_key)
+            ref_id = None
             target_url = get_default_url(proxy_object.server, iface_registry)
         else:
             assert element_key is not None  # an element key is expected for update operation
+            ref_id = element_key
             element = yield from proxy_object.fetch_element(element_key)
             target_url = Url.from_str(iface_registry, element.row.url)
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
-        return article_types.object_selector_handle(cls.view_id, ref_list, target_handle)
+        return article_types.object_selector_handle(cls.view_id, ref_list, ref_id, target_handle)
 
     @classmethod
     @asyncio.coroutine
     def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
         ref_list = objimpl_registry.resolve(state.ref_list)
         target_view = yield from view_registry.resolve(locale, state.target)
-        return cls(parent, ref_list, target_view)
+        return cls(parent, ref_list, state.ref_id, target_view)
 
-    def __init__(self, parent, ref_list, target_view):
+    def __init__(self, parent, ref_list, ref_id, target_view):
         QtGui.QWidget.__init__(self)
         view.View.__init__(self, parent)
         self.ref_list = ref_list
+        self.ref_id = ref_id
         self.target_view = target_view
         target_view.set_parent(self)
         self.groupBox = QtGui.QGroupBox('Select object for %s' % self.ref_list.get_title())
@@ -69,7 +72,7 @@ class View(view.View, QtGui.QWidget):
         self.setLayout(l)
 
     def get_state(self):
-        return article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), self.target_view.get_state())
+        return article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), self.ref_id, self.target_view.get_state())
 
     def get_current_child(self):
         return self.target_view
@@ -86,11 +89,14 @@ class View(view.View, QtGui.QWidget):
     def object_command_choose(self):
         url = self.target_view.get_url()
         if not url: return  # not a proxy - can not choose it
-        result = (yield from self.ref_list.execute_request('add', target_url=url.to_data()))
+        if self.ref_id is None:  # adding
+            result = (yield from self.ref_list.execute_request('add', target_url=url.to_data()))
+        else:
+            result = (yield from self.ref_list.execute_request('update', element_key=self.ref_id, target_url=url.to_data()))
         view.View.open(self, result.handle)  # do not wrap in our handle
 
     def open(self, handle):
-        handle = article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), handle)
+        handle = article_types.object_selector_handle(self.view_id, self.ref_list.get_state(), self.ref_id, handle)
         view.View.open(self, handle)
 
     def __del__(self):

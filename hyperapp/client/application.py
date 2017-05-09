@@ -154,7 +154,7 @@ class Application(QtGui.QApplication, view.View):
         window_state = window.get_state_type()(
             tab_view=tabs_state,
             size=window.this_module.size_type(600, 500),
-            pos=window.this_module.point_type(100, 100))
+            pos=window.this_module.point_type(1000, 100))
         return [window_state]
 
     def process_events_and_repeat(self):

@@ -67,7 +67,7 @@ class TestList(ListObject):
         return request.make_response_handle(ParamsForm().make_handle(request, size=self.size))
 
     def fetch_elements(self, request, sort_column_id, from_key, desc_count, asc_count):
-        assert desc_count == 1, repr(desc_count)  # Not yet supported
+        assert desc_count == 0, repr(desc_count)  # Not yet supported
         assert from_key is None or isinstance(from_key, int), repr(from_key)
         if from_key is None:
             start = 0
