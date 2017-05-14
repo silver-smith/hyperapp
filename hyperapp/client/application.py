@@ -223,7 +223,7 @@ class Application(QtGui.QApplication, view.View):
     def exec_(self):
         state = self._load_state_with_requirements()
         if not state:
-            state = self.get_default_state()
+            state = self._get_default_state()
         self._loop.run_until_complete(self.open_windows(state))
         self._loop.call_soon(self.process_events_and_repeat)
         try:
