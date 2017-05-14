@@ -94,11 +94,15 @@ class Application(QtGui.QApplication, view.View):
         self._loop.stop()
 
     def save_state(self, ui_state):
-        requirements = RequirementsCollector(self._core_types).collect(self._ui_state_type, ui_state)
+        collector = RequirementsCollector(self._core_types)
+        ui_requirements = collector.collect(self._ui_state_type, ui_state)
+        resources1 = self._load_required_resources(ui_requirements)
+        resource_requirements = collector.collect(self._resource_types.resource_rec_list, resources1)
+        resources2 = self._load_required_resources(resource_requirements)
+        resources = resources1 + resources2
+        requirements = ui_requirements + resource_requirements
         module_ids = list(self._resolve_module_requirements(requirements))
         code_modules = self.services.module_manager.resolve_ids(module_ids)
-        resource_requirements = [decode_path(id) for registry_id, id in requirements if registry_id == 'resources']
-        resources = flatten(map(self._resources_manager.resolve_starting_with, resource_requirements))
         log.info('resource requirements for state: %s', ', '.join(map(encode_path, resource_requirements)))
         for module in code_modules:
             log.info('-- code module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
@@ -108,6 +112,10 @@ class Application(QtGui.QApplication, view.View):
         state_data = packet_coders.encode(STATE_FILE_ENCODING, state, self._state_type)
         with open(STATE_FILE_PATH, 'wb') as f:
             f.write(state_data)
+
+    def _load_required_resources(self, requirements):
+        return flatten([self._resources_manager.resolve_starting_with(decode_path(id))
+                        for registry, id in requirements if registry == 'resources'])
 
     def _resolve_module_requirements(self, requirements):
         for registry_id, id in requirements:
