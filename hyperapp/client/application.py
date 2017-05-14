@@ -1,9 +1,9 @@
 import os.path
 import logging
 import asyncio
-import pickle as pickle
 from PySide import QtCore, QtGui
-from ..common.htypes import TList
+from ..common.util import encode_path, decode_path, flatten
+from ..common.htypes import TList, TRecord, Field, tString
 from ..common.url import UrlWithRoutes
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
@@ -27,17 +27,21 @@ class Application(QtGui.QApplication, view.View):
 
     def __init__(self, sys_argv):
         QtGui.QApplication.__init__(self, sys_argv)
-        self._response_mgr = None  # View constructor getattr call response_mgr
+        self._constructed = False    # Commander constructor getattr calls attributes not yet ready
         view.View.__init__(self)
         self.services = Services()
         self._core_types = self.services.types.core
-        self.state_type = TList(window.get_state_type())
+        self._packet_types = self.services.types.packet
+        self._resource_types = self.services.types.resource
+        self._resources_manager = self.services.resources_manager
+        self._constructed = True
         self._windows = []
         self._loop = asyncio.get_event_loop()
         self._loop.set_debug(True)
 
     @property
     def response_mgr(self):
+        if not self._constructed: return None
         return self._response_mgr
 
     def get_state(self):
@@ -88,20 +92,24 @@ class Application(QtGui.QApplication, view.View):
         self.save_state(state)
         self._loop.stop()
 
-    def save_state(self, state):
-        requirements = RequirementsCollector(self._core_types).collect(self.state_type, state)
-        module_ids = list(self._resolve_requirements(requirements))
-        modules = self.services.module_manager.resolve_ids(module_ids)
-        for module in modules:
-            log.info('-- module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
-        state_data = packet_coders.encode('cdr', state, self.state_type)
-        contents = (module_ids, modules, state_data)
+    def save_state(self, ui_state):
+        requirements = RequirementsCollector(self._core_types).collect(self._ui_state_type, ui_state)
+        module_ids = list(self._resolve_module_requirements(requirements))
+        code_modules = self.services.module_manager.resolve_ids(module_ids)
+        resource_requirements = [decode_path(id) for registry_id, id in requirements if registry_id == 'resources']
+        resources = flatten(map(self._resources_manager.resolve_starting_with, resource_requirements))
+        log.info('resource requirements for state: %s', ', '.join(map(encode_path, resource_requirements)))
+        for module in code_modules:
+            log.info('-- code module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
+        for rec in resources:
+            log.info('-- resource is stored to state: %r %r', encode_path(rec.id), rec.resource)
+        state = self._state_type(module_ids, code_modules, resources, ui_state)
+        state_data = packet_coders.encode('cdr', state, self._state_type)
         with open(STATE_FILE_PATH, 'wb') as f:
-            pickle.dump(contents, f)
+            f.write(state_data)
 
-    def _resolve_requirements(self, requirements):
+    def _resolve_module_requirements(self, requirements):
         for registry_id, id in requirements:
-            log.info('requirement for state: %s %r', registry_id, id)
             if registry_id == 'class':
                 module_id = self.services.type_module_repository.get_type_module_id_by_class_id(id)
             elif registry_id == 'interface':
@@ -112,14 +120,29 @@ class Application(QtGui.QApplication, view.View):
                 elif registry_id == 'handle':
                     registry = self.services.view_registry
                 elif registry_id == 'resources':
-                    continue  # todo
+                    continue
                 else:
                     assert False, repr(registry_id)  # unknown registry id
                 module_id = registry.get_dynamic_module_id(id)
+            log.info('requirement for state %s %r', registry_id, id)
             if module_id is not None:  # None for static module
-                log.info('dynamic module %r provides %s %r', module_id, registry_id, id)
+                log.info('\tprovided by module %s', module_id)
                 yield module_id
-    
+
+    @property
+    def _ui_state_type(self):
+        if not self._constructed: return None
+        return TList(window.get_state_type())
+
+    @property
+    def _state_type(self):
+        if not self._constructed: return None
+        return TRecord([
+            Field('module_ids', TList(tString)),
+            Field('code_modules', TList(self._packet_types.module)),
+            Field('resource_rec_list', self._resource_types.resource_rec_list),
+            Field('ui_state', self._ui_state_type),
+            ])
 
     ## def load_state_and_modules(self):
     ##     state = self.load_state_file()
@@ -137,7 +160,8 @@ class Application(QtGui.QApplication, view.View):
     def load_state_file(self):
         try:
             with open(STATE_FILE_PATH, 'rb') as f:
-                return pickle.load(f)
+                state_data = f.read()
+            return packet_coders.decode('cdr', state_data, self._state_type)
         except (EOFError, IOError, IndexError) as x:
             log.info('Error loading state: %r', x)
             return None
@@ -166,25 +190,26 @@ class Application(QtGui.QApplication, view.View):
         self._loop.call_later(0.01, self.process_events_and_repeat)
 
     def exec_(self):
-        contents = self.load_state_file()
-        if contents:
-            module_ids, code_modules, state_data = contents
-            log.info('-- code_modules loaded from state: ids=%r, code_modules=%r', module_ids, [module.fpath for module in code_modules])
-            type_modules, new_code_modules, resources = self._loop.run_until_complete(
+        state = self.load_state_file()
+        if state:
+            log.info('-->8 -- loaded state  ------')
+            pprint(self._state_type, state)
+            log.info('--- 8<------------------------')
+            log.info('-- code_modules loaded from state: ids=%r, code_modules=%r', state.module_ids, [module.fpath for module in state.code_modules])
+            log.info('-- resources loaded from state: %s', ', '.join(encode_path(rec.id) for rec in state.resource_rec_list))
+            type_modules, new_code_modules, modules_resources = self._loop.run_until_complete(
                 self.services.code_repository.get_modules_by_ids(
-                    [module_id for module_id in set(module_ids) if not self.services.module_manager.has_module(module_id)]))
+                    [module_id for module_id in set(state.module_ids) if not self.services.module_manager.has_module(module_id)]))
+            code_modules = state.code_modules
             if new_code_modules is not None:  # has code repositories?
-                code_modules = new_code_modules  # load new versions
+                code_modules = new_code_modules   # use new versions
             self.services.type_module_repository.add_all_type_modules(type_modules)
             self.services.module_manager.add_code_modules(code_modules)
-            self.services.resources_manager.register(resources)
-            state = packet_coders.decode('cdr', state_data, self.state_type)
-            log.info('-->8 -- loaded state  ------')
-            pprint(self.state_type, state)
-            log.info('--- 8<------------------------')
+            self.services.resources_manager.register(state.resource_rec_list + modules_resources)
+            ui_state = state.ui_state
         else:
-            state = self.get_default_state()
-        self._loop.run_until_complete(self.open_windows(state))
+            ui_state = self.get_default_state()
+        self._loop.run_until_complete(self.open_windows(ui_state))
         self._loop.call_soon(self.process_events_and_repeat)
         try:
             self._loop.run_forever()

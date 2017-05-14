@@ -21,6 +21,14 @@ class ResourcesRegistry(object):
         log.debug('### Resource registry: resolving %s -> %s', encode_path(id), self._registry.get(tuple(id)))
         return self._registry.get(tuple(id))
 
+    # return all resources with id starting from this
+    def resolve_starting_with(self, id):
+        id_tuple = tuple(id)
+        size = len(id_tuple)
+        for id, resource in self._registry.items():
+            if id[:size] == id_tuple:
+                yield self._resource_types.resource_rec(list(id), resource)
+
 
 class ResourcesManager(object):
 
@@ -47,6 +55,10 @@ class ResourcesManager(object):
         if resource is None:
             resource = self._cache_repository.load_value(self._cache_key(id), self._cache_type())
         return resource
+
+    def resolve_starting_with(self, id):
+        return self._resources_registry.resolve_starting_with(id)
+        # todo: may be load from cache repository also
 
     def _cache_key(self, id):
         return ['resources'] + id

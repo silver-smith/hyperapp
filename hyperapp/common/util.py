@@ -30,9 +30,9 @@ def is_tuple_inst(val, cls):
     return True
 
 # from itertools recipes
-def flatten(listOfLists):
+def flatten(list_of_lists):
     "Flatten one level of nesting"
-    return list(itertools.chain.from_iterable(listOfLists))
+    return list(itertools.chain.from_iterable(list_of_lists))
 
 # todo: quote/unquote '|' chars
 def encode_path(path):
