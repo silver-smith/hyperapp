@@ -20,7 +20,8 @@ from .services import Services
 log = logging.getLogger(__name__)
 
 
-STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state')
+STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state.json')
+STATE_FILE_ENCODING = 'json_pretty'
 
 
 class Application(QtGui.QApplication, view.View):
@@ -104,7 +105,7 @@ class Application(QtGui.QApplication, view.View):
         for rec in resources:
             log.info('-- resource is stored to state: %r %r', encode_path(rec.id), rec.resource)
         state = self._state_type(module_ids, code_modules, resources, ui_state)
-        state_data = packet_coders.encode('cdr', state, self._state_type)
+        state_data = packet_coders.encode(STATE_FILE_ENCODING, state, self._state_type)
         with open(STATE_FILE_PATH, 'wb') as f:
             f.write(state_data)
 
@@ -161,8 +162,8 @@ class Application(QtGui.QApplication, view.View):
         try:
             with open(STATE_FILE_PATH, 'rb') as f:
                 state_data = f.read()
-            return packet_coders.decode('cdr', state_data, self._state_type)
-        except (EOFError, IOError, IndexError) as x:
+            return packet_coders.decode(STATE_FILE_ENCODING, state_data, self._state_type)
+        except (EOFError, IOError, IndexError, UnicodeDecodeError) as x:
             log.info('Error loading state: %r', x)
             return None
 
