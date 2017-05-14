@@ -35,7 +35,17 @@ class Application(QtGui.QApplication, view.View):
         self._core_types = self.services.types.core
         self._packet_types = self.services.types.packet
         self._resource_types = self.services.types.resource
+        self._param_editor_types = self.services.types.param_editor
+        self._iface_registry = self.services.iface_registry
+        self._remoting = self.services.remoting
         self._resources_manager = self.services.resources_manager
+        self._objimpl_registry = self.services.objimpl_registry
+        self._view_registry = self.services.view_registry
+        self._param_editor_registry = self.services.param_editor_registry
+        self._type_module_repository = self.services.type_module_repository
+        self._module_manager = self.services.module_manager
+        self._code_repository = self.services.code_repository
+        self._modules = self.services.modules
         self._constructed = True
         self._windows = []
         self._loop = asyncio.get_event_loop()
@@ -52,7 +62,7 @@ class Application(QtGui.QApplication, view.View):
     @asyncio.coroutine
     def open_windows(self, state):
         for s in state or []:
-            yield from window.Window.from_state(s, self, self.services.view_registry, self.services.resources_manager)
+            yield from window.Window.from_state(s, self, self._view_registry, self._resources_manager)
 
     def pick_arg(self, kind):
         return None
@@ -80,10 +90,10 @@ class Application(QtGui.QApplication, view.View):
         window = self._windows[0]  # usually first window is the current one
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load url', os.getcwd(), 'Server url with routes (*.url)')
-        url = UrlWithRoutes.load_from_file(self.services.iface_registry, fpath)
-        self.services.remoting.add_routes_from_url(url)
-        server = Server.from_public_key(self.services.remoting, url.public_key)
-        handle = yield from execute_get_request(self.services.remoting, url)
+        url = UrlWithRoutes.load_from_file(self._iface_registry, fpath)
+        self._remoting.add_routes_from_url(url)
+        server = Server.from_public_key(self._remoting, url.public_key)
+        handle = yield from execute_get_request(self._remoting, url)
         assert handle  # url's get command must return a handle
         window.get_current_view().open(handle)
 
@@ -95,7 +105,7 @@ class Application(QtGui.QApplication, view.View):
         self._loop.stop()
 
     def save_state(self, state):
-        collector = RequirementsCollector(self._core_types)
+        collector = RequirementsCollector(self._core_types, self._param_editor_types)
         ui_requirements = collector.collect(self._state_type, state)
         resources1 = self._load_required_resources(ui_requirements)
         resource_requirements = collector.collect(self._resource_types.resource_rec_list, resources1)
@@ -103,7 +113,7 @@ class Application(QtGui.QApplication, view.View):
         resources = resources1 + resources2
         requirements = ui_requirements + resource_requirements
         module_ids = list(self._resolve_module_requirements(requirements))
-        code_modules = self.services.module_manager.resolve_ids(module_ids)
+        code_modules = self._module_manager.resolve_ids(module_ids)
         log.info('resource requirements for state: %s', ', '.join(map(encode_path, resource_requirements)))
         for module in code_modules:
             log.info('-- code module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
@@ -121,21 +131,23 @@ class Application(QtGui.QApplication, view.View):
 
     def _resolve_module_requirements(self, requirements):
         for registry_id, id in requirements:
+            log.info('requirement for state %s %r', registry_id, id)
             if registry_id == 'class':
-                module_id = self.services.type_module_repository.get_type_module_id_by_class_id(id)
+                module_id = self._type_module_repository.get_type_module_id_by_class_id(id)
             elif registry_id == 'interface':
-                module_id = self.services.type_module_repository.get_type_module_id_by_interface_id(id)
+                module_id = self._type_module_repository.get_type_module_id_by_interface_id(id)
             else:
                 if registry_id == 'object':
-                    registry = self.services.objimpl_registry
+                    registry = self._objimpl_registry
                 elif registry_id == 'handle':
-                    registry = self.services.view_registry
+                    registry = self._view_registry
                 elif registry_id == 'resources':
                     continue
+                elif registry_id == 'param_editor':
+                    registry = self._param_editor_registry
                 else:
                     assert False, repr(registry_id)  # unknown registry id
                 module_id = registry.get_dynamic_module_id(id)
-            log.info('requirement for state %s %r', registry_id, id)
             if module_id is not None:  # None for static module
                 log.info('\tprovided by module %s', module_id)
                 yield module_id
@@ -176,8 +188,8 @@ class Application(QtGui.QApplication, view.View):
         self._loop.call_later(0.01, self.process_events_and_repeat)
 
     def _get_default_state(self):
-        view_state_t = self.services.modules.text_view.View.get_state_type()
-        text_object_state_t = self.services.modules.text_object.TextObject.get_state_type()
+        view_state_t = self._modules.text_view.View.get_state_type()
+        text_object_state_t = self._modules.text_object.TextObject.get_state_type()
         text_handle = view_state_t('text_view', text_object_state_t('text', 'hello'))
         navigator_state = navigator.get_state_type()(
             view_id=navigator.View.view_id,
@@ -210,14 +222,14 @@ class Application(QtGui.QApplication, view.View):
                  state_requirements.module_ids, [module.fpath for module in state_requirements.code_modules])
         log.info('-- resources loaded from state: %s', ', '.join(encode_path(rec.id) for rec in state_requirements.resource_rec_list))
         type_modules, new_code_modules, modules_resources = self._loop.run_until_complete(
-            self.services.code_repository.get_modules_by_ids(
-                [module_id for module_id in set(state_requirements.module_ids) if not self.services.module_manager.has_module(module_id)]))
+            self._code_repository.get_modules_by_ids(
+                [module_id for module_id in set(state_requirements.module_ids) if not self._module_manager.has_module(module_id)]))
         code_modules = state_requirements.code_modules
         if new_code_modules is not None:  # has code repositories?
             code_modules = new_code_modules   # use new versions
-        self.services.type_module_repository.add_all_type_modules(type_modules)
-        self.services.module_manager.add_code_modules(code_modules)
-        self.services.resources_manager.register(state_requirements.resource_rec_list + modules_resources)
+        self._type_module_repository.add_all_type_modules(type_modules)
+        self._module_manager.add_code_modules(code_modules)
+        self._resources_manager.register(state_requirements.resource_rec_list + modules_resources)
         return self._load_state_file(self._state_type, STATE_FILE_PATH)
 
     def exec_(self):
