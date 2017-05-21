@@ -5,7 +5,7 @@ import asyncio
 import weakref
 from PySide import QtCore, QtGui
 from .qt_keys import print_key_event
-from .util import DEBUG_FOCUS, make_action, focused_index
+from .util import DEBUG_FOCUS, focused_index
 from .module import Module
 from .object import ObjectObserver
 from .command_class import Commander
