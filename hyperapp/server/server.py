@@ -1,5 +1,6 @@
 import time
 import logging
+import traceback
 from ..common.util import encode_path
 from ..common.identity import Identity
 from ..common.url import Url
@@ -41,11 +42,22 @@ class Server(object):
         if self.test_delay_sec:
             log.info('Test delay for %s sec...', self.test_delay_sec)
             time.sleep(self.test_delay_sec)
-        response = object.process_request(request)
+        response = self.process_object_request(object, request)
         response = self._prepare_response(object.__class__, request, response)
         if response is not None:
             self._subscribe_objects(request.peer.channel, response)
         return response
+
+    def process_object_request(self, object, request):
+        try:
+            return object.process_request(request)
+        except Exception as x:
+            if isinstance(x, self._request_types.tError):
+                error = x
+            else:
+                traceback.print_exc()
+                error = self._request_types.tServerError()
+            return request.make_response(error=error)
 
     def _resolve(self, iface, path):
         return module.Module.run_resolver(iface, path)

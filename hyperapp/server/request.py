@@ -65,13 +65,13 @@ class Request(RequestBase):
         RequestBase.__init__(self, request_types, core_types, me, peer, iface, path, command_id, params)
         self.request_id = request_id
 
-    def make_response(self, result=None):
+    def make_response(self, result=None, error=None):
         result_type = self.iface.get_command_result_type(self.command_id)
-        if result is None:
+        if result is None and error is None:
             result = result_type()
-        assert isinstance(result, result_type), \
+        assert result is None or isinstance(result, result_type), \
           '%s.Request.%s.result is expected to be %r, but is %r' % (self.iface.iface_id, self.command_id, result_type, result)
-        return Response(self._request_types, self.peer, self.iface, self.command_id, self.request_id, result)
+        return Response(self._request_types, self.peer, self.iface, self.command_id, self.request_id, result, error)
 
     def make_response_object(self, obj):
         return self.make_response_handle(obj.get_handle(self))
@@ -112,7 +112,7 @@ class ServerNotification(ResponseBase):
 
 class Response(ResponseBase):
 
-    def __init__(self, request_types, peer, iface, command_id, request_id, result):
+    def __init__(self, request_types, peer, iface, command_id, request_id, result=None, error=None):
         assert isinstance(peer, Peer), repr(peer)
         ResponseBase.__init__(self, request_types)
         self.peer = peer
@@ -120,6 +120,10 @@ class Response(ResponseBase):
         self.command_id = command_id
         self.request_id = request_id
         self.result = result
+        self.error = error
 
     def to_data(self):
-        return self._request_types.tResultResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
+        if self.error is not None:
+            return self._request_types.tErrorResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.error)
+        else:
+            return self._request_types.tResultResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)

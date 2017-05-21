@@ -124,9 +124,12 @@ class TExceptionClassRecord(RuntimeError):
         self._type = trec
         self._class = tclass
 
+    def __str__(self):
+        return '<%s: %s>' % (self._class.id, ', '.join(
+            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
+
     def __repr__(self):
-        return 'TExceptionClassRecord<%s>' % ', '.join(
-            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields())
+        return 'TExceptionClassRecord%s' % self
 
 
 class TExceptionClass(TClass):

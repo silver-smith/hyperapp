@@ -50,6 +50,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
 
 test_iface = Interface('test_iface', commands=[
     RequestCmd('echo', [Field('test_param', tString)], [Field('test_result', tString)]),
+    RequestCmd('check_ok', [Field('test_param', tString)], [Field('test_result', tString)]),
     RequestCmd('required_auth', result_fields=[Field('test_result', tString)]),
     RequestCmd('broadcast', [Field('message', tString)]),
     ],
@@ -64,8 +65,9 @@ class TestObject(Object):
     class_name = 'test_object'
     iface = test_iface
 
-    def __init__(self, module, id):
+    def __init__(self, test_error, module, id):
         Object.__init__(self)
+        self._test_error = test_error
         self.module = module
         self.id = id
 
@@ -75,6 +77,14 @@ class TestObject(Object):
     @command('echo')
     def command_echo(self, request):
         return request.make_response_result(test_result=request.params.test_param + ' to you too')
+
+    @command('check_ok')
+    def command_check_ok(self, request):
+        param = request.params.test_param
+        if param == 'ok':
+            return request.make_response_result(test_result='ok')
+        else:
+            raise self._test_error(param)
 
     @command('required_auth')
     def command_required_auth(self, request):
@@ -92,14 +102,15 @@ class TestModule(module_mod.Module):
 
     name = 'test_module'
 
-    def __init__(self):
+    def __init__(self, test_error):
         module_mod.Module.__init__(self, self.name)
+        self._test_error = test_error
 
     def resolve(self, iface, path):
         objname = path.pop_str()
         if objname == TestObject.class_name:
             obj_id = path.pop_str()
-            return TestObject(self, obj_id)
+            return TestObject(self._test_error, self, obj_id)
         path.raise_not_found()
 
         
@@ -198,9 +209,16 @@ class ServerTest(unittest.TestCase):
         test_iface.register_types(self.request_types, self.services.types.core)
         self.iface_registry.register(test_iface)
         self.remoting = self.services.remoting
-        self.test_module = TestModule()  # self-registering
+        self._init_test_module()
         self.server = Server(self.request_types, self.services.types.core, server_identity)
         self.session_list = TransportSessionList()
+
+    def _init_test_module(self):
+        request_types = self.services.request_types
+        self.test_error = request_types.tError.register('test_error', base=request_types.tClientError, fields=[
+            Field('invalid_param', tString),
+            ])
+        self.test_module = TestModule(self.test_error)  # self-registering
 
     def tearDown(self):
         self.services.module_manager.unregister_meta_hook()
@@ -222,6 +240,33 @@ class ServerTest(unittest.TestCase):
         pprint(self.request_types.tServerPacket, response.to_data())
         self.assertEqual('hello to you too', response.result.test_result)
 
+    def execute_check_ok_request(self, test_param):
+        request_data = self.request_types.tRequest(
+            iface='test_iface',
+            path=[TestModule.name, TestObject.class_name, '1'],
+            command_id='check_ok',
+            params=test_iface.get_request_params_type('check_ok')(test_param=test_param),
+            request_id='002',
+            )
+        pprint(self.request_types.tClientPacket, request_data)
+        request = RequestBase.from_data(None, Peer(PhonyChannel()),
+                                        self.request_types, self.types.core, self.iface_registry, request_data)
+
+        response = self.server.process_request(request)
+        pprint(self.request_types.tServerPacket, response.to_data())
+        return response
+
+    def test_check_ok_result(self):
+        response = self.execute_check_ok_request('ok')
+        self.assertEqual('ok', response.result.test_result)
+
+    def test_check_ok_error(self):
+        response = self.execute_check_ok_request('fail me')
+        assert isinstance(response.to_data(), self.request_types.tErrorResponse)
+        assert isinstance(response.to_data().error, self.test_error)
+        self.assertEqual('fail me', response.error.invalid_param)
+        self.assertEqual('fail me', response.to_data().error.invalid_param)
+        
     def transport_id2encoding(self, transport_id):
         if transport_id in ['tcp.cdr', 'tcp.json']:
             return transport_id.split('.')[1]
