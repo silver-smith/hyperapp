@@ -5,6 +5,7 @@ from .htypes import join_path, Type, tString, Field, Record, TRecord, TList
 class TClassRecord(Record):
 
     def __init__(self, trec, tclass):
+        assert isinstance(tclass, TClass), repr(tclass)
         Record.__init__(self, trec)
         self._class = tclass
 
@@ -12,13 +13,14 @@ class TClassRecord(Record):
 class TClass(TRecord):
 
     def __init__(self, hierarchy, id, trec):
+        assert isinstance(trec, TRecord), repr(trec)
         TRecord.__init__(self)
         self.hierarchy = hierarchy
         self.id = id
         self.trec = trec
 
     def __repr__(self):
-        return 'TClass(%s: %s)' % (self.id, ', '.join(map(repr, self.get_fields())))
+        return '%s(%s: %s)' % (self.__class__.__name__, self.id, ', '.join(map(repr, self.get_fields())))
 
     def __eq__(self, other):
         assert isinstance(other, TClass), repr(other)
@@ -86,13 +88,19 @@ class THierarchy(Type):
             else:
                 base_rec = None
             trec = TRecord(fields, base_rec)
-        tclass = TClass(self, id, trec)
+        tclass = self.make_tclass(id, trec)
         self.registry[id] = tclass
         #print('registered %s %s' % (self.hierarchy_id, id))
         return tclass
 
+    def make_tclass(self, id, trec):
+        return TClass(self, id, trec)
+
+    def is_tclassrecord(self, rec):
+        return isinstance(rec, TClassRecord)
+
     def __instancecheck__(self, rec):
-        if not isinstance(rec, TClassRecord):
+        if not self.is_tclassrecord(rec):
             return False
         return rec._class.hierarchy is self
 
@@ -106,3 +114,33 @@ class THierarchy(Type):
     def resolve_obj(self, rec):
         assert isinstance(rec, TClassRecord), repr(rec)
         return rec._class
+
+
+class TExceptionClassRecord(RuntimeError):
+
+    def __init__(self, trec, tclass):
+        assert isinstance(trec, TRecord), repr(trec)
+        assert isinstance(tclass, TExceptionClass), repr(tclass)
+        self._type = trec
+        self._class = tclass
+
+    def __repr__(self):
+        return 'TExceptionClassRecord<%s>' % ', '.join(
+            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields())
+
+
+class TExceptionClass(TClass):
+
+    def is_tclassrecord(self, rec):
+        return isinstance(rec, TExceptionClassRecord)
+
+    def instantiate(self, *args, **kw):
+        rec = TExceptionClassRecord(self.trec, self)
+        self.trec.instantiate_impl(rec, *args, **kw)
+        return rec
+
+
+class TExceptionHierarchy(THierarchy):
+
+    def make_tclass(self, id, trec):
+        return TExceptionClass(self, id, trec)
