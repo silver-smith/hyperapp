@@ -112,7 +112,7 @@ class Interface(object):
         for command in self._id2command.values():
             cmd_id = command.command_id
             request_types.tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
-            request_types.tResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
+            request_types.tResultResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
         self.tUpdate = request_types.tUpdate
 
     def __eq__(self, other):

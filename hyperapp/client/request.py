@@ -45,7 +45,7 @@ class ResponseBase(object):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(rec, request_types.tServerPacket), repr(rec)
         
-        if isinstance(rec, request_types.tResponse):
+        if isinstance(rec, request_types.tResultResponse):
             iface = iface_registry.resolve(rec.iface)
             return Response(request_types, server_public_key, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
         else:

@@ -76,7 +76,7 @@ class THierarchy(Type):
         assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         if trec is not None:
-            assert fields is None and base is None
+            assert fields is None and (base is None or base.fields == [])
             assert isinstance(trec, TRecord), repr(trec)
         else:
             assert fields is None or is_list_inst(fields, Field), repr(fields)

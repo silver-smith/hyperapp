@@ -33,12 +33,15 @@ def make_request_types():
     types.tServerNotification = types.tServerPacket.register('notification', fields=[
         Field('updates', TList(types.tUpdate)),
         ])
-    types.tResponseRec = TSwitchedRec(['iface', 'command_id'],
-                            base=types.tServerNotification, fields=[
+    types.tResponseRec = TRecord(base=types.tServerNotification, fields=[
                                 Field('iface', tIfaceId),
                                 Field('command_id', tString),
                                 Field('request_id', tString),
+                                ])
+    types.tResultResponseRec = TSwitchedRec(['iface', 'command_id'],
+                                base=types.tResponseRec, fields=[
                                 Field('result', tSwitched),
                                 ])
-    types.tResponse = types.tServerPacket.register('response', types.tResponseRec)
+    types.tResponse = types.tServerPacket.register('response')
+    types.tResultResponse = types.tServerPacket.register('result_response', types.tResultResponseRec, base=types.tResponse)
     return types

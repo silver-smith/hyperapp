@@ -122,4 +122,4 @@ class Response(ResponseBase):
         self.result = result
 
     def to_data(self):
-        return self._request_types.tResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
+        return self._request_types.tResultResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
