@@ -35,10 +35,10 @@ class TClass(TRecord):
     def get_field(self, name):
         return self.trec.get_field(name)
 
-    def __instancecheck__(self, obj):
-        if not isinstance(obj, TClassRecord):
+    def __instancecheck__(self, rec):
+        if not self.hierarchy.is_tclassrecord(rec):
             return False
-        return issubclass(obj._class, self)
+        return issubclass(rec._class, self)
 
     def instantiate(self, *args, **kw):
         rec = TClassRecord(self.trec, self)
@@ -112,7 +112,7 @@ class THierarchy(Type):
         return self.registry[class_id]
 
     def resolve_obj(self, rec):
-        assert isinstance(rec, TClassRecord), repr(rec)
+        assert self.is_tclassrecord(rec), repr(rec)
         return rec._class
 
 
@@ -147,3 +147,6 @@ class TExceptionHierarchy(THierarchy):
 
     def make_tclass(self, id, trec):
         return TExceptionClass(self, id, trec)
+
+    def is_tclassrecord(self, rec):
+        return isinstance(rec, TExceptionClassRecord)
