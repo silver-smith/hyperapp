@@ -380,6 +380,7 @@ class TransportRequestHandlingTest(ServerTest):
         response = self.decode_tcp_transport_response(session_list, transport_id, response_transport_packets)
         self.assertIsNone(response)
 
+
     def test_tcp_cdr_echo_request(self):
         self._test_tcp_echo_request('tcp.cdr')
 
@@ -392,6 +393,35 @@ class TransportRequestHandlingTest(ServerTest):
     def _test_tcp_echo_request(self, transport_id):
         response = self.execute_tcp_request(transport_id, obj_id='1', command_id='echo', test_param='hello')
         self.assertEqual('hello to you too', response.result.test_result)
+
+
+    def test_tcp_cdr_check_ok_result_request(self):
+        self._test_tcp_check_ok_result_request('tcp.cdr')
+
+    def test_tcp_json_check_ok_result_request(self):
+        self._test_tcp_check_ok_result_request('tcp.json')
+
+    def test_encrypted_tcp_check_ok_result_request(self):
+        self._test_tcp_check_ok_result_request('encrypted_tcp')
+
+    def _test_tcp_check_ok_result_request(self, transport_id):
+        response = self.execute_tcp_request(transport_id, obj_id='1', command_id='check_ok', test_param='ok')
+        self.assertEqual('ok', response.result.test_result)
+
+
+    def test_tcp_cdr_check_ok_error_request(self):
+        self._test_tcp_check_ok_error_request('tcp.cdr')
+
+    def test_tcp_json_check_ok_error_request(self):
+        self._test_tcp_check_ok_error_request('tcp.json')
+
+    def test_encrypted_tcp_check_ok_error_request(self):
+        self._test_tcp_check_ok_error_request('encrypted_tcp')
+
+    def _test_tcp_check_ok_error_request(self, transport_id):
+        response = self.execute_tcp_request(transport_id, obj_id='1', command_id='check_ok', test_param='fail me')
+        self.assertEqual('fail me', response.error.invalid_param)
+
 
     def test_tcp_cdr_broadcast_request(self):
         self._test_broadcast_tcp_request('tcp.cdr')
