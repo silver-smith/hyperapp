@@ -5,7 +5,7 @@ from ..common.util import encode_path
 from ..common.identity import Identity
 from ..common.url import Url
 from ..common.object_path_collector import ObjectPathCollector
-from .request import RequestBase, Request, ServerNotification, Response
+from .request import NotAuthorizedError, RequestBase, Request, ServerNotification, Response
 from .object import subscription
 from . import module
 
@@ -51,6 +51,8 @@ class Server(object):
     def process_object_request(self, object, request):
         try:
             return object.process_request(request)
+        except NotAuthorizedError:
+            raise
         except Exception as x:
             if isinstance(x, self._request_types.tError):
                 error = x

@@ -495,8 +495,6 @@ class ServerTest(unittest.TestCase):
             self.iface_registry, self.server, self.session_list, transport_request)
         challenge = self.pick_pop_channelge_from_responses(transport_id, response_transport_packets)
 
-        authorized_peer_identity
-        
         pop_record = tPopRecord(
             authorized_peer_identity.get_public_key().to_der(),
             authorized_peer_identity.sign(challenge))
