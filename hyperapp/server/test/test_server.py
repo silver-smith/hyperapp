@@ -208,10 +208,8 @@ class ServerTest(unittest.TestCase):
         self.iface_registry = self.services.iface_registry
         test_iface.register_types(self.request_types, self.services.types.core)
         self.iface_registry.register(test_iface)
-        self.remoting = self.services.remoting
         self._init_test_module()
         self.server = Server(self.request_types, self.services.types.core, server_identity)
-        self.session_list = TransportSessionList()
 
     def _init_test_module(self):
         request_types = self.services.request_types
@@ -222,6 +220,9 @@ class ServerTest(unittest.TestCase):
 
     def tearDown(self):
         self.services.module_manager.unregister_meta_hook()
+
+
+class ServerRequestHandlingTest(ServerTest):
 
     def test_simple_request(self):
         request_data = self.request_types.tRequest(
@@ -266,7 +267,15 @@ class ServerTest(unittest.TestCase):
         assert isinstance(response.to_data().error, self.test_error)
         self.assertEqual('fail me', response.error.invalid_param)
         self.assertEqual('fail me', response.to_data().error.invalid_param)
-        
+
+
+class TransportRequestHandlingTest(ServerTest):
+
+    def setUp(self):
+        ServerTest.setUp(self)
+        self.remoting = self.services.remoting
+        self.session_list = TransportSessionList()
+
     def transport_id2encoding(self, transport_id):
         if transport_id in ['tcp.cdr', 'tcp.json']:
             return transport_id.split('.')[1]
