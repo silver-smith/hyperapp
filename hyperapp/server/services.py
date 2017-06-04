@@ -1,6 +1,5 @@
 import os.path
 import logging
-from ..common.htypes import IfaceRegistry, TypeRegistryRegistry, make_request_types, builtin_type_registry
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from .module import Module
