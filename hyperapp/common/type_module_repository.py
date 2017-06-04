@@ -15,7 +15,6 @@ from .htypes import (
     TypeRegistryRegistry,
     TypeResolver,
     make_meta_type_registry,
-    builtin_type_registry,
     )
 from .type_module import resolve_typedefs, load_types_file
 
@@ -29,7 +28,6 @@ class TypeModuleRepository(object):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
         self._meta_type_registry = make_meta_type_registry()
-        self._builtin_type_registry = builtin_type_registry()
         self._request_types = request_types
         self._iface_registry = iface_registry
         self._type_registry_registry = type_registry_registry
@@ -105,7 +103,7 @@ class TypeModuleRepository(object):
     def add_type_module(self, module):
         log.info('  adding type module %r', module.module_name)
         assert isinstance(module, tTypeModule), repr(module)
-        resolver = TypeResolver([self._builtin_type_registry] + self._type_registry_registry.get_all_type_registries())
+        resolver = TypeResolver(self._type_registry_registry.get_all_type_registries())
         type_registry = resolve_typedefs(self._meta_type_registry, resolver, module.typedefs)
         self._register_type_module(module, type_registry)
 
