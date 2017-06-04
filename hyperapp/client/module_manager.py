@@ -18,7 +18,6 @@ class ModuleManager(common_module_manager.ModuleManager):
         self._view_registry = services.view_registry
         self._param_editor_registry = services.param_editor_registry
         self._meta_type_registry = make_meta_type_registry()
-        self._builtin_type_registry = builtin_type_registry()
 
     def add_code_modules(self, modules):
         for module in modules:
