@@ -24,7 +24,7 @@ class ParamsForm(Object):
     class_name = 'params'
 
     def get_path(self):
-        return module.make_path(self.class_name)
+        return this_module.make_path(self.class_name)
 
     def get_handle(self, request):
         return self.make_handle(request)  # todo: form data must be preserved somehow
@@ -60,7 +60,7 @@ class TestList(ListObject):
         self.size = size
 
     def get_path(self):
-        return module.make_path(self.class_name, path_part_to_str(self.size))
+        return this_module.make_path(self.class_name, path_part_to_str(self.size))
 
     @command('params')
     def command_params(self, request):
@@ -83,9 +83,9 @@ class TestList(ListObject):
         return self.Slice(sort_column_id, from_key, elements, bof, eof)
 
     
-class TestListModule(Module):
+class ThisModule(Module):
 
-    def __init__(self):
+    def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
 
     def resolve(self, iface, path):
@@ -103,6 +103,3 @@ class TestListModule(Module):
         if command_id == 'test_list':
             return request.make_response_object(TestList())
         return Module.run_command(self, request, command_id)
-
-
-module = TestListModule()
