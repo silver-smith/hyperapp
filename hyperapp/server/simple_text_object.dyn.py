@@ -19,9 +19,9 @@ and more recently with desktop publishing software like Aldus PageMaker includin
 '''
 
 
-class TestTextObjectModule(Module):
+class ThisModule(Module):
 
-    def __init__(self):
+    def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
 
     def get_commands(self):
@@ -40,6 +40,3 @@ class TestTextObjectModule(Module):
             handle = core_types.obj_handle('text_view', object)
             return request.make_response_handle(handle)
         return Module.run_command(self, request, command_id)
-
-
-module = TestTextObjectModule()
