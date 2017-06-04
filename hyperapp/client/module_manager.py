@@ -38,9 +38,7 @@ class ModuleManager(common_module_manager.ModuleManager):
         return modules
 
     def _register_provided_services(self, module, module_dict):
-        this_module_class = module_dict.get('ThisModule')
-        if this_module_class:
-            module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
+        common_module_manager.ModuleManager._register_provided_services(self, module, module_dict)
 
         def register(fn_name, registry):
             fn = module_dict.get(fn_name)

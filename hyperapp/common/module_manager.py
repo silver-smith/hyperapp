@@ -50,7 +50,9 @@ class ModuleManager(object):
         assert False, repr(module.__name__)
 
     def _register_provided_services(self, module, module_dict):
-        pass
+        this_module_class = module_dict.get('ThisModule')
+        if this_module_class:
+            module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
 
     def has_module(self, module_name):
         return (module_name in self._name2code_module)
