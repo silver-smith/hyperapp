@@ -1,0 +1,12 @@
+from core import handle
+
+
+test_error = error class test(client_error)
+
+test_object = list_interface test_object:
+  columns:
+    @id: string
+    title: string
+  commands:
+    request open (element_key: string) -> (handle: handle opt)
+    request run (element_key: string) -> ()
