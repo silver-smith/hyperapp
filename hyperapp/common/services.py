@@ -1,11 +1,9 @@
 import os.path
 import sys
 from types import SimpleNamespace
-import importlib
 from hyperapp.common.htypes import (
     IfaceRegistry,
-    TypeRegistryRegistry,
-    builtin_type_registry,
+    builtin_type_registry_registry,
     make_request_types,
     )
 from hyperapp.common.type_module_repository import TypeModuleRepository
@@ -20,7 +18,7 @@ class ServicesBase(object):
         self.types = SimpleNamespace()
         self.request_types = make_request_types()
         self.iface_registry = IfaceRegistry()
-        self.type_registry_registry = TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
+        self.type_registry_registry = builtin_type_registry_registry()
         self.type_module_repository = TypeModuleRepository(self.interface_dir, self.request_types, self.iface_registry, self.type_registry_registry)
 
     def _load_type_module(self, module_name):
