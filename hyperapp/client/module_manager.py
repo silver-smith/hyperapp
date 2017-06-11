@@ -1,6 +1,5 @@
 import logging
 from ..common.htypes import (
-    make_meta_type_registry,
     builtin_type_registry,
     )
 from ..common import module_manager as common_module_manager
@@ -17,7 +16,6 @@ class ModuleManager(common_module_manager.ModuleManager):
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
         self._param_editor_registry = services.param_editor_registry
-        self._meta_type_registry = make_meta_type_registry()
 
     def add_code_modules(self, modules):
         for module in modules:
