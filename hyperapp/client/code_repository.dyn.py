@@ -193,7 +193,7 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self.request_types = services.request_types
+        self.request_types = services.types.request
         self.resources_manager = services.resources_manager
         self.param_editor_registry = services.param_editor_registry
         services.code_repository = CodeRepository(

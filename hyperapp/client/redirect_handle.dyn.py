@@ -7,7 +7,7 @@ REDIRECT_VIEW_ID = 'redirect'
 
 
 def register_views(registry, services):
-    registry.register(REDIRECT_VIEW_ID, resolve_redirect, services.request_types, services.iface_registry, services.remoting)
+    registry.register(REDIRECT_VIEW_ID, resolve_redirect, services.types.request, services.iface_registry, services.remoting)
 
 @asyncio.coroutine
 def resolve_redirect(locale, handle, parent, request_types, iface_registry, remoting):

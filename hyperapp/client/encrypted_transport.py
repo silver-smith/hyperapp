@@ -80,8 +80,8 @@ class EncryptedTransport(Transport):
         packet = packet_coders.decode(ENCODING, packet_data, self._packet_types.packet)
         pprint(self._packet_types.packet, packet, self._resource_types, self._packet_types)
         yield from self.process_aux_info(packet.aux_info)
-        response_or_notification_rec = packet_coders.decode(ENCODING, packet.payload, self._request_types.tServerPacket)
-        pprint(self._request_types.tServerPacket, response_or_notification_rec, self._resource_types, self._packet_types)
+        response_or_notification_rec = packet_coders.decode(ENCODING, packet.payload, self._request_types.server_packet)
+        pprint(self._request_types.server_packet, response_or_notification_rec, self._resource_types, self._packet_types)
         return ResponseBase.from_data(self._request_types, self._iface_registry, server_public_key, response_or_notification_rec)
 
     @asyncio.coroutine

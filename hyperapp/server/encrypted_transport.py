@@ -33,7 +33,7 @@ class EncryptedTcpChannel(PeerChannel):
 
     def __init__(self, transport):
         self.transport = transport
-        self.updates = Queue()  # tUpdate list
+        self.updates = Queue()  # types.request.update list
 
     def _pop_all(self):
         updates = []
@@ -141,7 +141,7 @@ class EncryptedTcpTransport(Transport):
             return []
         aux_info, response_or_notification = result
         pprint(tAuxInfo, aux_info)
-        pprint(tServerPacket, response_or_notification)
+        pprint(self.transport._request_types.server_packet, response_or_notification)
         return [self.encode_response_or_notification(session, aux_info, response_or_notification)]
 
     def process_pop_packet(self, session, encrypted_packet):
@@ -161,7 +161,7 @@ class EncryptedTcpTransport(Transport):
 
     def encode_response_or_notification(self, session, aux_info, response_or_notification):
         assert session.session_key  # must be set when initial packet is received
-        payload = packet_coders.encode(ENCODING, response_or_notification, tServerPacket)
+        payload = packet_coders.encode(ENCODING, response_or_notification, self.transport._request_types.server_packet)
         packet = tPacket(aux_info, payload)
         packet_data = packet_coders.encode(ENCODING, packet, tPacket)
         return encrypt_subsequent_packet(session.session_key, packet_data)

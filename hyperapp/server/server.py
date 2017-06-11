@@ -54,11 +54,11 @@ class Server(object):
         except NotAuthorizedError:
             raise
         except Exception as x:
-            if isinstance(x, self._request_types.tError):
+            if isinstance(x, self._request_types.error):
                 error = x
             else:
                 traceback.print_exc()
-                error = self._request_types.tServerError()
+                error = self._request_types.server_error()
             return request.make_response(error=error)
 
     def _resolve(self, iface, path):
@@ -66,7 +66,7 @@ class Server(object):
 
     def _subscribe_objects(self, peer_channel, response):
         collector = ObjectPathCollector(self._core_types)
-        object_paths = collector.collect(self._request_types.tServerPacket, response.to_data())
+        object_paths = collector.collect(self._request_types.server_packet, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)
 

@@ -10,7 +10,7 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self._request_types = services.request_types
+        self._request_types = services.types.request
         self._iface_registry = services.iface_registry
         self._remoting = services.remoting
 

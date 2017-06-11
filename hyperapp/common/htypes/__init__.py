@@ -37,5 +37,5 @@ def builtin_type_registry():
     registry.register('server_routes', tServerRoutes)
     return registry
 
-def builtin_type_registry_registry():
-    return TypeRegistryRegistry(dict(builtins=builtin_type_registry()))
+def builtin_type_registry_registry(**kw):
+    return TypeRegistryRegistry(dict(builtins=builtin_type_registry(), **kw))

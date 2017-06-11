@@ -24,7 +24,7 @@ class RequestBase(object):
 class ClientNotification(RequestBase):
 
     def to_data(self):
-        return self._request_types.tClientNotification(self.iface.iface_id, self.path, self.command_id, self.params)
+        return self._request_types.client_notification(self.iface.iface_id, self.path, self.command_id, self.params)
 
 
 class Request(RequestBase):
@@ -35,7 +35,7 @@ class Request(RequestBase):
         self.request_id = request_id
 
     def to_data(self):
-        return self._request_types.tRequest(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
+        return self._request_types.request(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
 
 
 class ResponseBase(object):
@@ -43,13 +43,13 @@ class ResponseBase(object):
     @classmethod
     def from_data(cls, request_types, iface_registry, server_public_key, rec):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
-        assert isinstance(rec, request_types.tServerPacket), repr(rec)
+        assert isinstance(rec, request_types.server_packet), repr(rec)
         
-        if isinstance(rec, request_types.tResultResponse):
+        if isinstance(rec, request_types.result_response):
             iface = iface_registry.resolve(rec.iface)
             return Response(request_types, server_public_key, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
         else:
-            assert isinstance(rec, request_types.tServerNotification), repr(rec)
+            assert isinstance(rec, request_types.server_notification), repr(rec)
             return ServerNotification(request_types, server_public_key, rec.updates)
 
     def __init__(self, request_types, server_public_key, updates):

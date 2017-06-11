@@ -204,7 +204,7 @@ class ServerTest(unittest.TestCase):
     def setUp(self):
         self.services = Services()
         self.types = self.services.types
-        self.request_types = self.services.request_types
+        self.request_types = self.services.types.request
         self.iface_registry = self.services.iface_registry
         test_iface.register_types(self.request_types, self.services.types.core)
         self.iface_registry.register(test_iface)
@@ -212,8 +212,8 @@ class ServerTest(unittest.TestCase):
         self.server = Server(self.request_types, self.services.types.core, server_identity)
 
     def _init_test_module(self):
-        request_types = self.services.request_types
-        self.test_error = request_types.tError.register('test_error', base=request_types.tClientError, fields=[
+        request_types = self.services.types.request
+        self.test_error = request_types.error.register('test_error', base=request_types.client_error, fields=[
             Field('invalid_param', tString),
             ])
         self.test_module = TestModule(self.test_error)  # self-registering
@@ -225,36 +225,36 @@ class ServerTest(unittest.TestCase):
 class ServerRequestHandlingTest(ServerTest):
 
     def test_simple_request(self):
-        request_data = self.request_types.tRequest(
+        request_data = self.request_types.request(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, '1'],
             command_id='echo',
             params=test_iface.get_request_params_type('echo')(test_param='hello'),
             request_id='001',
             )
-        pprint(self.request_types.tClientPacket, request_data)
+        pprint(self.request_types.client_packet, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
                                         self.request_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
 
-        pprint(self.request_types.tServerPacket, response.to_data())
+        pprint(self.request_types.server_packet, response.to_data())
         self.assertEqual('hello to you too', response.result.test_result)
 
     def execute_check_ok_request(self, test_param):
-        request_data = self.request_types.tRequest(
+        request_data = self.request_types.request(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, '1'],
             command_id='check_ok',
             params=test_iface.get_request_params_type('check_ok')(test_param=test_param),
             request_id='002',
             )
-        pprint(self.request_types.tClientPacket, request_data)
+        pprint(self.request_types.client_packet, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
                                         self.request_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
-        pprint(self.request_types.tServerPacket, response.to_data())
+        pprint(self.request_types.server_packet, response.to_data())
         return response
 
     def test_check_ok_result(self):
@@ -263,7 +263,7 @@ class ServerRequestHandlingTest(ServerTest):
 
     def test_check_ok_error(self):
         response = self.execute_check_ok_request('fail me')
-        assert isinstance(response.to_data(), self.request_types.tErrorResponse)
+        assert isinstance(response.to_data(), self.request_types.error_response)
         assert isinstance(response.to_data().error, self.test_error)
         self.assertEqual('fail me', response.error.invalid_param)
         self.assertEqual('fail me', response.to_data().error.invalid_param)
@@ -317,7 +317,7 @@ class TransportRequestHandlingTest(ServerTest):
         return None  # no response
 
     def make_tcp_transport_request(self, session_list, transport_id, obj_id, command_id, **kw):
-        request = self.request_types.tRequest(
+        request = self.request_types.request(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
@@ -325,10 +325,10 @@ class TransportRequestHandlingTest(ServerTest):
             request_id='001',
             )
         log.info('Sending request:')
-        pprint(self.request_types.tClientPacket, request)
+        pprint(self.request_types.client_packet, request)
         request_packet = self.types.packet.packet(
             aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
-            payload=self.encode_packet(transport_id, request, self.request_types.tClientPacket))
+            payload=self.encode_packet(transport_id, request, self.request_types.client_packet))
         request_packet_data = self.encode_packet(transport_id, request_packet, self.types.packet.packet)
         transport_request = tTransportPacket(
             transport_id=transport_id,
@@ -336,17 +336,17 @@ class TransportRequestHandlingTest(ServerTest):
         return transport_request
 
     def make_tcp_transport_notification(self, session_list, transport_id, obj_id, command_id, **kw):
-        request = self.request_types.tClientNotification(
+        request = self.request_types.client_notification(
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
             params=test_iface.get_request_params_type(command_id)(**kw),
             )
         log.info('Sending client notification:')
-        pprint(self.request_types.tClientPacket, request)
+        pprint(self.request_types.client_packet, request)
         request_packet = self.types.packet.packet(
             aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
-            payload=self.encode_packet(transport_id, request, self.request_types.tClientPacket))
+            payload=self.encode_packet(transport_id, request, self.request_types.client_packet))
         request_packet_data = self.encode_packet(transport_id, request_packet, self.types.packet.packet)
         transport_request = tTransportPacket(
             transport_id=transport_id,
@@ -360,8 +360,8 @@ class TransportRequestHandlingTest(ServerTest):
         response_packet = self.decode_packet(transport_id, packet_data, self.types.packet.packet)
         log.info('Received response:')
         pprint(self.types.packet.packet, response_packet)
-        response = self.decode_packet(transport_id, response_packet.payload, self.request_types.tServerPacket)
-        pprint(self.request_types.tServerPacket, response)
+        response = self.decode_packet(transport_id, response_packet.payload, self.request_types.server_packet)
+        pprint(self.request_types.server_packet, response)
         return response
 
     def execute_tcp_request(self, transport_id, obj_id, command_id, session_list=None, **kw):

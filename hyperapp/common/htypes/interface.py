@@ -106,14 +106,14 @@ class Interface(object):
         self._tObject = core_types.object.register(
             self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
         log.debug('### registered object %r in %r', self.iface_id, id(core_types.object))
-        request_types.tUpdate.register((self.iface_id,), self._diff_type)
+        request_types.update.register((self.iface_id,), self._diff_type)
         self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self._id2command.items())
         self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self._id2command.items())
         for command in self._id2command.values():
             cmd_id = command.command_id
-            request_types.tClientNotificationRec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
-            request_types.tResultResponseRec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
-        self.tUpdate = request_types.tUpdate
+            request_types.client_notification_rec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
+            request_types.result_response_rec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
+        self.tUpdate = request_types.update
 
     def __eq__(self, other):
         return (isinstance(other, Interface) and

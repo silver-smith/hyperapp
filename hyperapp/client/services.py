@@ -56,7 +56,7 @@ class Services(ServicesBase):
                 'text_object_types',
             ])
         self.objimpl_registry = ObjImplRegistry()
-        self.remoting = Remoting(self.request_types, self.types.resource, self.types.packet, self.route_storage, self.proxy_registry)
+        self.remoting = Remoting(self.types.request, self.types.resource, self.types.packet, self.route_storage, self.proxy_registry)
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager = ModuleManager(self)

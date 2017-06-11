@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 class Transport(object):
 
     def __init__(self, services):
-        self._request_types = services.request_types
+        self._request_types = services.types.request
         self._core_types = services.types.core
         self._packet_types = services.types.packet
         self._resource_types = services.types.resource
@@ -27,9 +27,9 @@ class Transport(object):
         self._client_code_repository = services.client_code_repository
 
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
-        request_rec = packet_coders.decode(payload_encoding, packet.payload, self._request_types.tClientPacket)
+        request_rec = packet_coders.decode(payload_encoding, packet.payload, self._request_types.client_packet)
         pprint(self._packet_types.aux_info, packet.aux_info)
-        pprint(self._request_types.tClientPacket, request_rec)
+        pprint(self._request_types.client_packet, request_rec)
         self._add_routes(packet.aux_info.routes)
         request = RequestBase.from_data(server, peer, self._request_types, self._core_types, iface_registry, request_rec)
         response_or_notification = server.process_request(request)
@@ -37,8 +37,8 @@ class Transport(object):
             return None
         aux_info = self.prepare_aux_info(response_or_notification)
         pprint(self._packet_types.aux_info, aux_info)
-        pprint(self._request_types.tServerPacket, response_or_notification.to_data())
-        payload = packet_coders.encode(payload_encoding, response_or_notification.to_data(), self._request_types.tServerPacket)
+        pprint(self._request_types.server_packet, response_or_notification.to_data())
+        payload = packet_coders.encode(payload_encoding, response_or_notification.to_data(), self._request_types.server_packet)
         return self._packet_types.packet(aux_info, payload)
 
     def _add_routes(self, routes):
@@ -51,8 +51,8 @@ class Transport(object):
     def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)
         pprint(self._packet_types.aux_info, aux_info)
-        pprint(self._request_types.tServerPacket, notification.to_data())
-        payload = packet_coders.encode(payload_encoding, notification.to_data(), self._request_types.tServerPacket)
+        pprint(self._request_types.server_packet, notification.to_data())
+        payload = packet_coders.encode(payload_encoding, notification.to_data(), self._request_types.server_packet)
         return self._packet_types.packet(aux_info, payload)
 
     def process_packet(self, server, peer, transport_packet_data):
@@ -60,7 +60,7 @@ class Transport(object):
 
     def prepare_aux_info(self, response_or_notification):
         collector = RequirementsCollector(self._core_types, self._param_editor_types)
-        packet_requirements = collector.collect(self._request_types.tServerPacket, response_or_notification.to_data())
+        packet_requirements = collector.collect(self._request_types.server_packet, response_or_notification.to_data())
         resources1 = self._load_required_resources(packet_requirements)
         # resources themselves can contain requirements for more resources
         resource_requirements = collector.collect(self._resource_types.resource_rec_list, resources1)
@@ -69,7 +69,7 @@ class Transport(object):
         type_modules = self._type_module_repository.get_type_modules_by_requirements(requirements)
         modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
-        server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tServerPacket, response_or_notification.to_data())
+        server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.server_packet, response_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         return self._packet_types.aux_info(
             requirements=requirements,

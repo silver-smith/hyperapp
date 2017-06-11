@@ -94,7 +94,7 @@ class Services(ServicesBase):
                 'server_management',
                 'code_repository',
                 ])
-        self.remoting = Remoting(self.request_types, self.types.resource, self.types.packet, self.route_storage, self.proxy_registry)
+        self.remoting = Remoting(self.types.request, self.types.resource, self.types.packet, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
         self.param_editor_registry = ParamEditorRegistry()
@@ -130,7 +130,7 @@ class RealRequestTest(unittest.TestCase):
 
     def setUp(self):
         self.services = Services()
-        self.request_types = self.services.request_types
+        self.request_types = self.services.types.request
 
     def tearDown(self):
         self.services.module_manager.unregister_meta_hook()
@@ -156,7 +156,7 @@ class RealRequestTest(unittest.TestCase):
             request_id='test-001',
             params=url.iface.get_request_params_type('get')(),
             )
-        pprint(self.request_types.tClientPacket, request.to_data())
+        pprint(self.request_types.client_packet, request.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = yield from (asyncio.wait_for(server.execute_request(request), timeout=0.5))
         self.assertIsInstance(response, Response)
@@ -173,7 +173,7 @@ class RealRequestTest(unittest.TestCase):
             command_id='unsubscribe',
             params=url.iface.get_request_params_type('unsubscribe')(),
             )
-        pprint(self.request_types.tClientPacket, notification.to_data())
+        pprint(self.request_types.client_packet, notification.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = yield from (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
         self.assertEqual(None, response)

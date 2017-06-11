@@ -36,12 +36,12 @@ class RequestBase(object):
     @classmethod
     def from_data(cls, me, peer, request_types, core_types, iface_registry, rec):
         assert isinstance(peer, Peer), repr(peer)
-        assert isinstance(rec, request_types.tClientPacket), repr(rec)
+        assert isinstance(rec, request_types.client_packet), repr(rec)
         iface = iface_registry.resolve(rec.iface)
-        if isinstance(rec, request_types.tRequest):
+        if isinstance(rec, request_types.request):
             return Request(request_types, core_types, me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
         else:
-            assert isinstance(rec, request_types.tClientNotification), repr(rec)
+            assert isinstance(rec, request_types.client_notification), repr(rec)
             return ClientNotification(request_types, core_types, me, peer, iface, rec.path, rec.command_id, rec.params)
 
     def __init__(self, request_types, core_types, me, peer, iface, path, command_id, params):
@@ -100,14 +100,14 @@ class ResponseBase(object):
         self.updates = []
 
     def add_update(self, update):
-        assert isinstance(update, self._request_types.tUpdate), repr(update)
+        assert isinstance(update, self._request_types.update), repr(update)
         self.updates.append(update)
 
 
 class ServerNotification(ResponseBase):
 
     def to_data(self):
-        return self._request_types.tServerNotification(self.updates)
+        return self._request_types.server_notification(self.updates)
 
 
 class Response(ResponseBase):
@@ -124,6 +124,6 @@ class Response(ResponseBase):
 
     def to_data(self):
         if self.error is not None:
-            return self._request_types.tErrorResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.error)
+            return self._request_types.error_response(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.error)
         else:
-            return self._request_types.tResultResponse(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
+            return self._request_types.result_response(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)

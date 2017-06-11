@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 class Transport(metaclass=abc.ABCMeta):
 
     def __init__(self, services):
-        self._request_types = services.request_types
+        self._request_types = services.types.request
         self._resource_types = services.types.resource
         self._packet_types = services.types.packet
         self._module_manager = services.module_manager
@@ -87,10 +87,10 @@ class Transport(metaclass=abc.ABCMeta):
             self._route_storage.add_routes(public_key, srv_routes.routes)
 
     def make_request_packet(self, encoding, request_or_notification):
-        server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.tClientPacket, request_or_notification.to_data())
+        server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.client_packet, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
-        payload = packet_coders.encode(encoding, request_or_notification.to_data(), self._request_types.tClientPacket)
+        payload = packet_coders.encode(encoding, request_or_notification.to_data(), self._request_types.client_packet)
         return self._packet_types.packet(aux_info, payload)
 
     @asyncio.coroutine
@@ -161,7 +161,7 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification(self, public_key, request_or_notification):
-        pprint(self._request_types.tClientPacket, request_or_notification.to_data(), self._resource_types, self._packet_types)
+        pprint(self._request_types.client_packet, request_or_notification.to_data(), self._resource_types, self._packet_types)
         for route in self._route_storage.get_routes(public_key) or []:
             transport_id = route[0]
             transport = self.transport_registry.resolve(transport_id)

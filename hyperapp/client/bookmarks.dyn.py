@@ -21,7 +21,7 @@ from .named_url_file_repository import NamedUrl, NamedUrlRepository
 
 def register_object_implementations(registry, services):
     registry.register(BookmarkList.objimpl_id, BookmarkList.from_state,
-                      services.request_types, services.iface_registry, services.remoting, services.bookmarks)
+                      services.types.request, services.iface_registry, services.remoting, services.bookmarks)
 
 
 class Bookmarks(object):
