@@ -1,5 +1,6 @@
 # meta type is type for storing types themselves as data
 
+from types import SimpleNamespace
 from ..util import is_list_inst
 from .htypes import (
     Type,
@@ -200,6 +201,9 @@ class TypeRegistry(object):
         if self._next:
             return self._next.resolve(name)
         raise KeyError('Unknown type: %r' % name)
+
+    def to_namespace(self):
+        return SimpleNamespace(**dict(self._registry.items()))
 
 
 class MetaTypeRegistry(object):

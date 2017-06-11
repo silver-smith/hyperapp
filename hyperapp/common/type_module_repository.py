@@ -1,7 +1,6 @@
 import os
 import os.path
 import logging
-from types import SimpleNamespace
 from .util import is_list_inst, encode_path
 from .htypes import (
     Interface,
@@ -89,7 +88,7 @@ class TypeModuleRepository(object):
                 log.info('    provides class %s:%s', pclass.hierarchy_id, pclass.class_id)
         module = tTypeModule(name, provided_classes, used_modules, typedefs)
         self._register_type_module(module, type_registry)
-        ns = SimpleNamespace(**dict(type_registry.items()))
+        ns = type_registry.to_namespace()
         if name == 'core':  # we need it
             self._core_types = ns
         return ns
