@@ -1,9 +1,9 @@
 import os.path
 import logging
 from ..common.route_storage import RouteStorage
+from ..common.module_manager import ModuleManager
 from ..common.services import ServicesBase
 from .module import Module
-from .module_manager import ModuleManager
 from . import route_storage
 from .remoting import Remoting
 from . import tcp_transport
@@ -78,4 +78,4 @@ class Services(ServicesBase):
                 source = f.read()
             package = 'hyperapp.server'
             module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
-            self.module_manager.add_code_module(module)
+            self.module_manager.load_code_module(module)

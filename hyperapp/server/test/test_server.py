@@ -23,9 +23,9 @@ from hyperapp.common.encrypted_packet import (
     )
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.visual_rep import pprint
+from hyperapp.common.module_manager import ModuleManager
 from hyperapp.common.route_storage import RouteStorage
 from hyperapp.common.services import ServicesBase
-from hyperapp.server.module_manager import ModuleManager
 from hyperapp.server.module import Module
 from hyperapp.server import route_storage
 from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
@@ -189,7 +189,7 @@ class Services(ServicesBase):
                 source = f.read()
             package = 'hyperapp.server'
             module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
-            self.module_manager.add_code_module(module)
+            self.module_manager.load_code_module(module)
 
     def _register_transports(self):
         for module in [tcp_transport, encrypted_transport]:

@@ -107,7 +107,7 @@ class Services(ServicesBase):
                 source = f.read()
             package = 'hyperapp.client'
             module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
-            self.module_manager.add_code_module(module)
+            self.module_manager.load_code_module(module)
 
     def _register_object_implementations(self):
         for module in [

@@ -17,14 +17,9 @@ class ModuleManager(common_module_manager.ModuleManager):
         self._view_registry = services.view_registry
         self._param_editor_registry = services.param_editor_registry
 
-    def add_code_modules(self, modules):
-        for module in modules:
-            self.add_code_module(module)
-
-    def add_code_module(self, module):
-        log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
+    def load_code_module(self, module, fullname=None):
+        common_module_manager.ModuleManager.load_code_module(self, module)
         self._id2module[module.id] = module
-        self.load_code_module(module)
 
     def resolve_ids(self, module_ids):
         modules = []

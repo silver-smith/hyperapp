@@ -172,7 +172,7 @@ class Application(QtGui.QApplication, view.View):
     ##         return state
     ##     module_ids, modules, pickled_handles = state
     ##     for module in modules:
-    ##         self._module_manager.add_code_module(module)
+    ##         self._module_manager.load_code_module(module)
     ##         print '-- module is loaded from state: %r (satisfies %s)' % (module.id, module.satisfies)
     ##     for module in self._module_manager.resolve_ids(module_ids):
     ##         print 'loading cached module required for state: %r' % module.id
@@ -228,7 +228,7 @@ class Application(QtGui.QApplication, view.View):
         if new_code_modules is not None:  # has code repositories?
             code_modules = new_code_modules   # use new versions
         self._type_module_repository.add_all_type_modules(type_modules)
-        self._module_manager.add_code_modules(code_modules)
+        self._module_manager.load_code_module_list(code_modules)
         self._resources_manager.register(state_requirements.resource_rec_list + modules_resources)
         return self._load_state_file(self._state_type, STATE_FILE_PATH)
 

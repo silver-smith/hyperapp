@@ -57,7 +57,12 @@ class ModuleManager(object):
     def has_module(self, module_name):
         return (module_name in self._name2code_module)
 
+    def load_code_module_list(self, module_list):
+        for module in module_list:
+            self.load_code_module(module)
+
     def load_code_module(self, module, fullname=None):
+        log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
         assert isinstance(module, self._packet_types.module), repr(module)
         if fullname is None:
             fullname = module.package + '.' + module.id.replace('-', '_')
