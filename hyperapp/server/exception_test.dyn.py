@@ -20,15 +20,14 @@ class TestObject(SmallListObject):
         return cls(size)
 
     def __init__(self):
-        ListObject.__init__(self, core_types)
+        SmallListObject.__init__(self, core_types)
 
     def get_path(self):
-        return this_module.make_path(self.class_name, path_part_to_str(self.size))
+        return this_module.make_path(self.class_name)
 
     @command('run')
     def command_params(self, request):
         id = request.params.element_key
-        
 
     @command('open')
     def command_params(self, request):
@@ -54,5 +53,5 @@ class ThisModule(Module):
 
     def run_command(self, request, command_id):
         if command_id == 'test_object':
-            return request.make_response_object(TestList())
+            return request.make_response_object(TestObject())
         return Module.run_command(self, request, command_id)
