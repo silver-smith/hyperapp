@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 
 class TypeModuleRepository(object):
 
-    def __init__(self, dir, request_types, iface_registry, type_registry_registry):
+    def __init__(self, request_types, iface_registry, type_registry_registry):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
         self._meta_type_registry = make_meta_type_registry()
