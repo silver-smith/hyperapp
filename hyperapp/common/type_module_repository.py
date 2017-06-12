@@ -125,7 +125,8 @@ class TypeModuleRepository(object):
         if not modules: return []
         dep_modules = []
         for module in modules:
-            dep_modules += [self.get_type_module_by_id(module_id) for module_id in module.used_modules]
+            dep_modules += [self.get_type_module_by_id(module_id) for module_id in module.used_modules
+                            if not self._type_registry_registry.is_builtin_module(module_id)]
         return self._get_dep_modules(dep_modules) + dep_modules
 
     def _register_ifaces(self, type_registry):

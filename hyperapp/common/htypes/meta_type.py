@@ -225,13 +225,17 @@ class MetaTypeRegistry(object):
 
 class TypeRegistryRegistry(object):
 
-    def __init__(self, registries=None):
-        self._registry = registries or {}  # str -> TypeRegistry
+    def __init__(self, builtin_registries=None):
+        self._registry = builtin_registries or {}  # str -> TypeRegistry
+        self._builtin_module_ids = set(builtin_registries.keys())
             
     def register(self, module_name, type_registry):
         assert isinstance(module_name, str), repr(module_name)
         assert isinstance(type_registry, TypeRegistry), repr(type_registry)
         self._registry[module_name] = type_registry
+
+    def is_builtin_module(self, module_name):
+        return module_name in self._builtin_module_ids
 
     def has_type_registry(self, module_name):
         return module_name in self._registry
