@@ -9,15 +9,20 @@ class TClassRecord(Record):
         Record.__init__(self, trec)
         self._class = tclass
 
+    def __repr__(self):
+        return 'ClassRecord<%s: %s>' % (self._class.id, ', '.join(
+            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
+
 
 class TClass(TRecord):
 
-    def __init__(self, hierarchy, id, trec):
+    def __init__(self, hierarchy, id, trec, base=None):
         assert isinstance(trec, TRecord), repr(trec)
         TRecord.__init__(self)
         self.hierarchy = hierarchy
         self.id = id
         self.trec = trec
+        self.base = base
 
     def __repr__(self):
         return '%s(%s: %s)' % (self.__class__.__name__, self.id, ', '.join(map(repr, self.get_fields())))
@@ -52,6 +57,8 @@ class TClass(TRecord):
             return True
         if self.hierarchy is not tclass.hierarchy:
             return False
+        if tclass.base and issubclass(tclass.base, self):
+            return True
         return issubclass(tclass.get_trecord(), self.trec)
             
 
@@ -88,13 +95,13 @@ class THierarchy(Type):
             else:
                 base_rec = None
             trec = TRecord(fields, base_rec)
-        tclass = self.make_tclass(id, trec)
+        tclass = self.make_tclass(id, trec, base)
         self.registry[id] = tclass
         #print('registered %s %s' % (self.hierarchy_id, id))
         return tclass
 
-    def make_tclass(self, id, trec):
-        return TClass(self, id, trec)
+    def make_tclass(self, id, trec, base):
+        return TClass(self, id, trec, base)
 
     def is_tclassrecord(self, rec):
         return isinstance(rec, TClassRecord)
@@ -145,8 +152,8 @@ class TExceptionClass(TClass):
 
 class TExceptionHierarchy(THierarchy):
 
-    def make_tclass(self, id, trec):
-        return TExceptionClass(self, id, trec)
+    def make_tclass(self, id, trec, base):
+        return TExceptionClass(self, id, trec, base)
 
     def is_tclassrecord(self, rec):
         return isinstance(rec, TExceptionClassRecord)

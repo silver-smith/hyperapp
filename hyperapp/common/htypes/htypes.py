@@ -131,7 +131,7 @@ class Record(object):
         self._type = type
 
     def __repr__(self):
-        return 'Record(%s)' % ', '.join(
+        return 'Record<%s>' % ', '.join(
             '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields())
     
 
@@ -152,7 +152,7 @@ class TRecord(Type):
         return isinstance(other, TRecord) and other.fields == self.fields
 
     def __subclasscheck__(self, cls):
-        ## print '__subclasscheck__', self, cls
+        ## print('__subclasscheck__', self, cls)
         if not isinstance(cls, TRecord):
             return False
         if cls is self:
