@@ -43,11 +43,12 @@ class TestObject(SmallListObject):
         assert False, 'Unknown element id: %r' % id
 
     def fetch_all_elements(self, request):
+        commands = [self.command_run, self.command_open]
         elements = [
             ('test_error', 'Raise test_error exception'),
             ('assert', 'Raise assert exception'),
             ]
-        return [self.Element(self.Row(id, title)) for id, title in elements]
+        return [self.Element(self.Row(id, title), commands) for id, title in elements]
 
     
 class ThisModule(Module):

@@ -1,0 +1,12 @@
+test_object:
+  columns:
+    title:
+      text: Command
+  commands:
+    open:
+      is_default: yes
+      text: Open
+      description: Run command supposed to return new handle
+    run:
+      text: Run
+      description: Run command supposed to return nothing
