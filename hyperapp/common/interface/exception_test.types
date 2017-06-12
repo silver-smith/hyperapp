@@ -2,7 +2,9 @@ from core import handle
 from request import error, client_error
 
 
-test_error = error class test(client_error)
+test_error = error class test(client_error):
+  code: int
+
 
 test_object = list_interface test_object:
   columns:
