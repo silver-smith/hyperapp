@@ -45,9 +45,14 @@ class ResponseBase(object):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(rec, request_types.server_packet), repr(rec)
         
-        if isinstance(rec, request_types.result_response):
+        if isinstance(rec, request_types.response):
             iface = iface_registry.resolve(rec.iface)
-            return Response(request_types, server_public_key, rec.updates, iface, rec.command_id, rec.request_id, rec.result)
+            result = error = None
+            if isinstance(rec, request_types.result_response):
+                result = rec.result
+            if isinstance(rec, request_types.error_response):
+                error = rec.error
+            return Response(request_types, server_public_key, rec.updates, iface, rec.command_id, rec.request_id, result, error)
         else:
             assert isinstance(rec, request_types.server_notification), repr(rec)
             return ServerNotification(request_types, server_public_key, rec.updates)
@@ -65,9 +70,10 @@ class ServerNotification(ResponseBase):
 
 class Response(ResponseBase):
 
-    def __init__(self, request_types, server_public_key, updates, iface, command_id, request_id, result):
+    def __init__(self, request_types, server_public_key, updates, iface, command_id, request_id, result=None, error=None):
         ResponseBase.__init__(self, request_types, server_public_key, updates)
         self.iface = iface
         self.command_id = command_id
         self.request_id = request_id
         self.result = result
+        self.error = error  # exception

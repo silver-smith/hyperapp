@@ -200,7 +200,10 @@ class ProxyObject(Object):
     def execute_request(self, command_id, *args, **kw):
         request = self.prepare_request(command_id, *args, **kw)
         response = yield from self.server.execute_request(request)
-        return response.result
+        if response.error is not None:
+            raise response.error
+        else:
+            return response.result
 
     def process_update(self, diff):
         raise NotImplementedError(self.__class__)
