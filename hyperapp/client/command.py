@@ -4,6 +4,7 @@ import weakref
 from ..common.htypes import Field, TRecord
 from .command_class import Command, UnboundCommand
 from .module import Module
+from .error_handler_hook import get_handle_for_error
 
 log = logging.getLogger(__name__)
 
@@ -33,10 +34,15 @@ class ViewCommand(Command):
         view = self._view_wr()
         if not view: return
         log.debug('ViewCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
-        result = (yield from self._base_cmd.run(*args, **kw))
-        ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
-        if result:
-            view.open(result.handle)
+        try:
+            result = (yield from self._base_cmd.run(*args, **kw))
+            ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
+            if result:
+                view.open(result.handle)
+        except Exception as x:
+            import traceback
+            traceback.print_exc()
+            return get_handle_for_error(x)
 
 
 class WindowCommand(Command):
