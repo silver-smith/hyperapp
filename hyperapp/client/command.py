@@ -42,7 +42,9 @@ class ViewCommand(Command):
         except Exception as x:
             import traceback
             traceback.print_exc()
-            return get_handle_for_error(x)
+            handle = get_handle_for_error(x)
+            if handle:
+                view.open(handle)
 
 
 class WindowCommand(Command):

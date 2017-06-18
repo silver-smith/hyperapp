@@ -98,6 +98,7 @@ class Services(ServicesBase):
                 'text_view',
                 'text_edit',
                 'form_view',
+                'error_handler_impl',
                 'narrower',
                 'bookmarks',
                 'categorized_list_view',
