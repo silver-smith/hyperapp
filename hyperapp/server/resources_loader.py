@@ -14,7 +14,7 @@ class ResourcesLoader(resources_loader.ResourcesLoader):
         self._load_iface_resources(iface_resources_dir)
         self._load_client_module_resources(client_modules_resources_dir)
 
-    def load_resources(self, resource_id):
+    def get_resources(self, resource_id):
         return [rec for rec in self._resources
                 if rec.id[:len(resource_id)] == resource_id]
 

@@ -125,7 +125,7 @@ class PhonyChannel(PeerChannel):
 
 class PhonyResourcesLoader(object):
 
-    def load_resources(self, resource_id):
+    def get_resources(self, resource_id):
         return []
 
 

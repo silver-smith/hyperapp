@@ -128,7 +128,7 @@ class ClientCodeRepository(Object):
 
     def _load_module_resources(self, module):
         resource_id = ['client_module', module.id]
-        return self._resources_loader.load_resources(resource_id)
+        return self._resources_loader.get_resources(resource_id)
 
 
 class ClientCodeRepositoryBrowser(SmallListObject):

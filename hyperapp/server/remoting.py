@@ -84,7 +84,7 @@ class Transport(object):
                         if registry == 'resources'])
 
     def _load_resource(self, encoded_resource_id):
-        return list(self._resources_loader.load_resources(decode_path(encoded_resource_id)))
+        return list(self._resources_loader.get_resources(decode_path(encoded_resource_id)))
 
 
 class TransportRegistry(object):
