@@ -13,6 +13,11 @@ class TClassRecord(Record):
         return 'ClassRecord<%s: %s>' % (self._class.id, ', '.join(
             '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
 
+    # public
+    @property
+    def _class_id(self):
+        return self._class.id
+
 
 class TClass(TRecord):
 
@@ -137,6 +142,11 @@ class TExceptionClassRecord(RuntimeError):
 
     def __repr__(self):
         return 'TExceptionClassRecord%s' % self
+
+    # public
+    @property
+    def _class_id(self):
+        return self._class.id
 
 
 class TExceptionClass(TClass):

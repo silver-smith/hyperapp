@@ -11,5 +11,5 @@ class ThisModule(Module):
         set_error_handler(self.error_handler)
 
     def error_handler(self, exception):
-        obj = text_object_types.text_object('text', 'Unexpected error')
+        obj = text_object_types.text_object('text', 'Unexpected error: %s' % exception._class_id)
         return core_types.obj_handle('text_view', obj)
