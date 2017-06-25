@@ -10,3 +10,5 @@ test_object:
     run:
       text: Run
       description: Run command supposed to return nothing
+  errors:
+    test: This is test error. Nothing is wrong.
