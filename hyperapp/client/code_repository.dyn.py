@@ -121,7 +121,7 @@ class CodeRepositoryFormObject(Object):
     def get_title(self):
         return 'Add code repository'
 
-    @open_command('_submit')
+    @open_command('submit')
     def command_submit(self, name, url):
         log.info('adding code repository %r...', name)
         url_ = Url.from_str(self.iface_registry, url)

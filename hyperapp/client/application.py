@@ -221,15 +221,15 @@ class Application(QtGui.QApplication, view.View):
         log.info('-- code_modules loaded from state: ids=%r, code_modules=%r',
                  state_requirements.module_ids, [module.fpath for module in state_requirements.code_modules])
         log.info('-- resources loaded from state: %s', ', '.join(encode_path(rec.id) for rec in state_requirements.resource_rec_list))
-        type_modules, new_code_modules, modules_resources = self._loop.run_until_complete(
+        type_module_list, new_code_modules, modules_resources = self._loop.run_until_complete(
             self._code_repository.get_modules_by_ids(
                 [module_id for module_id in set(state_requirements.module_ids) if not self._module_manager.has_module(module_id)]))
         code_modules = state_requirements.code_modules
         if new_code_modules is not None:  # has code repositories?
             code_modules = new_code_modules   # use new versions
-        self._type_module_repository.add_all_type_modules(type_modules)
+        self._type_module_repository.add_all_type_modules(type_module_list or [])
         self._module_manager.load_code_module_list(code_modules)
-        self._resources_manager.register(state_requirements.resource_rec_list + modules_resources)
+        self._resources_manager.register(state_requirements.resource_rec_list + (modules_resources or []))
         return self._load_state_file(self._state_type, STATE_FILE_PATH)
 
     def exec_(self):
