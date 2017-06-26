@@ -1,6 +1,0 @@
-commands:
-- command_id: submit
-  text: Submit
-  desc: Submit form
-  shortcuts:
-  - Return

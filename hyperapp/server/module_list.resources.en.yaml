@@ -1,0 +1,63 @@
+module_list:
+  columns:
+    name:
+      text: Default name
+    id:
+      text: Module id
+  commands:
+    add:
+      text: Add
+      description: Create new module
+      shortcuts:
+      - Ins
+    open:
+      text: Open
+      description: Open module
+      shortcuts:
+      - Return
+    deps:
+      text: Dependencies
+      description: Open dependency selector
+      shortcuts:
+      - Ctrl+D
+    delete:
+      text: Delete
+      descriptionn: Delete module
+      shortcuts:
+      - Del
+
+module_form:
+  commands:
+    submit:
+      text: Submit
+      description: Submit form
+      shortcuts:
+      - Return
+
+module_dep_list:
+  commands:
+    remove:
+      text: Remove
+      description: Remove module from dependency list
+      shortcuts:
+        - Del
+  columns:
+    dep_id:
+      visible: no
+    visible_as:
+      text: Visible as
+    id:
+      text: Module id
+
+available_dep_list:
+  columns:
+    name:
+      text: Default name
+    id:
+      text: Module id
+  commands:
+    add:
+      text: Add
+      description: Add module to dependency list
+      shortcuts:
+        - Ins
