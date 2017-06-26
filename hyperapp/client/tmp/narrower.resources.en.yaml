@@ -1,6 +1,0 @@
-commands:
-- command_id: wider
-  text: Wider
-  desc: Cancel narrowing
-  shortcuts:
-  - Escape
