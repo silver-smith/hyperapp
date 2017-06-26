@@ -1,0 +1,15 @@
+test_list:
+  columns:
+    field_1:
+      text: 'Field #1'
+    field_2:
+      text: 'Field #2'
+    field_3:
+      text: 'Field #3'
+  commands:
+    params:
+      is_default: yes
+      text: Params
+      description: Edit params
+      shortcuts:
+      - Return
