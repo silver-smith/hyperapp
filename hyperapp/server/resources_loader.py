@@ -21,7 +21,10 @@ class ResourcesLoader(resources_loader.ResourcesLoader):
     def _load_iface_resources(self, dir):
         for rec in itertools.chain(self.load_localized_resources_from_dir(dir),
                                    self.load_unlocalized_resources_from_dir(dir)):
-            id = ['interface'] + rec.id[1:]  # skip module name from id
+            if rec.id[1] == 'error_message':
+                id = rec.id[1:]  # they are global; skip module name and interface id
+            else:
+                id = ['interface'] + rec.id[1:]  # skip module name from id
             log.info('    loaded resource %s: %s', encode_path(id), rec.resource)
             self._resources.append(self._resource_types.resource_rec(id, rec.resource))
 

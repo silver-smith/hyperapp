@@ -33,28 +33,32 @@ class ResourcesLoader(object):
         with open(fpath) as f:
             object_items = yaml.load(f)
             for object_id, sections in object_items.items():
-                for rec in self._decode_resource_sections(sections):
-                    yield self._resource_types.resource_rec([object_id] + rec.id, rec.resource)
-
-    def _decode_resource_sections(self, sections):
-        for section_type, item_elements in sections.items():
-            for item_id, items in item_elements.items():
-                if section_type == 'commands':
-                    resource = self._value2command_resource(items)
-                    item_type = 'command'
-                elif section_type == 'columns':
-                    resource = self._value2column_resource(items)
-                    item_type = 'column'
-                elif section_type == 'param_editors':
-                    resource = self._value2param_editor_resource(items)
-                    item_type = 'param_editor'
-                elif section_type == 'errors':
-                    resource = self._value2error_message_resource(items)
-                    item_type = 'error_message'
+                if object_id == 'error_messages':
+                    for rec in self._decode_resource_section('error_messages', sections):
+                        yield rec
                 else:
-                    assert False, 'Unknown resource section type: %r' % section_type
-                resource_id = [item_type, item_id]
-                yield self._resource_types.resource_rec(resource_id, resource)
+                    for section_type, item_elements in sections.items():
+                        for rec in self._decode_resource_section(section_type, item_elements):
+                            yield self._resource_types.resource_rec([object_id] + rec.id, rec.resource)
+
+    def _decode_resource_section(self, section_type, item_elements):
+        for item_id, items in item_elements.items():
+            if section_type == 'commands':
+                resource = self._value2command_resource(items)
+                item_type = 'command'
+            elif section_type == 'columns':
+                resource = self._value2column_resource(items)
+                item_type = 'column'
+            elif section_type == 'param_editors':
+                resource = self._value2param_editor_resource(items)
+                item_type = 'param_editor'
+            elif section_type == 'error_messages':
+                resource = self._value2error_message_resource(items)
+                item_type = 'error_message'
+            else:
+                assert False, 'Unknown resource section type: %r' % section_type
+            resource_id = [item_type, item_id]
+            yield self._resource_types.resource_rec(resource_id, resource)
 
     def _value2command_resource(self, value):
         return self._resource_types.command_resource(is_default=value.get('is_default', False),

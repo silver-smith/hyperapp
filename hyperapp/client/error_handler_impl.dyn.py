@@ -27,7 +27,7 @@ class ThisModule(Module):
 
     @asyncio.coroutine
     def resolve_error_handler(self, locale, state, parent):
-        resource_id = ['interface', 'test_object', 'error_message', state.error._class_id, locale]
+        resource_id = ['error_message', state.error._class_id, locale]
         error_message_resource = self._resources_manager.resolve(resource_id)
         if error_message_resource:
             message = error_message_resource.message.format(error=state.error)
@@ -37,4 +37,5 @@ class ThisModule(Module):
         return core_types.obj_handle('text_view', obj)
 
     def error_handler(self, exception):
+        # using intermediate handle is the simplest way to get currelt locale
         return self._error_handle_t(ERROR_HANDLER_VIEW_ID, exception)
