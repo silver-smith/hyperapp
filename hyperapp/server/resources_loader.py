@@ -16,7 +16,7 @@ class ResourcesLoader(resources_loader.ResourcesLoader):
 
     def get_resources(self, resource_id):
         return [rec for rec in self._resources
-                if rec.id[:len(resource_id)] == resource_id]
+                if rec.id[:len(resource_id)] == resource_id or rec.id[0] == 'error_message']  # todo: introduce package/module scope for error messages
 
     def _load_iface_resources(self, dir):
         for rec in itertools.chain(self.load_localized_resources_from_dir(dir),
