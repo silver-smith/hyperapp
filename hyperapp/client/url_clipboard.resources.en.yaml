@@ -1,0 +1,12 @@
+ThisModule:
+  commands:
+    url_from_clipboard:
+      text: Url from clipboard
+      description: Open url from clipboard
+      shortcuts:
+        - Alt+Ctrl+V
+    url_to_clipboard:
+      text: Url to clipboard
+      descripton: Copy current url to clipboard
+      shortcuts:
+        - Alt+Ctrl+C
