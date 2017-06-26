@@ -1,0 +1,10 @@
+code_repository_browser:
+  columns:
+    id:
+      text: Module id
+    fname:
+      text: File name
+    package:
+      text: Package
+    satisfies:
+      text: Satisfies requirements

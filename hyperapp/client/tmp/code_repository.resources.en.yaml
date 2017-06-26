@@ -14,8 +14,3 @@ commands:
   desc: Open code repository list
   shortcuts:
   - Alt+R
-- command_id: add_to_repository_list
-  text: Add Repository
-  desc: Add this repository to my repositories list
-  shortcuts:
-  - Ctrl+A

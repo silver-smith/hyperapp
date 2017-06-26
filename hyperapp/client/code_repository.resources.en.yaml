@@ -1,0 +1,7 @@
+ThisModule:
+  commands:
+    add_to_repository_list:
+      text: Add Repository
+      description: Add this repository to my repositories list
+      shortcuts:
+      - Ctrl+A
