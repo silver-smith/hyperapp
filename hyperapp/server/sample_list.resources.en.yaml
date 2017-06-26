@@ -8,8 +8,14 @@ test_list:
       text: 'Field #3'
   commands:
     params:
-      is_default: yes
       text: Params
       description: Edit params
+      shortcuts:
+      - Return
+params_form:
+  commands:
+    submit:
+      text: Submit
+      desc: Submit form
       shortcuts:
       - Return
