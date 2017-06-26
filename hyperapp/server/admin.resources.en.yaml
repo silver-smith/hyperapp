@@ -1,0 +1,14 @@
+user_list:
+  columns:
+    id:
+      visible: no
+    user_name:
+      text: User name
+    public_key_id:
+      text: Public key id
+  commands:
+    add:
+      text: Add
+      description: Add new user
+      shortcuts:
+      - Ins
