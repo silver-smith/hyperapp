@@ -186,7 +186,7 @@ class CodeRepositoryList(ListObject):
 
 def make_code_repository_list(key=None):
     object = CodeRepositoryList.get_state()
-    return code_repository_list_handle_type('list', object, ['client_module', 'code_repository_list'], sort_column_id='name', key=key)
+    return code_repository_list_handle_type('list', object, ['client_module', 'code_repository', 'CodeRepositoryList'], sort_column_id='name', key=key)
 
 
 class ThisModule(Module):

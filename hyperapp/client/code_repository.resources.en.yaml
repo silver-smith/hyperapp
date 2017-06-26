@@ -5,3 +5,25 @@ ThisModule:
       description: Add this repository to my repositories list
       shortcuts:
       - Ctrl+A
+    repository_list:
+      text: Code repositories
+      description: Open code repository list
+      shortcuts:
+      - Alt+R
+CodeRepositoryList:
+  columns:
+    name:
+      text: Code Repository name
+  commands:
+    add:
+      text: Add
+      description: Create code repository url from clipboard
+      shortcuts:
+      - Ins
+CodeRepositoryFormObject:
+  commands:
+    submit:
+      text: Add
+      description: Add new code repository
+      shortcuts:
+      - Return
