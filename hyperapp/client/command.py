@@ -1,6 +1,7 @@
 import logging
 import asyncio
 import weakref
+import traceback
 from ..common.htypes import Field, TRecord
 from .command_class import Command, UnboundCommand
 from .module import Module
@@ -38,7 +39,6 @@ class ViewCommand(Command):
             handle = yield from self._base_cmd.run(*args, **kw)
             ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         except Exception as x:
-            import traceback
             traceback.print_exc()
             handle = get_handle_for_error(x)
         if handle:
