@@ -13,9 +13,8 @@ from .command import command
 from .proxy_object import execute_get_request
 from . import view
 from . import window
-from . import tab_view
-from . import navigator
 from .services import Services
+from .default_state import build_default_state
 
 log = logging.getLogger(__name__)
 
@@ -187,21 +186,6 @@ class Application(QtGui.QApplication, view.View):
         self.sendPostedEvents(None, 0)
         self._loop.call_later(0.01, self.process_events_and_repeat)
 
-    def _get_default_state(self):
-        view_state_t = self._modules.text_view.View.get_state_type()
-        text_object_state_t = self._modules.text_object.TextObject.get_state_type()
-        text_handle = view_state_t('text_view', text_object_state_t('text', 'hello'))
-        navigator_state = navigator.get_state_type()(
-            view_id=navigator.View.view_id,
-            history=[navigator.get_item_type()('sample text', text_handle)],
-            current_pos=0)
-        tabs_state = tab_view.get_state_type()(tabs=[navigator_state], current_tab=0)
-        window_state = window.get_state_type()(
-            tab_view=tabs_state,
-            size=window.this_module.size_type(600, 500),
-            pos=window.this_module.point_type(1000, 100))
-        return [window_state]
-
     def _load_state_file(self, t, path):
         try:
             with open(path, 'rb') as f:
@@ -235,7 +219,7 @@ class Application(QtGui.QApplication, view.View):
     def exec_(self):
         state = self._load_state_with_requirements()
         if not state:
-            state = self._get_default_state()
+            state = build_default_state(self._modules)
         self._loop.run_until_complete(self.open_windows(state))
         self._loop.call_soon(self.process_events_and_repeat)
         try:
