@@ -1,3 +1,4 @@
+import os
 import logging
 import asyncio
 from PySide import QtCore, QtGui
@@ -20,6 +21,7 @@ class Application(QtGui.QApplication, view.View):
         QtGui.QApplication.__init__(self, sys_argv)
         view.View.__init__(self)
         self.services = Services()
+        self._request_types = self.services.types.request
         self._iface_registry = self.services.iface_registry
         self._remoting = self.services.remoting
         self._resources_manager = self.services.resources_manager
@@ -78,9 +80,9 @@ class Application(QtGui.QApplication, view.View):
         url = UrlWithRoutes.load_from_file(self._iface_registry, fpath)
         self._remoting.add_routes_from_url(url)
         server = Server.from_public_key(self._remoting, url.public_key)
-        handle = yield from execute_get_request(self._remoting, url)
-        assert handle  # url's get command must return a handle
-        window.get_current_view().open(handle)
+        result = yield from execute_get_request(self._request_types, self._remoting, url)
+        assert result.handle  # url's get command must return a handle
+        window.get_current_view().open(result.handle)
 
     @command('quit')
     def quit(self):
@@ -89,6 +91,7 @@ class Application(QtGui.QApplication, view.View):
         self._state_storage.save_state(state)
         self._loop.stop()
 
+    # process qt events while inside asyncio loop
     def process_events_and_repeat(self):
         while self.hasPendingEvents():
             self.processEvents()
