@@ -275,7 +275,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def process_fetch_result(self, slice):
         log.info('-- process_fetch_result self=%r model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
-                 self, id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements))
+                 id(self), id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements))
         assert isinstance(slice, Slice), repr(slice)
         self.model().process_fetch_result(slice)
         self.resizeColumnsToContents()
@@ -349,7 +349,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return None
 
     def set_object(self, object, sort_column_id=None):
-        log.info('-- set_object self=%r model=%r object=%r isVisible=%r', self, id(self.model()), object, self.isVisible())
+        log.info('-- set_object self=%r model=%r object=%r isVisible=%r', id(self), id(self.model()), object, self.isVisible())
         assert isinstance(object, ListObject), repr(object)
         assert sort_column_id is not None or self.model().get_sort_column_id() is not None
         if self._object:
@@ -371,8 +371,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.fetch_elements_if_required()
 
     def resizeEvent(self, evt):
-        log.info('-- resizeEvent self=%r model=%r isVisible=%r visible-rows=%r', self, id(self.model()), self.isVisible(), self._get_visible_rows())
+        log.info('-- resizeEvent self=%r model=%r isVisible=%r visible-rows=%r', id(self), id(self.model()), self.isVisible(), self._get_visible_rows())
         result = QtGui.QTableView.resizeEvent(self, evt)
+        # only now we are visible and know how many elements we require
         self.fetch_elements_if_required()
         return result
 
@@ -444,4 +445,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
             self._elt_commands.append(wrapped_cmd)
 
     def __del__(self):
-        log.info('~list_view.View %r', self)
+        log.info('~list_view.View self=%r', id(self))

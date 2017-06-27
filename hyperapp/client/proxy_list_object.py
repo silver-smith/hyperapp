@@ -203,7 +203,7 @@ class ProxyListObject(ProxyObject, ListObject):
         self._slices_from_cache[sort_column_id] = list(map(self._slice_from_data, slice_recs or []))
 
     def put_back_slice(self, slice):
-        log.info('-- proxy put_back_slice self=%r len(elements)=%r', self, len(slice.elements))
+        log.info('-- proxy put_back_slice self=%r len(elements)=%r', id(self), len(slice.elements))
         assert isinstance(slice, Slice), repr(slice)
         self._merge_in_slice(slice)
 
@@ -261,4 +261,4 @@ class ProxyListObject(ProxyObject, ListObject):
         return slice
 
     def __del__(self):
-        log.info('~ProxyListObject self=%r path=%r', self, self.path)
+        log.info('~ProxyListObject self=%r path=%r', id(self), self.path)
