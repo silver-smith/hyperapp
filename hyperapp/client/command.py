@@ -37,14 +37,12 @@ class ViewCommand(Command):
         try:
             handle = yield from self._base_cmd.run(*args, **kw)
             ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
-            if handle:
-                view.open(handle)
         except Exception as x:
             import traceback
             traceback.print_exc()
             handle = get_handle_for_error(x)
-            if handle:
-                view.open(handle)
+        if handle:
+            view.open(handle)
 
 
 class WindowCommand(Command):
