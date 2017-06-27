@@ -80,9 +80,9 @@ class Application(QtGui.QApplication, view.View):
         url = UrlWithRoutes.load_from_file(self._iface_registry, fpath)
         self._remoting.add_routes_from_url(url)
         server = Server.from_public_key(self._remoting, url.public_key)
-        result = yield from execute_get_request(self._request_types, self._remoting, url)
-        assert result.handle  # url's get command must return a handle
-        window.get_current_view().open(result.handle)
+        handle = yield from execute_get_request(self._request_types, self._remoting, url)
+        assert handle  # url's get command must return a handle
+        window.get_current_view().open(handle)
 
     @command('quit')
     def quit(self):

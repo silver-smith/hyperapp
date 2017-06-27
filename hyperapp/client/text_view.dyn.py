@@ -57,7 +57,7 @@ class View(view.View, QtGui.QTextBrowser):
 
     @asyncio.coroutine
     def open_url(self, url):
-        handle = (yield from self.object.open_ref(url.path())).handle
+        handle = yield from self.object.open_ref(url.path())
         if handle:
             self.open(handle)
 

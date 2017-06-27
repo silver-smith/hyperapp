@@ -1,6 +1,5 @@
 import logging
 import asyncio
-from types import SimpleNamespace
 import uuid
 import weakref
 import codecs
@@ -41,7 +40,7 @@ def execute_get_request(request_types, remoting, url):
     params = url.iface.make_params(command_id)
     request = Request(request_types, url.iface, url.path, command_id, request_id, params)
     response = yield from server.execute_request(request)
-    return response.result
+    return response.result.handle
 
 
 class RemoteCommand(Command):
@@ -170,12 +169,13 @@ class ProxyObject(Object):
     @asyncio.coroutine
     def run_remote_command(self, command_id, *args, **kw):
         if self._is_plain_open_handle_request(self.iface.get_command(command_id)):
-            return (yield from self.execute_request(command_id, *args, **kw))
+            result = yield from self.execute_request(command_id, *args, **kw)
+            return result.handle
         else:
             param_editor_resource_id = ['interface', self.iface.iface_id, 'param_editor', command_id]
             param_editor_resource = self._resources_manager.resolve(param_editor_resource_id)
             handle = yield from self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id, *args, **kw)
-            return SimpleNamespace(handle=handle)
+            return handle
 
     def observers_gone(self):
         log.info('-- observers_gone: %r', id(self))

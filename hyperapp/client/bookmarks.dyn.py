@@ -12,7 +12,7 @@ from ..common.interface import core as core_types
 from ..common.url import Url
 from .module import Module
 from .named_url_file_repository import FileNamedUrlRepository
-from .command import command, open_command
+from .command import command
 from .remoting import Remoting
 from .list_object import Element, Slice, ListObject
 from .proxy_object import execute_get_request
@@ -82,7 +82,7 @@ class BookmarkList(ListObject):
         item = self._bookmarks.get_item(element_key)
         return (yield from execute_get_request(self._request_types, self._remoting, item.url))
 
-    @open_command('add')
+    @command('add')
     @asyncio.coroutine
     def command_add(self):
         url_str = QtGui.QApplication.clipboard().text()
@@ -132,11 +132,12 @@ class ThisModule(Module):
             return [self.object_command_bookmark]
         return []
 
-    @open_command('bookmark_list')
+    @command('bookmark_list')
     def command_bookmark_list(self):
+        print('### command_bookmark_list', make_bookmark_list())
         return make_bookmark_list()
 
-    @open_command('bookmark', kind='object')
+    @command('bookmark', kind='object')
     def object_command_bookmark(self, object):
         url = object.get_url()
         assert url is not None

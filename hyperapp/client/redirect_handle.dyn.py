@@ -12,5 +12,5 @@ def register_views(registry, services):
 @asyncio.coroutine
 def resolve_redirect(locale, handle, parent, request_types, iface_registry, remoting):
     url = Url.from_data(iface_registry, handle.redirect_to)
-    result = yield from execute_get_request(request_types, remoting, url)
-    return result.handle
+    handle = yield from execute_get_request(request_types, remoting, url)
+    return handle

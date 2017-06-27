@@ -79,7 +79,6 @@ class Services(ServicesBase):
 
     def _register_modules(self):
         for module in [
-                command,
                 navigator,
                 tab_view,
                 window,

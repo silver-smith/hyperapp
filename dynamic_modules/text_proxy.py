@@ -45,7 +45,8 @@ class ProxyTextObject(ProxyObject, TextObject):
 
     @asyncio.coroutine
     def open_ref(self, ref_id):
-        return (yield from self.execute_request('open_ref', ref_id=ref_id))
+        result = yield from self.execute_request('open_ref', ref_id=ref_id)
+        return result.handle
         
     def process_update(self, new_text):
         self.text_changed(new_text)

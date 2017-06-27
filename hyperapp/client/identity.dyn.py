@@ -11,7 +11,7 @@ from ..common.htypes import (
 from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.identity import Identity
-from .command import open_command
+from .command import command
 from .module import Module
 from .object import Object
 from .list_object import Element, Slice, ListObject
@@ -104,7 +104,7 @@ class IdentityFormObject(Object):
     def get_title(self):
         return 'Create identity'
 
-    @open_command('submit')
+    @command('submit')
     def command_submit(self, name):
         log.info('creating identity %r...', name)
         self.identity_controller.generate(name)
@@ -142,7 +142,7 @@ class IdentityList(ListObject):
     def get_title(self):
         return 'Identity list'
 
-    @open_command('create')
+    @command('create')
     def command_new(self):
         return make_identity_form()
 
@@ -180,10 +180,10 @@ class ThisModule(Module):
                       or FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
         services.identity_controller = IdentityController(repository)
 
-    @open_command('identity_list')
+    @command('identity_list')
     def command_identity_list(self):
         return make_identity_list()
 
-    @open_command('create_identity')
+    @command('create_identity')
     def run_command_create_idenity(self):
         return make_identity_form()

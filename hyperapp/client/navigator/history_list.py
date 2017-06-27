@@ -1,6 +1,5 @@
 import logging
 import asyncio
-from types import SimpleNamespace
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import tInt, Column
 from ..command import command
@@ -48,7 +47,7 @@ class HistoryList(ListObject):
 
     @command('open', kind='element')
     def command_open(self, element_key):
-        return SimpleNamespace(handle=self._history[element_key].handle)  # hacky, todo?
+        return self._history[element_key].handle
 
     def get_columns(self):
         return [

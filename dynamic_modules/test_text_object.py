@@ -5,7 +5,7 @@ import asyncio
 from ..common.htypes import tString, Field
 from ..common.interface import core as core_types
 from ..common.interface import text_object_types
-from .command import open_command
+from .command import command
 from .object import Object
 from . import text_object as original_text_object
 
@@ -48,11 +48,11 @@ class TextObject(Object):
         self.text = new_text
         self._notify_object_changed(emitter_view)
 
-    @open_command('edit')
+    @command('edit')
     def command_edit(self):
         return core_types.obj_handle('text_edit', self.get_state())
 
-    @open_command('view')
+    @command('view')
     def command_view(self):
         return core_types.obj_handle('text_view', self.get_state())
 
