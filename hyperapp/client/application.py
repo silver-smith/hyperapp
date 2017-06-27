@@ -41,11 +41,6 @@ class Application(QtGui.QApplication, view.View):
         self._loop = asyncio.get_event_loop()
         self._loop.set_debug(True)
 
-    ## @property
-    ## def response_mgr(self):
-    ##     if not self._constructed: return None
-    ##     return self._response_mgr
-
     def get_state(self):
         return [view.get_state() for view in self._windows]
 
@@ -93,19 +88,6 @@ class Application(QtGui.QApplication, view.View):
         state = self.get_state()
         self._state_storage.save_state(state)
         self._loop.stop()
-
-    ## def load_state_and_modules(self):
-    ##     state = self.load_state_file()
-    ##     if not state:
-    ##         return state
-    ##     module_ids, modules, pickled_handles = state
-    ##     for module in modules:
-    ##         self._module_manager.load_code_module(module)
-    ##         print '-- module is loaded from state: %r (satisfies %s)' % (module.id, module.satisfies)
-    ##     for module in self._module_manager.resolve_ids(module_ids):
-    ##         print 'loading cached module required for state: %r' % module.id
-    ##         load_client_module(module)
-    ##     return pickler.loads(pickled_handles)
 
     def process_events_and_repeat(self):
         while self.hasPendingEvents():
