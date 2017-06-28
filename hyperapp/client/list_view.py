@@ -274,6 +274,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result(self, slice):
+        self.model()  # Internal C++ object (View) already deleted - this possible means this view was leaked.
         log.info('-- process_fetch_result self=%r model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
                  id(self), id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements))
         assert isinstance(slice, Slice), repr(slice)

@@ -34,7 +34,7 @@ class ViewCommand(Command):
     def run(self, *args, **kw):
         view = self._view_wr()
         if not view: return
-        log.debug('ViewCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
+        log.debug('ViewCommand.run: %r/%r, %r, (%s, %s), view=%r', self.id, self.kind, self._base_cmd, args, kw, id(view))
         try:
             handle = yield from self._base_cmd.run(*args, **kw)
             ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle

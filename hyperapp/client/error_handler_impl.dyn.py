@@ -33,6 +33,8 @@ class ThisModule(Module):
             message = error_message_resource.message.format(error=state.error)
         else:
             message = 'Unexpected error: %s' % state.error._class_id
+        # somehow this state got stuck forever, holding all objects in it's traceback, including views subscribed to events
+        state.error.__traceback__ = None
         obj = text_object_types.text_object('text', message)
         return core_types.obj_handle('text_view', obj)
 
