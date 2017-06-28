@@ -12,4 +12,4 @@ test_object:
       description: Run command supposed to return nothing
 
 error_messages:
-  test: This is test error. Nothing is wrong.
+  test: This is test error. Code={error.code}. Nothing is wrong.
