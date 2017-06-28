@@ -226,20 +226,20 @@ class ProxyListObject(ProxyObject, ListObject):
                  id(self), self._subscribed, from_key, desc_count, asc_count)
         slice = self._pick_slice(self._slices, sort_column_id, from_key, desc_count, asc_count)
         if slice:
-            log.info('   > cached actual: %r', slice)
+            log.info('   > from object: %r', slice)
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
             self._notify_fetch_result(slice)
-            if self._subscribed:  # otherwise our _slices may already be invalid, need to subscribe and refetch anyway
+            if self._subscribed:  # otherwise our _slices may already be outdated, need to subscribe and refetch anyway
                 return slice
         else:
             self._ensure_slices_from_cache_loaded(sort_column_id)
             cached_slices = self._slices_from_cache.get(sort_column_id, [])
             slice = self._pick_slice(cached_slices, sort_column_id, from_key, desc_count, asc_count)
             if slice:
-                log.info('   > cached outdated, len(elements)=%r', len(slice.elements))
+                log.info('   > from cache, len(elements)=%r', len(slice.elements))
                 self._notify_fetch_result(slice)
                 # and subscribe/fetch anyway
-        log.info('   > not cached or not subscribed, requesting')
+        log.info('   > not found or not subscribed, requesting')
         subscribing_now = not self._subscribed and not self._subscribe_pending
         command_id = 'subscribe_and_fetch_elements' if subscribing_now else 'fetch_elements'
         if subscribing_now:
