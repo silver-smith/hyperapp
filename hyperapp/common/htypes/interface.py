@@ -137,7 +137,7 @@ class Interface(object):
     def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None):
         if isinstance(command, ContentsCommand):
             result_fields = self.get_contents_fields()
-        return command.bind(params_fields, result_fields)
+        return command.bind(self, params_fields, result_fields)
         
     def _make_open_command(self, core_types, command_id, params_fields=None, result_fields=None):
         result_fields = [Field('handle', TOptional(core_types.handle))] + (result_fields or [])
