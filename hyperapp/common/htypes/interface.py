@@ -102,7 +102,7 @@ class Interface(object):
 
     def register_types(self, request_types, core_types):
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
-        self._bound_commands = map(self._resolve_and_bind_command, self._unbound_commands + self.get_basic_commands(core_types))
+        self._bound_commands = list(map(self._resolve_and_bind_command, self._unbound_commands + self.get_basic_commands(core_types)))
         self._id2command = dict((cmd.command_id, cmd) for cmd in self._bound_commands)
         self._tObject = core_types.object.register(
             self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
