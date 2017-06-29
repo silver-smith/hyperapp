@@ -35,7 +35,8 @@ class Request(RequestBase):
         self.request_id = request_id
 
     def to_data(self):
-        return self._request_types.request(self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
+        command = self.iface.get_command(self.command_id)
+        return self._request_types.request(command.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
 
 
 class ResponseBase(object):
