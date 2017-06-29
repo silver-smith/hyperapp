@@ -154,7 +154,7 @@ class RealRequestTest(unittest.TestCase):
             path=url.path,
             command_id='get',
             request_id='test-001',
-            params=url.iface.get_request_params_type('get')(),
+            params=url.iface.get_command('get').params_type(),
             )
         pprint(self.request_types.client_packet, request.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
@@ -171,7 +171,7 @@ class RealRequestTest(unittest.TestCase):
             iface=url.iface,
             path=url.path,
             command_id='unsubscribe',
-            params=url.iface.get_request_params_type('unsubscribe')(),
+            params=url.iface.get_command('unsubscribe').params_type(),
             )
         pprint(self.request_types.client_packet, notification.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)

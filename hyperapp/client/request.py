@@ -10,10 +10,10 @@ class RequestBase(object):
     def __init__(self, request_types, iface, path, command_id, params):
         assert isinstance(iface, Interface), repr(iface)
         assert isinstance(command_id, str), repr(command_id)
-        params_type = iface.get_request_params_type(command_id)
+        params_type = iface.get_command(command_id).params_type
         if params is None:
             params = params_type()
-        assert isinstance(params, params_type), repr(params)
+        assert isinstance(params, params_type), repr((params, params_type))
         self._request_types = request_types
         self.iface = iface
         self.path = path

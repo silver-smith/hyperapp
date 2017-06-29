@@ -66,7 +66,7 @@ class Request(RequestBase):
         self.request_id = request_id
 
     def make_response(self, result=None, error=None):
-        result_type = self.iface.get_command_result_type(self.command_id)
+        result_type = self.iface.get_command(self.command_id).result_type
         if result is None and error is None:
             result = result_type()
         assert result is None or isinstance(result, result_type), \

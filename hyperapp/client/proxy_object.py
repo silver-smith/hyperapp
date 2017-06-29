@@ -213,8 +213,8 @@ class ProxyObject(Object):
             Field('handle', TOptional(self._core_types.handle)),
             ])
         return (command.request_type == IfaceCommand.rt_request
-                and command.get_params_type(self.iface).get_fields() == []
-                and command.get_result_type(self.iface) == t_open_result)
+                and command.params_type.get_fields() == []
+                and command.result_type == t_open_result)
 
     def remote_command_from_iface_command(self, command, kind='object'):
         resource_id = ['interface', self.iface.iface_id, 'command', command.command_id]

@@ -5,6 +5,22 @@ from dateutil.tz import tzutc, tzlocal
 DATETIME_FORMAT = '%d.%m.%Y %H:%M:%S'
 
 
+class cached_property(object):
+    'Turns decorated method into caching property (method is called once on first access to property).'
+
+    def __init__(self, method, name=None):
+        self.method = method
+        self.name = name or method.__name__
+        self.__doc__ = method.__doc__
+
+    def __get__(self, inst, cls):
+        if inst is None:
+            return self
+        result = self.method(inst)
+        setattr(inst, self.name, result)
+        return result
+
+
 def is_list_inst(val, cls):
     if not isinstance(val, list):
         return False

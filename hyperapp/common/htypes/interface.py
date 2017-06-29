@@ -1,5 +1,5 @@
 import logging
-from ..util import is_list_inst
+from ..util import cached_property, is_list_inst
 from .htypes import (
     join_path,
     Type,
@@ -26,7 +26,7 @@ class IfaceCommand(object):
     rt_request = 'request'
     rt_notification = 'notification'
 
-    def __init__(self, request_type, command_id, params_fields, result_fields=None):
+    def __init__(self, request_type, command_id, params_fields=None, result_fields=None):
         assert request_type in [self.rt_request, self.rt_notification], repr(request_type)
         assert isinstance(command_id, str), repr(command_id)
         assert is_list_inst(params_fields or [], Field), repr(params_fields)
@@ -43,23 +43,10 @@ class IfaceCommand(object):
                 other.params_fields == self.params_fields and
                 self.result_fields == self.result_fields)
 
-    def get_params_type(self, iface):
-        return TRecord(self.get_params_fields(iface))
-
-    def get_result_type(self, iface):
-        return TRecord(self.get_result_fields(iface))
-
-    def get_params_fields(self, iface):
-        return self.params_fields
-
-    def get_result_fields(self, iface):
-        return self.result_fields
-
-    def get_result_field_type(self, field_name):
-        for field in self.result_fields:
-            if field.name == field_name:
-                return field.type
-        return None
+    def bind(self, iface, params_fields=None, result_fields=None):
+        return BoundIfaceCommand(iface, self.request_type, self.command_id,
+                                 params_fields or self.params_fields,
+                                 result_fields or self.result_fields)
 
 
 class RequestCmd(IfaceCommand):
@@ -75,12 +62,25 @@ class NotificationCmd(IfaceCommand):
 
 
 class ContentsCommand(RequestCmd):
+    pass
 
-    def __init__(self, command_id, params_fields=None):
-        RequestCmd.__init__(self, command_id, params_fields)
 
-    def get_result_type(self, iface):
-        return iface.get_contents_type()
+class BoundIfaceCommand(object):
+
+    def __init__(self, iface, request_type, command_id, params_fields, result_fields):
+        self.iface = iface
+        self.request_type = request_type
+        self.command_id = command_id
+        self.params_fields = params_fields
+        self.result_fields = result_fields
+
+    @cached_property
+    def params_type(self):
+        return TRecord(self.params_fields)
+
+    @cached_property
+    def result_type(self):
+        return TRecord(self.result_fields)
 
 
 class Interface(object):
@@ -91,36 +91,35 @@ class Interface(object):
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
         assert is_list_inst(commands or [], IfaceCommand), repr(commands)
         self.iface_id = iface_id
+        self._base = base
         self._contents_fields = contents_fields or []
         self._diff_type = diff_type
-        self._commands = commands or []
+        self._unbound_commands = commands or []
         if base:
             self._contents_fields = base._contents_fields + self._contents_fields
-            self._commands = base._commands + self._commands
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self._diff_type = base._diff_type
 
     def register_types(self, request_types, core_types):
-        self._id2command = dict((cmd.command_id, cmd) for cmd in self._commands + self.get_basic_commands(core_types))
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
+        self._bound_commands = map(self._resolve_and_bind_command, self._unbound_commands + self.get_basic_commands(core_types))
+        self._id2command = dict((cmd.command_id, cmd) for cmd in self._bound_commands)
         self._tObject = core_types.object.register(
             self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
         log.debug('### registered object %r in %r', self.iface_id, id(core_types.object))
         request_types.update.register((self.iface_id,), self._diff_type)
-        self._command_params_t = dict((command_id, cmd.get_params_type(self)) for command_id, cmd in self._id2command.items())
-        self._command_result_t = dict((command_id, cmd.get_result_type(self)) for command_id, cmd in self._id2command.items())
-        for command in self._id2command.values():
-            cmd_id = command.command_id
-            request_types.client_notification_rec.register((self.iface_id, cmd_id), self._command_params_t[cmd_id])
-            request_types.result_response_rec.register((self.iface_id, cmd_id), self._command_result_t[cmd_id])
+        for cmd_id, command in self._id2command.items():
+            request_types.client_notification_rec.register((self.iface_id, cmd_id), self._id2command[cmd_id].params_type)
+            request_types.result_response_rec.register((self.iface_id, cmd_id), self._id2command[cmd_id].result_type)
         self.tUpdate = request_types.update
 
     def __eq__(self, other):
         return (isinstance(other, Interface) and
                 other.iface_id == self.iface_id and
+                other._base == self._base and
                 other._contents_fields == self._contents_fields and
                 other._diff_type == self._diff_type and
-                other._commands == self._commands)
+                other._unbound_commands == self._unbound_commands)
 
     def get_object_type(self):
         return self._tObject
@@ -135,17 +134,17 @@ class Interface(object):
             NotificationCmd('unsubscribe'),
             ]
 
+    def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None):
+        if isinstance(command, ContentsCommand):
+            result_fields = self.get_contents_fields()
+        return command.bind(params_fields, result_fields)
+        
     def _make_open_command(self, core_types, command_id, params_fields=None, result_fields=None):
         result_fields = [Field('handle', TOptional(core_types.handle))] + (result_fields or [])
         return RequestCmd(command_id, params_fields, result_fields)
 
-    def get_request_type(self, command_id):
-        assert command_id in self._id2command, repr(command_id)  # Unknown command id
-        command = self._id2command[command_id]
-        return command.request_type
-
     def get_commands(self):
-        return self._commands
+        return self._bound_commands
 
     def get_command(self, command_id):
         cmd = self._id2command.get(command_id)
@@ -153,17 +152,11 @@ class Interface(object):
             raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         return cmd
 
-    def get_request_params_type(self, command_id):
-        return self._command_params_t[command_id]
-
     def make_params(self, command_id, *args, **kw):
-        return self.get_request_params_type(command_id)(*args, **kw)
-
-    def get_command_result_type(self, command_id):
-        return self._command_result_t[command_id]
+        return self.get_command(command_id).params_type(*args, **kw)
 
     def make_result(self, command_id, *args, **kw):
-        return self.get_command_result_type(command_id)(*args, **kw)
+        return self.get_command(command_id).result_type(*args, **kw)
 
     def get_default_contents_fields(self):
         return [Field('commands', TList(tCommand))]

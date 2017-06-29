@@ -94,7 +94,7 @@ class ProxyListObject(ProxyObject, ListObject):
         return not self._is_element_command(command)
 
     def _is_element_command(self, command):
-        command_fields = command.get_params_type(self.iface).get_fields()
+        command_fields = command.params_type.get_fields()
         element_field = Field('element_key', self.iface.get_key_type())
         return (command.request_type == IfaceCommand.rt_request
                 and len(command_fields) >= 1
@@ -107,8 +107,8 @@ class ProxyListObject(ProxyObject, ListObject):
             ])
         element_field = Field('element_key', self.iface.get_key_type())
         return (command.request_type == IfaceCommand.rt_request
-                and command.get_params_type(self.iface).get_fields() == [element_field]
-                and command.get_result_type(self.iface) in [t_empty_result, t_open_result])
+                and command.params_type.get_fields() == [element_field]
+                and command.result_type in [t_empty_result, t_open_result])
 
     @asyncio.coroutine
     def run_remote_command(self, command_id, *args, **kw):

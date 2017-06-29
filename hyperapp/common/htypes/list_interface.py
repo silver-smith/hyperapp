@@ -115,7 +115,6 @@ class ListInterface(Interface):
             Field('bof', tBool),
             Field('eof', tBool),
             ])
-        commands = [self._resolve_command(command) for command in commands or []]
         Interface.__init__(self, iface_id, base, contents_fields, self._tDiff, commands)
 
     def __eq__(self, other):
@@ -133,12 +132,10 @@ class ListInterface(Interface):
         assert key_column_id, 'No column with is_key is found'
         return key_column_id
 
-    def _resolve_command(self, command):
+    def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None):
         if isinstance(command, ElementCommand):
-            params_fields = [Field('element_key', self._key_type)] + (command.params_fields or [])
-            return RequestCmd(command.command_id, params_fields, command.result_fields)
-        else:
-            return command
+            params_fields = [Field('element_key', self._key_type)] + (params_fields or command.params_fields or [])
+        return Interface._resolve_and_bind_command(self, command, params_fields, result_fields)
 
     def get_key_type(self):
         return self._key_type

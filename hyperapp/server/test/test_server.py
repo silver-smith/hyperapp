@@ -229,7 +229,7 @@ class ServerRequestHandlingTest(ServerTest):
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, '1'],
             command_id='echo',
-            params=test_iface.get_request_params_type('echo')(test_param='hello'),
+            params=test_iface.get_command('echo').params_type(test_param='hello'),
             request_id='001',
             )
         pprint(self.request_types.client_packet, request_data)
@@ -246,7 +246,7 @@ class ServerRequestHandlingTest(ServerTest):
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, '1'],
             command_id='check_ok',
-            params=test_iface.get_request_params_type('check_ok')(test_param=test_param),
+            params=test_iface.get_command('check_ok').params_type(test_param=test_param),
             request_id='002',
             )
         pprint(self.request_types.client_packet, request_data)
@@ -321,7 +321,7 @@ class TransportRequestHandlingTest(ServerTest):
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
-            params=test_iface.get_request_params_type(command_id)(**kw),
+            params=test_iface.get_command(command_id).params_type(**kw),
             request_id='001',
             )
         log.info('Sending request:')
@@ -340,7 +340,7 @@ class TransportRequestHandlingTest(ServerTest):
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
-            params=test_iface.get_request_params_type(command_id)(**kw),
+            params=test_iface.get_command(command_id).params_type(**kw),
             )
         log.info('Sending client notification:')
         pprint(self.request_types.client_packet, request)
