@@ -35,7 +35,7 @@ class Type(object):
 class TPrimitive(Type):
 
     def __repr__(self):
-        return 'TPrimitive(%s)' % repr(self.get_type())
+        return 'TPrimitive<%s>' % self.get_type().__name__
 
     def __eq__(self, other):
         return isinstance(other, TPrimitive) and other.type_name == self.type_name
@@ -87,7 +87,7 @@ class TOptional(Type):
         self.base_t = base_t
 
     def __repr__(self):
-        return 'TOptional(%r)' % self.base_t
+        return 'TOptional<%r>' % self.base_t
 
     def __eq__(self, other):
         return isinstance(other, TOptional) and other.base_t == self.base_t
@@ -131,8 +131,8 @@ class Record(object):
         self._type = type
 
     def __repr__(self):
-        return 'Record<%s>' % ', '.join(
-            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields())
+        return 'Record<%d: %s>' % (id(self._type), ', '.join(
+            '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
     
 
 class TRecord(Type):
@@ -146,7 +146,7 @@ class TRecord(Type):
         self.base = base
 
     def __repr__(self):
-        return 'TRecord(%d: %s)' % (id(self), ', '.join(map(repr, self.get_fields())))
+        return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.get_fields())))
 
     def __eq__(self, other):
         return isinstance(other, TRecord) and other.fields == self.fields
@@ -228,7 +228,7 @@ class TList(Type):
         self.element_t = element_t
 
     def __repr__(self):
-        return 'TList(%r)' % self.element_t
+        return 'TList<%r>' % self.element_t
 
     def __eq__(self, other):
         return isinstance(other, TList) and other.element_t == self.element_t
