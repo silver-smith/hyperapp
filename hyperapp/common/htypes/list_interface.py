@@ -132,10 +132,10 @@ class ListInterface(Interface):
         assert key_column_id, 'No column with is_key is found'
         return key_column_id
 
-    def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None):
+    def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None, result_type=None):
         if isinstance(command, ElementCommand):
             params_fields = [Field('element_key', self._key_type)] + (params_fields or command.params_fields or [])
-        return Interface._resolve_and_bind_command(self, command, params_fields, result_fields)
+        return Interface._resolve_and_bind_command(self, command, params_fields, result_fields, result_type)
 
     def get_key_type(self):
         return self._key_type

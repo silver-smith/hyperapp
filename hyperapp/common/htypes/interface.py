@@ -1,5 +1,5 @@
 import logging
-from ..util import cached_property, is_list_inst
+from ..util import is_list_inst
 from .htypes import (
     join_path,
     Type,
@@ -43,10 +43,11 @@ class IfaceCommand(object):
                 other.params_fields == self.params_fields and
                 self.result_fields == self.result_fields)
 
-    def bind(self, iface, params_fields=None, result_fields=None):
+    def bind(self, iface, params_fields=None, result_fields=None, result_type=None):
         return BoundIfaceCommand(iface, self.request_type, self.command_id,
                                  params_fields or self.params_fields,
-                                 result_fields or self.result_fields)
+                                 result_fields or self.result_fields,
+                                 result_type)
 
 
 class RequestCmd(IfaceCommand):
@@ -67,20 +68,15 @@ class ContentsCommand(RequestCmd):
 
 class BoundIfaceCommand(object):
 
-    def __init__(self, iface, request_type, command_id, params_fields, result_fields):
+    def __init__(self, iface, request_type, command_id, params_fields, result_fields, result_type):
+        assert not (result_fields and result_type)  # only one can be specified
         self.iface = iface
         self.request_type = request_type
         self.command_id = command_id
         self.params_fields = params_fields
         self.result_fields = result_fields
-
-    @cached_property
-    def params_type(self):
-        return TRecord(self.params_fields)
-
-    @cached_property
-    def result_type(self):
-        return TRecord(self.result_fields)
+        self.params_type = TRecord(self.params_fields)
+        self.result_type = result_type or TRecord(self.result_fields)
 
 
 class Interface(object):
@@ -134,10 +130,10 @@ class Interface(object):
             NotificationCmd('unsubscribe'),
             ]
 
-    def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None):
+    def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None, result_type=None):
         if isinstance(command, ContentsCommand):
-            result_fields = self.get_contents_fields()
-        return command.bind(self, params_fields, result_fields)
+            result_type = self.get_contents_type()
+        return command.bind(self, params_fields, result_fields, result_type)
         
     def _make_open_command(self, core_types, command_id, params_fields=None, result_fields=None):
         result_fields = [Field('handle', TOptional(core_types.handle))] + (result_fields or [])
