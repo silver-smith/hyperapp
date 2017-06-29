@@ -155,7 +155,7 @@ class ProxyObject(Object):
         self._notify_object_changed()
 
     def set_contents(self, contents):
-        self.cache_repository.store_value(self._get_commands_cache_key(), contents.commands, self._get_commands_cache_type())
+        pass
 
     def get_title(self):
         return '%s:%s' % (self.server.public_key.get_short_id_hex(), '|'.join(self.path))

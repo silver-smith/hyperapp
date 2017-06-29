@@ -159,7 +159,7 @@ class Interface(object):
         return self.get_command(command_id).result_type(*args, **kw)
 
     def get_default_contents_fields(self):
-        return [Field('commands', TList(tCommand))]
+        return []
 
     def get_contents_fields(self):
         return self.get_default_contents_fields() + self._contents_fields

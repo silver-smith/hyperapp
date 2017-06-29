@@ -74,9 +74,7 @@ class Object(Commander):
             )
 
     def get_contents(self, request, **kw):
-        return self.iface.Contents(
-            commands=[cmd.to_data() for cmd in self.get_commands()],
-            **kw)
+        return self.iface.Contents(**kw)
 
     def get_handle(self, request):
         raise NotImplementedError(self.__class__)
