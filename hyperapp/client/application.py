@@ -35,6 +35,7 @@ class Application(QtGui.QApplication, view.View):
             self.services.types.param_editor,
             self.services.objimpl_registry,
             self.services.view_registry,
+            self.services.param_editor_registry,
             self.services.type_module_repository,
             self.services.resources_manager,
             self.services.module_manager,

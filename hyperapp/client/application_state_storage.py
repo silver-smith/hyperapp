@@ -20,13 +20,14 @@ STATE_FILE_ENCODING = 'json_pretty'
 class ApplicationStateStorage(object):
 
     def __init__(self, packet_types, resource_types, core_types, param_editor_types,
-                 objimpl_registry, view_registry, type_module_repository, resources_manager, module_manager, code_repository):
+                 objimpl_registry, view_registry, param_editor_registry, type_module_repository, resources_manager, module_manager, code_repository):
         self._packet_types = packet_types
         self._resource_types = resource_types
         self._core_types = core_types
         self._param_editor_types = param_editor_types
         self._objimpl_registry = objimpl_registry
         self._view_registry = view_registry
+        self._param_editor_registry = param_editor_registry
         self._type_module_repository = type_module_repository
         self._module_manager = module_manager
         self._resources_manager = resources_manager
