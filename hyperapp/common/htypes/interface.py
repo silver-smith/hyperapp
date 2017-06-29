@@ -148,7 +148,10 @@ class Interface(object):
     def get_command(self, command_id):
         cmd = self._id2command.get(command_id)
         if not cmd:
-            raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
+            if self._base:
+                return self._base.get_command(command_id)
+            else:
+                raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         return cmd
 
     def make_params(self, command_id, *args, **kw):
