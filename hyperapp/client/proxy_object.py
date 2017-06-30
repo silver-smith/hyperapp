@@ -172,7 +172,8 @@ class ProxyObject(Object):
             result = yield from self.execute_request(command_id, *args, **kw)
             return result.handle
         else:
-            param_editor_resource_id = ['interface', self.iface.iface_id, 'param_editor', command_id]
+            command = self.iface.get_command(command_id)
+            param_editor_resource_id = ['interface', command.iface.iface_id, 'param_editor', command_id]
             param_editor_resource = self._resources_manager.resolve(param_editor_resource_id)
             handle = yield from self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id, *args, **kw)
             return handle
@@ -217,7 +218,7 @@ class ProxyObject(Object):
                 and command.result_type == t_open_result)
 
     def remote_command_from_iface_command(self, command, kind='object'):
-        resource_id = ['interface', self.iface.iface_id, 'command', command.command_id]
+        resource_id = ['interface', command.iface.iface_id, 'command', command.command_id]
         return RemoteCommand(command.command_id, kind, resource_id, enabled=True, object_wr=weakref.ref(self))
 
     def _get_commands_cache_key(self):

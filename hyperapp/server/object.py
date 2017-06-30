@@ -55,11 +55,16 @@ class Object(Commander):
     def get_path(self):
         raise NotImplementedError(self.__class__)
 
-    def get_facets(self):
-        if self.facets is None:
-            return [self.iface]
+    def get_facets(self, iface=None):
+        facets = []
+        if not iface:
+            iface = self.iface
+            facets += self.facets or []
+        facets += [iface]
+        if iface.base:
+            return facets + self.get_facets(iface.base)
         else:
-            return self.facets
+            return facets
 
     def get(self, request):
         path = self.get_path()

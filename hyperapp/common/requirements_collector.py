@@ -33,3 +33,6 @@ class RequirementsCollector(Visitor):
         if self._param_editor_types and isinstance(value, self._param_editor_types.param_editor_resource):
             assert isinstance(value.param_editor, self._param_editor_types.param_editor_impl), repr(value.param_editor)
             self._collected_requirements.add(('param_editor', value.param_editor.impl_id))
+
+    def _interface_list_with_bases_and_facets(self, iface):
+        pass

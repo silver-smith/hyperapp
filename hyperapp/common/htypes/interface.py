@@ -87,7 +87,7 @@ class Interface(object):
         assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
         assert is_list_inst(commands or [], IfaceCommand), repr(commands)
         self.iface_id = iface_id
-        self._base = base
+        self.base = base
         self._contents_fields = contents_fields or []
         self._diff_type = diff_type
         self._unbound_commands = commands or []
@@ -112,7 +112,7 @@ class Interface(object):
     def __eq__(self, other):
         return (isinstance(other, Interface) and
                 other.iface_id == self.iface_id and
-                other._base == self._base and
+                other.base == self.base and
                 other._contents_fields == self._contents_fields and
                 other._diff_type == self._diff_type and
                 other._unbound_commands == self._unbound_commands)
@@ -140,16 +140,16 @@ class Interface(object):
         return RequestCmd(command_id, params_fields, result_fields)
 
     def get_commands(self):
-        if self._base:
-            return self._base._bound_commands + self._bound_commands
+        if self.base:
+            return self.base._bound_commands + self._bound_commands
         else:
             return self._bound_commands
 
     def get_command(self, command_id):
         cmd = self._id2command.get(command_id)
         if not cmd:
-            if self._base:
-                return self._base.get_command(command_id)
+            if self.base:
+                return self.base.get_command(command_id)
             else:
                 raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
         return cmd
