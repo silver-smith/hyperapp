@@ -126,6 +126,7 @@ class ProxyObject(Object):
         self.cache_repository = cache_repository
         self._resources_manager = resources_manager
         self._param_editor_registry = param_editor_registry
+        self._command_id2param_editor = dict(self._load_param_editor_resources())
         self._remote_commands = [self.remote_command_from_iface_command(command) for command in self.iface.get_commands()
                                  if self.is_iface_command_exposed(command)]
 
@@ -163,7 +164,8 @@ class ProxyObject(Object):
         return Object.get_commands(self) + self._remote_commands
 
     def is_iface_command_exposed(self, command):
-        return True
+        return (self._is_plain_open_handle_request(command) or
+                command.command_id in self._command_id2param_editor)
 
     @asyncio.coroutine
     def run_remote_command(self, command_id, *args, **kw):
@@ -171,12 +173,7 @@ class ProxyObject(Object):
             result = yield from self.execute_request(command_id, *args, **kw)
             return result.handle
         else:
-            command = self.iface.get_command(command_id)
-            param_editor_resource_id = ['interface', command.iface.iface_id, 'param_editor', command_id]
-            param_editor_resource = self._resources_manager.resolve(param_editor_resource_id)
-            if not param_editor_resource:
-                raise self._request_types.common_client_error(
-                    message='Param editor resource for %s.%s is missing' % (command.iface.iface_id, command_id))
+            param_editor_resource = self._command_id2param_editor[command_id]
             handle = yield from self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id, *args, **kw)
             return handle
 
@@ -210,6 +207,13 @@ class ProxyObject(Object):
 
     def process_update(self, diff):
         raise NotImplementedError(self.__class__)
+
+    def _load_param_editor_resources(self):
+        for command in self.iface.get_commands():
+            param_editor_resource_id = ['interface', command.iface.iface_id, 'param_editor', command.command_id]
+            param_editor_resource = self._resources_manager.resolve(param_editor_resource_id)
+            if param_editor_resource:
+                yield (command.command_id, param_editor_resource)
 
     def _is_plain_open_handle_request(self, command):
         t_open_result = TRecord([

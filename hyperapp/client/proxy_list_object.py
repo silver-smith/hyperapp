@@ -91,7 +91,8 @@ class ProxyListObject(ProxyObject, ListObject):
         pass
 
     def is_iface_command_exposed(self, command):
-        return not self._is_element_command(command)
+        if self._is_element_command(command): return False
+        return ProxyObject.is_iface_command_exposed(self, command)
 
     def _is_element_command(self, command):
         command_fields = command.params_type.get_fields()
