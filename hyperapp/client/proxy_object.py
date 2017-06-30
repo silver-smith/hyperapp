@@ -126,7 +126,6 @@ class ProxyObject(Object):
         self.cache_repository = cache_repository
         self._resources_manager = resources_manager
         self._param_editor_registry = param_editor_registry
-        cached_commands = self.cache_repository.load_value(self._get_commands_cache_key(), self._get_commands_cache_type())
         self._remote_commands = [self.remote_command_from_iface_command(command) for command in self.iface.get_commands()
                                  if self.is_iface_command_exposed(command)]
 
