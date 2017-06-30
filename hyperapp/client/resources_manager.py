@@ -41,8 +41,12 @@ class ResourcesManager(object):
 
     def _load_client_modules_resources(self, dir):
         loader = ResourcesLoader(self._resource_types, self._param_editor_types)
-        self.register([self._resource_types.resource_rec(['client_module'] + rec.id, rec.resource)
-                       for rec in loader.load_localized_resources_from_dir(dir)])
+        for rec in loader.load_localized_resources_from_dir(dir):
+            if rec.id[1] == 'error_message':
+                id = rec.id[1:]  # they are global; skip module name and interface id
+            else:
+                id = ['client_module'] + rec.id[1:]  # skip module name from id
+            self.register([self._resource_types.resource_rec(id, rec.resource)])
 
     def register(self, resource_list):
         assert isinstance(resource_list, self._resource_types.resource_rec_list), repr(resource_list)

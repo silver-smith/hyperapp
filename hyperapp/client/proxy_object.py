@@ -175,6 +175,9 @@ class ProxyObject(Object):
             command = self.iface.get_command(command_id)
             param_editor_resource_id = ['interface', command.iface.iface_id, 'param_editor', command_id]
             param_editor_resource = self._resources_manager.resolve(param_editor_resource_id)
+            if not param_editor_resource:
+                raise self._request_types.common_client_error(
+                    message='Param editor resource for %s.%s is missing' % (command.iface.iface_id, command_id))
             handle = yield from self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id, *args, **kw)
             return handle
 

@@ -36,6 +36,10 @@ def make_request_types():
     server_error = error.register('server_error', base=error_root)
     unknown_client_error = error.register('unknown_client_error', base=client_error)
 
+    common_client_error = error.register('common_client_error', base=client_error, fields=[
+        Field('message', tString),
+        ])
+
     server_packet = THierarchy('server_packet')
     server_notification = server_packet.register('notification', fields=[
         Field('updates', TList(update)),
@@ -67,6 +71,7 @@ def make_request_types():
     registry.register('client_error', client_error)
     registry.register('server_error', server_error)
     registry.register('unknown_client_error', unknown_client_error)
+    registry.register('common_client_error', common_client_error)
     registry.register('server_packet', server_packet)
     registry.register('server_notification', server_notification)
     registry.register('response_rec', response_rec)
