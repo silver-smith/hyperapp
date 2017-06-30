@@ -1,5 +1,6 @@
 import asyncio
 from ..common.htypes import Field
+from ..common.interface import request as request_types
 from ..common.interface import core as core_types
 from ..common.interface import text_object_types
 from .module import Module
@@ -39,5 +40,7 @@ class ThisModule(Module):
         return core_types.obj_handle('text_view', obj)
 
     def error_handler(self, exception):
-        # using intermediate handle is the simplest way to get currelt locale
+        if not isinstance(exception, request_types.error):
+            exception = request_types.unknown_client_error()
+        # using intermediate handle is the simplest way to get current locale
         return self._error_handle_t(ERROR_HANDLER_VIEW_ID, exception)

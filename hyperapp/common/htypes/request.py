@@ -34,6 +34,7 @@ def make_request_types():
     error_root = error.register('root')
     client_error = error.register('client_error', base=error_root)
     server_error = error.register('server_error', base=error_root)
+    unknown_client_error = error.register('unknown_client_error', base=client_error)
 
     server_packet = THierarchy('server_packet')
     server_notification = server_packet.register('notification', fields=[
@@ -65,6 +66,7 @@ def make_request_types():
     registry.register('error_root', error_root)
     registry.register('client_error', client_error)
     registry.register('server_error', server_error)
+    registry.register('unknown_client_error', unknown_client_error)
     registry.register('server_packet', server_packet)
     registry.register('server_notification', server_notification)
     registry.register('response_rec', response_rec)
