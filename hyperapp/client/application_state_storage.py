@@ -7,6 +7,7 @@ from ..common.htypes import TList, TRecord, Field, tString
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
+from .remoting import RequestError
 from . import window
 
 log = logging.getLogger(__name__)
@@ -106,15 +107,20 @@ class ApplicationStateStorage(object):
         log.info('-- code_modules loaded from state: ids=%r, code_modules=%r',
                  state_requirements.module_ids, [module.fpath for module in state_requirements.code_modules])
         log.info('-- resources loaded from state: %s', ', '.join(encode_path(rec.id) for rec in state_requirements.resource_rec_list))
-        type_module_list, new_code_modules, modules_resources = async_loop.run_until_complete(
-            self._code_repository.get_modules_by_ids(
-                [module_id for module_id in set(state_requirements.module_ids) if not self._module_manager.has_module(module_id)]))
         code_modules = state_requirements.code_modules
-        if new_code_modules is not None:  # has code repositories?
-            code_modules = new_code_modules   # use new versions
-        self._type_module_repository.add_all_type_modules(type_module_list or [])
+        resources = state_requirements.resource_rec_list
+        try:
+            type_module_list, new_code_modules, modules_resources = async_loop.run_until_complete(
+                self._code_repository.get_modules_by_ids(
+                    [module_id for module_id in set(state_requirements.module_ids) if not self._module_manager.has_module(module_id)]))
+            if new_code_modules is not None:  # has code repositories?
+                code_modules = new_code_modules   # use new versions
+            resources += (modules_resources or [])
+            self._type_module_repository.add_all_type_modules(type_module_list or [])
+        except RequestError as x:
+            log.warning('Unable to load latest modules and resources, using cached ones: %s' % x)
         self._module_manager.load_code_module_list(code_modules)
-        self._resources_manager.register(state_requirements.resource_rec_list + (modules_resources or []))
+        self._resources_manager.register(resources)
         return self._load_state_file(self._state_type, STATE_FILE_PATH)
 
     def _load_state_file(self, t, path):
