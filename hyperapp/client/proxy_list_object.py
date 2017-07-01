@@ -4,6 +4,7 @@ import weakref
 import bisect
 from ..common.htypes import TOptional, Field, TRecord, TList, IfaceCommand
 from .list_object import ListDiff, Element, Slice, ListObject
+from .remoting import RequestError
 from .proxy_object import RemoteCommand, ProxyObject
 
 log = logging.getLogger(__name__)
@@ -246,8 +247,12 @@ class ProxyListObject(ProxyObject, ListObject):
         if subscribing_now:
             # several views can call fetch_elements before response is received, and we do not want several subscribe_xxx calls
             self._subscribe_pending = True
-        result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
-        log.debug('proxy_list_object fetch_elements result self=%r, slice: %r', id(self), slice)
+        try:
+            result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
+            log.debug('proxy_list_object fetch_elements result self=%r, slice: %r', id(self), slice)
+        except RequestError as x:
+            log.warning('Error fetching elements from remote object; will use cached (%s)' % x)
+            return slice
         if subscribing_now:
             self._subscribe_pending = False
             self._subscribed = True
