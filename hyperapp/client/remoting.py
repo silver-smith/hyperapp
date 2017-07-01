@@ -17,6 +17,13 @@ from .proxy_registry import ProxyRegistry
 log = logging.getLogger(__name__)
 
 
+class RequestError(RuntimeError):
+    pass
+
+class TransportError(RuntimeError):
+    pass
+
+
 class Transport(metaclass=abc.ABCMeta):
 
     def __init__(self, services):
@@ -162,6 +169,7 @@ class Remoting(object):
     @asyncio.coroutine
     def send_request_or_notification(self, public_key, request_or_notification):
         pprint(self._request_types.client_packet, request_or_notification.to_data(), self._resource_types, self._packet_types)
+        error = None
         for route in self._route_storage.get_routes(public_key) or []:
             transport_id = route[0]
             transport = self.transport_registry.resolve(transport_id)
@@ -170,11 +178,10 @@ class Remoting(object):
                 continue
             try:
                 return (yield from transport.send_request_rec(self, public_key, route[1:], request_or_notification))
-            except:
-                # todo: catch specific exceptions; try next route
-                raise
-        raise RuntimeError('Unable to send packet to %s - no reachable transports'
-                           % public_key.get_short_id_hex())
+            except TransportError as x:
+                log.warning('Error sending request using %r: %s', transport, x)
+                error = x
+        raise RequestError('Unable to send packet to %s - no reachable transports' % public_key.get_short_id_hex()) from error
 
     @asyncio.coroutine
     def process_packet(self, protocol, session_list, server_public_key, packet):

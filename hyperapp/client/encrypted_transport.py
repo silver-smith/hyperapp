@@ -13,7 +13,7 @@ from ..common.transport_packet import tTransportPacket, encode_transport_packet,
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .request import ResponseBase
-from .remoting import Transport
+from .remoting import TransportError, Transport
 from .tcp_protocol import TcpProtocol
 
 
@@ -34,12 +34,18 @@ class Session(object):
 
 class EncryptedTransport(Transport):
 
+    def __repr__(self):
+        return 'encrypted transport'
+
     @asyncio.coroutine
     def send_request_rec(self, remoting, public_key, route, request_or_notification):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
-        protocol = yield from TcpProtocol.produce(remoting, public_key, host, port)
+        try:
+            protocol = yield from TcpProtocol.produce(remoting, public_key, host, port)
+        except OSError as x:
+            raise TransportError('Error connecting to %s:%d: %s' % (host, port, x))
         session = self._produce_session(protocol.session_list)
         transport_packet = self._make_payload_packet(session, public_key, request_or_notification)
         protocol.send_packet(transport_packet)
