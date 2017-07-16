@@ -141,7 +141,6 @@ class View(LineListPanel):
         self._base_obj = object
         self._resource_id = resource_id
         self._narrow_field_id = narrow_field_id
-        list_object = self._make_filtered_obj(prefix)
         line_edit_view = line_edit.View(self, prefix)
         list_view_view = list_view.View(
             locale, self, resources_manager, resource_id, None, object, key, sort_column_id, first_visible_row, select_first)
