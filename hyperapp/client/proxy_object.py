@@ -115,6 +115,7 @@ class ProxyObject(Object):
         assert is_list_inst(path, str), repr(path)
         assert isinstance(iface, Interface), repr(iface)
         assert facets is None or is_list_inst(facets, Interface), repr(facets)
+        log.debug('new ProxyObject self=%r path=%r', id(self), path)
         Object.__init__(self)
         self._request_types = request_types
         self._core_types = core_types
@@ -131,7 +132,7 @@ class ProxyObject(Object):
                                  if self.is_iface_command_exposed(command)]
 
     def __repr__(self):
-        return 'ProxyObject(%s, %s, %s, %s)' % (id(self), self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
+        return '%s(%s, %s, %s, %s)' % (self.__class__.__name__, id(self), self.server.public_key.get_short_id_hex(), self.iface.iface_id, '|'.join(self.path))
 
     def get_state(self):
         return self._core_types.proxy_object(
@@ -178,7 +179,7 @@ class ProxyObject(Object):
             return handle
 
     def observers_gone(self):
-        log.info('-- observers_gone: %r', id(self))
+        log.debug('-- observers_gone: self=%s', id(self))
         asyncio.async(self.send_notification('unsubscribe'))
 
     # prepare request which does not require/expect response
@@ -237,4 +238,4 @@ class ProxyObject(Object):
         return TList(tCommand)
 
     def __del__(self):
-        log.info('~ProxyObject %r path=%r', id(self), self.path)
+        log.debug('~ProxyObject self=%s path=%r', id(self), self.path)

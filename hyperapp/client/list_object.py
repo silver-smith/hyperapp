@@ -151,3 +151,6 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         assert isinstance(diff, ListDiff), repr(diff)
         for observer in self._observers:
             observer.diff_applied(diff)
+
+    def __del__(self):
+        log.debug('~list_object self=%s', id(self))

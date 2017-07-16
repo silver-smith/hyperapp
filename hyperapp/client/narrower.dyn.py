@@ -51,6 +51,7 @@ class FilteredListObj(ListObject, ListObserver):
 
     def __init__(self, base, narrow_field_id, prefix):
         assert isinstance(base, ListObject), repr(base)
+        log.debug('new FilteredListObj self=%s narrow_field_id=%r prefix=%r', id(self), narrow_field_id, prefix)
         ListObject.__init__(self)
         self._base = base
         self._narrow_field_id = narrow_field_id  # filter by this field
@@ -120,7 +121,7 @@ class FilteredListObj(ListObject, ListObserver):
         return getattr(element.row, self._narrow_field_id)
 
     def __del__(self):
-        log.info('~FilteredListObj narrow_field_id=%r prefix=%r', self._narrow_field_id, self._prefix)
+        log.debug('~FilteredListObj self=%s narrow_field_id=%r prefix=%r', id(self), self._narrow_field_id, self._prefix)
 
 
 class View(LineListPanel):
@@ -137,6 +138,7 @@ class View(LineListPanel):
 
     def __init__( self, locale, parent, data_type, object, resources_manager, resource_id, sort_column_id, key,
                   narrow_field_id, first_visible_row=None, select_first=True, prefix=None ):
+        log.debug('new narrower self=%s', id(self))
         self._data_type = data_type
         self._base_obj = object
         self._resource_id = resource_id
@@ -208,4 +210,4 @@ class View(LineListPanel):
         self._line_edit.setText(common_prefix)
 
     def __del__(self):
-        log.info('~narrower title=%r self=%r', self._base_obj.get_title(), self)
+        log.debug('~narrower title=%r self=%r', self._base_obj.get_title(), id(self))

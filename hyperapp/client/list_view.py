@@ -209,6 +209,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         assert parent is None or isinstance(parent, view.View), repr(parent)
         assert data_type is None or isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
+        log.debug('new list_view self=%s', id(self))
         QtGui.QTableView.__init__(self)
         view.View.__init__(self, parent)
         self._locale = locale
@@ -274,6 +275,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result(self, slice):
+        log.debug('-- list_view.process_fetch_result self=%s', id(self))
         self.model()  # Internal C++ object (View) already deleted - this possible means this view was leaked.
         log.info('-- process_fetch_result self=%r model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
                  id(self), id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements))
@@ -446,4 +448,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
             self._elt_commands.append(wrapped_cmd)
 
     def __del__(self):
-        log.info('~list_view.View self=%r', id(self))
+        log.debug('~list_view.View self=%r', id(self))

@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 class LineListPanel(Composite, QtGui.QWidget):
 
     def __init__(self, parent, line_edit, list_view):
+        log.debug('new line_list_panel self=%s', id(self))
         QtGui.QWidget.__init__(self)
         Composite.__init__(self, parent)
         self._line_edit = line_edit
@@ -63,3 +64,6 @@ class LineListPanel(Composite, QtGui.QWidget):
     def focusOutEvent(self, evt):
         if DEBUG_FOCUS: log.info('*** line_list_panel.focusOutEvent %r', self)
         QtGui.QWidget.focusOutEvent(self, evt)
+
+    def __del__(self):
+        log.debug('~line_list_panel self=%s', id(self))

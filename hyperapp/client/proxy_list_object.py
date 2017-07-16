@@ -68,6 +68,7 @@ class ProxyListObject(ProxyObject, ListObject):
     
     def __init__( self, request_types, core_types, iface_registry, cache_repository,
                   resources_manager, param_editor_registry, server, path, iface, facets=None ):
+        log.debug('new ProxyListObject self=%r path=%r', id(self), path)
         ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository,
                              resources_manager, param_editor_registry, server, path, iface, facets)
         ListObject.__init__(self)
@@ -267,4 +268,4 @@ class ProxyListObject(ProxyObject, ListObject):
         return slice
 
     def __del__(self):
-        log.info('~ProxyListObject self=%r path=%r', id(self), self.path)
+        log.debug('~ProxyListObject self=%r path=%r', id(self), self.path)
