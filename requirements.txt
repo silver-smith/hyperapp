@@ -1,7 +1,7 @@
-pony==0.6.1
+pony==0.7.1
 python-dateutil==2.1
 singledispatch
-PyYAML>=3.11  # under debian requires: libyaml-dev, libpython3.4-dev
+PyYAML>=3.12  # under debian requires: libyaml-dev, libpython3-dev
 cryptography>=1.0.2  # under debian requires: libffi-dev:amd64 libssl-dev:amd64
 pytest>=3.0.7
 ply
@@ -10,4 +10,7 @@ ply
 # apt-get install build-essential git cmake libqt4-dev libphonon-dev python2.7-dev libxml2-dev libxslt1-dev qtmobility-dev
 # see: http://pyside.readthedocs.org/en/latest/building/linux.html
 # also, maybe: apt-get install qmake
-PySide==1.2.2
+# ----
+# by now under debian 9 pyside versions installable by pip does not support python 3.5,
+# but debian has python3-pyside package for 1.2.2; so we need to use --system-site-packages for virtualenv
+# PySide==1.2.2
