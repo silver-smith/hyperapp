@@ -179,7 +179,6 @@ class ProxyObject(Object):
             return handle
 
     def observers_gone(self):
-        log.debug('-- observers_gone: self=%s', id(self))
         asyncio.async(self.send_notification('unsubscribe'))
 
     # prepare request which does not require/expect response

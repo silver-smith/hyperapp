@@ -63,6 +63,7 @@ class Object(Commander):
     def _on_subscriber_removed(self):
         try:
             if not self._observers:  # this was last reference to me
+                log.debug('-- Object.observers_gone self=%s/%r', id(self), self)
                 self.observers_gone()
         except:
             traceback.print_exc()

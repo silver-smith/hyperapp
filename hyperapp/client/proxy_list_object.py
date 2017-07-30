@@ -242,7 +242,7 @@ class ProxyListObject(ProxyObject, ListObject):
                 log.info('   > from cache, len(elements)=%r', len(slice.elements))
                 self._notify_fetch_result(slice)
                 # and subscribe/fetch anyway
-        log.info('   > not found or not subscribed, requesting')
+        log.info('-- proxy fetch_elements: not found or not subscribed, requesting')
         subscribing_now = not self._subscribed and not self._subscribe_pending
         command_id = 'subscribe_and_fetch_elements' if subscribing_now else 'fetch_elements'
         if subscribing_now:

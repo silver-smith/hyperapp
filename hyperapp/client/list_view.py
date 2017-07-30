@@ -257,7 +257,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self.model().get_sort_column_id()
 
     def object_changed(self):
-        log.info('-- list_view.object_changed self=%r', self)
+        log.info('-- list_view.object_changed self=%s / %r', id(self), self)
         view.View.object_changed(self)
         ## old_key = self._selected_elt.key if self._selected_elt else None
         ## self.model().reset()
