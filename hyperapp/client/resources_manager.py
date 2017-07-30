@@ -18,7 +18,7 @@ class ResourcesRegistry(object):
             self._registry[tuple(rec.id)] = rec.resource
 
     def resolve(self, id):
-        log.debug('### Resource registry: resolving %s -> %s', encode_path(id), self._registry.get(tuple(id)))
+        # log.debug('### Resource registry: resolving %s -> %s', encode_path(id), self._registry.get(tuple(id)))
         return self._registry.get(tuple(id))
 
     # return all resources with id starting from this

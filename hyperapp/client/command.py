@@ -22,7 +22,7 @@ class ViewCommand(Command):
         self._view_wr = view_wr  # weak ref to class instance
 
     def __repr__(self):
-        return 'ViewCommand(%r -> %r)' % (self.id, self._view_wr)
+        return 'ViewCommand(%r -> %s/%r)' % (self.id, id(self._view_wr()), self._view_wr())
 
     def get_view(self):
         return self._view_wr()

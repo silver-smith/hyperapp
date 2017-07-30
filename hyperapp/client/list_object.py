@@ -1,3 +1,4 @@
+import logging
 import asyncio
 import abc
 from functools import total_ordering
@@ -6,6 +7,8 @@ from ..common.util import is_list_inst, dt2local_str
 from ..common.htypes import ListInterface
 from .command import Command
 from .object import ObjectObserver, Object
+
+log = logging.getLogger(__name__)
 
 
 class ListObserver(ObjectObserver):

@@ -125,7 +125,7 @@ class Model(QtCore.QAbstractTableModel):
                  ' wanted_last_row=%r len(keys)=%r eof=%r wanted_rows=%r',
                  id(self), first_visible_row, visible_row_count, wanted_last_row, len(self.keys), self.eof, wanted_rows)
         if wanted_rows > 0 and not self.eof:
-            log.info('   fetch_elements object=%r key=%r wanted_rows=%r', self._object, key, wanted_rows)
+            log.info('   calling fetch_elements object=%s/%r key=%r wanted_rows=%r', id(self._object), self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             yield from self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
 
@@ -193,7 +193,7 @@ class Model(QtCore.QAbstractTableModel):
         return self._key2element[key]
 
     def __del__(self):
-        log.info('~list_view.Model %r', self)
+        log.info('~list_view.Model self=%s', id(self))
 
 
 class View(view.View, ListObserver, QtGui.QTableView):
@@ -275,9 +275,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result(self, slice):
-        log.debug('-- list_view.process_fetch_result self=%s', id(self))
+        log.debug('-- list_view.process_fetch_result self=%s (pre)', id(self))
         self.model()  # Internal C++ object (View) already deleted - this possible means this view was leaked.
-        log.info('-- process_fetch_result self=%r model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
+        log.info('-- list_view.process_fetch_result self=%s model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
                  id(self), id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements))
         assert isinstance(slice, Slice), repr(slice)
         self.model().process_fetch_result(slice)
@@ -385,6 +385,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self._selected_elements_changed()
 
     def setVisible(self, visible):
+        log.debug('-- list_view.setVisible self=%s visible=%r', id(self), visible)
         QtGui.QTableView.setVisible(self, visible)
         if visible:
             self.view_commands_changed(['element'])

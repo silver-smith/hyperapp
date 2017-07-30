@@ -1,8 +1,11 @@
+import logging
 import asyncio
 import weakref
 import traceback
 from .util import WeakSetWithCallback
 from .command_class import Commander
+
+log = logging.getLogger(__name__)
 
 
 class ObjectObserver(object):
@@ -37,6 +40,7 @@ class Object(Commander):
 
     def subscribe(self, observer):
         assert isinstance(observer, ObjectObserver), repr(observer)
+        log.debug('-- Object.subscribe self=%s, observer=%s/%r', id(self), id(observer), observer)
         self._observers.add(observer)
 
     def unsubscribe(self, observer):
