@@ -10,7 +10,7 @@ from ..common.route_storage import RouteRepository
 class FileRouteRepository(RouteRepository):
 
     fext = '.route.json'
-    encoding = 'json_pretty'
+    encoding = 'json'
 
     def __init__(self, dir):
         self.dir = dir

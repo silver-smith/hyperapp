@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state.json')
 STATE_REQUIREMENTS_FILE_PATH = os.path.expanduser('~/.hyperapp.state.requirements.json')
-STATE_FILE_ENCODING = 'json_pretty'
+STATE_FILE_ENCODING = 'json'
 
 
 class ApplicationStateStorage(object):

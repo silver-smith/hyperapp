@@ -29,7 +29,7 @@ from . import proxy_list_object
 
 
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
-CACHE_CONTENTS_ENCODING = 'json_pretty'
+CACHE_CONTENTS_ENCODING = 'json'
 CACHE_FILE_EXT = '.json'
 TYPE_MODULE_EXT = '.types'
 DYN_MODULE_EXT = '.dyn.py'

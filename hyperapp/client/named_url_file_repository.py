@@ -53,7 +53,7 @@ class NamedUrlRepository(object, metaclass=abc.ABCMeta):
 class FileNamedUrlRepository(NamedUrlRepository):
 
     fext = '.url.json'
-    encoding = 'json_pretty'
+    encoding = 'json'
 
     def __init__(self, iface_registry, dir):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
