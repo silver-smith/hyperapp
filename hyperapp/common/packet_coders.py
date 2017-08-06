@@ -34,6 +34,6 @@ class PacketCoders(object):
 
 
 packet_coders = PacketCoders()
-packet_coders.register('json', JsonEncoder(pretty=True), JsonDecoder())
+packet_coders.register('json', JsonEncoder(), JsonDecoder())
 packet_coders.register('yaml', YamlEncoder(), YamlDecoder())
 packet_coders.register('cdr', CdrEncoder(), CdrDecoder())

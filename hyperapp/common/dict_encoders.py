@@ -84,7 +84,7 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
 
 class JsonEncoder(DictEncoder):
 
-    def __init__(self, pretty=False):
+    def __init__(self, pretty=True):
         self.pretty = pretty
 
     def _dict_to_str(self, value):
