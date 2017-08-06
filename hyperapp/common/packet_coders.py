@@ -1,7 +1,3 @@
-from .dict_encoders import JsonEncoder, YamlEncoder
-from .dict_decoders import JsonDecoder, YamlDecoder
-from .cdr_encoder import CdrEncoder
-from .cdr_decoder import CdrDecoder
 
     
 class Coders(object):
@@ -34,6 +30,3 @@ class PacketCoders(object):
 
 
 packet_coders = PacketCoders()
-packet_coders.register('json', JsonEncoder(), JsonDecoder())
-packet_coders.register('yaml', YamlEncoder(), YamlDecoder())
-packet_coders.register('cdr', CdrEncoder(), CdrDecoder())
