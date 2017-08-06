@@ -11,9 +11,6 @@ def join_path(*args):
 
 class Type(object):
 
-    def __call__(self, *args, **kw):
-        return self.instantiate(*args, **kw)
-
     def __instancecheck__(self, value):
         raise NotImplementedError(self.__class__)
 
@@ -158,6 +155,9 @@ class TRecord(Type):
         if cls is self:
             return True
         return issubclass(cls.base, self)
+
+    def __call__(self, *args, **kw):
+        return self.instantiate(*args, **kw)
 
     def get_fields(self):
         return self.fields
