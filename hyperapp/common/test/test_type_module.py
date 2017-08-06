@@ -20,6 +20,7 @@ from hyperapp.common.type_module import (
     load_types_file,
     resolve_typedefs,
     )
+from hyperapp.common import dict_coders, cdr_coders
 
 
 class TypeModuleTest(unittest.TestCase):

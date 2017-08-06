@@ -15,6 +15,8 @@ from .htypes import (
     TRecord,
     TList,
     TIndexedList,
+    DecodableEmbedded,
+    TEmbedded,
     TSwitchedRec,
     THierarchy,
     )
@@ -25,6 +27,12 @@ def join_path(*args):
 
 
 class DecodeError(Exception): pass
+
+
+class DictDecodableEmbedded(DecodableEmbedded):
+
+    def decode(self, t):
+        return DictDecoder().decode_dict(t, self.data, path='embedded')
 
 
 class DictDecoder(object, metaclass=abc.ABCMeta):
@@ -84,6 +92,26 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         fields = self.decode_record_fields(t, value, path)
         return t(**fields)
 
+    @dispatch.register(TList)
+    def decode_list(self, t, value, path):
+        self.expect_type(path, isinstance(value, list), value, 'list')
+        return [self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
+                for idx, elt in enumerate(value)]
+
+    @dispatch.register(TIndexedList)
+    def decode_list(self, t, value, path):
+        self.expect_type(path, isinstance(value, list), value, 'list')
+        decoded_elts = []
+        for idx, elt in enumerate(value):
+            decoded_elt = self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
+            setattr(decoded_elt, 'idx', idx)
+            decoded_elts.append(decoded_elt)
+        return decoded_elts
+
+    @dispatch.register(TEmbedded)
+    def decode_embedded(self, t, value, path):
+        return DictDecodableEmbedded(value)
+
     @dispatch.register(THierarchy)
     def decode_hierarchy_obj(self, t, value, path):
         self.expect_type(path, isinstance(value, dict), value, 'hierarchy object (dict)')
@@ -108,22 +136,6 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
             elif not isinstance(field.type, TOptional):
                 self.failure(path, 'field %r is missing' % field.name)
         return fields
-
-    @dispatch.register(TList)
-    def decode_list(self, t, value, path):
-        self.expect_type(path, isinstance(value, list), value, 'list')
-        return [self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
-                for idx, elt in enumerate(value)]
-
-    @dispatch.register(TIndexedList)
-    def decode_list(self, t, value, path):
-        self.expect_type(path, isinstance(value, list), value, 'list')
-        decoded_elts = []
-        for idx, elt in enumerate(value):
-            decoded_elt = self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
-            setattr(decoded_elt, 'idx', idx)
-            decoded_elts.append(decoded_elt)
-        return decoded_elts
 
 
 

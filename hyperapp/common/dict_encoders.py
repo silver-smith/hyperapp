@@ -13,6 +13,8 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
+    EncodableEmbedded,
+    TEmbedded,
     TSwitchedRec,
     THierarchy,
     Interface,
@@ -20,6 +22,9 @@ from .htypes import (
 
 
 class DictEncoder(object, metaclass=abc.ABCMeta):
+
+    def __init__(self, encoding):
+        self._encoding = encoding
 
     def encode(self, t, value):
         return self._dict_to_str(self.dispatch(t, value)).encode()
@@ -60,6 +65,15 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
             fields[field.name] = self.dispatch(field.type, attr)
         return fields
 
+    @dispatch.register(TList)
+    def encode_list(self, t, value):
+        return [self.dispatch(t.element_t, elt) for elt in value]
+
+    @dispatch.register(TEmbedded)
+    def encode_embedded(self, t, value):
+        assert isinstance(value, EncodableEmbedded), repr(value)
+        return self.dispatch(value.type, value.value)
+
     @dispatch.register(TSwitchedRec)
     def encode_switched_record(self, t, value):
         fields = {}
@@ -77,18 +91,15 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
         return dict(self.dispatch(tclass.get_trecord(), value),
                     _class_id=self.dispatch(tString, tclass.id))
 
-    @dispatch.register(TList)
-    def encode_list(self, t, value):
-        return [self.dispatch(t.element_t, elt) for elt in value]
-
 
 class JsonEncoder(DictEncoder):
 
-    def __init__(self, pretty=True):
-        self.pretty = pretty
+    def __init__(self, encoding, pretty=True):
+        DictEncoder.__init__(self, encoding)
+        self._pretty = pretty
 
     def _dict_to_str(self, value):
-        return json.dumps(value, indent=4 if self.pretty else None)
+        return json.dumps(value, indent=4 if self._pretty else None)
 
 
 class YamlEncoder(DictEncoder):

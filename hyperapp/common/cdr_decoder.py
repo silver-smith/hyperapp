@@ -12,6 +12,8 @@ from .htypes import (
     TRecord,
     TList,
     TIndexedList,
+    DecodableEmbedded,
+    TEmbedded,
     THierarchy,
     TSwitchedRec,
     )
@@ -25,6 +27,12 @@ def join_path(*args):
 
 
 class DecodeError(Exception): pass
+
+
+class CdrDecodableEmbedded(DecodableEmbedded):
+
+    def decode(self, t):
+        return CdrDecoder().decode(t, self.data, path='embedded')
 
 
 class CdrDecoder(object):
@@ -121,13 +129,6 @@ class CdrDecoder(object):
             elt = self.dispatch(field.type, join_path(path, field.name))
             fields[field.name] = elt
         return fields
-        
-    @dispatch.register(THierarchy)
-    def decode_hierarchy_obj(self, t, path):
-        class_id = self.read_unicode(path)
-        tclass = t.resolve(class_id)
-        fields = self.decode_record_fields(tclass.get_trecord(), path)
-        return tclass(**fields)
 
     @dispatch.register(TList)
     def decode_list(self, t, path):
@@ -149,3 +150,14 @@ class CdrDecoder(object):
             setattr(elt, 'idx', idx)
             elements.append(elt)
         return elements
+
+    @dispatch.register(TEmbedded)
+    def decode_embedded(self, t, path):
+        return CdrDecodableEmbedded(value)
+        
+    @dispatch.register(THierarchy)
+    def decode_hierarchy_obj(self, t, path):
+        class_id = self.read_unicode(path)
+        tclass = t.resolve(class_id)
+        fields = self.decode_record_fields(tclass.get_trecord(), path)
+        return tclass(**fields)

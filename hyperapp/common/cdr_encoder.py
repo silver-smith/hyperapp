@@ -10,6 +10,8 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
+    EncodableEmbedded,
+    TEmbedded,
     THierarchy,
     TSwitchedRec,
     )
@@ -75,6 +77,17 @@ class CdrEncoder(object):
         for field in t.get_fields():
             self.dispatch(field.type, getattr(value, field.name))
 
+    @dispatch.register(TList)
+    def encode_list(self, t, value):
+        self.write_int(len(value))
+        for elt in value:
+            self.dispatch(t.element_t, elt)
+
+    @dispatch.register(TEmbedded)
+    def encode_embedded(self, t, value):
+        assert isinstance(value, EncodableEmbedded), repr(value)
+        return self.dispatch(value.type, value.value)
+
     @dispatch.register(TSwitchedRec)
     def encode_switched(self, t, value):
         static_dict = {}
@@ -90,9 +103,3 @@ class CdrEncoder(object):
         tclass = t.resolve_obj(value)
         self.write_unicode(tclass.id)
         self.dispatch(tclass.get_trecord(), value)
-
-    @dispatch.register(TList)
-    def encode_list(self, t, value):
-        self.write_int(len(value))
-        for elt in value:
-            self.dispatch(t.element_t, elt)

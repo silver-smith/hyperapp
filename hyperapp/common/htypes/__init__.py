@@ -1,5 +1,6 @@
 from .htypes import *
 from .hierarchy import *
+from .embedded import *
 from .switched import *
 from .meta_type import*
 from .request import *
