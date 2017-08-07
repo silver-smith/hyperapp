@@ -1,3 +1,5 @@
+# Embedded type embed seamlessly into encoded data: json included as json, cdr as tBinary
+
 import abc
 from .htypes import Type
 from ..packet_coders import packet_coders
