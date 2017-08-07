@@ -4,6 +4,7 @@ from .method_dispatch import method_dispatch
 from .htypes import (
     TString,
     TBinary,
+    tBinary,
     TInt,
     TBool,
     TDateTime,
@@ -153,7 +154,8 @@ class CdrDecoder(object):
 
     @dispatch.register(TEmbedded)
     def decode_embedded(self, t, path):
-        return CdrDecodableEmbedded(value)
+        data = self.dispatch(tBinary, path)
+        return CdrDecodableEmbedded(data)
         
     @dispatch.register(THierarchy)
     def decode_hierarchy_obj(self, t, path):

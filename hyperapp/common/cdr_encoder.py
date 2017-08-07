@@ -3,6 +3,7 @@ from .method_dispatch import method_dispatch
 from .htypes import (
     TString,
     TBinary,
+    tBinary,
     TInt,
     TBool,
     TDateTime,
@@ -54,7 +55,7 @@ class CdrEncoder(object):
         self.write_bool(value)
 
     @dispatch.register(TBinary)
-    def encode_primitive(self, t, value):
+    def encode_binary(self, t, value):
         self.write_binary(value)
 
     @dispatch.register(TString)
@@ -69,7 +70,7 @@ class CdrEncoder(object):
     def encode_optional(self, t, value):
         self.write_bool(value is not None)
         if value is not None:
-            return self.dispatch(t.base_t, value)
+            self.dispatch(t.base_t, value)
 
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
@@ -86,7 +87,8 @@ class CdrEncoder(object):
     @dispatch.register(TEmbedded)
     def encode_embedded(self, t, value):
         assert isinstance(value, EncodableEmbedded), repr(value)
-        return self.dispatch(value.type, value.value)
+        data = CdrEncoder().encode(value.type, value.value)
+        self.dispatch(tBinary, data)
 
     @dispatch.register(TSwitchedRec)
     def encode_switched(self, t, value):
