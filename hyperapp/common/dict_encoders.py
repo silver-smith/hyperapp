@@ -95,7 +95,7 @@ class JsonEncoder(DictEncoder):
         self._pretty = pretty
 
     def _dict_to_str(self, value):
-        return json.dumps(value, indent=4 if self._pretty else None)
+        return json.dumps(value, indent=2 if self._pretty else None)
 
 
 class YamlEncoder(DictEncoder):
