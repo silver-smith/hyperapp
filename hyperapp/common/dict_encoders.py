@@ -23,9 +23,6 @@ from .htypes import (
 
 class DictEncoder(object, metaclass=abc.ABCMeta):
 
-    def __init__(self, encoding):
-        self._encoding = encoding
-
     def encode(self, t, value):
         return self._dict_to_str(self.dispatch(t, value)).encode()
 
@@ -94,8 +91,7 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
 
 class JsonEncoder(DictEncoder):
 
-    def __init__(self, encoding, pretty=True):
-        DictEncoder.__init__(self, encoding)
+    def __init__(self, pretty=True):
         self._pretty = pretty
 
     def _dict_to_str(self, value):
