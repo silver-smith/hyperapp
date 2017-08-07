@@ -18,6 +18,7 @@ from .htypes import (
     THierarchy,
     TSwitchedRec,
     )
+from .packet_coders import DecodeError
 
 
 MAX_SANE_LIST_SIZE = 1 << 60
@@ -25,9 +26,6 @@ MAX_SANE_LIST_SIZE = 1 << 60
 
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
-
-
-class DecodeError(Exception): pass
 
 
 class CdrDecodableEmbedded(DecodableEmbedded):

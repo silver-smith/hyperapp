@@ -20,13 +20,11 @@ from .htypes import (
     TSwitchedRec,
     THierarchy,
     )
+from .packet_coders import DecodeError
 
 
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
-
-
-class DecodeError(Exception): pass
 
 
 class DictDecodableEmbedded(DecodableEmbedded):

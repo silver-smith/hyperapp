@@ -1,5 +1,9 @@
 
-    
+
+class DecodeError(Exception):
+    pass
+
+
 class Coders(object):
 
     def __init__(self, encoder, decoder):
