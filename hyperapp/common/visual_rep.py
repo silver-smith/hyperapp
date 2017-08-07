@@ -12,6 +12,7 @@ from .htypes import (
     TOptional,
     TRecord,
     TList,
+    TEmbedded,
     TSwitchedRec,
     THierarchy,
     Interface,
@@ -71,6 +72,17 @@ class VisualRepEncoder(object):
             return RepNode('None')
         return self.dispatch(t.base_t, value)
 
+    @dispatch.register(TList)
+    def encode_list(self, t, value):
+        if t is tPath:
+            return self.encode_path(value)
+        if self._packet_types and t is self._packet_types.requirement:
+            return RepNode('requirement: %s' % '/'.join(value))
+        if self._packet_types and t is self._resource_types.resource_id:
+            return RepNode(encode_path(value))
+        children = [self.dispatch(t.element_t, elt) for elt in value]
+        return RepNode('list (with %d elements)' % len(value), children)
+
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
@@ -113,6 +125,10 @@ class VisualRepEncoder(object):
             children.append(self.field_rep(field, value))
         return children
 
+    @dispatch.register(TEmbedded)
+    def encode_list(self, t, value):
+        return RepNode('<embedded>')
+
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj(self, t, value):
         tclass = t.resolve_obj(value)
@@ -122,17 +138,6 @@ class VisualRepEncoder(object):
     def field_rep(self, field, value):
         rep = self.dispatch(field.type, getattr(value, field.name))
         return RepNode('%s=%s' % (field.name, rep.text), rep.children)
-
-    @dispatch.register(TList)
-    def encode_list(self, t, value):
-        if t is tPath:
-            return self.encode_path(value)
-        if self._packet_types and t is self._packet_types.requirement:
-            return RepNode('requirement: %s' % '/'.join(value))
-        if self._packet_types and t is self._resource_types.resource_id:
-            return RepNode(encode_path(value))
-        children = [self.dispatch(t.element_t, elt) for elt in value]
-        return RepNode('list (with %d elements)' % len(value), children)
 
     def encode_path(self, obj):
         return RepNode(encode_path(obj))
