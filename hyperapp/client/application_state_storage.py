@@ -3,10 +3,10 @@
 import os.path
 import logging
 from ..common.util import encode_path, decode_path, flatten
-from ..common.htypes import TList, TRecord, Field, tString
+from ..common.htypes import TList, TRecord, Field, tString, tEmbedded, EncodableEmbedded
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
-from ..common.packet_coders import packet_coders
+from ..common.packet_coders import DecodeError, packet_coders
 from .remoting import RequestError
 from . import window
 
@@ -14,7 +14,6 @@ log = logging.getLogger(__name__)
 
 
 STATE_FILE_PATH = os.path.expanduser('~/.hyperapp.state.json')
-STATE_REQUIREMENTS_FILE_PATH = os.path.expanduser('~/.hyperapp.state.requirements.json')
 STATE_FILE_ENCODING = 'json'
 
 
@@ -33,10 +32,11 @@ class ApplicationStateStorage(object):
         self._module_manager = module_manager
         self._resources_manager = resources_manager
         self._code_repository = code_repository
-        self._state_requirements_type = TRecord([
+        self._state_with_requirements_type = TRecord([
             Field('module_ids', TList(tString)),
             Field('code_modules', TList(packet_types.module)),
             Field('resource_rec_list', resource_types.resource_rec_list),
+            Field('state', tEmbedded),
             ])
         self._state_type = TList(window.get_state_type())
         
@@ -55,11 +55,10 @@ class ApplicationStateStorage(object):
             log.info('-- code module is stored to state: %r %r (satisfies %s)', module.id, module.fpath, module.satisfies)
         for rec in resources:
             log.info('-- resource is stored to state: %r %r', encode_path(rec.id), rec.resource)
-        with open(STATE_REQUIREMENTS_FILE_PATH, 'wb') as f:
-            state_requirements = self._state_requirements_type(module_ids, code_modules, resources)
-            f.write(packet_coders.encode(STATE_FILE_ENCODING, state_requirements, self._state_requirements_type))
+        state_with_requirements = self._state_with_requirements_type(
+            module_ids, code_modules, resources, EncodableEmbedded(state, self._state_type))
         with open(STATE_FILE_PATH, 'wb') as f:
-            f.write(packet_coders.encode(STATE_FILE_ENCODING, state, self._state_type))
+            f.write(packet_coders.encode(STATE_FILE_ENCODING, state_with_requirements, self._state_with_requirements_type))
 
     def _load_required_resources(self, requirements):
         return flatten([self._resources_manager.resolve_starting_with(decode_path(id))
@@ -98,21 +97,21 @@ class ApplicationStateStorage(object):
             return None
 
     def load_state_with_requirements(self, async_loop):
-        state_requirements = self._load_state_file(self._state_requirements_type, STATE_REQUIREMENTS_FILE_PATH)
-        if not state_requirements:
+        state = self._load_state_file(self._state_with_requirements_type, STATE_FILE_PATH)
+        if not state:
             return None
-        log.info('-->8 -- loaded state requirements  ------')
-        pprint(self._state_requirements_type, state_requirements)
+        log.info('-->8 -- loaded state with requirements  ------')
+        pprint(self._state_with_requirements_type, state)
         log.info('--- 8<------------------------')
         log.info('-- code_modules loaded from state: ids=%r, code_modules=%r',
-                 state_requirements.module_ids, [module.fpath for module in state_requirements.code_modules])
-        log.info('-- resources loaded from state: %s', ', '.join(encode_path(rec.id) for rec in state_requirements.resource_rec_list))
-        code_modules = state_requirements.code_modules
-        resources = state_requirements.resource_rec_list
+                 state.module_ids, [module.fpath for module in state.code_modules])
+        log.info('-- resources loaded from state: %s', ', '.join(encode_path(rec.id) for rec in state.resource_rec_list))
+        code_modules = state.code_modules
+        resources = state.resource_rec_list
         try:
             type_module_list, new_code_modules, modules_resources = async_loop.run_until_complete(
                 self._code_repository.get_modules_by_ids(
-                    [module_id for module_id in set(state_requirements.module_ids) if not self._module_manager.has_module(module_id)]))
+                    [module_id for module_id in set(state.module_ids) if not self._module_manager.has_module(module_id)]))
             if new_code_modules is not None:  # has code repositories?
                 code_modules = new_code_modules   # use new versions
             resources += (modules_resources or [])
@@ -121,34 +120,13 @@ class ApplicationStateStorage(object):
             log.warning('Unable to load latest modules and resources, using cached ones: %s' % x)
         self._module_manager.load_code_module_list(code_modules)
         self._resources_manager.register(resources)
-        return self._load_state_file(self._state_type, STATE_FILE_PATH)
+        return state.state.decode(self._state_type)
 
     def _load_state_file(self, t, path):
         try:
             with open(path, 'rb') as f:
                 state_data = f.read()
             return packet_coders.decode(STATE_FILE_ENCODING, state_data, t)
-        except (EOFError, IOError, IndexError, UnicodeDecodeError) as x:
+        except (EOFError, IOError, IndexError, UnicodeDecodeError, DecodeError) as x:
             log.info('Error loading %r: %r', path, x)
             return None
-
-    def _load_state_with_requirements(self):
-        state_requirements = self._load_state_file(self._state_requirements_type, STATE_REQUIREMENTS_FILE_PATH)
-        if not state_requirements:
-            return None
-        log.info('-->8 -- loaded state requirements  ------')
-        pprint(self._state_requirements_type, state_requirements)
-        log.info('--- 8<------------------------')
-        log.info('-- code_modules loaded from state: ids=%r, code_modules=%r',
-                 state_requirements.module_ids, [module.fpath for module in state_requirements.code_modules])
-        log.info('-- resources loaded from state: %s', ', '.join(encode_path(rec.id) for rec in state_requirements.resource_rec_list))
-        type_module_list, new_code_modules, modules_resources = self._loop.run_until_complete(
-            self._code_repository.get_modules_by_ids(
-                [module_id for module_id in set(state_requirements.module_ids) if not self._module_manager.has_module(module_id)]))
-        code_modules = state_requirements.code_modules
-        if new_code_modules is not None:  # has code repositories?
-            code_modules = new_code_modules   # use new versions
-        self._type_module_repository.add_all_type_modules(type_module_list or [])
-        self._module_manager.load_code_module_list(code_modules)
-        self._resources_manager.register(state_requirements.resource_rec_list + (modules_resources or []))
-        return self._load_state_file(self._state_type, STATE_FILE_PATH)
