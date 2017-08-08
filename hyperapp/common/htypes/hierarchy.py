@@ -10,7 +10,7 @@ class TClassRecord(Record):
         self._class = tclass
 
     def __repr__(self):
-        return 'ClassRecord<%s: %s>' % (self._class.id, ', '.join(
+        return 'ClassRecord<%s.%s: %s>' % (self._class.hierarchy.hierarchy_id, self._class.id, ', '.join(
             '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
 
     # public

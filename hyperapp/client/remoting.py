@@ -97,7 +97,7 @@ class Transport(metaclass=abc.ABCMeta):
         server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.client_packet, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
-        payload = packet_coders.encode(encoding, request_or_notification.to_data(), self._request_types.client_packet)
+        payload = request_or_notification.to_data()
         return self._packet_types.packet(aux_info, payload)
 
     @asyncio.coroutine

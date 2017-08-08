@@ -31,6 +31,7 @@ def builtin_type_registry():
         tDateTime,
         ]:
         registry.register(t.type_name, t)
+    registry.register('embedded', tEmbedded)
     registry.register('iface_id', tIfaceId)
     registry.register('path', tPath)
     registry.register('url', tUrl)

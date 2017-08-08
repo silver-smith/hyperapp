@@ -32,13 +32,13 @@ def register_object_implementations(registry, services):
 
 
 @asyncio.coroutine
-def execute_get_request(request_types, remoting, url):
+def execute_get_request(packet_types, remoting, url):
     assert isinstance(url, Url), repr(url)
     server = Server.from_public_key(remoting, url.public_key)
     request_id = str(uuid.uuid4())
     command_id = 'get'
     params = url.iface.make_params(command_id)
-    request = Request(request_types, url.iface, url.path, command_id, request_id, params)
+    request = Request(packet_types, url.iface, url.path, command_id, request_id, params)
     response = yield from server.execute_request(request)
     return response.result.handle
 
@@ -78,19 +78,19 @@ class ProxyObject(Object):
 
     @classmethod
     def register(cls, registry, services):
-        registry.register(cls.objimpl_id, cls.from_state, services.types.request, services.types.core,
+        registry.register(cls.objimpl_id, cls.from_state, services.types.packet, services.types.core,
                           services.iface_registry, services.remoting, services.proxy_registry,
                           services.cache_repository, services.resources_manager, services.param_editor_registry)
 
     @classmethod
-    def from_state( cls, state, request_types, core_types, iface_registry, remoting,
+    def from_state( cls, state, packet_types, core_types, iface_registry, remoting,
                     proxy_registry, cache_repository, resources_manager, param_editor_registry ):
         assert isinstance(state, core_types.proxy_object), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
         server = Server.from_public_key(remoting, server_public_key)
         iface = iface_registry.resolve(state.iface)
         facets = [iface_registry.resolve(facet) for facet in state.facets]
-        object = cls.produce_obj(request_types, core_types, iface_registry, proxy_registry, cache_repository,
+        object = cls.produce_obj(packet_types, core_types, iface_registry, proxy_registry, cache_repository,
                                  resources_manager, param_editor_registry, server, state.path, iface, facets)
         if isinstance(state, core_types.proxy_object_with_contents):  # is it a response?
             object.set_contents(state.contents)
@@ -98,26 +98,26 @@ class ProxyObject(Object):
 
     # we avoid making proxy objects with same server+path
     @classmethod
-    def produce_obj( cls, request_types, core_types, iface_registry, proxy_registry, cache_repository,
+    def produce_obj( cls, packet_types, core_types, iface_registry, proxy_registry, cache_repository,
                      resources_manager, param_editor_registry, server, path, iface, facets ):
         object = proxy_registry.resolve(server, path)
         if object is not None:
             log.info('> proxy object is resolved from registry: %r', id(object))
             return object
-        object = cls(request_types, core_types, iface_registry, cache_repository,
+        object = cls(packet_types, core_types, iface_registry, cache_repository,
                      resources_manager, param_editor_registry, server, path, iface, facets)
         proxy_registry.register(server, path, object)
         log.info('< proxy object is registered in registry: %r', id(object))
         return object
 
-    def __init__( self, request_types, core_types, iface_registry, cache_repository,
+    def __init__( self, packet_types, core_types, iface_registry, cache_repository,
                   resources_manager, param_editor_registry, server, path, iface, facets=None ):
         assert is_list_inst(path, str), repr(path)
         assert isinstance(iface, Interface), repr(iface)
         assert facets is None or is_list_inst(facets, Interface), repr(facets)
         log.debug('new ProxyObject self=%r path=%r', id(self), path)
         Object.__init__(self)
-        self._request_types = request_types
+        self._packet_types = packet_types
         self._core_types = core_types
         self.iface_registry = iface_registry
         self.server = server
@@ -184,12 +184,12 @@ class ProxyObject(Object):
     # prepare request which does not require/expect response
     def prepare_notification(self, command_id, *args, **kw):
         params = self.iface.make_params(command_id, *args, **kw)
-        return ClientNotification(self._request_types, self.iface, self.path, command_id, params=params)
+        return ClientNotification(self._packet_types, self.iface, self.path, command_id, params=params)
 
     def prepare_request(self, command_id, *args, **kw):
         request_id = str(uuid.uuid4())
         params = self.iface.make_params(command_id, *args, **kw)
-        return Request(self._request_types, self.iface, self.path, command_id, request_id, params)
+        return Request(self._packet_types, self.iface, self.path, command_id, request_id, params)
 
     @asyncio.coroutine
     def send_notification(self, command_id, *args, **kw):

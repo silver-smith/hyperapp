@@ -22,6 +22,42 @@ aux_info = record:
     routes: server_routes list
     resources: resource_rec_list
 
+
+payload = hierarchy packet_payload
+
+client_packet = payload class client_packet:
+    iface: iface_id
+    path: path
+    command_id: string
+    params: embedded
+
+client_notification = payload class client_notification(client_packet)
+
+client_request = payload class client_request(client_packet):
+    request_id: string
+
+update = record:
+    iface: iface_id
+    path: path
+    diff: embedded
+
+server_packet = payload class server_packet:
+    update_list: update list
+
+server_notification = payload class server_notification(server_packet)
+
+server_response = payload class server_response(server_packet):
+    iface: iface_id
+    command_id: string
+    request_id: string
+
+server_result_response = payload class server_result_response(server_response):
+    result: embedded
+
+server_error_response = payload class server_error_response(server_response):
+    error: embedded
+
+
 packet = record:
     aux_info: aux_info
-    payload: binary
+    payload: payload

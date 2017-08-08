@@ -8,6 +8,7 @@ from hyperapp.common.htypes import (
     builtin_type_registry,
     )
 from hyperapp.common.url import UrlWithRoutes
+from hyperapp.common import dict_coders, cdr_coders
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
 from hyperapp.common.services import ServicesBase
@@ -130,7 +131,7 @@ class RealRequestTest(unittest.TestCase):
 
     def setUp(self):
         self.services = Services()
-        self.request_types = self.services.types.request
+        self.packet_types = self.services.types.packet
 
     def tearDown(self):
         self.services.module_manager.unregister_meta_hook()
@@ -149,14 +150,14 @@ class RealRequestTest(unittest.TestCase):
     def run_get_request(self):
         url = self.load_url_from_file()
         request = Request(
-            request_types=self.request_types,
+            packet_types=self.packet_types,
             iface=url.iface,
             path=url.path,
             command_id='get',
             request_id='test-001',
             params=url.iface.get_command('get').params_type(),
             )
-        pprint(self.request_types.client_packet, request.to_data())
+        pprint(self.packet_types.client_packet, request.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = yield from (asyncio.wait_for(server.execute_request(request), timeout=0.5))
         self.assertIsInstance(response, Response)
@@ -167,13 +168,13 @@ class RealRequestTest(unittest.TestCase):
     def run_unsubscribe_notification(self):
         url = self.load_url_from_file()
         notification = ClientNotification(
-            request_types=self.request_types,
+            packet_types=self.packet_types,
             iface=url.iface,
             path=url.path,
             command_id='unsubscribe',
             params=url.iface.get_command('unsubscribe').params_type(),
             )
-        pprint(self.request_types.client_packet, notification.to_data())
+        pprint(self.packet_types.client_packet, notification.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = yield from (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
         self.assertEqual(None, response)

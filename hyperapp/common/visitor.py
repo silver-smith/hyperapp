@@ -3,6 +3,7 @@ from .htypes import (
     TPrimitive,
     TOptional,
     TRecord,
+    TEmbedded,
     TSwitchedRec,
     THierarchy,
     TList,
@@ -44,6 +45,10 @@ class Visitor(object):
         if isinstance(t, TSwitchedRec):
             field = t.get_dynamic_field(fields)
             self.dispatch(field.type, getattr(value, field.name))
+            
+    @dispatch.register(TEmbedded)
+    def process_embedded(self, t, value):
+        pass
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj(self, t, value):

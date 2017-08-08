@@ -80,13 +80,13 @@ class CodeRepositoryProxy(ProxyObject):
     def from_url(cls, iface_registry, remoting, cache_repository, url):
         assert isinstance(url, Url), repr(url)
         server = Server.from_public_key(remoting, url.public_key)
-        return cls(this_module.request_types, core_types, iface_registry, cache_repository,
+        return cls(this_module.packet_types, core_types, iface_registry, cache_repository,
                    this_module.resources_manager, this_module.param_editor_registry, server, url.path, url.iface)
         
-    def __init__( self, request_types, core_types, iface_registry, cache_repository,
+    def __init__( self, packet_types, core_types, iface_registry, cache_repository,
                   resources_manager, param_editor_registry, server, path, iface, facets=None ):
         assert iface is code_repository_types.code_repository, repr(iface.iface_id)
-        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository,
+        ProxyObject.__init__(self, packet_types, core_types, iface_registry, cache_repository,
                              resources_manager, param_editor_registry, server, path, iface, facets)
 
     @asyncio.coroutine
@@ -193,7 +193,7 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self.request_types = services.types.request
+        self.packet_types = services.types.packet
         self.resources_manager = services.resources_manager
         self.param_editor_registry = services.param_editor_registry
         services.code_repository = CodeRepository(
