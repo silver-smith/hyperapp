@@ -208,7 +208,7 @@ class ServerTest(unittest.TestCase):
         self.request_types = self.services.types.request
         self.packet_types = self.services.types.packet
         self.iface_registry = self.services.iface_registry
-        test_iface.register_types(self.request_types, self.services.types.core)
+        test_iface.register_types(self.services.types.core)
         self.iface_registry.register(test_iface)
         self._init_test_module()
         self.server = Server(self.packet_types, self.services.types.core, server_identity)

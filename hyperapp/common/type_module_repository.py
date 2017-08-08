@@ -133,5 +133,5 @@ class TypeModuleRepository(object):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
             assert self._core_types  # 'core' module must be loaded first
-            t.register_types(self._request_types, self._core_types)
+            t.register_types(self._core_types)
             self._iface_registry.register(t)

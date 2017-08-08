@@ -96,17 +96,12 @@ class Interface(object):
             assert diff_type is None, repr(diff_type)  # Inherited from base
             self.diff_type = base.diff_type
 
-    def register_types(self, request_types, core_types):
+    def register_types(self, core_types):
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
         self._bound_commands = list(map(self._resolve_and_bind_command, self.get_basic_commands(core_types) + self._unbound_commands))
         self._id2command = dict((cmd.command_id, cmd) for cmd in self._bound_commands)
         self._tObject = core_types.object.register(
             self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
-        log.debug('### registered object %r in %r', self.iface_id, id(core_types.object))
-        request_types.update.register((self.iface_id,), self.diff_type)
-        for cmd_id, command in self._id2command.items():
-            request_types.client_notification_rec.register((self.iface_id, cmd_id), self._id2command[cmd_id].params_type)
-            request_types.result_response_rec.register((self.iface_id, cmd_id), self._id2command[cmd_id].result_type)
 
     def __eq__(self, other):
         return (isinstance(other, Interface) and
