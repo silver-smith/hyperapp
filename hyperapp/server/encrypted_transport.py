@@ -21,7 +21,6 @@ from ..common.identity import PublicKey
 from .request import NotAuthorizedError, PeerChannel, Peer, RequestBase, ServerNotification
 from .remoting import Transport
 from .transport_session import TransportSession
-from .server import Server
 
 log = logging.getLogger(__name__)
 
@@ -69,7 +68,7 @@ class EncryptedTcpSession(TransportSession):
         updates = self.channel._pop_all()
         if not updates:
             return []
-        notification = ServerNotification(self.transport._request_types)
+        notification = ServerNotification(self.transport._packet_types)
         for update in updates:
             notification.add_update(update)
         log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())

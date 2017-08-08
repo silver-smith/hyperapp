@@ -14,9 +14,9 @@ log = logging.getLogger(__name__)
 
 class Server(object):
 
-    def __init__(self, request_types, core_types, identity, test_delay_sec=None):
+    def __init__(self, packet_types, core_types, identity, test_delay_sec=None):
         assert isinstance(identity, Identity), repr(identity)
-        self._request_types = request_types
+        self._packet_types = packet_types
         self._core_types = core_types
         self.identity = identity
         self.test_delay_sec = test_delay_sec  # float
@@ -54,11 +54,11 @@ class Server(object):
         except NotAuthorizedError:
             raise
         except Exception as x:
-            if isinstance(x, self._request_types.error):
+            if isinstance(x, self._packet_types.error):
                 error = x
             else:
                 traceback.print_exc()
-                error = self._request_types.server_error()
+                error = self._packet_types.server_error()
             return request.make_response(error=error)
 
     def _resolve(self, iface, path):
@@ -66,7 +66,7 @@ class Server(object):
 
     def _subscribe_objects(self, peer_channel, response):
         collector = ObjectPathCollector(self._core_types)
-        object_paths = collector.collect(self._request_types.server_packet, response.to_data())
+        object_paths = collector.collect(self._packet_types.server_packet, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)
 

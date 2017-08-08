@@ -64,3 +64,12 @@ packet = record:
 
 
 error = exception_hierarchy error
+
+error_root = error class root
+client_error = error class client(error_root)
+server_error = error class server(error_root)
+
+unknown_client_error = error class unknown_client(client_error)
+
+common_client_error = error class common_client(client_error):
+    message: string

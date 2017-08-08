@@ -30,7 +30,7 @@ class TClass(TRecord):
         self.base = base
 
     def __repr__(self):
-        return '%s(%s: %s)' % (self.__class__.__name__, self.id, ', '.join(map(repr, self.get_fields())))
+        return '%s(%s.%s: %s)' % (self.__class__.__name__, self.hierarchy.hierarchy_id, self.id, ', '.join(map(repr, self.get_fields())))
 
     def __eq__(self, other):
         assert isinstance(other, TClass), repr(other)
@@ -137,7 +137,7 @@ class TExceptionClassRecord(RuntimeError):
         self._class = tclass
 
     def __str__(self):
-        return '<%s: %s>' % (self._class.id, ', '.join(
+        return '<%s.%s: %s>' % (self._class.hierarchy.hierarchy_id, self._class.id, ', '.join(
             '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
 
     def __repr__(self):

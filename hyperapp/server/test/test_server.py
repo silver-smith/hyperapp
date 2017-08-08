@@ -169,7 +169,6 @@ class Services(ServicesBase):
             'resource',
             'core',
             'packet',
-            'error',
             'param_editor',
             'code_repository',
             ])
@@ -212,10 +211,10 @@ class ServerTest(unittest.TestCase):
         test_iface.register_types(self.request_types, self.services.types.core)
         self.iface_registry.register(test_iface)
         self._init_test_module()
-        self.server = Server(self.request_types, self.services.types.core, server_identity)
+        self.server = Server(self.packet_types, self.services.types.core, server_identity)
 
     def _init_test_module(self):
-        self.test_error = self.services.types.packet.error.register('test_error', base=self.services.types.error.client_error, fields=[
+        self.test_error = self.types.packet.error.register('test_error', base=self.types.packet.client_error, fields=[
             Field('invalid_param', tString),
             ])
         self.test_module = TestModule(self.test_error)  # self-registering
@@ -347,13 +346,13 @@ class TransportRequestHandlingTest(ServerTest):
             iface='test_iface',
             path=[TestModule.name, TestObject.class_name, obj_id],
             command_id=command_id,
-            params=test_iface.get_command(command_id).params_type(**kw),
+            params=self.make_params(test_iface, command_id, **kw),
             )
         log.info('Sending client notification:')
         pprint(self.packet_types.client_packet, request)
         request_packet = self.types.packet.packet(
             aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
-            payload=self.encode_packet(transport_id, request, self.request_types.client_packet))
+            payload=request)
         request_packet_data = self.encode_packet(transport_id, request_packet, self.types.packet.packet)
         transport_request = tTransportPacket(
             transport_id=transport_id,
@@ -397,7 +396,8 @@ class TransportRequestHandlingTest(ServerTest):
 
     def _test_tcp_echo_request(self, transport_id):
         response = self.execute_tcp_request(transport_id, obj_id='1', command_id='echo', test_param='hello')
-        self.assertEqual('hello to you too', response.result.test_result)
+        result = response.result.decode(test_iface.get_command('echo').result_type)
+        self.assertEqual('hello to you too', result.test_result)
 
 
     def test_tcp_cdr_check_ok_result_request(self):
@@ -411,7 +411,8 @@ class TransportRequestHandlingTest(ServerTest):
 
     def _test_tcp_check_ok_result_request(self, transport_id):
         response = self.execute_tcp_request(transport_id, obj_id='1', command_id='check_ok', test_param='ok')
-        self.assertEqual('ok', response.result.test_result)
+        result = response.result.decode(test_iface.get_command('check_ok').result_type)
+        self.assertEqual('ok', result.test_result)
 
 
     def test_tcp_cdr_check_ok_error_request(self):
@@ -490,11 +491,11 @@ class TransportRequestHandlingTest(ServerTest):
         notification_packet = notifications[0]
         assert isinstance(notification_packet, tTransportPacket), repr(notification_packet)
         notification = self.decode_tcp_transport_response(session1, transport_id, [notification_packet])
-        self.assertEqual(1, len(notification.updates))
-        update = notification.updates[0]
+        self.assertEqual(1, len(notification.update_list))
+        update = notification.update_list[0]
         self.assertEqual('test_iface', update.iface)
         self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
-        self.assertEqual(message, update.diff)
+        self.assertEqual(message, update.diff.decode(test_iface.diff_type))
 
     def pick_pop_channelge_from_responses(self, transport_id, response_transport_packets):
         for packet in response_transport_packets:
@@ -549,7 +550,8 @@ class TransportRequestHandlingTest(ServerTest):
 
         response = self.decode_tcp_transport_response(self.session_list, transport_id, response_transport_packets)
         self.assertIsNotNone(response)  # now, after pop is received, first request must be processed
-        self.assertEqual('ok', response.result.test_result)
+        result = response.result.decode(test_iface.get_command('required_auth').result_type)
+        self.assertEqual('ok', result.test_result)
 
 
 if __name__ == '__main__':

@@ -50,9 +50,8 @@ class Transport(object):
     def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)
         pprint(self._packet_types.aux_info, aux_info)
-        pprint(self._request_types.server_packet, notification.to_data())
-        payload = packet_coders.encode(payload_encoding, notification.to_data(), self._request_types.server_packet)
-        return self._packet_types.packet(aux_info, payload)
+        pprint(self._packet_types.server_packet, notification.to_data())
+        return self._packet_types.packet(aux_info, notification.to_data())
 
     def process_packet(self, server, peer, transport_packet_data):
         raise NotImplementedError(self.__class__)
