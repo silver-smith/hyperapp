@@ -4,6 +4,7 @@ singledispatch
 PyYAML>=3.12  # under debian requires: libyaml-dev, libpython3-dev
 cryptography>=1.0.2  # under debian requires: libffi-dev:amd64 libssl-dev:amd64
 pytest>=3.0.7
+pytest-capturelog>=0.7
 ply
 
 # installing pyside using pip has following package requirements:
