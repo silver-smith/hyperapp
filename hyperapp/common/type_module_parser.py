@@ -11,6 +11,7 @@ from .htypes import (
     t_list_meta,
     t_record_meta,
     t_hierarchy_meta,
+    t_exception_hierarchy_meta,
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
@@ -29,6 +30,7 @@ keywords = [
     'list',
     'record',
     'hierarchy',
+    'exception_hierarchy',
     'class',
     'interface',
     'list_interface',
@@ -180,9 +182,13 @@ def p_record_def(p):
     p[0] = t_record_meta(p[4])
 
 
-def p_hierarchy_def(p):
+def p_hierarchy_def_1(p):
     'hierarchy_def : HIERARCHY NAME'
     p[0] = t_hierarchy_meta(p[2])
+
+def p_hierarchy_def_2(p):
+    'hierarchy_def : EXCEPTION_HIERARCHY NAME'
+    p[0] = t_exception_hierarchy_meta(p[2])
 
 
 def p_class_def(p):

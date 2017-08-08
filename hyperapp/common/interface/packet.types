@@ -61,3 +61,6 @@ server_error_response = payload class server_error_response(server_response):
 packet = record:
     aux_info: aux_info
     payload: payload
+
+
+error = exception_hierarchy error

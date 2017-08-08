@@ -32,7 +32,7 @@ class RequestBase(object):
 
     @property
     def _embedded_params(self):
-        return EncodableEmbedded(self.params, self._params_t)
+        return EncodableEmbedded(self._params_t, self.params)
 
 
 class ClientNotification(RequestBase):

@@ -15,7 +15,7 @@ from .htypes import (
     TRecord,
     TList,
     )
-from .hierarchy import TClass, THierarchy
+from .hierarchy import TClass, THierarchy, TExceptionHierarchy
 from .interface import IfaceCommand, Interface
 
 
@@ -100,6 +100,8 @@ def record_from_data(meta_registry, name_resolver, rec):
 tHierarchyMeta = tMetaType.register(
     'hierarchy', base=tRootMetaType, fields=[Field('hierarchy_id', tString)])
 
+tExceptionHierarchyMeta = tMetaType.register('exception_hierarchy', base=tHierarchyMeta)
+
 tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, fields=[
     Field('hierarchy', tMetaType),  # tNamed is expected
     Field('class_id', tString),
@@ -110,6 +112,9 @@ tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, 
 def t_hierarchy_meta(hierarchy_id):
     return tHierarchyMeta(tHierarchyMeta.id, hierarchy_id)
 
+def t_exception_hierarchy_meta(hierarchy_id):
+    return tExceptionHierarchyMeta(tExceptionHierarchyMeta.id, hierarchy_id)
+
 def t_hierarchy_class_meta(hierarchy_name, class_id, base_name, fields):
     return tHierarchyClassMeta(tHierarchyClassMeta.id,
                                t_named(hierarchy_name), class_id,
@@ -117,6 +122,9 @@ def t_hierarchy_class_meta(hierarchy_name, class_id, base_name, fields):
 
 def hierarchy_from_data(meta_registry, name_resolver, rec):
     return THierarchy(rec.hierarchy_id)
+
+def exception_hierarchy_from_data(meta_registry, name_resolver, rec):
+    return TExceptionHierarchy(rec.hierarchy_id)
 
 def hierarchy_class_from_data(meta_registry, name_resolver, rec):
     hierarchy = meta_registry.resolve(name_resolver, rec.hierarchy)

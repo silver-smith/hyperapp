@@ -2,6 +2,7 @@ import os
 import logging
 from queue import Queue
 from ..common.util import flatten
+from ..common.request import Update
 from ..common.transport_packet import tTransportPacket
 from ..common.encrypted_packet import (
     ENCODING,
@@ -42,6 +43,7 @@ class EncryptedTcpChannel(PeerChannel):
         return list(reversed(updates))
 
     def send_update(self, update):
+        assert isinstance(update, Update), repr(update)
         log.info('    update to be sent to %r channel %s', self.transport.get_transport_id(), self.get_id())
         self.updates.put(update)
 

@@ -1,5 +1,6 @@
 import logging
 from queue import Queue
+from ..common.request import Update
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
@@ -29,6 +30,7 @@ class TcpChannel(PeerChannel):
         return list(reversed(updates))
 
     def send_update(self, update):
+        assert isinstance(update, Update), repr(update)
         log.info('    update to be sent to %r channel %s', self.transport.get_transport_id(), self.get_id())
         self.updates.put(update)
 

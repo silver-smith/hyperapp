@@ -9,7 +9,7 @@ from ..common.htypes import (
     list_handle_type,
     categorized_list_handle_type,
     )
-from ..common.visual_rep import pprint
+from ..common.request import Update
 from .util import WeakValueMultiDict
 from .command import Commander
 
@@ -33,9 +33,9 @@ class Subscription(object):
         self.path2channel.remove(encode_path(path), peer_channel)
 
     def distribute_update(self, iface, path, diff):
-        update = iface.Update(path, diff)
+        update = Update(iface, path, diff)
         log.info('-- distributing update:')
-        pprint(iface.tUpdate, update)
+        update.pprint()
         for peer_channel in self.path2channel.get(encode_path(path)):
             log.info('-- sending update to %r', peer_channel.get_id())
             peer_channel.send_update(update)

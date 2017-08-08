@@ -7,12 +7,16 @@ from ..packet_coders import packet_coders
 
 class EncodableEmbedded(object):
 
-    def __init__(self, value, t):
-        self.value = value
+    def __init__(self, t, value):
         self.type = t
+        self.value = value
 
     def encode(self, encoding):
         return packet_coders.encode(encoding, self.value, self.type)
+
+    def decode(self, t):
+        assert t == self.type
+        return self.value
 
 
 class DecodableEmbedded(object, metaclass=abc.ABCMeta):

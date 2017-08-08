@@ -28,19 +28,17 @@ class Transport(object):
         self._client_code_repository = services.client_code_repository
 
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
-        request_rec = packet_coders.decode(payload_encoding, packet.payload, self._request_types.client_packet)
         pprint(self._packet_types.aux_info, packet.aux_info)
-        pprint(self._request_types.client_packet, request_rec)
+        pprint(self._request_types.client_packet, packet.payload)
         self._add_routes(packet.aux_info.routes)
-        request = RequestBase.from_data(server, peer, self._request_types, self._core_types, iface_registry, request_rec)
+        request = RequestBase.from_data(server, peer, self._packet_types, self._core_types, iface_registry, packet.payload)
         response_or_notification = server.process_request(request)
         if response_or_notification is None:
             return None
         aux_info = self.prepare_aux_info(response_or_notification)
         pprint(self._packet_types.aux_info, aux_info)
         pprint(self._request_types.server_packet, response_or_notification.to_data())
-        payload = packet_coders.encode(payload_encoding, response_or_notification.to_data(), self._request_types.server_packet)
-        return self._packet_types.packet(aux_info, payload)
+        return self._packet_types.packet(aux_info, response_or_notification.to_data())
 
     def _add_routes(self, routes):
         for srv_routes in routes:

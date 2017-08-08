@@ -32,7 +32,7 @@ def test_embedded(encoding):
         )
     value = t(
         something='some value',
-        embedded=EncodableEmbedded(embedded, embedded_t),
+        embedded=EncodableEmbedded(embedded_t, embedded),
         )
     data = packet_coders.encode(encoding, value, t)
     print('encoded data:', data)

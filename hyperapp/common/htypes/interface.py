@@ -89,12 +89,12 @@ class Interface(object):
         self.iface_id = iface_id
         self.base = base
         self._contents_fields = contents_fields or []
-        self._diff_type = diff_type
+        self.diff_type = diff_type
         self._unbound_commands = commands or []
         if base:
             self._contents_fields = base._contents_fields + self._contents_fields
             assert diff_type is None, repr(diff_type)  # Inherited from base
-            self._diff_type = base._diff_type
+            self.diff_type = base.diff_type
 
     def register_types(self, request_types, core_types):
         self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
@@ -103,18 +103,17 @@ class Interface(object):
         self._tObject = core_types.object.register(
             self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
         log.debug('### registered object %r in %r', self.iface_id, id(core_types.object))
-        request_types.update.register((self.iface_id,), self._diff_type)
+        request_types.update.register((self.iface_id,), self.diff_type)
         for cmd_id, command in self._id2command.items():
             request_types.client_notification_rec.register((self.iface_id, cmd_id), self._id2command[cmd_id].params_type)
             request_types.result_response_rec.register((self.iface_id, cmd_id), self._id2command[cmd_id].result_type)
-        self.tUpdate = request_types.update
 
     def __eq__(self, other):
         return (isinstance(other, Interface) and
                 other.iface_id == self.iface_id and
                 other.base == self.base and
                 other._contents_fields == self._contents_fields and
-                other._diff_type == self._diff_type and
+                other.diff_type == self.diff_type and
                 other._unbound_commands == self._unbound_commands)
 
     def get_object_type(self):
@@ -171,9 +170,6 @@ class Interface(object):
 
     def Contents(self, **kw):
         return self._tContents(**kw)
-
-    def Update(self, path, diff):
-        return self.tUpdate(self.iface_id, path, diff)
         
 
 # all interfaces support this one too:

@@ -1,5 +1,4 @@
-
-error = hierarchy error
+from packet import error
 
 error_root = error class root
 client_error = error class client(error_root)

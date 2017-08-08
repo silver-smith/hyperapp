@@ -56,7 +56,7 @@ class ApplicationStateStorage(object):
         for rec in resources:
             log.info('-- resource is stored to state: %r %r', encode_path(rec.id), rec.resource)
         state_with_requirements = self._state_with_requirements_type(
-            module_ids, code_modules, resources, EncodableEmbedded(state, self._state_type))
+            module_ids, code_modules, resources, EncodableEmbedded(self._state_type, state))
         with open(STATE_FILE_PATH, 'wb') as f:
             f.write(packet_coders.encode(STATE_FILE_ENCODING, state_with_requirements, self._state_with_requirements_type))
 

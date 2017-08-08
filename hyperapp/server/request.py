@@ -1,4 +1,6 @@
 from ..common.util import is_list_inst
+from ..common.htypes import EncodableEmbedded
+from ..common.request import Update
 from ..common.identity import PublicKey
 from ..common.url import Url
 
@@ -34,18 +36,19 @@ class Peer(object):
 class RequestBase(object):
 
     @classmethod
-    def from_data(cls, me, peer, request_types, core_types, iface_registry, rec):
+    def from_data(cls, me, peer, packet_types, core_types, iface_registry, rec):
         assert isinstance(peer, Peer), repr(peer)
-        assert isinstance(rec, request_types.client_packet), repr(rec)
+        assert isinstance(rec, packet_types.client_packet), repr(rec)
         iface = iface_registry.resolve(rec.iface)
-        if isinstance(rec, request_types.request):
-            return Request(request_types, core_types, me, peer, iface, rec.path, rec.command_id, rec.request_id, rec.params)
-        else:
-            assert isinstance(rec, request_types.client_notification), repr(rec)
-            return ClientNotification(request_types, core_types, me, peer, iface, rec.path, rec.command_id, rec.params)
+        params = rec.params.decode(iface.get_command(rec.command_id).params_type)
+        if isinstance(rec, packet_types.client_request):
+            return Request(packet_types, core_types, me, peer, iface, rec.path, rec.command_id, params, rec.request_id)
+        if isinstance(rec, packet_types.client_notification):
+            return ClientNotification(packet_types, core_types, me, peer, iface, rec.path, rec.command_id, params)
+        assert False, 'Unsupported packet type: %s' % rec
 
-    def __init__(self, request_types, core_types, me, peer, iface, path, command_id, params):
-        self._request_types = request_types
+    def __init__(self, packet_types, core_types, me, peer, iface, path, command_id, params):
+        self._packet_types = packet_types
         self._core_types = core_types
         self.me = me      # Server instance
         self.peer = peer
@@ -61,8 +64,8 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__(self, request_types, core_types, me, peer, iface, path, command_id, request_id, params):
-        RequestBase.__init__(self, request_types, core_types, me, peer, iface, path, command_id, params)
+    def __init__(self, packet_types, core_types, me, peer, iface, path, command_id, params, request_id):
+        RequestBase.__init__(self, packet_types, core_types, me, peer, iface, path, command_id, params)
         self.request_id = request_id
 
     def make_response(self, result=None, error=None):
@@ -71,7 +74,7 @@ class Request(RequestBase):
             result = result_type()
         assert result is None or isinstance(result, result_type), \
           '%s.Request.%s.result is expected to be %r, but is %r' % (self.iface.iface_id, self.command_id, result_type, result)
-        return Response(self._request_types, self.peer, self.iface, self.command_id, self.request_id, result, error)
+        return Response(self._packet_types, self.peer, self.iface, self.command_id, self.request_id, result, error)
 
     def make_response_object(self, obj):
         return self.make_response_handle(obj.get_handle(self))
@@ -95,26 +98,37 @@ class Request(RequestBase):
 
 class ResponseBase(object):
 
-    def __init__(self, request_types):
-        self._request_types = request_types
+    def __init__(self, packet_types):
+        self._packet_types = packet_types
         self.updates = []
 
     def add_update(self, update):
-        assert isinstance(update, self._request_types.update), repr(update)
+        assert isinstance(update, Update), repr(update)
         self.updates.append(update)
+
+    @property
+    def _encoded_updates(self):
+        return list(map(self._encode_update, self.updates))
+
+    def _encode_update(self, update):
+        return self._packet_types.update(
+            update.iface.iface_id,
+            update.path,
+            EncodableEmbedded(update.iface.diff_type, update.diff),
+            )
 
 
 class ServerNotification(ResponseBase):
 
     def to_data(self):
-        return self._request_types.server_notification(self.updates)
+        return self._packet_types.server_notification(self._encoded_updates)
 
 
 class Response(ResponseBase):
 
-    def __init__(self, request_types, peer, iface, command_id, request_id, result=None, error=None):
+    def __init__(self, packet_types, peer, iface, command_id, request_id, result=None, error=None):
         assert isinstance(peer, Peer), repr(peer)
-        ResponseBase.__init__(self, request_types)
+        ResponseBase.__init__(self, packet_types)
         self.peer = peer
         self.iface = iface
         self.command_id = command_id
@@ -124,6 +138,8 @@ class Response(ResponseBase):
 
     def to_data(self):
         if self.error is not None:
-            return self._request_types.error_response(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.error)
+            error = EncodableEmbedded(self._packet_types.error, self.error)
+            return self._packet_types.server_error_response(self._encoded_updates, self.iface.iface_id, self.command_id, self.request_id, error)
         else:
-            return self._request_types.result_response(self.updates, self.iface.iface_id, self.command_id, self.request_id, self.result)
+            result = EncodableEmbedded(self.iface.get_command(self.command_id).result_type, self.result)
+            return self._packet_types.server_result_response(self._encoded_updates, self.iface.iface_id, self.command_id, self.request_id, result)
