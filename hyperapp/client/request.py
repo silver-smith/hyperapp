@@ -1,9 +1,11 @@
+from ..common.util import is_list_inst
 from ..common.htypes import (
     EncodableEmbedded,
     tEmbedded,
     Interface,
     IfaceRegistry,
     )
+from ..common.request import Update
 from ..common.identity import PublicKey
 
 
@@ -58,21 +60,24 @@ class ResponseBase(object):
     def from_data(cls, packet_types, iface_registry, server_public_key, rec):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(rec, packet_types.server_packet), repr(rec)
-        
-        if isinstance(rec, packet_types.response):
+
+        updates = [Update.from_data(iface_registry, update) for update in rec.update_list]
+
+        if isinstance(rec, packet_types.server_response):
             iface = iface_registry.resolve(rec.iface)
             result = error = None
-            if isinstance(rec, packet_types.result_response):
-                result = rec.result
-            if isinstance(rec, packet_types.error_response):
-                error = rec.error
-            return Response(packet_types, server_public_key, rec.updates, iface, rec.command_id, rec.request_id, result, error)
-        else:
-            assert isinstance(rec, packet_types.server_notification), repr(rec)
-            return ServerNotification(packet_types, server_public_key, rec.updates)
+            if isinstance(rec, packet_types.server_result_response):
+                result = rec.result.decode(iface.get_command(rec.command_id).result_type)
+            if isinstance(rec, packet_types.server_error_response):
+                error = rec.error.decode(packet_types.error)
+            return Response(packet_types, server_public_key, updates, iface, rec.command_id, rec.request_id, result, error)
+        if isinstance(rec, packet_types.server_notification):
+            return ServerNotification(packet_types, server_public_key, updates)
+        assert False, 'Unsupported packet type: %s' % rec
 
     def __init__(self, packet_types, server_public_key, updates):
         assert isinstance(server_public_key, PublicKey), repr(server_public_key)
+        assert is_list_inst(updates, Update), repr(updates)
         self._packet_types = packet_types
         self.server_public_key = server_public_key
         self.updates = updates
