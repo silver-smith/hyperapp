@@ -98,13 +98,13 @@ class ClientCodeRepository(Object):
                 if module:
                     type_modules.append(module)
                 else:
-                    log.info('Unknown type requirement: %s/%s', registry, key)  # May be statically loaded, ignore
+                    log.info('Unknown type requirement: %s:%s', registry, key)  # May be statically loaded, ignore
             else:
                 module = self._code_module_repository.get_module_by_requirement(registry, key)
                 if module:
                     code_modules.append(module)
                 else:
-                    log.info('Unknown code requirement: %s/%s', registry, key)  # May be statically loaded, ignore
+                    log.info('Unknown code requirement: %s:%s', registry, key)  # May be statically loaded, ignore
         return (type_modules, code_modules)
 
     @command('get_modules_by_ids')

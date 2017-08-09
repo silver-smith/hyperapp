@@ -78,7 +78,7 @@ class VisualRepEncoder(object):
         if t is tPath:
             return self.encode_path(value)
         if self._packet_types and t is self._packet_types.requirement:
-            return RepNode('requirement: %s' % '/'.join(value))
+            return RepNode('requirement: %s' % ':'.join(value))
         if self._packet_types and t is self._resource_types.resource_id:
             return RepNode(encode_path(value))
         children = [self.dispatch(t.element_t, elt) for elt in value]
