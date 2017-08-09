@@ -211,7 +211,7 @@ class ServerTest(unittest.TestCase):
         test_iface.register_types(self.services.types.core)
         self.iface_registry.register(test_iface)
         self._init_test_module()
-        self.server = Server(self.packet_types, self.services.types.core, server_identity)
+        self.server = Server(self.packet_types, self.services.types.core, self.iface_registry, server_identity)
 
     def _init_test_module(self):
         self.test_error = self.types.packet.error.register('test_error', base=self.types.packet.client_error, fields=[
