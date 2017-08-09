@@ -95,7 +95,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     def make_request_packet(self, encoding, request_or_notification):
         server_pks_collector = ServerPksCollector(self._packet_types, self._core_types, self._iface_registry)
-        server_pks = server_pks_collector.collect_public_key_ders(self._packet_types.client_packet, request_or_notification.to_data())
+        server_pks = server_pks_collector.collect_public_key_ders(self._packet_types.payload, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
         payload = request_or_notification.to_data()

@@ -67,7 +67,7 @@ class Server(object):
 
     def _subscribe_objects(self, peer_channel, response):
         collector = ObjectPathCollector(self._packet_types, self._core_types, self._iface_registry)
-        object_paths = collector.collect(self._packet_types.server_packet, response.to_data())
+        object_paths = collector.collect(self._packet_types.payload, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)
 
