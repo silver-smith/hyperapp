@@ -38,7 +38,6 @@ from hyperapp.common.htypes import (
     builtin_type_registry,
     TypeResolver,
     )
-from hyperapp.common.visual_rep import pprint
 
 log = logging.getLogger(__name__)
 

@@ -169,7 +169,8 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification(self, public_key, request_or_notification):
-        pprint(self._packet_types.client_packet, request_or_notification.to_data(),
+        log.info('sending request or notification:')
+        pprint(self._packet_types.payload, request_or_notification.to_data(),
                self._resource_types, self._packet_types, self._iface_registry)
         error = None
         for route in self._route_storage.get_routes(public_key) or []:

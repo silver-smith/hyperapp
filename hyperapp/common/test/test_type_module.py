@@ -14,7 +14,6 @@ from hyperapp.common.htypes import (
     builtin_type_registry_registry,
     TypeResolver,
     )
-from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module import (
     resolve_typedefs_from_yaml_file,
     load_types_file,

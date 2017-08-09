@@ -236,13 +236,13 @@ class ServerRequestHandlingTest(ServerTest):
             params=self.make_params(test_iface, 'echo', test_param='hello'),
             request_id='001',
             )
-        pprint(self.packet_types.client_packet, request_data)
+        pprint(self.packet_types.payload, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
                                         self.packet_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
 
-        pprint(self.packet_types.server_packet, response.to_data())
+        pprint(self.packet_types.payload, response.to_data())
         self.assertEqual('hello to you too', response.result.test_result)
 
     def execute_check_ok_request(self, test_param):
@@ -253,12 +253,12 @@ class ServerRequestHandlingTest(ServerTest):
             params=self.make_params(test_iface, 'check_ok', test_param=test_param),
             request_id='002',
             )
-        pprint(self.packet_types.client_packet, request_data)
+        pprint(self.packet_types.payload, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
                                         self.packet_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
-        pprint(self.packet_types.server_packet, response.to_data())
+        pprint(self.packet_types.payload, response.to_data())
         return response
 
     def test_check_ok_result(self):
@@ -348,7 +348,7 @@ class TransportRequestHandlingTest(ServerTest):
             params=self.make_params(test_iface, command_id, **kw),
             )
         log.info('Sending client notification:')
-        pprint(self.packet_types.client_packet, request)
+        pprint(self.packet_types.payload, request)
         request_packet = self.types.packet.packet(
             aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
             payload=request)

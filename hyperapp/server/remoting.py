@@ -29,7 +29,7 @@ class Transport(object):
 
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
         pprint(self._packet_types.aux_info, packet.aux_info)
-        pprint(self._packet_types.client_packet, packet.payload, self._resource_types, self._packet_types, self._iface_registry)
+        pprint(self._packet_types.payload, packet.payload, self._resource_types, self._packet_types, self._iface_registry)
         self._add_routes(packet.aux_info.routes)
         request = RequestBase.from_data(server, peer, self._packet_types, self._core_types, iface_registry, packet.payload)
         response_or_notification = server.process_request(request)
@@ -37,7 +37,7 @@ class Transport(object):
             return None
         aux_info = self.prepare_aux_info(response_or_notification)
         pprint(self._packet_types.aux_info, aux_info, self._resource_types, self._packet_types, self._iface_registry)
-        pprint(self._packet_types.server_packet, response_or_notification.to_data(), self._resource_types, self._packet_types, self._iface_registry)
+        pprint(self._packet_types.payload, response_or_notification.to_data(), self._resource_types, self._packet_types, self._iface_registry)
         return self._packet_types.packet(aux_info, response_or_notification.to_data())
 
     def _add_routes(self, routes):
@@ -50,7 +50,7 @@ class Transport(object):
     def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)
         pprint(self._packet_types.aux_info, aux_info, self._resource_types, self._packet_types, self._iface_registry)
-        pprint(self._packet_types.server_packet, notification.to_data(), self._resource_types, self._packet_types, self._iface_registry)
+        pprint(self._packet_types.payload, notification.to_data(), self._resource_types, self._packet_types, self._iface_registry)
         return self._packet_types.packet(aux_info, notification.to_data())
 
     def process_packet(self, server, peer, transport_packet_data):
