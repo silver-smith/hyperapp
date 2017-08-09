@@ -86,7 +86,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
     @dispatch.register(TRecord)
     def decode_record(self, t, value, path):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
-        fields = self.decode_record_fields(t, value, path)
+        fields = self.decode_record_fields(t.fields, value, path)
         return t(**fields)
 
     @dispatch.register(TList)
@@ -115,21 +115,18 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         self.expect(path, '_class_id' in value, '_class_id field is missing')
         id = self.dispatch(tString, value['_class_id'], join_path(path, '_class_id'))
         tclass = t.resolve(id)
-        fields = self.decode_record_fields(tclass.get_trecord(), value, path)
+        fields = self.decode_record_fields(tclass.get_fields(), value, path)
         return tclass(**fields)
 
-    def decode_record_fields(self, t, value, path):
-        return self.decode_record_fields_impl(t.get_static_fields(), value, path)
-
-    def decode_record_fields_impl(self, tfields, value, path):
-        fields = {}
-        for field in tfields:
+    def decode_record_fields(self, fields, value, path):
+        decoded_fields = {}
+        for field in fields:
             if field.name in value:
                 elt = self.dispatch(field.type, value[field.name], join_path(path, field.name))
-                fields[field.name] = elt
+                decoded_fields[field.name] = elt
             elif not isinstance(field.type, TOptional):
                 self.failure(path, 'field %r is missing' % field.name)
-        return fields
+        return decoded_fields
 
 
 

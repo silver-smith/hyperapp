@@ -85,7 +85,7 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
-        ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
+        ## print '*** encoding record', value, t, [field.name for field in t.fields]
         if self._packet_types and t is self._packet_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
         if t is tCommand:
@@ -93,7 +93,7 @@ class VisualRepEncoder(object):
                            % (value.command_id, value.kind, encode_path(value.resource_id)))
         if t is tTypeModule:
             return self._make_type_module_rep(value)
-        children = self.encode_record_fields(t, value)
+        children = self.encode_record_fields(t.fields, value)
         if t is tServerRoutes:
             public_key = PublicKey.from_der(value.public_key_der)
             return RepNode('server routes: %s -> %r'
@@ -114,10 +114,10 @@ class VisualRepEncoder(object):
             RepNode('%d typedefs: %s' % (len(type_module.typedefs), ', '.join(typedef.name for typedef in type_module.typedefs))),
             ])
 
-    def encode_record_fields(self, t, value, custom_encoders=None):
+    def encode_record_fields(self, fields, value, custom_encoders=None):
         children = []
         fields = {}
-        for field in t.get_static_fields():
+        for field in fields:
             custom_encoder = (custom_encoders or {}).get(field.name)
             if custom_encoder:
                 rep = custom_encoder(value)
@@ -142,7 +142,7 @@ class VisualRepEncoder(object):
                 custom_encoders = dict(result=self.encode_server_response_result)
             if issubclass(tclass, self._packet_types.server_error_response):
                 custom_encoders = dict(error=self.encode_error_response_error)
-        children = self.encode_record_fields(tclass.get_trecord(), value, custom_encoders)
+        children = self.encode_record_fields(tclass.get_fields(), value, custom_encoders)
         return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
 
     def field_rep(self, field, value):

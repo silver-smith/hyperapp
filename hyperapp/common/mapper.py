@@ -49,7 +49,7 @@ class Mapper(object):
 
     def map_record_fields(self, t, value):
         mapped_fields = {}
-        for field in t.get_static_fields():
+        for field in t.fields:
             field_val = getattr(value, field.name)
             mapped_val = self.dispatch(field.type, field_val)
             mapped_fields[field.name] = mapped_val

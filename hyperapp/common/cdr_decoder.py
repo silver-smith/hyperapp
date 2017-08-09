@@ -112,18 +112,15 @@ class CdrDecoder(object):
 
     @dispatch.register(TRecord)
     def decode_record(self, t, path):
-        fields = self.decode_record_fields(t, path)
+        fields = self.decode_record_fields(t.fields, path)
         return t(**fields)
 
-    def decode_record_fields(self, t, path):
-        return self.decode_record_fields_impl(t.get_static_fields(), path)
-
-    def decode_record_fields_impl(self, tfields, path):
-        fields = {}
-        for field in tfields:
+    def decode_record_fields(self, fields, path):
+        decoded_fields = {}
+        for field in fields:
             elt = self.dispatch(field.type, join_path(path, field.name))
-            fields[field.name] = elt
-        return fields
+            decoded_fields[field.name] = elt
+        return decoded_fields
 
     @dispatch.register(TList)
     def decode_list(self, t, path):
@@ -155,5 +152,5 @@ class CdrDecoder(object):
     def decode_hierarchy_obj(self, t, path):
         class_id = self.read_unicode(path)
         tclass = t.resolve(class_id)
-        fields = self.decode_record_fields(tclass.get_trecord(), path)
+        fields = self.decode_record_fields(tclass.get_fields(), path)
         return tclass(**fields)

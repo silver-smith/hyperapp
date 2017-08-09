@@ -129,7 +129,7 @@ class Record(object):
 
     def __repr__(self):
         return 'Record<%d: %s>' % (id(self._type), ', '.join(
-            '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
+            '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields))
     
 
 class TRecord(Type):
@@ -139,11 +139,11 @@ class TRecord(Type):
         assert base is None or isinstance(base, TRecord), repr(base)
         self.fields = fields or []
         if base:
-            self.fields = base.get_fields() + self.fields
+            self.fields = base.fields + self.fields
         self.base = base
 
     def __repr__(self):
-        return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.get_fields())))
+        return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.fields)))
 
     def __eq__(self, other):
         return isinstance(other, TRecord) and other.fields == self.fields
@@ -159,12 +159,6 @@ class TRecord(Type):
     def __call__(self, *args, **kw):
         return self.instantiate(*args, **kw)
 
-    def get_fields(self):
-        return self.fields
-
-    def get_static_fields(self):
-        return self.fields
-
     def get_field(self, name):
         for field in self.fields:
             if field.name == name:
@@ -179,18 +173,17 @@ class TRecord(Type):
 
     def adopt_args(self, args, kw, check_unexpected=True):
         path = '<Record>'
-        tfields = self.get_fields()
         if check_unexpected:
-            self.assert_(path, len(args) <= len(tfields),
-                         'instantiate takes at most %d argumants (%d given)' % (len(tfields), len(args)))
+            self.assert_(path, len(args) <= len(self.fields),
+                         'instantiate takes at most %d arguments (%d given)' % (len(self.fields), len(args)))
         fields = dict(kw)
-        for field, arg in zip(tfields, args):
+        for field, arg in zip(self.fields, args):
             assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
             fields[field.name] = arg
         adopted_args = {}
         unexpected = set(fields.keys())
-        ## print '*** adopt_args', fields, self, [field.name for field in tfields]
-        for field in tfields:
+        ## print '*** adopt_args', fields, self, [field.name for field in self.fields]
+        for field in self.fields:
             if field.name in fields:
                 value = fields[field.name]
                 unexpected.remove(field.name)
@@ -200,13 +193,13 @@ class TRecord(Type):
                 elif field.default is not None:
                     value = field.default
                 else:
-                    raise TypeError('Record field is missing: %r' % field.name)
+                    raise TypeError('Record %s field is missing: %r' % (self, field.name))
             assert isinstance(value, field.type), 'Field %r is expected to be %r, but is %r' % (field.name, field.type, value)
             adopted_args[field.name] = value
         if check_unexpected:
             self.assert_(path, not unexpected,
                          'Unexpected fields: %s; allowed are: %s'
-                         % (', '.join(unexpected), ', '.join(field.name for field in tfields)))
+                         % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
         return adopted_args
 
     def instantiate_impl(self, rec, *args, **kw):

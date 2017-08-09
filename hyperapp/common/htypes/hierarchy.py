@@ -11,7 +11,7 @@ class TClassRecord(Record):
 
     def __repr__(self):
         return 'ClassRecord<%s.%s: %s>' % (self._class.hierarchy.hierarchy_id, self._class.id, ', '.join(
-            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
+            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.fields))
 
     # public
     @property
@@ -40,7 +40,7 @@ class TClass(TRecord):
         return self.trec
 
     def get_fields(self):
-        return self.trec.get_fields()
+        return self.trec.fields
 
     def get_field(self, name):
         return self.trec.get_field(name)
@@ -138,7 +138,7 @@ class TExceptionClassRecord(RuntimeError):
 
     def __str__(self):
         return '<%s.%s: %s>' % (self._class.hierarchy.hierarchy_id, self._class.id, ', '.join(
-            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.get_fields()))
+            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.fields))
 
     def __repr__(self):
         return 'TExceptionClassRecord%s' % self

@@ -42,7 +42,7 @@ class Visitor(object):
     def process_record(self, t, value):
         self.visit_record(t, value)
         fields = {}
-        for field in t.get_static_fields():
+        for field in t.fields:
             field_val = getattr(value, field.name)
             self.dispatch(field.type, field_val)
             fields[field.name] = field_val
