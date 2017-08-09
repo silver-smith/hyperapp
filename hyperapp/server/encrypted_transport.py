@@ -137,14 +137,6 @@ class EncryptedTcpTransport(Transport):
         packet_data = packet_coders.encode(ENCODING, response_packet, self._packet_types.packet)
         return [encrypt_subsequent_packet(session.session_key, packet_data)]
 
-    def encode_request_result(self, session, result):
-        if result is None:
-            return []
-        aux_info, response_or_notification = result
-        pprint(tAuxInfo, aux_info)
-        pprint(self.transport._request_types.server_packet, response_or_notification)
-        return [self.encode_response_or_notification(session, aux_info, response_or_notification)]
-
     def process_pop_packet(self, session, encrypted_packet):
         log.info('POP received')
         if encrypted_packet.challenge != session.pop_challenge:
