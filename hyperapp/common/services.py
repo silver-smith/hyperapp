@@ -4,7 +4,6 @@ from types import SimpleNamespace
 from hyperapp.common.htypes import (
     IfaceRegistry,
     builtin_type_registry_registry,
-    make_request_types,
     )
 from hyperapp.common.type_module_repository import TypeModuleRepository
 
