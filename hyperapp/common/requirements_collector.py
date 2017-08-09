@@ -5,8 +5,8 @@ from .visitor import Visitor
 
 class RequirementsCollector(Visitor):
 
-    def __init__(self, core_types, param_editor_types=None):
-        self._core_types = core_types
+    def __init__(self, packet_types, core_types, param_editor_types, iface_registry):
+        Visitor.__init__(self, packet_types, core_types, iface_registry)
         self._param_editor_types = param_editor_types
 
     def collect(self, t, value):

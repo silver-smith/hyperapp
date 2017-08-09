@@ -58,7 +58,7 @@ class Transport(object):
         raise NotImplementedError(self.__class__)
 
     def prepare_aux_info(self, response_or_notification):
-        collector = RequirementsCollector(self._core_types, self._param_editor_types)
+        collector = RequirementsCollector(self._packet_types, self._core_types, self._param_editor_types, self._iface_registry)
         packet_requirements = collector.collect(self._request_types.server_packet, response_or_notification.to_data())
         resources1 = self._load_required_resources(packet_requirements)
         # resources themselves can contain requirements for more resources
@@ -68,7 +68,8 @@ class Transport(object):
         type_modules = self._type_module_repository.get_type_modules_by_requirements(requirements)
         modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
-        server_pks = ServerPksCollector().collect_public_key_ders(self._request_types.server_packet, response_or_notification.to_data())
+        server_pks_collector = ServerPksCollector(self._packet_types, self._core_types, self._iface_registry)
+        server_pks = server_pks_collector.collect_public_key_ders(self._request_types.server_packet, response_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         return self._packet_types.aux_info(
             requirements=requirements,

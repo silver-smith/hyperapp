@@ -3,9 +3,6 @@ from .visitor import Visitor
 
 class ObjectPathCollector(Visitor):
 
-    def __init__(self, core_types):
-        self._core_types = core_types
-
     def collect(self, t, value):
         self.collected_paths = set()
         self.visit(t, value)
