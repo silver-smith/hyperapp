@@ -64,6 +64,8 @@ class Visitor(object):
             self.visit_client_packet_params(value)
         if issubclass(tclass, self._packet_types.server_result_response):
             self.visit_server_response_result(value)
+        if issubclass(tclass, self._packet_types.server_error_response):
+            self.visit_server_response_error(value)
 
     def process_field(self, field, value):
         self.dispatch(field.type, getattr(value, field.name))
@@ -84,3 +86,7 @@ class Visitor(object):
         result_t = iface.get_command(server_result_response.command_id).result_type
         result = server_result_response.result.decode(result_t)
         self.visit(result_t, result)
+
+    def visit_server_response_error(self, server_error_response):
+        error = server_error_response.error.decode(self._packet_types.error)
+        self.visit(self._packet_types.error, error)

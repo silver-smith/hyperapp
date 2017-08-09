@@ -110,7 +110,7 @@ class VisualRepEncoder(object):
 
     def _make_type_module_rep(self, type_module):
         return RepNode('type module %r' % type_module.module_name, children=[
-            RepNode('provided: %s' % ', '.join('%s/%s' % (pc.hierarchy_id, pc.class_id) for pc in type_module.provided_classes)),
+            RepNode('provided classes: %s' % ', '.join('%s/%s' % (pc.hierarchy_id, pc.class_id) for pc in type_module.provided_classes)),
             RepNode('used_modules: %s' % ', '.join(type_module.used_modules)),
             RepNode('%d typedefs: %s' % (len(type_module.typedefs), ', '.join(typedef.name for typedef in type_module.typedefs))),
             ])

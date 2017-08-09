@@ -81,7 +81,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     def _add_type_modules(self, type_modules):
         for type_module in type_modules:
-            log.info('received type module %r with %d typedefs, provided %r',
+            log.info('received type module %r with %d typedefs, provided classes %r',
                       type_module.module_name, len(type_module.typedefs),
                       ', '.join('%s:%s' % (rec.hierarchy_id, rec.class_id) for rec in type_module.provided_classes))
             if not self._type_module_repository.has_type_module(type_module.module_name):
