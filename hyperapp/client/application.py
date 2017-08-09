@@ -22,7 +22,7 @@ class Application(QtGui.QApplication, view.View):
         QtGui.QApplication.__init__(self, sys_argv)
         view.View.__init__(self)
         self.services = Services()
-        self._request_types = self.services.types.request
+        self._packet_types = self.services.types.packet
         self._iface_registry = self.services.iface_registry
         self._remoting = self.services.remoting
         self._resources_manager = self.services.resources_manager
@@ -83,7 +83,7 @@ class Application(QtGui.QApplication, view.View):
         url = UrlWithRoutes.load_from_file(self._iface_registry, fpath)
         self._remoting.add_routes_from_url(url)
         server = Server.from_public_key(self._remoting, url.public_key)
-        handle = yield from execute_get_request(self._request_types, self._remoting, url)
+        handle = yield from execute_get_request(self._packet_types, self._remoting, url)
         assert handle  # url's get command must return a handle
         window.get_current_view().open(handle)
 

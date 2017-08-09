@@ -27,7 +27,6 @@ class TransportError(RuntimeError):
 class Transport(metaclass=abc.ABCMeta):
 
     def __init__(self, services):
-        self._request_types = services.types.request
         self._packet_types = services.types.packet
         self._core_types = services.types.core
         self._resource_types = services.types.resource
@@ -96,7 +95,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     def make_request_packet(self, encoding, request_or_notification):
         server_pks_collector = ServerPksCollector(self._packet_types, self._core_types, self._iface_registry)
-        server_pks = server_pks_collector.collect_public_key_ders(self._request_types.client_packet, request_or_notification.to_data())
+        server_pks = server_pks_collector.collect_public_key_ders(self._packet_types.client_packet, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[])
         payload = request_or_notification.to_data()
@@ -129,11 +128,10 @@ class TransportRegistry(object):
 
 class Remoting(object):
 
-    def __init__(self, request_types, resource_types, packet_types, iface_registry, route_storage, proxy_registry):
+    def __init__(self, resource_types, packet_types, iface_registry, route_storage, proxy_registry):
         assert isinstance(route_storage, RouteStorage), repr(route_storage)
         assert isinstance(proxy_registry, ProxyRegistry), repr(proxy_registry)
         self.transport_registry = TransportRegistry()
-        self._request_types = request_types
         self._resource_types = resource_types
         self._packet_types = packet_types
         self._iface_registry = iface_registry
@@ -171,7 +169,7 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification(self, public_key, request_or_notification):
-        pprint(self._request_types.client_packet, request_or_notification.to_data(),
+        pprint(self._packet_types.client_packet, request_or_notification.to_data(),
                self._resource_types, self._packet_types, self._iface_registry)
         error = None
         for route in self._route_storage.get_routes(public_key) or []:

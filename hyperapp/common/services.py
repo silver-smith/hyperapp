@@ -16,10 +16,8 @@ class ServicesBase(object):
 
     def init_services(self):
         self.types = SimpleNamespace()
-        request_types_registry = make_request_types()
-        self.types.request = request_types_registry.to_namespace()
         self.iface_registry = IfaceRegistry()
-        self.type_registry_registry = builtin_type_registry_registry(request=request_types_registry)
+        self.type_registry_registry = builtin_type_registry_registry()
         self.type_module_repository = TypeModuleRepository(self.iface_registry, self.type_registry_registry)
 
     def _load_type_module(self, module_name):

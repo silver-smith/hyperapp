@@ -95,7 +95,7 @@ class Services(ServicesBase):
                 'server_management',
                 'code_repository',
                 ])
-        self.remoting = Remoting(self.types.request, self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
+        self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
         self.param_editor_registry = ParamEditorRegistry()

@@ -20,7 +20,7 @@ class TcpChannel(PeerChannel):
 
     def __init__(self, transport):
         self.transport = transport
-        self.updates = Queue()  # types.request.update list
+        self.updates = Queue()  # Update list
 
     def _pop_all(self):
         updates = []

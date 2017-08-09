@@ -205,7 +205,6 @@ class ServerTest(unittest.TestCase):
     def setUp(self):
         self.services = Services()
         self.types = self.services.types
-        self.request_types = self.services.types.request
         self.packet_types = self.services.types.packet
         self.iface_registry = self.services.iface_registry
         test_iface.register_types(self.services.types.core)
