@@ -127,13 +127,14 @@ class TransportRegistry(object):
 
 class Remoting(object):
 
-    def __init__(self, request_types, resource_types, packet_types, route_storage, proxy_registry):
+    def __init__(self, request_types, resource_types, packet_types, iface_registry, route_storage, proxy_registry):
         assert isinstance(route_storage, RouteStorage), repr(route_storage)
         assert isinstance(proxy_registry, ProxyRegistry), repr(proxy_registry)
         self.transport_registry = TransportRegistry()
         self._request_types = request_types
         self._resource_types = resource_types
         self._packet_types = packet_types
+        self._iface_registry = iface_registry
         self._route_storage = route_storage
         self._proxy_registry = proxy_registry
         self._futures = {}  # request id -> future for response
@@ -168,7 +169,8 @@ class Remoting(object):
 
     @asyncio.coroutine
     def send_request_or_notification(self, public_key, request_or_notification):
-        pprint(self._request_types.client_packet, request_or_notification.to_data(), self._resource_types, self._packet_types)
+        pprint(self._request_types.client_packet, request_or_notification.to_data(),
+               self._resource_types, self._packet_types, self._iface_registry)
         error = None
         for route in self._route_storage.get_routes(public_key) or []:
             transport_id = route[0]

@@ -22,6 +22,7 @@ class Transport(object):
         self._packet_types = services.types.packet
         self._resource_types = services.types.resource
         self._param_editor_types = services.types.param_editor
+        self._iface_registry = services.iface_registry
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
         self._type_module_repository = services.type_module_repository
@@ -29,7 +30,7 @@ class Transport(object):
 
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
         pprint(self._packet_types.aux_info, packet.aux_info)
-        pprint(self._request_types.client_packet, packet.payload)
+        pprint(self._request_types.client_packet, packet.payload, self._resource_types, self._packet_types, self._iface_registry)
         self._add_routes(packet.aux_info.routes)
         request = RequestBase.from_data(server, peer, self._packet_types, self._core_types, iface_registry, packet.payload)
         response_or_notification = server.process_request(request)
