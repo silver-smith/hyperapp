@@ -17,7 +17,6 @@ from .htypes import (
     TIndexedList,
     DecodableEmbedded,
     TEmbedded,
-    TSwitchedRec,
     THierarchy,
     )
 from .packet_coders import DecodeError
@@ -120,10 +119,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         return tclass(**fields)
 
     def decode_record_fields(self, t, value, path):
-        fields = self.decode_record_fields_impl(t.get_static_fields(), value, path)
-        if isinstance(t, TSwitchedRec):
-            fields.update(self.decode_record_fields_impl([t.get_dynamic_field(fields)], value, path))
-        return fields
+        return self.decode_record_fields_impl(t.get_static_fields(), value, path)
 
     def decode_record_fields_impl(self, tfields, value, path):
         fields = {}

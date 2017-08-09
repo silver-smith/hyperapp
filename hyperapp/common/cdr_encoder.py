@@ -14,7 +14,6 @@ from .htypes import (
     EncodableEmbedded,
     TEmbedded,
     THierarchy,
-    TSwitchedRec,
     )
 
 
@@ -89,16 +88,6 @@ class CdrEncoder(object):
         assert isinstance(value, EncodableEmbedded), repr(value)
         data = CdrEncoder().encode(value.type, value.value)
         self.dispatch(tBinary, data)
-
-    @dispatch.register(TSwitchedRec)
-    def encode_switched(self, t, value):
-        static_dict = {}
-        for field in t.get_static_fields():
-            field_val = getattr(value, field.name)
-            self.dispatch(field.type, field_val)
-            static_dict[field.name] = field_val
-        field = t.get_dynamic_field(static_dict)
-        self.dispatch(field.type, getattr(value, field.name))
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj(self, t, value):

@@ -13,7 +13,6 @@ from .htypes import (
     TRecord,
     TList,
     TEmbedded,
-    TSwitchedRec,
     THierarchy,
     Interface,
     tPath,
@@ -126,9 +125,6 @@ class VisualRepEncoder(object):
                 rep = self.field_rep(field, value)
             children.append(rep)
             fields[field.name] = getattr(value, field.name)
-        if isinstance(t, TSwitchedRec):
-            field = t.get_dynamic_field(fields)
-            children.append(self.field_rep(field, value))
         return children
 
     @dispatch.register(TEmbedded)

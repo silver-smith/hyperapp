@@ -3,7 +3,6 @@ from .htypes import (
     TPrimitive,
     TOptional,
     TRecord,
-    TSwitchedRec,
     THierarchy,
     TList,
     )
@@ -49,15 +48,9 @@ class Mapper(object):
         return self.map_hierarchy_obj(tclass, mapped_obj)
 
     def map_record_fields(self, t, value):
-        fields = {}
         mapped_fields = {}
         for field in t.get_static_fields():
             field_val = getattr(value, field.name)
             mapped_val = self.dispatch(field.type, field_val)
-            fields[field.name] = field_val
-            mapped_fields[field.name] = mapped_val
-        if isinstance(t, TSwitchedRec):
-            field = t.get_dynamic_field(fields)
-            mapped_val = self.dispatch(field.type, getattr(value, field.name))
             mapped_fields[field.name] = mapped_val
         return mapped_fields

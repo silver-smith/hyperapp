@@ -16,7 +16,6 @@ from .htypes import (
     DecodableEmbedded,
     TEmbedded,
     THierarchy,
-    TSwitchedRec,
     )
 from .packet_coders import DecodeError
 
@@ -117,10 +116,7 @@ class CdrDecoder(object):
         return t(**fields)
 
     def decode_record_fields(self, t, path):
-        fields = self.decode_record_fields_impl(t.get_static_fields(), path)
-        if isinstance(t, TSwitchedRec):
-            fields.update(self.decode_record_fields_impl([t.get_dynamic_field(fields)], path))
-        return fields
+        return self.decode_record_fields_impl(t.get_static_fields(), path)
 
     def decode_record_fields_impl(self, tfields, path):
         fields = {}

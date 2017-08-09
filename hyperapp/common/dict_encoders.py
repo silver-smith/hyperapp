@@ -15,7 +15,6 @@ from .htypes import (
     TList,
     EncodableEmbedded,
     TEmbedded,
-    TSwitchedRec,
     THierarchy,
     Interface,
     )
@@ -70,17 +69,6 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
     def encode_embedded(self, t, value):
         assert isinstance(value, EncodableEmbedded), repr(value)
         return self.dispatch(value.type, value.value)
-
-    @dispatch.register(TSwitchedRec)
-    def encode_switched_record(self, t, value):
-        fields = {}
-        for field in t.get_static_fields():
-            attr = getattr(value, field.name)
-            fields[field.name] = self.dispatch(field.type, attr)
-        dyn_field = t.get_dynamic_field(fields)
-        attr = getattr(value, dyn_field.name)
-        fields[dyn_field.name] = self.dispatch(dyn_field.type, attr)
-        return fields
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj(self, t, value):

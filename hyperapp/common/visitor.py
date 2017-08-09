@@ -4,7 +4,6 @@ from .htypes import (
     TOptional,
     TRecord,
     TEmbedded,
-    TSwitchedRec,
     THierarchy,
     TList,
     )
@@ -47,9 +46,6 @@ class Visitor(object):
             field_val = getattr(value, field.name)
             self.dispatch(field.type, field_val)
             fields[field.name] = field_val
-        if isinstance(t, TSwitchedRec):
-            field = t.get_dynamic_field(fields)
-            self.dispatch(field.type, getattr(value, field.name))
             
     @dispatch.register(TEmbedded)
     def process_embedded(self, t, value):
