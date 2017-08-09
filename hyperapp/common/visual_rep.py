@@ -144,6 +144,8 @@ class VisualRepEncoder(object):
                 custom_encoders = dict(params=self.encode_client_packet_params)
             if issubclass(tclass, self._packet_types.server_result_response):
                 custom_encoders = dict(result=self.encode_server_response_result)
+            if issubclass(tclass, self._packet_types.server_error_response):
+                custom_encoders = dict(error=self.encode_error_response_error)
         children = self.encode_record_fields(tclass.get_trecord(), value, custom_encoders)
         return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
 
@@ -168,6 +170,10 @@ class VisualRepEncoder(object):
         node = self.dispatch(result_t, result)
         return RepNode('result=' + node.text, node.children)
 
+    def encode_error_response_error(self, server_error_response):
+        error = server_error_response.error.decode(self._packet_types.error)
+        node = self.dispatch(self._packet_types.error, error)
+        return RepNode('error=' + node.text, node.children)
 
 def pprint(t, value, resource_types=None, packet_types=None, iface_registry=None):
     rep = VisualRepEncoder(resource_types, packet_types, iface_registry).encode(t, value)
