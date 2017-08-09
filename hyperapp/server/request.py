@@ -87,7 +87,7 @@ class Request(RequestBase):
 
     def make_response_update(self, iface, path, diff):
         response = self.make_response()
-        response.add_update(iface.Update(path, diff))
+        response.add_update(Update(iface, path, diff))
         return response
 
     def make_response_redirect(self, url):

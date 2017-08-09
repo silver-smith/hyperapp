@@ -10,7 +10,7 @@ class Update(object):
 
     @classmethod
     def from_data(cls, iface_registry, update):
-        iface = iface_registry.resolve(update.iface_id)
+        iface = iface_registry.resolve(update.iface)
         diff = update.diff.decode(iface.diff_type)
         return cls(iface, update.path, diff)
 

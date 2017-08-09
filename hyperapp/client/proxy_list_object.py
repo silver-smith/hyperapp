@@ -66,10 +66,10 @@ class ProxyListObject(ProxyObject, ListObject):
 
     objimpl_id = 'proxy_list'
     
-    def __init__( self, request_types, core_types, iface_registry, cache_repository,
+    def __init__( self, packet_types, core_types, iface_registry, cache_repository,
                   resources_manager, param_editor_registry, server, path, iface, facets=None ):
         log.debug('new ProxyListObject self=%r path=%r', id(self), path)
-        ProxyObject.__init__(self, request_types, core_types, iface_registry, cache_repository,
+        ProxyObject.__init__(self, packet_types, core_types, iface_registry, cache_repository,
                              resources_manager, param_editor_registry, server, path, iface, facets)
         ListObject.__init__(self)
         self._slice_algorithm = SliceAlgorithm()
