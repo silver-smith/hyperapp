@@ -20,7 +20,7 @@ class ServicesBase(object):
         self.types.request = request_types_registry.to_namespace()
         self.iface_registry = IfaceRegistry()
         self.type_registry_registry = builtin_type_registry_registry(request=request_types_registry)
-        self.type_module_repository = TypeModuleRepository(self.types.request, self.iface_registry, self.type_registry_registry)
+        self.type_module_repository = TypeModuleRepository(self.iface_registry, self.type_registry_registry)
 
     def _load_type_module(self, module_name):
         fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
