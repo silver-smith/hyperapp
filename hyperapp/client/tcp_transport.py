@@ -47,5 +47,5 @@ class TcpTransport(Transport):
         pprint(tPacket, packet)
         yield from self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(self.encoding, packet.payload, self._request_types.server_packet)
-        pprint(self._request_types.server_packet, response_or_notification_rec)
+        pprint(self._request_types.server_packet, response_or_notification_rec, self._resource_types, self._packet_types, self._iface_registry)
         return ResponseBase.from_data(server_public_key, self._iface_registry, response_or_notification_rec)

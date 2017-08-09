@@ -85,7 +85,7 @@ class VisualRepEncoder(object):
         return RepNode('list (with %d elements)' % len(value), children)
 
     @dispatch.register(TRecord)
-    def encode_record(self, t, value, name=None):
+    def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.get_fields()]
         if self._packet_types and t is self._packet_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
@@ -103,14 +103,10 @@ class VisualRepEncoder(object):
             public_key = PublicKey.from_der(value.public_key_der)
             return RepNode('iface=%s public_key=%s, path=%s'
                            % (value.iface, public_key.get_short_id_hex(), encode_path(value.path)))
-        if name:
-            prefix = name + '='
-        else:
-            prefix = ''
         if children:
-            return RepNode('%srecord' % prefix, children)
+            return RepNode('record', children)
         else:
-            return RepNode('%sempty record' % prefix)
+            return RepNode('empty record')
 
     def _make_type_module_rep(self, type_module):
         return RepNode('type module %r' % type_module.module_name, children=[
@@ -143,8 +139,11 @@ class VisualRepEncoder(object):
     def encode_hierarchy_obj(self, t, value):
         tclass = t.resolve_obj(value)
         custom_encoders = {}
-        if self._packet_types and self._iface_registry and issubclass(tclass, self._packet_types.client_packet):
-            custom_encoders = dict(params=self.encode_client_packet_params)
+        if self._packet_types and self._iface_registry:
+            if issubclass(tclass, self._packet_types.client_packet):
+                custom_encoders = dict(params=self.encode_client_packet_params)
+            if issubclass(tclass, self._packet_types.server_result_response):
+                custom_encoders = dict(result=self.encode_server_response_result)
         children = self.encode_record_fields(tclass.get_trecord(), value, custom_encoders)
         return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
 
@@ -159,7 +158,15 @@ class VisualRepEncoder(object):
         iface = self._iface_registry.resolve(client_packet.iface)
         params_t = iface.get_command(client_packet.command_id).params_type
         params = client_packet.params.decode(params_t)
-        return self.encode_record(params_t, params, 'params')
+        node = self.dispatch(params_t, params)
+        return RepNode('params=' + node.text, node.children)
+
+    def encode_server_response_result(self, server_result_response):
+        iface = self._iface_registry.resolve(server_result_response.iface)
+        result_t = iface.get_command(server_result_response.command_id).result_type
+        result = server_result_response.result.decode(result_t)
+        node = self.dispatch(result_t, result)
+        return RepNode('result=' + node.text, node.children)
 
 
 def pprint(t, value, resource_types=None, packet_types=None, iface_registry=None):
