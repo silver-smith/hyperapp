@@ -19,11 +19,10 @@ class TClassRecord(Record):
         return self._class.id
 
 
-class TClass(TRecord):
+class TClass(Type):
 
     def __init__(self, hierarchy, id, trec, base=None):
         assert isinstance(trec, TRecord), repr(trec)
-        TRecord.__init__(self)
         self.hierarchy = hierarchy
         self.id = id
         self.trec = trec
@@ -35,6 +34,14 @@ class TClass(TRecord):
     def __eq__(self, other):
         assert isinstance(other, TClass), repr(other)
         return other.hierarchy is self.hierarchy and other.id == self.id and other.trec == self.trec
+
+    def __call__(self, *args, **kw):
+        return self.instantiate(*args, **kw)
+
+    def instantiate(self, *args, **kw):
+        rec = TClassRecord(self.trec, self)
+        self.trec.instantiate_impl(rec, *args, **kw)
+        return rec
 
     def get_trecord(self):
         return self.trec
@@ -50,16 +57,11 @@ class TClass(TRecord):
             return False
         return issubclass(rec._class, self)
 
-    def instantiate(self, *args, **kw):
-        rec = TClassRecord(self.trec, self)
-        self.trec.instantiate_impl(rec, *args, **kw)
-        return rec
-
     def __subclasscheck__(self, tclass):
-        if not isinstance(tclass, TClass):
-            return False
         if tclass is self:
             return True
+        if not isinstance(tclass, TClass):
+            return False
         if self.hierarchy is not tclass.hierarchy:
             return False
         if tclass.base and issubclass(tclass.base, self):
