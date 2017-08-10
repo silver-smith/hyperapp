@@ -7,7 +7,6 @@ from hyperapp.common.util import is_list_inst
 from ..util import key_match, key_match_any
 from ..command import command
 from ..import view
-from ..import composite
 from ..import list_view
 from .module import get_this_module
 from .history_list import HistoryList
@@ -24,7 +23,7 @@ def register_views(registry, services):
     registry.register('navigator', View.from_state, services.view_registry, this_module)
 
 
-class View(composite.Composite):
+class View(view.View):
 
     view_id = 'navigator'
 
@@ -40,7 +39,7 @@ class View(composite.Composite):
         assert isinstance(child, view.View), repr(child)
         assert backward_history is None or is_list_inst(backward_history, this_module.item_type), repr(backward_history)
         assert forward_history is None or is_list_inst(forward_history, this_module.item_type), repr(forward_history)
-        composite.Composite.__init__(self, parent)
+        view.View.__init__(self, parent)
         self._this_module = this_module
         self._locale = locale
         self._view_registry = view_registry

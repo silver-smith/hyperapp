@@ -23,6 +23,7 @@ class Application(QtGui.QApplication, view.View):
         view.View.__init__(self)
         self.services = Services()
         self._packet_types = self.services.types.packet
+        self._module_registry = self.services.module_registry
         self._iface_registry = self.services.iface_registry
         self._remoting = self.services.remoting
         self._resources_manager = self.services.resources_manager
@@ -52,7 +53,7 @@ class Application(QtGui.QApplication, view.View):
     @asyncio.coroutine
     def open_windows(self, state):
         for s in state or []:
-            yield from window.Window.from_state(s, self, self._view_registry, self._resources_manager)
+            yield from window.Window.from_state(s, self, self._module_registry, self._view_registry, self._resources_manager)
 
     def pick_arg(self, kind):
         return None

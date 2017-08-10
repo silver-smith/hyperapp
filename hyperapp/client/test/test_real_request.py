@@ -16,6 +16,7 @@ from hyperapp.common.test.util import PhonyRouteRepository
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
 from hyperapp.client.module_manager import ModuleManager
+from hyperapp.client.module import ModuleRegistry
 from hyperapp.client.remoting import Remoting
 from hyperapp.client.objimpl_registry import ObjImplRegistry
 from hyperapp.client.named_url_file_repository import NamedUrlRepository
@@ -80,6 +81,7 @@ class Services(ServicesBase):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         ServicesBase.init_services(self)
+        self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.proxy_registry = ProxyRegistry()
         self.identity_repository = PhonyIdentityRepository()
@@ -97,7 +99,7 @@ class Services(ServicesBase):
                 ])
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
-        self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
+        self.view_registry = ViewRegistry(self.module_registry, self.iface_registry, self.remoting)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager = ModuleManager(self)
         self.module_manager.register_meta_hook()

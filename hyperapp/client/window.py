@@ -8,7 +8,6 @@ from .util import DEBUG_FOCUS, call_after
 from .module import Module
 from .command import command
 from . import view
-from . import composite
 from .menu_bar import MenuBar
 from . import cmd_pane
 from . import tab_view
@@ -26,21 +25,21 @@ def get_state_type():
     return this_module.state_type
 
 
-class Window(composite.Composite, QtGui.QMainWindow):
+class Window(view.View, QtGui.QMainWindow):
 
     @classmethod
     @asyncio.coroutine
-    def from_state(cls, state, app, view_registry, resources_manager):
+    def from_state(cls, state, app, module_registry, view_registry, resources_manager):
         locale = LOCALE
-        child = yield from tab_view.View.from_state(locale, state.tab_view, view_registry)
-        return cls(locale, view_registry, resources_manager, app, child,
+        child = yield from tab_view.View.from_state(locale, state.tab_view, module_registry, view_registry)
+        return cls(locale, view_registry, module_registry, resources_manager, app, child,
                    size=QtCore.QSize(state.size.w, state.size.h),
                    pos=QtCore.QPoint(state.pos.x, state.pos.y))
 
-    def __init__(self, locale, view_registry, resources_manager, app, child, size=None, pos=None):
+    def __init__(self, locale, view_registry, module_registry, resources_manager, app, child, size=None, pos=None):
         assert isinstance(child, tab_view.View), repr(child)
         QtGui.QMainWindow.__init__(self)
-        composite.Composite.__init__(self, app)
+        view.View.__init__(self, app)
         self._locale = locale
         self._view_registry = view_registry
         self._resources_manager = resources_manager
@@ -55,11 +54,12 @@ class Window(composite.Composite, QtGui.QMainWindow):
             self.move(pos)
         else:
             self.move(800, 100)
-        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, resources_manager)
+        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, module_registry, resources_manager)
         self._cmd_pane = cmd_pane.View(self, LOCALE, resources_manager)
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
+        self.init(module_registry)
         self.set_child(child)
         self.show()
         self._parent().window_created(self)

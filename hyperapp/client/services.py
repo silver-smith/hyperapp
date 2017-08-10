@@ -9,6 +9,7 @@ from .param_editor_registry import ParamEditorRegistry
 from .remoting import Remoting
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
+from .module import ModuleRegistry
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
@@ -42,6 +43,7 @@ class Services(ServicesBase):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         ServicesBase.init_services(self)
+        self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self._load_type_modules([
@@ -57,7 +59,7 @@ class Services(ServicesBase):
             ])
         self.objimpl_registry = ObjImplRegistry()
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
-        self.view_registry = ViewRegistry(self.iface_registry, self.remoting)
+        self.view_registry = ViewRegistry(self.module_registry, self.iface_registry, self.remoting)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager = ModuleManager(self)
         self.modules = self.module_manager.modules
@@ -85,7 +87,9 @@ class Services(ServicesBase):
                 splitter,
                 url_clipboard,
             ]:
-            module.__dict__['this_module'] = module.ThisModule(self)  # will auto-register itself
+            this_module = module.ThisModule(self)
+            module.__dict__['this_module'] = this_module
+            self.module_registry.register(this_module)
 
     def _load_modules(self):
         for module_name in [

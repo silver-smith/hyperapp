@@ -20,12 +20,14 @@ class View(QtGui.QTabWidget, view.View):
 
     @classmethod
     @asyncio.coroutine
-    def from_state(cls, locale, state, view_registry):
+    def from_state(cls, locale, state, module_registry, view_registry):
         children = []
         for tab_state in state.tabs:
             child = yield from view_registry.resolve(locale, tab_state)
             children.append(child)
-        return cls(locale, view_registry, children, state.current_tab)
+        view = cls(locale, view_registry, children, state.current_tab)
+        view.init(module_registry)
+        return view
 
     @staticmethod    
     def map_current(state, mapper):

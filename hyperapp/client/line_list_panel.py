@@ -13,7 +13,7 @@ class LineListPanel(Composite, QtGui.QWidget):
     def __init__(self, parent, line_edit, list_view):
         log.debug('new line_list_panel self=%s', id(self))
         QtGui.QWidget.__init__(self)
-        Composite.__init__(self, parent)
+        Composite.__init__(self, parent, [line_edit, list_view])
         self._line_edit = line_edit
         self._list_view = list_view
         self._list_view.get_widget().setFocusPolicy(QtCore.Qt.NoFocus)

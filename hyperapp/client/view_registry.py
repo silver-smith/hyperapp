@@ -11,8 +11,9 @@ MAX_REDIRECT_COUNT = 10
 
 class ViewRegistry(Registry):
 
-    def __init__(self, iface_registry, remoting):
+    def __init__(self, module_registry, iface_registry, remoting):
         Registry.__init__(self)
+        self._module_registry = module_registry
         self._iface_registry = iface_registry
         self._remoting = remoting
         self._core_types = None
@@ -30,6 +31,7 @@ class ViewRegistry(Registry):
             view_or_handle = yield from rec.factory(locale, handle, parent, *rec.args, **rec.kw)
             assert isinstance(view_or_handle, (self._core_types.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
             if isinstance(view_or_handle, View):
+                view_or_handle.init(self._module_registry)
                 return view_or_handle
             handle = view_or_handle
         assert False, 'Too much redirections: %d' % i
