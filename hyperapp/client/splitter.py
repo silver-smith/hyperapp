@@ -204,4 +204,4 @@ class ThisModule(Module):
         self.splitter_types = importlib.import_module('hyperapp.common.interface.splitter')
 
     def splitter_handle(self, x, y, orientation, focused=0, sizes=None):
-        return self.splitter_types.splitter_handle(View.view_id, x, y, orientation='horizontal', focused=0, sizes=sizes or [])
+        return self.splitter_types.splitter_handle(View.view_id, x, y, orientation=orientation, focused=0, sizes=sizes or [])
