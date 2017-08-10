@@ -135,6 +135,7 @@ class RealRequestTest(unittest.TestCase):
 
     def tearDown(self):
         self.services.module_manager.unregister_meta_hook()
+        Server._servers.clear()  # temporary fix; todo
 
     def test_get_request(self):
         loop = asyncio.get_event_loop()
