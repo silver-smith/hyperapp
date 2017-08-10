@@ -99,13 +99,11 @@ class Field(object):
     def from_data(cls, registry, rec):
         return cls(rec.name, registry.resolve(rec.type))
 
-    def __init__(self, name, type, default=None):
+    def __init__(self, name, type):
         assert isinstance(name, str), repr(name)
         assert isinstance(type, Type), repr(type)
-        assert default is None or isinstance(default, type), repr(default)
         self.name = name
         self.type = type
-        self.default = default
 
     def isinstance(self, value):
         if not self.type:
@@ -190,8 +188,6 @@ class TRecord(Type):
             else:
                 if isinstance(field.type, TOptional):
                     value = None
-                elif field.default is not None:
-                    value = field.default
                 else:
                     raise TypeError('Record %s field is missing: %r' % (self, field.name))
             assert isinstance(value, field.type), 'Field %r is expected to be %r, but is %r' % (field.name, field.type, value)
