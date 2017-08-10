@@ -27,7 +27,7 @@ from hyperapp.common.visual_rep import pprint
 from hyperapp.common.module_manager import ModuleManager
 from hyperapp.common.route_storage import RouteStorage
 from hyperapp.common.services import ServicesBase
-from hyperapp.server.module import Module
+from hyperapp.server.module import ModuleRegistry
 from hyperapp.server import route_storage
 from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
 from hyperapp.server.remoting import Remoting
@@ -161,6 +161,7 @@ class Services(ServicesBase):
         self.server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../dynamic_modules'))
         ServicesBase.init_services(self)
+        self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
         self.remoting = Remoting(self.iface_registry)
@@ -172,7 +173,7 @@ class Services(ServicesBase):
             'param_editor',
             'code_repository',
             ])
-        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet)
+        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)
         self.module_manager.register_meta_hook()
         try:
             self._load_server_modules()
@@ -206,17 +207,19 @@ class ServerTest(unittest.TestCase):
         self.services = Services()
         self.types = self.services.types
         self.packet_types = self.services.types.packet
+        self.module_registry = self.services.module_registry
         self.iface_registry = self.services.iface_registry
         test_iface.register_types(self.services.types.core)
         self.iface_registry.register(test_iface)
         self._init_test_module()
-        self.server = Server(self.packet_types, self.services.types.core, self.iface_registry, server_identity)
+        self.server = Server(self.packet_types, self.services.types.core, self.services.module_registry, self.iface_registry, server_identity)
 
     def _init_test_module(self):
         self.test_error = self.types.packet.error.register('test_error', base=self.types.packet.client_error, fields=[
             Field('invalid_param', tString),
             ])
-        self.test_module = TestModule(self.test_error)  # self-registering
+        self.test_module = TestModule(self.test_error)
+        self.module_registry.register(self.test_module)
 
     def tearDown(self):
         self.services.module_manager.unregister_meta_hook()

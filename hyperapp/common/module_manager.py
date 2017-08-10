@@ -6,17 +6,20 @@ import abc
 import importlib
 import importlib.machinery
 from .htypes import TypeRegistry, TypeRegistryRegistry
+from .module_registry import ModuleRegistry
 
 log = logging.getLogger(__name__)
 
 
 class ModuleManager(object):
 
-    def __init__(self, services, type_registry_registry, packet_types):
+    def __init__(self, services, type_registry_registry, packet_types, module_registry):
         assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
+        assert isinstance(module_registry, ModuleRegistry), repr(module_registry)
         self._services = services
         self._type_registry_registry = type_registry_registry
         self._packet_types = packet_types
+        self._module_registry = module_registry
         self._type_modules = {}  # fullname -> ModuleType
         self._code_modules = {}  # fullname -> tModule
         self._name2code_module = {}  # name -> tModule
@@ -52,7 +55,9 @@ class ModuleManager(object):
     def _register_provided_services(self, module, module_dict):
         this_module_class = module_dict.get('ThisModule')
         if this_module_class:
-            module_dict['this_module'] = this_module_class(self._services)  # todo: remove auto-registration by Module ctr
+            this_module = this_module_class(self._services)
+            module_dict['this_module'] = this_module
+            self._module_registry.register(this_module)
 
     def has_module(self, module_name):
         return (module_name in self._name2code_module)

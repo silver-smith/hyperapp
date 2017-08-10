@@ -15,10 +15,6 @@ MODULE_NAME = 'server_info'
 
 class DbRouteRepository(RouteRepository):
 
-    def __init__(self, this_module):
-        assert isinstance(this_module, ThisModule), repr(this_module)
-        self.ServerRoute = this_module.ServerRoute
-
     def enumerate(self):
         return []
 
@@ -27,12 +23,12 @@ class DbRouteRepository(RouteRepository):
         assert isinstance(public_key, PublicKey), repr(public_key)
         assert is_list_list_inst(routes, str), repr(routes)
         public_key_pem = public_key.to_pem()
-        ## delete(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem)
-        for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key_pem):
+        ## delete(rec for rec in this_module.ServerRoute if rec.public_key_pem==public_key_pem)
+        for rec in select(rec for rec in this_module.ServerRoute if rec.public_key_pem==public_key_pem):
             rec.delete()
         for route in routes:
             log.info('-- storing route for %s: %r', public_key.get_short_id_hex(), encode_route(route))
-            self.ServerRoute(
+            this_module.ServerRoute(
                 public_key_pem=public_key_pem,
                 route=encode_route(route),
                 )
@@ -41,7 +37,7 @@ class DbRouteRepository(RouteRepository):
     def get(self, public_key):
         assert isinstance(public_key, PublicKey), repr(public_key)
         routes = []
-        for rec in select(rec for rec in self.ServerRoute if rec.public_key_pem==public_key.to_pem()):
+        for rec in select(rec for rec in this_module.ServerRoute if rec.public_key_pem==public_key.to_pem()):
             routes.append(decode_route(rec.route))
         log.info('-- loaded routes for %s: %r', public_key.get_short_id_hex(), [encode_route(route) for route in routes])
         return routes
@@ -49,7 +45,7 @@ class DbRouteRepository(RouteRepository):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self):
+    def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
 
     def init_phase2(self):

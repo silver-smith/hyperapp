@@ -3,7 +3,8 @@ import logging
 from ..common.route_storage import RouteStorage
 from ..common.module_manager import ModuleManager
 from ..common.services import ServicesBase
-from .module import Module
+from .module import ModuleRegistry
+from . import ponyorm_module
 from . import route_storage
 from .remoting import Remoting
 from . import tcp_transport
@@ -23,7 +24,7 @@ class Services(ServicesBase):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         ServicesBase.init_services(self)
-        self.route_storage_module = route_storage.ThisModule()
+        self.module_registry = ModuleRegistry()
         self._load_type_modules([
                 'resource',
                 'core',
@@ -42,18 +43,28 @@ class Services(ServicesBase):
                 'text_object_types',
                 'exception_test',
                 ])
-        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet)
+        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()
         self.resources_loader = ResourcesLoader(self.types.resource,
                                                 self.types.param_editor,
                                                 iface_resources_dir=self.server_dir,
                                                 client_modules_resources_dir=self.dynamic_module_dir)
+        self._register_static_modules()
         self._load_server_modules()
-        Module.init_phases()
-        self.route_storage = RouteStorage(route_storage.DbRouteRepository(self.route_storage_module))
+        self.module_registry.init_phases()
+        self.route_storage = RouteStorage(route_storage.DbRouteRepository())
         self.remoting = Remoting(self.iface_registry)
         self._register_transports()
+
+    def _register_static_modules(self):
+        for module in [
+                ponyorm_module,
+                route_storage,
+            ]:
+            this_module = module.ThisModule(self)
+            module.__dict__['this_module'] = this_module
+            self.module_registry.register(this_module)
 
     def _register_transports(self):
         for module in [tcp_transport, encrypted_transport]:

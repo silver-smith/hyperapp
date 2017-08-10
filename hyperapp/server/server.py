@@ -7,17 +7,17 @@ from ..common.url import Url
 from ..common.object_path_collector import ObjectPathCollector
 from .request import NotAuthorizedError, RequestBase, Request, ServerNotification, Response
 from .object import subscription
-from . import module
 
 log = logging.getLogger(__name__)
 
 
 class Server(object):
 
-    def __init__(self, packet_types, core_types, iface_registry, identity, test_delay_sec=None):
+    def __init__(self, packet_types, core_types, module_registry, iface_registry, identity, test_delay_sec=None):
         assert isinstance(identity, Identity), repr(identity)
         self._packet_types = packet_types
         self._core_types = core_types
+        self._module_registry = module_registry
         self._iface_registry = iface_registry
         self.identity = identity
         self.test_delay_sec = test_delay_sec  # float
@@ -63,7 +63,7 @@ class Server(object):
             return request.make_response(error=error)
 
     def _resolve(self, iface, path):
-        return module.Module.run_resolver(iface, path)
+        return self._module_registry.run_resolver(iface, path)
 
     def _subscribe_objects(self, peer_channel, response):
         collector = ObjectPathCollector(self._packet_types, self._core_types, self._iface_registry)

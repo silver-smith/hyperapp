@@ -88,7 +88,7 @@ class Article(Object):
             target_url = Url(iface, public_key, path)
             return request.make_response_redirect(target_url)
         else:
-            target = this_module.run_resolver(iface, path)
+            target = this_module.module_registry.run_resolver(iface, path)
             return request.make_response_object(target)
 
     @db_session
@@ -142,7 +142,7 @@ class ArticleRefList(SmallListObject):
             target_url = Url(iface, public_key, path)
             target_handle = self._core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
         else:
-            target_obj = this_module.run_resolver(iface, path)
+            target_obj = this_module.module_registry.run_resolver(iface, path)
             target_handle = target_obj.get_handle(request)
         return request.make_response_handle(target_handle)
 
@@ -216,6 +216,7 @@ class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
+        self.module_registry = services.module_registry
         self.iface_registry = services.iface_registry
         self.article_fields = dict(text=Required(str),
                                    refs=Set('ArticleRef'))

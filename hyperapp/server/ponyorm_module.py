@@ -12,7 +12,7 @@ class PonyOrmModule(Module):
 
     def __init__(self, name):
         Module.__init__(self, name)
-        self.db = module.db
+        self.db = this_module.db
 
     def make_entity(self, entity_name, **fields):
         return self.make_inherited_entity(entity_name, self.db.Entity, **fields)
@@ -23,13 +23,10 @@ class PonyOrmModule(Module):
 
 class ThisModule(Module):
 
-    def __init__(self):
+    def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
         #sql_debug(True)
         self.db = Database('sqlite', SQLITE_DB_PATH, create_db=True)
 
     def init_phase3(self):
         self.db.generate_mapping(create_tables=True)
-
-
-module = ThisModule()

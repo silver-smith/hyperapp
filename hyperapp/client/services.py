@@ -70,16 +70,12 @@ class Services(ServicesBase):
         self.resources_manager = ResourcesManager(
             self.types.resource, self.types.param_editor, self.resources_registry, self.cache_repository, self._dir)
         self._load_modules()
-        self._register_modules()
+        self._register_static_modules()
         self._register_transports()
         self._register_object_implementations()
         self._register_views()
 
-    def _register_transports(self):
-        tcp_transport.register_transports(self.remoting.transport_registry, self)
-        encrypted_transport.register_transports(self.remoting.transport_registry, self)
-
-    def _register_modules(self):
+    def _register_static_modules(self):
         for module in [
                 navigator,
                 tab_view,
@@ -90,6 +86,10 @@ class Services(ServicesBase):
             this_module = module.ThisModule(self)
             module.__dict__['this_module'] = this_module
             self.module_registry.register(this_module)
+
+    def _register_transports(self):
+        tcp_transport.register_transports(self.remoting.transport_registry, self)
+        encrypted_transport.register_transports(self.remoting.transport_registry, self)
 
     def _load_modules(self):
         for module_name in [

@@ -1,4 +1,5 @@
 import logging
+from ..common import module_registry as common_module_registry
 from .util import Path
 
 log = logging.getLogger(__name__)
@@ -17,13 +18,8 @@ class ModuleCommand(object):
 # base class for modules
 class Module(object):
 
-    module_registry = []
-    module_by_name = {}
-
     def __init__(self, name):
         self.name = name
-        self.module_registry.append(self)  # preserves import order
-        self.module_by_name[name] = self
 
     def init_phase2(self):
         pass
@@ -31,35 +27,46 @@ class Module(object):
     def init_phase3(self):
         pass
 
-    @classmethod
-    def init_phases(cls):
-        for module in cls.module_registry:
-            module.init_phase2()
-        for module in cls.module_registry:
-            module.init_phase3()
-
-    @classmethod
-    def get_module_by_name(cls, name):
-        return cls.module_by_name[name]
-
-    @classmethod
-    def run_resolver(cls, iface, path):
-        path = Path(path)
-        module = path.pop_str()
-        return cls.module_by_name[module].resolve(iface, path)
-
     def resolve(self, iface, path):
         path.raise_not_found()
 
     def get_commands(self):
         return []
 
-    @classmethod
-    def get_all_modules_commands(cls):
-        commands = []
-        for module in cls.module_registry:
-            commands += module.get_commands()
-        return commands
+    def run_command(self, request, command_id):
+        raise RuntimeError('Unknown command: %r' % command_iid)
     
     def make_path(self, *args):
         return [self.name] + list(args)
+
+
+class ModuleRegistry(common_module_registry.ModuleRegistry):
+
+    def __init__(self):
+        self._module_list = []
+        self._name2module = {}
+
+    def register(self, module):
+        assert isinstance(module, Module), repr(module)
+        self._module_list.append(module)  # preserves import order
+        self._name2module[module.name] = module
+
+    def init_phases(self):
+        for module in self._module_list:
+            module.init_phase2()
+        for module in self._module_list:
+            module.init_phase3()
+
+    def get_module_by_name(self, name):
+        return self._name2module[name]
+
+    def run_resolver(self, iface, path):
+        path = Path(path)
+        module = path.pop_str()
+        return self._name2module[module].resolve(iface, path)
+
+    def get_all_modules_commands(self):
+        commands = []
+        for module in self._module_list:
+            commands += module.get_commands()
+        return commands

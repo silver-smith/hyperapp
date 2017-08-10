@@ -1,3 +1,4 @@
+from ..common import module_registry as common_module_registry
 from .command_class import Commander
 
 
@@ -10,7 +11,7 @@ class Module(Commander):
         return []
 
 
-class ModuleRegistry(object):
+class ModuleRegistry(common_module_registry.ModuleRegistry):
 
     def __init__(self):
         self._modules = []

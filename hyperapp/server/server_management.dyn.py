@@ -20,11 +20,12 @@ class CommandList(SmallListObject):
     def get_path(cls):
         return this_module.make_path()
 
-    def __init__(self):
+    def __init__(self, module_registry):
         SmallListObject.__init__(self, core_types)
+        self._module_registry = module_registry
 
     def fetch_all_elements(self, request):
-        return list(map(self.cmd2element, Module.get_all_modules_commands()))
+        return list(map(self.cmd2element, self._module_registry.get_all_modules_commands()))
 
     def cmd2element(self, cmd):
         commands = [self.command_open]
@@ -34,7 +35,7 @@ class CommandList(SmallListObject):
     @command('open', kind='element')
     def command_open(self, request):
         module_name, command_id = request.params.element_key.split('.')
-        module = Module.get_module_by_name(module_name)
+        module = self._module_registry.get_module_by_name(module_name)
         return module.run_command(request, command_id)
 
 
@@ -42,10 +43,11 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
+        self._module_registry = services.module_registry
 
     def resolve(self, iface, path):
         path.check_empty()
-        return CommandList()
+        return CommandList(self._module_registry)
 
 
 def get_management_url(public_key):
