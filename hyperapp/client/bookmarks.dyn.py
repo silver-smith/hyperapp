@@ -134,7 +134,6 @@ class ThisModule(Module):
 
     @command('bookmark_list')
     def command_bookmark_list(self):
-        print('### command_bookmark_list', make_bookmark_list())
         return make_bookmark_list()
 
     @command('bookmark', kind='object')

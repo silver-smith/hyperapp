@@ -26,4 +26,4 @@ ThisModule:
       text: Bookmark
       descriptoin: Add this url to bookmarks
       shortcuts:
-      - Ctrl+D
+      - Alt+D

@@ -45,7 +45,7 @@ class ResourcesManager(object):
             if rec.id[1] == 'error_message':
                 id = rec.id[1:]  # they are global; skip module name and interface id
             else:
-                id = ['client_module'] + rec.id[1:]  # skip module name from id
+                id = ['client_module'] + rec.id
             self.register([self._resource_types.resource_rec(id, rec.resource)])
 
     def register(self, resource_list):
