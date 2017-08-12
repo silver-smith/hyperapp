@@ -10,16 +10,17 @@ from .proxy_object import execute_get_request
 from . import view
 from . import window
 from .services import Services
+from .async_application import AsyncApplication
 from .application_state_storage import ApplicationStateStorage
 from .default_state import build_default_state
 
 log = logging.getLogger(__name__)
 
 
-class Application(QtGui.QApplication, view.View):
+class Application(AsyncApplication, view.View):
 
     def __init__(self, sys_argv):
-        QtGui.QApplication.__init__(self, sys_argv)
+        AsyncApplication.__init__(self, sys_argv)
         view.View.__init__(self)
         self.services = Services()
         self._packet_types = self.services.types.packet
@@ -44,8 +45,6 @@ class Application(QtGui.QApplication, view.View):
             self.services.module_manager,
             self.services.code_repository,
             )
-        self._loop = asyncio.get_event_loop()
-        self._loop.set_debug(True)
 
     def get_state(self):
         return [view.get_state() for view in self._windows]
@@ -69,11 +68,7 @@ class Application(QtGui.QApplication, view.View):
         self._windows.remove(view)
         if not self._windows:  # Was it the last window? Then it is time to exit
             self._state_storage.save_state(state)
-            asyncio.async(self.stop_loop())  # call it async to allow all pending tasks to complete
-
-    @asyncio.coroutine
-    def stop_loop(self):
-        self._loop.stop()
+            self.stop_loop()
 
     @command('open_server')
     @asyncio.coroutine
@@ -93,24 +88,11 @@ class Application(QtGui.QApplication, view.View):
         ## module.set_shutdown_flag()
         state = self.get_state()
         self._state_storage.save_state(state)
-        self._loop.stop()
-
-    # process qt events while inside asyncio loop
-    def process_events_and_repeat(self):
-        while self.hasPendingEvents():
-            self.processEvents()
-            # although this event is documented as deprecated, it is essential for qt objects being destroyed:
-            self.processEvents(QtCore.QEventLoop.DeferredDeletion)
-        self.sendPostedEvents(None, 0)
-        self._loop.call_later(0.01, self.process_events_and_repeat)
+        self.stop_loop()
 
     def exec_(self):
-        state = self._state_storage.load_state_with_requirements(self._loop)
+        state = self._state_storage.load_state_with_requirements(self._async_loop)
         if not state:
             state = build_default_state(self._modules)
-        self._loop.run_until_complete(self.open_windows(state))
-        self._loop.call_soon(self.process_events_and_repeat)
-        try:
-            self._loop.run_forever()
-        finally:
-            self._loop.close()
+        self._async_loop.run_until_complete(self.open_windows(state))
+        AsyncApplication.exec_(self)
