@@ -119,6 +119,7 @@ class Slice(object):
 
 class ListObject(Object, metaclass=abc.ABCMeta):
 
+    # return list_interface.Column list
     @abc.abstractmethod
     def get_columns(self):
         pass

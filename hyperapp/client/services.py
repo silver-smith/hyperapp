@@ -41,8 +41,8 @@ class Services(ServicesBase):
     def __init__(self):
         self._dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
-        self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         ServicesBase.init_services(self)
+        self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
