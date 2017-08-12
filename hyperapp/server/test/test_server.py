@@ -61,7 +61,7 @@ test_iface = Interface('test_iface', commands=[
 authorized_peer_identity = Identity.generate(fast=True)
 
 
-class TestObject(Object):
+class SampleObject(Object):
 
     class_name = 'test_object'
     iface = test_iface
@@ -99,7 +99,7 @@ class TestObject(Object):
         subscription.distribute_update(self.iface, self.get_path(), request.params.message)
 
 
-class TestModule(module_mod.Module):
+class StubModule(module_mod.Module):
 
     name = 'test_module'
 
@@ -109,9 +109,9 @@ class TestModule(module_mod.Module):
 
     def resolve(self, iface, path):
         objname = path.pop_str()
-        if objname == TestObject.class_name:
+        if objname == SampleObject.class_name:
             obj_id = path.pop_str()
-            return TestObject(self._test_error, self, obj_id)
+            return SampleObject(self._test_error, self, obj_id)
         path.raise_not_found()
 
         
@@ -148,7 +148,7 @@ class PhonyClientCodeRepository(object):
         return []
 
 
-class TestSession(TransportSession):
+class StubSession(TransportSession):
 
     def pull_notification_transport_packets(self):
         return []
@@ -218,7 +218,7 @@ class ServerTest(unittest.TestCase):
         self.test_error = self.types.packet.error.register('test_error', base=self.types.packet.client_error, fields=[
             Field('invalid_param', tString),
             ])
-        self.test_module = TestModule(self.test_error)
+        self.test_module = StubModule(self.test_error)
         self.module_registry.register(self.test_module)
 
     def tearDown(self):
@@ -234,7 +234,7 @@ class ServerRequestHandlingTest(ServerTest):
     def test_simple_request(self):
         request_data = self.packet_types.client_request(
             iface='test_iface',
-            path=[TestModule.name, TestObject.class_name, '1'],
+            path=[StubModule.name, SampleObject.class_name, '1'],
             command_id='echo',
             params=self.make_params(test_iface, 'echo', test_param='hello'),
             request_id='001',
@@ -251,7 +251,7 @@ class ServerRequestHandlingTest(ServerTest):
     def execute_check_ok_request(self, test_param):
         request_data = self.packet_types.client_request(
             iface='test_iface',
-            path=[TestModule.name, TestObject.class_name, '1'],
+            path=[StubModule.name, SampleObject.class_name, '1'],
             command_id='check_ok',
             params=self.make_params(test_iface, 'check_ok', test_param=test_param),
             request_id='002',
@@ -301,7 +301,7 @@ class TransportRequestHandlingTest(ServerTest):
             return data
         session = session_list.get_transport_session('test.encrypted_tcp')
         if session is None:
-            session = TestSession()
+            session = StubSession()
             session.session_key = make_session_key()
             session_list.set_transport_session('test.encrypted_tcp', session)
         packet = encrypt_initial_packet(session.session_key, server_identity.get_public_key(), data)
@@ -327,7 +327,7 @@ class TransportRequestHandlingTest(ServerTest):
     def make_tcp_transport_request(self, session_list, transport_id, obj_id, command_id, **kw):
         request = self.packet_types.client_request(
             iface='test_iface',
-            path=[TestModule.name, TestObject.class_name, obj_id],
+            path=[StubModule.name, SampleObject.class_name, obj_id],
             command_id=command_id,
             params=self.make_params(test_iface, command_id, **kw),
             request_id='001',
@@ -346,7 +346,7 @@ class TransportRequestHandlingTest(ServerTest):
     def make_tcp_transport_notification(self, session_list, transport_id, obj_id, command_id, **kw):
         request = self.packet_types.client_notification(
             iface='test_iface',
-            path=[TestModule.name, TestObject.class_name, obj_id],
+            path=[StubModule.name, SampleObject.class_name, obj_id],
             command_id=command_id,
             params=self.make_params(test_iface, command_id, **kw),
             )
@@ -450,7 +450,7 @@ class TransportRequestHandlingTest(ServerTest):
         self.assertEqual(1, len(response.update_list))
         update = response.update_list[0]
         self.assertEqual('test_iface', update.iface)
-        self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
+        self.assertEqual([StubModule.name, SampleObject.class_name, obj_id], update.path)
         self.assertEqual(message, update.diff.decode(test_iface.diff_type))
 
     def test_tcp_cdr_unsubscribe_notification_request(self):
@@ -496,7 +496,7 @@ class TransportRequestHandlingTest(ServerTest):
         self.assertEqual(1, len(notification.update_list))
         update = notification.update_list[0]
         self.assertEqual('test_iface', update.iface)
-        self.assertEqual([TestModule.name, TestObject.class_name, obj_id], update.path)
+        self.assertEqual([StubModule.name, SampleObject.class_name, obj_id], update.path)
         self.assertEqual(message, update.diff.decode(test_iface.diff_type))
 
     def pick_pop_channelge_from_responses(self, transport_id, response_transport_packets):

@@ -1,11 +1,14 @@
 import os.path
 import asyncio
+import logging
 import pytest
 from PySide.QtGui import QApplication
 from hyperapp.common.htypes import tString, list_handle_type, Column
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.list_object import ListObject
 from hyperapp.client.list_view import View
+
+log = logging.getLogger(__name__)
 
 
 class ResourcesManager(object):
@@ -14,7 +17,7 @@ class ResourcesManager(object):
         self._resources = resources
 
     def resolve(self, resource_id):
-        print('resolving resource:', resource_id)
+        log.debug('resolving resource: %s', resource_id)
         return self._resources.get('.'.join(resource_id))
 
 
@@ -29,7 +32,7 @@ class Services(ServicesBase):
                 ])
 
 
-class TestObject(ListObject):
+class StubObject(ListObject):
 
     def get_columns(self):
         return [
@@ -42,9 +45,10 @@ class TestObject(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
-        pass
+        assert 0
 
 
+# not used directly but required to exist before creating gui objects
 @pytest.fixture
 def application():
     return QApplication([])
@@ -57,7 +61,7 @@ def services():
 def list_view(application, services):
     resource_manager = ResourcesManager({
         })
-    object = TestObject()
+    object = StubObject()
     data_type = list_handle_type(services.types.core, tString)
     return View(
         locale='en',
