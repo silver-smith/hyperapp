@@ -1,10 +1,12 @@
 import os.path
 import asyncio
 import logging
+import time
 import pytest
-from PySide.QtGui import QApplication
+from PySide.QtTest import QTest
 from hyperapp.common.htypes import tString, list_handle_type, Column
 from hyperapp.common.services import ServicesBase
+from hyperapp.client.async_application import AsyncApplication
 from hyperapp.client.list_object import ListObject
 from hyperapp.client.list_view import View
 
@@ -51,8 +53,13 @@ class StubObject(ListObject):
 # not used directly but required to exist before creating gui objects
 @pytest.fixture
 def application():
-    return QApplication([])
+    app = AsyncApplication()
+    return app
 
+@pytest.fixture
+def event_loop(application):
+    return application.event_loop
+    
 @pytest.fixture
 def services():
     return Services()
@@ -74,5 +81,13 @@ def list_view(application, services):
         sort_column_id='key',
         )
 
+@pytest.mark.asyncio
+@asyncio.coroutine
 def test_list_view(list_view):
-    pass
+    list_view.show()
+    #application.stop_loop()
+    #application.exec_()
+    #QTest.qWaitForWindowShown(list_view)
+    #time.sleep(1)
+    log.debug('done')
+    #assert 0

@@ -91,8 +91,8 @@ class Application(AsyncApplication, view.View):
         self.stop_loop()
 
     def exec_(self):
-        state = self._state_storage.load_state_with_requirements(self._async_loop)
+        state = self._state_storage.load_state_with_requirements(self.event_loop)
         if not state:
             state = build_default_state(self._modules)
-        self._async_loop.run_until_complete(self.open_windows(state))
+        self.event_loop.run_until_complete(self.open_windows(state))
         AsyncApplication.exec_(self)
