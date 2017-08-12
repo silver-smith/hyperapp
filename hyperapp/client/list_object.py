@@ -51,11 +51,11 @@ class ListDiff(object):
 @total_ordering
 class Element(object):
 
-    def __init__(self, key, row, commands, order_key=None):
-        assert is_list_inst(commands, Command), repr(commands)
+    def __init__(self, key, row, commands=None, order_key=None):
+        assert is_list_inst(commands or [], Command), repr(commands)
         self.key = key
         self.row = row
-        self.commands = commands
+        self.commands = commands or []
         if order_key is not None:
             self.order_key = order_key
 

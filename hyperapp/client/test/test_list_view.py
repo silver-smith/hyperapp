@@ -2,12 +2,13 @@ import os.path
 import asyncio
 import logging
 import time
+from types import SimpleNamespace
 import pytest
 from PySide.QtTest import QTest
-from hyperapp.common.htypes import tString, list_handle_type, Column
+from hyperapp.common.htypes import tString, tInt, list_handle_type, Column
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.async_application import AsyncApplication
-from hyperapp.client.list_object import ListObject
+from hyperapp.client.list_object import Element, Slice, ListObject
 from hyperapp.client.list_view import View
 
 log = logging.getLogger(__name__)
@@ -38,7 +39,7 @@ class StubObject(ListObject):
 
     def get_columns(self):
         return [
-            Column('key'),
+            Column('key', type=tInt),
             Column('title'),
             ]
 
@@ -47,7 +48,14 @@ class StubObject(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
-        assert 0
+        log.debug('StubObject.fetch_elements: sort_column_id=%s, key=%r, desc_count=%d, asc_count=%d', sort_column_id, key, desc_count, asc_count)
+        assert sort_column_id == 'key'
+        if key is None and desc_count == 0:
+            elements = [Element(key, SimpleNamespace(key=key, title='title.%03d' % key)) for key in range(20)]
+            slice = Slice(sort_column_id, 0, elements, bof=True, eof=True)
+            self._notify_fetch_result(slice)
+        else:
+            assert 0
 
 
 # not used directly but required to exist before creating gui objects
@@ -90,4 +98,4 @@ def test_list_view(list_view):
     #QTest.qWaitForWindowShown(list_view)
     #time.sleep(1)
     log.debug('done')
-    #assert 0
+    assert 0  # just show me the logs
