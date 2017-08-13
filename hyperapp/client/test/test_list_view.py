@@ -4,6 +4,7 @@ import logging
 import time
 from types import SimpleNamespace
 import pytest
+from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
 from hyperapp.common.htypes import tString, tInt, list_handle_type, Column
 from hyperapp.common.services import ServicesBase
@@ -12,6 +13,9 @@ from hyperapp.client.list_object import Element, Slice, ListObject
 from hyperapp.client.list_view import View
 
 log = logging.getLogger(__name__)
+
+
+ROW_COUNT = 20
 
 
 class ResourcesManager(object):
@@ -51,18 +55,17 @@ class StubObject(ListObject):
         log.debug('StubObject.fetch_elements: sort_column_id=%s, key=%r, desc_count=%d, asc_count=%d', sort_column_id, key, desc_count, asc_count)
         assert sort_column_id == 'key'
         if key is None and desc_count == 0:
-            elements = [Element(key, SimpleNamespace(key=key, title='title.%03d' % key)) for key in range(20)]
+            elements = [Element(key, SimpleNamespace(key=key, title='title.%03d' % key)) for key in range(ROW_COUNT)]
             slice = Slice(sort_column_id, 0, elements, bof=True, eof=True)
             self._notify_fetch_result(slice)
         else:
             assert 0
 
 
-# not used directly but required to exist before creating gui objects
+# required to exist when creating gui objects
 @pytest.fixture
 def application():
-    app = AsyncApplication()
-    return app
+    return AsyncApplication()
 
 @pytest.fixture
 def event_loop(application):
@@ -89,13 +92,28 @@ def list_view(application, services):
         sort_column_id='key',
         )
 
+@asyncio.coroutine
+def wait_for(timeout_sec, fn, *args, **kw):
+    t = time.time()
+    while not fn(*args, **kw):
+        if time.time() - t > timeout_sec:
+            assert False, 'Timed out in %s seconds' % timeout_sec
+        yield from asyncio.sleep(0.1)
+
 @pytest.mark.asyncio
 @asyncio.coroutine
 def test_list_view(list_view):
-    list_view.show()
+    #list_view.show()
+    list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
     #application.stop_loop()
     #application.exec_()
     #QTest.qWaitForWindowShown(list_view)
     #time.sleep(1)
+    model = list_view.model()
+    yield from wait_for(1, lambda: model.columnCount(QtCore.QModelIndex()) == 2)
+    yield from wait_for(1, lambda: model.rowCount(QtCore.QModelIndex()) == ROW_COUNT)
+    for row in range(ROW_COUNT):
+        assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
+        assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
     log.debug('done')
-    assert 0  # just show me the logs
+    # assert 0  # just show me the logs
