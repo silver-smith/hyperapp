@@ -137,4 +137,3 @@ def test_list_view(list_view):
         assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
         assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
     log.debug('done')
-    # assert 0  # just show me the logs

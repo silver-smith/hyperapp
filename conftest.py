@@ -1,3 +1,4 @@
+import logging
 import pytest
 
 
@@ -10,6 +11,11 @@ class AsyncExceptionHandler(object):
         self.had_exceptions = True
         loop.default_exception_handler(context)
 
+
+def pytest_configure(config):
+    if not config.getvalue('capturelog'):
+        # dump log to stdout if no capturelog is enabled
+        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)-25s %(lineno)4d %(levelname)-8s %(message)s', datefmt='%H:%M:%S')
 
 @pytest.mark.hookwrapper
 def pytest_pyfunc_call(pyfuncitem):
