@@ -3,6 +3,7 @@ import asyncio
 import logging
 import time
 from types import SimpleNamespace
+from itertools import chain
 import pytest
 from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
@@ -15,7 +16,7 @@ from hyperapp.client.list_view import View
 log = logging.getLogger(__name__)
 
 
-ROW_COUNT = 20
+ROW_COUNT = 50
 
 
 class ResourcesManager(object):
@@ -91,7 +92,7 @@ def event_loop(application):
 def services():
     return Services()
 
-@pytest.fixture(params=range(1, 10))
+@pytest.fixture(params=chain(range(1, 10), range(10, ROW_COUNT + 1, 10)))
 def object(request):
     return StubObject(rows_per_fetch=request.param)
 
@@ -128,10 +129,11 @@ def test_list_view(list_view):
     #application.exec_()
     #QTest.qWaitForWindowShown(list_view)
     #time.sleep(1)
+    first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
     yield from wait_for(1, lambda: model.columnCount(QtCore.QModelIndex()) == 2)
-    yield from wait_for(1, lambda: model.rowCount(QtCore.QModelIndex()) == ROW_COUNT)
-    for row in range(ROW_COUNT):
+    yield from wait_for(1, lambda: model.rowCount(QtCore.QModelIndex()) >= visible_row_count)
+    for row in range(visible_row_count):
         assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
         assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
     log.debug('done')
