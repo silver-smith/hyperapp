@@ -41,6 +41,10 @@ class Services(ServicesBase):
 
 class StubObject(ListObject):
 
+    def __init__(self, rows_per_fetch):
+        ListObject.__init__(self)
+        self._rows_per_fetch = rows_per_fetch
+
     def get_columns(self):
         return [
             Column('key', type=tInt),
@@ -54,16 +58,28 @@ class StubObject(ListObject):
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         log.debug('StubObject.fetch_elements: sort_column_id=%s, key=%r, desc_count=%d, asc_count=%d', sort_column_id, key, desc_count, asc_count)
         assert sort_column_id == 'key'
-        if key is None and desc_count == 0:
-            elements = [Element(key, SimpleNamespace(key=key, title='title.%03d' % key)) for key in range(ROW_COUNT)]
-            slice = Slice(sort_column_id, 0, elements, bof=True, eof=True)
+        if desc_count == 0:
+            if key is not None:
+                start = key + 1
+                bof = False
+            else:
+                start = 0
+                bof = True
+            end = start + self._rows_per_fetch
+            if end >= ROW_COUNT:
+                end = ROW_COUNT
+                eof = True
+            else:
+                eof = False
+            elements = [Element(key, SimpleNamespace(key=key, title='title.%03d' % key)) for key in range(start, end)]
+            slice = Slice(sort_column_id, 0, elements, bof=bof, eof=eof)
             self._notify_fetch_result(slice)
         else:
             assert 0
 
 
 # required to exist when creating gui objects
-@pytest.fixture
+@pytest.fixture(scope='module')
 def application():
     return AsyncApplication()
 
@@ -75,11 +91,14 @@ def event_loop(application):
 def services():
     return Services()
 
+@pytest.fixture(params=range(1, 10))
+def object(request):
+    return StubObject(rows_per_fetch=request.param)
+
 @pytest.fixture
-def list_view(application, services):
+def list_view(application, services, object):
     resource_manager = ResourcesManager({
         })
-    object = StubObject()
     data_type = list_handle_type(services.types.core, tString)
     return View(
         locale='en',
