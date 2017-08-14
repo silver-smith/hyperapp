@@ -16,7 +16,7 @@ from hyperapp.client.list_view import View
 log = logging.getLogger(__name__)
 
 
-ROW_COUNT = 50
+DEFAULT_ROW_COUNT = 50
 DEFAULT_ROWS_PER_FETCH = 10
 
 
@@ -43,8 +43,9 @@ class Services(ServicesBase):
 
 class StubObject(ListObject):
 
-    def __init__(self, rows_per_fetch):
+    def __init__(self, row_count, rows_per_fetch):
         ListObject.__init__(self)
+        self._row_count = row_count
         self._rows_per_fetch = rows_per_fetch
 
     def get_columns(self):
@@ -68,8 +69,8 @@ class StubObject(ListObject):
                 start = 0
                 bof = True
             end = start + self._rows_per_fetch
-            if end >= ROW_COUNT:
-                end = ROW_COUNT
+            if end >= self._row_count:
+                end = self._row_count
                 eof = True
             else:
                 eof = False
@@ -95,7 +96,7 @@ def services():
 
 @pytest.fixture
 def object():
-    return StubObject(rows_per_fetch=DEFAULT_ROWS_PER_FETCH)
+    return StubObject(DEFAULT_ROW_COUNT, DEFAULT_ROWS_PER_FETCH)
 
 @pytest.fixture
 def list_view_factory(application, services, object):
@@ -145,12 +146,19 @@ def wait_for_all_tasks_to_complete(timeout_sec):
     yield from future
 
 
+def row_count_and_rows_per_fetch_and_key():
+    for row_count in chain(range(1, 6), [10, 11, 15, 20, 50]):
+        for rows_per_fetch in chain(range(1, 10), range(10, row_count + 1, 10)):
+            for key in [0, 1, 2, 5, 10, 20, row_count - 1]:
+                if rows_per_fetch > row_count: continue
+                if key >= row_count: continue
+                yield (row_count, rows_per_fetch, key)
+
 @pytest.mark.asyncio
-@pytest.mark.parametrize('rows_per_fetch', chain(range(1, 10), range(10, ROW_COUNT + 1, 10)))
-@pytest.mark.parametrize('key', [0, 1, 2, 5, 10, 20, ROW_COUNT - 1])
+@pytest.mark.parametrize('row_count,rows_per_fetch,key', row_count_and_rows_per_fetch_and_key())
 @asyncio.coroutine
-def test_rows_fetched_and_current_key_set(list_view_factory, rows_per_fetch, key):
-    object = StubObject(rows_per_fetch)
+def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, key):
+    object = StubObject(row_count, rows_per_fetch)
     list_view = list_view_factory(object, key)
     #list_view.show()
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
@@ -160,9 +168,10 @@ def test_rows_fetched_and_current_key_set(list_view_factory, rows_per_fetch, key
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
     yield from wait_for_all_tasks_to_complete(timeout_sec=1)
+    expected_row_count = min(row_count, visible_row_count)
     assert model.columnCount(QtCore.QModelIndex()) == 2
-    assert model.rowCount(QtCore.QModelIndex()) >= visible_row_count
-    for row in range(visible_row_count):
+    assert model.rowCount(QtCore.QModelIndex()) >= expected_row_count
+    for row in range(expected_row_count):
         assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
         assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
     assert list_view.get_current_key() == key
