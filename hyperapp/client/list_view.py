@@ -171,16 +171,16 @@ class Model(QtCore.QAbstractTableModel):
         key = self.keys[row]
         return self._get_key_element(key)
 
-    def get_visible_slice(self, first_visible_row, visible_row_count):
-        last_row = self._wanted_last_row(first_visible_row, visible_row_count)
-        if first_visible_row > 0:
-            from_key = self.keys[first_visible_row - 1]
-        else:
-            from_key = None
-        elements = [self._get_key_element(key) for key in self.keys[first_visible_row:last_row]]
-        bof = self.bof and first_visible_row == 0
-        eof = self.eof and last_row >= len(self.keys)
-        return Slice(self._current_order, from_key, elements, bof, eof)
+    ## def get_visible_slice(self, first_visible_row, visible_row_count):
+    ##     last_row = self._wanted_last_row(first_visible_row, visible_row_count)
+    ##     if first_visible_row > 0:
+    ##         from_key = self.keys[first_visible_row - 1]
+    ##     else:
+    ##         from_key = None
+    ##     elements = [self._get_key_element(key) for key in self.keys[first_visible_row:last_row]]
+    ##     bof = self.bof and first_visible_row == 0
+    ##     eof = self.eof and last_row >= len(self.keys)
+    ##     return Slice(self._current_order, from_key, elements, bof, eof)
 
     def _update_elements_map(self, elements):
         for element in elements:
