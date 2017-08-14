@@ -154,6 +154,7 @@ def row_count_and_rows_per_fetch_and_key():
                 if key >= row_count: continue
                 yield (row_count, rows_per_fetch, key)
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize('row_count,rows_per_fetch,key', row_count_and_rows_per_fetch_and_key())
 @asyncio.coroutine
