@@ -106,9 +106,6 @@ class Model(QtCore.QAbstractTableModel):
         else:
             return True
 
-    def _resolve_resource(self):
-        return 
-
     def _wanted_last_row(self, first_visible_row, visible_row_count):
         wanted_last_row = first_visible_row + visible_row_count
         if not self.eof:
