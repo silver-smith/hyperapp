@@ -17,12 +17,13 @@ log = logging.getLogger(__name__)
 
 
 ROW_COUNT = 50
+DEFAULT_ROWS_PER_FETCH = 10
 
 
 class ResourcesManager(object):
 
-    def __init__(self, resources):
-        self._resources = resources
+    def __init__(self, resources=None):
+        self._resources = resources or {}
 
     def resolve(self, resource_id):
         log.debug('resolving resource: %s', resource_id)
@@ -92,24 +93,24 @@ def event_loop(application):
 def services():
     return Services()
 
-@pytest.fixture(params=chain(range(1, 10), range(10, ROW_COUNT + 1, 10)))
-def object(request):
-    return StubObject(rows_per_fetch=request.param)
+@pytest.fixture
+def object():
+    return StubObject(rows_per_fetch=DEFAULT_ROWS_PER_FETCH)
 
 @pytest.fixture
 def list_view_factory(application, services, object):
-    resource_manager = ResourcesManager({
-        })
-    data_type = list_handle_type(services.types.core, tString)
+    default_object = object
+    data_type = list_handle_type(services.types.core, tInt)
 
-    def make_list_view(key=None):
+    def make_list_view(object=None, key=None, resources=None):
+        resource_manager = ResourcesManager(resources)
         return View(
             locale='en',
             parent=None,
             resources_manager=resource_manager,
             resource_id=['test', 'list'],
             data_type=data_type,
-            object=object,
+            object=object or default_object,
             key=key,
             sort_column_id='key',
             )
@@ -145,12 +146,14 @@ def wait_for_all_tasks_to_complete(timeout_sec):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('rows_per_fetch', chain(range(1, 10), range(10, ROW_COUNT + 1, 10)))
 @pytest.mark.parametrize('key', [0, 1, 2, 5, 10, 20, ROW_COUNT - 1])
 @asyncio.coroutine
-def test_list_view(list_view_factory, key):
-    list_view = list_view_factory(key)
+def test_rows_fetched_and_current_key_set(list_view_factory, rows_per_fetch, key):
+    object = StubObject(rows_per_fetch)
+    list_view = list_view_factory(object, key)
     #list_view.show()
-    list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
+    list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     #application.stop_loop()
     #application.exec_()
     #QTest.qWaitForWindowShown(list_view)
@@ -163,4 +166,20 @@ def test_list_view(list_view_factory, key):
         assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
         assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
     assert list_view.get_current_key() == key
-    log.debug('done')
+    # without resource column_id is used for header
+    assert model.headerData(1, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'title'
+
+@pytest.mark.asyncio
+@asyncio.coroutine
+def test_resources_used_for_header_and_visibility(services, list_view_factory):
+    resources = {
+        'test.list.column.key.en': services.types.resource.column_resource(visible=False, text='the key', description=''),
+        'test.list.column.title.en': services.types.resource.column_resource(visible=True, text='the title', description=''),
+        }
+    list_view = list_view_factory(resources=resources)
+    list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
+    first_visible_row, visible_row_count = list_view._get_visible_rows()
+    model = list_view.model()
+    yield from wait_for_all_tasks_to_complete(timeout_sec=1)
+    assert model.columnCount(QtCore.QModelIndex()) == 1  # key column must be hidden
+    assert model.headerData(0, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'the title'
