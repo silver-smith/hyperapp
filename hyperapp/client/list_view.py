@@ -116,7 +116,7 @@ class Model(QtCore.QAbstractTableModel):
         return wanted_last_row
 
     @asyncio.coroutine
-    def fetch_elements_if_required(self, first_visible_row, visible_row_count):
+    def fetch_elements_if_required(self, first_visible_row, visible_row_count, force=False):
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         wanted_rows = wanted_last_row - len(self.keys)
@@ -124,7 +124,7 @@ class Model(QtCore.QAbstractTableModel):
         log.info('-- list_view.Model.fetch_elements_if_required self=%r first_visible_row=%r visible_row_count=%r'
                  ' wanted_last_row=%r len(keys)=%r eof=%r wanted_rows=%r',
                  id(self), first_visible_row, visible_row_count, wanted_last_row, len(self.keys), self.eof, wanted_rows)
-        if wanted_rows > 0 and not self.eof:
+        if force or (wanted_rows > 0 and not self.eof):
             log.info('   calling fetch_elements object=%s/%r key=%r wanted_rows=%r', id(self._object), self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             yield from self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
@@ -282,12 +282,12 @@ class View(view.View, ListObserver, QtGui.QTableView):
         assert isinstance(slice, Slice), repr(slice)
         self.model().process_fetch_result(slice)
         self.resizeColumnsToContents()
-        self.fetch_elements_if_required()
         if self.wanted_current_key is not None:
-            self.set_current_key(self.wanted_current_key, select_first=True)
-            self.wanted_current_key = None
+            if self.set_current_key(self.wanted_current_key):
+                self.wanted_current_key = None
         elif self.currentIndex().row() == -1:
-            self.set_current_key(None, select_first=True)
+            self.set_current_key(select_first=True)
+        self.fetch_elements_if_required()
 
     def diff_applied(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -322,11 +322,14 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.scrollTo(idx)
         self._selected_elements_changed()
 
-    def set_current_key(self, key, select_first=False, accept_near=False):
+    def set_current_key(self, key=None, select_first=False, accept_near=False):
         row = self.model().get_key_row(key)
         log.info('-- set_current_key key=%r select_first=%r row=%r keys=%r', key, select_first, row, self.model().keys)
-        if row is None and select_first:
-            row = 0
+        if row is None:
+            if select_first:
+                row = 0
+            else:
+                return False
         self.set_current_row(row)
         ## if accept_near:
         ##     row = self._find_nearest_key(key)
@@ -398,7 +401,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def fetch_elements_if_required(self):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        asyncio.async(self.model().fetch_elements_if_required(first_visible_row, visible_row_count))
+        asyncio.async(self.model().fetch_elements_if_required(first_visible_row, visible_row_count, force=self.wanted_current_key is not None))
 
     ## def check_if_elements_must_be_fetched(self):
     ##     last_visible_row = self.get_last_visible_row()

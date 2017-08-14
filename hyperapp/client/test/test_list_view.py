@@ -97,20 +97,24 @@ def object(request):
     return StubObject(rows_per_fetch=request.param)
 
 @pytest.fixture
-def list_view(application, services, object):
+def list_view_factory(application, services, object):
     resource_manager = ResourcesManager({
         })
     data_type = list_handle_type(services.types.core, tString)
-    return View(
-        locale='en',
-        parent=None,
-        resources_manager=resource_manager,
-        resource_id=['test', 'list'],
-        data_type=data_type,
-        object=object,
-        key='key',
-        sort_column_id='key',
-        )
+
+    def make_list_view(key=None):
+        return View(
+            locale='en',
+            parent=None,
+            resources_manager=resource_manager,
+            resource_id=['test', 'list'],
+            data_type=data_type,
+            object=object,
+            key=key,
+            sort_column_id='key',
+            )
+
+    return make_list_view
 
 @asyncio.coroutine
 def wait_for(timeout_sec, fn, *args, **kw):
@@ -141,14 +145,15 @@ def wait_for_all_tasks_to_complete(timeout_sec):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize('key', [0, 1, 2, 5, 10, 20, ROW_COUNT - 1])
 @asyncio.coroutine
-def test_list_view(list_view):
+def test_list_view(list_view_factory, key):
+    list_view = list_view_factory(key)
     #list_view.show()
     list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
     #application.stop_loop()
     #application.exec_()
     #QTest.qWaitForWindowShown(list_view)
-    #time.sleep(1)
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
     yield from wait_for_all_tasks_to_complete(timeout_sec=1)
@@ -157,4 +162,5 @@ def test_list_view(list_view):
     for row in range(visible_row_count):
         assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
         assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
+    assert list_view.get_current_key() == key
     log.debug('done')
