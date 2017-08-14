@@ -17,6 +17,7 @@ def pytest_configure(config):
         # dump log to stdout if no capturelog is enabled
         logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)-25s %(lineno)4d %(levelname)-8s %(message)s', datefmt='%H:%M:%S')
 
+
 @pytest.mark.hookwrapper
 def pytest_pyfunc_call(pyfuncitem):
     event_loop = None

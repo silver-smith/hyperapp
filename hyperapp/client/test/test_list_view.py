@@ -120,6 +120,26 @@ def wait_for(timeout_sec, fn, *args, **kw):
             assert False, 'Timed out in %s seconds' % timeout_sec
         yield from asyncio.sleep(0.1)
 
+@asyncio.coroutine
+def wait_for_all_tasks_to_complete(timeout_sec):
+    t = time.time()
+    future = asyncio.Future()
+    def check_pending():
+        pending = [task for task in asyncio.Task.all_tasks() if not task.done()]
+        log.debug('%d pending tasks:', len(pending))
+        for task in pending:
+            log.debug('\t%s', task)
+        if len(pending) > 1:  # only test itself must be left
+            if time.time() - t > timeout_sec:
+                future.set_exception(RuntimeError('Timed out waiting for all tasks to complete in %s seconds' % timeout_sec))
+            else:
+                asyncio.get_event_loop().call_soon(check_pending)
+        else:
+            future.set_result(None)
+    asyncio.get_event_loop().call_soon(check_pending)
+    yield from future
+
+
 @pytest.mark.asyncio
 @asyncio.coroutine
 def test_list_view(list_view):
@@ -131,8 +151,9 @@ def test_list_view(list_view):
     #time.sleep(1)
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
-    yield from wait_for(1, lambda: model.columnCount(QtCore.QModelIndex()) == 2)
-    yield from wait_for(1, lambda: model.rowCount(QtCore.QModelIndex()) >= visible_row_count)
+    yield from wait_for_all_tasks_to_complete(timeout_sec=1)
+    assert model.columnCount(QtCore.QModelIndex()) == 2
+    assert model.rowCount(QtCore.QModelIndex()) >= visible_row_count
     for row in range(visible_row_count):
         assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
         assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
