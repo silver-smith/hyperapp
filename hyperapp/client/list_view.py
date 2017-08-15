@@ -140,8 +140,11 @@ class Model(QtCore.QAbstractTableModel):
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(slice.elements))
     
     def diff_applied(self, diff):
-        start_idx = bisect.bisect_left(self.keys, diff.start_key)
-        end_idx = bisect.bisect_right(self.keys, diff.end_key)
+        if diff.start_key == diff.end_key == None:
+            start_idx = end_idx = len(self.keys)
+        else:
+            start_idx = bisect.bisect_left(self.keys, diff.start_key)
+            end_idx = bisect.bisect_right(self.keys, diff.end_key)
         log.info('-- list_view.Model.diff_applied self=%r diff=%r start_idx=%r end_idx=%r len(keys)=%r keys=%r',
                  id(self), diff, start_idx, end_idx, len(self.keys), self.keys)
         for key in self.keys[start_idx:end_idx]:
@@ -274,8 +277,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def process_fetch_result(self, slice):
         log.debug('-- list_view.process_fetch_result self=%s (pre)', id(self))
         self.model()  # Internal C++ object (View) already deleted - this possible means this view was leaked.
-        log.info('-- list_view.process_fetch_result self=%s model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r',
-                 id(self), id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements))
+        log.info('-- list_view.process_fetch_result self=%s model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r keys=%r',
+                 id(self), id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements),
+                 [element.key for element in slice.elements])
         assert isinstance(slice, Slice), repr(slice)
         self.model().process_fetch_result(slice)
         self.resizeColumnsToContents()

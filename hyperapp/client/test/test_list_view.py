@@ -10,7 +10,7 @@ from PySide.QtTest import QTest
 from hyperapp.common.htypes import tString, tInt, list_handle_type, Column
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.async_application import AsyncApplication
-from hyperapp.client.list_object import Element, Slice, ListObject
+from hyperapp.client.list_object import ListDiff, Element, Slice, ListObject
 from hyperapp.client.list_view import View
 
 log = logging.getLogger(__name__)
@@ -41,12 +41,16 @@ class Services(ServicesBase):
                 ])
 
 
+def element(key):
+    return Element(key, SimpleNamespace(key=key, title='title.%03d' % key))
+
+
 class StubObject(ListObject):
 
-    def __init__(self, row_count, rows_per_fetch):
+    def __init__(self, rows_per_fetch=None, row_count=None, keys=None):
         ListObject.__init__(self)
-        self._row_count = row_count
-        self._rows_per_fetch = rows_per_fetch
+        self._rows_per_fetch = rows_per_fetch or DEFAULT_ROWS_PER_FETCH
+        self._keys = keys or list(range(row_count or DEFAULT_ROW_COUNT))
 
     def get_columns(self):
         return [
@@ -63,18 +67,18 @@ class StubObject(ListObject):
         assert sort_column_id == 'key'
         if desc_count == 0:
             if key is not None:
-                start = key + 1
+                start = self._keys.index(key) + 1
                 bof = False
             else:
                 start = 0
                 bof = True
             end = start + self._rows_per_fetch
-            if end >= self._row_count:
-                end = self._row_count
+            if end >= len(self._keys):
+                end = len(self._keys)
                 eof = True
             else:
                 eof = False
-            elements = [Element(key, SimpleNamespace(key=key, title='title.%03d' % key)) for key in range(start, end)]
+            elements = [element(self._keys[row]) for row in range(start, end)]
             slice = Slice(sort_column_id, 0, elements, bof=bof, eof=eof)
             self._notify_fetch_result(slice)
         else:
@@ -96,7 +100,7 @@ def services():
 
 @pytest.fixture
 def object():
-    return StubObject(DEFAULT_ROW_COUNT, DEFAULT_ROWS_PER_FETCH)
+    return StubObject()
 
 @pytest.fixture
 def list_view_factory(application, services, object):
@@ -127,7 +131,7 @@ def wait_for(timeout_sec, fn, *args, **kw):
         yield from asyncio.sleep(0.1)
 
 @asyncio.coroutine
-def wait_for_all_tasks_to_complete(timeout_sec):
+def wait_for_all_tasks_to_complete(timeout_sec=1):
     t = time.time()
     future = asyncio.Future()
     def check_pending():
@@ -152,14 +156,16 @@ def row_count_and_rows_per_fetch_and_key():
             for key in [0, 1, 2, 5, 10, 20, row_count - 1]:
                 if rows_per_fetch > row_count: continue
                 if key >= row_count: continue
-                yield (row_count, rows_per_fetch, key)
+                values = (row_count, rows_per_fetch, key)
+                if values != (50, 2, 20):
+                    values = pytest.param(*values, marks=pytest.mark.slow)
+                yield values
 
-@pytest.mark.slow
 @pytest.mark.asyncio
 @pytest.mark.parametrize('row_count,rows_per_fetch,key', row_count_and_rows_per_fetch_and_key())
 @asyncio.coroutine
 def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, key):
-    object = StubObject(row_count, rows_per_fetch)
+    object = StubObject(rows_per_fetch, row_count)
     list_view = list_view_factory(object, key)
     #list_view.show()
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
@@ -168,7 +174,7 @@ def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per
     #QTest.qWaitForWindowShown(list_view)
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
-    yield from wait_for_all_tasks_to_complete(timeout_sec=1)
+    yield from wait_for_all_tasks_to_complete()
     expected_row_count = min(row_count, visible_row_count)
     assert model.columnCount(QtCore.QModelIndex()) == 2
     assert model.rowCount(QtCore.QModelIndex()) >= expected_row_count
@@ -190,6 +196,36 @@ def test_resources_used_for_header_and_visibility(services, list_view_factory):
     list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
-    yield from wait_for_all_tasks_to_complete(timeout_sec=1)
+    yield from wait_for_all_tasks_to_complete()
     assert model.columnCount(QtCore.QModelIndex()) == 1  # key column must be hidden
     assert model.headerData(0, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'the title'
+
+@pytest.mark.asyncio
+@asyncio.coroutine
+def test_diff(services, list_view_factory):
+    keys = [0, 1, 2, 3, 5, 6, 7]
+    object = StubObject(keys=keys)
+    current_key = keys[-1]  # last key to force loading all rows
+    list_view = list_view_factory(object, key=current_key)
+    list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
+    model = list_view.model()
+
+    @asyncio.coroutine
+    def assert_keys(expected_keys):
+        yield from wait_for_all_tasks_to_complete()
+        assert model.rowCount(QtCore.QModelIndex()) == len(expected_keys)
+        for row, key in enumerate(expected_keys):
+            assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(key)
+            assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % key
+        # assert list_view.get_current_key() == current_key  # must not change; todo
+
+    yield from assert_keys(keys)
+
+    list_view.diff_applied(ListDiff.add_one(4, element(4)))
+    yield from assert_keys([0, 1, 2, 3, 4, 5, 6, 7])
+
+    list_view.diff_applied(ListDiff.append_many([element(8), element(9)]))
+    yield from assert_keys([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    list_view.diff_applied(ListDiff.delete(2))
+    yield from assert_keys([0, 1, 3, 4, 5, 6, 7, 8, 9])
