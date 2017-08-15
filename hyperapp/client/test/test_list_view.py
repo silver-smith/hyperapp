@@ -200,32 +200,25 @@ def test_resources_used_for_header_and_visibility(services, list_view_factory):
     assert model.columnCount(QtCore.QModelIndex()) == 1  # key column must be hidden
     assert model.headerData(0, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'the title'
 
+@pytest.mark.parametrize('diff,expected_keys', [
+    (ListDiff.add_one(4, element(4)), [0, 1, 2, 3, 4, 5, 6, 7]),
+    (ListDiff.append_many([element(8), element(9)]), [0, 1, 2, 3, 5, 6, 7, 8, 9]),
+    (ListDiff.delete(2), [0, 1, 3, 5, 6, 7]),
+    ])
 @pytest.mark.asyncio
 @asyncio.coroutine
-def test_diff(services, list_view_factory):
+def test_diff(services, list_view_factory, diff, expected_keys):
     keys = [0, 1, 2, 3, 5, 6, 7]
     object = StubObject(keys=keys)
     current_key = keys[-1]  # last key to force loading all rows
     list_view = list_view_factory(object, key=current_key)
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     model = list_view.model()
-
-    @asyncio.coroutine
-    def assert_keys(expected_keys):
-        yield from wait_for_all_tasks_to_complete()
-        assert model.rowCount(QtCore.QModelIndex()) == len(expected_keys)
-        for row, key in enumerate(expected_keys):
-            assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(key)
-            assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % key
-        # assert list_view.get_current_key() == current_key  # must not change; todo
-
-    yield from assert_keys(keys)
-
-    list_view.diff_applied(ListDiff.add_one(4, element(4)))
-    yield from assert_keys([0, 1, 2, 3, 4, 5, 6, 7])
-
-    list_view.diff_applied(ListDiff.append_many([element(8), element(9)]))
-    yield from assert_keys([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-    list_view.diff_applied(ListDiff.delete(2))
-    yield from assert_keys([0, 1, 3, 4, 5, 6, 7, 8, 9])
+    yield from wait_for_all_tasks_to_complete()
+    list_view.diff_applied(diff)
+    yield from wait_for_all_tasks_to_complete()
+    assert model.rowCount(QtCore.QModelIndex()) == len(expected_keys)
+    for row, key in enumerate(expected_keys):
+        assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(key)
+        assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % key
+    # assert list_view.get_current_key() == current_key  # must not change; todo
