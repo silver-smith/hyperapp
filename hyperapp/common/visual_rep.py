@@ -46,6 +46,7 @@ class VisualRepEncoder(object):
         self._iface_registry = iface_registry
 
     def encode(self, t, value):
+        assert isinstance(value, t), repr(value)
         return self.dispatch(t, value)
 
     @method_dispatch
@@ -116,7 +117,6 @@ class VisualRepEncoder(object):
 
     def encode_record_fields(self, fields, value, custom_encoders=None):
         children = []
-        fields = {}
         for field in fields:
             custom_encoder = (custom_encoders or {}).get(field.name)
             if custom_encoder:
@@ -124,7 +124,6 @@ class VisualRepEncoder(object):
             else:
                 rep = self.field_rep(field, value)
             children.append(rep)
-            fields[field.name] = getattr(value, field.name)
         return children
 
     @dispatch.register(TEmbedded)
