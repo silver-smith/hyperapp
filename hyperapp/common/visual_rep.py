@@ -176,7 +176,8 @@ class VisualRepEncoder(object):
     def encode_update_diff(self, update):
         iface = self._iface_registry.resolve(update.iface)
         diff = update.diff.decode(iface.diff_type)
-        return self.dispatch(iface.diff_type, diff)
+        node = self.dispatch(iface.diff_type, diff)
+        return RepNode('diff=' + node.text, node.children)
 
 def pprint(t, value, resource_types=None, packet_types=None, iface_registry=None):
     rep = VisualRepEncoder(resource_types, packet_types, iface_registry).encode(t, value)
