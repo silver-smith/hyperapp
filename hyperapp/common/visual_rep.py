@@ -94,7 +94,10 @@ class VisualRepEncoder(object):
                            % (value.command_id, value.kind, encode_path(value.resource_id)))
         if t is tTypeModule:
             return self._make_type_module_rep(value)
-        children = self.encode_record_fields(t.fields, value)
+        custom_encoders = None
+        if self._packet_types and self._iface_registry and issubclass(t, self._packet_types.update):
+            custom_encoders = dict(diff=self.encode_update_diff)
+        children = self.encode_record_fields(t.fields, value, custom_encoders)
         if t is tServerRoutes:
             public_key = PublicKey.from_der(value.public_key_der)
             return RepNode('server routes: %s -> %r'
@@ -169,6 +172,11 @@ class VisualRepEncoder(object):
         error = server_error_response.error.decode(self._packet_types.error)
         node = self.dispatch(self._packet_types.error, error)
         return RepNode('error=' + node.text, node.children)
+
+    def encode_update_diff(self, update):
+        iface = self._iface_registry.resolve(update.iface)
+        diff = update.diff.decode(iface.diff_type)
+        return self.dispatch(iface.diff_type, diff)
 
 def pprint(t, value, resource_types=None, packet_types=None, iface_registry=None):
     rep = VisualRepEncoder(resource_types, packet_types, iface_registry).encode(t, value)
