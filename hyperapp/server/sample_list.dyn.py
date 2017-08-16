@@ -3,6 +3,7 @@ from ..common.htypes import Column
 from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.interface import test_list as test_list_types
+from ..common.list_object import Element, Slice
 from .util import path_part_to_str
 from .command import command
 from .object import Object, ListObject
@@ -66,7 +67,7 @@ class TestList(ListObject):
     def command_params(self, request):
         return request.make_response_handle(ParamsForm().make_handle(request, size=self.size))
 
-    def fetch_elements(self, request, sort_column_id, from_key, desc_count, asc_count):
+    def fetch_elements_impl(self, request, sort_column_id, from_key, desc_count, asc_count):
         assert desc_count == 0, repr(desc_count)  # Not yet supported
         assert from_key is None or isinstance(from_key, int), repr(from_key)
         if from_key is None:
@@ -77,10 +78,10 @@ class TestList(ListObject):
         elements = []
         for idx in range(start, stop):
             row = self.Row(idx, 'field1#%d' % idx, 'field2#%d' % idx, 'field3#%d' % idx)
-            elements.append(self.Element(row))
+            elements.append(Element(row))
         bof = start == 0
         eof = stop >= self.size
-        return self.Slice(sort_column_id, from_key, elements, bof, eof)
+        return Slice(sort_column_id, from_key, elements, bof, eof)
 
     
 class ThisModule(Module):

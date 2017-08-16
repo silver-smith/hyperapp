@@ -111,10 +111,11 @@ class ResponseBase(object):
         return list(map(self._encode_update, self.updates))
 
     def _encode_update(self, update):
+        diff = update.diff.to_data(update.iface)
         return self._packet_types.update(
             update.iface.iface_id,
             update.path,
-            EncodableEmbedded(update.iface.diff_type, update.diff),
+            EncodableEmbedded(update.iface.diff_type, diff),
             )
 
 

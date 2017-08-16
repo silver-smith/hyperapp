@@ -10,6 +10,7 @@ from hyperapp.common.htypes import (
     RequestCmd,
     Interface,
     )
+from hyperapp.common.request import SimpleDiff
 from hyperapp.common.transport_packet import tTransportPacket
 from hyperapp.common.identity import Identity, PublicKey
 from hyperapp.common.encrypted_packet import (
@@ -96,7 +97,7 @@ class SampleObject(Object):
 
     @command('broadcast')
     def command_broadcast(self, request):
-        subscription.distribute_update(self.iface, self.get_path(), request.params.message)
+        subscription.distribute_update(self.iface, self.get_path(), SimpleDiff(request.params.message))
 
 
 class StubModule(module_mod.Module):

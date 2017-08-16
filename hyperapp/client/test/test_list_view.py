@@ -8,9 +8,10 @@ import pytest
 from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
 from hyperapp.common.htypes import tString, tInt, list_handle_type, Column
+from hyperapp.common.list_object import Element, Slice, ListDiff
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.async_application import AsyncApplication
-from hyperapp.client.list_object import ListDiff, Element, Slice, ListObject
+from hyperapp.client.list_object import ListObject
 from hyperapp.client.list_view import View
 
 log = logging.getLogger(__name__)

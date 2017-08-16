@@ -10,6 +10,8 @@ from ..common.htypes import (
     categorized_list_handle_type,
     )
 from ..common.request import Update
+from ..common.command import Command
+from ..common.list_object import Element, Slice
 from .util import WeakValueMultiDict
 from .command import Commander
 
@@ -124,10 +126,14 @@ class ListObject(Object):
 
     @classmethod
     def Element(cls, row, commands=None):
+        assert commands is None or is_list_inst(commands, Command), repr(commands)
+        assert isinstance(row, cls.iface.Row), repr(row)  # construct row using self.Row (cls.Row)
         for cmd in commands or []:
             assert cmd.kind == 'element', ('%s: command %r must has "element" kind, but has kind %r'
                                            % (cls.__name__, cmd.id, cmd.kind))
-        return cls.iface.Element(row, [cmd.id for cmd in commands or []])
+        key_attr = cls.iface.get_key_column_id()
+        key = getattr(row, key_attr)
+        return Element(key, row, commands)
 
     @classmethod
     def Diff(cls, *args, **kw):
@@ -188,8 +194,14 @@ class ListObject(Object):
           'Invalid result is returned from fetch_elements: %r; use: return self.Slice(...)' % slice
         return request.make_response(Object.get_contents(self, request, slice=slice))
 
-    # must return Slice, construct using self.Slice(...)
+    # must return iface.Slice
     def fetch_elements(self, request, sort_column_id, key, desc_count, asc_count):
+        slice = self.fetch_elements_impl(request, sort_column_id, key, desc_count, asc_count)
+        assert isinstance(slice, Slice), repr(slice)  # fetch_elements_impl must return hyperapp.common.list_object.Slice instance
+        return slice.to_data(self.iface)
+
+    # must return common.list_object.Slice
+    def fetch_elements_impl(self, request, sort_column_id, key, desc_count, asc_count):
         raise NotImplementedError(self.__class__)
 
     def run_element_command(self, request, command_id, element_key):
@@ -228,10 +240,12 @@ class ListObject(Object):
 
 class SmallListObject(ListObject):
 
-    def fetch_elements(self, request, sort_column_id, from_key, desc_count, asc_count):
+    def fetch_elements_impl(self, request, sort_column_id, from_key, desc_count, asc_count):
         assert desc_count == 0, repr(desc_count)  # Not yet supported
         elt2sort_key = attrgetter('row.%s' % self.iface.get_key_column_id())
-        sorted_elements = sorted(self.fetch_all_elements(request), key=elt2sort_key)
+        all_elements = self.fetch_all_elements(request)
+        assert is_list_inst(all_elements, Element), repr(all_elements)  # fetch_all_elements must return hyperapp.common.list_object.Element list
+        sorted_elements = sorted(all_elements, key=elt2sort_key)
         if from_key is None:
             idx = 0
         else:
@@ -245,7 +259,7 @@ class SmallListObject(ListObject):
         elements = sorted_elements[idx : idx+asc_count]
         bof = idx == 0
         eof = idx + asc_count >= len(sorted_elements)
-        return self.Slice(sort_column_id, from_key, elements, bof, eof)
+        return Slice(sort_column_id, from_key, elements, bof, eof)
 
     # must return self.iface.Element list
     def fetch_all_elements(self, request):

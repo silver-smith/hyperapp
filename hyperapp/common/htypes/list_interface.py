@@ -162,14 +162,13 @@ class ListInterface(Interface):
             + [ContentsCommand('fetch_elements', fetch_params_fields),
                ContentsCommand('subscribe_and_fetch_elements', fetch_params_fields)]
 
-    def Row(self, *args, **kw):
-        return self._tRowRecord(*args, **kw)
+    @property
+    def Row(self):
+        return self._tRowRecord
 
-    def tElement(self):
+    @property
+    def Element(self):
         return self._tElement
-
-    def Element(self, row, commands=None):
-        return self.tElement()(row, commands or [])
 
     def tSlice(self):
         return self._tSlice

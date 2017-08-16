@@ -4,9 +4,10 @@ import asyncio
 import bisect
 from PySide import QtCore, QtGui
 from ..common.htypes import Type
+from ..common.list_object import Slice, ListDiff
 from .util import uni2str, key_match, key_match_any, make_async_action
 from .command import Command, ViewCommand
-from .list_object import ListObserver, ListDiff, Slice, ListObject
+from .list_object import ListObserver, ListObject
 from . import view
 
 log = logging.getLogger(__name__)

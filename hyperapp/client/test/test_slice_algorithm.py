@@ -1,5 +1,6 @@
 import pytest
-from hyperapp.client.list_object import ListDiff, Element, Slice, ListObject
+from hyperapp.common.list_object import Element, Slice, ListDiff
+from hyperapp.client.list_object import ListObject
 from hyperapp.client.proxy_list_object import SliceAlgorithm
 
 

@@ -4,6 +4,7 @@ from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.interface import splitter as splitter_types
 from ..common.interface import module_list as module_list_types
+from ..common.list_object import Element, ListDiff
 from .ponyorm_module import PonyOrmModule
 from .command import command
 from .object import Object, SmallListObject, subscription
@@ -155,9 +156,9 @@ class ModuleDepList(SmallListObject):
         dep_module_rec = rec.dep
         rec.delete()
         available_list = AvailableDepList(self.module_id)
-        add_diff = available_list.Diff_insert_one(dep_module_rec.id, available_list.rec2element(dep_module_rec))
+        add_diff = ListDiff.add_one(dep_module_rec.id, available_list.rec2element(dep_module_rec))
         subscription.distribute_update(available_list.iface, available_list.get_path(), add_diff)
-        remove_diff = self.Diff_delete(rec_id)
+        remove_diff = ListDiff.delete(rec_id)
         return request.make_response_update(self.iface, self.get_path(), remove_diff)
 
 
@@ -205,9 +206,9 @@ class AvailableDepList(SmallListObject):
         rec = this_module.ModuleDep(module=module_rec, dep=dep_module, visible_as=dep_module.name)
         commit()  # generate rec.id
         dep_list = ModuleDepList(self.module_id)
-        add_diff = dep_list.Diff_insert_one(rec.id, dep_list.rec2element(rec))
+        add_diff = ListDiff.add_one(rec.id, dep_list.rec2element(rec))
         subscription.distribute_update(dep_list.iface, dep_list.get_path(), add_diff)
-        remove_diff = self.Diff_delete(module_id)
+        remove_diff = ListDiff.delete(module_id)
         return request.make_response_update(self.iface, self.get_path(), remove_diff)
     
 

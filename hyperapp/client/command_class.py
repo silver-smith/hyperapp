@@ -3,20 +3,20 @@ import asyncio
 import weakref
 import abc
 from ..common.util import is_list_inst
+from ..common import command as common_command
 
 
 log = logging.getLogger(__name__)
 
 
 # returned from Object.get_commands
-class Command(object, metaclass=abc.ABCMeta):
+class Command(common_command.Command, metaclass=abc.ABCMeta):
 
     def __init__(self, id, kind, resource_id, enabled=True):
-        assert isinstance(id, str), repr(id)
+        common_command.Command.__init__(self, id)
         assert isinstance(kind, str), repr(kind)
         assert is_list_inst(resource_id, str), repr(resource_id)
         assert isinstance(enabled, bool), repr(enabled)
-        self.id = id
         self.kind = kind
         self.resource_id = resource_id
         self.enabled = enabled

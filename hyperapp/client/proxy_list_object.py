@@ -3,7 +3,8 @@ import asyncio
 import weakref
 import bisect
 from ..common.htypes import TOptional, Field, TRecord, TList, IfaceCommand
-from .list_object import ListDiff, Element, Slice, ListObject
+from ..common.list_object import Element, Slice, ListDiff
+from .list_object import ListObject
 from .remoting import RequestError
 from .proxy_object import RemoteCommand, ProxyObject
 
