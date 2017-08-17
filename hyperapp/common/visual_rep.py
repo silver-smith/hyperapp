@@ -122,12 +122,16 @@ class VisualRepEncoder(object):
         children = []
         for field in fields:
             custom_encoder = (custom_encoders or {}).get(field.name)
-            if custom_encoder:
-                rep = custom_encoder(value)
-            else:
-                rep = self.field_rep(field, value)
+            rep = self.field_rep(field, value, custom_encoder)
             children.append(rep)
         return children
+
+    def field_rep(self, field, value, custom_encoder):
+        if custom_encoder:
+            rep = custom_encoder(value)
+        else:
+            rep = self.dispatch(field.type, getattr(value, field.name))
+        return RepNode('%s=%s' % (field.name, rep.text), rep.children)
 
     @dispatch.register(TEmbedded)
     def encode_list(self, t, value):
@@ -147,10 +151,6 @@ class VisualRepEncoder(object):
         children = self.encode_record_fields(tclass.get_fields(), value, custom_encoders)
         return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
 
-    def field_rep(self, field, value):
-        rep = self.dispatch(field.type, getattr(value, field.name))
-        return RepNode('%s=%s' % (field.name, rep.text), rep.children)
-
     def encode_path(self, obj):
         return RepNode(encode_path(obj))
 
@@ -158,26 +158,22 @@ class VisualRepEncoder(object):
         iface = self._iface_registry.resolve(client_packet.iface)
         params_t = iface.get_command(client_packet.command_id).params_type
         params = client_packet.params.decode(params_t)
-        node = self.dispatch(params_t, params)
-        return RepNode('params=' + node.text, node.children)
+        return self.dispatch(params_t, params)
 
     def encode_server_response_result(self, server_result_response):
         iface = self._iface_registry.resolve(server_result_response.iface)
         result_t = iface.get_command(server_result_response.command_id).result_type
         result = server_result_response.result.decode(result_t)
-        node = self.dispatch(result_t, result)
-        return RepNode('result=' + node.text, node.children)
+        return self.dispatch(result_t, result)
 
     def encode_error_response_error(self, server_error_response):
         error = server_error_response.error.decode(self._packet_types.error)
-        node = self.dispatch(self._packet_types.error, error)
-        return RepNode('error=' + node.text, node.children)
+        return self.dispatch(self._packet_types.error, error)
 
     def encode_update_diff(self, update):
         iface = self._iface_registry.resolve(update.iface)
         diff = update.diff.decode(iface.diff_type)
-        node = self.dispatch(iface.diff_type, diff)
-        return RepNode('diff=' + node.text, node.children)
+        return self.dispatch(iface.diff_type, diff)
 
 def pprint(t, value, resource_types=None, packet_types=None, iface_registry=None):
     rep = VisualRepEncoder(resource_types, packet_types, iface_registry).encode(t, value)
