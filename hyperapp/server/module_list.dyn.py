@@ -122,7 +122,7 @@ class ModuleDepList(SmallListObject):
     iface = module_list_types.module_dep_list
     objimpl_id = 'proxy_list'
     class_name = 'module_dep_list'
-    default_sort_column_id = 'id'
+    default_sort_column_id = 'dep_id'
 
     @classmethod
     def resolve(cls, path):
