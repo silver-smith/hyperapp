@@ -94,6 +94,10 @@ class ListDiff(Diff):
         return cls.add_many(None, elements)
 
     @classmethod
+    def replace(cls, key, element):
+        return cls(key, key, [element])
+
+    @classmethod
     def delete(cls, key):
         return cls(key, key, [])
 
