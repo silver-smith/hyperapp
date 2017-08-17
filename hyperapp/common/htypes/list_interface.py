@@ -148,7 +148,7 @@ class ListInterface(Interface):
 
     def get_default_contents_fields(self):
         return Interface.get_default_contents_fields(self) + [
-            Field('slice', self.tSlice()),
+            Field('slice', self.Slice),
             ]
 
     def get_basic_commands(self, core_types):
@@ -170,14 +170,10 @@ class ListInterface(Interface):
     def Element(self):
         return self._tElement
 
-    def tSlice(self):
+    @property
+    def Slice(self):
         return self._tSlice
 
-    def Slice(self, *args, **kw):
-        return self.tSlice()(*args, **kw)
-
-    def tDiff(self):
+    @property
+    def Diff(self):
         return self._tDiff
-
-    def Diff(self, *args, **kw):
-        return self.tDiff()(*args, **kw)

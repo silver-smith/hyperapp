@@ -197,7 +197,7 @@ class ProxyListObject(ProxyObject, ListObject):
         return self.make_cache_key('slices-%s' % sort_column_id)
 
     def _get_slices_cache_type(self):
-        return TList(self.iface.tSlice())
+        return TList(self.iface.Slice)
 
     def _store_slices_to_cache(self, sort_column_id):
         key = self._get_slice_cache_key(sort_column_id)

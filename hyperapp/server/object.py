@@ -139,42 +139,14 @@ class ListObject(Object):
         key = getattr(row, key_attr)
         return Element(key, row, commands)
 
-    @classmethod
-    def Diff(cls, *args, **kw):
-        return cls.iface.Diff(*args, **kw)
-
-    @classmethod
-    def Diff_replace(cls, key, element):
-        return cls.Diff(key, key, [element])
-
-    @classmethod
-    def Diff_insert_one(cls, key, element):
-        return cls.Diff_insert_many(key, [element])
-
-    @classmethod
-    def Diff_add_one(cls, element):
-        return cls.Diff_insert_one(None, element)
-
-    @classmethod
-    def Diff_insert_many(cls, key, elements):
-        return cls.Diff(key, key, elements)
-
-    @classmethod
-    def Diff_add_many(cls, elements):
-        return cls.Diff.insert_many(None, elements)
-
-    @classmethod
-    def Diff_delete(cls, key):
-        return cls.Diff(key, key, [])
-
     def __init__(self, core_types):
         Object.__init__(self, core_types)
 
     def get_contents(self, request, **kw):
         slice = self.fetch_elements(request, self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
-        assert isinstance(slice, self.iface.tSlice()), \
+        assert isinstance(slice, self.iface.Slice), \
           'Invalid result returned from fetch_elements, use: return self.Slice(...); returned: %r, expected: %r' \
-            % (slice, self.iface.tSlice())
+            % (slice, self.iface.Slice)
         return Object.get_contents(self, request, slice=slice, **kw)
 
     def get_handle(self, request):
@@ -194,7 +166,7 @@ class ListObject(Object):
     def process_request_fetch_elements(self, request):
         params = request.params
         slice = self.fetch_elements(request, params.sort_column_id, params.from_key, params.desc_count, params.asc_count)
-        assert isinstance(slice, self.iface.tSlice()), \
+        assert isinstance(slice, self.iface.Slice), \
           'Invalid result is returned from fetch_elements: %r; use: return self.Slice(...)' % slice
         return request.make_response(Object.get_contents(self, request, slice=slice))
 
