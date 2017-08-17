@@ -145,7 +145,7 @@ class ListObject(Object):
     def get_contents(self, request, **kw):
         slice = self.fetch_elements(request, self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
         assert isinstance(slice, self.iface.Slice), \
-          'Invalid result returned from fetch_elements, use: return self.Slice(...); returned: %r, expected: %r' \
+          'Invalid result returned from fetch_elements, (you should implement fetch_elements_impl): %r, expected: %r' \
             % (slice, self.iface.Slice)
         return Object.get_contents(self, request, slice=slice, **kw)
 
@@ -182,13 +182,6 @@ class ListObject(Object):
 
     def run_element_command(self, request, command_id, element_key):
         assert False, repr(command_id)  # Unexpected command_id
-
-    def Slice(self, sort_column_id, from_key, elements, bof, eof):
-        assert isinstance(sort_column_id, str), repr(sort_column_id)
-        column = self._pick_column(sort_column_id)
-        assert column, 'Unknown column: %r; known are: %r'\
-           % (sort_column_id, [column.id for column in self.iface.get_columns()])
-        return self.iface.Slice(sort_column_id, from_key, elements, bof, eof)
             
     def _pick_column(self, column_id):
         for column in self.iface.get_columns():
