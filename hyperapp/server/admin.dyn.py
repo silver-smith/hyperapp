@@ -1,4 +1,5 @@
 from pony.orm import db_session, commit, Required, Optional, Set, select
+from ..common.list_object import ListDiff
 from ..common.identity import PublicKey
 from ..common.interface import core as core_types
 from ..common.interface import admin as admin_iface
@@ -49,7 +50,7 @@ class UserList(SmallListObject):
         rec = this_module.User(user_name=request.params.user_name,
                                public_key_pem=public_key.to_pem())
         commit()  # make rec.id
-        diff = self.Diff_add_one(self.rec2element(rec))
+        diff = ListDiff.add_one(rec.id, self.rec2element(rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
         return self.ListHandle(self, key=rec.id)
 
