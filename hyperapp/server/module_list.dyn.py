@@ -56,7 +56,7 @@ class ModuleList(SmallListObject):
     def command_delete(self, request):
         id = request.params.element_key
         this_module.Module[id].delete()
-        diff = self.Diff_delete(id)
+        diff = ListDiff.delete(id)
         return request.make_response_update(self.iface, self.get_path(), diff)
 
     @command('deps', kind='element')

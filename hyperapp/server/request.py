@@ -1,5 +1,6 @@
 from ..common.util import is_list_inst
-from ..common.htypes import EncodableEmbedded
+from ..common.htypes import EncodableEmbedded, Interface
+from ..common.diff import Diff
 from ..common.request import Update
 from ..common.identity import PublicKey
 from ..common.url import Url
@@ -86,6 +87,9 @@ class Request(RequestBase):
         return self.make_response(self.iface.make_result(self.command_id, **kw))
 
     def make_response_update(self, iface, path, diff):
+        assert isinstance(iface, Interface), repr(iface)
+        assert is_list_inst(path, str), repr(path)
+        assert isinstance(diff, Diff), repr(diff)
         response = self.make_response()
         response.add_update(Update(iface, path, diff))
         return response
