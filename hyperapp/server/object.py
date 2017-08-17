@@ -11,6 +11,7 @@ from ..common.htypes import (
     )
 from ..common.request import Update
 from ..common.command import Command
+from ..common.diff import Diff
 from ..common.list_object import Element, Slice
 from .util import WeakValueMultiDict
 from .command import Commander
@@ -35,6 +36,9 @@ class Subscription(object):
         self.path2channel.remove(encode_path(path), peer_channel)
 
     def distribute_update(self, iface, path, diff):
+        assert isinstance(iface, Interface), repr(iface)
+        assert is_list_inst(path, str), repr(path)
+        assert isinstance(diff, Diff), repr(diff)
         update = Update(iface, path, diff)
         log.info('-- distributing update:')
         update.pprint()

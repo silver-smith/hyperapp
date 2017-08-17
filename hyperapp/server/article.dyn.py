@@ -6,6 +6,7 @@ from ..common.interface import core as core_types
 from ..common.interface import article as article_types
 from ..common.identity import PublicKey
 from ..common.url import Url
+from ..common.list_object import ListDiff
 from ..common.interface import core as core_types
 from .util import path_part_to_str
 from .command import command
@@ -156,7 +157,7 @@ class ArticleRefList(SmallListObject):
                                      server_public_key_pem=server_public_key_pem,
                                      path=path)
         commit()
-        diff = self.Diff_insert_one(rec.id, self.rec2element(request, rec))
+        diff = ListDiff.add_one(rec.id, self.rec2element(request, rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
         handle = self.ListHandle(self.get(request), key=rec.id)
         return request.make_response_handle(handle)
@@ -170,7 +171,7 @@ class ArticleRefList(SmallListObject):
         server_public_key_pem, path = self._make_article_ref_url_fields(request, url)
         rec.server_public_key_pem = server_public_key_pem
         rec.path = path
-        diff = self.Diff_replace(rec.id, self.rec2element(request, rec))
+        diff = ListDiff.replace(rec.id, self.rec2element(request, rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
         handle = self.ListHandle(self.get(request), key=rec.id)
         return request.make_response_handle(handle)
@@ -187,7 +188,7 @@ class ArticleRefList(SmallListObject):
     def command_delete(self, request):
         ref_id = request.params.element_key
         this_module.ArticleRef[ref_id].delete()
-        diff = self.Diff_delete(ref_id)
+        diff = ListDiff.delete(ref_id)
         subscription.distribute_update(self.iface, self.get_path(), diff)
 
     @db_session
