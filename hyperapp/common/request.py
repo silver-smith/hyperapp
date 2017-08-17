@@ -16,6 +16,8 @@ class Update(object):
         diff = update.diff.decode(iface.diff_type)
         if isinstance(iface, ListInterface):
             diff = ListDiff.from_data(iface, diff)
+        else:
+            diff = SimpleDiff(diff)
         return cls(iface, update.path, diff)
 
     def __init__(self, iface, path, diff):

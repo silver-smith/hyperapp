@@ -11,7 +11,7 @@ class Element(object):
     @classmethod
     def from_data(cls, iface, rec):
         key = getattr(rec.row, iface.get_key_column_id())
-        return cls(key, rec.row, 
+        return cls(key, rec.row, [Command(id) for id in rec.commands])
 
     def __init__(self, key, row, commands=None, order_key=None):
         assert is_list_inst(commands or [], Command), repr(commands)
@@ -99,7 +99,7 @@ class ListDiff(Diff):
 
     @classmethod
     def from_data(cls, iface, rec):
-        return cls(rec.start_key, rec.end_key, [element.from_data(iface) for element in rec.elements])
+        return cls(rec.start_key, rec.end_key, [Element.from_data(iface, element) for element in rec.elements])
 
     def __init__(self, start_key, end_key, elements):
         assert is_list_inst(elements, Element), repr(elements)

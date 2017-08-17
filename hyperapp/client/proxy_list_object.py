@@ -132,16 +132,20 @@ class ProxyListObject(ProxyObject, ListObject):
         return ListDiff(rec.start_key, rec.end_key, [self._element_from_data(key_column_id, None, elt) for elt in rec.elements])
 
     def _element_from_data(self, key_column_id, sort_column_id, rec):
-        key = getattr(rec.row, key_column_id)
+        element = Element.from_data(self.iface, rec)
         if sort_column_id is None:
             order_key = None
         else:
             order_key = getattr(rec.row, sort_column_id)
-        commands = [self._element_command_from_data(command_id) for command_id in  rec.commands]
-        return Element(key, rec.row, commands, order_key)
+        return self._map_element_commands(element, order_key)
 
-    def _element_command_from_data(self, command_id):
-        return self._element_commands[command_id]
+    def _map_element_commands(self, element, order_key=None):
+        return Element(element.key, element.row,
+                       [self._element_commands[command.id] for command in element.commands],
+                       order_key)
+
+    def _map_list_diff_commands(self, diff):
+        return ListDiff(diff.start_key, diff.end_key, [self._map_element_commands(element) for element in diff.elements])
 
     def _merge_in_slice(self, new_slice):
         log.info('  -- merge_in_slice self=%r from_key=%r len(elements)=%r bof=%r', id(self), new_slice.from_key, len(new_slice.elements), new_slice.bof)
@@ -213,10 +217,9 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def process_update(self, diff):
         log.info('-- proxy process_update self=%r diff=%r start_key=%r end_key=%r elements=%r', id(self), diff, diff.start_key, diff.end_key, diff.elements)
-        key_column_id = self.get_key_column_id()
-        diff = self._list_diff_from_data(key_column_id, diff)
-        self._update_slices(diff)
-        self._notify_diff_applied(diff)
+        mapped_diff = self._map_list_diff_commands(diff)
+        self._update_slices(mapped_diff)
+        self._notify_diff_applied(mapped_diff)
 
     def get_columns(self):
         return self.iface.get_columns()
