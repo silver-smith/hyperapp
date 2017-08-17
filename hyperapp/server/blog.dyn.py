@@ -1,6 +1,8 @@
 from datetime import datetime
 import logging
 from pony.orm import db_session, commit, desc, Required, Set
+from ..common.diff import SimpleDiff
+from ..common.list_object import ListDiff
 from ..common.interface import core as core_types
 from ..common.interface import blog as blog_types
 from .ponyorm_module import PonyOrmModule
@@ -42,9 +44,9 @@ class BlogEntry(article.Article):
         commit()
         self.article_id = entry_rec.id  # now may have new get_path()
         log.info('Blog entry is saved, blog entry id = %r', self.article_id)
-        subscription.distribute_update(self.iface, self.get_path(), text)
+        subscription.distribute_update(self.iface, self.get_path(), SimpleDiff(text))
         if is_insertion:
-            diff = Blog.Diff_insert_one(entry_rec.id, Blog.rec2element(entry_rec))
+            diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
             subscription.distribute_update(Blog.iface, Blog.get_path(), diff)
         return request.make_response_result(new_path=self.get_path())
 
@@ -90,7 +92,7 @@ class Blog(SmallListObject):
     def command_delete(self, request):
         article_id = request.params.element_key
         this_module.BlogEntry[article_id].delete()
-        diff = self.Diff_delete(article_id)
+        diff = ListDiff.delete(article_id)
         subscription.distribute_update(self.iface, self.get_path(), diff)
 
 
