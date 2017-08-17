@@ -116,10 +116,12 @@ class ProxyListObject(ProxyObject, ListObject):
 
     @asyncio.coroutine
     def run_remote_command(self, command_id, *args, **kw):
-        if self._is_plain_open_handle_element_request(self.iface.get_command(command_id)):
+        command = self.iface.get_command(command_id)
+        if self._is_plain_open_handle_element_request(command):
             log.debug('running remote element command %r (*%s, **%s)', command_id, args, kw)
             result = yield from self.execute_request(command_id, *args, **kw)
-            return result.handle
+            if command.result_type != TRecord([]):
+                return result.handle
         else:
             return (yield from ProxyObject.run_remote_command(self, command_id, *args, **kw))
 
