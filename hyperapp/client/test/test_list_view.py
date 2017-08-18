@@ -240,14 +240,12 @@ def test_diff(list_view_factory, diff, expected_keys):
         assert get_cell(list_view, row, 1) == 'title.%03d' % key
     # assert list_view.get_current_key() == current_key  # must not change; todo
 
-@pytest.mark.parametrize('sort_column_idx,sort_column_id', [
-    (2, 'column_1'),
-    (3, 'column_2'),
-    ])
+@pytest.mark.parametrize('sort_column_id', ['column_1', 'column_2'])
 @pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
 @pytest.mark.asyncio
 @asyncio.coroutine
-def test_sort_by_non_key_column(list_view_factory, sort_column_idx, sort_column_id, row_count, rows_per_fetch, current_key):
+def test_sort_by_non_key_column(list_view_factory, sort_column_id, row_count, rows_per_fetch, current_key):
+    sort_column_idx = Row._fields.index(sort_column_id)
     object = StubObject(rows_per_fetch, row_count)
     list_view = list_view_factory(object, sort_column_id=sort_column_id, current_key=current_key)
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
