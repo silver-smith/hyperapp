@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 DIR=$(dirname $0)
-
 if [ "$1" == "fast" ]; then
-	ARGS="-m not slow"
 	shift
+	ARGS=( "-m" "not slow" "$@" )
 else
-	ARGS=""
+	ARGS=( "$@" )
 fi
 
 cd $DIR
-PYTHONPATH=$PYTHONPATH:$DIR ~/venv/bin/pytest --ignore dynamic_modules "$ARGS" "$@"
+set -x
+PYTHONPATH=$PYTHONPATH:$DIR ~/venv/bin/pytest --ignore dynamic_modules "${ARGS[@]}"
