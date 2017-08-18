@@ -2,8 +2,9 @@ import os.path
 import asyncio
 import logging
 import time
-from types import SimpleNamespace
+from collections import namedtuple
 from itertools import chain
+from operator import attrgetter
 import pytest
 from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
@@ -42,8 +43,21 @@ class Services(ServicesBase):
                 ])
 
 
+Row = namedtuple('Row', 'key title column_1 column_2')
+
+def make_row(key):
+    return Row(
+        key=key,
+        title='title.%03d' % key,
+        column_1=(key % 10) * 10 + key//10,
+        column_2=(key % 20) * 20 + key//20,
+        )
+
 def element(key):
-    return Element(key, SimpleNamespace(key=key, title='title.%03d' % key))
+    return Element(key, make_row(key))  
+
+def element_for_row(row):
+    return Element(row.key, row)
 
 
 class StubObject(ListObject):
@@ -51,12 +65,14 @@ class StubObject(ListObject):
     def __init__(self, rows_per_fetch=None, row_count=None, keys=None):
         ListObject.__init__(self)
         self._rows_per_fetch = rows_per_fetch or DEFAULT_ROWS_PER_FETCH
-        self._keys = keys or list(range(row_count or DEFAULT_ROW_COUNT))
+        self._rows = [make_row(key) for key in keys or list(range(row_count or DEFAULT_ROW_COUNT))]
 
     def get_columns(self):
         return [
             Column('key', type=tInt),
             Column('title'),
+            Column('column_1', type=tInt),
+            Column('column_2', type=tInt),
             ]
 
     def get_key_column_id(self):
@@ -65,25 +81,19 @@ class StubObject(ListObject):
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         log.debug('StubObject.fetch_elements: sort_column_id=%s, key=%r, desc_count=%d, asc_count=%d', sort_column_id, key, desc_count, asc_count)
-        assert sort_column_id == 'key'
-        if desc_count == 0:
-            if key is not None:
-                start = self._keys.index(key) + 1
-                bof = False
-            else:
-                start = 0
-                bof = True
-            end = start + self._rows_per_fetch
-            if end >= len(self._keys):
-                end = len(self._keys)
-                eof = True
-            else:
-                eof = False
-            elements = [element(self._keys[row]) for row in range(start, end)]
-            slice = Slice(sort_column_id, 0, elements, bof=bof, eof=eof)
-            self._notify_fetch_result(slice)
+        sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
+        key2idx = dict((row.key, idx) for idx, row in enumerate(sorted_rows))
+        assert desc_count == 0, repr(desc_count)  # Not supported
+        if key is not None:
+            start = key2idx[key] + 1
         else:
-            assert 0
+            start = 0
+        end = min(start + self._rows_per_fetch, len(sorted_rows))
+        bof = start == 0
+        eof = end == len(sorted_rows)
+        elements = [element_for_row(row) for row in sorted_rows[start:end]]
+        slice = Slice(sort_column_id, key, elements, bof=bof, eof=eof)
+        self._notify_fetch_result(slice)
 
 
 # required to exist when creating gui objects
@@ -108,7 +118,7 @@ def list_view_factory(application, services, object):
     default_object = object
     data_type = list_handle_type(services.types.core, tInt)
 
-    def make_list_view(object=None, key=None, resources=None):
+    def make_list_view(object=None, sort_column_id=None, key=None, resources=None):
         resource_manager = ResourcesManager(resources)
         return View(
             locale='en',
@@ -118,7 +128,7 @@ def list_view_factory(application, services, object):
             data_type=data_type,
             object=object or default_object,
             key=key,
-            sort_column_id='key',
+            sort_column_id=sort_column_id or 'key',
             )
 
     return make_list_view
@@ -151,6 +161,10 @@ def wait_for_all_tasks_to_complete(timeout_sec=1):
     yield from future
 
 
+def get_cell(list_view, row, column):
+    model = list_view.model()
+    return model.data(model.createIndex(row, column), QtCore.Qt.DisplayRole)
+
 def row_count_and_rows_per_fetch_and_key():
     for row_count in chain(range(1, 6), [10, 11, 15, 20, 50]):
         for rows_per_fetch in chain(range(1, 10), range(10, row_count + 1, 10)):
@@ -167,7 +181,7 @@ def row_count_and_rows_per_fetch_and_key():
 @asyncio.coroutine
 def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, key):
     object = StubObject(rows_per_fetch, row_count)
-    list_view = list_view_factory(object, key)
+    list_view = list_view_factory(object, key=key)
     #list_view.show()
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     #application.stop_loop()
@@ -177,11 +191,13 @@ def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per
     model = list_view.model()
     yield from wait_for_all_tasks_to_complete()
     expected_row_count = min(row_count, visible_row_count)
-    assert model.columnCount(QtCore.QModelIndex()) == 2
+    assert model.columnCount(QtCore.QModelIndex()) == 4
     assert model.rowCount(QtCore.QModelIndex()) >= expected_row_count
     for row in range(expected_row_count):
-        assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(row)
-        assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % row
+        assert get_cell(list_view, row, 0) == str(make_row(row).key)
+        assert get_cell(list_view, row, 1) == str(make_row(row).title)
+        assert get_cell(list_view, row, 2) == str(make_row(row).column_1)
+        assert get_cell(list_view, row, 3) == str(make_row(row).column_2)
     assert list_view.get_current_key() == key
     # without resource column_id is used for header
     assert model.headerData(1, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'title'
@@ -198,7 +214,7 @@ def test_resources_used_for_header_and_visibility(services, list_view_factory):
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
     yield from wait_for_all_tasks_to_complete()
-    assert model.columnCount(QtCore.QModelIndex()) == 1  # key column must be hidden
+    assert model.columnCount(QtCore.QModelIndex()) == 3  # key column must be hidden
     assert model.headerData(0, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'the title'
 
 @pytest.mark.parametrize('diff,expected_keys', [
@@ -208,7 +224,7 @@ def test_resources_used_for_header_and_visibility(services, list_view_factory):
     ])
 @pytest.mark.asyncio
 @asyncio.coroutine
-def test_diff(services, list_view_factory, diff, expected_keys):
+def test_diff(list_view_factory, diff, expected_keys):
     keys = [0, 1, 2, 3, 5, 6, 7]
     object = StubObject(keys=keys)
     current_key = keys[-1]  # last key to force loading all rows
@@ -220,6 +236,29 @@ def test_diff(services, list_view_factory, diff, expected_keys):
     yield from wait_for_all_tasks_to_complete()
     assert model.rowCount(QtCore.QModelIndex()) == len(expected_keys)
     for row, key in enumerate(expected_keys):
-        assert model.data(model.createIndex(row, 0), QtCore.Qt.DisplayRole) == str(key)
-        assert model.data(model.createIndex(row, 1), QtCore.Qt.DisplayRole) == 'title.%03d' % key
+        assert get_cell(list_view, row, 0) == str(key)
+        assert get_cell(list_view, row, 1) == 'title.%03d' % key
     # assert list_view.get_current_key() == current_key  # must not change; todo
+
+@pytest.mark.parametrize('sort_column_idx,sort_column_id', [
+    (2, 'column_1'),
+    (3, 'column_2'),
+    ])
+@pytest.mark.asyncio
+@asyncio.coroutine
+def test_sort_by_non_key_column(list_view_factory, sort_column_idx, sort_column_id):
+    list_view = list_view_factory(sort_column_id=sort_column_id)
+    list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
+    first_visible_row, visible_row_count = list_view._get_visible_rows()
+    model = list_view.model()
+    yield from wait_for_all_tasks_to_complete()
+    expected_row_count = min(DEFAULT_ROW_COUNT, visible_row_count)
+    assert model.columnCount(QtCore.QModelIndex()) == 4
+    assert model.rowCount(QtCore.QModelIndex()) >= expected_row_count
+    for row in range(0, expected_row_count):
+        key = int(get_cell(list_view, row, 0))
+        assert get_cell(list_view, row, 2) == str(make_row(key).column_1)
+        assert get_cell(list_view, row, 3) == str(make_row(key).column_2)
+        if row > 0:
+            assert (int(get_cell(list_view, row - 1, sort_column_idx)) <=
+                    int(get_cell(list_view, row, sort_column_idx)))

@@ -132,11 +132,7 @@ class Model(QtCore.QAbstractTableModel):
         self._fetch_pending = False
         old_len = len(self.keys)
         self._update_elements_map(slice.elements)
-        if slice.elements:
-            idx = bisect.bisect_left(self.keys, slice.elements[0].key)
-        else:
-            idx = len(self.keys)
-        self.keys = self.keys[:idx] + [element.key for element in slice.elements]
+        self.keys = self.keys + [element.key for element in slice.elements]
         self.eof = slice.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(slice.elements))
     
