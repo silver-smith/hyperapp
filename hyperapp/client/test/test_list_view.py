@@ -118,7 +118,7 @@ def list_view_factory(application, services, object):
     default_object = object
     data_type = list_handle_type(services.types.core, tInt)
 
-    def make_list_view(object=None, sort_column_id=None, key=None, resources=None):
+    def make_list_view(object=None, sort_column_id=None, current_key=None, resources=None):
         resource_manager = ResourcesManager(resources)
         return View(
             locale='en',
@@ -127,7 +127,7 @@ def list_view_factory(application, services, object):
             resource_id=['test', 'list'],
             data_type=data_type,
             object=object or default_object,
-            key=key,
+            key=current_key,
             sort_column_id=sort_column_id or 'key',
             )
 
@@ -168,20 +168,20 @@ def get_cell(list_view, row, column):
 def row_count_and_rows_per_fetch_and_key():
     for row_count in chain(range(1, 6), [10, 11, 15, 20, 50]):
         for rows_per_fetch in chain(range(1, 10), range(10, row_count + 1, 10)):
-            for key in [0, 1, 2, 5, 10, 20, row_count - 1]:
+            for current_key in [0, 1, 2, 5, 10, 20, row_count - 1]:
                 if rows_per_fetch > row_count: continue
-                if key >= row_count: continue
-                values = (row_count, rows_per_fetch, key)
+                if current_key >= row_count: continue
+                values = (row_count, rows_per_fetch, current_key)
                 if values != (50, 2, 20):
                     values = pytest.param(*values, marks=pytest.mark.slow)
                 yield values
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('row_count,rows_per_fetch,key', row_count_and_rows_per_fetch_and_key())
+@pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
 @asyncio.coroutine
-def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, key):
+def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, current_key):
     object = StubObject(rows_per_fetch, row_count)
-    list_view = list_view_factory(object, key=key)
+    list_view = list_view_factory(object, current_key=current_key)
     #list_view.show()
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     #application.stop_loop()
@@ -198,7 +198,7 @@ def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per
         assert get_cell(list_view, row, 1) == str(make_row(row).title)
         assert get_cell(list_view, row, 2) == str(make_row(row).column_1)
         assert get_cell(list_view, row, 3) == str(make_row(row).column_2)
-    assert list_view.get_current_key() == key
+    assert list_view.get_current_key() == current_key
     # without resource column_id is used for header
     assert model.headerData(1, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'title'
 
@@ -228,7 +228,7 @@ def test_diff(list_view_factory, diff, expected_keys):
     keys = [0, 1, 2, 3, 5, 6, 7]
     object = StubObject(keys=keys)
     current_key = keys[-1]  # last key to force loading all rows
-    list_view = list_view_factory(object, key=current_key)
+    list_view = list_view_factory(object, current_key=current_key)
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     model = list_view.model()
     yield from wait_for_all_tasks_to_complete()
@@ -244,21 +244,25 @@ def test_diff(list_view_factory, diff, expected_keys):
     (2, 'column_1'),
     (3, 'column_2'),
     ])
+@pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
 @pytest.mark.asyncio
 @asyncio.coroutine
-def test_sort_by_non_key_column(list_view_factory, sort_column_idx, sort_column_id):
-    list_view = list_view_factory(sort_column_id=sort_column_id)
+def test_sort_by_non_key_column(list_view_factory, sort_column_idx, sort_column_id, row_count, rows_per_fetch, current_key):
+    object = StubObject(rows_per_fetch, row_count)
+    list_view = list_view_factory(object, sort_column_id=sort_column_id, current_key=current_key)
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
     yield from wait_for_all_tasks_to_complete()
-    expected_row_count = min(DEFAULT_ROW_COUNT, visible_row_count)
+    expected_row_count = min(row_count, visible_row_count)
     assert model.columnCount(QtCore.QModelIndex()) == 4
     assert model.rowCount(QtCore.QModelIndex()) >= expected_row_count
     for row in range(0, expected_row_count):
         key = int(get_cell(list_view, row, 0))
+        assert get_cell(list_view, row, 1) == str(make_row(key).title)
         assert get_cell(list_view, row, 2) == str(make_row(key).column_1)
         assert get_cell(list_view, row, 3) == str(make_row(key).column_2)
         if row > 0:
             assert (int(get_cell(list_view, row - 1, sort_column_idx)) <=
                     int(get_cell(list_view, row, sort_column_idx)))
+    assert list_view.get_current_key() == current_key
