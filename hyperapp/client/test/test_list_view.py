@@ -176,6 +176,18 @@ def row_count_and_rows_per_fetch_and_key():
                     values = pytest.param(*values, marks=pytest.mark.slow)
                 yield values
 
+def check_rows(list_view, sort_column_id, expected_row_count):
+    sort_column_idx = Row._fields.index(sort_column_id)
+    assert list_view.model().rowCount(QtCore.QModelIndex()) >= expected_row_count
+    for row in range(0, expected_row_count):
+        key = int(get_cell(list_view, row, 0))
+        assert get_cell(list_view, row, 1) == str(make_row(key).title)
+        assert get_cell(list_view, row, 2) == str(make_row(key).column_1)
+        assert get_cell(list_view, row, 3) == str(make_row(key).column_2)
+        if row > 0:
+            assert (int(get_cell(list_view, row - 1, sort_column_idx)) <=
+                    int(get_cell(list_view, row, sort_column_idx)))
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
 @asyncio.coroutine
@@ -192,12 +204,9 @@ def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per
     yield from wait_for_all_tasks_to_complete()
     expected_row_count = min(row_count, visible_row_count)
     assert model.columnCount(QtCore.QModelIndex()) == 4
-    assert model.rowCount(QtCore.QModelIndex()) >= expected_row_count
+    check_rows(list_view, 'key', expected_row_count)
     for row in range(expected_row_count):
         assert get_cell(list_view, row, 0) == str(make_row(row).key)
-        assert get_cell(list_view, row, 1) == str(make_row(row).title)
-        assert get_cell(list_view, row, 2) == str(make_row(row).column_1)
-        assert get_cell(list_view, row, 3) == str(make_row(row).column_2)
     assert list_view.get_current_key() == current_key
     # without resource column_id is used for header
     assert model.headerData(1, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'title'
@@ -234,10 +243,9 @@ def test_diff(list_view_factory, diff, expected_keys):
     yield from wait_for_all_tasks_to_complete()
     list_view.diff_applied(diff)
     yield from wait_for_all_tasks_to_complete()
-    assert model.rowCount(QtCore.QModelIndex()) == len(expected_keys)
+    check_rows(list_view, sort_column_id='key', expected_row_count=len(expected_keys))
     for row, key in enumerate(expected_keys):
         assert get_cell(list_view, row, 0) == str(key)
-        assert get_cell(list_view, row, 1) == 'title.%03d' % key
     # assert list_view.get_current_key() == current_key  # must not change; todo
 
 @pytest.mark.parametrize('sort_column_id', ['column_1', 'column_2'])
@@ -254,13 +262,5 @@ def test_sort_by_non_key_column(list_view_factory, sort_column_id, row_count, ro
     yield from wait_for_all_tasks_to_complete()
     expected_row_count = min(row_count, visible_row_count)
     assert model.columnCount(QtCore.QModelIndex()) == 4
-    assert model.rowCount(QtCore.QModelIndex()) >= expected_row_count
-    for row in range(0, expected_row_count):
-        key = int(get_cell(list_view, row, 0))
-        assert get_cell(list_view, row, 1) == str(make_row(key).title)
-        assert get_cell(list_view, row, 2) == str(make_row(key).column_1)
-        assert get_cell(list_view, row, 3) == str(make_row(key).column_2)
-        if row > 0:
-            assert (int(get_cell(list_view, row - 1, sort_column_idx)) <=
-                    int(get_cell(list_view, row, sort_column_idx)))
+    check_rows(list_view, sort_column_id, expected_row_count)
     assert list_view.get_current_key() == current_key
