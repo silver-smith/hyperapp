@@ -131,7 +131,7 @@ class ProxyListObject(ProxyObject, ListObject):
         return Slice(rec.sort_column_id, rec.from_key, elements, rec.bof, rec.eof)
 
     def _list_diff_from_data(self, key_column_id, rec):
-        return ListDiff(rec.start_key, rec.end_key, [self._element_from_data(key_column_id, None, elt) for elt in rec.elements])
+        return ListDiff(rec.remove_keys, rec.insert_before_key, [self._element_from_data(key_column_id, None, elt) for elt in rec.elements])
 
     def _element_from_data(self, key_column_id, sort_column_id, rec):
         element = Element.from_data(self.iface, rec)
@@ -147,7 +147,7 @@ class ProxyListObject(ProxyObject, ListObject):
                        order_key)
 
     def _map_list_diff_commands(self, diff):
-        return ListDiff(diff.start_key, diff.end_key, [self._map_element_commands(element) for element in diff.elements])
+        return ListDiff(diff.remove_keys, diff.insert_before_key, [self._map_element_commands(element) for element in diff.elements])
 
     def _merge_in_slice(self, new_slice):
         log.info('  -- merge_in_slice self=%r from_key=%r len(elements)=%r bof=%r', id(self), new_slice.from_key, len(new_slice.elements), new_slice.bof)
@@ -162,34 +162,31 @@ class ProxyListObject(ProxyObject, ListObject):
                       i, slice.from_key, slice.bof, slice.eof, len(slice.elements), ', '.join(str(element.key) for element in slice.elements))
 
     def _update_slices(self, diff):
-        log.info('  -- update_slices self=%r diff: start_key=%r end_key=%r len(elements)=%r', id(self), diff.start_key, diff.end_key, len(diff.elements))
+        log.info('  -- update_slices self=%r diff: remove_keys=%r insert_before_key=%r len(elements)=%r',
+                 id(self), diff.remove_keys, diff.insert_before_key, len(diff.elements))
         for slice in self._slices:
-            for idx in reversed(range(len(slice.elements))):
-                element = slice.elements[idx]
-                if diff.start_key <= element.key and element.key <= diff.end_key:
-                    del slice.elements[idx]
-                    log.info('-- slice with sort %r: element is deleted at %d', slice.sort_column_id, idx)
-            for new_elt in diff.elements:
-                new_elt = new_elt.clone_with_sort_column(slice.sort_column_id)
-                for idx in range(len(slice.elements)):
-                    assert len(diff.elements) <= 1, len(diff.elements)  # inserting more than one elements at once is not yet supported
-                    order_key = slice.elements[idx].order_key
-                    if idx == 0:
-                        if new_elt.order_key <= order_key and slice.bof:
-                            slice.elements.insert(0, new_elt)
-                            log.info('-- slice with sort %r: element is inserted to begin of slice', slice.sort_column_id)
-                            break
-                    else:
-                        prev_order_key = slice.elements[idx - 1].order_key
-                        if prev_order_key <= new_elt.order_key and new_elt.order_key <= order_key:
-                            slice.elements.insert(idx, new_elt)
-                            log.info('-- slice with sort %r: element is inserted at idx %d', slice.sort_column_id, idx)
-                            break
-                if slice.elements:
-                    order_key = slice.elements[-1].order_key
-                    if new_elt.order_key > order_key and slice.eof:
-                        slice.elements.append(new_elt)
-                        log.info('-- slice with sort %r: element is appended to the end of slice', slice.sort_column_id)
+            slice.elements = list(filter(lambda element: element.key not in diff.remove_keys, slice.elements))
+            if not diff.elements: continue
+            assert len(diff.elements) == 1, len(diff.elements)  # inserting more than one elements at once is not yet supported
+            new_elt =  diff.elements[0].clone_with_sort_column(slice.sort_column_id)
+            for idx, elt in enumerate(slice.elements):
+                order_key = elt.order_key
+                if idx == 0:
+                    if new_elt.order_key <= order_key and slice.bof:
+                        slice.elements.insert(0, new_elt)
+                        log.info('-- slice with sort %r: element is inserted to begin of slice', slice.sort_column_id)
+                        break
+                else:
+                    prev_order_key = slice.elements[idx - 1].order_key
+                    if prev_order_key <= new_elt.order_key <= order_key:
+                        slice.elements.insert(idx, new_elt)
+                        log.info('-- slice with sort %r: element is inserted at idx %d', slice.sort_column_id, idx)
+                        break
+            if slice.elements:
+                order_key = slice.elements[-1].order_key
+                if new_elt.order_key > order_key and slice.eof:
+                    slice.elements.append(new_elt)
+                    log.info('-- slice with sort %r: element is appended to the end of slice', slice.sort_column_id)
                     
     def _pick_slice(self, slices, sort_column_id, from_key, desc_count, asc_count):
         log.info('  -- pick_slice self=%r sort_column_id=%r from_key=%r', id(self), sort_column_id, from_key)
@@ -218,7 +215,8 @@ class ProxyListObject(ProxyObject, ListObject):
         self._merge_in_slice(slice)
 
     def process_update(self, diff):
-        log.info('-- proxy process_update self=%r diff=%r start_key=%r end_key=%r elements=%r', id(self), diff, diff.start_key, diff.end_key, diff.elements)
+        log.info('-- proxy process_update self=%r diff=%r remove_keys=%r insert_before_key=%r elements=%r',
+                 id(self), diff, diff.remove_keys, diff.insert_before_key, diff.elements)
         mapped_diff = self._map_list_diff_commands(diff)
         self._update_slices(mapped_diff)
         self._notify_diff_applied(mapped_diff)
