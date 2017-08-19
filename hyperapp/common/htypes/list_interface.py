@@ -86,36 +86,50 @@ intColumnType = tSimpleColumnType('int')
 dateTimeColumnType = tSimpleColumnType('date_time')
 
 
+def row_type(column_list):
+    assert is_list_inst(column_list, Column), repr(column_list)
+    return TRecord([Field(column.id, column.type) for column in column_list])
+
+def element_type(row_t):
+    return TRecord([
+        Field('row', row_t),
+        Field('commands', TList(tString)),
+        ])
+
+def diff_type(key_t, element_t):
+    return TRecord([
+        Field('start_key', key_t),            # replace elements from this one
+        Field('end_key', key_t),              # up to (and including) this one
+        Field('elements', TList(element_t)),  # with these elemenents
+        ])
+
+def slice_type(key_t, element_t):
+    return TRecord([
+        Field('sort_column_id', tString),
+        Field('from_key', TOptional(key_t)),
+        Field('elements', TList(element_t)),
+        Field('bof', tBool),
+        Field('eof', tBool),
+        ])
+
+
 class ElementCommand(RequestCmd):
     pass
 
 
 class ListInterface(Interface):
-        
+    
     def __init__(self, iface_id, base=None, contents_fields=None, commands=None, columns=None):
         assert is_list_inst(columns, Column), repr(columns)
         self._id2column = dict((column.id, column) for column in columns)
         self._columns = columns
         self._key_column_id = self._pick_key_column_id()
         self._key_type = self._id2column[self._key_column_id].type
-        self._tRowRecord = TRecord([Field(column.id, column.type) for column in columns])
-        self._tElement = TRecord([
-            Field('row', self._tRowRecord),
-            Field('commands', TList(tString)),
-            ])
-        self._tDiff = TRecord([
-            Field('start_key', self._key_type),          # replace elements from this one
-            Field('end_key', self._key_type),            # up to (and including) this one
-            Field('elements', TList(self._tElement)),  # with these elemenents
-            ])
-        self._tSlice = TRecord([
-            Field('sort_column_id', tString),
-            Field('from_key', TOptional(self._key_type)),
-            Field('elements', TList(self._tElement)),
-            Field('bof', tBool),
-            Field('eof', tBool),
-            ])
-        Interface.__init__(self, iface_id, base, contents_fields, self._tDiff, commands)
+        self._row_t = row_type(columns)
+        self._element_t = element_type(self._row_t)
+        self._diff_t = diff_type(self._key_type, self._element_t)
+        self._slice_t = slice_type(self._key_type, self._element_t)
+        Interface.__init__(self, iface_id, base, contents_fields, self._diff_t, commands)
 
     def __eq__(self, other):
         return (isinstance(other, ListInterface) and
@@ -164,16 +178,16 @@ class ListInterface(Interface):
 
     @property
     def Row(self):
-        return self._tRowRecord
+        return self._row_t
 
     @property
     def Element(self):
-        return self._tElement
+        return self._element_t
 
     @property
     def Slice(self):
-        return self._tSlice
+        return self._slice_t
 
     @property
     def Diff(self):
-        return self._tDiff
+        return self._diff_t
