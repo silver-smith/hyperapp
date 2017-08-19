@@ -156,7 +156,7 @@ class ModuleDepList(SmallListObject):
         dep_module_rec = rec.dep
         rec.delete()
         available_list = AvailableDepList(self.module_id)
-        add_diff = ListDiff.add_one(dep_module_rec.id, available_list.rec2element(dep_module_rec))
+        add_diff = ListDiff.add_one(available_list.rec2element(dep_module_rec))
         subscription.distribute_update(available_list.iface, available_list.get_path(), add_diff)
         remove_diff = ListDiff.delete(rec_id)
         return request.make_response_update(self.iface, self.get_path(), remove_diff)
@@ -206,7 +206,7 @@ class AvailableDepList(SmallListObject):
         rec = this_module.ModuleDep(module=module_rec, dep=dep_module, visible_as=dep_module.name)
         commit()  # generate rec.id
         dep_list = ModuleDepList(self.module_id)
-        add_diff = ListDiff.add_one(rec.id, dep_list.rec2element(rec))
+        add_diff = ListDiff.add_one(dep_list.rec2element(rec))
         subscription.distribute_update(dep_list.iface, dep_list.get_path(), add_diff)
         remove_diff = ListDiff.delete(module_id)
         return request.make_response_update(self.iface, self.get_path(), remove_diff)

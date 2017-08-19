@@ -98,9 +98,9 @@ def element_type(row_t):
 
 def diff_type(key_t, element_t):
     return TRecord([
-        Field('start_key', key_t),            # replace elements from this one
-        Field('end_key', key_t),              # up to (and including) this one
-        Field('elements', TList(element_t)),  # with these elemenents
+        Field('remove_keys', TList(key_t)),
+        Field('insert_before_key', TOptional(key_t)),  # insert elements before this key, None to append at the end;
+        Field('elements', TList(element_t)),
         ])
 
 def slice_type(key_t, element_t):

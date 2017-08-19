@@ -50,7 +50,7 @@ class UserList(SmallListObject):
         rec = this_module.User(user_name=request.params.user_name,
                                public_key_pem=public_key.to_pem())
         commit()  # make rec.id
-        diff = ListDiff.add_one(rec.id, self.rec2element(rec))
+        diff = ListDiff.add_one(self.rec2element(rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
         return self.ListHandle(self, key=rec.id)
 

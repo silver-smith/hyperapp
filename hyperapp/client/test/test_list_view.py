@@ -227,7 +227,7 @@ def test_resources_used_for_header_and_visibility(services, list_view_factory):
     assert model.headerData(0, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'the title'
 
 @pytest.mark.parametrize('diff,expected_keys', [
-    (ListDiff.add_one(4, element(4)), [0, 1, 2, 3, 4, 5, 6, 7]),
+    (ListDiff.add_one(element(4)), [0, 1, 2, 3, 4, 5, 6, 7]),
     (ListDiff.append_many([element(8), element(9)]), [0, 1, 2, 3, 5, 6, 7, 8, 9]),
     (ListDiff.delete(2), [0, 1, 3, 5, 6, 7]),
     ])

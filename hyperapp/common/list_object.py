@@ -82,39 +82,39 @@ class Slice(object):
 class ListDiff(Diff):
 
     @classmethod
-    def add_one(cls, key, element):
-        return cls(key, key, [element])
+    def add_one(cls, element):
+        return cls([], element.key, [element])
 
     @classmethod
-    def add_many(cls, key, elements):
-        return cls(key, key, elements)
+    def insert_many(cls, before_key, elements):
+        return cls([], before_key, elements)
 
     @classmethod
     def append_many(cls, elements):
-        return cls.add_many(None, elements)
+        return cls.insert_many(None, elements)
 
     @classmethod
     def replace(cls, key, element):
-        return cls(key, key, [element])
+        return cls([key], key, [element])
 
     @classmethod
     def delete(cls, key):
-        return cls(key, key, [])
+        return cls([key], None, [])
 
     @classmethod
     def from_data(cls, iface, rec):
-        return cls(rec.start_key, rec.end_key, [Element.from_data(iface, element) for element in rec.elements])
+        return cls(rec.remove_keys, rec.insert_before_key, [Element.from_data(iface, element) for element in rec.elements])
 
-    def __init__(self, start_key, end_key, elements):
+    def __init__(self, remove_keys, insert_before_key, elements):
+        assert isinstance(remove_keys, list), repr(remove_keys)
         assert is_list_inst(elements, Element), repr(elements)
-        # keys == None means append
-        self.start_key = start_key  # replace elements from this one
-        self.end_key = end_key      # up to (and including) this one
-        self.elements = elements    # with these elemenents
+        self.remove_keys = remove_keys
+        self.insert_before_key = insert_before_key  # insert elements before this key, None to append at the end
+        self.elements = elements
 
     def __repr__(self):
-        return 'ListDiff(%r-%r>%r)' % (self.start_key, self.end_key, self.elements)
+        return 'ListDiff(-%r+%r:%r)' % (self.remove_keys, self.insert_before_key, self.elements)
 
     def to_data(self, iface):
         assert isinstance(iface, ListInterface), repr(iface)
-        return iface.Diff(self.start_key, self.end_key, [element.to_data(iface) for element in self.elements])
+        return iface.Diff(self.remove_keys, self.insert_before_key, [element.to_data(iface) for element in self.elements])

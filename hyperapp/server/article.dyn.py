@@ -157,7 +157,7 @@ class ArticleRefList(SmallListObject):
                                      server_public_key_pem=server_public_key_pem,
                                      path=path)
         commit()
-        diff = ListDiff.add_one(rec.id, self.rec2element(request, rec))
+        diff = ListDiff.add_one(self.rec2element(request, rec))
         subscription.distribute_update(self.iface, self.get_path(), diff)
         handle = self.ListHandle(self.get(request), key=rec.id)
         return request.make_response_handle(handle)

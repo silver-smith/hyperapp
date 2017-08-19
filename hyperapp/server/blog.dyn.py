@@ -46,7 +46,7 @@ class BlogEntry(article.Article):
         log.info('Blog entry is saved, blog entry id = %r', self.article_id)
         subscription.distribute_update(self.iface, self.get_path(), SimpleDiff(text))
         if is_insertion:
-            diff = ListDiff.add_one(entry_rec.id, Blog.rec2element(entry_rec))
+            diff = ListDiff.add_one(Blog.rec2element(entry_rec))
             subscription.distribute_update(Blog.iface, Blog.get_path(), diff)
         return request.make_response_result(new_path=self.get_path())
 
