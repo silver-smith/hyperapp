@@ -18,8 +18,7 @@ class Element(object):
         self.key = key
         self.row = row
         self.commands = commands or []
-        if order_key is not None:
-            self.order_key = order_key
+        self.order_key = order_key  # may be None
 
     def __repr__(self):
         return '<Element #%r %r>' % (self.key, self.row)
@@ -30,15 +29,15 @@ class Element(object):
 
     def __eq__(self, other):
         if isinstance(other, Element):
-            return self.order_key == other.order_key
+            return self.key == other.key
         else:
-            return self.order_key == other
+            return self.key == other
 
     def __lt__(self, other):
         if isinstance(other, Element):
-            return self.order_key < other.order_key
+            return (self.order_key, self.key) < (other.order_key, other.key)
         else:
-            return self.order_key < other
+            return (self.order_key < other)
 
     def clone_with_sort_column(self, sort_column_id):
         order_key = getattr(self.row, sort_column_id)
