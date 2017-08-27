@@ -18,26 +18,32 @@ class PublicKey(object):
     def from_pem(cls, pem):
         assert isinstance(pem, str), repr(pem)
         public_key = serialization.load_pem_public_key(pem.encode(), backend=default_backend())
-        return cls('rsa', public_key)
+        return cls.from_public_key('rsa', public_key)
 
     @classmethod
     def from_der(cls, der):
         assert isinstance(der, bytes), repr(der)
         public_key = serialization.load_der_public_key(der, backend=default_backend())
-        return cls('rsa', public_key)
+        return cls.from_public_key('rsa', public_key)
 
-    def __init__(self, algorithm, public_key):
-        assert isinstance(algorithm, str), repr(algorithm)
-        self.algorithm = algorithm
-        self.public_key = public_key
-        self.public_pem = public_key.public_bytes(
+    @classmethod
+    def from_public_key(cls, algorithm, public_key):
+        public_key_pem = public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             ).decode()
+        return cls(algorithm, public_key, public_key_pem)
+
+    def __init__(self, algorithm, public_key, public_key_pem):
+        assert isinstance(algorithm, str), repr(algorithm)
+        assert isinstance(public_key_pem, str), repr(public_key_pem)
+        self._algorithm = algorithm  # str
+        self._public_key = public_key  # RSAPublicKey
+        self._public_key_pem = public_key_pem  # str
         self._id = self._make_id()
 
     def _make_id(self):
-        pk_der = self.public_key.public_bytes(
+        pk_der = self._public_key.public_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
@@ -55,24 +61,24 @@ class PublicKey(object):
         return codecs.encode(self._id[:4], 'hex').decode()
 
     def to_pem(self):
-        return self.public_pem
+        return self._public_key_pem
 
     def to_der(self):
-        return self.public_key.public_bytes(
+        return self._public_key.public_bytes(
             encoding=serialization.Encoding.DER,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
 
     def save_to_file(self, fpath):
         with open(fpath, 'w') as f:
-            f.write(self.public_key.public_bytes(
+            f.write(self._public_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PublicFormat.SubjectPublicKeyInfo
                 ))
 
     def encrypt(self, plain_text):
         hash_alg = hashes.SHA1()
-        cipher_text = self.public_key.encrypt(
+        cipher_text = self._public_key.encrypt(
             plain_text,
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hash_alg),
@@ -84,7 +90,7 @@ class PublicKey(object):
         sign_alg, hash_alg, sign = signature.split(b':', 2)
         assert sign_alg == b'rsa' and hash_alg == b'sha256', repr((sign_alg, hash_alg))
         hashalg = hashes.SHA256()
-        verifier = self.public_key.verifier(
+        verifier = self._public_key.verifier(
             sign,
             padding.PSS(
                 mgf=padding.MGF1(hashalg),
@@ -98,13 +104,13 @@ class PublicKey(object):
             return False
 
     def __eq__(self, other):
-        return isinstance(other, PublicKey) and self.public_pem == other.public_pem
+        return isinstance(other, PublicKey) and self._public_key_pem == other._public_key_pem
 
     def __lt__(self, other):
-        return isinstance(other, PublicKey) and self.public_pem < other.public_pem
+        return isinstance(other, PublicKey) and self._public_key_pem < other._public_key_pem
 
     def __hash__(self):
-        return hash(self.public_pem)
+        return hash(self._public_key_pem)
 
 
 # Contains assymetryc private key
@@ -128,7 +134,7 @@ class Identity(object):
     def __init__(self, algorithm, private_key):
         assert isinstance(algorithm, str), repr(algorithm)
         assert algorithm == 'rsa', repr(algorithm)  # only algorithm supported for now
-        self.algorithm = algorithm
+        self._algorithm = algorithm
         self.private_key = private_key
 
     def save_to_file(self, fpath):
@@ -140,7 +146,7 @@ class Identity(object):
                 ))
 
     def get_public_key(self):
-        return PublicKey(self.algorithm, self.private_key.public_key())
+        return PublicKey.from_public_key(self._algorithm, self.private_key.public_key())
 
     def decrypt(self, cipher_text):
         hash_alg = hashes.SHA1()
