@@ -97,11 +97,11 @@ class Interface(object):
             self.diff_type = base.diff_type
 
     def register_types(self, core_types):
-        self._tContents = TRecord(self.get_contents_fields())  # used by the following commands params/result
+        self._contents_t = TRecord(self.get_contents_fields())  # used by the following commands params/result
         self._bound_commands = list(map(self._resolve_and_bind_command, self.get_basic_commands(core_types) + self._unbound_commands))
         self._id2command = dict((cmd.command_id, cmd) for cmd in self._bound_commands)
-        self._tObject = core_types.object.register(
-            self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._tContents)])
+        self._object_t = core_types.object.register(
+            self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._contents_t)])
 
     def __eq__(self, other):
         return (isinstance(other, Interface) and
@@ -112,10 +112,10 @@ class Interface(object):
                 other._unbound_commands == self._unbound_commands)
 
     def get_object_type(self):
-        return self._tObject
+        return self._object_t
 
     def get_contents_type(self):
-        return self._tContents
+        return self._contents_t
 
     def get_basic_commands(self, core_types):
         return [
@@ -161,10 +161,10 @@ class Interface(object):
         return self.get_default_contents_fields() + self._contents_fields
 
     def Object(self, **kw):
-        return self._tObject(**kw)
+        return self._object_t(**kw)
 
     def Contents(self, **kw):
-        return self._tContents(**kw)
+        return self._contents_t(**kw)
         
 
 # all interfaces support this one too:
