@@ -8,6 +8,7 @@ from hyperapp.common.htypes.list_interface import Column, ListInterface
 from hyperapp.common.identity import PublicKey
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.server import Server
+from hyperapp.client.list_object import ListObserver
 from hyperapp.client.proxy_list_object import ProxyListObject
 
 log = logging.getLogger(__name__)
@@ -89,4 +90,10 @@ def test_fetch_elements(proxy_list_object):
             ))
     response = mock.Mock(error=None, result=result)
     proxy_list_object.server.execute_request.async_return_value = response
-    yield from proxy_list_object.fetch_elements('id', None, 0, 10)
+    observer = mock.Mock(spec=ListObserver)
+    proxy_list_object.subscribe(observer)
+    slice = yield from proxy_list_object.fetch_elements('id', None, 0, 10)
+    assert slice.bof
+    assert slice.eof
+    assert slice.elements == []
+    observer.process_fetch_result.assert_called_once_with(slice)
