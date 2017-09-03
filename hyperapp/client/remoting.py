@@ -204,5 +204,5 @@ class Remoting(object):
         for update in updates:
             obj = self._proxy_registry.resolve(server_public_key, update.path)
             if obj:
-                obj.process_update(update.diff)
+                obj.process_diff(update.diff)
             # otherwize object is already gone and updates must be discarded

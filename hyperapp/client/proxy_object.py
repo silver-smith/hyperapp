@@ -205,7 +205,7 @@ class ProxyObject(Object):
         else:
             return response.result
 
-    def process_update(self, diff):
+    def process_diff(self, diff):
         raise NotImplementedError(self.__class__)
 
     def _load_param_editor_resources(self):

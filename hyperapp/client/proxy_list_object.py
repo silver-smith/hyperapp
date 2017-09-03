@@ -214,8 +214,8 @@ class ProxyListObject(ProxyObject, ListObject):
         assert isinstance(slice, Slice), repr(slice)
         self._merge_in_slice(slice)
 
-    def process_update(self, diff):
-        log.info('-- proxy process_update self=%r diff=%r remove_keys=%r insert_before_key=%r elements=%r',
+    def process_diff(self, diff):
+        log.info('-- proxy process_diff self=%r diff=%r remove_keys=%r insert_before_key=%r elements=%r',
                  id(self), diff, diff.remove_keys, diff.insert_before_key, diff.elements)
         mapped_diff = self._map_list_diff_commands(diff)
         self._update_slices(mapped_diff)
