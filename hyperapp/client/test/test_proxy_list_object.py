@@ -1,13 +1,14 @@
 import os.path
 import logging
 import uuid
+from itertools import chain
 from unittest import mock
 import aiomock
 import asyncio
 import pytest
 from hyperapp.common.htypes import tInt
 from hyperapp.common.htypes.list_interface import Column, ListInterface
-from hyperapp.common.list_object import Element, Slice
+from hyperapp.common.list_object import Element, Slice, ListDiff
 from hyperapp.common.identity import PublicKey
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.request import Request
@@ -180,4 +181,36 @@ def test_slices_are_merged(services, proxy_list_object):
     assert not slice.eof
     assert slice.elements == [Element(i, iface.Row(i)) for i in range(20)]
     observer.process_fetch_result.assert_called_once_with(slice)
+    proxy_list_object.server.execute_request.assert_not_called()
+
+
+@pytest.mark.asyncio
+@asyncio.coroutine
+def test_list_diff(proxy_list_object):
+    iface = proxy_list_object.iface
+
+    # populate with 10 elements
+    fetch_result = iface.Contents(
+        slice=Slice(
+            sort_column_id='id',
+            from_key=None,
+            elements=[Element(i, iface.Row(i)) for i in chain(range(0, 10), range(20, 30))],
+            bof=True,
+            eof=False,
+            ).to_data(iface))
+    response = mock.Mock(error=None, result=fetch_result)
+    proxy_list_object.server.execute_request.async_return_value = response
+    yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+
+    diff = ListDiff(remove_keys=[5, 7],
+                    insert_before_key=None,
+                    elements=[Element(i, iface.Row(i)) for i in range(10, 20)])
+    proxy_list_object.process_diff(diff)
+
+    # elements fetched by first two calls must be merged together
+    proxy_list_object.server.reset_mock()
+    slice = yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    assert slice.bof
+    assert not slice.eof
+    assert slice.elements == [Element(i, iface.Row(i)) for i in range(30) if not i in [5, 7]]
     proxy_list_object.server.execute_request.assert_not_called()
