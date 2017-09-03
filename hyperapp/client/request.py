@@ -24,6 +24,13 @@ class RequestBase(object):
         self.command_id = command_id
         self.params = params
 
+    def __eq__(self, other):
+        return (isinstance(other, RequestBase) and
+                self.iface is other.iface and
+                self.path == other.path and
+                self.command_id == other.command_id and
+                self.params == other.params)
+
     @property
     def _command(self):
         return self.iface.get_command(self.command_id)
@@ -43,6 +50,11 @@ class ClientNotification(RequestBase):
         return self._packet_types.client_notification(self._command.iface.iface_id, self.path, self.command_id, self._embedded_params)
 
 
+    def __eq__(self, other):
+        return (isinstance(other, ClientNotification) and
+                RequestBase.__eq__(self, other))
+
+
 class Request(RequestBase):
 
     def __init__(self, packet_types, iface, path, command_id, request_id, params=None):
@@ -52,6 +64,16 @@ class Request(RequestBase):
 
     def to_data(self):
         return self._packet_types.client_request(self._command.iface.iface_id, self.path, self.command_id, self._embedded_params, self.request_id)
+
+    def __repr__(self):
+        return '<Request iface=%s path=%s command_id=%s params=%s request_id=%s>' % (
+            self.iface.iface_id, self.path, self.command_id, self.params, self.request_id)
+
+
+    def __eq__(self, other):
+        return (isinstance(other, Request) and
+                RequestBase.__eq__(self, other) and
+                self.request_id == other.request_id)
 
 
 class ResponseBase(object):
