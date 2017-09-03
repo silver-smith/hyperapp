@@ -4,7 +4,9 @@ from unittest import mock
 import aiomock
 import asyncio
 import pytest
+from hyperapp.common.htypes import tInt
 from hyperapp.common.htypes.list_interface import Column, ListInterface
+from hyperapp.common.list_object import Element, Slice
 from hyperapp.common.identity import PublicKey
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.server import Server
@@ -61,7 +63,7 @@ def proxy_list_object(services, server):
     resources_manager = mock.Mock()
     resources_manager.resove.return_value = None
     param_editor_registry = mock.Mock()
-    iface = ListInterface('test_iface', columns=[Column('id', is_key=True)])
+    iface = ListInterface('test_iface', columns=[Column('id', type=tInt, is_key=True)])
     iface.register_types(services.types.core)
     return ProxyListObject(
         services.types.packet,
@@ -80,20 +82,23 @@ def proxy_list_object(services, server):
 @asyncio.coroutine
 def test_fetch_elements(proxy_list_object):
     iface = proxy_list_object.iface
-    result = iface.Contents(
-        slice=iface.Slice(
+    elements = [
+        Element(1, iface.Row(1)),
+        ]
+    fetch_result = iface.Contents(
+        slice=Slice(
             sort_column_id='id',
             from_key=None,
-            elements=[],
+            elements=elements,
             bof=True,
             eof=True,
-            ))
-    response = mock.Mock(error=None, result=result)
+            ).to_data(iface))
+    response = mock.Mock(error=None, result=fetch_result)
     proxy_list_object.server.execute_request.async_return_value = response
     observer = mock.Mock(spec=ListObserver)
     proxy_list_object.subscribe(observer)
     slice = yield from proxy_list_object.fetch_elements('id', None, 0, 10)
     assert slice.bof
     assert slice.eof
-    assert slice.elements == []
+    assert slice.elements == elements
     observer.process_fetch_result.assert_called_once_with(slice)
