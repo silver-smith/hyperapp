@@ -82,9 +82,7 @@ def proxy_list_object(services, server):
 @asyncio.coroutine
 def test_fetch_elements(proxy_list_object):
     iface = proxy_list_object.iface
-    elements = [
-        Element(1, iface.Row(1)),
-        ]
+    elements = [Element(i, iface.Row(i)) for i in range(10)]
     fetch_result = iface.Contents(
         slice=Slice(
             sort_column_id='id',
