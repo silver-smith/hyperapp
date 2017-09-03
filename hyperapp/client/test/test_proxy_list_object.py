@@ -25,6 +25,11 @@ class Services(ServicesBase):
                 ])
 
 
+# override pytest-asyncio event_loop to test-scoped, or it will be still running and run_until_complete from other tests will fail
+@pytest.fixture
+def event_loop():
+    return asyncio.get_event_loop()
+
 @pytest.fixture
 def services():
     return Services()
