@@ -95,8 +95,36 @@ def test_fetch_elements(proxy_list_object):
     proxy_list_object.server.execute_request.async_return_value = response
     observer = mock.Mock(spec=ListObserver)
     proxy_list_object.subscribe(observer)
+    slice = yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    assert slice.bof
+    assert slice.eof
+    assert slice.elements == elements
+    observer.process_fetch_result.assert_called_once_with(slice)
+
+
+@pytest.mark.asyncio
+@asyncio.coroutine
+def test_fetch_cached_elements(proxy_list_object):
+    iface = proxy_list_object.iface
+    elements = [Element(i, iface.Row(i)) for i in range(10)]
+    fetch_result = iface.Contents(
+        slice=Slice(
+            sort_column_id='id',
+            from_key=None,
+            elements=elements,
+            bof=True,
+            eof=True,
+            ).to_data(iface))
+    response = mock.Mock(error=None, result=fetch_result)
+    proxy_list_object.server.execute_request.async_return_value = response
+    yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    observer = mock.Mock(spec=ListObserver)
+    proxy_list_object.subscribe(observer)
+    proxy_list_object.server.reset_mock()
+    # second call must fetch results from cache, server must not be called
     slice = yield from proxy_list_object.fetch_elements('id', None, 0, 10)
     assert slice.bof
     assert slice.eof
     assert slice.elements == elements
     observer.process_fetch_result.assert_called_once_with(slice)
+    proxy_list_object.server.execute_request.assert_not_called()
