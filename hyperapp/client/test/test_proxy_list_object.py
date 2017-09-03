@@ -37,18 +37,12 @@ def services():
 
 public_key_pem = '''
 -----BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAypQ+wUX1tb2s74JeoPSN
-AHOj5zLGpnTnKUB+cYFzjAjUX+SXt39cH7tMcYPj7uLsn5LfSf3sit+Z9yQEcZuY
-U7Bd3vjwx6TTnwQfBpmJKTE2mgctNM1AiO6GB1GsKDcj7PwKqnl5TJXOyppWvKWP
-NauWqxlTS1aCi236AnjbfZE93UFgHFQ55XVbWUUA4fz96Q/Xmr1TlwjKf9+ZYL1J
-6JTu1ec2r4K/lCgiQLqX46tVXAmRWjFtbC5nB1buVwN6L4g5a6r5uwOMCL9gGbuF
-NmQuC2hRlrRO6gFFNchIh/hYxnhzf0jm13CbspdVza9IHBvy8yoEX+tlVd/Wkxu3
-ixRPUdD7vASellSRp/YkbJX3IdEIuG9J4XLIc6m3d57qnUwuQSoHxl+CyoCf4NV6
-vETpVIURuD9gvfuSUjsK2nM5JhtvnpGi6F1X9Ydh8qx84S9fGPNz4o1PgubLyjyL
-vwWhRqfwx2ryXNQwc2r1LjsoKmWnEjmrayzrqcRbgjNxSJsWm2h5KP3lHl5vEct7
-wW5UhvHquE5JqJ7vfz2kSOoERF2N08CBjtXb1JuepFzzfOCVs959hi48LWE7ud1E
-M6nlQe0Uf0B0rUKTvBnXI7Y5wrHnZkAHEvjOqj+RYiRD13f+yUOnpMaWB+s1GqGF
-eKiI58a13Vd/GBKUcEGVk0UCAwEAAQ==
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAypQ+wUX1tb2s74JeoPSNAHOj5zLGpnTnKUB+cYFzjAjUX+SXt39cH7tMcYPj7uLsn5LfSf3sit+Z9yQEcZuY
+U7Bd3vjwx6TTnwQfBpmJKTE2mgctNM1AiO6GB1GsKDcj7PwKqnl5TJXOyppWvKWPNauWqxlTS1aCi236AnjbfZE93UFgHFQ55XVbWUUA4fz96Q/Xmr1TlwjKf9+ZYL1J
+6JTu1ec2r4K/lCgiQLqX46tVXAmRWjFtbC5nB1buVwN6L4g5a6r5uwOMCL9gGbuFNmQuC2hRlrRO6gFFNchIh/hYxnhzf0jm13CbspdVza9IHBvy8yoEX+tlVd/Wkxu3
+ixRPUdD7vASellSRp/YkbJX3IdEIuG9J4XLIc6m3d57qnUwuQSoHxl+CyoCf4NV6vETpVIURuD9gvfuSUjsK2nM5JhtvnpGi6F1X9Ydh8qx84S9fGPNz4o1PgubLyjyL
+vwWhRqfwx2ryXNQwc2r1LjsoKmWnEjmrayzrqcRbgjNxSJsWm2h5KP3lHl5vEct7wW5UhvHquE5JqJ7vfz2kSOoERF2N08CBjtXb1JuepFzzfOCVs959hi48LWE7ud1E
+M6nlQe0Uf0B0rUKTvBnXI7Y5wrHnZkAHEvjOqj+RYiRD13f+yUOnpMaWB+s1GqGFeKiI58a13Vd/GBKUcEGVk0UCAwEAAQ==
 -----END PUBLIC KEY-----
 '''
 
@@ -66,8 +60,7 @@ def proxy_list_object(services, server):
     resources_manager = mock.Mock()
     resources_manager.resove.return_value = None
     param_editor_registry = mock.Mock()
-    iface = ListInterface('test_iface',
-                          columns=[Column('id', is_key=True)])
+    iface = ListInterface('test_iface', columns=[Column('id', is_key=True)])
     iface.register_types(services.types.core)
     return ProxyListObject(
         services.types.packet,
