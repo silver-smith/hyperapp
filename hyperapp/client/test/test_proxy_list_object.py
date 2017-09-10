@@ -207,7 +207,6 @@ def test_list_diff(proxy_list_object):
                     elements=[Element(i, iface.Row(i)) for i in range(10, 20)])
     proxy_list_object.process_diff(diff)
 
-    # elements fetched by first two calls must be merged together
     proxy_list_object.server.reset_mock()
     slice = yield from proxy_list_object.fetch_elements('id', None, 0, 100)
     assert slice.bof
