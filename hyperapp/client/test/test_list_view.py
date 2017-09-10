@@ -80,8 +80,9 @@ class StubObject(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
-        log.debug('StubObject.fetch_elements: sort_column_id=%s, key=%r, desc_count=%d, asc_count=%d', sort_column_id, key, desc_count, asc_count)
         sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
+        log.debug('StubObject.fetch_elements: sort_column_id=%s key=%r desc_count=%d asc_count=%d sorted_rows=%r',
+                  sort_column_id, key, desc_count, asc_count, [row.key for row in sorted_rows])
         key2idx = dict((row.key, idx) for idx, row in enumerate(sorted_rows))
         assert desc_count == 0, repr(desc_count)  # Not supported
         if key is not None:
@@ -89,6 +90,9 @@ class StubObject(ListObject):
         else:
             start = 0
         end = min(start + self._rows_per_fetch, len(sorted_rows))
+        self.notify_fetch_result(sort_column_id, key, sorted_rows, start, end)
+
+    def notify_fetch_result(self, sort_column_id, key, sorted_rows, start, end):
         bof = start == 0
         eof = end == len(sorted_rows)
         elements = [element_for_row(row) for row in sorted_rows[start:end]]
@@ -176,9 +180,12 @@ def row_count_and_rows_per_fetch_and_key():
                     values = pytest.param(*values, marks=pytest.mark.slow)
                 yield values
 
+def get_list_view_row_count(list_view):
+    return list_view.model().rowCount(QtCore.QModelIndex())
+
 def check_rows(list_view, sort_column_id, expected_row_count):
     sort_column_idx = Row._fields.index(sort_column_id)
-    assert list_view.model().rowCount(QtCore.QModelIndex()) >= expected_row_count
+    assert get_list_view_row_count(list_view) >= expected_row_count
     for row in range(0, expected_row_count):
         key = int(get_cell(list_view, row, 0))
         assert get_cell(list_view, row, 1) == str(make_row(key).title)
@@ -210,6 +217,24 @@ def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per
     assert list_view.get_current_key() == current_key
     # without resource column_id is used for header
     assert model.headerData(1, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'title'
+
+@pytest.mark.asyncio
+@asyncio.coroutine
+def test_overlapped_fetch_result_should_be_merged_properly(list_view_factory):
+    row_count = 10
+    object = StubObject(rows_per_fetch=10, row_count=row_count)
+    list_view = list_view_factory(object)
+    list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
+    first_visible_row, visible_row_count = list_view._get_visible_rows()
+    model = list_view.model()
+    yield from wait_for_all_tasks_to_complete()
+    expected_row_count = min(row_count, visible_row_count)
+    actual_row_count = get_list_view_row_count(list_view)
+    check_rows(list_view, 'key', expected_row_count)
+    rows = [make_row(key) for key in range(row_count)]
+    object.notify_fetch_result(sort_column_id='key', key=None, sorted_rows=rows, start=0, end=10)
+    assert get_list_view_row_count(list_view) == actual_row_count  # no new rows are expected
+    check_rows(list_view, 'key', actual_row_count)
 
 @pytest.mark.asyncio
 @asyncio.coroutine
