@@ -133,7 +133,14 @@ class Model(QtCore.QAbstractTableModel):
         self._fetch_pending = False
         old_len = len(self._keys)
         self._update_elements_map(slice.elements)
-        self._keys = self._keys + [element.key for element in slice.elements]
+        if slice.bof:
+            start_idx = 0
+        else:
+            assert slice.from_key is not None and slice.from_key in self._keys, repr(slice.from_key)  # valid from_key is expected for non-bof slices
+            start_idx = self._keys.index(slice.from_key) + 1
+        # elements after this slice are removed from self._keys
+        self._keys = self._keys[:start_idx] + [element.key for element in slice.elements]
+        log.info('   list_view.Model.process_fetch_result self=%r keys=%r', id(self), self._keys)
         self._eof = slice.eof
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(slice.elements))
     
