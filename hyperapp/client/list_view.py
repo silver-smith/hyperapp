@@ -95,7 +95,7 @@ class Model(QtCore.QAbstractTableModel):
         self._key_column_id = object.get_key_column_id()
         self._current_order = sort_column_id or self._current_order
         self._keys = []
-        self._eof = False
+        self._bof = False
         self._eof = False
         self.reset()
         self._fetch_pending = False
@@ -115,14 +115,15 @@ class Model(QtCore.QAbstractTableModel):
 
     @asyncio.coroutine
     def fetch_elements_if_required(self, first_visible_row, visible_row_count, force=False):
+        log.info('-- list_view.Model.fetch_elements_if_required self=%r fetch_pending=%r', id(self), self._fetch_pending)
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
         wanted_rows = wanted_last_row - len(self._keys)
         key = self._keys[-1] if self._keys else None
         log.info('-- list_view.Model.fetch_elements_if_required self=%r first_visible_row=%r visible_row_count=%r'
-                 ' wanted_last_row=%r len(keys)=%r eof=%r wanted_rows=%r',
-                 id(self), first_visible_row, visible_row_count, wanted_last_row, len(self._keys), self._eof, wanted_rows)
-        if force or (wanted_rows > 0 and not self._eof):
+                 ' force=%r wanted_last_row=%r len(keys)=%r eof=%r wanted_rows=%r',
+                 id(self), first_visible_row, visible_row_count, force, wanted_last_row, len(self._keys), self._eof, wanted_rows)
+        if (force or wanted_rows > 0) and not self._eof:
             log.info('   calling fetch_elements object=%s/%r key=%r wanted_rows=%r', id(self._object), self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             yield from self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
