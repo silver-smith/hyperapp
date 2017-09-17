@@ -258,6 +258,7 @@ class ProxyListObject(ProxyObject, ListObject):
             log.debug('-- proxy_list_object.fetch_elements result: self=%s, chunk: %r', id(self), chunk)
         except RequestError as x:
             log.warning('Error fetching elements from remote object; will use cached (%s)' % x)
+            self._notify_fetch_result(chunk)
             return chunk
         if subscribing_now:
             self._subscribe_pending = False
