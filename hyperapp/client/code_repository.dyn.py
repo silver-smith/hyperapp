@@ -20,7 +20,7 @@ from .server import Server
 from .proxy_object import ProxyObject
 from .command import command
 from .object import Object
-from .list_object import Element, Slice, ListObject
+from .list_object import Element, Chunk, ListObject
 from .form import formHandle
 from .named_url_file_repository import NamedUrl, NamedUrlRepository, FileNamedUrlRepository
 
@@ -173,11 +173,11 @@ class CodeRepositoryList(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
-        self._notify_fetch_result(self._get_slice())
+        self._notify_fetch_result(self._get_chunk())
 
-    def _get_slice(self):
+    def _get_chunk(self):
         items = self.code_repository.get_items()
-        return Slice('name', None, list(map(self._item2element, items)), bof=True, eof=True)
+        return Chunk('name', None, list(map(self._item2element, items)), bof=True, eof=True)
 
     def _item2element(self, item):
         assert isinstance(item, NamedUrl), repr(item)

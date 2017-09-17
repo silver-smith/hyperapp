@@ -9,7 +9,7 @@ import pytest
 from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
 from hyperapp.common.htypes import tString, tInt, list_handle_type, Column
-from hyperapp.common.list_object import Element, Slice, ListDiff
+from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.async_application import AsyncApplication
 from hyperapp.client.list_object import ListObject
@@ -54,7 +54,7 @@ def make_row(key):
         )
 
 def element(key):
-    return Element(key, make_row(key))  
+    return Element(key, make_row(key))
 
 def element_for_row(row):
     return Element(row.key, row)
@@ -96,8 +96,8 @@ class StubObject(ListObject):
         bof = start == 0
         eof = end == len(sorted_rows)
         elements = [element_for_row(row) for row in sorted_rows[start:end]]
-        slice = Slice(sort_column_id, key, elements, bof=bof, eof=eof)
-        self._notify_fetch_result(slice)
+        chunk = Chunk(sort_column_id, key, elements, bof=bof, eof=eof)
+        self._notify_fetch_result(chunk)
 
 
 # required to exist when creating gui objects

@@ -44,7 +44,7 @@ class Element(object):
         return Element(self.key, self.row, self.commands, order_key)
 
 
-class Slice(object):
+class Chunk(object):
 
     def __init__(self, sort_column_id, from_key, elements, bof, eof):
         assert isinstance(sort_column_id, str), repr(sort_column_id)
@@ -56,7 +56,7 @@ class Slice(object):
         self.eof = eof
 
     def __eq__(self, other):
-        if not isinstance(other, Slice):
+        if not isinstance(other, Chunk):
             return False
         return (self.sort_column_id == other.sort_column_id
                 and self.from_key == other.from_key
@@ -65,17 +65,17 @@ class Slice(object):
                 and self.eof == other.eof)
 
     def __repr__(self):
-        return ('Slice(sort_column_id=%r from_key=%r bof=%r eof=%r %d elements %s)'
+        return ('Chunk(sort_column_id=%r from_key=%r bof=%r eof=%r %d elements %s)'
                 % (self.sort_column_id, self.from_key, self.bof, self.eof, len(self.elements),
                    'from %r to %r' % (self.elements[0].key, self.elements[-1].key) if self.elements else ''))
 
     def to_data(self, iface):
         assert isinstance(iface, ListInterface), repr(iface)
         elements = [elt.to_data(iface) for elt in self.elements]
-        return iface.Slice(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
+        return iface.Chunk(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
 
     def clone_with_elements(self, elements):
-        return Slice(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
+        return Chunk(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
 
 
 class ListDiff(Diff):

@@ -4,7 +4,7 @@ import abc
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
 from ..common.htypes import ListInterface
-from ..common.list_object import Element, Slice, ListDiff
+from ..common.list_object import Element, Chunk, ListDiff
 from .object import ObjectObserver, Object
 
 log = logging.getLogger(__name__)
@@ -38,8 +38,8 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     @asyncio.coroutine
     def fetch_element(self, key):
         sort_column_id = self.get_key_column_id()
-        slice = yield from self.fetch_elements(sort_column_id, key, 1, 1)
-        matched_elements = [element for element in slice.elements if element.key == key]
+        chunk = yield from self.fetch_elements(sort_column_id, key, 1, 1)
+        matched_elements = [element for element in chunk.elements if element.key == key]
         assert matched_elements, repr(matched_elements)  # at least one element with this key is expected
         return matched_elements[0]
 
@@ -48,10 +48,10 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def run_element_command(self, command_id, element_key):
         return (yield from self.run_command(command_id, element_key=element_key))
 
-    def _notify_fetch_result(self, slice):
-        assert isinstance(slice, Slice), repr(slice)
+    def _notify_fetch_result(self, chunk):
+        assert isinstance(chunk, Chunk), repr(chunk)
         for observer in self._observers:
-            observer.process_fetch_result(slice)
+            observer.process_fetch_result(chunk)
 
     def _notify_diff_applied(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)

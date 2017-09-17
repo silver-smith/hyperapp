@@ -103,7 +103,7 @@ def diff_type(key_t, element_t):
         Field('elements', TList(element_t)),
         ])
 
-def slice_type(key_t, element_t):
+def chunk_type(key_t, element_t):
     return TRecord([
         Field('sort_column_id', tString),
         Field('from_key', TOptional(key_t)),
@@ -128,7 +128,7 @@ class ListInterface(Interface):
         self._row_t = row_type(columns)
         self._element_t = element_type(self._row_t)
         self._diff_t = diff_type(self._key_type, self._element_t)
-        self._slice_t = slice_type(self._key_type, self._element_t)
+        self._chunk_t = chunk_type(self._key_type, self._element_t)
         Interface.__init__(self, iface_id, base, contents_fields, self._diff_t, commands)
 
     def __eq__(self, other):
@@ -162,7 +162,7 @@ class ListInterface(Interface):
 
     def get_default_contents_fields(self):
         return Interface.get_default_contents_fields(self) + [
-            Field('slice', self.Slice),
+            Field('chunk', self.Chunk),
             ]
 
     def get_basic_commands(self, core_types):
@@ -185,8 +185,8 @@ class ListInterface(Interface):
         return self._element_t
 
     @property
-    def Slice(self):
-        return self._slice_t
+    def Chunk(self):
+        return self._chunk_t
 
     @property
     def Diff(self):

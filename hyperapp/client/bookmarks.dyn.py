@@ -15,7 +15,7 @@ from .module import Module
 from .named_url_file_repository import FileNamedUrlRepository
 from .command import command
 from .remoting import Remoting
-from .list_object import Element, Slice, ListObject
+from .list_object import Element, Chunk, ListObject
 from .proxy_object import execute_get_request
 from .named_url_file_repository import NamedUrl, NamedUrlRepository
 
@@ -102,11 +102,11 @@ class BookmarkList(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
-        self._notify_fetch_result(self._get_slice())
+        self._notify_fetch_result(self._get_chunk())
 
-    def _get_slice(self):
+    def _get_chunk(self):
         items = self._bookmarks.get_items()
-        return Slice('id', None, list(map(self._item2element, items)), bof=True, eof=True)
+        return Chunk('id', None, list(map(self._item2element, items)), bof=True, eof=True)
 
     def _item2element(self, item):
         assert isinstance(item, NamedUrl), repr(item)

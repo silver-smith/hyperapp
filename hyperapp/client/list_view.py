@@ -4,7 +4,7 @@ import asyncio
 import bisect
 from PySide import QtCore, QtGui
 from ..common.htypes import Type
-from ..common.list_object import Slice, ListDiff
+from ..common.list_object import Chunk, ListDiff
 from .util import uni2str, key_match, key_match_any, make_async_action
 from .command import Command, ViewCommand
 from .list_object import ListObserver, ListObject
@@ -128,21 +128,21 @@ class Model(QtCore.QAbstractTableModel):
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
             yield from self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
 
-    def process_fetch_result(self, slice):
-        log.info('-- list_view.Model.process_fetch_result self=%r object=%r len(slice.elements)=%r', id(self), self._object, len(slice.elements))
+    def process_fetch_result(self, chunk):
+        log.info('-- list_view.Model.process_fetch_result self=%r object=%r len(chunk.elements)=%r', id(self), self._object, len(chunk.elements))
         self._fetch_pending = False
         old_len = len(self._keys)
-        self._update_elements_map(slice.elements)
-        if slice.bof:
+        self._update_elements_map(chunk.elements)
+        if chunk.bof:
             start_idx = 0
         else:
-            assert slice.from_key is not None and slice.from_key in self._keys, repr(slice.from_key)  # valid from_key is expected for non-bof slices
-            start_idx = self._keys.index(slice.from_key) + 1
-        # elements after this slice are removed from self._keys
-        self._keys = self._keys[:start_idx] + [element.key for element in slice.elements]
+            assert chunk.from_key is not None and chunk.from_key in self._keys, repr(chunk.from_key)  # valid from_key is expected for non-bof chunks
+            start_idx = self._keys.index(chunk.from_key) + 1
+        # elements after this chunk are removed from self._keys
+        self._keys = self._keys[:start_idx] + [element.key for element in chunk.elements]
         log.info('   list_view.Model.process_fetch_result self=%r keys=%r', id(self), self._keys)
-        self._eof = slice.eof
-        self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(slice.elements))
+        self._eof = chunk.eof
+        self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(chunk.elements))
     
     def diff_applied(self, diff):
         log.info('-- list_view.Model.diff_applied self=%r diff=%r len(keys)=%r keys=%r', id(self), diff, len(self._keys), self._keys)
@@ -190,7 +190,7 @@ class Model(QtCore.QAbstractTableModel):
         key = self._keys[row]
         return self._get_key_element(key)
 
-    ## def get_visible_slice(self, first_visible_row, visible_row_count):
+    ## def get_visible_chunk(self, first_visible_row, visible_row_count):
     ##     last_row = self._wanted_last_row(first_visible_row, visible_row_count)
     ##     if first_visible_row > 0:
     ##         from_key = self._keys[first_visible_row - 1]
@@ -199,7 +199,7 @@ class Model(QtCore.QAbstractTableModel):
     ##     elements = [self._get_key_element(key) for key in self._keys[first_visible_row:last_row]]
     ##     bof = self._bof and first_visible_row == 0
     ##     eof = self._eof and last_row >= len(self._keys)
-    ##     return Slice(self._current_order, from_key, elements, bof, eof)
+    ##     return Chunk(self._current_order, from_key, elements, bof, eof)
 
     def _update_elements_map(self, elements):
         for element in elements:
@@ -246,15 +246,15 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.activated.connect(self._on_activated)
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
-#        print (len(slice.elements), slice.eof) if slice else None
-        ## if handle_slice:
-        ##     object.put_back_slice(handle_slice)
+#        print (len(chunk.elements), chunk.eof) if chunk else None
+        ## if handle_chunk:
+        ##     object.put_back_chunk(handle_chunk)
         self.set_object(object, sort_column_id)
         self.wanted_current_key = key  # will set it to current when rows are loaded
 
     def get_state(self):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        ## slice = self.model().get_visible_slice(first_visible_row, visible_row_count)
+        ## chunk = self.model().get_visible_chunk(first_visible_row, visible_row_count)
         return self.data_type('list', self.get_object().get_state(), self._resource_id,
                               self.model().get_sort_column_id(), self.get_current_key())
        #, first_visible_row, self._select_first)
@@ -290,14 +290,14 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ## view.View.object_changed(self)
         ## self.check_if_elements_must_be_fetched()
 
-    def process_fetch_result(self, slice):
+    def process_fetch_result(self, chunk):
         log.debug('-- list_view.process_fetch_result self=%s (pre)', id(self))
         self.model()  # Internal C++ object (View) already deleted - this possible means this view was leaked.
         log.info('-- list_view.process_fetch_result self=%s model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r keys=%r',
-                 id(self), id(self.model()), slice.sort_column_id, slice.bof, slice.eof, len(slice.elements),
-                 [element.key for element in slice.elements])
-        assert isinstance(slice, Slice), repr(slice)
-        self.model().process_fetch_result(slice)
+                 id(self), id(self.model()), chunk.sort_column_id, chunk.bof, chunk.eof, len(chunk.elements),
+                 [element.key for element in chunk.elements])
+        assert isinstance(chunk, Chunk), repr(chunk)
+        self.model().process_fetch_result(chunk)
         self.resizeColumnsToContents()
         if self.wanted_current_key is not None:
             if self.set_current_key(self.wanted_current_key):

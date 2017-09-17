@@ -3,7 +3,7 @@ from ..common.htypes import Column
 from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.interface import test_list as test_list_types
-from ..common.list_object import Element, Slice
+from ..common.list_object import Element, Chunk
 from .util import path_part_to_str
 from .command import command
 from .object import Object, ListObject
@@ -81,7 +81,7 @@ class TestList(ListObject):
             elements.append(self.Element(row))
         bof = start == 0
         eof = stop >= self.size
-        return Slice(sort_column_id, from_key, elements, bof, eof)
+        return Chunk(sort_column_id, from_key, elements, bof, eof)
 
     
 class ThisModule(Module):

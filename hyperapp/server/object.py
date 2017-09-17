@@ -12,7 +12,7 @@ from ..common.htypes import (
 from ..common.request import Update
 from ..common.command import Command
 from ..common.diff import Diff
-from ..common.list_object import Element, Slice
+from ..common.list_object import Element, Chunk
 from .util import WeakValueMultiDict
 from .command import Commander
 
@@ -143,11 +143,11 @@ class ListObject(Object):
         Object.__init__(self, core_types)
 
     def get_contents(self, request, **kw):
-        slice = self.fetch_elements(request, self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
-        assert isinstance(slice, self.iface.Slice), \
+        chunk = self.fetch_elements(request, self.default_sort_column_id, None, 0, MIN_ROWS_RETURNED)
+        assert isinstance(chunk, self.iface.Chunk), \
           'Invalid result returned from fetch_elements, (you should implement fetch_elements_impl): %r, expected: %r' \
-            % (slice, self.iface.Slice)
-        return Object.get_contents(self, request, slice=slice, **kw)
+            % (chunk, self.iface.Chunk)
+        return Object.get_contents(self, request, chunk=chunk, **kw)
 
     def get_handle(self, request):
         return self.ListHandle(self.get(request))
@@ -165,18 +165,18 @@ class ListObject(Object):
 
     def process_request_fetch_elements(self, request):
         params = request.params
-        slice = self.fetch_elements(request, params.sort_column_id, params.from_key, params.desc_count, params.asc_count)
-        assert isinstance(slice, self.iface.Slice), \
-          'Invalid result is returned from fetch_elements: %r; use: return self.Slice(...)' % slice
-        return request.make_response(Object.get_contents(self, request, slice=slice))
+        chunk = self.fetch_elements(request, params.sort_column_id, params.from_key, params.desc_count, params.asc_count)
+        assert isinstance(chunk, self.iface.Chunk), \
+          'Invalid result is returned from fetch_elements: %r; use: return self.Chunk(...)' % chunk
+        return request.make_response(Object.get_contents(self, request, chunk=chunk))
 
-    # must return iface.Slice
+    # must return iface.Chunk
     def fetch_elements(self, request, sort_column_id, key, desc_count, asc_count):
-        slice = self.fetch_elements_impl(request, sort_column_id, key, desc_count, asc_count)
-        assert isinstance(slice, Slice), repr(slice)  # fetch_elements_impl must return hyperapp.common.list_object.Slice instance
-        return slice.to_data(self.iface)
+        chunk = self.fetch_elements_impl(request, sort_column_id, key, desc_count, asc_count)
+        assert isinstance(chunk, Chunk), repr(chunk)  # fetch_elements_impl must return hyperapp.common.list_object.Chunk instance
+        return chunk.to_data(self.iface)
 
-    # must return common.list_object.Slice
+    # must return common.list_object.Chunk
     def fetch_elements_impl(self, request, sort_column_id, key, desc_count, asc_count):
         raise NotImplementedError(self.__class__)
 
@@ -228,7 +228,7 @@ class SmallListObject(ListObject):
         elements = sorted_elements[idx : idx+asc_count]
         bof = idx == 0
         eof = idx + asc_count >= len(sorted_elements)
-        return Slice(sort_column_id, from_key, elements, bof, eof)
+        return Chunk(sort_column_id, from_key, elements, bof, eof)
 
     # must return self.iface.Element list
     def fetch_all_elements(self, request):

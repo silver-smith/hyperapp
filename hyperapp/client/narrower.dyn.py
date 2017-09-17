@@ -4,7 +4,7 @@ from PySide import QtCore, QtGui
 from ..common.htypes import tString, tInt, TOptional, Field
 from ..common.interface import core as core_types
 from .util import uni2str, key_match, key_match_any
-from .list_object import ListObserver, Slice, ListObject
+from .list_object import ListObserver, Chunk, ListObject
 from .command import command
 from . import view
 from .line_list_panel import LineListPanel

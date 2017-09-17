@@ -3,7 +3,7 @@ import asyncio
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import tInt, Column
 from ..command import command
-from ..list_object import Element, Slice, ListObject
+from ..list_object import Element, Chunk, ListObject
 from .module import get_this_module
 
 log = logging.getLogger(__name__)
@@ -60,10 +60,10 @@ class HistoryList(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
-        self._notify_fetch_result(self._get_slice())
+        self._notify_fetch_result(self._get_chunk())
 
-    def _get_slice(self):
-        return Slice('idx', None, list(map(self._item2element, enumerate(self._history))), bof=True, eof=True)
+    def _get_chunk(self):
+        return Chunk('idx', None, list(map(self._item2element, enumerate(self._history))), bof=True, eof=True)
 
     def _item2element(self, idx_and_item):
         idx, item = idx_and_item
