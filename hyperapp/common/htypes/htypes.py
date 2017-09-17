@@ -133,6 +133,9 @@ class Record(object):
         return (self._type is other._type and
                 [getattr(self,  field.name) for field in self._type.fields] ==
                 [getattr(other, field.name) for field in self._type.fields])
+
+    def __hash__(self):
+        return hash(id(self))  # todo: add Type.hash, converting lists to tuples
     
 
 class TRecord(Type):
