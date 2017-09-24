@@ -9,6 +9,7 @@ from .util import uni2str, key_match, key_match_any, make_async_action
 from .command import Command, ViewCommand
 from .list_object import ListObserver, ListObject
 from . import view
+from .slice import Slice
 
 log = logging.getLogger(__name__)
 
@@ -34,21 +35,18 @@ class Model(QtCore.QAbstractTableModel):
         self._columns_resource = {}  # column_id -> tColumnResource
         self._visible_columns = []
         self._key2element = {}
-        self._current_order = None  # column id
-        self._keys = []  #  ordered elements keys
-        self._bof = False
-        self._eof = False
+        self._slice = Slice(self._key2element, sort_column_id=None)
 
     def get_sort_column_id(self):
-        return self._current_order
+        return self._slice.sort_column_id
 
     def data(self, index, role):
         if role == QtCore.Qt.DisplayRole:
             column = self._visible_columns[index.column()]
-            if index.row() >= len(self._keys):
+            if index.row() >= len(self._slice.keys):
                 return None  # phony row
-            key = self._keys[index.row()]
-            element = self._get_key_element(key)
+            key = self._slice.keys[index.row()]
+            element = self._key2element[key]
             value = getattr(element.row, column.id)
             return self._value_to_string(column, value)
         return None
@@ -68,8 +66,8 @@ class Model(QtCore.QAbstractTableModel):
 
     def rowCount(self, parent):
         if parent == QtCore.QModelIndex() and self._object:
-            count = len(self._keys)
-            if not self._eof:
+            count = len(self._slice.keys)
+            if not self._slice.eof:
                 count += APPEND_PHONY_REC_COUNT
             return count
         else:
@@ -92,11 +90,8 @@ class Model(QtCore.QAbstractTableModel):
             column.id: self._resources_manager.resolve(self._resource_id + ['column', column.id, self._locale])
             for column in self._columns}
         self._visible_columns = [column for column in self._columns if self._is_column_visible(column.id)]
+        self._slice = Slice(self._key2element, sort_column_id or self._slice.sort_column_id)
         self._key_column_id = object.get_key_column_id()
-        self._current_order = sort_column_id or self._current_order
-        self._keys = []
-        self._bof = False
-        self._eof = False
         self.reset()
         self._fetch_pending = False
 
@@ -109,7 +104,7 @@ class Model(QtCore.QAbstractTableModel):
 
     def _wanted_last_row(self, first_visible_row, visible_row_count):
         wanted_last_row = first_visible_row + visible_row_count
-        if not self._eof:
+        if not self._slice.eof:
             wanted_last_row += APPEND_PHONY_REC_COUNT
         return wanted_last_row
 
@@ -118,95 +113,70 @@ class Model(QtCore.QAbstractTableModel):
         log.info('-- list_view.Model.fetch_elements_if_required self=%r fetch_pending=%r', id(self), self._fetch_pending)
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
-        wanted_rows = wanted_last_row - len(self._keys)
-        key = self._keys[-1] if self._keys else None
+        wanted_rows = wanted_last_row - len(self._slice.keys)
+        key = self._slice.keys[-1] if self._slice.keys else None
         log.info('-- list_view.Model.fetch_elements_if_required self=%r first_visible_row=%r visible_row_count=%r'
                  ' force=%r wanted_last_row=%r len(keys)=%r eof=%r wanted_rows=%r',
-                 id(self), first_visible_row, visible_row_count, force, wanted_last_row, len(self._keys), self._eof, wanted_rows)
-        if (force or wanted_rows > 0) and not self._eof:
+                 id(self), first_visible_row, visible_row_count, force, wanted_last_row, len(self._slice.keys), self._slice.eof, wanted_rows)
+        if (force or wanted_rows > 0) and not self._slice.eof:
             log.info('   calling fetch_elements object=%s/%r key=%r wanted_rows=%r', id(self._object), self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
-            yield from self._object.fetch_elements(self._current_order, key, 0, wanted_rows)
+            yield from self._object.fetch_elements(self._slice.sort_column_id, key, 0, wanted_rows)
 
     def process_fetch_result(self, chunk):
-        log.info('-- list_view.Model.process_fetch_result self=%r object=%r len(chunk.elements)=%r', id(self), self._object, len(chunk.elements))
+        log.info('-- list_view.Model.process_fetch_result self=%r object=%r chunk=%r', id(self), self._object, chunk)
         self._fetch_pending = False
-        old_len = len(self._keys)
+        old_len = len(self._slice.keys)
         self._update_elements_map(chunk.elements)
-        if chunk.bof:
-            start_idx = 0
-        else:
-            assert chunk.from_key is not None and chunk.from_key in self._keys, repr(chunk.from_key)  # valid from_key is expected for non-bof chunks
-            start_idx = self._keys.index(chunk.from_key) + 1
-        # elements after this chunk are removed from self._keys
-        self._keys = self._keys[:start_idx] + [element.key for element in chunk.elements]
-        log.info('   list_view.Model.process_fetch_result self=%r keys=%r', id(self), self._keys)
-        self._eof = chunk.eof
-        self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, old_len + len(chunk.elements))
+        start_idx = self._slice.add_fetched_chunk(chunk)
+        log.info('   list_view.Model.process_fetch_result self=%r slice=%r', id(self), self._slice)
+        if old_len > start_idx:  # some elements were replaced
+            self.dataChanged(self.createIndex(start_idx, 0), self.createIndex(old_len - 1, len(self._visible_columns) - 1))
+        self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, len(self._slice.keys) - 1)
     
     def diff_applied(self, diff):
-        log.info('-- list_view.Model.diff_applied self=%r diff=%r len(keys)=%r keys=%r', id(self), diff, len(self._keys), self._keys)
+        log.info('-- list_view.Model.diff_applied self=%r self.slice=%r diff=%r', id(self), self._slice, diff)
         for key in diff.remove_keys:
-            del self._key2element[key]
-        for key in sorted(diff.remove_keys, reverse=True):
             try:
-                idx = self._keys.index(key)
+                idx = self._slice.keys.index(key)
             except ValueError:
                 continue
-            del self._keys[idx]
             self.rowsRemoved.emit(QtCore.QModelIndex(), idx, idx)
-        if diff.insert_before_key is not None:
-            insert_idx = bisect.bisect_left(self._keys, diff.insert_before_key)
-        else:
-            insert_idx = None
-        self._update_elements_map(diff.elements)
-        new_keys = [element.key for element in diff.elements]
-        if insert_idx is not None:
-            self._keys[insert_idx:insert_idx] = new_keys
-        else:
-            self._keys.extend(new_keys)
-        if new_keys:
-            if insert_idx is not None:
-                idx = insert_idx
-            else:
-                idx = len(self._keys) - len(new_keys)
-            self.rowsInserted.emit(QtCore.QModelIndex(), idx, idx + len(new_keys) - 1)
-        log.info('  > len(keys)=%r keys=%r', len(self._keys), self._keys)
+        new_key_idx = self._slice.merge_in_diff(diff)
+        for idx in new_key_idx:
+            self.rowsInserted.emit(QtCore.QModelIndex(), idx, idx)
+        log.info('  > slice=%r', self._slice)
 
     def get_key_row(self, key):
         try:
-            return self._keys.index(key)
+            return self._slice.keys.index(key)
         except ValueError:
             return None
 
     def get_row_key(self, row):
-        if row == 0 and not self._keys:
+        if row == 0 and not self._slice.keys:
             return None
-        return self._keys[row]
+        return self._slice.keys[row]
 
     def get_row_element(self, row):
-        if row >= len(self._keys):
+        if row >= len(self._slice.keys):
             return None  # no elements or phony row
-        key = self._keys[row]
-        return self._get_key_element(key)
+        key = self._slice.keys[row]
+        return self._key2element[key]
 
     ## def get_visible_chunk(self, first_visible_row, visible_row_count):
     ##     last_row = self._wanted_last_row(first_visible_row, visible_row_count)
     ##     if first_visible_row > 0:
-    ##         from_key = self._keys[first_visible_row - 1]
+    ##         from_key = self._slice.keys[first_visible_row - 1]
     ##     else:
     ##         from_key = None
-    ##     elements = [self._get_key_element(key) for key in self._keys[first_visible_row:last_row]]
-    ##     bof = self._bof and first_visible_row == 0
-    ##     eof = self._eof and last_row >= len(self._keys)
+    ##     elements = [self._get_key_element(key) for key in self._slice.keys[first_visible_row:last_row]]
+    ##     bof = self._slice.bof and first_visible_row == 0
+    ##     eof = self._slice.eof and last_row >= len(self._slice.keys)
     ##     return Chunk(self._current_order, from_key, elements, bof, eof)
 
     def _update_elements_map(self, elements):
-        for element in elements:
-            self._key2element[element.key] = element
-
-    def _get_key_element(self, key):
-        return self._key2element[key]
+        self._key2element.update({element.key: element for element in elements})
 
     def __del__(self):
         log.info('~list_view.Model self=%s', id(self))
@@ -341,7 +311,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def set_current_key(self, key=None, select_first=False, accept_near=False):
         row = self.model().get_key_row(key)
-        log.info('-- set_current_key key=%r select_first=%r row=%r keys=%r', key, select_first, row, self.model()._keys)
+        log.info('-- set_current_key key=%r select_first=%r row=%r keys=%r', key, select_first, row, self.model()._slice.keys)
         if row is None:
             if select_first:
                 row = 0

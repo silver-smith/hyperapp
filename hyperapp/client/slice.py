@@ -37,6 +37,7 @@ class Slice(object):
     def merge_in_diff(self, diff):
         self.key2element.update({element.key: element for element in diff.elements})
         self.keys = [key for key in self.keys if key not in diff.remove_keys]
+        new_key_idx = []
         for element in diff.elements:
             idx = bisect.bisect(self._ordered_elements(self.keys), element)
             if idx == 0 and not self.bof:
@@ -44,6 +45,8 @@ class Slice(object):
             if idx == len(self.keys) and not self.eof:
                 continue  # after last element - ignore if not eof
             self.keys.insert(idx, element.key)
+            new_key_idx.append(idx)
+        return new_key_idx
 
     def pick_chunk(self, key, desc_count, asc_count):
         if key is None:
