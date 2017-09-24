@@ -55,9 +55,9 @@ def test_new_chunk_should_be_properly_merged_in_ordered_slice(slice, new_chunk, 
 @pytest.mark.parametrize('slice, diff, expected_new_slice', [
     (slice([1, 2, 4, 5]), ListDiff.add_one(element(3)), slice([1, 2, 3, 4, 5])),  # between existing ones
     (slice([2, 3, 4, 5]), ListDiff.add_one(element(1)), slice([2, 3, 4, 5])),  # before first one and not bof - ignore
-    (slice([2, 3, 4, 5], bof=True), ListDiff.add_one(element(1)), slice([1, 2, 3, 4, 5])),  # before first one and bof - insert
+    (slice([2, 3, 4, 5], bof=True), ListDiff.add_one(element(1)), slice([1, 2, 3, 4, 5], bof=True)),  # before first one and bof - insert
     (slice([1, 2, 3, 4]), ListDiff.add_one(element(5)), slice([1, 2, 3, 4])),  # after last one and not eof - ignore
-    (slice([1, 2, 3, 4], eof=True), ListDiff.add_one(element(5)), slice([1, 2, 3, 4, 5])),  # after last one and eof - append
+    (slice([1, 2, 3, 4], eof=True), ListDiff.add_one(element(5)), slice([1, 2, 3, 4, 5], eof=True)),  # after last one and eof - append
     ])
 def test_diff_should_be_properly_merged_in(slice, diff, expected_new_slice):
     slice.merge_in_diff(diff)
@@ -66,9 +66,9 @@ def test_diff_should_be_properly_merged_in(slice, diff, expected_new_slice):
 @pytest.mark.parametrize('slice, diff, expected_new_slice', [
     (oslice([(21, 1), (12, 2), (34, 4), (15, 5)]), ListDiff.add_one(element(43, 3)), oslice([(21, 1), (12, 2), (43, 3), (34, 4), (15, 5)])),  # between existing ones
     (oslice([(22, 2), (13, 3), (54, 4), (15, 5)]), ListDiff.add_one(element(21, 1)), oslice([(22, 2), (13, 3), (54, 4), (15, 5)])),  # before first one and not bof - ignore
-    (oslice([(22, 2), (13, 3), (54, 4), (15, 5)], bof=True), ListDiff.add_one(element(21, 1)), oslice([(21, 1), (22, 2), (13, 3), (54, 4), (15, 5)])),  # before first one and bof - insert
+    (oslice([(22, 2), (13, 3), (54, 4), (15, 5)], bof=True), ListDiff.add_one(element(21, 1)), oslice([(21, 1), (22, 2), (13, 3), (54, 4), (15, 5)], bof=True)),  # before first one and bof - insert
     (oslice([(21, 1), (42, 2), (13, 3), (34, 4)]), ListDiff.add_one(element(15, 5)), oslice([(21, 1), (42, 2), (13, 3), (34, 4)])),  # after last one and not eof - ignore
-    (oslice([(21, 1), (42, 2), (13, 3), (34, 4)], eof=True), ListDiff.add_one(element(15, 5)), oslice([(21, 1), (42, 2), (13, 3), (34, 4), (15, 5)])),  # after last one and eof - append
+    (oslice([(21, 1), (42, 2), (13, 3), (34, 4)], eof=True), ListDiff.add_one(element(15, 5)), oslice([(21, 1), (42, 2), (13, 3), (34, 4), (15, 5)], eof=True)),  # after last one and eof - append
     ])
 def test_diff_should_be_properly_merged_in_ordered_slice(slice, diff, expected_new_slice):
     slice.merge_in_diff(diff)

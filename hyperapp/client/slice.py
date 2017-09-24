@@ -1,3 +1,4 @@
+import bisect
 
 
 class Slice(object):
@@ -32,7 +33,15 @@ class Slice(object):
         self.eof = chunk.eof
 
     def merge_in_diff(self, diff):
-        pass
+        self.key2element.update({element.key: element for element in diff.elements})
+        self.keys = [key for key in self.keys if key not in diff.remove_keys]
+        for element in diff.elements:
+            idx = bisect.bisect([self.key2element[key] for key in self.keys], element)
+            if idx == 0 and not self.bof:
+                continue  # before first element - ignore if not bof
+            if idx == len(self.keys) and not self.eof:
+                continue  # after last element - ignore if not eof
+            self.keys.insert(idx, element.key)
 
     def pick_chunk(self, key, desc_count, asc_count):
         if key is None:
