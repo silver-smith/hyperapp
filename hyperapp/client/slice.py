@@ -37,7 +37,7 @@ class Slice(object):
         self.key2element.update({element.key: element for element in diff.elements})
         self.keys = [key for key in self.keys if key not in diff.remove_keys]
         for element in diff.elements:
-            idx = bisect.bisect([self.key2element[key] for key in self.keys], element)
+            idx = bisect.bisect(self._ordered_elements(self.keys), element)
             if idx == 0 and not self.bof:
                 continue  # before first element - ignore if not bof
             if idx == len(self.keys) and not self.eof:
@@ -68,8 +68,10 @@ class Slice(object):
         keys = self.keys[start:end]
         bof = self.bof and start == 0
         eof = self.eof and end == len(self.keys)
-        return Chunk(self.sort_column_id, from_key, [self.key2element[key] for key in keys], bof=bof, eof=eof)
+        return Chunk(self.sort_column_id, from_key, self._ordered_elements(keys), bof=bof, eof=eof)
 
+    def _ordered_elements(self, keys ):
+        return [self.key2element[key].clone_with_sort_column(self.sort_column_id) for key in keys]
 
 
 class SliceList(object):

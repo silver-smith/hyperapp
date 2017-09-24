@@ -1,3 +1,4 @@
+from collections import namedtuple
 import pytest
 from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.client.list_object import ListObject
@@ -8,8 +9,10 @@ from hyperapp.client.slice import Slice
 def rangel(*args):
     return list(range(*args))
 
+Row = namedtuple('Row', 'id name')
+
 def element(key, order_key=None):
-    return Element(key=key, order_key=order_key or key, row=None)
+    return Element(key=key, order_key=order_key or key, row=Row(key, order_key or key))
 
 def chunk(from_key, keys, bof=False, eof=False):
     elements = [element(key) for key in keys]
