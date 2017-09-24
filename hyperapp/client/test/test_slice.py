@@ -8,15 +8,16 @@ from hyperapp.client.slice import Slice
 def rangel(*args):
     return list(range(*args))
 
-def element(key):
-    return Element(key=key, order_key=key, row=None)
+def element(key, order_key=None):
+    return Element(key=key, order_key=order_key or key, row=None)
 
 def chunk(from_key, keys, bof=False, eof=False):
     elements = [element(key) for key in keys]
     return Chunk(sort_column_id='id', from_key=from_key, elements=elements, bof=bof, eof=eof)
 
 def slice(keys, bof=False, eof=False):
-    return Slice(sort_column_id='id', bof=bof, eof=eof, keys=list(keys))
+    key2element = {key: element(key) for key in keys}
+    return Slice(key2element, sort_column_id='id', bof=bof, eof=eof, keys=list(keys))
 
 
 @pytest.mark.parametrize('slice, new_chunk, expected_new_slice', [

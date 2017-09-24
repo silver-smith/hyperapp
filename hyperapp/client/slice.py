@@ -2,7 +2,8 @@
 
 class Slice(object):
 
-    def __init__(self, sort_column_id, bof, eof, keys):
+    def __init__(self, key2element, sort_column_id, bof, eof, keys):
+        self.key2element = key2element
         self.sort_column_id = sort_column_id
         self.bof = bof
         self.eof = eof
@@ -18,6 +19,7 @@ class Slice(object):
                 self.keys == other.keys)
 
     def add_fetched_chunk(self, chunk):
+        self.key2element.update({element.key: element for element in chunk.elements})
         if chunk.bof:
             assert chunk.from_key is None, repr(chunk.from_key)
             start_idx = 0
