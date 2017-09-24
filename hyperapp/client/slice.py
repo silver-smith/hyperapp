@@ -1,4 +1,5 @@
 import bisect
+from ..common.list_object import Chunk
 
 
 class Slice(object):
@@ -46,9 +47,28 @@ class Slice(object):
     def pick_chunk(self, key, desc_count, asc_count):
         if key is None:
             if self.bof:
-                return self
+                idx = 0
             else:
                 return None
+        else:
+            try:
+                idx = self.keys.index(key)
+            except ValueError:
+                return None  # Unknown key
+        start = max(0, idx - desc_count)
+        end = min(len(self.keys), idx + asc_count)
+        if start == 0:
+            if self.bof:
+                from_key = None
+            else:
+                from_key = self.keys[start]
+                start += 1
+        else:
+            from_key = self.keys[start - 1]
+        keys = self.keys[start:end]
+        bof = self.bof and start == 0
+        eof = self.eof and end == len(self.keys)
+        return Chunk(self.sort_column_id, from_key, [self.key2element[key] for key in keys], bof=bof, eof=eof)
 
 
 

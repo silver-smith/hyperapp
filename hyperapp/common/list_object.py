@@ -67,7 +67,7 @@ class Chunk(object):
     def __repr__(self):
         return ('Chunk(sort_column_id=%r from_key=%r bof=%r eof=%r %d elements %s)'
                 % (self.sort_column_id, self.from_key, self.bof, self.eof, len(self.elements),
-                   'from %r to %r' % (self.elements[0].key, self.elements[-1].key) if self.elements else ''))
+                   '%r-%r' % (self.elements[0].key, self.elements[-1].key) if self.elements else ''))
 
     def to_data(self, iface):
         assert isinstance(iface, ListInterface), repr(iface)
