@@ -85,23 +85,3 @@ def test_diff_should_be_properly_merged_in_ordered_slice(slice, diff, expected_n
 def test_pick_chunk_should_return_proper_chunk(slice, key, desc_count, asc_count, expected_chunk):
     chunk = slice.pick_chunk(key, desc_count, asc_count)
     assert chunk == expected_chunk
-
-# def test_pick_chunk_with_empty_key_should_return_bof_chunk():
-#     chunks = [make_chunk((20, 30), bof=False),
-#               make_chunk((0, 10), bof=True),
-#               make_chunk((10, 20), bof=False)]
-#     result = ChunkAlgorithm().pick_chunk(chunks, sort_column_id='id', from_key=None, desc_count=0, asc_count=10)
-#     assert chunks[1] == result
-
-# @pytest.mark.parametrize('chunks_range, from_key, desc_count, asc_count, expected_chunk_range', [
-#     ([(0, 10), (20, 30), (40, 50)], 25, 0, 10, (26, 30)),
-#     ([(0, 10), (20, 30), (40, 50)], 0, 0, 10, (1, 10)),
-#     ([(0, 10), (20, 30), (40, 50)], 48, 0, 10, (49, 50)),
-#     ([(0, 10), (20, 30), (40, 50)], 25, 1, 10, (25, 30)),
-#     ([(0, 10), (20, 30), (40, 50)], 0, 10, 10, (0, 10)),
-#     ([(0, 10), (20, 30), (40, 50)], 48, 5, 10, (44, 50)),
-#     ])
-# def test_pick_chunk_should_return_proper_elements(chunks_range, from_key, desc_count, asc_count, expected_chunk_range):
-#     chunks = list(map(make_chunk, chunks_range))
-#     result = ChunkAlgorithm().pick_chunk(chunks, sort_column_id='id', from_key=from_key, desc_count=desc_count, asc_count=asc_count)
-#     assert expected_chunk_range == chunk2range(result)
