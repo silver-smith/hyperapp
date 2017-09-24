@@ -32,27 +32,29 @@ def oslice(element_tuples, bof=False, eof=False):
     return Slice(key2element, sort_column_id='name', bof=bof, eof=eof, keys=keys)
 
 
-@pytest.mark.parametrize('slice, new_chunk, expected_new_slice', [
-    (slice([1, 2, 3]), chunk(3, [4, 5]), slice([1, 2, 3, 4, 5])),
-    (slice([1, 2, 3, 4, 5]), chunk(1, [11, 12]), slice([1, 11, 12])),  # old elements after from_key must be thrown away
-    (slice([10, 11, 12]), chunk(None, [1, 2, 3], bof=True), slice([1, 2, 3], bof=True)),  # bof chunk must replace all
-    (slice([1]), chunk(1, [2, 3], eof=True), slice([1, 2, 3], eof=True)),  # eof must be recorded in slice
-    (slice([1], eof=True), chunk(1, [2, 3], eof=False), slice([1, 2, 3], eof=False)),  # eof must be recorded in slice
+@pytest.mark.parametrize('slice, new_chunk, expected_start_idx, expected_new_slice', [
+    (slice([1, 2, 3]), chunk(3, [4, 5]), 3, slice([1, 2, 3, 4, 5])),
+    (slice([1, 2, 3, 4, 5]), chunk(1, [11, 12]), 1, slice([1, 11, 12])),  # old elements after from_key must be thrown away
+    (slice([10, 11, 12]), chunk(None, [1, 2, 3], bof=True), 0, slice([1, 2, 3], bof=True)),  # bof chunk must replace all
+    (slice([1]), chunk(1, [2, 3], eof=True), 1, slice([1, 2, 3], eof=True)),  # eof must be recorded in slice
+    (slice([1], eof=True), chunk(1, [2, 3], eof=False), 1, slice([1, 2, 3], eof=False)),  # eof must be recorded in slice
     ])
-def test_new_chunk_should_be_properly_merged_in(slice, new_chunk, expected_new_slice):
-    slice.add_fetched_chunk(new_chunk)
+def test_new_chunk_should_be_properly_merged_in(slice, new_chunk, expected_start_idx, expected_new_slice):
+    start_idx = slice.add_fetched_chunk(new_chunk)
     assert slice == expected_new_slice
+    assert start_idx == expected_start_idx
 
-@pytest.mark.parametrize('slice, new_chunk, expected_new_slice', [
-    (oslice([(21, 1), (12, 2), (43, 3)]), ochunk(43, [(34, 4), (15, 5)]), oslice([(21, 1), (12, 2), (43, 3), (34, 4), (15, 5)])),
-    (oslice([(21, 1), (12, 2), (43, 3), (34, 4), (15, 5)]), ochunk(21, [(38, 8), (19, 9)]), oslice([(21, 1), (38, 8), (19, 9)])),  # old elements after from_key must be thrown away
-    (oslice([(36, 6), (47, 7), (28, 8)]), ochunk(None, [(41, 1), (12, 2), (33, 3)], bof=True), oslice([(41, 1), (12, 2), (33, 3)], bof=True)),  # bof chunk must replace all
-    (oslice([(21, 1)]), ochunk(21, [(12, 2), (43, 3)], eof=True), oslice([(21, 1), (12, 2), (43, 3)], eof=True)),  # eof must be recorded in slice
-    (oslice([(21, 1)], eof=True), ochunk(21, [(12, 2), (43, 3)], eof=False), oslice([(21, 1), (12, 2), (43, 3)], eof=False)),  # eof must be recorded in slice
+@pytest.mark.parametrize('slice, new_chunk, expected_start_idx, expected_new_slice', [
+    (oslice([(21, 1), (12, 2), (43, 3)]), ochunk(43, [(34, 4), (15, 5)]), 3, oslice([(21, 1), (12, 2), (43, 3), (34, 4), (15, 5)])),
+    (oslice([(21, 1), (12, 2), (43, 3), (34, 4), (15, 5)]), ochunk(21, [(38, 8), (19, 9)]), 1, oslice([(21, 1), (38, 8), (19, 9)])),  # old elements after from_key must be thrown away
+    (oslice([(36, 6), (47, 7), (28, 8)]), ochunk(None, [(41, 1), (12, 2), (33, 3)], bof=True), 0, oslice([(41, 1), (12, 2), (33, 3)], bof=True)),  # bof chunk must replace all
+    (oslice([(21, 1)]), ochunk(21, [(12, 2), (43, 3)], eof=True), 1, oslice([(21, 1), (12, 2), (43, 3)], eof=True)),  # eof must be recorded in slice
+    (oslice([(21, 1)], eof=True), ochunk(21, [(12, 2), (43, 3)], eof=False), 1, oslice([(21, 1), (12, 2), (43, 3)], eof=False)),  # eof must be recorded in slice
     ])
-def test_new_chunk_should_be_properly_merged_in_ordered_slice(slice, new_chunk, expected_new_slice):
-    slice.add_fetched_chunk(new_chunk)
+def test_new_chunk_should_be_properly_merged_in_ordered_slice(slice, new_chunk, expected_start_idx, expected_new_slice):
+    start_idx = slice.add_fetched_chunk(new_chunk)
     assert slice == expected_new_slice
+    assert start_idx == expected_start_idx
 
 
 @pytest.mark.parametrize('slice, diff, expected_new_slice', [
