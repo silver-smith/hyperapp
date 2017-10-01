@@ -188,7 +188,6 @@ class ProxyListObject(ProxyObject, ListObject):
             self._subscribe_pending = True
         try:
             result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
-            log.debug('-- proxy_list_object.fetch_elements result (self=%s): %r', id(self), result)
         except RequestError as x:
             log.warning('Error fetching elements from remote object; will use cached (%s)' % x)
             return chunk
@@ -201,6 +200,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _process_fetch_elements_result(self, result):
         chunk = self._chunk_from_data(result.chunk)
+        log.debug('-- proxy_list_object.fetch_elements (self=%s) result chunk: %r', id(self), chunk)
         self._add_fetched_chunk(chunk)
         self._notify_fetch_result(chunk)
         return chunk

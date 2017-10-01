@@ -74,6 +74,8 @@ class Slice(object):
                 idx = self.keys.index(key)
             except ValueError:
                 return None  # Unknown key
+            if idx == len(self.keys) - 1:
+                return None  # from key is last element - we need to load next chunk from server
         start = max(0, idx - desc_count)
         end = min(len(self.keys), idx + asc_count)
         if start == 0:

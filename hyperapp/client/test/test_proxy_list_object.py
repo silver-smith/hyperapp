@@ -183,11 +183,10 @@ def test_chunks_are_merged(services, proxy_list_object):
 
 
 def element(key):
-    return Element(key, test_iface.Row(key))
+    return Element(key, test_iface.Row(key), order_key=key)
 
 @pytest.mark.parametrize('diff,expected_keys', [
     (ListDiff.add_one(element(4)), [0, 1, 2, 3, 4, 5, 6, 7]),
-    (ListDiff.append_many([element(8), element(9)]), [0, 1, 2, 3, 5, 6, 7, 8, 9]),
     (ListDiff.delete(2), [0, 1, 3, 5, 6, 7]),
     ])
 @pytest.mark.asyncio

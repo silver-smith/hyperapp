@@ -85,6 +85,7 @@ def test_diff_should_be_properly_merged_in_ordered_slice(slice, diff, expected_n
 @pytest.mark.parametrize('slice, key, desc_count, asc_count, expected_chunk', [
     (slice(rangel(1, 11), bof=False), None, 0, 10, None),  # request with key=None means we want bof
     (slice(rangel(1, 11), bof=True), None, 0, 10, chunk(None, rangel(1, 11), bof=True)),  # request with key=None means we want bof
+    (slice(rangel(1, 11)), 10, 0, 10, None),  # from_key matches last element means we need to load more chunks from server
     (slice(rangel(1, 101)), 50, 10, 20, chunk(39, rangel(40, 70))),
     (slice([1, 2, 3, 4, 5]), 3, 2, 2, chunk(1, [2, 3, 4])),  # from_key must be excluded when used, must be used if bof=False
     (slice([1, 2, 3, 4, 5], bof=True), 3, 2, 2, chunk(None, [1, 2, 3, 4], bof=True)),  # from_key may be not used if bof=True
