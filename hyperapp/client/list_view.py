@@ -164,17 +164,6 @@ class Model(QtCore.QAbstractTableModel):
         key = self._slice.keys[row]
         return self._key2element[key]
 
-    ## def get_visible_chunk(self, first_visible_row, visible_row_count):
-    ##     last_row = self._wanted_last_row(first_visible_row, visible_row_count)
-    ##     if first_visible_row > 0:
-    ##         from_key = self._slice.keys[first_visible_row - 1]
-    ##     else:
-    ##         from_key = None
-    ##     elements = [self._get_key_element(key) for key in self._slice.keys[first_visible_row:last_row]]
-    ##     bof = self._slice.bof and first_visible_row == 0
-    ##     eof = self._slice.eof and last_row >= len(self._slice.keys)
-    ##     return Chunk(self._current_order, from_key, elements, bof, eof)
-
     def _update_elements_map(self, elements):
         self._key2element.update({element.key: element for element in elements})
 
@@ -216,15 +205,11 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self.activated.connect(self._on_activated)
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
-#        print (len(chunk.elements), chunk.eof) if chunk else None
-        ## if handle_chunk:
-        ##     object.put_back_chunk(handle_chunk)
         self.set_object(object, sort_column_id)
         self.wanted_current_key = key  # will set it to current when rows are loaded
 
     def get_state(self):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        ## chunk = self.model().get_visible_chunk(first_visible_row, visible_row_count)
         return self.data_type('list', self.get_object().get_state(), self._resource_id,
                               self.model().get_sort_column_id(), self.get_current_key())
        #, first_visible_row, self._select_first)
