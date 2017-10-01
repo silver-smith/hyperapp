@@ -80,9 +80,16 @@ class Slice(object):
 
 class SliceList(object):
 
-    def __init__(self, sort_column_id):
+    def __init__(self, sort_column_id, slice_list=None):
         self.sort_column_id = sort_column_id
-        self.slice_list = []
+        self.slice_list = slice_list or []
+
+    def __repr__(self):
+        return '<%r: %r>' % (self.sort_column_id, self.slice_list)
+
+    def __eq__(self, other):
+        return (self.sort_column_id == other.sort_column_id and
+                self.slice_list == other.slice_list)
 
     def pick_slice(self, sort_column_id, key, desc_count, asc_count):
         if sort_column_id != self.sort_column_id:
@@ -92,3 +99,9 @@ class SliceList(object):
             if chunk:
                 return chunk
         return None  # none found
+
+    def add_fetched_chunk(self, chunk):
+        if chunk.sort_column_id != self.sort_column_id: return
+        for slice in self.slice_list:
+            if chunk.from_key in slice.keys:
+                slice.add_fetched_chunk(chunk)

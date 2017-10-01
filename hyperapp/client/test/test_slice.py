@@ -3,7 +3,7 @@ import pytest
 from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.client.list_object import ListObject
 from hyperapp.client.proxy_list_object import ChunkAlgorithm
-from hyperapp.client.slice import Slice
+from hyperapp.client.slice import Slice, SliceList
 
 
 def rangel(*args):
@@ -25,6 +25,9 @@ def ochunk(from_key, element_tuples, bof=False, eof=False):
 def slice(keys, bof=False, eof=False):
     key2element = {key: element(key) for key in keys}
     return Slice(key2element, sort_column_id='id', bof=bof, eof=eof, keys=list(keys))
+
+def slice_list(slices):
+    return SliceList('id', slices)
 
 def oslice(element_tuples, bof=False, eof=False):
     key2element = {key: element(key, order_key) for (key, order_key) in element_tuples}
@@ -90,3 +93,11 @@ def test_diff_should_be_properly_merged_in_ordered_slice(slice, diff, expected_n
 def test_pick_chunk_should_return_proper_chunk(slice, key, desc_count, asc_count, expected_chunk):
     chunk = slice.pick_chunk(key, desc_count, asc_count)
     assert chunk == expected_chunk
+
+
+@pytest.mark.parametrize('slice_list, new_chunk, expected_new_slice_list', [
+    (slice_list([slice(rangel(1, 11)), slice(rangel(21, 31))]), chunk(30, rangel(31, 41)), slice_list([slice(rangel(1, 11)), slice(rangel(21, 41))])),
+    ])
+def test_new_chunk_should_be_merged_to_proper_slice(slice_list, new_chunk, expected_new_slice_list):
+    slice_list.add_fetched_chunk(new_chunk)
+    assert slice_list == expected_new_slice_list
