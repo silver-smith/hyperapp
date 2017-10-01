@@ -21,7 +21,7 @@ class Element(object):
         self.order_key = order_key  # may be None
 
     def __repr__(self):
-        return '<Element #%r %r>' % (self.key, self.row)
+        return '<Element #%r order_key=%r %r>' % (self.key, self.order_key, self.row)
 
     def to_data(self, iface):
         assert isinstance(iface, ListInterface), repr(iface)

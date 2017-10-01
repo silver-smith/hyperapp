@@ -39,7 +39,7 @@ class Slice(object):
         self.keys = [key for key in self.keys if key not in diff.remove_keys]
         new_key_idx = []
         for element in diff.elements:
-            idx = bisect.bisect(self._ordered_elements(self.keys), element)
+            idx = bisect.bisect(self._ordered_elements(self.keys), element.clone_with_sort_column(self.sort_column_id))
             if idx == 0 and not self.bof:
                 continue  # before first element - ignore if not bof
             if idx == len(self.keys) and not self.eof:

@@ -131,7 +131,7 @@ class Model(QtCore.QAbstractTableModel):
         start_idx = self._slice.add_fetched_chunk(chunk)
         log.info('   list_view.Model.process_fetch_result self=%r slice=%r', id(self), self._slice)
         if old_len > start_idx:  # some elements were replaced
-            self.dataChanged(self.createIndex(start_idx, 0), self.createIndex(old_len - 1, len(self._visible_columns) - 1))
+            self.dataChanged.emit(self.createIndex(start_idx, 0), self.createIndex(old_len - 1, len(self._visible_columns) - 1))
         self.rowsInserted.emit(QtCore.QModelIndex(), old_len + 1, len(self._slice.keys) - 1)
     
     def diff_applied(self, diff):
