@@ -1,8 +1,18 @@
 import bisect
+from ..common.htypes import tString, tBool, Field, TRecord, TList, ListInterface
 from ..common.list_object import Chunk
 
 
 class Slice(object):
+
+    @staticmethod
+    def data_t(iface):
+        return TRecord([
+            Field('sort_column_id', tString),
+            Field('bof', tBool),
+            Field('eof', tBool),
+            Field('keys', TList(iface.get_key_type())),
+            ])
 
     def __init__(self, key2element, sort_column_id, bof=False, eof=False, keys=None):
         self.key2element = key2element
@@ -20,7 +30,12 @@ class Slice(object):
                 self.eof == other.eof and
                 self.keys == other.keys)
 
+    def to_data(self, iface):
+        assert isinstance(iface, ListInterface), repr(iface)
+        return self.data_t(iface)(self.sort_column_id, self.bof, self.eof, self.keys)
+
     def add_fetched_chunk(self, chunk):
+        assert chunk.sort_column_id == self.sort_column_id, repr((chunk.sort_column_id, self.sort_column_id))
         self.key2element.update({element.key: element for element in chunk.elements})
         if chunk.bof:
             assert chunk.from_key is None, repr(chunk.from_key)
@@ -80,7 +95,15 @@ class Slice(object):
 
 class SliceList(object):
 
-    def __init__(self, sort_column_id, slice_list=None):
+    @staticmethod
+    def data_t(iface):
+        return TRecord([
+            Field('sort_column_id', tString),
+            Field('slice_list', TList(Slice.data_t(iface))),
+            ])
+
+    def __init__(self, key2element, sort_column_id, slice_list=None):
+        self.key2element = key2element
         self.sort_column_id = sort_column_id
         self.slice_list = slice_list or []
 
@@ -91,7 +114,28 @@ class SliceList(object):
         return (self.sort_column_id == other.sort_column_id and
                 self.slice_list == other.slice_list)
 
-    def pick_slice(self, sort_column_id, key, desc_count, asc_count):
+    def to_data(self, iface):
+        assert isinstance(iface, ListInterface), repr(iface)
+        return self.data_t(iface)(self.sort_column_id, [slice.to_data(iface) for slice in self.slice_list])
+
+    # todo: merge intersecting slices to single one
+    def add_fetched_chunk(self, chunk):
+        if chunk.sort_column_id != self.sort_column_id: return
+        has_slice = False
+        for slice in self.slice_list:
+            if chunk.bof or chunk.from_key in slice.keys:
+                slice.add_fetched_chunk(chunk)
+                has_slice = True
+        if not has_slice:
+            slice = Slice(self.key2element, chunk.sort_column_id)
+            slice.add_fetched_chunk(chunk)
+            self.slice_list.append(slice)
+
+    def merge_in_diff(self, diff):
+        for slice in self.slice_list:
+            slice.merge_in_diff(diff)
+
+    def pick_chunk(self, sort_column_id, key, desc_count, asc_count):
         if sort_column_id != self.sort_column_id:
             return None
         for slice in self.slice_list:
@@ -99,9 +143,3 @@ class SliceList(object):
             if chunk:
                 return chunk
         return None  # none found
-
-    def add_fetched_chunk(self, chunk):
-        if chunk.sort_column_id != self.sort_column_id: return
-        for slice in self.slice_list:
-            if chunk.from_key in slice.keys:
-                slice.add_fetched_chunk(chunk)

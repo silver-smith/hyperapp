@@ -126,7 +126,7 @@ def test_fetch_cached_elements(proxy_list_object):
     observer = mock.Mock(spec=ListObserver)
     proxy_list_object.subscribe(observer)
     proxy_list_object.server.reset_mock()
-    # second call must fetch results from cache, server must not be called
+    # second call must fetch results from cache (actual slices), server must not be called
     chunk = yield from proxy_list_object.fetch_elements('id', None, 0, 10)
     assert chunk.bof
     assert chunk.eof

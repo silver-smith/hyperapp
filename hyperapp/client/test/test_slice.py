@@ -2,7 +2,6 @@ from collections import namedtuple
 import pytest
 from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.client.list_object import ListObject
-from hyperapp.client.proxy_list_object import ChunkAlgorithm
 from hyperapp.client.slice import Slice, SliceList
 
 
@@ -27,7 +26,7 @@ def slice(keys, bof=False, eof=False):
     return Slice(key2element, sort_column_id='id', bof=bof, eof=eof, keys=list(keys))
 
 def slice_list(slices):
-    return SliceList('id', slices)
+    return SliceList({}, 'id', slices)
 
 def oslice(element_tuples, bof=False, eof=False):
     key2element = {key: element(key, order_key) for (key, order_key) in element_tuples}

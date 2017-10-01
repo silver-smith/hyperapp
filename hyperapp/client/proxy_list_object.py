@@ -7,60 +7,14 @@ from ..common.list_object import Element, Chunk, ListDiff
 from .list_object import ListObject
 from .remoting import RequestError
 from .proxy_object import RemoteCommand, ProxyObject
+from .slice import SliceList
+
 
 log = logging.getLogger(__name__)
 
 
 def register_object_implementations(registry, services):
     ProxyListObject.register(registry, services)
-
-
-class ChunkAlgorithm(object):
-
-    def merge_in_chunk(self, chunks, new_chunk):
-        if new_chunk.elements:
-            log.info('      elements[0].key=%r elements[-1].key=%r', new_chunk.elements[0].key, new_chunk.elements[-1].key)
-        for chunk in chunks:
-            if chunk.sort_column_id != new_chunk.sort_column_id: continue
-            if new_chunk.from_key == chunk.elements[-1].key:
-                assert not new_chunk.bof  # this is continuation for existing chunk, bof is not possible
-                chunk.elements.extend(new_chunk.elements)
-                chunk.eof = new_chunk.eof
-                log.info('     > merged len(elements)=%r elements[0].key=%r elements[-1].key=%r', len(chunk.elements), chunk.elements[0].key, chunk.elements[-1].key)
-                break
-            if not new_chunk.elements: continue
-            if new_chunk.elements[0].key > chunk.elements[-1].key: continue
-            if new_chunk.elements[-1].key < chunk.elements[0].key: continue
-            # now we know we have an intersection
-            assert False, 'todo: implement chunk intersections'
-        else:
-            chunks.append(new_chunk)
-            log.info('     > added')
-
-    def pick_chunk(self, chunks, sort_column_id, from_key, desc_count, asc_count):
-        for chunk in chunks:
-            if chunk.sort_column_id != sort_column_id: continue
-            if from_key == None:
-                if chunk.bof:
-                    log.info('     > bof found, len(elements)=%r', len(chunk.elements))
-                    return chunk
-                else:
-                    continue
-            log.info('       - checking len(elements)=%r elements[0].order_key=%r elements[-1].order_key=%r', len(chunk.elements), chunk.elements[0].order_key, chunk.elements[-1].order_key)
-            # here we assume sort_column_id == key_column_id, other sort order is todo:
-            if chunk.elements[0].order_key <= from_key <= chunk.elements[-1].order_key:
-                idx = bisect.bisect_left(chunk.elements, from_key)  # must be from_order_key
-                log.info('     - bisecting idx=%r', idx)
-                while chunk.elements[idx].order_key <= from_key:  # from_order_key
-                    idx += 1
-                    if chunk.elements[idx-1].key == from_key: break  # from_order_key
-                log.info('     - exact key idx=%r', idx)
-                if idx < len(chunk.elements):
-                    log.info('     > middle found idx=%r len(elements)=%r len(elements[idx:])=%r', idx, len(chunk.elements), len(chunk.elements[idx:]))
-                    idx = max(idx - desc_count, 0)
-                    return chunk.clone_with_elements(chunk.elements[idx:])
-        log.info('     > none found')
-        return None  # none found
 
 
 class ProxyListObject(ProxyObject, ListObject):
@@ -73,19 +27,21 @@ class ProxyListObject(ProxyObject, ListObject):
         ProxyObject.__init__(self, packet_types, core_types, iface_registry, cache_repository,
                              resources_manager, param_editor_registry, server, path, iface, facets)
         ListObject.__init__(self)
-        self._chunk_algorithm = ChunkAlgorithm()
-        self._chunks = []  # all chunks are stored in ascending order, guaranteed actual/up-do-date
-        self._chunks_from_cache = {}  # key_column_id -> Chunk list, chunks loaded from cache, possibly out-of-date
+        self._actual_key2element = {}
+        self._cached_key2element = {}
+        self._actual_slices = {}  # sort_column_id -> SliceList, actual, up-do-date slices
+        self._slices_from_cache = {}  # sort_column_id -> SliceList, slices loaded from cache, possibly out-of-date
         self._subscribed = False
         self._subscribe_pending = False  # subscribe method is called and response is not yet received
         self._element_commands = {command.command_id: self.remote_command_from_iface_command(command, kind='element')
                                   for command in self.iface.get_commands() if self._is_element_command(command)}
 
     def set_contents(self, contents):
-        self._log_chunks('before set_contents')
+        self._log_slices('before set_contents')
         ProxyObject.set_contents(self, contents)
         chunk = self._chunk_from_data(contents.chunk)
-        self._chunks = [chunk]
+        self._actual_slices.clear()
+        self._add_fetched_chunk(chunk)
         # set_contents call means this object is returned from server and thus already subscribed
         self._subscribed = True
 
@@ -149,77 +105,50 @@ class ProxyListObject(ProxyObject, ListObject):
     def _map_list_diff_commands(self, diff):
         return ListDiff(diff.remove_keys, diff.insert_before_key, [self._map_element_commands(element) for element in diff.elements])
 
-    def _merge_in_chunk(self, new_chunk):
-        log.info('  -- merge_in_chunk self=%r from_key=%r len(elements)=%r bof=%r', id(self), new_chunk.from_key, len(new_chunk.elements), new_chunk.bof)
-        self._chunk_algorithm.merge_in_chunk(self._chunks, new_chunk)
-        self._log_chunks('after _merge_in_chunks')
-        self._store_chunks_to_cache(new_chunk.sort_column_id)
+    def _add_fetched_chunk(self, chunk):
+        log.info('  -- add_fetched_chunk self=%r chunk=%r', id(self), chunk)
+        slice_list = self._actual_slices.setdefault(chunk.sort_column_id, SliceList(self._actual_key2element, chunk.sort_column_id))
+        slice_list.add_fetched_chunk(chunk)
+        self._log_slices('after _add_fetched_chunks')
+        self._store_slices_to_cache(chunk.sort_column_id)
 
-    def _log_chunks(self, when):
-        log.debug('  -- proxy list object %s has total %d chunks %s:', id(self), len(self._chunks), when)
-        for i, chunk in enumerate(self._chunks):
-            log.debug('    -- chunk #%d has from_key=%r bof=%r eof=%r %d elements: %s',
-                      i, chunk.from_key, chunk.bof, chunk.eof, len(chunk.elements), ', '.join(str(element.key) for element in chunk.elements))
+    def _log_slices(self, when):
+        log.debug('  -- proxy list object %s %s:', id(self), when)
+        for sort_column_id, slice_list in self._actual_slices.items():
+            log.debug('    -- sort_column_id: %r', slice_list.sort_column_id)
+            for i, slice in enumerate(slice_list.slice_list):
+                log.debug('      -- slice #%d: %r', i, slice)
 
-    def _update_chunks_with_diff(self, diff):
-        log.info('  -- update_chunks_with_diff self=%r diff: remove_keys=%r insert_before_key=%r len(elements)=%r',
-                 id(self), diff.remove_keys, diff.insert_before_key, len(diff.elements))
-        for chunk in self._chunks:
-            chunk.elements = list(filter(lambda element: element.key not in diff.remove_keys, chunk.elements))
-            if not diff.elements: continue
-            assert len(diff.elements) == 1, len(diff.elements)  # inserting more than one elements at once is not yet supported
-            new_elt =  diff.elements[0].clone_with_sort_column(chunk.sort_column_id)
-            for idx, elt in enumerate(chunk.elements):
-                order_key = elt.order_key
-                if idx == 0:
-                    if new_elt.order_key <= order_key and chunk.bof:
-                        chunk.elements.insert(0, new_elt)
-                        log.info('-- chunk with sort %r: element is inserted to begin of chunk', chunk.sort_column_id)
-                        break
-                else:
-                    prev_order_key = chunk.elements[idx - 1].order_key
-                    if prev_order_key <= new_elt.order_key <= order_key:
-                        chunk.elements.insert(idx, new_elt)
-                        log.info('-- chunk with sort %r: element is inserted at idx %d', chunk.sort_column_id, idx)
-                        break
-            if chunk.elements:
-                order_key = chunk.elements[-1].order_key
-                if new_elt.order_key > order_key and chunk.eof:
-                    chunk.elements.append(new_elt)
-                    log.info('-- chunk with sort %r: element is appended to the end of chunk', chunk.sort_column_id)
+    def _merge_in_diff(self, diff):
+        log.info('  -- merge_in_diff self=%r diff: %r', id(self), diff)
+        for slice_list in self._actual_slices.values():
+            slice_list.merge_in_diff(diff)
                     
-    def _pick_chunk(self, chunks, sort_column_id, from_key, desc_count, asc_count):
-        log.info('  -- pick_chunk self=%r sort_column_id=%r from_key=%r', id(self), sort_column_id, from_key)
-        return ChunkAlgorithm().pick_chunk(chunks, sort_column_id, from_key, desc_count, asc_count)
-
-    def _get_chunk_cache_key(self, sort_column_id):
+    def _get_slice_list_cache_key(self, sort_column_id):
         return self.make_cache_key('chunks-%s' % sort_column_id)
 
-    def _get_chunks_cache_type(self):
-        return TList(self.iface.Chunk)
+    def _store_slices_to_cache(self, sort_column_id):
+        cache_key = self._get_slice_list_cache_key(sort_column_id)
+        slice_list = self._actual_slices.get(sort_column_id)
+        if not slice_list: return
+        slice_list_data = [slice.to_data(self.iface) for slice in slice_list.slice_list]
+        self.cache_repository.store_value(cache_key, slice_list_data, SliceList.data_t(self.iface))
 
-    def _store_chunks_to_cache(self, sort_column_id):
-        key = self._get_chunk_cache_key(sort_column_id)
-        chunks = [chunk.to_data(self.iface) for chunk in self._chunks if chunk.sort_column_id == sort_column_id]
-        self.cache_repository.store_value(key, chunks, self._get_chunks_cache_type())
+    def _ensure_slices_from_cache_are_loaded(self, sort_column_id):
+        if sort_column_id in self._slices_from_cache: return  # already loaded
+        cache_key = self._get_slice_list_cache_key(sort_column_id)
+        slice_list_data = self.cache_repository.load_value(cache_key, SliceList.data_t(self.iface))
+        if not slice_list_data: return
+        self._slices_from_cache[sort_column_id] = map(self._slice_list_from_data, slice_list)
 
-    def _ensure_chunks_from_cache_loaded(self, sort_column_id):
-        if sort_column_id in self._chunks_from_cache: return  # already loaded
-        key = self._get_chunk_cache_key(sort_column_id)
-        chunk_recs = self.cache_repository.load_value(key, self._get_chunks_cache_type())
-        self._chunks_from_cache[sort_column_id] = list(map(self._chunk_from_data, chunk_recs or []))
-
-    def put_back_chunk(self, chunk):
-        log.info('-- proxy put_back_chunk self=%r len(elements)=%r', id(self), len(chunk.elements))
-        assert isinstance(chunk, Chunk), repr(chunk)
-        self._merge_in_chunk(chunk)
+    def _slice_list_from_data(self, slice_list_data):
+        assert False  # todo
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
-        log.info('-- proxy process_diff self=%r diff=%r remove_keys=%r insert_before_key=%r elements=%r',
-                 id(self), diff, diff.remove_keys, diff.insert_before_key, diff.elements)
+        log.info('-- proxy process_diff self=%r diff=%r', id(self), diff)
         mapped_diff = self._map_list_diff_commands(diff)
-        self._update_chunks_with_diff(mapped_diff)
+        self._merge_in_diff(mapped_diff)
         self._notify_diff_applied(mapped_diff)
 
     def get_columns(self):
@@ -232,21 +161,25 @@ class ProxyListObject(ProxyObject, ListObject):
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r desc_count=%r asc_count=%r',
                  id(self), self._subscribed, from_key, desc_count, asc_count)
-        chunk = self._pick_chunk(self._chunks, sort_column_id, from_key, desc_count, asc_count)
+        actual_slice_list = self._actual_slices.get(sort_column_id)
+        chunk = None
+        if actual_slice_list:
+            chunk = actual_slice_list.pick_chunk(sort_column_id, from_key, desc_count, asc_count)
         if chunk:
-            log.info('   > from object: %r', chunk)
+            log.info('   > actual: %r', chunk)
             # return result even if it is stale, for faster gui response, will refresh when server response will be available
             self._notify_fetch_result(chunk)
-            if self._subscribed:  # otherwise our _chunks may already be outdated, need to subscribe and refetch anyway
+            if self._subscribed:  # otherwise our _actual_slices may already be outdated, need to subscribe and refetch anyway
                 return chunk
         else:
-            self._ensure_chunks_from_cache_loaded(sort_column_id)
-            cached_chunks = self._chunks_from_cache.get(sort_column_id, [])
-            chunk = self._pick_chunk(cached_chunks, sort_column_id, from_key, desc_count, asc_count)
-            if chunk:
-                log.info('   > from cache, len(elements)=%r', len(chunk.elements))
-                self._notify_fetch_result(chunk)
-                # and subscribe/fetch anyway
+            self._ensure_slices_from_cache_are_loaded(sort_column_id)
+            cached_slice_list = self._slices_from_cache.get(sort_column_id)
+            if cached_slice_list:
+                chunk = cached_slice_list.pick_chunk(sort_column_id, from_key, desc_count, asc_count)
+                if chunk:
+                    log.info('   > cached: %r', chunk)
+                    self._notify_fetch_result(chunk)
+                    # and subscribe/fetch anyway
         log.info('-- proxy fetch_elements: not found or not subscribed, requesting')
         subscribing_now = not self._subscribed and not self._subscribe_pending
         command_id = 'subscribe_and_fetch_elements' if subscribing_now else 'fetch_elements'
@@ -255,10 +188,9 @@ class ProxyListObject(ProxyObject, ListObject):
             self._subscribe_pending = True
         try:
             result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
-            log.debug('-- proxy_list_object.fetch_elements result: self=%s, chunk: %r', id(self), chunk)
+            log.debug('-- proxy_list_object.fetch_elements result (self=%s): %r', id(self), result)
         except RequestError as x:
             log.warning('Error fetching elements from remote object; will use cached (%s)' % x)
-            self._notify_fetch_result(chunk)
             return chunk
         if subscribing_now:
             self._subscribe_pending = False
@@ -269,7 +201,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _process_fetch_elements_result(self, result):
         chunk = self._chunk_from_data(result.chunk)
-        self._merge_in_chunk(chunk)
+        self._add_fetched_chunk(chunk)
         self._notify_fetch_result(chunk)
         return chunk
 
