@@ -67,11 +67,15 @@ test_iface = ListInterface('test_iface', columns=[Column('id', type=tInt, is_key
 
 class StubCacheRepository(object):
 
+    def __init__(self):
+        self._map = {}
+
     def load_value(self, key, t):
-        return []
+        return self._map.get(tuple(key))
 
     def store_value(self, key, value, t):
         assert isinstance(value, t), repr(value)
+        self._map[tuple(key)] = value
 
 
 @pytest.fixture

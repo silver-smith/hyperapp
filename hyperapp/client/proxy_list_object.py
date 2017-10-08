@@ -132,16 +132,14 @@ class ProxyListObject(ProxyObject, ListObject):
         slice_list = self._actual_slices.get(sort_column_id)
         if not slice_list: return
         self.cache_repository.store_value(cache_key, slice_list.to_data(self.iface), SliceList.data_t(self.iface))
+        self._cached_key2element.update(self._actual_key2element)
 
     def _ensure_slices_from_cache_are_loaded(self, sort_column_id):
         if sort_column_id in self._slices_from_cache: return  # already loaded
         cache_key = self._get_slice_list_cache_key(sort_column_id)
         slice_list_data = self.cache_repository.load_value(cache_key, SliceList.data_t(self.iface))
         if not slice_list_data: return
-        self._slices_from_cache[sort_column_id] = self._slice_list_from_data(slice_list_data)
-
-    def _slice_list_from_data(self, slice_list_data):
-        assert False  # todo
+        self._slices_from_cache[sort_column_id] = SliceList.from_data(self._cached_key2element, slice_list_data)
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)

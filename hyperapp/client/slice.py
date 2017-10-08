@@ -16,6 +16,10 @@ class Slice(object):
             Field('keys', TList(iface.get_key_type())),
             ])
 
+    @classmethod
+    def from_data(cls, key2element, data):
+        return cls(key2element, data.sort_column_id, data.bof, data.eof, data.keys)
+
     def __init__(self, key2element, sort_column_id, bof=False, eof=False, keys=None):
         self.key2element = key2element
         self.sort_column_id = sort_column_id
@@ -106,6 +110,10 @@ class SliceList(object):
             Field('sort_column_id', tString),
             Field('slice_list', TList(Slice.data_t(iface))),
             ])
+
+    @classmethod
+    def from_data(cls, key2element, data):
+        return cls(key2element, data.sort_column_id, [Slice.from_data(key2element, slice_data) for slice_data in data.slice_list])
 
     def __init__(self, key2element, sort_column_id, slice_list=None):
         self.key2element = key2element
