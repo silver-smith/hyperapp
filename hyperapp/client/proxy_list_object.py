@@ -82,14 +82,14 @@ class ProxyListObject(ProxyObject, ListObject):
             return (yield from ProxyObject.run_remote_command(self, command_id, *args, **kw))
 
     def _chunk_from_data(self, rec):
-        key_column_id = self.get_key_column_id()
-        elements = [self._element_from_data(key_column_id, rec.sort_column_id, elt) for elt in rec.elements]
+        elements = [self._element_from_data(elt, rec.sort_column_id) for elt in rec.elements]
         return Chunk(rec.sort_column_id, rec.from_key, elements, rec.bof, rec.eof)
 
-    def _list_diff_from_data(self, key_column_id, rec):
-        return ListDiff(rec.remove_keys, rec.insert_before_key, [self._element_from_data(key_column_id, None, elt) for elt in rec.elements])
+    def _list_diff_from_data(self, rec):
+        key_column_id = self.get_key_column_id()
+        return ListDiff(rec.remove_keys, rec.insert_before_key, [self._element_from_data(elt) for elt in rec.elements])
 
-    def _element_from_data(self, key_column_id, sort_column_id, rec):
+    def _element_from_data(self, rec, sort_column_id=None):
         element = Element.from_data(self.iface, rec)
         if sort_column_id is None:
             order_key = None
@@ -127,15 +127,24 @@ class ProxyListObject(ProxyObject, ListObject):
     def _get_slice_list_cache_key(self, sort_column_id):
         return self.make_cache_key('chunks-%s' % sort_column_id)
 
+    def _get_elements_cache_key(self):
+        return self.make_cache_key('elements')
+
     def _store_slices_to_cache(self, sort_column_id):
         cache_key = self._get_slice_list_cache_key(sort_column_id)
         slice_list = self._actual_slices.get(sort_column_id)
         if not slice_list: return
         self.cache_repository.store_value(cache_key, slice_list.to_data(self.iface), SliceList.data_t(self.iface))
         self._cached_key2element.update(self._actual_key2element)
+        cached_elements_data = [element.to_data(self.iface) for element in self._cached_key2element.values()]
+        self.cache_repository.store_value(self._get_elements_cache_key(), cached_elements_data, TList(self.iface.Element))
 
     def _ensure_slices_from_cache_are_loaded(self, sort_column_id):
         if sort_column_id in self._slices_from_cache: return  # already loaded
+        cached_elements_data = self.cache_repository.load_value(self._get_elements_cache_key(), TList(self.iface.Element))
+        cached_elements = [self._element_from_data(data) for data in cached_elements_data or []]
+        self._cached_key2element.update({
+            element.key: element for element in cached_elements})
         cache_key = self._get_slice_list_cache_key(sort_column_id)
         slice_list_data = self.cache_repository.load_value(cache_key, SliceList.data_t(self.iface))
         if not slice_list_data: return
