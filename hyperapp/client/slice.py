@@ -1,4 +1,5 @@
 import bisect
+from ..common.util import memoize
 from ..common.htypes import tString, tBool, Field, TRecord, TList, ListInterface
 from ..common.list_object import Chunk
 
@@ -6,6 +7,7 @@ from ..common.list_object import Chunk
 class Slice(object):
 
     @staticmethod
+    @memoize
     def data_t(iface):
         return TRecord([
             Field('sort_column_id', tString),
@@ -98,6 +100,7 @@ class Slice(object):
 class SliceList(object):
 
     @staticmethod
+    @memoize
     def data_t(iface):
         return TRecord([
             Field('sort_column_id', tString),

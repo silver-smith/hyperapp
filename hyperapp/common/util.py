@@ -1,9 +1,23 @@
+import functools
 import itertools
 from dateutil.tz import tzutc, tzlocal
 
 
 DATETIME_FORMAT = '%d.%m.%Y %H:%M:%S'
 
+
+# https://wiki.python.org/moin/PythonDecoratorLibrary
+# note that this decorator ignores **kwargs
+def memoize(obj):
+    cache = obj.cache = {}
+ 
+    @functools.wraps(obj)
+    def memoizer(*args, **kwargs):
+        if args not in cache:
+            cache[args] = obj(*args, **kwargs)
+        return cache[args]
+    return memoizer
+  
 
 class cached_property(object):
     'Turns decorated method into caching property (method is called once on first access to property).'

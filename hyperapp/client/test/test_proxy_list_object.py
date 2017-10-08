@@ -64,10 +64,18 @@ def server():
 
 test_iface = ListInterface('test_iface', columns=[Column('id', type=tInt, is_key=True)])
 
+
+class StubCacheRepository(object):
+
+    def load_value(self, key, t):
+        return []
+
+    def store_value(self, key, value, t):
+        assert isinstance(value, t), repr(value)
+
+
 @pytest.fixture
 def proxy_list_object(services, server):
-    cache_repository = mock.Mock()
-    cache_repository.load_value.return_value = []
     resources_manager = mock.Mock()
     resources_manager.resove.return_value = None
     param_editor_registry = mock.Mock()
@@ -76,7 +84,7 @@ def proxy_list_object(services, server):
         services.types.packet,
         services.types.core,
         services.iface_registry,
-        cache_repository,
+        StubCacheRepository(),
         resources_manager,
         param_editor_registry,
         server,
