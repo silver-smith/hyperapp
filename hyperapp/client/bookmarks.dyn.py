@@ -116,7 +116,7 @@ class BookmarkList(ListObject):
 
 def make_bookmark_list(key=None):
     object = BookmarkList.get_state()
-    return bookmark_list_handle_type('list', object, ['client_module', 'bookmarks', 'BookmarkList'], sort_column_id='name', key=key)
+    return bookmark_list_handle_type('list', object, ['client_module', 'bookmarks', 'BookmarkList'], sort_column_id='id', key=key)
 
 
 class ThisModule(Module):
