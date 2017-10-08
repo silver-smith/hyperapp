@@ -37,6 +37,9 @@ class TPrimitive(Type):
     def __eq__(self, other):
         return isinstance(other, TPrimitive) and other.type_name == self.type_name
 
+    def __hash__(self):
+        return hash(self.type_name)
+
     def __instancecheck__(self, value):
         return isinstance(value, self.get_type())
 

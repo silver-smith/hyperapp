@@ -52,6 +52,9 @@ class Column(object):
                 other.type == self.type and
                 other.is_key == self.is_key)
 
+    def __hash__(self):
+        return hash((self.id, self.type, self.is_key))
+
 
 tColumn = TRecord([
     Field('id', tString),
@@ -136,6 +139,12 @@ class ListInterface(Interface):
                 Interface.__eq__(self, other) and
                 other._columns == self._columns and
                 other._key_column_id == self._key_column_id)
+
+    def __hash__(self):
+        return hash((
+            tuple(self._columns),
+            self._key_column_id,
+            ))
 
     def _pick_key_column_id(self):
         key_column_id = None

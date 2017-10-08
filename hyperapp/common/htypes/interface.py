@@ -111,6 +111,15 @@ class Interface(object):
                 other.diff_type == self.diff_type and
                 other._unbound_commands == self._unbound_commands)
 
+    def __hash__(self):
+        return hash((
+            self.iface_id,
+            self.base,
+            tuple(self._contents_fields),
+            self.diff_type,
+            tuple(self._unbound_commands),
+            ))
+
     def get_object_type(self):
         return self._object_t
 
