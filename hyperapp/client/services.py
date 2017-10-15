@@ -56,6 +56,7 @@ class Services(ServicesBase):
                 'splitter',
                 'form',
                 'text_object_types',
+                'hyper_ref',
             ])
         self.objimpl_registry = ObjImplRegistry()
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
@@ -105,6 +106,7 @@ class Services(ServicesBase):
                 'narrower',
                 'bookmarks',
                 'categorized_list_view',
+                'href_redirect_handle',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
