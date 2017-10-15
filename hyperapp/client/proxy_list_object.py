@@ -87,7 +87,7 @@ class ProxyListObject(ProxyObject, ListObject):
 
     def _list_diff_from_data(self, rec):
         key_column_id = self.get_key_column_id()
-        return ListDiff(rec.remove_keys, rec.insert_before_key, [self._element_from_data(elt) for elt in rec.elements])
+        return ListDiff(rec.remove_keys, [self._element_from_data(elt) for elt in rec.elements])
 
     def _element_from_data(self, rec, sort_column_id=None):
         element = Element.from_data(self.iface, rec)
@@ -103,7 +103,7 @@ class ProxyListObject(ProxyObject, ListObject):
                        order_key)
 
     def _map_list_diff_commands(self, diff):
-        return ListDiff(diff.remove_keys, diff.insert_before_key, [self._map_element_commands(element) for element in diff.elements])
+        return ListDiff(diff.remove_keys, [self._map_element_commands(element) for element in diff.elements])
 
     def _add_fetched_chunk(self, chunk):
         log.info('  -- add_fetched_chunk self=%r chunk=%r', id(self), chunk)

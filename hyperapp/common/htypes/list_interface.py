@@ -102,7 +102,6 @@ def element_type(row_t):
 def diff_type(key_t, element_t):
     return TRecord([
         Field('remove_keys', TList(key_t)),
-        Field('insert_before_key', TOptional(key_t)),  # insert elements before this key, None to append at the end;
         Field('elements', TList(element_t)),
         ])
 
