@@ -14,7 +14,7 @@ class Type(object):
     def __instancecheck__(self, value):
         raise NotImplementedError(self.__class__)
 
-    def to_data(self):
+    def instance_hash(self, value):
         raise NotImplementedError(self.__class__)
         
     def expect(self, path, value, name, expr):
@@ -42,6 +42,9 @@ class TPrimitive(Type):
 
     def __instancecheck__(self, value):
         return isinstance(value, self.get_type())
+
+    def instance_hash(self, value):
+        return hash(value)
 
     def get_type(self):
         return self.type
@@ -95,6 +98,12 @@ class TOptional(Type):
     def __instancecheck__(self, value):
         return value is None or isinstance(value, self.base_t)
 
+    def instance_hash(self, value):
+        if value is None:
+            return hash(value)
+        else:
+            return self.base_t.instance_hash(value)
+
 
 class Field(object):
 
@@ -138,7 +147,7 @@ class Record(object):
                 [getattr(other, field.name) for field in self._type.fields])
 
     def __hash__(self):
-        return hash(id(self))  # todo: add Type.hash, converting lists to tuples
+        return self._type.instance_hash(self)
     
 
 class TRecord(Type):
@@ -179,6 +188,9 @@ class TRecord(Type):
         if not isinstance(rec, Record):
             return False
         return issubclass(rec._type, self)
+
+    def instance_hash(self, value):
+        return hash(tuple(field.type.instance_hash(getattr(value, field.name)) for field in self.fields))
 
     def adopt_args(self, args, kw, check_unexpected=True):
         path = '<Record>'
@@ -235,6 +247,9 @@ class TList(Type):
 
     def __instancecheck__(self, value):
         return is_list_inst(value, self.element_t)
+
+    def instance_hash(self, value):
+        return hash(tuple(self.element_t.instance_hash(element) for element in value))
 
 
 class TIndexedList(TList):

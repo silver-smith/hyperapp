@@ -11,6 +11,9 @@ class EncodableEmbedded(object):
         self.type = t
         self.value = value
 
+    def __hash__(self):
+        return hash((self.type, self.value))
+
     def encode(self, encoding):
         return packet_coders.encode(encoding, self.value, self.type)
 
@@ -23,6 +26,9 @@ class DecodableEmbedded(object, metaclass=abc.ABCMeta):
 
     def __init__(self, data):
         self.data = data
+
+    def __hash__(self):
+        return hash(self.data)
 
     @abc.abstractmethod
     def decode(self, t):
@@ -39,6 +45,9 @@ class TEmbedded(Type):
 
     def __instancecheck__(self, value):
         return isinstance(value, (EncodableEmbedded, DecodableEmbedded))
+
+    def instance_hash(self, value):
+        return hash(value)
 
 
 tEmbedded = TEmbedded()

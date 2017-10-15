@@ -118,6 +118,9 @@ class THierarchy(Type):
             return False
         return rec._class.hierarchy is self
 
+    def instance_hash(self, rec):
+        return hash((rec._class_id, hash(rec)))  # class_id + fields
+
     def resolve(self, class_id):
         assert isinstance(class_id, str), repr(class_idid)
         assert class_id in self.registry, ('Unknown hierarchy %r class id: %r. Known are: %r, hierarchy id = %r'
