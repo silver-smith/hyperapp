@@ -1,7 +1,9 @@
 import logging
 import asyncio
+import traceback
 from .registry import Registry
 from .view import View
+from .error_handler_hook import get_handle_for_error
 
 log = logging.getLogger(__name__)
 
@@ -28,8 +30,12 @@ class ViewRegistry(Registry):
         for i in range(MAX_REDIRECT_COUNT):
             rec = self._resolve(handle.view_id)
             log.info('producing view %r using %s(%s, %s)', handle.view_id, rec.factory, rec.args, rec.kw)
-            view_or_handle = yield from rec.factory(locale, handle, parent, *rec.args, **rec.kw)
-            assert isinstance(view_or_handle, (self._core_types.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
+            try:
+                view_or_handle = yield from rec.factory(locale, handle, parent, *rec.args, **rec.kw)
+                assert isinstance(view_or_handle, (self._core_types.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
+            except Exception as x:
+                traceback.print_exc()
+                view_or_handle = get_handle_for_error(x)
             if isinstance(view_or_handle, View):
                 view_or_handle.init(self._module_registry)
                 return view_or_handle
