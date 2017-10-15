@@ -1,0 +1,12 @@
+from core import handle, view_handle
+
+
+multihash = record:
+    algorighm: string
+    hash: binary
+
+href = multihash
+
+
+href_redirect_handle = handle class href_redirect(view_handle):
+    href: href

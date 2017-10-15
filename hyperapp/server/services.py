@@ -42,6 +42,7 @@ class Services(ServicesBase):
                 'test_list',
                 'text_object_types',
                 'exception_test',
+                'hyper_ref',
                 ])
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)
         self.modules = self.module_manager.modules
@@ -83,6 +84,7 @@ class Services(ServicesBase):
                 'simple_text_object',
                 'sample_list',
                 'exception_test',
+                'hyperref_test',
                 ]:
             fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
