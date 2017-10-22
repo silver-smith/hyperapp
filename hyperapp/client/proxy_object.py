@@ -3,6 +3,7 @@ import asyncio
 import uuid
 import weakref
 import codecs
+import re
 from ..common.util import is_list_inst, encode_path
 from ..common.htypes import (
     IfaceCommand,
@@ -231,7 +232,10 @@ class ProxyObject(Object):
         return self.make_cache_key('commands')
 
     def make_cache_key(self, name):
-        return [self.objimpl_id, self.server.public_key.get_id_hex()] + self.path + [name]
+        return [self.objimpl_id, self.server.public_key.get_id_hex()] + list(map(self._quote_name, self.path)) + [name]
+
+    def _quote_name(self, name):
+        return re.sub(r'[^%s]' % self.cache_repository.allowed_chars_pattern, '-', name)
 
     def _get_commands_cache_type(self):
         return TList(tCommand)

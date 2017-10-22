@@ -48,7 +48,7 @@ class Slice(object):
             start_idx = 0
             self.bof = True
         else:
-            assert chunk.from_key is not None and chunk.from_key in self.keys, repr(chunk.from_key)  # valid from_key is expected for non-bof chunks
+            assert chunk.from_key is not None and chunk.from_key in self.keys, repr((chunk.from_key, self.keys))  # valid from_key is expected for non-bof chunks
             start_idx = self.keys.index(chunk.from_key) + 1
         # elements after this chunk are removed from self.keys
         self.keys = self.keys[:start_idx] + [element.key for element in chunk.elements]
