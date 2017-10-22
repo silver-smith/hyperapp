@@ -13,6 +13,7 @@ from hyperapp.common.identity import PublicKey
 from hyperapp.common.services import ServicesBase
 from hyperapp.client.request import Request
 from hyperapp.client.server import Server
+from hyperapp.client.cache_repository import CacheRepository
 from hyperapp.client.list_object import ListObserver
 from hyperapp.client.proxy_list_object import ProxyListObject
 
@@ -65,7 +66,7 @@ def server():
 test_iface = ListInterface('test_iface', columns=[Column('id', type=tInt, is_key=True)])
 
 
-class StubCacheRepository(object):
+class StubCacheRepository(CacheRepository):
 
     def __init__(self):
         self._map = {}
