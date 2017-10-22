@@ -6,7 +6,6 @@ import time
 from types import SimpleNamespace
 from hyperapp.common.identity import Identity
 from hyperapp.server.services import Services
-from hyperapp.server.tcp_server import TcpServer
 
 log = logging.getLogger(__name__)
 
@@ -29,16 +28,15 @@ def main():
     identity = Identity.load_from_file(args.identity_fpath)
     start_args = SimpleNamespace(identity=identity, addr=args.addr, test_delay=args.test_delay)
     services = Services(start_args)
-    tcp_server = TcpServer.create(services, start_args)
     management_url = services.modules.server_management.get_management_url(services.server.get_public_key())
-    url_with_routes = management_url.clone_with_routes(tcp_server.get_routes())
+    url_with_routes = management_url.clone_with_routes(services.tcp_server.get_routes())
     log.info('Management url: %s', url_with_routes.to_str())
-    tcp_server.start()
+    services.start()
     try:
-        while tcp_server.is_running:
+        while services.is_running:
             time.sleep(0.3)
     finally:
-        tcp_server.stop()
+        services.stop()
 
 
 main()

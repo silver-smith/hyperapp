@@ -8,6 +8,7 @@ from . import ponyorm_module
 from . import route_storage
 from .remoting import Remoting
 from .server import Server
+from .tcp_server import TcpServer
 from . import tcp_transport
 from . import encrypted_transport
 from .resources_loader import ResourcesLoader
@@ -58,7 +59,18 @@ class Services(ServicesBase):
         self.module_registry.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository())
         self.remoting = Remoting(self.iface_registry)
+        self.tcp_server = TcpServer.create(self, start_args)
         self._register_transports()
+
+    def start(self):
+        self.tcp_server.start()
+
+    @property
+    def is_running(self):
+        return self.tcp_server.is_running
+
+    def stop(self):
+        self.tcp_server.stop()
 
     def _register_static_modules(self):
         for module in [
