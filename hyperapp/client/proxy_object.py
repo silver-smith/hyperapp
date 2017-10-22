@@ -83,8 +83,8 @@ class ProxyObject(Object):
                           services.cache_repository, services.resources_manager, services.param_editor_registry)
 
     @classmethod
-    def from_state( cls, state, packet_types, core_types, iface_registry, remoting,
-                    proxy_registry, cache_repository, resources_manager, param_editor_registry ):
+    def from_state(cls, state, packet_types, core_types, iface_registry, remoting,
+                   proxy_registry, cache_repository, resources_manager, param_editor_registry):
         assert isinstance(state, core_types.proxy_object), repr(state)
         server_public_key = PublicKey.from_der(state.public_key_der)
         server = Server.from_public_key(remoting, server_public_key)
@@ -98,8 +98,8 @@ class ProxyObject(Object):
 
     # we avoid making proxy objects with same server+path
     @classmethod
-    def produce_obj( cls, packet_types, core_types, iface_registry, proxy_registry, cache_repository,
-                     resources_manager, param_editor_registry, server, path, iface, facets ):
+    def produce_obj(cls, packet_types, core_types, iface_registry, proxy_registry, cache_repository,
+                    resources_manager, param_editor_registry, server, path, iface, facets):
         object = proxy_registry.resolve(server, path)
         if object is not None:
             log.info('> proxy object is resolved from registry: %r', id(object))
@@ -110,8 +110,8 @@ class ProxyObject(Object):
         log.info('< proxy object is registered in registry: %r', id(object))
         return object
 
-    def __init__( self, packet_types, core_types, iface_registry, cache_repository,
-                  resources_manager, param_editor_registry, server, path, iface, facets=None ):
+    def __init__(self, packet_types, core_types, iface_registry, cache_repository,
+                 resources_manager, param_editor_registry, server, path, iface, facets=None):
         assert is_list_inst(path, str), repr(path)
         assert isinstance(iface, Interface), repr(iface)
         assert facets is None or is_list_inst(facets, Interface), repr(facets)
