@@ -55,11 +55,11 @@ class Services(ServicesBase):
                                                 client_modules_resources_dir=self.dynamic_module_dir)
         self._register_static_modules()
         self.server = Server.create(self, start_args)
-        self._load_server_modules()
-        self.module_registry.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository())
         self.remoting = Remoting(self.iface_registry)
         self.tcp_server = TcpServer.create(self, start_args)
+        self._load_server_modules()
+        self.module_registry.init_phases()
         self._register_transports()
 
     def start(self):
@@ -99,6 +99,7 @@ class Services(ServicesBase):
                 'sample_list',
                 'exception_test',
                 'hyperref_test',
+                'href_resolver',
                 ]:
             fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
