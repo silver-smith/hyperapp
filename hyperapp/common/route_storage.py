@@ -20,13 +20,10 @@ class RouteRepository(object, metaclass=abc.ABCMeta):
 
 class RouteStorage(object):
 
-    instance = None  # todo: remove globals
-
     def __init__(self, repository):
         assert isinstance(repository, RouteRepository), repr(repository)
         self._repository = repository
         self._server_id2routes = dict((pk.get_id(), routes) for (pk, routes) in self._repository.enumerate())
-        self.__class__.instance = self
 
     def add_routes(self, public_key, routes):
         assert isinstance(public_key, PublicKey), repr(public_key)
