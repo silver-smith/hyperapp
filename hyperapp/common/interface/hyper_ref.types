@@ -2,7 +2,7 @@ from core import handle, view_handle
 
 
 multihash = record:
-    algorighm: string
+    algorithm: string
     hash: binary
 
 href = multihash
@@ -10,3 +10,11 @@ href = multihash
 
 href_redirect_handle = handle class href_redirect(view_handle):
     href: href
+
+
+href_data = hierarchy href_data
+
+
+href_resolver = interface href_resolver:
+    commands:
+        request resolve_href (href: href) -> (href_data: href_data)

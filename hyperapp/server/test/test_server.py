@@ -1,6 +1,7 @@
 import os
 import logging
 import unittest
+from types import SimpleNamespace
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from hyperapp.common.htypes import (

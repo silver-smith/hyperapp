@@ -1,4 +1,4 @@
-# server management module: used to expose module commands in one list
+# server management module: used to expose commands from all modules in one list
 
 from ..common.interface import core as core_types
 from ..common.interface import server_management as server_management_types

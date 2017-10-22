@@ -7,6 +7,7 @@ from .module import ModuleRegistry
 from . import ponyorm_module
 from . import route_storage
 from .remoting import Remoting
+from .server import Server
 from . import tcp_transport
 from . import encrypted_transport
 from .resources_loader import ResourcesLoader
@@ -19,7 +20,7 @@ DYN_MODULE_EXT = '.dyn.py'
 
 class Services(ServicesBase):
 
-    def __init__(self):
+    def __init__(self, start_args):
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
@@ -52,6 +53,7 @@ class Services(ServicesBase):
                                                 iface_resources_dir=self.server_dir,
                                                 client_modules_resources_dir=self.dynamic_module_dir)
         self._register_static_modules()
+        self.server = Server.create(self, start_args)
         self._load_server_modules()
         self.module_registry.init_phases()
         self.route_storage = RouteStorage(route_storage.DbRouteRepository())

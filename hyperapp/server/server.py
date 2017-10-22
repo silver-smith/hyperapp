@@ -13,6 +13,17 @@ log = logging.getLogger(__name__)
 
 class Server(object):
 
+    @classmethod
+    def create(cls, services, start_args):
+        return cls(
+            services.types.packet,
+            services.types.core,
+            services.module_registry,
+            services.iface_registry,
+            start_args.identity,
+            start_args.test_delay,
+            )
+
     def __init__(self, packet_types, core_types, module_registry, iface_registry, identity, test_delay_sec=None):
         assert isinstance(identity, Identity), repr(identity)
         self._packet_types = packet_types

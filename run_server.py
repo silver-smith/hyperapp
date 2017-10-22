@@ -2,9 +2,9 @@
 
 import logging
 import argparse
+from types import SimpleNamespace
 from hyperapp.common.identity import Identity
 from hyperapp.server.services import Services
-from hyperapp.server.server import Server
 from hyperapp.server.tcp_server import TcpServer
 
 log = logging.getLogger(__name__)
@@ -32,10 +32,10 @@ def main():
 
     identity = Identity.load_from_file(args.identity_fpath)
     host, port = parse_addr(args.addr)
-    services = Services()
-    server = Server(services.types.packet, services.types.core, services.module_registry, services.iface_registry, identity, args.test_delay)
-    tcp_server = TcpServer(services.remoting, server, host, port)
-    management_url = services.modules.server_management.get_management_url(server.get_public_key())
+    start_args = SimpleNamespace(identity=identity, test_delay=args.test_delay)
+    services = Services(start_args)
+    tcp_server = TcpServer(services.remoting, services.server, host, port)
+    management_url = services.modules.server_management.get_management_url(services.server.get_public_key())
     url_with_routes = management_url.clone_with_routes(tcp_server.get_routes())
     log.info('Management url: %s', url_with_routes.to_str())
     tcp_server.run()
