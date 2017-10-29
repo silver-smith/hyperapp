@@ -14,6 +14,7 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._href_resolver = services.href_resolver
+        self._href_object_registry = services.href_object_registry
         self._iface_registry = services.iface_registry
         self._remoting = services.remoting
 
@@ -22,3 +23,8 @@ class ThisModule(Module):
         href = handle.href
         object = yield from self._href_resolver.resolve_href(href)
         assert object, repr(object)
+        print(repr(object))
+        handle = self._href_object_registry.resolve(object)
+        assert handle, repr(handle)
+        print(repr(handle))
+        return handle
