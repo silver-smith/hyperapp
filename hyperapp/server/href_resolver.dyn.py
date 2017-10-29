@@ -44,7 +44,9 @@ class ThisModule(module_mod.Module):
         url = Url(HRefResolver.iface, public_key, HRefResolver.get_path())
         url_with_routes = url.clone_with_routes(self._tcp_server.get_routes())
         url_path = os.path.expanduser(HREF_RESOLVER_URL_PATH)
-        os.makedirs(os.path.dirname(url_path))
+        common_dir = os.path.dirname(url_path)
+        if not os.path.isdir(common_dir):
+            os.makedirs(common_dir)
         with open(url_path, 'w') as f:
             f.write(url_with_routes.to_str())
         log.info('HRef resolver url is saved to: %s', url_path)

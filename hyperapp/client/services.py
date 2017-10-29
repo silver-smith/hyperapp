@@ -106,6 +106,8 @@ class Services(ServicesBase):
                 'narrower',
                 'bookmarks',
                 'categorized_list_view',
+                'remoting_proxy',
+                'href_resolver',
                 'href_redirect_handle',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)

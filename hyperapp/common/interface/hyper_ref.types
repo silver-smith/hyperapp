@@ -12,9 +12,9 @@ href_redirect_handle = handle class href_redirect(view_handle):
     href: href
 
 
-href_data = hierarchy href_data
+href_object = hierarchy href_object
 
 
 href_resolver = interface href_resolver:
     commands:
-        request resolve_href (href: href) -> (href_data: href_data)
+        request resolve_href (href: href) -> (href_object: href_object)
