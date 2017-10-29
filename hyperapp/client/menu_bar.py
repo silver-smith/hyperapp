@@ -3,7 +3,6 @@ import weakref
 from PySide import QtCore, QtGui
 from .util import make_action, make_async_action
 from .command import Command, WindowCommand
-from .module import Module
 
 log = logging.getLogger(__name__)
 
