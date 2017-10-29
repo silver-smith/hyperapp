@@ -6,15 +6,29 @@ multihash = record:
     hash: binary
 
 href = multihash
+href_object = hierarchy href_object
 
 
 href_redirect_handle = handle class href_redirect(view_handle):
     href: href
 
 
-href_object = hierarchy href_object
-
-
 href_resolver = interface href_resolver:
     commands:
         request resolve_href (href: href) -> (href_object: href_object)
+
+
+service_ref = multihash
+service_object = hierarchy service_object
+
+
+fs_service_object = service_object class fs_service:
+    remote_url: url
+
+host_id = string
+
+fs_ref = href_object class fs_ref:
+    fs_service: service_ref
+    host: host_id
+    path: string list
+    current_file_name: string

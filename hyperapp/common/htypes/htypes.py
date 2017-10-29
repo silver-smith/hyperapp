@@ -142,6 +142,7 @@ class Record(object):
             '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields))
 
     def __eq__(self, other):
+        assert isinstance(other, Record), repr(other)
         return (self._type is other._type and
                 [getattr(self,  field.name) for field in self._type.fields] ==
                 [getattr(other, field.name) for field in self._type.fields])

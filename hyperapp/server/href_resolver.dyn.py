@@ -1,8 +1,9 @@
 import logging
 import os
 import os.path
-from ..common.interface import hyper_ref as hyper_ref_types
+from ..common.interface import hyper_ref as href_types
 from ..common.url import Url
+from .command import command
 from .object import Object
 from . import module as module_mod
 
@@ -17,7 +18,7 @@ HREF_RESOLVER_URL_PATH = '~/.local/share/hyperapp/common/href_resolver.url'
 
 class HRefResolver(Object):
 
-    iface = hyper_ref_types.href_resolver
+    iface = href_types.href_resolver
     class_name = HREF_RESOLVER_CLASS_NAME
 
     @classmethod
@@ -30,6 +31,19 @@ class HRefResolver(Object):
     def resolve(self, path):
         path.check_empty()
         return self
+
+    @command('resolve_href')
+    def command_resolve_href(self, request):
+        href = request.params.href
+        assert href == href_types.href('sha256', b'test-fs-href'), repr(href)  # the only href currently supported
+        fs_service_ref = href_types.service_ref('sha256', b'test-fs-service-ref')
+        object = href_types.fs_ref(
+            fs_service=fs_service_ref,
+            host='localhost',
+            path=['usr', 'share'],
+            current_file_name='dpkg',
+            )
+        return request.make_response_result(href_object=object)
 
 
 class ThisModule(module_mod.Module):
