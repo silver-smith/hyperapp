@@ -109,6 +109,7 @@ class Services(ServicesBase):
                 'remoting_proxy',
                 'href_resolver',
                 'href_redirect_handle',
+                'fs',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
