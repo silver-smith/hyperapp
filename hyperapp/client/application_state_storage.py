@@ -121,7 +121,11 @@ class ApplicationStateStorage(object):
             log.warning('Unable to load latest modules and resources, using cached ones: %s' % x)
         self._module_manager.load_code_module_list(code_modules)
         self._resources_manager.register(resources)
-        return state.state.decode(self._state_type)
+        try:
+            return state.state.decode(self._state_type)
+        except DecodeError as x:
+            log.info('Error decoding %r: %r', STATE_FILE_PATH, x)
+            return None
 
     def _load_state_file(self, t, path):
         try:
