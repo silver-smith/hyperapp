@@ -1,10 +1,12 @@
 import asyncio
 from ..common.htypes import tInt, tString, Column, list_handle_type
+from ..common.url import Url
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
 from .module import Module
 from .list_object import ListObject
+from .proxy_list_object_ import ProxyListObject
 
 
 class FsDirObject(ListObject):
@@ -12,16 +14,19 @@ class FsDirObject(ListObject):
     objimpl_id = 'fs_dir'
 
     @classmethod
-    def from_state(cls, state):
-        return cls(state.host, state.path)
+    def from_state(cls, state, iface_registry):
+        dir_url = Url.from_data(iface_registry, state.dir_url)
+        return cls(dir_url, state.host, state.path)
 
-    def __init__(self, host, path):
+    def __init__(self, dir_url, host, path):
         ListObject.__init__(self)
+        self._dir_url = dir_url
         self._host = host
         self._path = path
+        self._proxy = ProxyListObject(self._dir_url)
 
     def get_state(self):
-        return fs_types.fs_dir_object(self.objimpl_id, self._host, self._path)
+        return fs_types.fs_dir_object(self.objimpl_id, self._dir_url.to_data(), self._host, self._path)
 
     def get_title(self):
         return '%s:%s' % (self._host, '/'.join(self._path))
@@ -51,11 +56,15 @@ class FsDirObject(ListObject):
 
 class FsService(object):
 
-    def __init__(self, remote_url):
-        self._remote_url = remote_url
+    def __init__(self, service_url):
+        assert isinstance(service_url, Url), repr(service_url)
+        self._service_url = service_url
 
     def resolve_fs_object(self, fs_object):
-        object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_object.host, fs_object.path)
+        assert self._service_url.path[-1] == 'service'
+        remote_path = self._service_url.path[:-1]
+        dir_url = Url(fs_types.fs_dir, self._service_url.public_key, remote_path)
+        object = fs_types.fs_dir_object(FsDirObject.objimpl_id, dir_url.to_data(), fs_object.host, fs_object.path)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'key'
         resource_id = ['interface', fs_types.fs_dir.iface_id]
@@ -66,11 +75,12 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
+        self._iface_registry = services.iface_registry
         self._href_resolver = services.href_resolver
         self._service_registry = services.service_registry
         services.href_object_registry.register(href_types.fs_ref.id, self.resolve_fs_object)
         services.service_registry.register(href_types.fs_service.id, self.resolve_fs_service)
-        services.objimpl_registry.register(FsDirObject.objimpl_id, FsDirObject.from_state)
+        services.objimpl_registry.register(FsDirObject.objimpl_id, FsDirObject.from_state, services.iface_registry)
 
     @asyncio.coroutine
     def resolve_fs_object(self, fs_object):
@@ -79,4 +89,4 @@ class ThisModule(Module):
         return fs_service.resolve_fs_object(fs_object)
 
     def resolve_fs_service(self, service_object):
-        return FsService(service_object.remote_url)
+        return FsService(Url.from_data(self._iface_registry, service_object.service_url))

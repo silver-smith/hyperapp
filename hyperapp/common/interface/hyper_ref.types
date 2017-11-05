@@ -25,7 +25,7 @@ href_resolver = interface href_resolver:
 
 
 fs_service = service class fs_service:
-    remote_url: url
+    service_url: url
 
 
 host_id = string

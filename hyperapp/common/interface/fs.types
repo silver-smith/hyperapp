@@ -23,5 +23,6 @@ fs_service = interface fs_service:
 
 
 fs_dir_object = object class fs_dir_object(object_base):
+    dir_url: url
     host: string
     path: string list

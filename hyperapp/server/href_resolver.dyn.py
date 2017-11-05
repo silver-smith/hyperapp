@@ -54,7 +54,7 @@ class HRefResolver(Object):
         assert ref == href_types.service_ref('sha256', b'test-fs-service-ref'), repr(ref)  # the only service ref currently supported
         fs_service_url = Url(fs_types.fs_dir, self._server.get_public_key(), FsService.get_path())
         service = href_types.fs_service(
-            remote_url=fs_service_url.to_data())
+            service_url=fs_service_url.to_data())
         return request.make_response_result(service=service)
 
 
