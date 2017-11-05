@@ -25,7 +25,7 @@ class HRefResolver(object):
 class HRefObjectRegistry(Registry):
 
     def resolve(self, href_object):
-        tclass = href_types.href_object.resolve_obj(href_object)
+        tclass = href_types.href_object.get_object_class(href_object)
         rec = self._resolve(tclass.id)
         log.info('producing href object %r using %s(%s, %s)', tclass.id, rec.factory, rec.args, rec.kw)
         return rec.factory(href_object, *rec.args, **rec.kw)

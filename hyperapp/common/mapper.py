@@ -42,7 +42,7 @@ class Mapper(object):
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj(self, t, value):
-        tclass = t.resolve_obj(value)
+        tclass = t.get_object_class(value)
         fields = self.map_record_fields(tclass.get_trecord(), value)
         mapped_obj = tclass(**fields)
         return self.map_hierarchy_obj(tclass, mapped_obj)

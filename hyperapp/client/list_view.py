@@ -176,7 +176,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     @classmethod
     @asyncio.coroutine
     def from_state(cls, locale, state, parent, core_types, objimpl_registry, resources_manager):
-        data_type = core_types.handle.resolve_obj(state)
+        data_type = core_types.handle.get_object_class(state)
         object = objimpl_registry.resolve(state.object)
         return cls(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)
 

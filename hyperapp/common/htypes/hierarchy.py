@@ -128,7 +128,7 @@ class THierarchy(Type):
         assert class_id in self.registry, 'Unknown hierarchy %r class id: %r. Known are: %r' % (self.hierarchy_id, class_id, sorted(self.registry.keys()))
         return self.registry[class_id]
 
-    def resolve_obj(self, rec):
+    def get_object_class(self, rec):
         assert self.is_tclassrecord(rec), repr(rec)
         return rec._class
 

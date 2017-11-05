@@ -53,7 +53,7 @@ class Visitor(object):
             
     @dispatch.register(THierarchy)
     def process_hierarchy_obj(self, t, value):
-        tclass = t.resolve_obj(value)
+        tclass = t.get_object_class(value)
         self.visit_hierarchy_obj(t, tclass, value)
         self.dispatch(tclass.get_trecord(), value)
         if issubclass(tclass, self._packet_types.client_packet):

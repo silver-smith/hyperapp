@@ -139,7 +139,7 @@ class VisualRepEncoder(object):
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj(self, t, value):
-        tclass = t.resolve_obj(value)
+        tclass = t.get_object_class(value)
         custom_encoders = {}
         if self._packet_types and self._iface_registry:
             if issubclass(tclass, self._packet_types.client_packet):

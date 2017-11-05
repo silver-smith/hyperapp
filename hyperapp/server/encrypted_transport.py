@@ -154,7 +154,7 @@ class EncryptedTcpTransport(Transport):
 
     def decrypt_packet(self, server, session, encrypted_packet):
         if not isinstance(encrypted_packet, tInitialEncryptedPacket):
-            assert session.session_key, tEncryptedPacket.resolve_obj(encrypted_packet).id  # subsequent packet must not be first one
+            assert session.session_key, tEncryptedPacket.get_object_class(encrypted_packet).id  # subsequent packet must not be first one
         session_key, plain_text = decrypt_packet(server.get_identity(), session.session_key, encrypted_packet)
         session.session_key = session_key
         return plain_text
