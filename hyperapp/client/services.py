@@ -57,6 +57,7 @@ class Services(ServicesBase):
                 'form',
                 'text_object_types',
                 'hyper_ref',
+                'fs',
             ])
         self.objimpl_registry = ObjImplRegistry()
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
