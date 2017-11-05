@@ -1,5 +1,8 @@
 import asyncio
+import logging
 from .module import Module
+
+log = logging.getLogger(__name__)
 
 
 REDIRECT_VIEW_ID = 'href_redirect'
@@ -23,8 +26,8 @@ class ThisModule(Module):
         href = handle.href
         object = yield from self._href_resolver.resolve_href(href)
         assert object, repr(object)
-        print(repr(object))
-        handle = self._href_object_registry.resolve(object)
+        log.debug('resolve_redirect: href resolved to %r', object)
+        handle = yield from self._href_object_registry.resolve(object)
         assert handle, repr(handle)
-        print(repr(handle))
+        log.debug('resolve_redirect: href object resolved to handle %r', handle)
         return handle

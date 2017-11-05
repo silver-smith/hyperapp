@@ -8,6 +8,7 @@ from .module import Module
 
 log = logging.getLogger(__name__)
 
+
 HREF_RESOLVER_URL_PATH = '~/.local/share/hyperapp/common/href_resolver.url'
 
 
@@ -17,18 +18,24 @@ class HRefResolver(object):
         self._href_resolver_proxy = href_resolver_proxy
 
     @asyncio.coroutine
-    def resolve_href(self, href):
-        result = yield from self._href_resolver_proxy.resolve_href(href)
+    def resolve_href(self, ref):
+        result = yield from self._href_resolver_proxy.resolve_href(ref)
         return result.href_object
+
+    @asyncio.coroutine
+    def resolve_service_ref(self, ref):
+        result = yield from self._href_resolver_proxy.resolve_service_ref(ref)
+        return result.service
 
 
 class HRefObjectRegistry(Registry):
 
+    @asyncio.coroutine
     def resolve(self, href_object):
         tclass = href_types.href_object.get_object_class(href_object)
         rec = self._resolve(tclass.id)
         log.info('producing href object %r using %s(%s, %s)', tclass.id, rec.factory, rec.args, rec.kw)
-        return rec.factory(href_object, *rec.args, **rec.kw)
+        return (yield from rec.factory(href_object, *rec.args, **rec.kw))
 
 
 class ThisModule(Module):

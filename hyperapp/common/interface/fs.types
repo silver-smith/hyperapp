@@ -15,3 +15,9 @@ fs_dir = list_interface fs_dir:
     commands:
         request parent () -> (handle: handle opt)
         request open (element_key: string) -> (handle: handle opt)
+
+
+fs_service = interface fs_service:
+    commands:
+        request test () -> ()
+

@@ -2,10 +2,12 @@ import logging
 import os
 import os.path
 from ..common.interface import hyper_ref as href_types
+from ..common.interface import fs as fs_types
 from ..common.url import Url
 from .command import command
 from .object import Object
 from . import module as module_mod
+from .fs import FsService
 
 log = logging.getLogger(__name__)
 
@@ -25,8 +27,9 @@ class HRefResolver(Object):
     def get_path(cls):
         return this_module.make_path(cls.class_name)
 
-    def __init__(self):
+    def __init__(self, server):
         Object.__init__(self)
+        self._server = server
 
     def resolve(self, path):
         path.check_empty()
@@ -34,16 +37,25 @@ class HRefResolver(Object):
 
     @command('resolve_href')
     def command_resolve_href(self, request):
-        href = request.params.href
-        assert href == href_types.href('sha256', b'test-fs-href'), repr(href)  # the only href currently supported
+        ref = request.params.ref
+        assert ref == href_types.href('sha256', b'test-fs-href'), repr(ref)  # the only href currently supported
         fs_service_ref = href_types.service_ref('sha256', b'test-fs-service-ref')
         object = href_types.fs_ref(
-            fs_service=fs_service_ref,
+            fs_service_ref=fs_service_ref,
             host='localhost',
             path=['usr', 'share'],
             current_file_name='dpkg',
             )
         return request.make_response_result(href_object=object)
+
+    @command('resolve_service_ref')
+    def command_resolve_service_ref(self, request):
+        ref = request.params.ref
+        assert ref == href_types.service_ref('sha256', b'test-fs-service-ref'), repr(ref)  # the only service ref currently supported
+        fs_service_url = Url(fs_types.fs_dir, self._server.get_public_key(), FsService.get_path())
+        service = href_types.fs_service(
+            remote_url=fs_service_url.to_data())
+        return request.make_response_result(service=service)
 
 
 class ThisModule(module_mod.Module):
@@ -68,5 +80,5 @@ class ThisModule(module_mod.Module):
     def resolve(self, iface, path):
         objname = path.pop_str()
         if objname == HRefResolver.class_name:
-            return HRefResolver().resolve(path)
+            return HRefResolver(self._server).resolve(path)
         path.raise_not_found()

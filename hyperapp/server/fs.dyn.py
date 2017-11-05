@@ -5,7 +5,7 @@ from ..common.htypes import Column
 from ..common.interface import core as core_types
 from ..common.interface import fs as fs_types
 from .command import command
-from .object import SmallListObject
+from .object import Object, SmallListObject
 from .module import Module, ModuleCommand
 
 MODULE_NAME = 'file'
@@ -108,6 +108,16 @@ class Dir(FsObject):
         if dir == self.fspath:
             return None  # already root
         return dir
+
+
+class FsService(Object):
+
+    iface = fs_types.fs_service
+    class_name = 'service'
+
+    @classmethod
+    def get_path(cls):
+        return this_module.make_path(cls.class_name)
 
 
 class ThisModule(Module):
