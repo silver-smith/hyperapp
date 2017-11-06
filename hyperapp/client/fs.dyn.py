@@ -72,7 +72,7 @@ class FsService(object):
     def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
         result = yield from self._service_proxy.fetch_dir_contents(host, path, fetch_request)
-        yield result.chunk
+        return result.chunk
 
 
 class ThisModule(Module):
