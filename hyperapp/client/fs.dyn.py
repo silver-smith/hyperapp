@@ -56,6 +56,11 @@ class FsDirObject(ListObject):
 
 class FsService(object):
 
+    @classmethod
+    def from_data(cls, service_object, iface_registry):
+        service_url = Url.from_data(iface_registry, service_object.service_url)
+        return cls(service_url)
+
     def __init__(self, service_url):
         assert isinstance(service_url, Url), repr(service_url)
         self._service_url = service_url
@@ -75,11 +80,10 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self._iface_registry = services.iface_registry
         self._href_resolver = services.href_resolver
         self._service_registry = services.service_registry
         services.href_object_registry.register(href_types.fs_ref.id, self.resolve_fs_object)
-        services.service_registry.register(href_types.fs_service.id, self.resolve_fs_service)
+        services.service_registry.register(href_types.fs_service.id, FsService.from_data, services.iface_registry)
         services.objimpl_registry.register(FsDirObject.objimpl_id, FsDirObject.from_state, services.iface_registry)
 
     @asyncio.coroutine
@@ -87,6 +91,3 @@ class ThisModule(Module):
         service_object = yield from self._href_resolver.resolve_service_ref(fs_object.fs_service_ref)
         fs_service = self._service_registry.resolve(service_object)
         return fs_service.resolve_fs_object(fs_object)
-
-    def resolve_fs_service(self, service_object):
-        return FsService(Url.from_data(self._iface_registry, service_object.service_url))
