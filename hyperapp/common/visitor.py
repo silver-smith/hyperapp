@@ -5,6 +5,7 @@ from .htypes import (
     TRecord,
     TEmbedded,
     THierarchy,
+    TClass,
     TList,
     )
 
@@ -62,6 +63,10 @@ class Visitor(object):
             self.visit_server_response_result(value)
         if issubclass(tclass, self._packet_types.server_error_response):
             self.visit_server_response_error(value)
+
+    @dispatch.register(TClass)
+    def process_tclass_obj(self, t, value):
+        self.process_hierarchy_obj(t.hierarchy, value)
 
     def process_field(self, field, value):
         self.dispatch(field.type, getattr(value, field.name))

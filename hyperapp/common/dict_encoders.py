@@ -16,6 +16,7 @@ from .htypes import (
     EncodableEmbedded,
     TEmbedded,
     THierarchy,
+    TClass,
     Interface,
     )
 
@@ -75,6 +76,11 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
         tclass = t.get_object_class(value)
         return dict(self.dispatch(tclass.get_trecord(), value),
                     _class_id=self.dispatch(tString, tclass.id))
+
+    @dispatch.register(TClass)
+    def encode_tclass_obj(self, t, value):
+        assert isinstance(value, t), repr((t, value))
+        return self.encode_hierarchy_obj(t.hierarchy, value)
 
 
 class JsonEncoder(DictEncoder):

@@ -22,6 +22,7 @@ class TClassRecord(Record):
 class TClass(Type):
 
     def __init__(self, hierarchy, id, trec, base=None):
+        assert isinstance(hierarchy, THierarchy), repr(hierarchy)
         assert isinstance(trec, TRecord), repr(trec)
         self.hierarchy = hierarchy
         self.id = id

@@ -18,6 +18,7 @@ from .htypes import (
     DecodableEmbedded,
     TEmbedded,
     THierarchy,
+    TClass,
     )
 from .packet_coders import DecodeError
 
@@ -117,6 +118,10 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         tclass = t.resolve(id)
         fields = self.decode_record_fields(tclass.get_fields(), value, path)
         return tclass(**fields)
+
+    @dispatch.register(TClass)
+    def decode_tclass_obj(self, t, value, path):
+        return self.decode_hierarchy_obj(t.hierarchy, value, path)
 
     def decode_record_fields(self, fields, value, path):
         decoded_fields = {}
