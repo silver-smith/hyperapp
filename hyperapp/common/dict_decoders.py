@@ -144,7 +144,10 @@ class DictDecoderBase(DictDecoder, metaclass=abc.ABCMeta):
 class JsonDecoder(DictDecoderBase):
 
     def _str_to_dict(self, value):
-        return json.loads(value)
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError as x:
+            raise DecodeError(str(x)) from x
 
 
 class YamlDecoder(DictDecoderBase):
