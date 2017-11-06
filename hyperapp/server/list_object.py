@@ -1,3 +1,4 @@
+from operator import attrgetter
 
 
 MIN_ROWS_RETURNED = 100
@@ -5,7 +6,7 @@ MIN_ROWS_RETURNED = 100
 
 def rows2fetched_chunk(key_column_id, all_rows, fetch_request, Chunk):
     assert fetch_request.desc_count == 0, repr(fetch_request.desc_count)  # Not yet supported
-    sorted_rows = sorted(all_rows, key=fetch_request.sort_column_id)
+    sorted_rows = sorted(all_rows, key=attrgetter(fetch_request.sort_column_id))
     if fetch_request.from_key is None:
         idx = 0
     else:

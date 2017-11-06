@@ -134,17 +134,18 @@ class FsService(Object):
         return request.make_response_result(chunk=chunk)
 
     def fetch_dir_contents(self, host, fs_path):
+        dir_path = '/' + '/'.join(fs_path)
         assert host == 'localhost', repr(host)  # remote hosts not supported
         dirs  = []
         files = []
         try:
-            names = os.listdir('/'.join(fs_path))
+            names = os.listdir(dir_path)
         except OSError:  # path may be invalid
             names = []
         for fname in names:
             fname = fsname2uni(fname)
             if fname[0] == '.': continue  # skip special and hidden names
-            item_fs_path = os.path.join(fs_path, fname)
+            item_fs_path = os.path.join(dir_path, fname)
             finfo = self.get_file_info(fname, item_fs_path)
             if finfo['ftype'] == 'dir':
                 dirs.append(finfo)
@@ -154,6 +155,21 @@ class FsService(Object):
                 for finfo in sorted(dirs, key=itemgetter('key')) +
                              sorted(files, key=itemgetter('key'))]
 
+    def get_file_info(self, fname, fspath):
+        try:
+            s = os.stat(fspath)
+        except OSError:
+            return dict(
+                key=fname,
+                ftype='file',
+                ftime=0,
+                fsize=0)
+        return dict(
+            key=fname,
+            ftype='dir' if os.path.isdir(fspath) else 'file',
+            ftime=s[stat.ST_MTIME],
+            fsize=s[stat.ST_SIZE],
+            )
 
 
 class ThisModule(Module):
