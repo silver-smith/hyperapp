@@ -42,6 +42,9 @@ class RemotingProxy(object):
         self._server = server
         self._path = path
 
+    def get_url(self):
+        return self._server.make_url(self._iface, self._path)
+
     def __getattr__(self, name):
         command = self._iface.get_command_if_exists(name)
         if not command:

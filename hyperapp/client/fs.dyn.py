@@ -55,16 +55,17 @@ class FsDirObject(ListObject):
 class FsService(object):
 
     @classmethod
-    def from_data(cls, service_object, iface_registry):
+    def from_data(cls, service_object, iface_registry, proxy_factory):
         service_url = Url.from_data(iface_registry, service_object.service_url)
-        return cls(service_url)
+        service_proxy = proxy_factory.from_url(service_url)
+        return cls(service_proxy)
 
-    def __init__(self, service_url):
-        assert isinstance(service_url, Url), repr(service_url)
-        self._service_url = service_url
+    def __init__(self, service_proxy):
+        self._service_proxy = service_proxy
 
     def to_data(self):
-        return href_types.fs_service(self._service_url.to_data())
+        service_url = self._service_proxy.get_url()
+        return href_types.fs_service(service_url.to_data())
 
 
 class ThisModule(Module):
@@ -74,7 +75,7 @@ class ThisModule(Module):
         self._href_resolver = services.href_resolver
         self._service_registry = services.service_registry
         services.href_object_registry.register(href_types.fs_ref.id, self.resolve_fs_object)
-        services.service_registry.register(href_types.fs_service.id, FsService.from_data, services.iface_registry)
+        services.service_registry.register(href_types.fs_service.id, FsService.from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(FsDirObject.objimpl_id, FsDirObject.from_state, services.service_registry)
 
     @asyncio.coroutine
