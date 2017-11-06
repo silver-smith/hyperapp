@@ -45,7 +45,8 @@ class FsDirObject(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
-        pass
+        return (yield from self._fs_service.fetch_dir_contents(
+            self._host, self._path, sort_column_id, from_key, desc_count, asc_count))
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -66,6 +67,12 @@ class FsService(object):
     def to_data(self):
         service_url = self._service_proxy.get_url()
         return href_types.fs_service(service_url.to_data())
+
+    @asyncio.coroutine
+    def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
+        fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
+        result = yield from self._service_proxy.fetch_dir_contents(host, path, fetch_request)
+        yield result.chunk
 
 
 class ThisModule(Module):

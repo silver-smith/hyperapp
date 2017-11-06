@@ -52,7 +52,7 @@ class HRefResolver(Object):
     def command_resolve_service_ref(self, request):
         ref = request.params.ref
         assert ref == href_types.service_ref('sha256', b'test-fs-service-ref'), repr(ref)  # the only service ref currently supported
-        fs_service_url = Url(fs_types.fs_dir, self._server.get_public_key(), FsService.get_path())
+        fs_service_url = Url(fs_types.fs_service, self._server.get_public_key(), FsService.get_path())
         service = href_types.fs_service(
             service_url=fs_service_url.to_data())
         return request.make_response_result(service=service)
