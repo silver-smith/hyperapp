@@ -1,4 +1,5 @@
 from core import object, object_base, handle
+from hyper_ref import fs_service
 
 
 fs_file = list_interface fs_file:
@@ -23,6 +24,6 @@ fs_service = interface fs_service:
 
 
 fs_dir_object = object class fs_dir_object(object_base):
-    dir_url: url
+    fs_service: fs_service
     host: string
     path: string list

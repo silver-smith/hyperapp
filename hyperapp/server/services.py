@@ -39,12 +39,12 @@ class Services(ServicesBase):
                 'admin',
                 'article',
                 'blog',
-                'fs',
                 'module_list',
                 'test_list',
                 'text_object_types',
                 'exception_test',
                 'hyper_ref',
+                'fs',
                 ])
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)
         self.modules = self.module_manager.modules
