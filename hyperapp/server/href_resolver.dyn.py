@@ -4,7 +4,7 @@ import os.path
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
 from ..common.url import Url
-from ..common.local_server_paths import HREF_RESOLVER_URL_PATH
+from ..common.local_server_paths import LOCAL_HREF_RESOLVER_URL_PATH, save_url_to_file
 from .command import command
 from .object import Object
 from . import module as module_mod
@@ -68,12 +68,7 @@ class ThisModule(module_mod.Module):
         public_key = self._server.get_public_key()
         url = Url(HRefResolver.iface, public_key, HRefResolver.get_path())
         url_with_routes = url.clone_with_routes(self._tcp_server.get_routes())
-        url_path = os.path.expanduser(HREF_RESOLVER_URL_PATH)
-        common_dir = os.path.dirname(url_path)
-        if not os.path.isdir(common_dir):
-            os.makedirs(common_dir)
-        with open(url_path, 'w') as f:
-            f.write(url_with_routes.to_str())
+        url_path = save_url_to_file(url_with_routes, LOCAL_HREF_RESOLVER_URL_PATH)
         log.info('HRef resolver url is saved to: %s', url_path)
 
     def resolve(self, iface, path):

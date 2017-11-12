@@ -3,7 +3,7 @@ import os.path
 import logging
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
-from ..common.local_server_paths import HREF_RESOLVER_URL_PATH
+from ..common.local_server_paths import LOCAL_HREF_RESOLVER_URL_PATH
 from .registry import Registry
 from .module import Module
 
@@ -41,7 +41,7 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._remoting = services.remoting
-        url_path = os.path.expanduser(HREF_RESOLVER_URL_PATH)
+        url_path = os.path.expanduser(LOCAL_HREF_RESOLVER_URL_PATH)
         with open(url_path) as f:
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         proxy = services.proxy_factory.from_url(url)

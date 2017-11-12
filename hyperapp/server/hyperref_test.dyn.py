@@ -1,4 +1,4 @@
-from ..common.interface import hyper_ref as hyper_ref_types
+from ..common.interface import hyper_ref as href_types
 from .module import Module, ModuleCommand
 
 
@@ -17,7 +17,7 @@ class ThisModule(Module):
 
     def run_command(self, request, command_id):
         if command_id == 'test_href':
-            href = hyper_ref_types.href('sha256', b'test-fs-href')
-            handle = hyper_ref_types.href_redirect_handle('href_redirect', href)
+            href = href_types.href('sha256', b'test-fs-href')
+            handle = href_types.href_redirect_handle('href_redirect', href)
             return request.make_response_handle(handle)
         return Module.run_command(self, request, command_id)

@@ -25,6 +25,11 @@ class Path(object):
     def pop_str(self):
         if not self.path:
             self.raise_not_found()
+        return self.pop_str_opt()
+
+    def pop_str_opt(self):
+        if not self.path:
+            return None
         part = self.path[0]
         self.path = self.path[1:]
         return part
