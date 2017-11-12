@@ -35,19 +35,3 @@ fs_ref = href_object class fs_ref:
     host: host_id
     path: string list
     current_file_name: string
-
-
-ref_item = record:
-    id: string
-    ref: href
-
-ref_list = href_object class ref_list:
-    ref_list: ref_item list
-
-
-ref_list_resolver = interface ref_list_resolver:
-    commands:
-        request resolve_ref_list (ref_list_id: string) -> (ref_list: ref_list)
-
-ref_list_service = service class ref_list:
-    service_url: url

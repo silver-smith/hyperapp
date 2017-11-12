@@ -13,5 +13,5 @@ class ThisModule(Module):
     @command('open_local_server')
     @asyncio.coroutine
     def open_local_server(self):
-        href = href_types.href('sha256', b'server_ref_list')
+        href = href_types.href('sha256', b'server-ref-list')
         return (yield from self._href_resolver.resolve_href_to_handle(href))

@@ -57,6 +57,7 @@ class Services(ServicesBase):
                 'form',
                 'text_object_types',
                 'hyper_ref',
+                'ref_list',
                 'fs',
             ])
         self.objimpl_registry = ObjImplRegistry()
@@ -112,6 +113,7 @@ class Services(ServicesBase):
                 'href_redirect_handle',
                 'service_registry',
                 'proxy_list_object_',
+                'ref_list',
                 'local_server_ref_list',
                 'fs',
                 ]:

@@ -44,6 +44,7 @@ class Services(ServicesBase):
                 'text_object_types',
                 'exception_test',
                 'hyper_ref',
+                'ref_list',
                 'fs',
                 ])
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)

@@ -3,7 +3,7 @@
 import logging
 from ..common.interface import core as core_types
 from ..common.interface import server_management as server_management_types
-from ..common.interface import hyper_ref as href_types
+from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
 from ..common.local_server_paths import LOCAL_SERVER_REF_LIST_URL_PATH, save_url_to_file
 from .object import Object, SmallListObject
@@ -47,7 +47,7 @@ class CommandList(SmallListObject):
 
 class ManagementService(Object):
 
-    iface = href_types.ref_list_resolver
+    iface = ref_list_types.ref_list_resolver
     class_name = MANAGEMENT_SERVICE_CLASS_NAME
 
     @classmethod
