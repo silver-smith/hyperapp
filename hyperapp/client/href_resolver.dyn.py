@@ -3,13 +3,11 @@ import os.path
 import logging
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
+from ..common.local_server_paths import HREF_RESOLVER_URL_PATH
 from .registry import Registry
 from .module import Module
 
 log = logging.getLogger(__name__)
-
-
-HREF_RESOLVER_URL_PATH = '~/.local/share/hyperapp/common/href_resolver.url'
 
 
 class HRefResolver(object):

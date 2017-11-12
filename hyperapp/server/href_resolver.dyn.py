@@ -4,6 +4,7 @@ import os.path
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
 from ..common.url import Url
+from ..common.local_server_paths import HREF_RESOLVER_URL_PATH
 from .command import command
 from .object import Object
 from . import module as module_mod
@@ -14,8 +15,6 @@ log = logging.getLogger(__name__)
 
 MODULE_NAME = 'href_resolver'
 HREF_RESOLVER_CLASS_NAME = 'href_resolver'
-
-HREF_RESOLVER_URL_PATH = '~/.local/share/hyperapp/common/href_resolver.url'
 
 
 class HRefResolver(Object):
