@@ -17,9 +17,6 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._href_resolver = services.href_resolver
-        self._href_object_registry = services.href_object_registry
-        self._iface_registry = services.iface_registry
-        self._remoting = services.remoting
 
     @asyncio.coroutine
     def resolve_redirect(self, locale, handle, parent):
