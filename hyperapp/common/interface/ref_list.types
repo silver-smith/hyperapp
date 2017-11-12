@@ -23,5 +23,5 @@ ref_list_service = service class ref_list:
     service_url: url
 
 ref_list_object = object class ref_list(object_base):
-    service: ref_list_service
+    ref_list_service: ref_list_service
     ref_list_id: string
