@@ -23,11 +23,4 @@ class ThisModule(Module):
 
     @asyncio.coroutine
     def resolve_redirect(self, locale, handle, parent):
-        href = handle.href
-        object = yield from self._href_resolver.resolve_href(href)
-        assert object, repr(object)
-        log.debug('resolve_redirect: href resolved to %r', object)
-        handle = yield from self._href_object_registry.resolve(object)
-        assert handle, repr(handle)
-        log.debug('resolve_redirect: href object resolved to handle %r', handle)
-        return handle
+        return (yield from self._href_resolver.resolve_href_to_handle(handle.href))

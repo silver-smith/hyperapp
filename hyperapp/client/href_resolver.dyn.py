@@ -12,17 +12,28 @@ log = logging.getLogger(__name__)
 
 class HRefResolver(object):
 
-    def __init__(self, href_resolver_proxy):
+    def __init__(self, href_object_registry, href_resolver_proxy):
+        self._href_object_registry = href_object_registry
         self._href_resolver_proxy = href_resolver_proxy
 
     @asyncio.coroutine
-    def resolve_href(self, ref):
-        result = yield from self._href_resolver_proxy.resolve_href(ref)
+    def resolve_href_to_handle(self, href):
+        object = yield from self.resolve_href(href)
+        assert object, repr(object)
+        log.debug('href resolver: href resolved to %r', object)
+        handle = yield from self._href_object_registry.resolve(object)
+        assert handle, repr(handle)
+        log.debug('href resolver: href object resolved to handle %r', handle)
+        return handle
+
+    @asyncio.coroutine
+    def resolve_href(self, href):
+        result = yield from self._href_resolver_proxy.resolve_href(href)
         return result.href_object
 
     @asyncio.coroutine
-    def resolve_service_ref(self, ref):
-        result = yield from self._href_resolver_proxy.resolve_service_ref(ref)
+    def resolve_service_ref(self, service_ref):
+        result = yield from self._href_resolver_proxy.resolve_service_ref(service_ref)
         return result.service
 
 
@@ -45,5 +56,5 @@ class ThisModule(Module):
         with open(url_path) as f:
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         proxy = services.proxy_factory.from_url(url)
-        services.href_resolver = HRefResolver(proxy)
         services.href_object_registry = HRefObjectRegistry()
+        services.href_resolver = HRefResolver(services.href_object_registry, proxy)
