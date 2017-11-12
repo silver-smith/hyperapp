@@ -1,0 +1,7 @@
+ThisModule:
+  commands:
+    open_local_server:
+      text: Open local server
+      description: Retrieve and open local server management reference list
+      shortcuts:
+      - Alt+L

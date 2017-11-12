@@ -112,6 +112,7 @@ class Services(ServicesBase):
                 'href_redirect_handle',
                 'service_registry',
                 'proxy_list_object_',
+                'local_server_ref_list',
                 'fs',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
