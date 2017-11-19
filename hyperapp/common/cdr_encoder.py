@@ -14,6 +14,7 @@ from .htypes import (
     EncodableEmbedded,
     TEmbedded,
     THierarchy,
+    TClass,
     )
 
 
@@ -94,3 +95,8 @@ class CdrEncoder(object):
         tclass = t.get_object_class(value)
         self.write_unicode(tclass.id)
         self.dispatch(tclass.get_trecord(), value)
+
+    @dispatch.register(TClass)
+    def encode_tclass_obj(self, t, value):
+        assert isinstance(value, t), repr((t, value))
+        self.encode_hierarchy_obj(t.hierarchy, value)

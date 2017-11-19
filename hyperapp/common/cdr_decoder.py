@@ -16,6 +16,7 @@ from .htypes import (
     DecodableEmbedded,
     TEmbedded,
     THierarchy,
+    TClass,
     )
 from .packet_coders import DecodeError
 
@@ -154,3 +155,7 @@ class CdrDecoder(object):
         tclass = t.resolve(class_id)
         fields = self.decode_record_fields(tclass.get_fields(), path)
         return tclass(**fields)
+
+    @dispatch.register(TClass)
+    def decode_tclass_obj(self, t, path):
+        return self.decode_hierarchy_obj(t.hierarchy, path)

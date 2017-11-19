@@ -14,6 +14,7 @@ from .htypes import (
     TList,
     TEmbedded,
     THierarchy,
+    TClass,
     Interface,
     tPath,
     tCommand,
@@ -150,6 +151,11 @@ class VisualRepEncoder(object):
                 custom_encoders = dict(error=self.encode_error_response_error)
         children = self.encode_record_fields(tclass.get_fields(), value, custom_encoders)
         return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
+
+    @dispatch.register(TClass)
+    def encode_tclass_obj(self, t, value):
+        assert isinstance(value, t), repr((t, value))
+        return self.encode_hierarchy_obj(t.hierarchy, value)
 
     def encode_path(self, obj):
         return RepNode(encode_path(obj))
