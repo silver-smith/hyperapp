@@ -1,9 +1,11 @@
 from operator import attrgetter
+from collections import namedtuple
 import asyncio
 from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.interface import core as core_types
 from ..common.interface import href_list as href_list_types
 from ..common.url import Url
+from ..common.list_object import Element, Chunk
 from .module import Module
 from .list_object import ListObject
 
@@ -11,6 +13,8 @@ from .list_object import ListObject
 class HRefListObject(ListObject):
 
     objimpl_id = 'href_list'
+
+    Row = namedtuple('HRefListObject_Row', 'id href')
 
     @classmethod
     def from_state(cls, state, service_registry):
@@ -44,7 +48,9 @@ class HRefListObject(ListObject):
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         href_list = yield from self._href_list_service.get_href_list(self._href_list_id)
         assert sort_column_id in ['id', 'href'], repr(sort_column_id)
-        sorted_rows = sorted(href_list, key=attrgetter(sort_column_id))
+        rows = [self.Row(href_item.id, '%s.%s' % (href_item.href.algorithm, href_item.href.hash.decode()))
+                for href_item in href_list.href_list]
+        sorted_rows = sorted(rows, key=attrgetter(sort_column_id))
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id)) for row in sorted_rows]
         chunk = Chunk(sort_column_id, None, elements, True, True)
         self._notify_fetch_result(chunk)
