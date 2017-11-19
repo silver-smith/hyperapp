@@ -1,3 +1,4 @@
+from operator import attrgetter
 import asyncio
 from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.interface import core as core_types
@@ -41,13 +42,13 @@ class HRefListObject(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
-        chunk = yield from self._href_list_service.fetch_dir_contents(
-            self._host, self._path, sort_column_id, from_key, desc_count, asc_count)
-        elements = [Element(row.key, row, commands=None, order_key=getattr(row, sort_column_id))
-                    for row in chunk.rows]
-        list_chunk = Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
-        self._notify_fetch_result(list_chunk)
-        return list_chunk
+        href_list = yield from self._href_list_service.get_href_list(self._href_list_id)
+        assert sort_column_id in ['id', 'href'], repr(sort_column_id)
+        sorted_rows = sorted(href_list, key=attrgetter(sort_column_id))
+        elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id)) for row in sorted_rows]
+        chunk = Chunk(sort_column_id, None, elements, True, True)
+        self._notify_fetch_result(chunk)
+        return chunk
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)

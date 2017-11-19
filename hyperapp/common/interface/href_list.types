@@ -17,7 +17,7 @@ dynamic_href_list = href_object class dynamic_href_list:
 
 href_list_resolver = interface href_list_resolver:
     commands:
-        request resolve_href_list (href_list_id: string) -> (href_list: href_list)
+        request get_href_list (href_list_id: string) -> (href_list: href_list)
 
 href_list_service = service class href_list:
     service_url: url

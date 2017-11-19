@@ -3,6 +3,7 @@
 import logging
 from ..common.interface import core as core_types
 from ..common.interface import server_management as server_management_types
+from ..common.interface import hyper_ref as href_types
 from ..common.interface import href_list as href_list_types
 from ..common.url import Url
 from ..common.local_server_paths import LOCAL_SERVER_HREF_LIST_URL_PATH, save_url_to_file
@@ -54,9 +55,20 @@ class ManagementService(Object):
     def get_path(cls):
         return this_module.make_path(cls.class_name)
 
+    def __init__(self, module_registry):
+        Object.__init__(self)
+        self._module_registry = module_registry
+
     def resolve(self, path):
         path.check_empty()
         return self
+    
+    @command('get_href_list')
+    def command_get_href_list(self, request):
+        href_list_id = request.params.href_list_id
+        href_item_list = [href_list_types.href_item(id='%s.%s' % (command.module_name, command.id), href=href_types.href('', command.id.encode()))
+                          for command in self._module_registry.get_all_modules_commands()]
+        return request.make_response_result(href_list=href_list_types.href_list(href_list=href_item_list))
 
     
 class ThisModule(Module):
@@ -66,11 +78,12 @@ class ThisModule(Module):
         self._module_registry = services.module_registry
         self._server = services.server
         self._tcp_server = services.tcp_server
+        self._management_service = ManagementService(services.module_registry)
 
     def resolve(self, iface, path):
         class_name = path.pop_str_opt()
         if class_name and class_name == ManagementService.class_name:
-            return ManagementService.resolve(path)
+            return self._management_service.resolve(path)
         path.check_empty()
         return CommandList(self._module_registry)
 
