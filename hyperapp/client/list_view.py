@@ -381,6 +381,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
     ##     force_load = self.want_current_key is not None
     ##     self._object.need_elements_count(last_visible_row + 1, force_load)
 
+    def _wrap_element_command(self, element, cmd):
+        return ViewCommand.from_command(cmd.clone(args=(element.key,)), self)
+
     def _on_activated(self, index):
         element = self.model().get_row_element(index.row())
         for command in self._object.get_element_command_list(element.key):
@@ -389,7 +392,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
                 break
         else:
             return
-        asyncio.async(command.run())
+        asyncio.async(self._wrap_element_command(element, command).run())
 
     def _selected_elements_changed(self):
         self._update_selected_actions()
@@ -411,13 +414,14 @@ class View(view.View, ListObserver, QtGui.QTableView):
             assert isinstance(command, Command), repr(command)
             assert command.kind == 'element', repr(command)
             resource = self._resources_manager.resolve(command.resource_id + [self._locale])
+            wrapped_command = self._wrap_element_command(element, command)
             action = make_async_action(
-                action_widget, '%s/%s' % (command.resource_id, command.id),
-                resource.shortcuts if resource else None, command.run)
+                action_widget, '%s/%s' % (wrapped_command.resource_id, wrapped_command.id),
+                resource.shortcuts if resource else None, wrapped_command.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
-            self._elt_commands.append(command)
+            self._elt_commands.append(wrapped_command)
 
     def __del__(self):
         log.debug('~list_view.View self=%r', id(self))
