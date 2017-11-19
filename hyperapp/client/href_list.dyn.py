@@ -26,6 +26,8 @@ class HRefListObject(ListObject):
         ListObject.__init__(self)
         self._href_list_service = href_list_service
         self._href_list_id = href_list_id
+        self._id2href = None
+        self._rows = None
 
     def get_state(self):
         return href_list_types.href_list_object(self.objimpl_id, self._href_list_service.to_data(), self._href_list_id)
@@ -44,19 +46,24 @@ class HRefListObject(ListObject):
 
     @asyncio.coroutine
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
-        href_list = yield from self._href_list_service.get_href_list(self._href_list_id)
-        assert sort_column_id in ['id', 'href'], repr(sort_column_id)
-        rows = [self.Row(href_item.id, '%s.%s' % (href_item.href.algorithm, href_item.href.hash.decode()))
-                for href_item in href_list.href_list]
-        sorted_rows = sorted(rows, key=attrgetter(sort_column_id))
+        if not self._rows:
+            href_list = yield from self._href_list_service.get_href_list(self._href_list_id)
+            assert sort_column_id in ['id', 'href'], repr(sort_column_id)
+            self._rows = [self.Row(href_item.id, '%s.%s' % (href_item.href.algorithm, href_item.href.hash.decode()))
+                          for href_item in href_list.href_list]
+            self._id2href = {href_item.id: href_item.href for href_item in href_list.href_list}
+        sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id)) for row in sorted_rows]
         chunk = Chunk(sort_column_id, None, elements, True, True)
         self._notify_fetch_result(chunk)
         return chunk
 
     @command('open', kind='element')
+    @asyncio.coroutine
     def command_open(self, element_key):
-        assert False, repr(element_key)
+        assert self._id2href is not None  # fetch_element was not called yet
+        href = self._id2href[element_key]
+        assert False, repr(href)
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
