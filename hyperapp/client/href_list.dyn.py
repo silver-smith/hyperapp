@@ -1,3 +1,4 @@
+import logging
 from operator import attrgetter
 from collections import namedtuple
 import asyncio
@@ -10,6 +11,8 @@ from .command import command
 from .module import Module
 from .list_object import ListObject
 
+log = logging.getLogger(__name__)
+
 
 class HRefListObject(ListObject):
 
@@ -18,12 +21,13 @@ class HRefListObject(ListObject):
     Row = namedtuple('HRefListObject_Row', 'id href')
 
     @classmethod
-    def from_state(cls, state, service_registry):
+    def from_state(cls, state, href_resolver, service_registry):
         href_list_service = service_registry.resolve(state.href_list_service)
-        return cls(href_list_service, state.href_list_id)
+        return cls(href_resolver, href_list_service, state.href_list_id)
 
-    def __init__(self, href_list_service, href_list_id):
+    def __init__(self, href_resolver, href_list_service, href_list_id):
         ListObject.__init__(self)
+        self._href_resolver = href_resolver
         self._href_list_service = href_list_service
         self._href_list_id = href_list_id
         self._id2href = None
@@ -63,7 +67,8 @@ class HRefListObject(ListObject):
     def command_open(self, element_key):
         assert self._id2href is not None  # fetch_element was not called yet
         href = self._id2href[element_key]
-        assert False, repr(href)
+        log.info('Opening href %r: %r', element_key, href)
+        return (yield from self._href_resolver.resolve_href_to_handle(href))
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -99,7 +104,7 @@ class ThisModule(Module):
         self._service_registry = services.service_registry
         services.href_object_registry.register(href_list_types.dynamic_href_list.id, self.resolve_dynamic_href_list_object)
         services.service_registry.register(href_list_types.href_list_service.id, HRefListService.from_data, services.iface_registry, services.proxy_factory)
-        services.objimpl_registry.register(HRefListObject.objimpl_id, HRefListObject.from_state, services.service_registry)
+        services.objimpl_registry.register(HRefListObject.objimpl_id, HRefListObject.from_state, services.href_resolver, services.service_registry)
 
     @asyncio.coroutine
     def resolve_dynamic_href_list_object(self, dynamic_href_list):
