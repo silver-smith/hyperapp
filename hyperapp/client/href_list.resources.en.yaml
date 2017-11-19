@@ -1,0 +1,12 @@
+HRefListObject:
+  columns:
+    id:
+      text: Id
+      description: Identity
+    href:
+      text: href
+  commands:
+    open:
+      text: Open
+      description: Open hyper ref
+      is_default: yes

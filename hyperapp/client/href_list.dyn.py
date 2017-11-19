@@ -100,5 +100,5 @@ class ThisModule(Module):
         object = href_list_types.href_list_object(HRefListObject.objimpl_id, href_list_service, dynamic_href_list.href_list_id)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'id'
-        resource_id = ['client', 'href_list']
+        resource_id = ['client_module', 'href_list', 'HRefListObject']
         return handle_t('list', object, resource_id, sort_column_id, None)
