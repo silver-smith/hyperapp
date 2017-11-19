@@ -3,9 +3,9 @@
 import logging
 from ..common.interface import core as core_types
 from ..common.interface import server_management as server_management_types
-from ..common.interface import ref_list as ref_list_types
+from ..common.interface import href_list as href_list_types
 from ..common.url import Url
-from ..common.local_server_paths import LOCAL_SERVER_REF_LIST_URL_PATH, save_url_to_file
+from ..common.local_server_paths import LOCAL_SERVER_HREF_LIST_URL_PATH, save_url_to_file
 from .object import Object, SmallListObject
 from .module import Module
 from .command import command
@@ -47,7 +47,7 @@ class CommandList(SmallListObject):
 
 class ManagementService(Object):
 
-    iface = ref_list_types.ref_list_resolver
+    iface = href_list_types.href_list_resolver
     class_name = MANAGEMENT_SERVICE_CLASS_NAME
 
     @classmethod
@@ -78,7 +78,7 @@ class ThisModule(Module):
         public_key = self._server.get_public_key()
         url = Url(ManagementService.iface, public_key, ManagementService.get_path())
         url_with_routes = url.clone_with_routes(self._tcp_server.get_routes())
-        url_path = save_url_to_file(url_with_routes, LOCAL_SERVER_REF_LIST_URL_PATH)
+        url_path = save_url_to_file(url_with_routes, LOCAL_SERVER_HREF_LIST_URL_PATH)
         log.info('Management service url is saved to: %s', url_path)
 
 

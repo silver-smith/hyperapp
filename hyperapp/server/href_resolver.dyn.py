@@ -3,7 +3,7 @@ import os
 import os.path
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
-from ..common.interface import ref_list as ref_list_types
+from ..common.interface import href_list as href_list_types
 from ..common.url import Url
 from ..common.local_server_paths import LOCAL_HREF_RESOLVER_URL_PATH, save_url_to_file
 from .command import command
@@ -50,9 +50,9 @@ class HRefResolver(Object):
             return request.make_response_result(href_object=object)
         if ref == href_types.href('sha256', b'server-ref-list'):
             service_ref = href_types.service_ref('sha256', b'ref-list-service')
-            object = ref_list_types.dynamic_ref_list(
-                ref_list_service=service_ref,
-                ref_list_id='server-management',
+            object = href_list_types.dynamic_href_list(
+                href_list_service=service_ref,
+                href_list_id='server-management',
                 )
             return request.make_response_result(href_object=object)
         assert False, repr(ref)  # Unknown hyper ref
@@ -67,7 +67,7 @@ class HRefResolver(Object):
             return request.make_response_result(service=service)
         if ref == href_types.service_ref('sha256', b'ref-list-service'):
             service_url = Url(ManagementService.iface, self._server.get_public_key(), ManagementService.get_path())
-            service = ref_list_types.ref_list_service(
+            service = href_list_types.href_list_service(
                 service_url=service_url.to_data())
             return request.make_response_result(service=service)
         assert False, repr(ref)  # Unknown service ref
