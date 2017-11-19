@@ -50,20 +50,20 @@ class View(ObjectObserver, Commander):
         else:
             return self
 
-    def get_commands(self, kinds=None):
+    def get_command_list(self, kinds=None):
         assert self._module_registry, repr(self)  # init method was not called, expected to be called by ViewRegistry.resolve
-        commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_commands(self, kinds)]
+        commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_command_list(self, kinds)]
         child = self.get_current_child()
         if child:
-            commands += child.get_commands(kinds)
+            commands += child.get_command_list(kinds)
         object = self.get_object()
         if object:
             commands += [ViewCommand.from_command(cmd, self) for cmd in
-                         self.get_object_commands(object) + self._module_registry.get_all_object_commands(object)]
+                         self.get_object_command_list(object, kinds) + self._module_registry.get_all_object_commands(object)]
         return commands
 
-    def get_object_commands(self, object):
-        return object.get_commands()
+    def get_object_command_list(self, object, kinds=None):
+        return object.get_command_list(kinds)
 
     def get_shortcut_ctx_widget(self, view):
         return view.get_widget()

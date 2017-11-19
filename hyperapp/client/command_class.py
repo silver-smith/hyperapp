@@ -126,7 +126,9 @@ class Commander(object):
                 return command
         return None
 
-    def get_commands(self, kinds=None):
+    def get_command_list(self, kinds=None):
+        # assert not kinds or list(kinds) != ['element'], repr(kinds)
+        log.debug('###### Commander.get_command_list(%r/%r) -> %r', kinds, self._commands_kind, [cmd for cmd in self._commands if cmd.kind in (kinds or [self._commands_kind])])
         if kinds is None:
             kinds = set([self._commands_kind])
         return [cmd for cmd in self._commands if cmd.kind in kinds]

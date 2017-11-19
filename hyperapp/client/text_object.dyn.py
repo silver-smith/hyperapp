@@ -39,9 +39,9 @@ class TextObject(Object):
     def get_state(self):
         return this_module.state_type(self.objimpl_id, self.text)
 
-    def get_commands(self, mode):
+    def get_command_list(self, mode, kinds):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
-        return self.filter_mode_commands(Object.get_commands(self), mode)
+        return self.filter_mode_commands(Object.get_command_list(self, kinds), mode)
 
     def filter_mode_commands(self, commands, mode):
         return [command for command in commands

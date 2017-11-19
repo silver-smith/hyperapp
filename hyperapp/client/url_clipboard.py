@@ -14,7 +14,7 @@ class ThisModule(Module):
         self._iface_registry = services.iface_registry
         self._remoting = services.remoting
 
-    def get_object_commands(self, object):
+    def get_object_command_list(self, object, kinds=None):
         if object.get_url() is not None:
             return [self.command_url_to_clipboard]
         return []

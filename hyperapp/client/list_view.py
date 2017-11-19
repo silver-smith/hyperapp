@@ -383,21 +383,18 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def _on_activated(self, index):
         element = self.model().get_row_element(index.row())
-        for cmd in element.commands:
-            resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
+        for command in self._object.get_element_command_list(element.key):
+            resource = self._resources_manager.resolve(command.resource_id + [self._locale])
             if resource and resource.is_default:
                 break
         else:
             return
-        asyncio.async(self._wrap_element_command(element, cmd).run())
+        asyncio.async(command.run())
 
     def _selected_elements_changed(self):
         self._update_selected_actions()
         if self.isVisible():  # we may being destructed now
             self.view_commands_changed(['element'])
-
-    def _wrap_element_command(self, element, cmd):
-        return ViewCommand.from_command(cmd.clone(args=(element.key,)), self)
 
     def _update_selected_actions(self):
         # remove previous actions
@@ -410,18 +407,17 @@ class View(view.View, ListObserver, QtGui.QTableView):
         element = self.get_current_elt()
         if not element: return
         # create actions
-        for cmd in element.commands:
-            assert isinstance(cmd, Command), repr(cmd)
-            assert cmd.kind == 'element', repr(cmd)
-            resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
-            wrapped_cmd = self._wrap_element_command(element, cmd)
+        for command in self._object.get_element_command_list(element.key):
+            assert isinstance(command, Command), repr(command)
+            assert command.kind == 'element', repr(command)
+            resource = self._resources_manager.resolve(command.resource_id + [self._locale])
             action = make_async_action(
-                action_widget, '%s/%s' % (wrapped_cmd.resource_id, wrapped_cmd.id),
-                resource.shortcuts if resource else None, wrapped_cmd.run)
+                action_widget, '%s/%s' % (command.resource_id, command.id),
+                resource.shortcuts if resource else None, command.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
-            self._elt_commands.append(wrapped_cmd)
+            self._elt_commands.append(command)
 
     def __del__(self):
         log.debug('~list_view.View self=%r', id(self))

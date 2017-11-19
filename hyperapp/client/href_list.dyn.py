@@ -6,6 +6,7 @@ from ..common.interface import core as core_types
 from ..common.interface import href_list as href_list_types
 from ..common.url import Url
 from ..common.list_object import Element, Chunk
+from .command import command
 from .module import Module
 from .list_object import ListObject
 
@@ -32,9 +33,6 @@ class HRefListObject(ListObject):
     def get_title(self):
         return 'HRef List %s' % self._href_list_id
 
-    def get_commands(self):
-        return ListObject.get_commands(self)
-
     def get_columns(self):
         return [
             Column('id', is_key=True),
@@ -55,6 +53,10 @@ class HRefListObject(ListObject):
         chunk = Chunk(sort_column_id, None, elements, True, True)
         self._notify_fetch_result(chunk)
         return chunk
+
+    @command('open', kind='element')
+    def command_open(self, element_key):
+        assert False, repr(element_key)
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)

@@ -43,7 +43,7 @@ class View(QtGui.QDockWidget):
             btn.deleteLater()
         self.dir_buttons = []
         idx = 0
-        for cmd in window.get_commands():
+        for cmd in window.get_command_list():
             assert isinstance(cmd, Command), repr(cmd)
             if cmd.kind != 'object': continue
             #if cmd.is_system(): continue
@@ -57,9 +57,8 @@ class View(QtGui.QDockWidget):
         for btn in self.elts_buttons:
             btn.deleteLater()
         self.elts_buttons = []
-        for cmd in window.get_commands():
-            assert isinstance(cmd, Command), repr(cmd)
-            if cmd.kind != 'element': continue
+        for cmd in window.get_command_list(kinds=['element']):
+            assert isinstance(cmd, Command) and cmd.kind == 'element', repr(cmd)
             #if cmd.is_system(): continue
             button = self._make_button(cmd)
             button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))

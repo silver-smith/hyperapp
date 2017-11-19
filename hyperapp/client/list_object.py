@@ -43,6 +43,9 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         assert matched_elements, repr(matched_elements)  # at least one element with this key is expected
         return matched_elements[0]
 
+    def get_element_command_list(self, element_key):
+        return self.get_command_list(kinds=['element'])  # by default all elements have same commands
+
     # currently unused
     @asyncio.coroutine
     def run_element_command(self, command_id, element_key):

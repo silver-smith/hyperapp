@@ -7,7 +7,7 @@ class Module(Commander):
     def __init__(self, services):
         Commander.__init__(self, commands_kind='global')
 
-    def get_object_commands(self, object):
+    def get_object_command_list(self, object, kinds=None):
         return []
 
 
@@ -23,11 +23,11 @@ class ModuleRegistry(common_module_registry.ModuleRegistry):
     def get_all_commands(self):
         commands = []
         for module in self._modules:
-            commands += module.get_commands()
+            commands += module.get_command_list()
         return commands
 
     def get_all_object_commands(self, object):
         commands = []
         for module in self._modules:
-            commands += module.get_object_commands(object)
+            commands += module.get_object_command_list(object)
         return [cmd.clone(args=(object,)) for cmd in commands]

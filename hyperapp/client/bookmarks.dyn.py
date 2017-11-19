@@ -127,7 +127,7 @@ class ThisModule(Module):
             services.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         services.bookmarks = self.bookmarks
 
-    def get_object_commands(self, object):
+    def get_object_command_list(self, object, kinds=None):
         if object.get_url() is not None:
             return [self.object_command_bookmark]
         return []

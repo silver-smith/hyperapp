@@ -88,7 +88,7 @@ class MenuBar(object):
 
     def _update_dir_menu(self, window):
         self.dir_menu.clear()
-        commands = window.get_commands()
+        commands = window.get_command_list()
         for cmd in commands:
             assert isinstance(cmd, Command), repr(cmd)
             if cmd.kind != 'object': continue
@@ -101,7 +101,7 @@ class MenuBar(object):
         # remove duplicate shortcuts, with latter (from deeper views) commands overriding former ones
         commands = []  # in reversed order
         shortcuts = set()
-        for cmd in reversed(window.get_commands()):
+        for cmd in reversed(window.get_command_list()):
             assert isinstance(cmd, Command), repr(cmd)
             if cmd.kind != 'view': continue
             #if cmd.is_system(): continue

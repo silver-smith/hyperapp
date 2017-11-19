@@ -204,7 +204,7 @@ class ThisModule(Module):
     def command_repository_list(self):
         return make_code_repository_list()
 
-    def get_object_commands(self, object):
+    def get_object_command_list(self, object, kinds=None):
         if code_repository_types.code_repository in object.get_facets():
             return [self.object_command_add_to_repository_list]
         return []
