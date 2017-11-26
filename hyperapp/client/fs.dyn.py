@@ -26,6 +26,7 @@ class FsDirObject(ListObject):
         self._fs_service = fs_service
         self._host = host
         self._path = path
+        self._key2row = {}  # cache for visited rows
 
     def get_state(self):
         return fs_types.fs_dir_object(self.objimpl_id, self._fs_service.to_data(), self._host, self._path)
@@ -54,6 +55,7 @@ class FsDirObject(ListObject):
     def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         chunk = yield from self._fs_service.fetch_dir_contents(
             self._host, self._path, sort_column_id, from_key, desc_count, asc_count)
+        self._key2row.update({row.key: row for row in chunk.rows})
         elements = [Element(row.key, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in chunk.rows]
         list_chunk = Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
@@ -63,6 +65,14 @@ class FsDirObject(ListObject):
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
         log.info('-- FsDirObject.process_diff self=%r diff=%r', id(self), diff)
+
+    def get_element_command_list(self, element_key):
+        all_command_list = ListObject.get_element_command_list(self, element_key)
+        row = self._key2row[element_key]
+        if row.ftype == 'dir':
+            return all_command_list
+        else:
+            return [command for command in all_command_list if command.id != 'open']
 
     @command('open', kind='element')
     @asyncio.coroutine

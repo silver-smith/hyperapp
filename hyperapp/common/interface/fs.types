@@ -39,7 +39,7 @@ row_fetch_request = record:
 
 fs_dir_row = record:
     key: string
-    ftype: string
+    ftype: string  # 'dir' or 'file'
     ftime: int
     fsize: int
 
