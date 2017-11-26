@@ -12,7 +12,7 @@ fs_ref = href_object class fs_ref:
     fs_service_ref: service_ref
     host: host_id
     path: string list
-    current_file_name: string
+    current_file_name: string opt
 
 
 fs_file = list_interface fs_file:
