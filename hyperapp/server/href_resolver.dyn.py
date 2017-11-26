@@ -41,7 +41,7 @@ class HRefResolver(Object):
         ref = request.params.ref
         if ref == href_types.href('sha256', b'test-fs-href'):
             fs_service_ref = href_types.service_ref('sha256', b'test-fs-service-ref')
-            object = href_types.fs_ref(
+            object = fs_types.fs_ref(
                 fs_service_ref=fs_service_ref,
                 host='localhost',
                 path=['usr', 'share'],
@@ -61,8 +61,8 @@ class HRefResolver(Object):
     def command_resolve_service_ref(self, request):
         ref = request.params.ref
         if ref == href_types.service_ref('sha256', b'test-fs-service-ref'):
-            fs_service_url = Url(fs_types.fs_service, self._server.get_public_key(), FsService.get_path())
-            service = href_types.fs_service(
+            fs_service_url = Url(fs_types.fs_service_iface, self._server.get_public_key(), FsService.get_path())
+            service = fs_types.fs_service(
                 service_url=fs_service_url.to_data())
             return request.make_response_result(service=service)
         if ref == href_types.service_ref('sha256', b'ref-list-service'):

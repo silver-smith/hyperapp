@@ -1,5 +1,18 @@
 from core import object, object_base, handle
-from hyper_ref import fs_service
+from hyper_ref import href_object, service_ref, service
+
+
+fs_service = service class fs_service:
+    service_url: url
+
+
+host_id = string
+
+fs_ref = href_object class fs_ref:
+    fs_service_ref: service_ref
+    host: host_id
+    path: string list
+    current_file_name: string
 
 
 fs_file = list_interface fs_file:
@@ -39,7 +52,7 @@ fs_dir_chunk = record:
 
 fs_path = string list
 
-fs_service = interface fs_service:
+fs_service_iface = interface fs_service:
     commands:
         request fetch_dir_contents (host: string, fs_path: fs_path, fetch_request: row_fetch_request) -> (chunk: fs_dir_chunk)
 

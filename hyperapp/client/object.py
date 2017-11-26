@@ -26,6 +26,10 @@ class Object(Commander):
     def to_data(self):
         raise NotImplementedError(self.__class__)
 
+    # collect references for currently visible objects
+    def pick_current_refs(self):
+        return []
+
     def get_url(self):
         return None
 

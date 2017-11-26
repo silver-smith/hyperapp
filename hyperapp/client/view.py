@@ -77,6 +77,16 @@ class View(ObjectObserver, Commander):
             return object.get_title()
         return 'Untitled'
 
+    def pick_current_refs(self):
+        refs = []
+        child = self.get_current_child()
+        if child:
+            refs += child.pick_current_refs()
+        object = self.get_object()
+        if object:
+            refs == object.pick_current_refs()
+        return refs
+
     def get_url(self):
         object = self.get_object()
         if object:

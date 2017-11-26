@@ -115,7 +115,7 @@ class Dir(FsObject):
 
 class FsService(Object):
 
-    iface = fs_types.fs_service
+    iface = fs_types.fs_service_iface
     class_name = 'service'
 
     @classmethod

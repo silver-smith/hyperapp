@@ -12,13 +12,17 @@ log = logging.getLogger(__name__)
 
 class HRefResolver(object):
 
-    def __init__(self, href_object_registry, href_resolver_proxy):
+    def __init__(self, href_registry, href_object_registry, href_resolver_proxy):
+        self._href_registry = href_registry
         self._href_object_registry = href_object_registry
         self._href_resolver_proxy = href_resolver_proxy
 
     @asyncio.coroutine
     def resolve_href_to_handle(self, href):
-        object = yield from self.resolve_href(href)
+        object = self._href_registry.resolve(href)
+        if not object:
+            object = yield from self.resolve_href(href)
+            self._href_registry.register(href, object)
         assert object, repr(object)
         log.debug('href resolver: href resolved to %r', object)
         handle = yield from self._href_object_registry.resolve(object)
@@ -37,6 +41,23 @@ class HRefResolver(object):
         return result.service
 
 
+class HRefRegistry(object):
+
+    def __init__(self):
+        self._registry = {}
+
+    def register(self, href, href_object):
+        assert isinstance(href, href_types.href), repr(href)
+        assert isinstance(href_object, href_types.href_object), repr(href_object)
+        existing_object = self._registry.get(href)
+        if existing_object:
+            assert href_object == existing_object, repr((existing_object, href_object))  # new object does not match existing one
+        self._registry[href] = href_object
+
+    def resolve(self, href):
+        return self._registry.get(href)
+
+
 class HRefObjectRegistry(Registry):
 
     @asyncio.coroutine
@@ -52,9 +73,11 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._remoting = services.remoting
+        self._href_registry = HRefRegistry()
         url_path = os.path.expanduser(LOCAL_HREF_RESOLVER_URL_PATH)
         with open(url_path) as f:
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
-        proxy = services.proxy_factory.from_url(url)
+        href_resolver_proxy = services.proxy_factory.from_url(url)
+        services.href_registry = self._href_registry
         services.href_object_registry = HRefObjectRegistry()
-        services.href_resolver = HRefResolver(services.href_object_registry, proxy)
+        services.href_resolver = HRefResolver(self._href_registry, services.href_object_registry, href_resolver_proxy)

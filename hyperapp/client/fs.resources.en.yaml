@@ -1,4 +1,4 @@
-fs_dir:
+FsDirObject:
   columns:
     key:
       text: File Name
@@ -11,18 +11,11 @@ fs_dir:
       text: File size
   commands:
     open:
-      is_default: true
       text: Open
-      description: Open file or directory
-      shortcuts: []
+      description: Open selected directory
+      is_default: yes
     parent:
       text: Open parent
       description: Open parent directory
       shortcuts:
       - Ctrl+Backspace
-fs_file:
-  columns:
-    idx:
-      text: Index
-    line:
-      text: Line
