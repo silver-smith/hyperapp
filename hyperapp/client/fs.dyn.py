@@ -77,15 +77,26 @@ class FsDirObject(ListObject):
         else:
             return [command for command in all_command_list if command.id != 'open']
 
-    @command('open', kind='element')
     @asyncio.coroutine
-    def command_open(self, element_key):
+    def _open_path(self, path):
         fs_service_ref = self._fs_service.to_service_ref()
-        path = self._path + [element_key]
         href_object = fs_types.fs_ref(fs_service_ref, self._host, path)
         href = href_types.href('sha256', ('test-fs-href:%s' % '/'.join(path)).encode())
         self._href_registry.register(href, href_object)
         return (yield from self._href_resolver.resolve_href_to_handle(href))
+
+    @command('open', kind='element')
+    @asyncio.coroutine
+    def command_open(self, element_key):
+        path = self._path + [element_key]
+        return (yield from self._open_path(path))
+
+    @command('open_parent')
+    @asyncio.coroutine
+    def command_open_parent(self):
+        if len(self._path) > 0:
+            path = self._path[:-1]
+            return (yield from self._open_path(path))
 
 
 class FsService(object):

@@ -14,7 +14,7 @@ FsDirObject:
       text: Open
       description: Open selected directory
       is_default: yes
-    parent:
+    open_parent:
       text: Open parent
       description: Open parent directory
       shortcuts:
