@@ -37,8 +37,12 @@ class FsDirObject(ListObject):
     def get_title(self):
         return '%s:%s' % (self._host, '/'.join(self._path))
 
-    def get_commands(self):
-        return ListObject.get_commands(self)
+    def get_command_list(self, kinds):
+        command_list = ListObject.get_command_list(self, kinds)
+        if not self._path:
+            return [command for command in command_list if command.id != 'open_parent']
+        else:
+            return command_list
 
     def pick_current_refs(self):
         return []
