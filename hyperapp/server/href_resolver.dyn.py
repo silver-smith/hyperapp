@@ -55,7 +55,7 @@ class HRefResolver(Object):
                 href_list_id='server-management',
                 )
             return request.make_response_result(href_object=object)
-        assert False, repr(ref)  # Unknown hyper ref
+        raise href_types.unknown_href_error(ref)
 
     @command('resolve_service_ref')
     def command_resolve_service_ref(self, request):

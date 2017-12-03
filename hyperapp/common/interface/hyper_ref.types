@@ -1,4 +1,5 @@
 from core import handle, view_handle
+from packet import error, client_error
 
 
 multihash = record:
@@ -17,6 +18,9 @@ href_redirect_handle = handle class href_redirect(view_handle):
 service_ref = multihash
 service = hierarchy service
 
+
+unknown_href_error = error class unknown_href(client_error):
+    href: href
 
 href_resolver = interface href_resolver:
     commands:

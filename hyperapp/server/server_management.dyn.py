@@ -69,7 +69,10 @@ class ManagementService(Object):
         href_item_list = [href_list_types.href_item(id='%s.%s' % (command.module_name, command.id),
                                                     href=href_types.href('phony_alg', command.id.encode()))
                           for command in self._module_registry.get_all_modules_commands()]
-        href_item_list = [href_list_types.href_item('fs', href_types.href('sha256', b'test-fs-href'))] + href_item_list
+        href_item_list = [
+            href_list_types.href_item('blog', href_types.href('sha256', b'test-blog-href')),
+            href_list_types.href_item('fs', href_types.href('sha256', b'test-fs-href')),
+            ] + href_item_list
         return request.make_response_result(href_list=href_list_types.href_list(href_list=href_item_list))
 
     
