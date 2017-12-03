@@ -221,8 +221,13 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def get_object(self):
         return self._object
 
-    def get_commands(self, kinds):
-        return view.View.get_commands(self, kinds) + self._elt_commands
+    def get_command_list(self, kinds):
+        command_list = view.View.get_command_list(self, kinds)
+        filtered_command_list = list(filter(lambda command: command.kind != 'element', command_list))
+        if not kinds or 'element' in kinds:
+            return filtered_command_list + self._elt_commands
+        else:
+            return filtered_command_list
 
     def get_sort_column_id(self):
         return self.model().get_sort_column_id()

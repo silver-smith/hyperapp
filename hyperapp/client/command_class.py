@@ -22,7 +22,7 @@ class Command(common_command.Command, metaclass=abc.ABCMeta):
         self.enabled = enabled
 
     def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, self.id)
+        return '%s(id=%r kind=%r)' % (self.__class__.__name__, self.id, self.kind)
 
     def is_enabled(self):
         return self.enabled

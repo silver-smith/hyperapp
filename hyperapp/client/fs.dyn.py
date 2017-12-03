@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.url import Url
 from ..common.interface import core as core_types
@@ -8,6 +9,8 @@ from ..common.list_object import Element, Chunk
 from .command import command
 from .module import Module
 from .list_object import ListObject
+
+log = logging.getLogger(__name__)
 
 
 class FsDirObject(ListObject):
