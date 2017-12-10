@@ -4,9 +4,12 @@ import logging
 from ..common.htypes import tInt, tDateTime, Column, list_handle_type
 from ..common.url import Url
 from ..common.interface import core as core_types
+from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
 from ..common.list_object import Element, Chunk
 from .module import Module
+from .command import command
+from .text_object import TextObject
 from .list_object import ListObject
 
 log = logging.getLogger(__name__)
@@ -61,7 +64,33 @@ class BlogObject(ListObject):
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
-        log.info('-- BlogDirObject.process_diff self=%r diff=%r', id(self), diff)
+        log.info('-- BlogObject.process_diff self=%r diff=%r', id(self), diff)
+
+    @command('open', kind='element')
+    @asyncio.coroutine
+    def command_open(self, element_key):
+        article_id = element_key
+        blog_service_ref = self._blog_service.to_service_ref()
+        href_object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
+        href = href_types.href('sha256', ('test-blog-article-href:%d' % article_id).encode())
+        self._href_registry.register(href, href_object)
+        return (yield from self._href_resolver.resolve_href_to_handle(href))
+
+
+class BlogArticleObject(TextObject):
+
+    objimpl_id = 'blog_article'
+
+    @classmethod
+    def from_state(cls, state, service_registry):
+        blog_service = service_registry.resolve(state.blog_service)
+        return cls(blog_service, state.blog_id, state.article_id)
+
+    def __init__(self, blog_service, blog_id, article_id):
+        TextObject.__init__(self, text='')
+        self._blog_service = blog_id
+        self._blog_id = blog_id
+        self._article_id = article_id
 
 
 class BlogService(object):
@@ -96,6 +125,7 @@ class ThisModule(Module):
         self._href_resolver = services.href_resolver
         self._service_registry = services.service_registry
         services.href_object_registry.register(blog_types.blog_ref.id, self.resolve_blog_object)
+        services.href_object_registry.register(blog_types.blog_article_ref.id, self.resolve_blog_article_object)
         services.service_registry.register(
             blog_types.blog_service.id, BlogService.from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
@@ -104,8 +134,17 @@ class ThisModule(Module):
     @asyncio.coroutine
     def resolve_blog_object(self, blog_object):
         blog_service_object = yield from self._href_resolver.resolve_service_ref(blog_object.blog_service_ref)
-        dir_object = blog_types.blog_object(BlogObject.objimpl_id, blog_service_object, blog_object.blog_id)
+        list_object = blog_types.blog_object(BlogObject.objimpl_id, blog_service_object, blog_object.blog_id)
         handle_t = list_handle_type(core_types, tInt)
         sort_column_id = 'created_at'
         resource_id = ['client_module', 'blog', 'BlogObject']
+        return handle_t('list', list_object, resource_id, sort_column_id, None)
+
+    @asyncio.coroutine
+    def resolve_blog_article_object(self, blog_article_object):
+        blog_service_object = yield from self._href_resolver.resolve_service_ref(blog_article_object.blog_service_ref)
+        text_object = blog_types.blog_article_object(BlogObject.objimpl_id, blog_service_object, blog_article_object.blog_id, blog_article_object.article_id)
+        handle_t = list_handle_type(core_types, tInt)
+        sort_column_id = 'created_at'
+        resource_id = ['client_module', 'blog', 'BlogArticleObject']
         return handle_t('list', dir_object, resource_id, sort_column_id, None)

@@ -1,0 +1,13 @@
+BlogObject:
+  columns:
+    id:
+      text: Id
+    created_at:
+      text: Created at
+    title:
+      text: Title
+  commands:
+    open:
+      text: Open
+      description: Open selected article
+      is_default: yes
