@@ -21,8 +21,10 @@ row_fetch_request = record:
     asc_count: int
 
 blog_row = record:
-    key: int
+    id: int
+    created_at: datetime
     title: string
+    text: string
 
 blog_chunk = record:
     sort_column_id: string

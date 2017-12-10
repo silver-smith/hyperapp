@@ -11,6 +11,7 @@ from .command import command
 from .object import Object, subscription
 from .module import ModuleCommand
 from . import article
+from .list_object import rows2fetched_chunk
 
 log = logging.getLogger(__name__)
 
@@ -110,6 +111,27 @@ class BlogService(Object):
         path.check_empty()
         return cls()
 
+    @command('fetch_blog_contents')
+    def command_fetch_blog_contents(self, request):
+        all_rows = self.fetch_blog_contents(request.params.blog_id)
+        chunk = rows2fetched_chunk('id', all_rows, request.params.fetch_request, blog_types.blog_chunk)
+        return request.make_response_result(chunk=chunk)
+
+
+    @db_session
+    def fetch_blog_contents(self, blog_id):
+        # blog_id is ignored now
+        return list(map(self.rec2element, this_module.BlogEntry.select()))
+
+    @classmethod
+    def rec2element(cls, rec):
+        return blog_types.blog_row(
+            id=rec.id,
+            created_at=rec.created_at,
+            title='Article #%d' % rec.id,
+            text=rec.text,
+            )
+
 
 class ThisModule(PonyOrmModule):
 
@@ -124,11 +146,9 @@ class ThisModule(PonyOrmModule):
         BlogEntry.register_class(self.BlogEntry)
 
     def resolve(self, iface, path):
-        objname = path.pop_str()
-        if objname == BlogEntry.class_name:
-            return BlogEntry.resolve(path)
-        if objname == Blog.class_name:
-            return Blog.resolve(path)
+        name = path.pop_str()
+        if name == BlogService.class_name:
+            return BlogService.resolve(path)
         path.raise_not_found()
 
     def get_commands(self):

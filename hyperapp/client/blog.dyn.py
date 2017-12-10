@@ -1,10 +1,11 @@
 import asyncio
 import logging
 
-from ..common.htypes import tInt, tString, Column, list_handle_type
+from ..common.htypes import tInt, tDateTime, Column, list_handle_type
 from ..common.url import Url
 from ..common.interface import core as core_types
 from ..common.interface import blog as blog_types
+from ..common.list_object import Element, Chunk
 from .module import Module
 from .list_object import ListObject
 
@@ -40,6 +41,7 @@ class BlogObject(ListObject):
     def get_columns(self):
         return [
             Column('id', type=tInt, is_key=True),
+            Column('created_at', type=tDateTime),
             Column('title'),
             ]
 
@@ -51,7 +53,7 @@ class BlogObject(ListObject):
         chunk = yield from self._blog_service.fetch_blog_contents(
             self._blog_id, sort_column_id, from_key, desc_count, asc_count)
         self._key2row.update({row.id: row for row in chunk.rows})
-        elements = [Element(row.key, row, commands=None, order_key=getattr(row, sort_column_id))
+        elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in chunk.rows]
         list_chunk = Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
         self._notify_fetch_result(list_chunk)
@@ -104,6 +106,6 @@ class ThisModule(Module):
         blog_service_object = yield from self._href_resolver.resolve_service_ref(blog_object.blog_service_ref)
         dir_object = blog_types.blog_object(BlogObject.objimpl_id, blog_service_object, blog_object.blog_id)
         handle_t = list_handle_type(core_types, tInt)
-        sort_column_id = 'id'
+        sort_column_id = 'created_at'
         resource_id = ['client_module', 'blog', 'BlogObject']
         return handle_t('list', dir_object, resource_id, sort_column_id, None)
