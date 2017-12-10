@@ -59,6 +59,7 @@ class Services(ServicesBase):
                 'hyper_ref',
                 'href_list',
                 'fs',
+                'blog',
             ])
         self.objimpl_registry = ObjImplRegistry()
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
@@ -116,6 +117,7 @@ class Services(ServicesBase):
                 'href_list',
                 'local_server_ref_list',
                 'fs',
+                'blog',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:

@@ -8,7 +8,7 @@ from ..common.interface import blog as blog_types
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
 from .command import command
-from .object import SmallListObject, subscription
+from .object import Object, subscription
 from .module import ModuleCommand
 from . import article
 
@@ -20,7 +20,7 @@ MODULE_NAME = 'blog'
 
 class BlogEntry(article.Article):
 
-    iface = blog_types.blog_entry
+    #iface = blog_types.blog_entry
     objimpl_id = 'proxy.text'
 
     def get_path(self):
@@ -51,9 +51,9 @@ class BlogEntry(article.Article):
         return request.make_response_result(new_path=self.get_path())
 
 
-class Blog(SmallListObject):
+class Blog:#(SmallListObject):
 
-    iface = blog_types.blog
+    #iface = blog_types.blog
     objimpl_id = 'proxy_list'
     class_name = 'blog'
     default_sort_column_id = 'id'
@@ -94,6 +94,21 @@ class Blog(SmallListObject):
         this_module.BlogEntry[article_id].delete()
         diff = ListDiff.delete(article_id)
         subscription.distribute_update(self.iface, self.get_path(), diff)
+
+
+class BlogService(Object):
+
+    iface = blog_types.blog_service_iface
+    class_name = 'service'
+
+    @classmethod
+    def get_path(cls):
+        return this_module.make_path(cls.class_name)
+
+    @classmethod
+    def resolve(cls, path):
+        path.check_empty()
+        return cls()
 
 
 class ThisModule(PonyOrmModule):

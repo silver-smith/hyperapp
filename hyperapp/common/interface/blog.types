@@ -1,17 +1,41 @@
-from core import handle
-from article import article
+from core import object, object_base, handle
+from hyper_ref import href_object, service_ref, service
 
 
-blog_entry = interface blog_entry(article):
+
+blog_service = service class blog_service:
+    service_url: url
+
+
+blog_ref = href_object class blog_ref:
+    blog_service_ref: service_ref
+    blog_id: string
+    current_article_id: int opt
+
+
+
+row_fetch_request = record:
+    sort_column_id: string
+    from_key: int opt
+    desc_count: int
+    asc_count: int
+
+blog_row = record:
+    key: int
+    title: string
+
+blog_chunk = record:
+    sort_column_id: string
+    from_key: int opt
+    rows: blog_row list
+    bof: bool
+    eof: bool
+
+blog_service_iface = interface blog_service:
     commands:
-        request parent () -> (handle: handle opt)
+        request fetch_blog_contents (blog_id: string, fetch_request: row_fetch_request) -> (chunk: blog_chunk)
 
-blog = list_interface blog:
-    columns:
-        @id: int
-        created_at: datetime
-    commands:
-        request open (element_key: int) -> (handle: handle opt)
-        request delete (element_key: int) -> ()
-        request add () -> (handle: handle opt)
 
+blog_object = object class blog_object(object_base):
+    blog_service: blog_service
+    blog_id: string

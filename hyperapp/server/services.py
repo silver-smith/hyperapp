@@ -31,6 +31,8 @@ class Services(ServicesBase):
                 'resource',
                 'core',
                 'packet',
+                'hyper_ref',
+                'href_list',
                 'param_editor',
                 'server_management',
                 'code_repository',
@@ -43,8 +45,6 @@ class Services(ServicesBase):
                 'test_list',
                 'text_object_types',
                 'exception_test',
-                'hyper_ref',
-                'href_list',
                 'fs',
                 ])
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)

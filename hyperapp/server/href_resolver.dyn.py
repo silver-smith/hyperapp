@@ -3,6 +3,7 @@ import os
 import os.path
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
+from ..common.interface import blog as blog_types
 from ..common.interface import href_list as href_list_types
 from ..common.url import Url
 from ..common.local_server_paths import LOCAL_HREF_RESOLVER_URL_PATH, save_url_to_file
@@ -10,6 +11,7 @@ from .command import command
 from .object import Object
 from . import module as module_mod
 from .fs import FsService
+from .blog import BlogService
 from .server_management import ManagementService
 
 log = logging.getLogger(__name__)
@@ -39,6 +41,13 @@ class HRefResolver(Object):
     @command('resolve_href')
     def command_resolve_href(self, request):
         ref = request.params.ref
+        if ref == href_types.href('sha256', b'server-ref-list'):
+            service_ref = href_types.service_ref('sha256', b'ref-list-service')
+            object = href_list_types.dynamic_href_list(
+                href_list_service=service_ref,
+                href_list_id='server-management',
+                )
+            return request.make_response_result(href_object=object)
         if ref == href_types.href('sha256', b'test-fs-href'):
             fs_service_ref = href_types.service_ref('sha256', b'test-fs-service-ref')
             object = fs_types.fs_ref(
@@ -48,11 +57,12 @@ class HRefResolver(Object):
                 current_file_name='dpkg',
                 )
             return request.make_response_result(href_object=object)
-        if ref == href_types.href('sha256', b'server-ref-list'):
-            service_ref = href_types.service_ref('sha256', b'ref-list-service')
-            object = href_list_types.dynamic_href_list(
-                href_list_service=service_ref,
-                href_list_id='server-management',
+        if ref == href_types.href('sha256', b'test-blog-href'):
+            blog_service_ref = href_types.service_ref('sha256', b'test-blog-service-ref')
+            object = blog_types.blog_ref(
+                blog_service_ref=blog_service_ref,
+                blog_id='test-blog',
+                current_article_id=None,
                 )
             return request.make_response_result(href_object=object)
         raise href_types.unknown_href_error(ref)
@@ -60,15 +70,20 @@ class HRefResolver(Object):
     @command('resolve_service_ref')
     def command_resolve_service_ref(self, request):
         ref = request.params.ref
+        if ref == href_types.service_ref('sha256', b'ref-list-service'):
+            service_url = Url(ManagementService.iface, self._server.get_public_key(), ManagementService.get_path())
+            service = href_list_types.href_list_service(
+                service_url=service_url.to_data())
+            return request.make_response_result(service=service)
         if ref == href_types.service_ref('sha256', b'test-fs-service-ref'):
             fs_service_url = Url(fs_types.fs_service_iface, self._server.get_public_key(), FsService.get_path())
             service = fs_types.fs_service(
                 service_url=fs_service_url.to_data())
             return request.make_response_result(service=service)
-        if ref == href_types.service_ref('sha256', b'ref-list-service'):
-            service_url = Url(ManagementService.iface, self._server.get_public_key(), ManagementService.get_path())
-            service = href_list_types.href_list_service(
-                service_url=service_url.to_data())
+        if ref == href_types.service_ref('sha256', b'test-blog-service-ref'):
+            blog_service_url = Url(blog_types.blog_service_iface, self._server.get_public_key(), BlogService.get_path())
+            service = blog_types.blog_service(
+                service_url=blog_service_url.to_data())
             return request.make_response_result(service=service)
         assert False, repr(ref)  # Unknown service ref
 
