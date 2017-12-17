@@ -82,15 +82,20 @@ class BlogArticleObject(TextObject):
     objimpl_id = 'blog_article'
 
     @classmethod
+    @asyncio.coroutine
     def from_state(cls, state, service_registry):
         blog_service = service_registry.resolve(state.blog_service)
-        return cls(blog_service, state.blog_id, state.article_id)
+        row = yield from blog_service.get_blog_row(state.blog_id, state.article_id)
+        return cls(blog_service, state.blog_id, state.article_id, row.text)
 
-    def __init__(self, blog_service, blog_id, article_id):
-        TextObject.__init__(self, text='')
-        self._blog_service = blog_id
+    def __init__(self, blog_service, blog_id, article_id, text):
+        TextObject.__init__(self, text=text)
+        self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
+
+    def get_state(self):
+        return blog_types.blog_article_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
 
 
 class BlogService(object):
@@ -103,6 +108,7 @@ class BlogService(object):
 
     def __init__(self, service_proxy):
         self._service_proxy = service_proxy
+        self._blog_id_article_id_to_row = {}  # (blog_id, article_id) -> blog_row, already fetched rows
 
     def to_data(self):
         service_url = self._service_proxy.get_url()
@@ -115,7 +121,17 @@ class BlogService(object):
     def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
         result = yield from self._service_proxy.fetch_blog_contents(blog_id, fetch_request)
+        self._blog_id_article_id_to_row.update({(blog_id, row.id): row for row in result.chunk.rows})
         return result.chunk
+
+    @asyncio.coroutine
+    def get_blog_row(self, blog_id, article_id):
+        row = self._blog_id_article_id_to_row.get((blog_id, article_id))
+        if not row:
+            yield from self.fetch_blog_contents(blog_id, sort_column_id='id', from_key=article_id, desc_count=1, asc_count=0)
+            row = self._blog_id_article_id_to_row.get((blog_id, article_id))
+            assert row, repr((blog_id, article_id))  # expecting it to be fetched now
+        return row
 
 
 class ThisModule(Module):
