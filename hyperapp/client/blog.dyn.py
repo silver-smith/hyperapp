@@ -130,6 +130,8 @@ class ThisModule(Module):
             blog_types.blog_service.id, BlogService.from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
             BlogObject.objimpl_id, BlogObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
+        services.objimpl_registry.register(
+            BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.service_registry)
 
     @asyncio.coroutine
     def resolve_blog_object(self, blog_object):
@@ -143,8 +145,6 @@ class ThisModule(Module):
     @asyncio.coroutine
     def resolve_blog_article_object(self, blog_article_object):
         blog_service_object = yield from self._href_resolver.resolve_service_ref(blog_article_object.blog_service_ref)
-        text_object = blog_types.blog_article_object(BlogObject.objimpl_id, blog_service_object, blog_article_object.blog_id, blog_article_object.article_id)
-        handle_t = list_handle_type(core_types, tInt)
-        sort_column_id = 'created_at'
-        resource_id = ['client_module', 'blog', 'BlogArticleObject']
-        return handle_t('list', dir_object, resource_id, sort_column_id, None)
+        text_object = blog_types.blog_article_object(
+            BlogArticleObject.objimpl_id, blog_service_object, blog_article_object.blog_id, blog_article_object.article_id)
+        return core_types.obj_handle('text_view', text_object)
