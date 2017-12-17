@@ -132,7 +132,7 @@ class View(LineListPanel):
     @asyncio.coroutine
     def from_state(cls, locale, state, parent, objimpl_registry, resources_manager):
         data_type = core_types.handle.get_object_class(state)
-        object = objimpl_registry.resolve(state.object)
+        object = yield from objimpl_registry.resolve(state.object)
         return cls(locale, parent, data_type, object, resources_manager, state.resource_id,
                    state.sort_column_id, state.key, state.narrow_field_id)
 

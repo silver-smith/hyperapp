@@ -52,7 +52,7 @@ class View(view.View, QtGui.QWidget):
     @classmethod
     @asyncio.coroutine
     def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
-        ref_list = objimpl_registry.resolve(state.ref_list)
+        ref_list = yield from objimpl_registry.resolve(state.ref_list)
         target_view = yield from view_registry.resolve(locale, state.target)
         return cls(parent, ref_list, state.ref_id, target_view)
 
