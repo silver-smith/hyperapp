@@ -1,4 +1,3 @@
-import asyncio
 from PySide import QtCore, QtGui
 from ..common.url import UrlWithRoutes
 from .command import command
@@ -20,8 +19,7 @@ class ThisModule(Module):
         return []
 
     @command('url_from_clipboard')
-    @asyncio.coroutine
-    def command_url_from_clipboard(self):
+    async def command_url_from_clipboard(self):
         url_str = QtGui.QApplication.clipboard().text()
         url = UrlWithRoutes.from_str(self._iface_registry, url_str)
         self._remoting.add_routes(url.public_key, url.routes)

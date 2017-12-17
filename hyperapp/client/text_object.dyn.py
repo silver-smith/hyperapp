@@ -1,5 +1,4 @@
 import logging
-import asyncio
 from ..common.htypes import tString, Field
 from ..common.interface import core as core_types
 from ..common.interface import text_object_types
@@ -66,8 +65,7 @@ class TextObject(Object):
     def command_view(self):
         return core_types.obj_handle('text_view', self.get_state())
 
-    @asyncio.coroutine
-    def open_ref(self, ref_id):
+    async def open_ref(self, ref_id):
         pass  # not implemented for local text
 
     def __del__(self):

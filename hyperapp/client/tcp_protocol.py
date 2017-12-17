@@ -14,15 +14,14 @@ class TcpProtocol(asyncio.Protocol):
     _connections = {}  # (server public key, host, port) -> TcpProtocol
 
     @classmethod
-    @asyncio.coroutine
-    def produce(cls, remoting, server_public_key, host, port):
+    async def produce(cls, remoting, server_public_key, host, port):
         assert isinstance(remoting, Remoting), repr(remoting)
         key = (server_public_key.get_id(), host, port)
         protocol = cls._connections.get(key)
         if not protocol:
             loop = asyncio.get_event_loop()
             constructor = lambda: cls(remoting, server_public_key, host, port)
-            transport, protocol = yield from loop.create_connection(constructor, host, port)
+            transport, protocol = await loop.create_connection(constructor, host, port)
             cls._connections[key] = protocol
         return protocol
 

@@ -1,4 +1,3 @@
-import asyncio
 from ..common.transport_packet import tTransportPacket
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
@@ -26,13 +25,12 @@ class TcpTransport(Transport):
     def register(self, registry):
         registry.register(self.transport_id, self)
 
-    @asyncio.coroutine
-    def send_request_rec(self, remoting, public_key, route, request_or_notification):
+    async def send_request_rec(self, remoting, public_key, route, request_or_notification):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
         transport_packet = self._make_transport_packet(request_or_notification)
-        protocol = yield from TcpProtocol.produce(remoting, public_key, host, port)
+        protocol = await TcpProtocol.produce(remoting, public_key, host, port)
         protocol.send_packet(transport_packet)
         return True
 
@@ -41,11 +39,10 @@ class TcpTransport(Transport):
         packet_data = packet_coders.encode(self.encoding, packet, tPacket)
         return tTransportPacket(self.transport_id, packet_data)
 
-    @asyncio.coroutine
-    def process_packet(self, protocol, session_list, server_public_key, data):
+    async def process_packet(self, protocol, session_list, server_public_key, data):
         packet = packet_coders.decode(self.encoding, data, tPacket)
         pprint(tPacket, packet)
-        yield from self.process_aux_info(packet.aux_info)
+        await self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(self.encoding, packet.payload, self._packet_types.payload)
         pprint(self._packet_types.payload, response_or_notification_rec, self._resource_types, self._packet_types, self._iface_registry)
         return ResponseBase.from_data(server_public_key, self._iface_registry, response_or_notification_rec)

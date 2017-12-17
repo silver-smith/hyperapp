@@ -18,9 +18,8 @@ def register_views(registry, services):
 class View(view.View, QtGui.QTextBrowser):
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, parent, objimpl_registry):
-        object = yield from objimpl_registry.resolve(state.object)
+    async def from_state(cls, locale, state, parent, objimpl_registry):
+        object = await objimpl_registry.resolve(state.object)
         return cls(object, parent)
 
     @staticmethod
@@ -55,9 +54,8 @@ class View(view.View, QtGui.QTextBrowser):
         log.info('on_anchor_clicked url.path=%r', url.path())
         asyncio.async(self.open_url(url))
 
-    @asyncio.coroutine
-    def open_url(self, url):
-        handle = yield from self.object.open_ref(url.path())
+    async def open_url(self, url):
+        handle = await self.object.open_ref(url.path())
         if handle:
             self.open(handle)
 

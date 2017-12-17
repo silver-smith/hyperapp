@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import weakref
 import traceback
 from .util import WeakSetWithCallback
@@ -36,11 +35,10 @@ class Object(Commander):
     def get_facets(self):
         return []
 
-    @asyncio.coroutine
-    def run_command(self, command_id, *args, **kw):
+    async def run_command(self, command_id, *args, **kw):
         command = self.get_command(command_id)
         assert command, 'Unknown command: %r; known are: %r' % (command_id, [cmd.id for cmd in self._commands])  # Unknown command
-        return (yield from command.run(*args, **kw))
+        return (await command.run(*args, **kw))
 
     def subscribe(self, observer):
         assert isinstance(observer, ObjectObserver), repr(observer)
@@ -50,8 +48,7 @@ class Object(Commander):
     def unsubscribe(self, observer):
         self._observers.remove(observer)
 
-    @asyncio.coroutine
-    def server_subscribe(self):
+    async def server_subscribe(self):
         pass
 
     def observers_gone(self):

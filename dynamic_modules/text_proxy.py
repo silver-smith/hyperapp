@@ -1,6 +1,5 @@
 # text object representing server text object
 
-import asyncio
 from ..common.htypes import tString
 from .command import command
 from .text_object import TextObject
@@ -37,15 +36,13 @@ class ProxyTextObject(ProxyObject, TextObject):
         return TextObject.command_must_be_visible_for_mode(self, command, mode)
     
     @command('save')
-    @asyncio.coroutine
-    def command_save(self):
-        result = yield from self.execute_request('save', text=self.text)
+    async def command_save(self):
+        result = await self.execute_request('save', text=self.text)
         self.path = result.new_path
         self._notify_object_changed()
 
-    @asyncio.coroutine
-    def open_ref(self, ref_id):
-        result = yield from self.execute_request('open_ref', ref_id=ref_id)
+    async def open_ref(self, ref_id):
+        result = await self.execute_request('open_ref', ref_id=ref_id)
         return result.handle
         
     def process_diff(self, new_text):

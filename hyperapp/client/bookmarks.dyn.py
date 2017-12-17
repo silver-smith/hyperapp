@@ -1,5 +1,4 @@
 import os.path
-import asyncio
 import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
@@ -77,14 +76,12 @@ class BookmarkList(ListObject):
         return 'Bookmarks'
 
     @command('open', kind='element')
-    @asyncio.coroutine
-    def command_open_bookmark(self, element_key):
+    async def command_open_bookmark(self, element_key):
         item = self._bookmarks.get_item(element_key)
-        return (yield from execute_get_request(packet_types, self._remoting, item.url))
+        return (await execute_get_request(packet_types, self._remoting, item.url))
 
     @command('add')
-    @asyncio.coroutine
-    def command_add(self):
+    async def command_add(self):
         url_str = QtGui.QApplication.clipboard().text()
         url = Url.from_str(self._iface_registry, url_str)
         name = 'Imported url'
@@ -100,8 +97,7 @@ class BookmarkList(ListObject):
     def get_key_column_id(self):
         return 'id'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         self._notify_fetch_result(self._get_chunk())
 
     def _get_chunk(self):

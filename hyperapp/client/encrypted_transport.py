@@ -1,4 +1,3 @@
-import asyncio
 from ..common.encrypted_packet import (
     tEncryptedPacket,
     tSubsequentEncryptedPacket,
@@ -37,13 +36,12 @@ class EncryptedTransport(Transport):
     def __repr__(self):
         return 'encrypted transport'
 
-    @asyncio.coroutine
-    def send_request_rec(self, remoting, public_key, route, request_or_notification):
+    async def send_request_rec(self, remoting, public_key, route, request_or_notification):
         assert len(route) >= 2, repr(route)  # host and port are expected
         host, port_str = route[:2]
         port = int(port_str)
         try:
-            protocol = yield from TcpProtocol.produce(remoting, public_key, host, port)
+            protocol = await TcpProtocol.produce(remoting, public_key, host, port)
         except OSError as x:
             raise TransportError('Error connecting to %s:%d: %s' % (host, port, x))
         session = self._produce_session(protocol.session_list)
@@ -69,28 +67,25 @@ class EncryptedTransport(Transport):
         encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
         return tTransportPacket(TRANSPORT_ID, encrypted_packet_data)
 
-    @asyncio.coroutine
-    def process_packet(self, protocol, session_list, server_public_key, data):
+    async def process_packet(self, protocol, session_list, server_public_key, data):
         session = session_list.get_transport_session(TRANSPORT_ID)
         assert session is not None  # must be created when sending request
         encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
         if isinstance(encrypted_packet, tSubsequentEncryptedPacket):
-            return (yield from self._process_subsequent_encrypted_packet(server_public_key, session, encrypted_packet))
+            return (await self._process_subsequent_encrypted_packet(server_public_key, session, encrypted_packet))
         if isinstance(encrypted_packet, tPopChallengePacket):
-            yield from self._process_pop_challenge_packet(protocol, server_public_key, session, encrypted_packet)
+            await self._process_pop_challenge_packet(protocol, server_public_key, session, encrypted_packet)
             return None  # not a response; packet processed by transport
 
-    @asyncio.coroutine
-    def _process_subsequent_encrypted_packet(self, server_public_key, session, encrypted_packet):
+    async def _process_subsequent_encrypted_packet(self, server_public_key, session, encrypted_packet):
         packet_data = decrypt_subsequent_packet(session.session_key, encrypted_packet)
         packet = packet_coders.decode(ENCODING, packet_data, self._packet_types.packet)
         pprint(self._packet_types.aux_info, packet.aux_info, self._resource_types, self._packet_types, self._iface_registry)
-        yield from self.process_aux_info(packet.aux_info)
+        await self.process_aux_info(packet.aux_info)
         pprint(self._packet_types.payload, packet.payload, self._resource_types, self._packet_types, self._iface_registry)
         return ResponseBase.from_data(self._packet_types, self._iface_registry, server_public_key, packet.payload)
 
-    @asyncio.coroutine
-    def _process_pop_challenge_packet(self, protocol, server_public_key, session, encrypted_packet):
+    async def _process_pop_challenge_packet(self, protocol, server_public_key, session, encrypted_packet):
         challenge = encrypted_packet.challenge
         pop_records = []
         for item in self._identity_controller.get_items():

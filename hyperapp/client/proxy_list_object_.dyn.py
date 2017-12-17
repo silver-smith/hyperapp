@@ -1,4 +1,3 @@
-import asyncio
 from .module import Module
 
 
@@ -8,8 +7,7 @@ class ProxyListObject(object):
         self._proxy = this_module.proxy_factory.from_url(url)
         self._subscribed = None  # todo
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         log.info('-- ProxyListObject fetch_elements self=%r subscribed=%r from_key=%r desc_count=%r asc_count=%r',
                  id(self), self._subscribed, from_key, desc_count, asc_count)
         pass

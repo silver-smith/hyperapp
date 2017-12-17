@@ -77,10 +77,9 @@ class FilteredListObj(ListObject, ListObserver):
     def get_key_column_id(self):
         return self._base.get_key_column_id()
     
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         log.info('-- narrower.fetch_elements sort_column_id=%r key=%r desc_count=%r asc_count=%r', sort_column_id, key, desc_count, asc_count)
-        yield from self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
+        await self._base.fetch_elements(sort_column_id, key, desc_count, asc_count)
 
     def process_fetch_result(self, result):
         log.info('-- narrower.process_fetch_result sort_column_id=%r bof=%r eof=%r elements-len=%r', result.sort_column_id, result.bof, result.eof, len(result.elements))
@@ -101,9 +100,8 @@ class FilteredListObj(ListObject, ListObserver):
         value = self._get_filter_field(element)
         return value.lower().startswith(self._prefix.lower())
 
-    @asyncio.coroutine
-    def run_command(self, command_id, **kw):
-        return (yield from self._base.run_command(command_id, **kw))
+    async def run_command(self, command_id, **kw):
+        return (await self._base.run_command(command_id, **kw))
 
     # we find only in cached elements, that is elements we have seen; do not issue additional fetch command
     def find_common_prefix(self):
@@ -129,10 +127,9 @@ class View(LineListPanel):
     view_id = NARROWER_VIEW_ID
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, parent, objimpl_registry, resources_manager):
+    async def from_state(cls, locale, state, parent, objimpl_registry, resources_manager):
         data_type = core_types.handle.get_object_class(state)
-        object = yield from objimpl_registry.resolve(state.object)
+        object = await objimpl_registry.resolve(state.object)
         return cls(locale, parent, data_type, object, resources_manager, state.resource_id,
                    state.sort_column_id, state.key, state.narrow_field_id)
 

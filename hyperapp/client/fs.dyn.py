@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.url import Url
@@ -58,9 +57,8 @@ class FsDirObject(ListObject):
     def get_key_column_id(self):
         return 'key'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
-        chunk = yield from self._fs_service.fetch_dir_contents(
+    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+        chunk = await self._fs_service.fetch_dir_contents(
             self._host, self._path, sort_column_id, from_key, desc_count, asc_count)
         self._key2row.update({row.key: row for row in chunk.rows})
         elements = [Element(row.key, row, commands=None, order_key=getattr(row, sort_column_id))
@@ -81,26 +79,23 @@ class FsDirObject(ListObject):
         else:
             return [command for command in all_command_list if command.id != 'open']
 
-    @asyncio.coroutine
-    def _open_path(self, path):
+    async def _open_path(self, path):
         fs_service_ref = self._fs_service.to_service_ref()
         href_object = fs_types.fs_ref(fs_service_ref, self._host, path)
         href = href_types.href('sha256', ('test-fs-href:%s' % '/'.join(path)).encode())
         self._href_registry.register(href, href_object)
-        return (yield from self._href_resolver.resolve_href_to_handle(href))
+        return (await self._href_resolver.resolve_href_to_handle(href))
 
     @command('open', kind='element')
-    @asyncio.coroutine
-    def command_open(self, element_key):
+    async def command_open(self, element_key):
         path = self._path + [element_key]
-        return (yield from self._open_path(path))
+        return (await self._open_path(path))
 
     @command('open_parent')
-    @asyncio.coroutine
-    def command_open_parent(self):
+    async def command_open_parent(self):
         if len(self._path) > 0:
             path = self._path[:-1]
-            return (yield from self._open_path(path))
+            return (await self._open_path(path))
 
 
 class FsService(object):
@@ -121,10 +116,9 @@ class FsService(object):
     def to_service_ref(self):
         return href_types.service_ref('sha256', b'test-fs-service-ref')
 
-    @asyncio.coroutine
-    def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
-        result = yield from self._service_proxy.fetch_dir_contents(host, path, fetch_request)
+        result = await self._service_proxy.fetch_dir_contents(host, path, fetch_request)
         return result.chunk
 
 
@@ -140,9 +134,8 @@ class ThisModule(Module):
         services.objimpl_registry.register(
             FsDirObject.objimpl_id, FsDirObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
 
-    @asyncio.coroutine
-    def resolve_fs_object(self, fs_object):
-        fs_service_object = yield from self._href_resolver.resolve_service_ref(fs_object.fs_service_ref)
+    async def resolve_fs_object(self, fs_object):
+        fs_service_object = await self._href_resolver.resolve_service_ref(fs_object.fs_service_ref)
         dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_service_object, fs_object.host, fs_object.path)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'key'

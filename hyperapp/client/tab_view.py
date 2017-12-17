@@ -1,5 +1,4 @@
 import logging
-import asyncio
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, TList, Field, TRecord
@@ -19,11 +18,10 @@ def get_state_type():
 class View(QtGui.QTabWidget, view.View):
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, module_registry, view_registry):
+    async def from_state(cls, locale, state, module_registry, view_registry):
         children = []
         for tab_state in state.tabs:
-            child = yield from view_registry.resolve(locale, tab_state)
+            child = await view_registry.resolve(locale, tab_state)
             children.append(child)
         view = cls(locale, view_registry, children, state.current_tab)
         view.init(module_registry)
@@ -86,11 +84,10 @@ class View(QtGui.QTabWidget, view.View):
         QtGui.QTabWidget.setVisible(self, visible)
 
     @command('duplicate_tab')
-    @asyncio.coroutine
-    def duplicate_tab(self):
+    async def duplicate_tab(self):
         idx = self.currentIndex()
         state = self._children[idx].get_state()
-        new_view = yield from self._view_registry.resolve(self._locale, state, self)
+        new_view = await self._view_registry.resolve(self._locale, state, self)
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
@@ -104,27 +101,23 @@ class View(QtGui.QTabWidget, view.View):
         view.View.view_changed(self)  # notify parents
 
     @command('split_horizontally')
-    @asyncio.coroutine
-    def split_horizontally(self):
-        yield from self._map_current(splitter.split(splitter.horizontal))
+    async def split_horizontally(self):
+        await self._map_current(splitter.split(splitter.horizontal))
 
     @command('split_vertically')
-    @asyncio.coroutine
-    def split_vertically(self):
-        yield from self._map_current(splitter.split(splitter.vertical))
+    async def split_vertically(self):
+        await self._map_current(splitter.split(splitter.vertical))
 
     @command('unsplit')
-    @asyncio.coroutine
-    def unsplit(self):
-        yield from self._map_current(splitter.unsplit)
+    async def unsplit(self):
+        await self._map_current(splitter.unsplit)
 
-    @asyncio.coroutine
-    def _map_current(self, mapper):
+    async def _map_current(self, mapper):
         idx = self.currentIndex()
         state = mapper(self._children[idx].get_state())
         if not state: return
         self._remove_tab(idx)
-        child = yield from self._view_registry.resolve(self._locale, state, self)
+        child = await self._view_registry.resolve(self._locale, state, self)
         self._insert_tab(idx, child)
         child.ensure_has_focus()
         view.View.view_changed(self)  # notify parents

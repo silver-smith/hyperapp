@@ -2,7 +2,6 @@
 
 import os
 import logging
-import asyncio
 import uuid
 from PySide import QtCore, QtGui
 from ..common.htypes import (
@@ -57,21 +56,19 @@ class CodeRepository(object):
         return item
 
     # todo: try all items
-    @asyncio.coroutine
-    def get_modules_by_ids(self, module_ids):
+    async def get_modules_by_ids(self, module_ids):
         if not self._items:
             return (None, None, None)
         proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
-        return (yield from proxy.get_modules_by_ids(module_ids))
+        return (await proxy.get_modules_by_ids(module_ids))
 
     # todo: try all items
-    @asyncio.coroutine
-    def get_modules_by_requirements(self, requirements):
+    async def get_modules_by_requirements(self, requirements):
         if not self._items:
             log.warn('No available code repository servers are found')
             return (None, None, None)
         proxy = CodeRepositoryProxy.from_url(self._iface_registry, self._remoting, self._cache_repository, self._items[0].url)
-        return (yield from proxy.get_modules_by_requirements(requirements))
+        return (await proxy.get_modules_by_requirements(requirements))
 
 
 class CodeRepositoryProxy(ProxyObject):
@@ -89,14 +86,12 @@ class CodeRepositoryProxy(ProxyObject):
         ProxyObject.__init__(self, packet_types, core_types, iface_registry, cache_repository,
                              resources_manager, param_editor_registry, server, path, iface, facets)
 
-    @asyncio.coroutine
-    def get_modules_by_ids(self, module_ids):
-        result = yield from self.execute_request('get_modules_by_ids', module_ids=module_ids)
+    async def get_modules_by_ids(self, module_ids):
+        result = await self.execute_request('get_modules_by_ids', module_ids=module_ids)
         return (result.type_modules, result.code_modules, result.resources)
 
-    @asyncio.coroutine
-    def get_modules_by_requirements(self, requirements):
-        result = yield from self.execute_request('get_modules_by_requirements', requirements=requirements)
+    async def get_modules_by_requirements(self, requirements):
+        result = await self.execute_request('get_modules_by_requirements', requirements=requirements)
         return (result.type_modules, result.code_modules, result.resources)
 
 
@@ -171,8 +166,7 @@ class CodeRepositoryList(ListObject):
     def get_key_column_id(self):
         return 'name'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         self._notify_fetch_result(self._get_chunk())
 
     def _get_chunk(self):

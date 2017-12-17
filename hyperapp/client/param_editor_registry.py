@@ -1,4 +1,3 @@
-import asyncio
 from .command_class import Command
 from .registry import Registry
 
@@ -21,8 +20,7 @@ from .registry import Registry
 ##         args = self._args + (args or ())
 ##         return ParamEditorOpenCommand(self.id, self.kind, self.resource_id, self.enabled, self._object_wr, args)
 
-##     @asyncio.coroutine
-##     def run(self, *args, **kw):
+##     async def run(self, *args, **kw):
 ##         object = self._object_wr()
 ##         if not object: return
 ##         assert 0  # todo
@@ -30,7 +28,6 @@ from .registry import Registry
 
 class ParamEditorRegistry(Registry):
 
-    @asyncio.coroutine
-    def resolve(self, state, proxy_object, command_id, *args, **kw):
+    async def resolve(self, state, proxy_object, command_id, *args, **kw):
         rec = self._resolve(state.impl_id)
-        return (yield from rec.factory(state, proxy_object, command_id, *(args + rec.args), **(dict(rec.kw, **kw))))
+        return (await rec.factory(state, proxy_object, command_id, *(args + rec.args), **(dict(rec.kw, **kw))))

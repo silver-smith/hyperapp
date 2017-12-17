@@ -149,8 +149,7 @@ class RealRequestTest(unittest.TestCase):
         loop.set_debug(True)
         loop.run_until_complete(self.run_unsubscribe_notification())
 
-    @asyncio.coroutine
-    def run_get_request(self):
+    async def run_get_request(self):
         url = self.load_url_from_file()
         request = Request(
             packet_types=self.packet_types,
@@ -162,13 +161,12 @@ class RealRequestTest(unittest.TestCase):
             )
         pprint(self.packet_types.payload, request.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
-        response = yield from (asyncio.wait_for(server.execute_request(request), timeout=0.5))
+        response = await (asyncio.wait_for(server.execute_request(request), timeout=0.5))
         self.assertIsInstance(response, Response)
         self.assertEqual('get', response.command_id)
         self.assertEqual('test-001', response.request_id)
 
-    @asyncio.coroutine
-    def run_unsubscribe_notification(self):
+    async def run_unsubscribe_notification(self):
         url = self.load_url_from_file()
         notification = ClientNotification(
             packet_types=self.packet_types,
@@ -179,7 +177,7 @@ class RealRequestTest(unittest.TestCase):
             )
         pprint(self.packet_types.payload, notification.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
-        response = yield from (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
+        response = await (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
         self.assertEqual(None, response)
 
     def load_url_from_file(self):

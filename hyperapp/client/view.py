@@ -1,7 +1,6 @@
 # base class for Views
 
 import logging
-import asyncio
 import weakref
 from PySide import QtCore, QtGui
 from .qt_keys import print_key_event

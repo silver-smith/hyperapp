@@ -1,5 +1,4 @@
 import logging
-import asyncio
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import tInt, Column
 from ..command import command
@@ -58,8 +57,7 @@ class HistoryList(ListObject):
     def get_key_column_id(self):
         return 'idx'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         self._notify_fetch_result(self._get_chunk())
 
     def _get_chunk(self):

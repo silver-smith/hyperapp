@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import weakref
 import bisect
 from ..common.htypes import TOptional, Field, TRecord, TList, IfaceCommand
@@ -45,8 +44,7 @@ class ProxyListObject(ProxyObject, ListObject):
         # set_contents call means this object is returned from server and thus already subscribed
         self._subscribed = True
 
-    @asyncio.coroutine
-    def server_subscribe(self):
+    async def server_subscribe(self):
         pass
 
     def is_iface_command_exposed(self, command):
@@ -70,16 +68,15 @@ class ProxyListObject(ProxyObject, ListObject):
                 and command.params_type.fields == [element_field]
                 and command.result_type in [t_empty_result, t_open_result])
 
-    @asyncio.coroutine
-    def run_remote_command(self, command_id, *args, **kw):
+    async def run_remote_command(self, command_id, *args, **kw):
         command = self.iface.get_command(command_id)
         if self._is_plain_open_handle_element_request(command):
             log.debug('running remote element command %r (*%s, **%s)', command_id, args, kw)
-            result = yield from self.execute_request(command_id, *args, **kw)
+            result = await self.execute_request(command_id, *args, **kw)
             if command.result_type != TRecord([]):
                 return result.handle
         else:
-            return (yield from ProxyObject.run_remote_command(self, command_id, *args, **kw))
+            return (await ProxyObject.run_remote_command(self, command_id, *args, **kw))
 
     def _chunk_from_data(self, rec):
         elements = [self._element_from_data(elt, rec.sort_column_id) for elt in rec.elements]
@@ -163,8 +160,7 @@ class ProxyListObject(ProxyObject, ListObject):
     def get_key_column_id(self):
         return self.iface.get_key_column_id()
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         log.info('-- proxy fetch_elements self=%r subscribed=%r from_key=%r desc_count=%r asc_count=%r',
                  id(self), self._subscribed, from_key, desc_count, asc_count)
         actual_slice_list = self._actual_slices.get(sort_column_id)
@@ -193,7 +189,7 @@ class ProxyListObject(ProxyObject, ListObject):
             # several views can call fetch_elements before response is received, and we do not want several subscribe_xxx calls
             self._subscribe_pending = True
         try:
-            result = yield from self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
+            result = await self.execute_request(command_id, sort_column_id, from_key, desc_count, asc_count)
         except RequestError as x:
             log.warning('Error fetching elements from remote object; will use cached (%s)' % x)
             return chunk

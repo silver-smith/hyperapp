@@ -1,5 +1,4 @@
 import logging
-import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface import core as core_types
 from .module import Module
@@ -16,9 +15,8 @@ def register_views(registry, services):
 class View(view.View, QtGui.QTextEdit):
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, parent, objimpl_registry):
-        object = yield from objimpl_registry.resolve(state.object)
+    async def from_state(cls, locale, state, parent, objimpl_registry):
+        object = await objimpl_registry.resolve(state.object)
         return cls(object, parent)
 
     @staticmethod

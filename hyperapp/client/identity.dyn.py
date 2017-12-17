@@ -1,6 +1,5 @@
 import os
 import os.path
-import asyncio
 import glob
 import logging
 from ..common.htypes import (
@@ -154,8 +153,7 @@ class IdentityList(ListObject):
     def get_key_column_id(self):
         return 'name'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         self._notify_fetch_result(self._get_chunk())
 
     def _get_chunk(self):

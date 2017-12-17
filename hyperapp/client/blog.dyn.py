@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 from ..common.htypes import tInt, tDateTime, Column, list_handle_type
@@ -51,9 +50,8 @@ class BlogObject(ListObject):
     def get_key_column_id(self):
         return 'id'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
-        chunk = yield from self._blog_service.fetch_blog_contents(
+    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+        chunk = await self._blog_service.fetch_blog_contents(
             self._blog_id, sort_column_id, from_key, desc_count, asc_count)
         self._key2row.update({row.id: row for row in chunk.rows})
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
@@ -67,14 +65,13 @@ class BlogObject(ListObject):
         log.info('-- BlogObject.process_diff self=%r diff=%r', id(self), diff)
 
     @command('open', kind='element')
-    @asyncio.coroutine
-    def command_open(self, element_key):
+    async def command_open(self, element_key):
         article_id = element_key
         blog_service_ref = self._blog_service.to_service_ref()
         href_object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
         href = href_types.href('sha256', ('test-blog-article-href:%d' % article_id).encode())
         self._href_registry.register(href, href_object)
-        return (yield from self._href_resolver.resolve_href_to_handle(href))
+        return (await self._href_resolver.resolve_href_to_handle(href))
 
 
 class BlogArticleObject(TextObject):
@@ -82,10 +79,9 @@ class BlogArticleObject(TextObject):
     objimpl_id = 'blog_article'
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, state, service_registry):
+    async def from_state(cls, state, service_registry):
         blog_service = service_registry.resolve(state.blog_service)
-        row = yield from blog_service.get_blog_row(state.blog_id, state.article_id)
+        row = await blog_service.get_blog_row(state.blog_id, state.article_id)
         return cls(blog_service, state.blog_id, state.article_id, row.text)
 
     def __init__(self, blog_service, blog_id, article_id, text):
@@ -111,18 +107,16 @@ class BlogService(object):
     def to_service_ref(self):
         return href_types.service_ref('sha256', b'test-blog-service-ref')
 
-    @asyncio.coroutine
-    def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
-        result = yield from self._service_proxy.fetch_blog_contents(blog_id, fetch_request)
+        result = await self._service_proxy.fetch_blog_contents(blog_id, fetch_request)
         self._blog_id_article_id_to_row.update({(blog_id, row.id): row for row in result.chunk.rows})
         return result.chunk
 
-    @asyncio.coroutine
-    def get_blog_row(self, blog_id, article_id):
+    async def get_blog_row(self, blog_id, article_id):
         row = self._blog_id_article_id_to_row.get((blog_id, article_id))
         if not row:
-            yield from self.fetch_blog_contents(blog_id, sort_column_id='id', from_key=article_id, desc_count=1, asc_count=0)
+            await self.fetch_blog_contents(blog_id, sort_column_id='id', from_key=article_id, desc_count=1, asc_count=0)
             row = self._blog_id_article_id_to_row.get((blog_id, article_id))
             assert row, repr((blog_id, article_id))  # expecting it to be fetched now
         return row
@@ -153,18 +147,16 @@ class ThisModule(Module):
             self._url2service[service_url] = service
         return service
 
-    @asyncio.coroutine
-    def resolve_blog_object(self, blog_object):
-        blog_service_object = yield from self._href_resolver.resolve_service_ref(blog_object.blog_service_ref)
+    async def resolve_blog_object(self, blog_object):
+        blog_service_object = await self._href_resolver.resolve_service_ref(blog_object.blog_service_ref)
         list_object = blog_types.blog_object(BlogObject.objimpl_id, blog_service_object, blog_object.blog_id)
         handle_t = list_handle_type(core_types, tInt)
         sort_column_id = 'created_at'
         resource_id = ['client_module', 'blog', 'BlogObject']
         return handle_t('list', list_object, resource_id, sort_column_id, None)
 
-    @asyncio.coroutine
-    def resolve_blog_article_object(self, blog_article_object):
-        blog_service_object = yield from self._href_resolver.resolve_service_ref(blog_article_object.blog_service_ref)
+    async def resolve_blog_article_object(self, blog_article_object):
+        blog_service_object = await self._href_resolver.resolve_service_ref(blog_article_object.blog_service_ref)
         text_object = blog_types.blog_article_object(
             BlogArticleObject.objimpl_id, blog_service_object, blog_article_object.blog_id, blog_article_object.article_id)
         return core_types.obj_handle('text_view', text_object)

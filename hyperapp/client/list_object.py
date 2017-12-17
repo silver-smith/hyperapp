@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import abc
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
@@ -30,15 +29,13 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def get_key_column_id(self):
         pass
 
-    @asyncio.coroutine
     @abc.abstractmethod
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         pass
 
-    @asyncio.coroutine
-    def fetch_element(self, key):
+    async def fetch_element(self, key):
         sort_column_id = self.get_key_column_id()
-        chunk = yield from self.fetch_elements(sort_column_id, key, 1, 1)
+        chunk = await self.fetch_elements(sort_column_id, key, 1, 1)
         matched_elements = [element for element in chunk.elements if element.key == key]
         assert matched_elements, repr(matched_elements)  # at least one element with this key is expected
         return matched_elements[0]
@@ -47,9 +44,8 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         return self.get_command_list(kinds=['element'])  # by default all elements have same commands
 
     # currently unused
-    @asyncio.coroutine
-    def run_element_command(self, command_id, element_key):
-        return (yield from self.run_command(command_id, element_key=element_key))
+    async def run_element_command(self, command_id, element_key):
+        return (await self.run_command(command_id, element_key=element_key))
 
     def _notify_fetch_result(self, chunk):
         assert isinstance(chunk, Chunk), repr(chunk)

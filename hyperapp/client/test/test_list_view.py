@@ -78,8 +78,7 @@ class StubObject(ListObject):
     def get_key_column_id(self):
         return 'key'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
         sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
         log.debug('StubObject.fetch_elements: sort_column_id=%s key=%r desc_count=%d asc_count=%d sorted_rows=%r',
                   sort_column_id, key, desc_count, asc_count, [row.key for row in sorted_rows])
@@ -137,16 +136,14 @@ def list_view_factory(application, services, object):
 
     return make_list_view
 
-@asyncio.coroutine
-def wait_for(timeout_sec, fn, *args, **kw):
+async def wait_for(timeout_sec, fn, *args, **kw):
     t = time.time()
     while not fn(*args, **kw):
         if time.time() - t > timeout_sec:
             assert False, 'Timed out in %s seconds' % timeout_sec
-        yield from asyncio.sleep(0.1)
+        await asyncio.sleep(0.1)
 
-@asyncio.coroutine
-def wait_for_all_tasks_to_complete(timeout_sec=1):
+async def wait_for_all_tasks_to_complete(timeout_sec=1):
     t = time.time()
     future = asyncio.Future()
     def check_pending():
@@ -162,7 +159,7 @@ def wait_for_all_tasks_to_complete(timeout_sec=1):
         else:
             future.set_result(None)
     asyncio.get_event_loop().call_soon(check_pending)
-    yield from future
+    await future
 
 
 def get_cell(list_view, row, column):
@@ -197,8 +194,7 @@ def check_rows(list_view, sort_column_id, expected_row_count):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
-@asyncio.coroutine
-def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, current_key):
+async def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, current_key):
     object = StubObject(rows_per_fetch, row_count)
     list_view = list_view_factory(object, current_key=current_key)
     #list_view.show()
@@ -208,7 +204,7 @@ def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per
     #QTest.qWaitForWindowShown(list_view)
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
-    yield from wait_for_all_tasks_to_complete()
+    await wait_for_all_tasks_to_complete()
     expected_row_count = min(row_count, visible_row_count)
     assert model.columnCount(QtCore.QModelIndex()) == 4
     check_rows(list_view, 'key', expected_row_count)
@@ -219,15 +215,14 @@ def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per
     assert model.headerData(1, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'title'
 
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_overlapped_fetch_result_should_be_merged_properly(list_view_factory):
+async def test_overlapped_fetch_result_should_be_merged_properly(list_view_factory):
     row_count = 10
     object = StubObject(rows_per_fetch=10, row_count=row_count)
     list_view = list_view_factory(object)
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
-    yield from wait_for_all_tasks_to_complete()
+    await wait_for_all_tasks_to_complete()
     expected_row_count = min(row_count, visible_row_count)
     actual_row_count = get_list_view_row_count(list_view)
     check_rows(list_view, 'key', expected_row_count)
@@ -237,8 +232,7 @@ def test_overlapped_fetch_result_should_be_merged_properly(list_view_factory):
     check_rows(list_view, 'key', actual_row_count)
 
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_resources_used_for_header_and_visibility(services, list_view_factory):
+async def test_resources_used_for_header_and_visibility(services, list_view_factory):
     resources = {
         'test.list.column.key.en': services.types.resource.column_resource(visible=False, text='the key', description=''),
         'test.list.column.title.en': services.types.resource.column_resource(visible=True, text='the title', description=''),
@@ -247,7 +241,7 @@ def test_resources_used_for_header_and_visibility(services, list_view_factory):
     list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
-    yield from wait_for_all_tasks_to_complete()
+    await wait_for_all_tasks_to_complete()
     assert model.columnCount(QtCore.QModelIndex()) == 3  # key column must be hidden
     assert model.headerData(0, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'the title'
 
@@ -257,17 +251,16 @@ def test_resources_used_for_header_and_visibility(services, list_view_factory):
     (ListDiff.delete(2), [0, 1, 3, 5, 6, 7]),
     ])
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_diff(list_view_factory, diff, expected_keys):
+async def test_diff(list_view_factory, diff, expected_keys):
     keys = [0, 1, 2, 3, 5, 6, 7]
     object = StubObject(keys=keys)
     current_key = keys[-1]  # last key to force loading all rows
     list_view = list_view_factory(object, current_key=current_key)
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     model = list_view.model()
-    yield from wait_for_all_tasks_to_complete()
+    await wait_for_all_tasks_to_complete()
     list_view.diff_applied(diff)
-    yield from wait_for_all_tasks_to_complete()
+    await wait_for_all_tasks_to_complete()
     check_rows(list_view, sort_column_id='key', expected_row_count=len(expected_keys))
     for row, key in enumerate(expected_keys):
         assert get_cell(list_view, row, 0) == str(key)
@@ -276,15 +269,14 @@ def test_diff(list_view_factory, diff, expected_keys):
 @pytest.mark.parametrize('sort_column_id', ['column_1', 'column_2'])
 @pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_sort_by_non_key_column(list_view_factory, sort_column_id, row_count, rows_per_fetch, current_key):
+async def test_sort_by_non_key_column(list_view_factory, sort_column_id, row_count, rows_per_fetch, current_key):
     sort_column_idx = Row._fields.index(sort_column_id)
     object = StubObject(rows_per_fetch, row_count)
     list_view = list_view_factory(object, sort_column_id=sort_column_id, current_key=current_key)
     list_view.fetch_elements_if_required()  # normally called from resizeEvent when view is shown
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()
-    yield from wait_for_all_tasks_to_complete()
+    await wait_for_all_tasks_to_complete()
     expected_row_count = min(row_count, visible_row_count)
     assert model.columnCount(QtCore.QModelIndex()) == 4
     check_rows(list_view, sort_column_id, expected_row_count)

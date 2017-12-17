@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import traceback
 from .registry import Registry
 from .view import View
@@ -23,15 +22,14 @@ class ViewRegistry(Registry):
     def set_core_types(self, core_types):
         self._core_types = core_types
 
-    @asyncio.coroutine
-    def resolve(self, locale, handle, parent=None):
+    async def resolve(self, locale, handle, parent=None):
         assert isinstance(locale, str), repr(locale)
         assert isinstance(handle, self._core_types.handle), repr(handle)
         for i in range(MAX_REDIRECT_COUNT):
             rec = self._resolve(handle.view_id)
             log.info('producing view %r using %s(%s, %s)', handle.view_id, rec.factory, rec.args, rec.kw)
             try:
-                view_or_handle = yield from rec.factory(locale, handle, parent, *rec.args, **rec.kw)
+                view_or_handle = await rec.factory(locale, handle, parent, *rec.args, **rec.kw)
                 assert isinstance(view_or_handle, (self._core_types.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
             except Exception as x:
                 traceback.print_exc()

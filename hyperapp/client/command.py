@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import weakref
 import traceback
 from ..common.htypes import Field, TRecord
@@ -30,13 +29,12 @@ class ViewCommand(Command):
     def clone(self):
         return ViewCommand(self.id, self.kind, self.resource_id, self.enabled, self._base_cmd, self._window_wr)
 
-    @asyncio.coroutine
-    def run(self, *args, **kw):
+    async def run(self, *args, **kw):
         view = self._view_wr()
         if not view: return
         log.debug('ViewCommand.run: %r/%r, %r, (%s, %s), view=%r', self.id, self.kind, self._base_cmd, args, kw, id(view))
         try:
-            handle = yield from self._base_cmd.run(*args, **kw)
+            handle = await self._base_cmd.run(*args, **kw)
             ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         except Exception as x:
             traceback.print_exc()
@@ -65,12 +63,11 @@ class WindowCommand(Command):
     def clone(self):
         return WindowCommand(self.id, self.kind, self.resource_id, self.enabled, self._base_cmd, self._window_wr)
 
-    @asyncio.coroutine
-    def run(self, *args, **kw):
+    async def run(self, *args, **kw):
         window = self._window_wr()
         if not window: return
         log.debug('WindowCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
-        handle = yield from self._base_cmd.run(*args, **kw)
+        handle = await self._base_cmd.run(*args, **kw)
         print('### handle:', handle)
         ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         if handle:

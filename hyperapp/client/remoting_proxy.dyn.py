@@ -1,4 +1,3 @@
-import asyncio
 import uuid
 from ..common.htypes import IfaceCommand
 from ..common.url import Url, UrlWithRoutes
@@ -16,20 +15,19 @@ class ProxyMethod(object):
         self._path = path
         self._command = command
 
-    @asyncio.coroutine
-    def __call__(self, *args, **kw):
+    async def __call__(self, *args, **kw):
         params = self._iface.make_params(self._command.command_id, *args, **kw)
         if self._command.request_type == IfaceCommand.rt_request:
             request_id = str(uuid.uuid4())
             request = Request(self._packet_types, self._iface, self._path, self._command.command_id, request_id, params)
-            response = yield from self._server.execute_request(request)
+            response = await self._server.execute_request(request)
             if response.error is not None:
                 raise response.error
             else:
                 return response.result
         elif self._command.request_type == IfaceCommand.rt_notification:
             notification = ClientNotification(self._packet_types, self._iface, self._path, self._command.command_id, params)
-            yield from self._server.send_notification(notification)
+            await self._server.send_notification(notification)
         else:
             assert False, repr(self._command.request_type)
 

@@ -108,8 +108,7 @@ class Model(QtCore.QAbstractTableModel):
             wanted_last_row += APPEND_PHONY_REC_COUNT
         return wanted_last_row
 
-    @asyncio.coroutine
-    def fetch_elements_if_required(self, first_visible_row, visible_row_count, force=False):
+    async def fetch_elements_if_required(self, first_visible_row, visible_row_count, force=False):
         log.info('-- list_view.Model.fetch_elements_if_required self=%r fetch_pending=%r', id(self), self._fetch_pending)
         if self._fetch_pending: return
         wanted_last_row = self._wanted_last_row(first_visible_row, visible_row_count)
@@ -121,7 +120,7 @@ class Model(QtCore.QAbstractTableModel):
         if (force or wanted_rows > 0) and not self._slice.eof:
             log.info('   calling fetch_elements object=%s/%r key=%r wanted_rows=%r', id(self._object), self._object, key, wanted_rows)
             self._fetch_pending = True  # must be set before request because it may callback immediately and so clear _fetch_pending
-            yield from self._object.fetch_elements(self._slice.sort_column_id, key, 0, wanted_rows)
+            await self._object.fetch_elements(self._slice.sort_column_id, key, 0, wanted_rows)
 
     def process_fetch_result(self, chunk):
         log.info('-- list_view.Model.process_fetch_result self=%r object=%r chunk=%r', id(self), self._object, chunk)
@@ -174,10 +173,9 @@ class Model(QtCore.QAbstractTableModel):
 class View(view.View, ListObserver, QtGui.QTableView):
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, parent, core_types, objimpl_registry, resources_manager):
+    async def from_state(cls, locale, state, parent, core_types, objimpl_registry, resources_manager):
         data_type = core_types.handle.get_object_class(state)
-        object = yield from objimpl_registry.resolve(state.object)
+        object = await objimpl_registry.resolve(state.object)
         return cls(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)
 
     def __init__(self, locale, parent, resources_manager, resource_id, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True):

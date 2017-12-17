@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import weakref
 from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
@@ -28,10 +27,9 @@ def get_state_type():
 class Window(view.View, QtGui.QMainWindow):
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, state, app, module_registry, view_registry, resources_manager):
+    async def from_state(cls, state, app, module_registry, view_registry, resources_manager):
         locale = LOCALE
-        child = yield from tab_view.View.from_state(locale, state.tab_view, module_registry, view_registry)
+        child = await tab_view.View.from_state(locale, state.tab_view, module_registry, view_registry)
         return cls(locale, view_registry, module_registry, resources_manager, app, child,
                    size=QtCore.QSize(state.size.w, state.size.h),
                    pos=QtCore.QPoint(state.pos.x, state.pos.y))
@@ -114,12 +112,11 @@ class Window(view.View, QtGui.QMainWindow):
         self._cmd_pane.view_commands_changed(self, command_kinds)
         
     @command('duplicate_window')
-    @asyncio.coroutine
-    def duplicate_window(self):
+    async def duplicate_window(self):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        yield from self.from_state(state, self._app, self._view_registry, self._resources_manager)
+        await self.from_state(state, self._app, self._view_registry, self._resources_manager)
 
     def __del__(self):
         log.info('~window')

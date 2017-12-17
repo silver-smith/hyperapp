@@ -14,8 +14,7 @@ class AsyncApplication(QtGui.QApplication):
     def stop_loop(self):
         asyncio.async(self._stop_loop_async())  # call it async to allow all pending tasks to complete
 
-    @asyncio.coroutine
-    def _stop_loop_async(self):
+    async def _stop_loop_async(self):
         self.event_loop.stop()
 
     # process qt events while inside asyncio loop

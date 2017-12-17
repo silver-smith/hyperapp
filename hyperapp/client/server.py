@@ -1,5 +1,4 @@
 import logging
-import asyncio
 from ..common.identity import PublicKey
 from ..common.url import Url
 from .request import ClientNotification, Request
@@ -36,13 +35,12 @@ class Server(object):
     def __repr__(self):
         return 'server:%s' % self.public_key.get_short_id_hex()
 
-    def send_notification(self, notification):
+    async def send_notification(self, notification):
         assert isinstance(notification, ClientNotification), repr(notification)
         log.info('notification command_id=%r to %s', notification.command_id, self.public_key.get_short_id_hex())
-        return (yield from self._remoting.send_notification(self.public_key, notification))
+        return (await self._remoting.send_notification(self.public_key, notification))
 
-    @asyncio.coroutine
-    def execute_request(self, request):
+    async def execute_request(self, request):
         assert isinstance(request, Request), repr(request)
         log.info('request command_id=%r request_id=%r to %s', request.command_id, request.request_id, self.public_key.get_short_id_hex())
-        return (yield from self._remoting.execute_request(self.public_key, request))
+        return (await self._remoting.execute_request(self.public_key, request))

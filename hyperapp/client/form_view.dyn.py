@@ -1,5 +1,4 @@
 import logging
-import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface.form import string_field_handle, int_field_handle, form_field, form_handle
 from .util import call_after
@@ -64,9 +63,8 @@ class View(view.View, QtGui.QWidget):
     view_id = 'form'
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, parent, objimpl_registry):
-        object = yield from objimpl_registry.resolve(state.object)
+    async def from_state(cls, locale, state, parent, objimpl_registry):
+        object = await objimpl_registry.resolve(state.object)
         return cls(parent, object, state.fields, state.current_field)
 
     def __init__(self, parent, object, fields, current_field):
@@ -108,12 +106,11 @@ class View(view.View, QtGui.QWidget):
         return self.fields[0][1].get_widget()
 
     @command('submit')  # 'Submit', 'Submit form', 'Return')
-    @asyncio.coroutine
-    def command_submit(self):
+    async def command_submit(self):
         field_values = {}
         for name, field in self.fields:
             field_values[name] = field.get_value()
-        handle = yield from self.object.run_command('submit', **field_values)
+        handle = await self.object.run_command('submit', **field_values)
         if handle:
             self.open(handle)
 

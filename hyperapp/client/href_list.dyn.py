@@ -1,7 +1,6 @@
 import logging
 from operator import attrgetter
 from collections import namedtuple
-import asyncio
 from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.interface import core as core_types
 from ..common.interface import href_list as href_list_types
@@ -48,10 +47,9 @@ class HRefListObject(ListObject):
     def get_key_column_id(self):
         return 'id'
 
-    @asyncio.coroutine
-    def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         if not self._rows:
-            href_list = yield from self._href_list_service.get_href_list(self._href_list_id)
+            href_list = await self._href_list_service.get_href_list(self._href_list_id)
             assert sort_column_id in ['id', 'href'], repr(sort_column_id)
             self._rows = [self.Row(href_item.id, '%s.%s' % (href_item.href.algorithm, href_item.href.hash.decode()))
                           for href_item in href_list.href_list]
@@ -63,12 +61,11 @@ class HRefListObject(ListObject):
         return chunk
 
     @command('open', kind='element')
-    @asyncio.coroutine
-    def command_open(self, element_key):
+    async def command_open(self, element_key):
         assert self._id2href is not None  # fetch_element was not called yet
         href = self._id2href[element_key]
         log.info('Opening href %r: %r', element_key, href)
-        return (yield from self._href_resolver.resolve_href_to_handle(href))
+        return (await self._href_resolver.resolve_href_to_handle(href))
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -90,9 +87,8 @@ class HRefListService(object):
         service_url = self._service_proxy.get_url()
         return href_list_types.href_list_service(service_url.to_data())
 
-    @asyncio.coroutine
-    def get_href_list(self, href_list_id):
-        result = yield from self._service_proxy.get_href_list(href_list_id)
+    async def get_href_list(self, href_list_id):
+        result = await self._service_proxy.get_href_list(href_list_id)
         return result.href_list
 
 
@@ -106,9 +102,8 @@ class ThisModule(Module):
         services.service_registry.register(href_list_types.href_list_service.id, HRefListService.from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(HRefListObject.objimpl_id, HRefListObject.from_state, services.href_resolver, services.service_registry)
 
-    @asyncio.coroutine
-    def resolve_dynamic_href_list_object(self, dynamic_href_list):
-        href_list_service = yield from self._href_resolver.resolve_service_ref(dynamic_href_list.href_list_service)
+    async def resolve_dynamic_href_list_object(self, dynamic_href_list):
+        href_list_service = await self._href_resolver.resolve_service_ref(dynamic_href_list.href_list_service)
         object = href_list_types.href_list_object(HRefListObject.objimpl_id, href_list_service, dynamic_href_list.href_list_id)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'id'

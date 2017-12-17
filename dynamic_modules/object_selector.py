@@ -1,6 +1,5 @@
 import os.path
 import logging
-import asyncio
 from PySide import QtCore, QtGui
 from ..common.interface import article as article_types
 from ..common.interface import core as core_types
@@ -33,8 +32,7 @@ class View(view.View, QtGui.QWidget):
     view_id = 'object_selector'
 
     @classmethod
-    @asyncio.coroutine
-    def resolve_param_editor(cls, state, proxy_object, command_id, element_key, action, iface_registry):
+    async def resolve_param_editor(cls, state, proxy_object, command_id, element_key, action, iface_registry):
         assert action in ['add', 'update'], repr(action)
         ref_list = proxy_object.get_state()
         if action == 'add':
@@ -44,16 +42,15 @@ class View(view.View, QtGui.QWidget):
         else:
             assert element_key is not None  # an element key is expected for update operation
             ref_id = element_key
-            element = yield from proxy_object.fetch_element(element_key)
+            element = await proxy_object.fetch_element(element_key)
             target_url = Url.from_str(iface_registry, element.row.url)
         target_handle = core_types.redirect_handle(view_id='redirect', redirect_to=target_url.to_data())
         return article_types.object_selector_handle(cls.view_id, ref_list, ref_id, target_handle)
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
-        ref_list = yield from objimpl_registry.resolve(state.ref_list)
-        target_view = yield from view_registry.resolve(locale, state.target)
+    async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
+        ref_list = await objimpl_registry.resolve(state.ref_list)
+        target_view = await view_registry.resolve(locale, state.target)
         return cls(parent, ref_list, state.ref_id, target_view)
 
     def __init__(self, parent, ref_list, ref_id, target_view):
@@ -85,14 +82,13 @@ class View(view.View, QtGui.QWidget):
                 + [self.object_command_choose])  # do not wrap in ViewCommand - we will open it ourselves
 
     @command('choose', kind='object')
-    @asyncio.coroutine
-    def object_command_choose(self):
+    async def object_command_choose(self):
         url = self.target_view.get_url()
         if not url: return  # not a proxy - can not choose it
         if self.ref_id is None:  # adding
-            result = (yield from self.ref_list.execute_request('add', target_url=url.to_data()))
+            result = (await self.ref_list.execute_request('add', target_url=url.to_data()))
         else:
-            result = (yield from self.ref_list.execute_request('update', element_key=self.ref_id, target_url=url.to_data()))
+            result = (await self.ref_list.execute_request('update', element_key=self.ref_id, target_url=url.to_data()))
         view.View.open(self, result.handle)  # do not wrap in our handle
 
     def open(self, handle):

@@ -44,20 +44,18 @@ class Transport(metaclass=abc.ABCMeta):
         ## assert isinstance(code_repository, CodeRepository), repr(code_repository)  # circular import dep
         ## assert isinstance(self._identity_controller, IdentityController), repr(self._identity_controller)  # from dynamic module
 
-    @asyncio.coroutine
-    def process_aux_info(self, aux_info):
+    async def process_aux_info(self, aux_info):
         assert isinstance(aux_info, self._packet_types.aux_info), repr(aux_info)
         self._add_type_modules(aux_info.type_modules)  # types must be added before requirements - modules may use them
-        yield from self._resolve_requirements(aux_info.requirements)
+        await self._resolve_requirements(aux_info.requirements)
         self._add_routes(aux_info.routes)
         self._resources_manager.register(aux_info.resources)
         
-    @asyncio.coroutine
-    def _resolve_requirements(self, requirements):
+    async def _resolve_requirements(self, requirements):
         assert is_list_inst(requirements, self._packet_types.requirement), repr(requirements)
         unfulfilled_requirements = list(filter(self._is_unfulfilled_requirement, requirements))
         if not unfulfilled_requirements: return
-        type_modules, code_modules, resources = yield from self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
+        type_modules, code_modules, resources = await self._code_repository.get_modules_by_requirements(unfulfilled_requirements)
         self._add_type_modules(type_modules or [])  # modules is None if there is no code repositories
         self._module_manager.load_code_module_list(code_modules or [])  # modules is None if there is no code repositories
         self._resources_manager.register(resources or [])
@@ -101,14 +99,12 @@ class Transport(metaclass=abc.ABCMeta):
         payload = request_or_notification.to_data()
         return self._packet_types.packet(aux_info, payload)
 
-    @asyncio.coroutine
     @abc.abstractmethod
-    def send_request_rec(self, remoting, public_key, route, request_or_notification):
+    async def send_request_rec(self, remoting, public_key, route, request_or_notification):
         pass
 
-    @asyncio.coroutine
     @abc.abstractmethod
-    def process_packet(self, protocol, session_list, server_public_key, data):
+    async def process_packet(self, protocol, session_list, server_public_key, data):
         pass
 
 
@@ -150,25 +146,22 @@ class Remoting(object):
         assert isinstance(url, Url), repr(url)
         return url.clone_with_routes(self._route_storage.get_routes(url.public_key))
 
-    @asyncio.coroutine
-    def execute_request(self, public_key, request):
+    async def execute_request(self, public_key, request):
         assert isinstance(public_key, PublicKey), repr(public_key)
         assert isinstance(request, Request), repr(request)
         self._futures[request.request_id] = future = asyncio.Future()
         try:
-            yield from self.send_request_or_notification(public_key, request)
-            return (yield from future)
+            await self.send_request_or_notification(public_key, request)
+            return (await future)
         finally:
             del self._futures[request.request_id]
 
-    @asyncio.coroutine
-    def send_notification(self, public_key, notification):
+    async def send_notification(self, public_key, notification):
         assert isinstance(public_key, PublicKey), repr(public_key)
         assert isinstance(notification, ClientNotification), repr(notification)
-        yield from self.send_request_or_notification(public_key, notification)
+        await self.send_request_or_notification(public_key, notification)
 
-    @asyncio.coroutine
-    def send_request_or_notification(self, public_key, request_or_notification):
+    async def send_request_or_notification(self, public_key, request_or_notification):
         log.info('sending request or notification:')
         pprint(self._packet_types.payload, request_or_notification.to_data(),
                self._resource_types, self._packet_types, self._iface_registry)
@@ -180,18 +173,17 @@ class Remoting(object):
                 log.info('Warning: unknown transport: %r', transport_id)
                 continue
             try:
-                return (yield from transport.send_request_rec(self, public_key, route[1:], request_or_notification))
+                return (await transport.send_request_rec(self, public_key, route[1:], request_or_notification))
             except TransportError as x:
                 log.warning('Error sending request using %r: %s', transport, x)
                 error = x
         raise RequestError('Unable to send packet to %s - no reachable transports' % public_key.get_short_id_hex()) from error
 
-    @asyncio.coroutine
-    def process_packet(self, protocol, session_list, server_public_key, packet):
+    async def process_packet(self, protocol, session_list, server_public_key, packet):
         assert isinstance(packet, tTransportPacket), repr(packet)
         log.info('received %r packet, contents %d bytes', packet.transport_id, len(packet.data))
         transport = self.transport_registry.resolve(packet.transport_id)
-        response_or_notification = yield from transport.process_packet(protocol, session_list, server_public_key, packet.data)
+        response_or_notification = await transport.process_packet(protocol, session_list, server_public_key, packet.data)
         if response_or_notification is None:
             return
         self._process_updates(server_public_key, response_or_notification.updates)

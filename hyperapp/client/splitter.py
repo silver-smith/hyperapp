@@ -1,5 +1,4 @@
 import logging
-import asyncio
 import importlib
 from PySide import QtCore, QtGui
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
@@ -38,10 +37,9 @@ class View(QtGui.QSplitter, view.View):
     view_id = 'splitter'
 
     @classmethod
-    @asyncio.coroutine
-    def from_state(cls, locale, state, parent, view_registry):
-        x = yield from view_registry.resolve(locale, state.x)
-        y = yield from view_registry.resolve(locale, state.y)
+    async def from_state(cls, locale, state, parent, view_registry):
+        x = await view_registry.resolve(locale, state.x)
+        y = await view_registry.resolve(locale, state.y)
         return cls(parent, x, y, state.orientation, state.focused, state.sizes)
 
     def __init__(self, parent, x, y, orient, focused, sizes):

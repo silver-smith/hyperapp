@@ -48,9 +48,8 @@ class Command(common_command.Command, metaclass=abc.ABCMeta):
     def clone(self):
         pass
     
-    @asyncio.coroutine
     @abc.abstractmethod
-    def run(self, *args, **kw):
+    async def run(self, *args, **kw):
         pass
 
 
@@ -75,13 +74,12 @@ class BoundCommand(Command):
             args = self._args + args
         return BoundCommand(self.id, self.kind, self.resource_id, self.enabled, self._class_method, self._inst_wr, args)
 
-    @asyncio.coroutine
-    def run(self, *args, **kw):
+    async def run(self, *args, **kw):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
         log.debug('BoundCommand.run: %s, %r/%r, %r, (%s/%s, %s)', self, self.id, self.kind, inst, self._args, args, kw)
         if asyncio.iscoroutinefunction(self._class_method):
-            return (yield from self._class_method(inst, *(self._args + args), **kw))
+            return (await self._class_method(inst, *(self._args + args), **kw))
         else:
             return self._class_method(inst, *(self._args + args), **kw)
 

@@ -1,4 +1,3 @@
-import asyncio
 from ..common.htypes import Field
 from ..common.interface import packet as packet_types
 from ..common.interface import core as core_types
@@ -26,8 +25,7 @@ class ThisModule(Module):
                 ])
         set_error_handler(self.error_handler)
 
-    @asyncio.coroutine
-    def resolve_error_handler(self, locale, state, parent):
+    async def resolve_error_handler(self, locale, state, parent):
         resource_id = ['error_message', state.error._class_id, locale]
         error_message_resource = self._resources_manager.resolve(resource_id)
         if error_message_resource:

@@ -1,4 +1,3 @@
-import asyncio
 from ..common.interface import hyper_ref as href_types
 from .command import command
 from .module import Module
@@ -11,7 +10,6 @@ class ThisModule(Module):
         self._href_resolver = services.href_resolver
 
     @command('open_local_server')
-    @asyncio.coroutine
-    def open_local_server(self):
+    async def open_local_server(self):
         href = href_types.href('sha256', b'server-ref-list')
-        return (yield from self._href_resolver.resolve_href_to_handle(href))
+        return (await self._href_resolver.resolve_href_to_handle(href))

@@ -99,8 +99,7 @@ def proxy_list_object(services, server):
 
 
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_fetch_elements(proxy_list_object):
+async def test_fetch_elements(proxy_list_object):
     elements = [Element(i, test_iface.Row(i)) for i in range(10)]
     fetch_result = test_iface.Contents(
         chunk=Chunk(
@@ -114,7 +113,7 @@ def test_fetch_elements(proxy_list_object):
     proxy_list_object.server.execute_request.async_return_value = response
     observer = mock.Mock(spec=ListObserver)
     proxy_list_object.subscribe(observer)
-    chunk = yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    chunk = await proxy_list_object.fetch_elements('id', None, 0, 100)
     assert chunk.bof
     assert chunk.eof
     assert chunk.elements == elements
@@ -122,8 +121,7 @@ def test_fetch_elements(proxy_list_object):
 
 
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_fetch_cached_elements(proxy_list_object):
+async def test_fetch_cached_elements(proxy_list_object):
     elements = [Element(i, test_iface.Row(i)) for i in range(10)]
     fetch_result = test_iface.Contents(
         chunk=Chunk(
@@ -135,12 +133,12 @@ def test_fetch_cached_elements(proxy_list_object):
             ).to_data(test_iface))
     response = mock.Mock(error=None, result=fetch_result)
     proxy_list_object.server.execute_request.async_return_value = response
-    yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    await proxy_list_object.fetch_elements('id', None, 0, 100)
     observer = mock.Mock(spec=ListObserver)
     proxy_list_object.subscribe(observer)
     proxy_list_object.server.reset_mock()
     # second call must fetch results from cache (actual slices), server must not be called
-    chunk = yield from proxy_list_object.fetch_elements('id', None, 0, 10)
+    chunk = await proxy_list_object.fetch_elements('id', None, 0, 10)
     assert chunk.bof
     assert chunk.eof
     assert chunk.elements == elements
@@ -150,8 +148,7 @@ def test_fetch_cached_elements(proxy_list_object):
 
 # two adjacent chunks must be merged when fetch results are processed
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_chunks_are_merged(services, proxy_list_object):
+async def test_chunks_are_merged(services, proxy_list_object):
     # fetch first 10 elements
     fetch_result = test_iface.Contents(
         chunk=Chunk(
@@ -163,7 +160,7 @@ def test_chunks_are_merged(services, proxy_list_object):
             ).to_data(test_iface))
     response = mock.Mock(error=None, result=fetch_result)
     proxy_list_object.server.execute_request.async_return_value = response
-    yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    await proxy_list_object.fetch_elements('id', None, 0, 100)
 
     # fetch next 10 elements
     fetch_result = test_iface.Contents(
@@ -178,7 +175,7 @@ def test_chunks_are_merged(services, proxy_list_object):
     proxy_list_object.server.execute_request.async_return_value = response
     with mock.patch('uuid.uuid4') as uuid4:
         uuid4.return_value = 'request#1'
-        yield from proxy_list_object.fetch_elements('id', 9, 0, 100)
+        await proxy_list_object.fetch_elements('id', 9, 0, 100)
     proxy_list_object.server.execute_request.assert_called_with(
         Request(services.types.packet, test_iface, ['test-path'], 'fetch_elements', 'request#1',
                 params=test_iface.get_command('fetch_elements').params_type('id', 9, 0, 100)))
@@ -187,7 +184,7 @@ def test_chunks_are_merged(services, proxy_list_object):
     observer = mock.Mock(spec=ListObserver)
     proxy_list_object.subscribe(observer)
     proxy_list_object.server.reset_mock()
-    chunk = yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    chunk = await proxy_list_object.fetch_elements('id', None, 0, 100)
     assert chunk.bof
     assert not chunk.eof
     assert chunk.elements == [Element(i, test_iface.Row(i)) for i in range(20)]
@@ -203,8 +200,7 @@ def element(key):
     (ListDiff.delete(2), [0, 1, 3, 5, 6, 7]),
     ])
 @pytest.mark.asyncio
-@asyncio.coroutine
-def test_list_diff(proxy_list_object, diff, expected_keys):
+async def test_list_diff(proxy_list_object, diff, expected_keys):
     initial_keys = [0, 1, 2, 3, 5, 6, 7]
 
     # populate with initial elements
@@ -218,12 +214,12 @@ def test_list_diff(proxy_list_object, diff, expected_keys):
             ).to_data(test_iface))
     response = mock.Mock(error=None, result=fetch_result)
     proxy_list_object.server.execute_request.async_return_value = response
-    yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    await proxy_list_object.fetch_elements('id', None, 0, 100)
 
     proxy_list_object.process_diff(diff)
 
     proxy_list_object.server.reset_mock()
-    chunk = yield from proxy_list_object.fetch_elements('id', None, 0, 100)
+    chunk = await proxy_list_object.fetch_elements('id', None, 0, 100)
     assert chunk.bof
     assert not chunk.eof
     assert chunk.elements == [element(key) for key in expected_keys]

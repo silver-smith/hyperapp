@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from .module import Module
 
@@ -18,6 +17,5 @@ class ThisModule(Module):
         Module.__init__(self, services)
         self._href_resolver = services.href_resolver
 
-    @asyncio.coroutine
-    def resolve_redirect(self, locale, handle, parent):
-        return (yield from self._href_resolver.resolve_href_to_handle(handle.href))
+    async def resolve_redirect(self, locale, handle, parent):
+        return (await self._href_resolver.resolve_href_to_handle(handle.href))

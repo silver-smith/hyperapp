@@ -1,4 +1,3 @@
-import asyncio
 import os.path
 import logging
 from ..common.interface import hyper_ref as href_types
@@ -17,27 +16,24 @@ class HRefResolver(object):
         self._href_object_registry = href_object_registry
         self._href_resolver_proxy = href_resolver_proxy
 
-    @asyncio.coroutine
-    def resolve_href_to_handle(self, href):
+    async def resolve_href_to_handle(self, href):
         object = self._href_registry.resolve(href)
         if not object:
-            object = yield from self.resolve_href(href)
+            object = await self.resolve_href(href)
             self._href_registry.register(href, object)
         assert object, repr(object)
         log.debug('href resolver: href resolved to %r', object)
-        handle = yield from self._href_object_registry.resolve(object)
+        handle = await self._href_object_registry.resolve(object)
         assert handle, repr(handle)
         log.debug('href resolver: href object resolved to handle %r', handle)
         return handle
 
-    @asyncio.coroutine
-    def resolve_href(self, href):
-        result = yield from self._href_resolver_proxy.resolve_href(href)
+    async def resolve_href(self, href):
+        result = await self._href_resolver_proxy.resolve_href(href)
         return result.href_object
 
-    @asyncio.coroutine
-    def resolve_service_ref(self, service_ref):
-        result = yield from self._href_resolver_proxy.resolve_service_ref(service_ref)
+    async def resolve_service_ref(self, service_ref):
+        result = await self._href_resolver_proxy.resolve_service_ref(service_ref)
         return result.service
 
 
@@ -60,12 +56,11 @@ class HRefRegistry(object):
 
 class HRefObjectRegistry(Registry):
 
-    @asyncio.coroutine
-    def resolve(self, href_object):
+    async def resolve(self, href_object):
         tclass = href_types.href_object.get_object_class(href_object)
         rec = self._resolve(tclass.id)
         log.info('producing href object %r using %s(%s, %s)', tclass.id, rec.factory, rec.args, rec.kw)
-        return (yield from rec.factory(href_object, *rec.args, **rec.kw))
+        return (await rec.factory(href_object, *rec.args, **rec.kw))
 
 
 class ThisModule(Module):

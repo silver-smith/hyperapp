@@ -32,15 +32,14 @@ def register_object_implementations(registry, services):
     ProxyObject.register(registry, services)
 
 
-@asyncio.coroutine
-def execute_get_request(packet_types, remoting, url):
+async def execute_get_request(packet_types, remoting, url):
     assert isinstance(url, Url), repr(url)
     server = Server.from_public_key(remoting, url.public_key)
     request_id = str(uuid.uuid4())
     command_id = 'get'
     params = url.iface.make_params(command_id)
     request = Request(packet_types, url.iface, url.path, command_id, request_id, params)
-    response = yield from server.execute_request(request)
+    response = await server.execute_request(request)
     return response.result.handle
 
 
@@ -65,12 +64,11 @@ class RemoteCommand(Command):
         args = self._args + (args or ())
         return RemoteCommand(self.id, self.kind, self.resource_id, self.enabled, self._object_wr, args)
 
-    @asyncio.coroutine
-    def run(self, *args, **kw):
+    async def run(self, *args, **kw):
         object = self._object_wr()
         if not object: return
         log.debug('running remote command %r (*%s, **%s)', self.id, self._args + args, kw)
-        return (yield from object.run_remote_command(self.id, *(self._args + args), **kw))
+        return (await object.run_remote_command(self.id, *(self._args + args), **kw))
 
 
 class ProxyObject(Object):
@@ -150,9 +148,8 @@ class ProxyObject(Object):
     def get_facets(self):
         return self.facets
 
-    @asyncio.coroutine
-    def server_subscribe(self):
-        result = yield from self.execute_request('subscribe')
+    async def server_subscribe(self):
+        result = await self.execute_request('subscribe')
         self.set_contents(result)
         self._notify_object_changed()
 
@@ -169,14 +166,13 @@ class ProxyObject(Object):
         return (self._is_plain_open_handle_request(command) or
                 command.command_id in self._command_id2param_editor)
 
-    @asyncio.coroutine
-    def run_remote_command(self, command_id, *args, **kw):
+    async def run_remote_command(self, command_id, *args, **kw):
         if self._is_plain_open_handle_request(self.iface.get_command(command_id)):
-            result = yield from self.execute_request(command_id, *args, **kw)
+            result = await self.execute_request(command_id, *args, **kw)
             return result.handle
         else:
             param_editor_resource = self._command_id2param_editor[command_id]
-            handle = yield from self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id, *args, **kw)
+            handle = await self._param_editor_registry.resolve(param_editor_resource.param_editor, self, command_id, *args, **kw)
             return handle
 
     def observers_gone(self):
@@ -192,15 +188,13 @@ class ProxyObject(Object):
         params = self.iface.make_params(command_id, *args, **kw)
         return Request(self._packet_types, self.iface, self.path, command_id, request_id, params)
 
-    @asyncio.coroutine
-    def send_notification(self, command_id, *args, **kw):
+    async def send_notification(self, command_id, *args, **kw):
         notification = self.prepare_notification(command_id, *args, **kw)
-        yield from self.server.send_notification(notification)
+        await self.server.send_notification(notification)
 
-    @asyncio.coroutine
-    def execute_request(self, command_id, *args, **kw):
+    async def execute_request(self, command_id, *args, **kw):
         request = self.prepare_request(command_id, *args, **kw)
-        response = yield from self.server.execute_request(request)
+        response = await self.server.execute_request(request)
         if response.error is not None:
             raise response.error
         else:

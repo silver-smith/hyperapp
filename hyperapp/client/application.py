@@ -1,6 +1,5 @@
 import os
 import logging
-import asyncio
 from PySide import QtCore, QtGui
 from ..common.url import UrlWithRoutes
 from ..common import dict_coders, cdr_coders
@@ -49,10 +48,9 @@ class Application(AsyncApplication, view.View):
     def get_state(self):
         return [view.get_state() for view in self._windows]
 
-    @asyncio.coroutine
-    def open_windows(self, state):
+    async def open_windows(self, state):
         for s in state or []:
-            yield from window.Window.from_state(s, self, self._module_registry, self._view_registry, self._resources_manager)
+            await window.Window.from_state(s, self, self._module_registry, self._view_registry, self._resources_manager)
 
     def pick_arg(self, kind):
         return None
@@ -71,15 +69,14 @@ class Application(AsyncApplication, view.View):
             self.stop_loop()
 
     @command('open_server')
-    @asyncio.coroutine
-    def open_server(self):
+    async def open_server(self):
         window = self._windows[0]  # usually first window is the current one
         fpath, ftype = QtGui.QFileDialog.getOpenFileName(
             window.get_widget(), 'Load url', os.getcwd(), 'Server url with routes (*.url)')
         url = UrlWithRoutes.load_from_file(self._iface_registry, fpath)
         self._remoting.add_routes_from_url(url)
         server = Server.from_public_key(self._remoting, url.public_key)
-        handle = yield from execute_get_request(self._packet_types, self._remoting, url)
+        handle = await execute_get_request(self._packet_types, self._remoting, url)
         assert handle  # url's get command must return a handle
         window.get_current_view().open(handle)
 
