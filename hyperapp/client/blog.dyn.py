@@ -100,12 +100,6 @@ class BlogArticleObject(TextObject):
 
 class BlogService(object):
 
-    @classmethod
-    def from_data(cls, service_object, iface_registry, proxy_factory):
-        service_url = Url.from_data(iface_registry, service_object.service_url)
-        service_proxy = proxy_factory.from_url(service_url)
-        return cls(service_proxy)
-
     def __init__(self, service_proxy):
         self._service_proxy = service_proxy
         self._blog_id_article_id_to_row = {}  # (blog_id, article_id) -> blog_row, already fetched rows
@@ -140,14 +134,24 @@ class ThisModule(Module):
         Module.__init__(self, services)
         self._href_resolver = services.href_resolver
         self._service_registry = services.service_registry
+        self._url2service = {}
         services.href_object_registry.register(blog_types.blog_ref.id, self.resolve_blog_object)
         services.href_object_registry.register(blog_types.blog_article_ref.id, self.resolve_blog_article_object)
         services.service_registry.register(
-            blog_types.blog_service.id, BlogService.from_data, services.iface_registry, services.proxy_factory)
+            blog_types.blog_service.id, self.blog_service_from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
             BlogObject.objimpl_id, BlogObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
         services.objimpl_registry.register(
             BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.service_registry)
+
+    def blog_service_from_data(self, service_object, iface_registry, proxy_factory):
+        service_url = Url.from_data(iface_registry, service_object.service_url)
+        service = self._url2service.get(service_url)
+        if not service:
+            service_proxy = proxy_factory.from_url(service_url)
+            service = BlogService(service_proxy)
+            self._url2service[service_url] = service
+        return service
 
     @asyncio.coroutine
     def resolve_blog_object(self, blog_object):
