@@ -42,6 +42,12 @@ class PublicKey(object):
         self._public_key_pem = public_key_pem  # str
         self._id = self._make_id()
 
+    def __eq__(self, other):
+        if not isinstance(other, PublicKey):
+            return False
+        return (self._algorithm == other._algorithm and
+                self._id == other._id)
+
     def _make_id(self):
         pk_der = self._public_key.public_bytes(
             encoding=serialization.Encoding.DER,

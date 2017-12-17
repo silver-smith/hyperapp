@@ -43,6 +43,9 @@ class IfaceCommand(object):
                 other.params_fields == self.params_fields and
                 self.result_fields == self.result_fields)
 
+    def __hash__(self):
+        return hash((self.request_type, self.command_id, tuple(self.params_fields), tuple(self.result_fields)))
+
     def bind(self, iface, params_fields=None, result_fields=None, result_type=None):
         return BoundIfaceCommand(iface, self.request_type, self.command_id,
                                  params_fields or self.params_fields,

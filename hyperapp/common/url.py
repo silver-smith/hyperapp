@@ -40,6 +40,16 @@ class Url(object):
         self.public_key = public_key
         self.path = path
 
+    def __eq__(self, other):
+        if not isinstance(other, Url):
+            return False
+        return (self.iface == other.iface and
+                self.public_key == other.public_key and
+                self.path == other.path)
+
+    def __hash__(self):
+        return hash((self.iface, self.public_key, tuple(self.path)))
+
     def to_data(self):
         return self.type(self.iface.iface_id, self.public_key.to_der(), self.path)
 

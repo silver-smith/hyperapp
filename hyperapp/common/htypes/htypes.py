@@ -95,6 +95,9 @@ class TOptional(Type):
     def __eq__(self, other):
         return isinstance(other, TOptional) and other.base_t == self.base_t
 
+    def __hash__(self):
+        return hash(('toptional', self.base_t))
+
     def __instancecheck__(self, value):
         return value is None or isinstance(value, self.base_t)
 
@@ -128,6 +131,9 @@ class Field(object):
     def __eq__(self, other):
         assert isinstance(other, Field), repr(other)
         return other.name == self.name and other.type == self.type
+
+    def __hash__(self):
+        return hash((self.name, self.type))
 
 
 # class for instantiated records
@@ -166,6 +172,9 @@ class TRecord(Type):
 
     def __eq__(self, other):
         return isinstance(other, TRecord) and other.fields == self.fields
+
+    def __hash__(self):
+        return hash((tuple(self.fields), self.base))
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)
@@ -245,6 +254,9 @@ class TList(Type):
 
     def __eq__(self, other):
         return isinstance(other, TList) and other.element_t == self.element_t
+
+    def __hash__(self):
+        return hash(('tlist', self.element_t))
 
     def __instancecheck__(self, value):
         return is_list_inst(value, self.element_t)
