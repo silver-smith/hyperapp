@@ -18,3 +18,9 @@ BlogArticleObject:
       description: Open references list
       shortcuts:
         - Ctrl+R
+ArticleRefListObject:
+  commands:
+    open:
+      text: Open
+      description: Open selected hyper ref
+      is_default: yes

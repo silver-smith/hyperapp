@@ -109,15 +109,17 @@ class ArticleRefListObject(ListObject):
     objimpl_id = 'article-ref-list'
 
     @classmethod
-    def from_state(cls, state, service_registry):
+    def from_state(cls, state, href_resolver, service_registry):
         blog_service = service_registry.resolve(state.blog_service)
-        return cls(blog_service, state.blog_id, state.article_id)
+        return cls(href_resolver, blog_service, state.blog_id, state.article_id)
 
-    def __init__(self, blog_service, blog_id, article_id):
+    def __init__(self, href_resolver, blog_service, blog_id, article_id):
         ListObject.__init__(self)
+        self._href_resolver = href_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
+        self._id2href = {}
 
     def get_state(self):
         return blog_types.article_ref_list_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
@@ -140,11 +142,17 @@ class ArticleRefListObject(ListObject):
 
     async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         ref_list = await self._blog_service.get_article_ref_list(self._blog_id, self._article_id)
+        self._id2href.update({row.id: row.href for row in ref_list})
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in ref_list]
         list_chunk = Chunk(sort_column_id, from_key=None, elements=elements, bof=True, eof=True)
         self._notify_fetch_result(list_chunk)
         return list_chunk
+
+    @command('open', kind='element')
+    async def command_open(self, element_key):
+        href = self._id2href[element_key]
+        return (await self._href_resolver.resolve_href_to_handle(href))
 
 
 class BlogService(object):
@@ -196,7 +204,7 @@ class ThisModule(Module):
         services.objimpl_registry.register(
             BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
         services.objimpl_registry.register(
-            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.service_registry)
+            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.href_resolver, services.service_registry)
 
     def blog_service_from_data(self, service_object, iface_registry, proxy_factory):
         service_url = Url.from_data(iface_registry, service_object.service_url)
