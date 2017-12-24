@@ -11,3 +11,10 @@ BlogObject:
       text: Open
       description: Open selected article
       is_default: yes
+BlogArticleObject:
+  commands:
+    refs:
+      text: Refs
+      description: Open references list
+      shortcuts:
+        - Ctrl+R

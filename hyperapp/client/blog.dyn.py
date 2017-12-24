@@ -79,19 +79,72 @@ class BlogArticleObject(TextObject):
     objimpl_id = 'blog_article'
 
     @classmethod
-    async def from_state(cls, state, service_registry):
+    async def from_state(cls, state, href_registry, href_resolver, service_registry):
         blog_service = service_registry.resolve(state.blog_service)
         row = await blog_service.get_blog_row(state.blog_id, state.article_id)
-        return cls(blog_service, state.blog_id, state.article_id, row.text)
+        return cls(href_registry, href_resolver, blog_service, state.blog_id, state.article_id, row.text)
 
-    def __init__(self, blog_service, blog_id, article_id, text):
+    def __init__(self, href_registry, href_resolver, blog_service, blog_id, article_id, text):
         TextObject.__init__(self, text=text)
+        self._href_registry = href_registry
+        self._href_resolver = href_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
 
     def get_state(self):
         return blog_types.blog_article_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
+
+    @command('refs')
+    async def command_refs(self):
+        blog_service_ref = self._blog_service.to_service_ref()
+        href_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
+        href = href_types.href('sha256', ('test-blog-article-ref-list-href:%d' % self._article_id).encode())
+        self._href_registry.register(href, href_object)
+        return (await self._href_resolver.resolve_href_to_handle(href))
+        
+
+class ArticleRefListObject(ListObject):
+
+    objimpl_id = 'article-ref-list'
+
+    @classmethod
+    def from_state(cls, state, service_registry):
+        blog_service = service_registry.resolve(state.blog_service)
+        return cls(blog_service, state.blog_id, state.article_id)
+
+    def __init__(self, blog_service, blog_id, article_id):
+        ListObject.__init__(self)
+        self._blog_service = blog_service
+        self._blog_id = blog_id
+        self._article_id = article_id
+
+    def get_state(self):
+        return blog_types.article_ref_list_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
+
+    def get_title(self):
+        return 'refs for %s:%d' % (self._blog_id, self._article_id)
+
+    def pick_current_refs(self):
+        return []
+
+    def get_columns(self):
+        return [
+            Column('id', type=tInt, is_key=True),
+            Column('title'),
+            Column('href'),
+            ]
+
+    def get_key_column_id(self):
+        return 'id'
+
+    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+        ref_list = await self._blog_service.get_article_ref_list(self._blog_id, self._article_id)
+        elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
+                    for row in ref_list]
+        list_chunk = Chunk(sort_column_id, from_key=None, elements=elements, bof=True, eof=True)
+        self._notify_fetch_result(list_chunk)
+        return list_chunk
 
 
 class BlogService(object):
@@ -121,6 +174,10 @@ class BlogService(object):
             assert row, repr((blog_id, article_id))  # expecting it to be fetched now
         return row
 
+    async def get_article_ref_list(self, blog_id, article_id):
+        row = await self.get_blog_row(blog_id, article_id)
+        return row.ref_list
+
 
 class ThisModule(Module):
 
@@ -131,12 +188,15 @@ class ThisModule(Module):
         self._url2service = {}
         services.href_object_registry.register(blog_types.blog_ref.id, self.resolve_blog_object)
         services.href_object_registry.register(blog_types.blog_article_ref.id, self.resolve_blog_article_object)
+        services.href_object_registry.register(blog_types.blog_article_ref_list_ref.id, self.resolve_blog_article_ref_list_object)
         services.service_registry.register(
             blog_types.blog_service.id, self.blog_service_from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
             BlogObject.objimpl_id, BlogObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
         services.objimpl_registry.register(
-            BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.service_registry)
+            BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
+        services.objimpl_registry.register(
+            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.service_registry)
 
     def blog_service_from_data(self, service_object, iface_registry, proxy_factory):
         service_url = Url.from_data(iface_registry, service_object.service_url)
@@ -153,10 +213,19 @@ class ThisModule(Module):
         handle_t = list_handle_type(core_types, tInt)
         sort_column_id = 'created_at'
         resource_id = ['client_module', 'blog', 'BlogObject']
-        return handle_t('list', list_object, resource_id, sort_column_id, None)
+        return handle_t('list', list_object, resource_id, sort_column_id, key=None)
 
     async def resolve_blog_article_object(self, blog_article_object):
         blog_service_object = await self._href_resolver.resolve_service_ref(blog_article_object.blog_service_ref)
         text_object = blog_types.blog_article_object(
             BlogArticleObject.objimpl_id, blog_service_object, blog_article_object.blog_id, blog_article_object.article_id)
         return core_types.obj_handle('text_view', text_object)
+
+    async def resolve_blog_article_ref_list_object(self, ref_list_object):
+        blog_service_object = await self._href_resolver.resolve_service_ref(ref_list_object.blog_service_ref)
+        list_object = blog_types.article_ref_list_object(
+            ArticleRefListObject.objimpl_id, blog_service_object, ref_list_object.blog_id, ref_list_object.article_id)
+        handle_t = list_handle_type(core_types, tInt)
+        sort_column_id = 'id'
+        resource_id = ['client_module', 'blog', 'BlogArticleRefListObject']
+        return handle_t('list', list_object, resource_id, sort_column_id, key=None)

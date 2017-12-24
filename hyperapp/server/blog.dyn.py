@@ -139,7 +139,7 @@ class BlogService(Object):
         return blog_types.article_ref(
             id=rec.id,
             title=rec.title,
-            href=href_types.href('none', rec.href),
+            href=href_types.href('sha256', rec.href),
             )
 
 

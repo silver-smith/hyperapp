@@ -16,6 +16,11 @@ blog_article_ref = href_object class blog_article_ref:
     blog_id: string
     article_id: int
 
+blog_article_ref_list_ref = href_object class blog_article_ref_list_ref:
+    blog_service_ref: service_ref
+    blog_id: string
+    article_id: int
+
 
 row_fetch_request = record:
     sort_column_id: string
@@ -52,6 +57,11 @@ blog_object = object class blog_object(object_base):
     blog_id: string
 
 blog_article_object = object class blog_article_object(object_base):
+    blog_service: blog_service
+    blog_id: string
+    article_id: int
+
+article_ref_list_object = object class article_ref_list_object(object_base):
     blog_service: blog_service
     blog_id: string
     article_id: int
