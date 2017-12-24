@@ -226,9 +226,8 @@ class ThisModule(PonyOrmModule):
         self.Article = self.make_entity('Article', **self.article_fields)
         self.ArticleRef = self.make_entity('ArticleRef',
                                            article=Required(self.Article),
-                                           server_public_key_pem=Optional(str),  # '' if local
-                                           iface=Required(str),
-                                           path=Required(str),
+                                           title=Required(str),
+                                           href=Required(bytes),
                                            )
         Article.register_class(self.Article)
 

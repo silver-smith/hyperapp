@@ -4,6 +4,7 @@ from pony.orm import db_session, commit, desc, Required, Set
 from ..common.diff import SimpleDiff
 from ..common.list_object import ListDiff
 from ..common.interface import core as core_types
+from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
@@ -117,7 +118,6 @@ class BlogService(Object):
         chunk = rows2fetched_chunk('id', all_rows, request.params.fetch_request, blog_types.blog_chunk)
         return request.make_response_result(chunk=chunk)
 
-
     @db_session
     def fetch_blog_contents(self, blog_id):
         # blog_id is ignored now
@@ -125,11 +125,21 @@ class BlogService(Object):
 
     @classmethod
     def rec2element(cls, rec):
+        ref_list = map(cls.rec2ref, rec.refs.select().order_by(this_module.ArticleRef.id))
         return blog_types.blog_row(
             id=rec.id,
             created_at=rec.created_at,
             title='Article #%d' % rec.id,
             text=rec.text,
+            ref_list=list(ref_list),
+            )
+
+    @staticmethod
+    def rec2ref(rec):
+        return blog_types.article_ref(
+            id=rec.id,
+            title=rec.title,
+            href=href_types.href('none', rec.href),
             )
 
 
@@ -141,6 +151,7 @@ class ThisModule(PonyOrmModule):
 
     def init_phase2(self):
         self.Article = self.article_module.Article
+        self.ArticleRef = self.article_module.ArticleRef
         self.BlogEntry = self.make_inherited_entity('BlogEntry', self.Article,
                                                     created_at=Required(datetime))
         BlogEntry.register_class(self.BlogEntry)

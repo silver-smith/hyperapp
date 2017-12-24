@@ -1,6 +1,5 @@
 from core import object, object_base, handle
-from hyper_ref import href_object, service_ref, service
-
+from hyper_ref import href, href_object, service_ref, service
 
 
 blog_service = service class blog_service:
@@ -18,18 +17,23 @@ blog_article_ref = href_object class blog_article_ref:
     article_id: int
 
 
-
 row_fetch_request = record:
     sort_column_id: string
     from_key: int opt
     desc_count: int
     asc_count: int
 
+article_ref = record:
+    id: int
+    title: string
+    href: href
+
 blog_row = record:
     id: int
     created_at: datetime
     title: string
     text: string
+    ref_list: article_ref list
 
 blog_chunk = record:
     sort_column_id: string

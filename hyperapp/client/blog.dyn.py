@@ -29,7 +29,7 @@ class BlogObject(ListObject):
         self._href_resolver = href_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
-        self._key2row = {}  # cache for visited rows
+        self._key2row = {}  # cache for visited rows; unused, may be are to be removed
 
     def get_state(self):
         return blog_types.blog_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id)
