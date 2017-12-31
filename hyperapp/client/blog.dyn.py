@@ -5,6 +5,7 @@ from ..common.url import Url
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
+from ..common.interface import object_selector as object_selector_types
 from ..common.list_object import Element, Chunk
 from .module import Module
 from .command import command
@@ -149,10 +150,19 @@ class ArticleRefListObject(ListObject):
         self._notify_fetch_result(list_chunk)
         return list_chunk
 
+    async def get_ref_handle(self, id):
+        href = self._id2href[id]
+        return (await self._href_resolver.resolve_href_to_handle(href))
+
     @command('open', kind='element')
     async def command_open(self, element_key):
-        href = self._id2href[element_key]
-        return (await self._href_resolver.resolve_href_to_handle(href))
+        return (await self.get_ref_handle(element_key))
+
+    @command('change', kind='element')
+    async def command_change(self, element_key):
+        target_handle = await self.get_ref_handle(element_key)
+        object = object_selector_types.object_selector_object('object_selector')
+        return object_selector_types.object_selector_view('object_selector', object, target_handle)
 
 
 class BlogService(object):

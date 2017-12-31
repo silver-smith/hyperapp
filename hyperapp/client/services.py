@@ -59,6 +59,7 @@ class Services(ServicesBase):
                 'hyper_ref',
                 'href_list',
                 'fs',
+                'object_selector',
                 'blog',
             ])
         self.objimpl_registry = ObjImplRegistry()
@@ -117,6 +118,7 @@ class Services(ServicesBase):
                 'href_list',
                 'local_server_ref_list',
                 'fs',
+                'object_selector',
                 'blog',
                 ]:
             fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)

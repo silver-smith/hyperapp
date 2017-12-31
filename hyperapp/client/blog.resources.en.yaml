@@ -24,3 +24,8 @@ ArticleRefListObject:
       text: Open
       description: Open selected hyper ref
       is_default: yes
+    change:
+      text: Change
+      description: Select another object for this reference
+      shortcuts:
+        - Space
