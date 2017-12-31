@@ -29,22 +29,31 @@ class ObjectSelectorView(View, QtGui.QWidget):
     async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
         object = await objimpl_registry.resolve(state.object)
         target_view = await view_registry.resolve(locale, state.target)
-        return cls(object, target_view)
+        return cls(parent, object, target_view)
 
-    def __init__(self, object, target_view):
+    def __init__(self, parent, object, target_view):
         QtGui.QWidget.__init__(self)
-        View.__init__(self)
+        View.__init__(self, parent)
         self.object = object
         self.target_view = target_view
         layout = QtGui.QVBoxLayout()
         layout.addWidget(QtGui.QLabel('Select object'))
         layout.addWidget(target_view.get_widget())
         self.setLayout(layout)
+        target_view.set_parent(self)
 
     def get_state(self):
         target_handle = self.target_view.get_state()
         object = self.object.get_state()
         return object_selector_types.object_selector_view(self.impl_id, object, target_handle)
+
+    def get_current_child(self):
+        return self.target_view
+
+    def open(self, handle):
+        object = self.object.get_state()
+        selector_handle = object_selector_types.object_selector_view(self.impl_id, object, handle)
+        View.open(self, selector_handle)
 
 
 class ThisModule(Module):
