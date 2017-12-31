@@ -1,5 +1,6 @@
 from PySide import QtCore, QtGui
 
+from .command import command
 from .object import Object
 from .view import View
 from .module import Module
@@ -54,6 +55,18 @@ class ObjectSelectorView(View, QtGui.QWidget):
         object = self.object.get_state()
         selector_handle = object_selector_types.object_selector_view(self.impl_id, object, handle)
         View.open(self, selector_handle)
+
+    def get_command_list(self, kinds=None):
+        command_list = super().get_command_list(kinds)
+        if not kinds or 'object' in kinds:
+            return command_list + [self.object_command_choose]  # do not wrap in ViewCommand - we will open it ourselves
+        else:
+            return command_list
+
+    @command('choose', kind='object')
+    async def object_command_choose(self):
+        ref_list = self.target_view.pick_current_refs()
+        print('*** ref_list =', ref_list)
 
 
 class ThisModule(Module):
