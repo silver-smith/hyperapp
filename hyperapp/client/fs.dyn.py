@@ -44,7 +44,7 @@ class FsDirObject(ListObject):
             return command_list
 
     def pick_current_refs(self):
-        return []
+        return [self._get_path_ref(self._path)]
 
     def get_columns(self):
         return [
@@ -79,11 +79,15 @@ class FsDirObject(ListObject):
         else:
             return [command for command in all_command_list if command.id != 'open']
 
-    async def _open_path(self, path):
+    def _get_path_ref(self, path):
         fs_service_ref = self._fs_service.to_service_ref()
         href_object = fs_types.fs_ref(fs_service_ref, self._host, path)
         href = href_types.href('sha256', ('test-fs-href:%s' % '/'.join(path)).encode())
         self._href_registry.register(href, href_object)
+        return href
+
+    async def _open_path(self, path):
+        href = self._get_path_ref(path)
         return (await self._href_resolver.resolve_href_to_handle(href))
 
     @command('open', kind='element')

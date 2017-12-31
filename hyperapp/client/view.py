@@ -77,14 +77,14 @@ class View(ObjectObserver, Commander):
         return 'Untitled'
 
     def pick_current_refs(self):
-        refs = []
+        ref_list = []
         child = self.get_current_child()
         if child:
-            refs += child.pick_current_refs()
+            ref_list += child.pick_current_refs()
         object = self.get_object()
         if object:
-            refs == object.pick_current_refs()
-        return refs
+            ref_list += object.pick_current_refs()
+        return ref_list
 
     def get_url(self):
         object = self.get_object()
