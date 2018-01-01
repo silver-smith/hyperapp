@@ -31,7 +31,6 @@ class BlogObject(ListObject):
         self._href_resolver = href_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
-        self._key2row = {}  # cache for visited rows; unused, may be are to be removed
 
     def get_state(self):
         return blog_types.blog_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id)
@@ -55,7 +54,6 @@ class BlogObject(ListObject):
     async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
         chunk = await self._blog_service.fetch_blog_contents(
             self._blog_id, sort_column_id, from_key, desc_count, asc_count)
-        self._key2row.update({row.id: row for row in chunk.rows})
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in chunk.rows]
         list_chunk = Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
