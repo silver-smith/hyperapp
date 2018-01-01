@@ -1,5 +1,6 @@
 from core import object, object_base, handle
 from hyper_ref import href, href_object, service_ref, service
+from object_selector import object_selector_callback
 
 
 blog_service = service class blog_service:

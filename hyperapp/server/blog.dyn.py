@@ -11,91 +11,12 @@ from .util import utcnow, path_part_to_str
 from .command import command
 from .object import Object, subscription
 from .module import ModuleCommand
-from . import article
 from .list_object import rows2fetched_chunk
 
 log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'blog'
-
-
-class BlogEntry(article.Article):
-
-    #iface = blog_types.blog_entry
-    objimpl_id = 'proxy.text'
-
-    def get_path(self):
-        return this_module.make_path(self.class_name, path_part_to_str(self.article_id, none_str='new'))
-
-    @command('parent')
-    def command_parent(self, request):
-        return request.make_response_object(Blog())
-
-    @db_session
-    def do_save(self, request, text):
-        if self.article_id is not None:
-            entry_rec = this_module.BlogEntry[self.article_id]
-            entry_rec.text = text
-            is_insertion = False
-        else:
-            entry_rec = this_module.BlogEntry(
-                text=text,
-                created_at=utcnow())
-            is_insertion = True
-        commit()
-        self.article_id = entry_rec.id  # now may have new get_path()
-        log.info('Blog entry is saved, blog entry id = %r', self.article_id)
-        subscription.distribute_update(self.iface, self.get_path(), SimpleDiff(text))
-        if is_insertion:
-            diff = ListDiff.add_one(Blog.rec2element(entry_rec))
-            subscription.distribute_update(Blog.iface, Blog.get_path(), diff)
-        return request.make_response_result(new_path=self.get_path())
-
-
-class Blog:#(SmallListObject):
-
-    #iface = blog_types.blog
-    objimpl_id = 'proxy_list'
-    class_name = 'blog'
-    default_sort_column_id = 'id'
-
-    @classmethod
-    def resolve(cls, path):
-        return cls()
-
-    def __init__(self):
-        SmallListObject.__init__(self, core_types)
-
-    @classmethod
-    def get_path(cls):
-        return this_module.make_path(cls.class_name)
-
-    @command('add')
-    def command_add(self, request):
-        return request.make_response_object(BlogEntry(mode=BlogEntry.mode_edit))
-
-    @db_session
-    def fetch_all_elements(self, request):
-        return list(map(self.rec2element, this_module.BlogEntry.select().order_by(desc(this_module.BlogEntry.created_at))))
-
-    @classmethod
-    def rec2element(cls, rec):
-        commands = [cls.command_open, cls.command_delete]
-        return cls.Element(cls.Row(rec.id, rec.created_at), commands)
-
-    @command('open', kind='element')
-    def command_open(self, request):
-        article_id = request.params.element_key
-        return request.make_response_object(BlogEntry(article_id))
-    
-    @command('delete', kind='element')
-    @db_session
-    def command_delete(self, request):
-        article_id = request.params.element_key
-        this_module.BlogEntry[article_id].delete()
-        diff = ListDiff.delete(article_id)
-        subscription.distribute_update(self.iface, self.get_path(), diff)
 
 
 class BlogService(Object):
@@ -147,14 +68,23 @@ class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
-        self.article_module = article.this_module
 
     def init_phase2(self):
-        self.Article = self.article_module.Article
-        self.ArticleRef = self.article_module.ArticleRef
-        self.BlogEntry = self.make_inherited_entity('BlogEntry', self.Article,
-                                                    created_at=Required(datetime))
-        BlogEntry.register_class(self.BlogEntry)
+        self.Article = self.make_entity(
+            'Article',
+            text=Required(str),
+            refs=Set('ArticleRef'),
+            )
+        self.ArticleRef = self.make_entity(
+            'ArticleRef',
+            article=Required(self.Article),
+            title=Required(str),
+            href=Required(bytes),
+            )
+        self.BlogEntry = self.make_inherited_entity(
+            'BlogEntry', self.Article,
+            created_at=Required(datetime),
+            )
 
     def resolve(self, iface, path):
         name = path.pop_str()
