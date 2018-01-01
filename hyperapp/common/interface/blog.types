@@ -21,6 +21,7 @@ blog_article_ref_list_ref = href_object class blog_article_ref_list_ref:
     blog_service_ref: service_ref
     blog_id: string
     article_id: int
+    selected_ref_id: int opt
 
 
 row_fetch_request = record:

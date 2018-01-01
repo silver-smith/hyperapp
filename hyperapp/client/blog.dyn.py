@@ -168,9 +168,28 @@ class ArticleRefListObject(ListObject):
 class SelectorCallback(object):
 
     @classmethod
-    def from_data(cls, state):
-        assert 0, 'todo'
+    def from_data(cls, state, href_registry, href_resolver, service_registry):
+        blog_service = service_registry.resolve(state.blog_service)
+        return cls(href_registry, href_resolver, blog_service, state.blog_id, state.article_id, state.ref_id)
 
+    def __init__(self, href_registry, href_resolver, blog_service, blog_id, article_id, ref_id):
+        self._href_registry = href_registry
+        self._href_resolver = href_resolver
+        self._blog_service = blog_service
+        self._blog_id = blog_id
+        self._article_id = article_id
+        self._ref_id = ref_id
+
+    async def set_ref(self, href):
+        blog_service_ref = self._blog_service.to_service_ref()
+        href_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, self._ref_id)
+        href = href_types.href('sha256', ('test-blog-article-ref-list-href:%d:%d' % (self._article_id, self._ref_id)).encode())
+        self._href_registry.register(href, href_object)
+        return (await self._href_resolver.resolve_href_to_handle(href))
+
+    def to_data(self):
+        return blog_types.selector_callback(self._blog_service.to_data(), self._blog_id, self._article_id, self._ref_id)
+    
 
 class BlogService(object):
 
@@ -222,7 +241,8 @@ class ThisModule(Module):
             BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
         services.objimpl_registry.register(
             ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.href_resolver, services.service_registry)
-        object_selector.this_module.register_callback(blog_types.selector_callback, SelectorCallback.from_data)
+        object_selector.this_module.register_callback(
+            blog_types.selector_callback, SelectorCallback.from_data, services.href_registry, services.href_resolver, services.service_registry)
 
     def blog_service_from_data(self, service_object, iface_registry, proxy_factory):
         service_url = Url.from_data(iface_registry, service_object.service_url)

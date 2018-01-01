@@ -25,7 +25,10 @@ class ObjectSelectorObject(Object):
         self._callback = callback
 
     def get_state(self):
-        return object_selector_types.object_selector_object(self.impl_id)
+        return object_selector_types.object_selector_object(self.impl_id, self._callback.to_data())
+
+    async def set_ref(self, ref):
+        return (await self._callback.set_ref(ref))
 
 
 class ObjectSelectorView(View, QtGui.QWidget):
@@ -72,7 +75,11 @@ class ObjectSelectorView(View, QtGui.QWidget):
     @command('choose', kind='object')
     async def object_command_choose(self):
         ref_list = self.target_view.pick_current_refs()
-        print('*** ref_list =', ref_list)
+        assert len(ref_list) <= 1, repr(ref_list)  # multiple refs are not supported yet
+        if ref_list:
+            handle = await self.object.set_ref(ref_list[0])
+            if handle:
+                View.open(self, handle)
 
 
 class CallbackRegistry(Registry):
