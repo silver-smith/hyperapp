@@ -11,6 +11,7 @@ from .module import Module
 from .command import command
 from .text_object import TextObject
 from .list_object import ListObject
+from . import object_selector
 
 log = logging.getLogger(__name__)
 
@@ -161,8 +162,16 @@ class ArticleRefListObject(ListObject):
     @command('change', kind='element')
     async def command_change(self, element_key):
         target_handle = await self.get_ref_handle(element_key)
-        object = object_selector_types.object_selector_object('object_selector')
+        callback = blog_types.selector_callback(self._blog_service.to_data(), self._blog_id, self._article_id, element_key)
+        object = object_selector_types.object_selector_object('object_selector', callback)
         return object_selector_types.object_selector_view('object_selector', object, target_handle)
+
+
+class SelectorCallback(object):
+
+    @classmethod
+    def from_data(cls, state):
+        assert 0, 'todo'
 
 
 class BlogService(object):
@@ -215,6 +224,7 @@ class ThisModule(Module):
             BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
         services.objimpl_registry.register(
             ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.href_resolver, services.service_registry)
+        object_selector.this_module.register_callback(blog_types.selector_callback, SelectorCallback.from_data)
 
     def blog_service_from_data(self, service_object, iface_registry, proxy_factory):
         service_url = Url.from_data(iface_registry, service_object.service_url)

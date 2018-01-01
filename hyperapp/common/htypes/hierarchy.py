@@ -130,8 +130,13 @@ class THierarchy(Type):
         return self.registry[class_id]
 
     def get_object_class(self, rec):
-        assert self.is_tclassrecord(rec), repr(rec)
+        assert isinstance(rec, self), repr(rec)
         return rec._class
+
+    def is_my_class(self, tclass):
+        if not isinstance(tclass, TClass):
+            return False
+        return tclass.hierarchy is self
 
 
 class TExceptionClassRecord(RuntimeError):

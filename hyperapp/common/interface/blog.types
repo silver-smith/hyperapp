@@ -66,3 +66,9 @@ article_ref_list_object = object class article_ref_list_object(object_base):
     blog_service: blog_service
     blog_id: string
     article_id: int
+
+selector_callback = object_selector_callback class blog_callback:
+    blog_service: blog_service
+    blog_id: string
+    article_id: int
+    ref_id: int

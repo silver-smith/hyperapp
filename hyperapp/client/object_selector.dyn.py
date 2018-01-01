@@ -1,10 +1,14 @@
+import logging
 from PySide import QtCore, QtGui
 
 from .command import command
 from .object import Object
 from .view import View
+from .registry import Registry
 from .module import Module
 from ..common.interface import object_selector as object_selector_types
+
+log = logging.getLogger(__name__)
 
 
 class ObjectSelectorObject(Object):
@@ -13,10 +17,12 @@ class ObjectSelectorObject(Object):
 
     @classmethod
     def from_state(cls, state):
-        return cls()
+        callback = this_module.callback_registry.resolve(state.callback)
+        return cls(callback)
 
-    def __init__(self):
+    def __init__(self, callback):
         Object.__init__(self)
+        self._callback = callback
 
     def get_state(self):
         return object_selector_types.object_selector_object(self.impl_id)
@@ -69,9 +75,26 @@ class ObjectSelectorView(View, QtGui.QWidget):
         print('*** ref_list =', ref_list)
 
 
+class CallbackRegistry(Registry):
+
+    def register(self, tclass, factory, *args, **kw):
+        assert object_selector_types.object_selector_callback.is_my_class(tclass)
+        super().register(tclass.id, factory, *args, **kw)
+
+    def resolve(self, callback):
+        tclass = object_selector_types.object_selector_callback.get_object_class(callback)
+        rec = self._resolve(tclass.id)
+        log.info('producing object selector callback %r using %s(%s, %s)', tclass.id, rec.factory, rec.args, rec.kw)
+        return rec.factory(callback, *rec.args, **rec.kw)
+
+
 class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
         services.objimpl_registry.register(ObjectSelectorObject.impl_id, ObjectSelectorObject.from_state)
         services.view_registry.register(ObjectSelectorView.impl_id, ObjectSelectorView.from_state, services.objimpl_registry, services.view_registry)
+        self.callback_registry = CallbackRegistry()
+
+    def register_callback(self, id, factory, *args, **kw):
+        self.callback_registry.register(id, factory, *args, **kw)
