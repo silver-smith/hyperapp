@@ -46,8 +46,8 @@ class ObjectSelectorView(View, QtGui.QWidget):
         View.__init__(self, parent)
         self.object = object
         self.target_view = target_view
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(QtGui.QLabel('Select object'))
+        layout = QtGui.QVBoxLayout(spacing=1)
+        layout.addWidget(QtGui.QPushButton('Select object', focusPolicy=QtCore.Qt.NoFocus))
         layout.addWidget(target_view.get_widget())
         self.setLayout(layout)
         target_view.set_parent(self)
