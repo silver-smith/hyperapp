@@ -130,16 +130,16 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self._href_resolver = services.href_resolver
+        self._ref_resolver = services.ref_resolver
         self._service_registry = services.service_registry
-        services.href_object_registry.register(fs_types.fs_ref.id, self.resolve_fs_object)
-        services.service_registry.register(
-            fs_types.fs_service.id, FsService.from_data, services.iface_registry, services.proxy_factory)
+        #services.ref_object_registry.register(fs_types.fs_ref.id, self.resolve_fs_object)
+        #services.service_registry.register(
+        #    fs_types.fs_service.id, FsService.from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
-            FsDirObject.objimpl_id, FsDirObject.from_state, services.href_registry, services.href_resolver, services.service_registry)
+            FsDirObject.objimpl_id, FsDirObject.from_state, services.ref_registry, services.ref_resolver, services.service_registry)
 
     async def resolve_fs_object(self, fs_object):
-        fs_service_object = await self._href_resolver.resolve_service_ref(fs_object.fs_service_ref)
+        fs_service_object = await self._ref_resolver.resolve_service_ref(fs_object.fs_service_ref)
         dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_service_object, fs_object.host, fs_object.path)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'key'

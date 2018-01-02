@@ -1,0 +1,27 @@
+from core import object, object_base, handle, view_handle
+from hyper_ref import ref
+
+
+ref_item = record:
+    id: string
+    ref: ref
+
+ref_list = record:
+    ref_list: ref_item list
+
+
+dynamic_ref_list = record:
+    ref_list_service: ref
+    ref_list_id: string
+
+
+ref_list_resolver = interface ref_list_resolver:
+    commands:
+        request get_ref_list (ref_list_id: string) -> (ref_list: ref_list)
+
+ref_list_service = record:
+    service_url: url
+
+ref_list_object = object class ref_list(object_base):
+    ref_list_service: ref_list_service
+    ref_list_id: string

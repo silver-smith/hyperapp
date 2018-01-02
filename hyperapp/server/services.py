@@ -32,7 +32,7 @@ class Services(ServicesBase):
                 'core',
                 'packet',
                 'hyper_ref',
-                'href_list',
+                'ref_list',
                 'param_editor',
                 'server_management',
                 'code_repository',
@@ -99,7 +99,7 @@ class Services(ServicesBase):
                 'sample_list',
                 'exception_test',
                 'hyperref_test',
-                'href_resolver',
+                'ref_resolver',
                 ]:
             fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:

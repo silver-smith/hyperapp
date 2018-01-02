@@ -1,24 +1,24 @@
 from core import object, object_base, handle
-from hyper_ref import href, href_object, service_ref, service
+from hyper_ref import ref
 from object_selector import object_selector_callback
 
 
-blog_service = service class blog_service:
+blog_service = record:
     service_url: url
 
 
-blog_ref = href_object class blog_ref:
-    blog_service_ref: service_ref
+blog_ref = record:
+    blog_service_ref: ref
     blog_id: string
     current_article_id: int opt
 
-blog_article_ref = href_object class blog_article_ref:
-    blog_service_ref: service_ref
+blog_article_ref = record:
+    blog_service_ref: ref
     blog_id: string
     article_id: int
 
-blog_article_ref_list_ref = href_object class blog_article_ref_list_ref:
-    blog_service_ref: service_ref
+blog_article_ref_list_ref = record:
+    blog_service_ref: ref
     blog_id: string
     article_id: int
     selected_ref_id: int opt
@@ -33,7 +33,7 @@ row_fetch_request = record:
 article_ref = record:
     id: int
     title: string
-    href: href
+    ref: ref
 
 blog_row = record:
     id: int
@@ -52,8 +52,8 @@ blog_chunk = record:
 blog_service_iface = interface blog_service:
     commands:
         request fetch_blog_contents (blog_id: string, fetch_request: row_fetch_request) -> (chunk: blog_chunk)
-        request update_ref (blog_id: string, article_id: int, ref_id: int, ref: href) -> ()
-        request add_ref (blog_id: string, article_id: int, ref: href) -> (ref_id: int)
+        request update_ref (blog_id: string, article_id: int, ref_id: int, ref: ref) -> ()
+        request add_ref (blog_id: string, article_id: int, ref: ref) -> (ref_id: int)
 
 
 blog_object = object class blog_object(object_base):

@@ -1,8 +1,8 @@
 import os.path
 
 
-LOCAL_HREF_RESOLVER_URL_PATH = '~/.local/share/hyperapp/common/local_href_resolver.url'
-LOCAL_SERVER_HREF_LIST_URL_PATH = '~/.local/share/hyperapp/common/local_server_href_list.url'
+LOCAL_REF_RESOLVER_URL_PATH = '~/.local/share/hyperapp/common/local_ref_resolver.url'
+LOCAL_SERVER_REF_LIST_URL_PATH = '~/.local/share/hyperapp/common/local_server_ref_list.url'
 
 
 def save_url_to_file(url_with_routes, path):

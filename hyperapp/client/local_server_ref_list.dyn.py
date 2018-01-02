@@ -7,9 +7,9 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self._href_resolver = services.href_resolver
+        self._ref_resolver = services.ref_resolver
 
     @command('open_local_server')
     async def open_local_server(self):
-        href = href_types.href('sha256', b'server-ref-list')
-        return (await self._href_resolver.resolve_href_to_handle(href))
+        ref = b'server-ref-list'
+        return (await self._ref_resolver.resolve_ref_to_handle(ref))

@@ -4,7 +4,7 @@ from .module import Module
 log = logging.getLogger(__name__)
 
 
-REDIRECT_VIEW_ID = 'href_redirect'
+REDIRECT_VIEW_ID = 'ref_redirect'
 
 
 def register_views(registry, services):
@@ -15,7 +15,7 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self._href_resolver = services.href_resolver
+        self._ref_resolver = services.ref_resolver
 
     async def resolve_redirect(self, locale, handle, parent):
-        return (await self._href_resolver.resolve_href_to_handle(handle.href))
+        return (await self._ref_resolver.resolve_ref_to_handle(handle.ref))

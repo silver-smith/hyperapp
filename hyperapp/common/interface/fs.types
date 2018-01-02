@@ -1,15 +1,15 @@
 from core import object, object_base, handle
-from hyper_ref import href_object, service_ref, service
+from hyper_ref import ref
 
 
-fs_service = service class fs_service:
+fs_service = record:
     service_url: url
 
 
 host_id = string
 
-fs_ref = href_object class fs_ref:
-    fs_service_ref: service_ref
+fs_ref = record:
+    fs_service_ref: ref
     host: host_id
     path: string list
     current_file_name: string opt

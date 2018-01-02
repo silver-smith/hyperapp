@@ -2,27 +2,20 @@ from core import handle, view_handle
 from packet import error, client_error
 
 
-multihash = record:
-    algorithm: string
-    hash: binary
+hash = binary
+ref = hash
+full_type_name = string list
 
-href = multihash
-href_object = hierarchy href_object
+referred = record:
+    full_type_name: full_type_name
+    hash_algorithm: string
+    encoding: string
+    encoded_object: binary
+    
 
+unknown_ref_error = error class unknown_ref(client_error):
+    ref: ref
 
-href_redirect_handle = handle class href_redirect(view_handle):
-    href: href
-
-
-
-service_ref = multihash
-service = hierarchy service
-
-
-unknown_href_error = error class unknown_href(client_error):
-    href: href
-
-href_resolver = interface href_resolver:
+ref_resolver = interface ref_resolver:
     commands:
-        request resolve_href (ref: href) -> (href_object: href_object)
-        request resolve_service_ref (ref: service_ref) -> (service: service)
+        request resolve_ref (ref: ref) -> (referred: referred)

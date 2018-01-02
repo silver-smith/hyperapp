@@ -29,6 +29,7 @@ class PacketCoders(object):
         return coders.decoder.decode(t, data)
 
     def encode(self, encoding, object, t):
+        assert isinstance(object, t), repr(object)
         coders = self.resolve(encoding)
         return coders.encoder.encode(t, object)
 
