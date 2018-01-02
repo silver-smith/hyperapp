@@ -181,9 +181,14 @@ class SelectorCallback(object):
         self._ref_id = ref_id
 
     async def set_ref(self, href):
+        if self._ref_id is not None:
+            await self._blog_service.update_ref(self._blog_id, self._article_id, self._ref_id, href)
+            ref_id = self._ref_id
+        else:
+            ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, href)
         blog_service_ref = self._blog_service.to_service_ref()
-        href_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, self._ref_id)
-        href = href_types.href('sha256', ('test-blog-article-ref-list-href:%d:%d' % (self._article_id, self._ref_id)).encode())
+        href_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
+        href = href_types.href('sha256', ('test-blog-article-ref-list-href:%d:%d' % (self._article_id, ref_id)).encode())
         self._href_registry.register(href, href_object)
         return (await self._href_resolver.resolve_href_to_handle(href))
 
@@ -221,6 +226,13 @@ class BlogService(object):
     async def get_article_ref_list(self, blog_id, article_id):
         row = await self.get_blog_row(blog_id, article_id)
         return row.ref_list
+
+    async def update_ref(self, blog_id, article_id, ref_id, ref):
+        await self._service_proxy.update_ref(blog_id, article_id, ref_id, ref)
+
+    async def add_ref(self, blog_id, article_id, ref):
+        ref_id = await self._service_proxy.update_ref(blog_id, article_id, ref)
+        return ref_id
 
 
 class ThisModule(Module):

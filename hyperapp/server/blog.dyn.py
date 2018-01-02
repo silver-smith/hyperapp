@@ -63,6 +63,13 @@ class BlogService(Object):
             href=href_types.href('sha256', rec.href),
             )
 
+    @command('update_ref')
+    @db_session
+    def command_update_ref(self, request):
+        rec = this_module.ArticleRef[request.params.ref_id]
+        rec.href = request.params.ref.hash
+        log.info('Article ref#%d is updated to %s', rec.id, rec.href.decode())
+
 
 class ThisModule(PonyOrmModule):
 
