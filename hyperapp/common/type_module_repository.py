@@ -75,7 +75,7 @@ class TypeModuleRepository(object):
     
     def load_type_module(self, name, fpath):
         log.info('loading type module %r from %r', name, fpath)
-        used_modules, typedefs, type_registry = load_types_file(self._meta_type_registry, self._type_registry_registry, fpath)
+        used_modules, typedefs, type_registry = load_types_file(self._meta_type_registry, self._type_registry_registry, name, fpath)
         provided_classes = []
         for typedef in typedefs:
             t = typedef.type
@@ -88,7 +88,7 @@ class TypeModuleRepository(object):
         module = tTypeModule(name, provided_classes, used_modules, typedefs)
         self._register_type_module(module, type_registry)
         ns = type_registry.to_namespace()
-        if name == 'core':  # we need it
+        if name == 'core':  # we need it ourselves
             self._core_types = ns
         return ns
 
@@ -102,7 +102,7 @@ class TypeModuleRepository(object):
         log.info('  adding type module %r', module.module_name)
         assert isinstance(module, tTypeModule), repr(module)
         resolver = TypeResolver(self._type_registry_registry.get_all_type_registries())
-        type_registry = resolve_typedefs(self._meta_type_registry, resolver, module.typedefs)
+        type_registry = resolve_typedefs(self._meta_type_registry, resolver, module.module_name, module.typedefs)
         self._register_type_module(module, type_registry)
 
     def _register_type_module(self, module, type_registry):
