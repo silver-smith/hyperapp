@@ -18,20 +18,21 @@ class RefResolver(object):
         self._ref_resolver_proxy = ref_resolver_proxy
 
     async def resolve_ref_to_handle(self, ref):
-        referred = self._ref_registry.resolve(ref)
-        if not referred:
-            referred = await self.resolve_ref(ref)
-            self._ref_registry.register(ref, referred)
-        assert referred, repr(referred)
-        log.debug('ref resolver: ref resolved to %r', referred)
+        referred = await self.resolve_ref(ref)
         handle = await self._referred_registry.resolve(referred)
         assert handle, repr(handle)
         log.debug('ref resolver: referred resolved to handle %r', handle)
         return handle
 
     async def resolve_ref(self, ref):
-        result = await self._ref_resolver_proxy.resolve_ref(ref)
-        return result.referred
+        referred = self._ref_registry.resolve(ref)
+        if not referred:
+            result = await self._ref_resolver_proxy.resolve_ref(ref)
+            referred = result.referred
+            self._ref_registry.register(ref, referred)
+        log.debug('ref resolver: ref resolved to %r', referred)
+        assert referred, repr(referred)
+        return referred
 
     async def resolve_ref_to_object(self, ref, t):
         referred = await self.resolve_ref(ref)

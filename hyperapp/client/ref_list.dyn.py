@@ -21,8 +21,8 @@ class RefListObject(ListObject):
     Row = namedtuple('RefListObject_Row', 'id ref')
 
     @classmethod
-    def from_state(cls, state, ref_resolver):
-        ref_list_service = ref_resolver.resolve(state.ref_list_service)
+    def from_state(cls, state, ref_resolver, iface_registry, proxy_factory):
+        ref_list_service = RefListService.from_data(state.ref_list_service, iface_registry, proxy_factory)
         return cls(ref_resolver, ref_list_service, state.ref_list_id)
 
     def __init__(self, ref_resolver, ref_list_service, ref_list_id):
@@ -52,7 +52,7 @@ class RefListObject(ListObject):
         if not self._rows:
             ref_list = await self._ref_list_service.get_ref_list(self._ref_list_id)
             assert sort_column_id in ['id', 'ref'], repr(sort_column_id)
-            self._rows = [self.Row(ref_item.id, '%s.%s' % (ref_item.ref.algorithm, ref_item.ref.hash.decode()))
+            self._rows = [self.Row(ref_item.id, ref_item.ref.decode())
                           for ref_item in ref_list.ref_list]
             self._id2ref = {ref_item.id: ref_item.ref for ref_item in ref_list.ref_list}
         sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
@@ -77,7 +77,11 @@ class RefListService(object):
 
     @classmethod
     def from_data(cls, service_object, iface_registry, proxy_factory):
-        service_url = Url.from_data(iface_registry, service_object.service_url)
+        return cls.from_url(service_object.service_url, iface_registry, proxy_factory)
+
+    @classmethod
+    def from_url(cls, url, iface_registry, proxy_factory):
+        service_url = Url.from_data(iface_registry, url)
         service_proxy = proxy_factory.from_url(service_url)
         return cls(service_proxy)
 
@@ -100,7 +104,8 @@ class ThisModule(Module):
         self._ref_resolver = services.ref_resolver
         services.referred_registry.register('ref_list.dynamic_ref_list', self.resolve_dynamic_ref_list_object)
         #services.service_registry.register(ref_list_types.ref_list_service.id, RefListService.from_data, services.iface_registry, services.proxy_factory)
-        services.objimpl_registry.register(RefListObject.objimpl_id, RefListObject.from_state, services.ref_resolver, services.service_registry)
+        services.objimpl_registry.register(
+            RefListObject.objimpl_id, RefListObject.from_state, services.ref_resolver, services.iface_registry, services.proxy_factory)
 
     async def resolve_dynamic_ref_list_object(self, referred):
         dynamic_ref_list = packet_coders.decode(referred.encoding, referred.encoded_object, ref_list_types.dynamic_ref_list)

@@ -67,11 +67,11 @@ class RefListResolverService(Object):
     def command_get_ref_list(self, request):
         ref_list_id = request.params.ref_list_id
         ref_item_list = [ref_list_types.ref_item(id='%s.%s' % (command.module_name, command.id),
-                                                    ref=ref_types.ref('phony_alg', command.id.encode()))
+                                                 ref=command.id.encode())
                           for command in self._module_registry.get_all_modules_commands()]
         ref_item_list = [
-            ref_list_types.ref_item('fs', ref_types.ref('sha256', b'test-fs-ref')),
-            ref_list_types.ref_item('blog', ref_types.ref('sha256', b'test-blog-ref')),
+            ref_list_types.ref_item('fs', b'test-fs-ref'),
+            ref_list_types.ref_item('blog', b'test-blog-ref'),
             ] + ref_item_list
         return request.make_response_result(ref_list=ref_list_types.ref_list(ref_list=ref_item_list))
 
