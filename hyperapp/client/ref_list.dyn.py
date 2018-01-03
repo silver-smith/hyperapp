@@ -109,7 +109,7 @@ class ThisModule(Module):
 
     async def resolve_dynamic_ref_list_object(self, referred):
         dynamic_ref_list = packet_coders.decode(referred.encoding, referred.encoded_object, ref_list_types.dynamic_ref_list)
-        ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service, ref_list_types.ref_list_service)
+        ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service)
         object = ref_list_types.ref_list_object(RefListObject.objimpl_id, ref_list_service, dynamic_ref_list.ref_list_id)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'id'

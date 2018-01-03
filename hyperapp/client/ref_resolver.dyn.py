@@ -12,7 +12,8 @@ log = logging.getLogger(__name__)
 
 class RefResolver(object):
 
-    def __init__(self, ref_registry, referred_registry, ref_resolver_proxy):
+    def __init__(self, type_registry_registry, ref_registry, referred_registry, ref_resolver_proxy):
+        self._type_registry_registry = type_registry_registry
         self._ref_registry = ref_registry
         self._referred_registry = referred_registry
         self._ref_resolver_proxy = ref_resolver_proxy
@@ -34,8 +35,9 @@ class RefResolver(object):
         assert referred, repr(referred)
         return referred
 
-    async def resolve_ref_to_object(self, ref, t):
+    async def resolve_ref_to_object(self, ref):
         referred = await self.resolve_ref(ref)
+        t = self._type_registry_registry.resolve_type(referred.full_type_name)
         return packet_coders.decode(referred.encoding, referred.encoded_object, t)
 
 
@@ -81,4 +83,4 @@ class ThisModule(Module):
         ref_resolver_proxy = services.proxy_factory.from_url(url)
         services.ref_registry = self._ref_registry
         services.referred_registry = ReferredRegistry()
-        services.ref_resolver = RefResolver(self._ref_registry, services.referred_registry, ref_resolver_proxy)
+        services.ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, services.referred_registry, ref_resolver_proxy)

@@ -254,6 +254,13 @@ class TypeRegistryRegistry(object):
     def get_all_type_registries(self):
         return list(self._registry.values())
 
+    def resolve_type(self, full_type_name):
+        assert len(full_type_name) == 2, repr(full_type_name)  # currently it is: <module>.<name>
+        registry = self._registry.get(full_type_name[0])
+        assert registry, 'Unknown type module name: %s' % full_type_name[0]
+        t = registry.get_name(full_type_name[1])
+        assert t, 'Unknown type: %s' % '.'.join(full_type_name)
+        return t
 
 
 class UnknownTypeError(KeyError):
