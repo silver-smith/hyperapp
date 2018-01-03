@@ -28,14 +28,14 @@ def builtin_type_registry():
         tInt,
         tBool,
         tDateTime,
+        tEmbedded,
+        tIfaceId,
+        tPath,
+        tUrl,
+        tTypeModule,
+        tServerRoutes,
         ]:
-        registry.register(t.type_name, t)
-    registry.register('embedded', tEmbedded)
-    registry.register('iface_id', tIfaceId)
-    registry.register('path', tPath)
-    registry.register('url', tUrl)
-    registry.register('type_module', tTypeModule)
-    registry.register('server_routes', tServerRoutes)
+        registry.register(t.name, t)
     return registry
 
 def builtin_type_registry_registry(**kw):

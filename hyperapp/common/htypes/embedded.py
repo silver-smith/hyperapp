@@ -50,4 +50,4 @@ class TEmbedded(Type):
         return hash(value)
 
 
-tEmbedded = TEmbedded()
+tEmbedded = TEmbedded(['builtins', 'embedded'])

@@ -112,7 +112,7 @@ class MetaTypeTest(unittest.TestCase):
         cdata_b = t_hierarchy_class_meta('my_test_hierarchy', 'class_b', base_name='my_class_a', fields=[
             t_field_meta('field_b_1', t_list_meta(t_named('int'))),
             ])
-        self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
+        self.assertTrue(THierarchy(['test_module', 'some_test_hierarchy'], 'test_hierarchy').matches(hierarchy))
         class_a = self.meta_type_registry.resolve(resolver, ['test_module', 'test_class_a'], cdata_a)
         type_names.register('my_class_a', class_a)
         class_b = self.meta_type_registry.resolve(resolver, ['test_module', 'test_class_b'], cdata_b)

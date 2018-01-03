@@ -11,6 +11,21 @@ def join_path(*args):
 
 class Type(object):
 
+    def __init__(self, full_name):
+        assert full_name is None or (is_list_inst(full_name, str) and full_name), repr(full_name)
+        self._full_name = full_name
+
+    @property
+    def full_name(self):
+        return self._full_name
+
+    @property
+    def name(self):
+        if self.full_name:
+            return self.full_name[-1]
+        else:
+            return None
+
     def __instancecheck__(self, value):
         raise NotImplementedError(self.__class__)
 
@@ -30,6 +45,9 @@ class Type(object):
 
 
 class TPrimitive(Type):
+
+    def __init__(self):
+        super().__init__(['builtins', self.type_name])
 
     def __repr__(self):
         return 'TPrimitive<%s>' % self.get_type().__name__
@@ -85,8 +103,9 @@ tDateTime = TDateTime()
 
 class TOptional(Type):
 
-    def __init__(self, base_t):
+    def __init__(self, base_t, full_name=None):
         assert isinstance(base_t, Type), repr(base_t)
+        super().__init__(full_name)
         self.base_t = base_t
 
     def __repr__(self):
@@ -159,9 +178,10 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__(self, fields=None, base=None):
+    def __init__(self, full_name, fields=None, base=None):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
+        super().__init__(full_name)
         self.fields = fields or []
         if base:
             self.fields = base.fields + self.fields
@@ -245,8 +265,9 @@ class TRecord(Type):
 
 class TList(Type):
 
-    def __init__(self, element_t):
+    def __init__(self, element_t, full_name=None):
         assert isinstance(element_t, Type), repr(element_t)
+        super().__init__(full_name)
         self.element_t = element_t
 
     def __repr__(self):
@@ -268,28 +289,28 @@ class TList(Type):
 class TIndexedList(TList):
     pass
 
-tRoute = TList(tString)
+tRoute = TList(tString, ['builtins', 'route'])
 
-tServerRoutes = TRecord([
+tServerRoutes = TRecord(['builtins', 'server_routes'], [
     Field('public_key_der', tBinary),
     Field('routes', TList(tRoute)),
     ])
 
 tIfaceId = tString
 
-tPath = TList(tString)
+tPath = TList(tString, ['builtins', 'path'])
 
-tUrl = TRecord([
+tUrl = TRecord(['builtins', 'url'], [
     Field('iface', tIfaceId),
     Field('public_key_der', tBinary),
     Field('path', tPath),
     ])
 
-tUrlWithRoutes = TRecord(base=tUrl, fields=[
+tUrlWithRoutes = TRecord(['builtins', 'url_with_routes'], base=tUrl, fields=[
     Field('routes', TList(tRoute)),
     ])
 
-tCommand = TRecord([
+tCommand = TRecord(['builtins', 'command'], [
     Field('command_id', tString),
     Field('kind', tString),
     Field('resource_id', TList(tString)),

@@ -56,16 +56,16 @@ class Column(object):
         return hash((self.id, self.type, self.is_key))
 
 
-tColumn = TRecord([
+tColumn = TRecord(['meta_type', 'column'], [
     Field('id', tString),
     Field('type', tMetaType),
     Field('is_key', tBool),
     ])
 
-tColumnType = THierarchy('column_type')
-tSimpleColumnType = tColumnType.register('simple', fields=[Field('impl_id', tString)])
+tColumnType = THierarchy(['meta_type', 'column_type'], 'column_type')
+tSimpleColumnType = tColumnType.register(['meta_type', 'simple_column_type'], 'simple', fields=[Field('impl_id', tString)])
 
-tListInterface = tMetaType.register('list_interface', base=tInterfaceMeta, fields=[
+tListInterface = tMetaType.register(['meta_type', 'list_interface'], 'list_interface', base=tInterfaceMeta, fields=[
     Field('columns', TList(tColumn)),
     ])
 

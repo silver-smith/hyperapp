@@ -72,8 +72,8 @@ class TClass(Type):
 
 class THierarchy(Type):
 
-    def __init__(self, hierarchy_id):
-        Type.__init__(self)
+    def __init__(self, full_name, hierarchy_id):
+        super().__init__(full_name)
         self.hierarchy_id = hierarchy_id
         self.registry = {}  # id -> TClass
 
@@ -89,7 +89,7 @@ class THierarchy(Type):
                 sorted(other.registry.values(), key=lambda cls: cls.id) ==
                 sorted(self.registry.values(), key=lambda cls: cls.id))
 
-    def register(self, id, trec=None, fields=None, base=None):
+    def register(self, full_name, id, trec=None, fields=None, base=None):
         assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         if trec is not None:
@@ -102,7 +102,7 @@ class THierarchy(Type):
                 base_rec = base.get_trecord()
             else:
                 base_rec = None
-            trec = TRecord(fields, base_rec)
+            trec = TRecord(full_name, fields, base_rec)
         tclass = self.make_tclass(id, trec, base)
         self.registry[id] = tclass
         #print('registered %s %s' % (self.hierarchy_id, id))
