@@ -92,7 +92,7 @@ def register_typedef(p, name_token_num, name, type):
     parser = p.parser
     typedef = tTypeDef(name=name, type=type)
     try:
-        t = parser.meta_registry.resolve(parser.resolver, typedef.type)
+        t = parser.meta_type_registry.resolve(parser.resolver, typedef.type)
     except UnknownTypeError as x:
         syntax_error(p, name_token_num, 'Unknown type: %r' % x.name)
     parser.new_type_registry.register(typedef.name, t)
@@ -419,11 +419,11 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module(meta_registry, type_registry_registry, fname, contents, debug=False):
+def parse_type_module(meta_type_registry, type_registry_registry, fname, contents, debug=False):
     parser = yacc.yacc(debug=debug)
     parser.fname = fname
     parser.lines = contents.splitlines()
-    parser.meta_registry = meta_registry
+    parser.meta_type_registry = meta_type_registry
     parser.type_registry_registry = type_registry_registry
     parser.imported_type_registry = TypeRegistry()
     parser.new_type_registry = TypeRegistry()
