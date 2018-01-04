@@ -65,7 +65,14 @@ class RefResolver(Object):
                 path=['usr', 'share'],
                 current_file_name='dpkg',
                 )
-            return request.make_response_result(ref_object=object)
+            referred = self._encode_referred(fs_types.fs_ref, object)
+            return request.make_response_result(referred=referred)
+        if ref == b'test-fs-service-ref':
+            fs_service_url = Url(fs_types.fs_service_iface, self._server.get_public_key(), FsService.get_path())
+            object = fs_types.fs_service(
+                service_url=fs_service_url.to_data())
+            referred = self._encode_referred(fs_types.fs_service, object)
+            return request.make_response_result(referred=referred)
         if ref == b'test-blog-ref':
             blog_service_ref = b'test-blog-service-ref'
             object = blog_types.blog_ref(
@@ -74,11 +81,6 @@ class RefResolver(Object):
                 current_article_id=None,
                 )
             return request.make_response_result(ref_object=object)
-        if ref == b'test-fs-service-ref':
-            fs_service_url = Url(fs_types.fs_service_iface, self._server.get_public_key(), FsService.get_path())
-            service = fs_types.fs_service(
-                service_url=fs_service_url.to_data())
-            return request.make_response_result(service=service)
         if ref == b'test-blog-service-ref':
             blog_service_url = Url(blog_types.blog_service_iface, self._server.get_public_key(), BlogService.get_path())
             service = blog_types.blog_service(

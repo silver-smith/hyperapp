@@ -4,6 +4,7 @@ from ..common.htypes import Type
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
+from ..common.referred import make_referred, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH
 from .registry import Registry
 from .module import Module
@@ -56,6 +57,12 @@ class RefRegistry(object):
             assert referred == existing_referred, repr((existing_referred, referred))  # new referred does not match existing one
         self._registry[ref] = referred
 
+    def register_new_object(self, t, object):
+        referred = make_referred(t, object)
+        ref = make_ref(referred)
+        self.register(ref, referred)
+        return ref
+
     def resolve(self, ref):
         return self._registry.get(ref)
 
@@ -75,7 +82,7 @@ class ReferredRegistry(Registry):
         t = self._type_registry_registry.resolve_type(referred.full_type_name)
         object = packet_coders.decode(referred.encoding, referred.encoded_object, t)
         rec = self._resolve(tuple(referred.full_type_name))
-        log.info('resolving handle for %s using %s(%s, %s) for object %r', '.'.join(referred.full_type_name), rec.factory, rec.args, rec.kw, object)
+        log.info('producing handle for %s using %s(%s, %s) for object %r', '.'.join(referred.full_type_name), rec.factory, rec.args, rec.kw, object)
         return (await rec.factory(object, *rec.args, **rec.kw))
 
 

@@ -2,7 +2,6 @@ import logging
 from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.url import Url
 from ..common.interface import core as core_types
-from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
 from ..common.list_object import Element, Chunk
 from .command import command
@@ -17,14 +16,14 @@ class FsDirObject(ListObject):
     objimpl_id = 'fs_dir'
 
     @classmethod
-    def from_state(cls, state, href_registry, href_resolver, service_registry):
-        fs_service = service_registry.resolve(state.fs_service)
-        return cls(href_registry, href_resolver, fs_service, state.host, state.path)
+    def from_state(cls, state, iface_registry, ref_registry, ref_resolver, service_registry, proxy_factory):
+        fs_service = FsService.from_data(state.fs_service, iface_registry, proxy_factory)
+        return cls(ref_registry, ref_resolver, fs_service, state.host, state.path)
 
-    def __init__(self, href_registry, href_resolver, fs_service, host, path):
+    def __init__(self, ref_registry, ref_resolver, fs_service, host, path):
         ListObject.__init__(self)
-        self._href_registry = href_registry
-        self._href_resolver = href_resolver
+        self._ref_registry = ref_registry
+        self._ref_resolver = ref_resolver
         self._fs_service = fs_service
         self._host = host
         self._path = path
@@ -81,14 +80,12 @@ class FsDirObject(ListObject):
 
     def _get_path_ref(self, path):
         fs_service_ref = self._fs_service.to_service_ref()
-        href_object = fs_types.fs_ref(fs_service_ref, self._host, path)
-        href = href_types.href('sha256', ('test-fs-href:%s' % '/'.join(path)).encode())
-        self._href_registry.register(href, href_object)
-        return href
+        object = fs_types.fs_ref(fs_service_ref, self._host, path)
+        return self._ref_registry.register_new_object(fs_types.fs_ref, object)
 
     async def _open_path(self, path):
-        href = self._get_path_ref(path)
-        return (await self._href_resolver.resolve_href_to_handle(href))
+        ref = self._get_path_ref(path)
+        return (await self._ref_resolver.resolve_ref_to_handle(ref))
 
     @command('open', kind='element')
     async def command_open(self, element_key):
@@ -118,7 +115,7 @@ class FsService(object):
         return fs_types.fs_service(service_url.to_data())
 
     def to_service_ref(self):
-        return href_types.service_ref('sha256', b'test-fs-service-ref')
+        return b'test-fs-service-ref'
 
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
@@ -131,16 +128,14 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._ref_resolver = services.ref_resolver
-        self._service_registry = services.service_registry
-        #services.ref_object_registry.register(fs_types.fs_ref.id, self.resolve_fs_object)
-        #services.service_registry.register(
-        #    fs_types.fs_service.id, FsService.from_data, services.iface_registry, services.proxy_factory)
+        services.referred_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
-            FsDirObject.objimpl_id, FsDirObject.from_state, services.ref_registry, services.ref_resolver, services.service_registry)
+            FsDirObject.objimpl_id, FsDirObject.from_state, services.iface_registry,
+            services.ref_registry, services.ref_resolver, services.service_registry, services.proxy_factory)
 
     async def resolve_fs_object(self, fs_object):
-        fs_service_object = await self._ref_resolver.resolve_service_ref(fs_object.fs_service_ref)
-        dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_service_object, fs_object.host, fs_object.path)
+        fs_service = await self._ref_resolver.resolve_ref_to_object(fs_object.fs_service_ref)
+        dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_service, fs_object.host, fs_object.path)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']
