@@ -1,5 +1,6 @@
 import os.path
 import logging
+from ..common.htypes import Type
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
@@ -61,14 +62,21 @@ class RefRegistry(object):
 
 class ReferredRegistry(Registry):
 
-    def register(self, full_type_name, factory, *args, **kw):
-        assert isinstance(full_type_name, str), repr(full_type_name)
-        super().register(tuple(full_type_name.split('.')), factory, *args, **kw)
+    def __init__(self, type_registry_registry):
+        super().__init__()
+        self._type_registry_registry = type_registry_registry
+
+    def register(self, t, factory, *args, **kw):
+        assert isinstance(t, Type), repr(t)
+        assert t.full_name, repr(t)  # type must have a name
+        super().register(tuple(t.full_name), factory, *args, **kw)
         
     async def resolve(self, referred):
+        t = self._type_registry_registry.resolve_type(referred.full_type_name)
+        object = packet_coders.decode(referred.encoding, referred.encoded_object, t)
         rec = self._resolve(tuple(referred.full_type_name))
-        log.info('producing referred %s using %s(%s, %s)', '.'.join(referred.full_type_name), rec.factory, rec.args, rec.kw)
-        return (await rec.factory(referred, *rec.args, **rec.kw))
+        log.info('resolving handle for %s using %s(%s, %s) for object %r', '.'.join(referred.full_type_name), rec.factory, rec.args, rec.kw, object)
+        return (await rec.factory(object, *rec.args, **rec.kw))
 
 
 class ThisModule(Module):
@@ -82,5 +90,5 @@ class ThisModule(Module):
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         ref_resolver_proxy = services.proxy_factory.from_url(url)
         services.ref_registry = self._ref_registry
-        services.referred_registry = ReferredRegistry()
+        services.referred_registry = ReferredRegistry(services.type_registry_registry)
         services.ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, services.referred_registry, ref_resolver_proxy)

@@ -5,7 +5,6 @@ from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.interface import core as core_types
 from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
-from ..common.packet_coders import packet_coders
 from ..common.list_object import Element, Chunk
 from .command import command
 from .module import Module
@@ -102,13 +101,11 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._ref_resolver = services.ref_resolver
-        services.referred_registry.register('ref_list.dynamic_ref_list', self.resolve_dynamic_ref_list_object)
-        #services.service_registry.register(ref_list_types.ref_list_service.id, RefListService.from_data, services.iface_registry, services.proxy_factory)
+        services.referred_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
             RefListObject.objimpl_id, RefListObject.from_state, services.ref_resolver, services.iface_registry, services.proxy_factory)
 
-    async def resolve_dynamic_ref_list_object(self, referred):
-        dynamic_ref_list = packet_coders.decode(referred.encoding, referred.encoded_object, ref_list_types.dynamic_ref_list)
+    async def resolve_dynamic_ref_list_object(self, dynamic_ref_list):
         ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service)
         object = ref_list_types.ref_list_object(RefListObject.objimpl_id, ref_list_service, dynamic_ref_list.ref_list_id)
         handle_t = list_handle_type(core_types, tString)

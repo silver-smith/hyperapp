@@ -1,4 +1,4 @@
-HRefListObject:
+RefListObject:
   columns:
     id:
       text: Id
