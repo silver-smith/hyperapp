@@ -86,15 +86,15 @@ def t_field_meta(name, type):
 def t_record_meta(fields):
     return tRecordMeta(tRecordMeta.id, fields)
 
-def field_from_data(meta_type_registry, name_resolver, rec, full_name):
-    t = meta_type_registry.resolve(name_resolver, rec.type, full_name)
+def field_from_data(meta_type_registry, name_resolver, rec):
+    t = meta_type_registry.resolve(name_resolver, rec.type)
     return Field(rec.name, t)
 
-def field_list_from_data(meta_type_registry, name_resolver, fields, full_name):
-    return [field_from_data(meta_type_registry, name_resolver, field, full_name) for field in fields]
+def field_list_from_data(meta_type_registry, name_resolver, fields):
+    return [field_from_data(meta_type_registry, name_resolver, field) for field in fields]
 
 def record_from_data(meta_type_registry, name_resolver, rec, full_name):
-    return TRecord(field_list_from_data(meta_type_registry, name_resolver, rec.fields, full_name))
+    return TRecord(field_list_from_data(meta_type_registry, name_resolver, rec.fields), full_name=full_name)
 
 
 tHierarchyMeta = tMetaType.register(
@@ -133,7 +133,7 @@ def hierarchy_class_from_data(meta_type_registry, name_resolver, rec, full_name)
         base = meta_type_registry.resolve(name_resolver, rec.base, full_name)
     else:
         base = None
-    fields = field_list_from_data(meta_type_registry, name_resolver, rec.fields, full_name)
+    fields = field_list_from_data(meta_type_registry, name_resolver, rec.fields)
     return hierarchy.register(rec.class_id, base=base, fields=fields, full_name=full_name)
 
 
@@ -161,13 +161,13 @@ def t_interface_meta(iface_id, base_iface_id, commands, contents_fields=None, di
     return tInterfaceMeta(tInterfaceMeta.id, iface_id, base_iface_id, contents_fields or [], diff_type, commands)
 
 def command_from_data(meta_type_registry, name_resolver, rec, full_name):
-    params_fields = field_list_from_data(meta_type_registry, name_resolver, rec.params_fields, full_name)
-    result_fields = field_list_from_data(meta_type_registry, name_resolver, rec.result_fields, full_name)
+    params_fields = field_list_from_data(meta_type_registry, name_resolver, rec.params_fields)
+    result_fields = field_list_from_data(meta_type_registry, name_resolver, rec.result_fields)
     return IfaceCommand(rec.request_type, rec.command_id, params_fields, result_fields)
 
 def interface_from_data(meta_type_registry, name_resolver, rec, full_name):
     base_iface = name_resolver.resolve(rec.base_iface_id) if rec.base_iface_id else None
-    contents_fields = field_list_from_data(meta_type_registry, name_resolver, rec.contents_fields, full_name)
+    contents_fields = field_list_from_data(meta_type_registry, name_resolver, rec.contents_fields)
     diff_type = meta_type_registry.resolve(name_resolver, rec.diff_type, full_name)  if rec.diff_type is not None else None
     commands = [command_from_data(meta_type_registry, name_resolver, command, full_name) for command in rec.commands]
     return Interface(rec.iface_id, base_iface, contents_fields=contents_fields, diff_type=diff_type, commands=commands)

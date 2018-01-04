@@ -77,7 +77,7 @@ def t_list_interface_meta(iface_id, base_iface_id, commands, columns, contents_f
     return tListInterface(tListInterface.id, iface_id, base_iface_id, contents_fields or [], diff_type, commands, columns)
 
 def list_interface_from_data(meta_type_registry, type_registry, rec, full_name):
-    contents_fields = field_list_from_data(meta_type_registry, type_registry, rec.contents_fields, full_name)
+    contents_fields = field_list_from_data(meta_type_registry, type_registry, rec.contents_fields)
     assert rec.diff_type is None, repr(rec.diff_type)  # list interface makes it's own diff type
     commands = [command_from_data(meta_type_registry, type_registry, command, full_name) for command in rec.commands]
     columns = [Column.from_data(meta_type_registry, type_registry, column, full_name) for column in rec.columns]
