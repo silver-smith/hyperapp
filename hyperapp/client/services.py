@@ -113,7 +113,6 @@ class Services(ServicesBase):
                 'remoting_proxy',
                 'ref_resolver',
                 'ref_redirect_handle',
-                'service_registry',
                 'proxy_list_object_',
                 'ref_list',
                 'local_server_ref_list',

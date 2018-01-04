@@ -16,7 +16,7 @@ class FsDirObject(ListObject):
     objimpl_id = 'fs_dir'
 
     @classmethod
-    def from_state(cls, state, iface_registry, ref_registry, ref_resolver, service_registry, proxy_factory):
+    def from_state(cls, state, iface_registry, ref_registry, ref_resolver, proxy_factory):
         fs_service = FsService.from_data(state.fs_service, iface_registry, proxy_factory)
         return cls(ref_registry, ref_resolver, fs_service, state.host, state.path)
 
@@ -131,7 +131,7 @@ class ThisModule(Module):
         services.referred_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
             FsDirObject.objimpl_id, FsDirObject.from_state, services.iface_registry,
-            services.ref_registry, services.ref_resolver, services.service_registry, services.proxy_factory)
+            services.ref_registry, services.ref_resolver, services.proxy_factory)
 
     async def resolve_fs_object(self, fs_object):
         fs_service = await self._ref_resolver.resolve_ref_to_object(fs_object.fs_service_ref)

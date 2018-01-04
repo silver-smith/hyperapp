@@ -21,7 +21,7 @@ class BlogObject(ListObject):
     objimpl_id = 'blog'
 
     @classmethod
-    def from_state(cls, state, ref_registry, ref_resolver, service_registry):
+    def from_state(cls, state, ref_registry, ref_resolver):
         blog_service = this_module.blog_service_from_data(state.blog_service)
         return cls(ref_registry, ref_resolver, blog_service, state.blog_id)
 
@@ -68,10 +68,8 @@ class BlogObject(ListObject):
     async def command_open(self, element_key):
         article_id = element_key
         blog_service_ref = self._blog_service.to_service_ref()
-        ref_object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
-        assert 0, 'todo'
-        ref = ref_types.ref('sha256', ('test-blog-article-ref:%d' % article_id).encode())
-        self._ref_registry.register(ref, ref_object)
+        object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
+        ref = self._ref_registry.register_new_object(blog_types.blog_article_ref, object)
         return (await self._ref_resolver.resolve_ref_to_handle(ref))
 
 
@@ -80,8 +78,8 @@ class BlogArticleObject(TextObject):
     objimpl_id = 'blog_article'
 
     @classmethod
-    async def from_state(cls, state, ref_registry, ref_resolver, service_registry):
-        blog_service = service_registry.resolve(state.blog_service)
+    async def from_state(cls, state, ref_registry, ref_resolver):
+        blog_service = this_module.blog_service_from_data(state.blog_service)
         row = await blog_service.get_blog_row(state.blog_id, state.article_id)
         return cls(ref_registry, ref_resolver, blog_service, state.blog_id, state.article_id, row.text)
 
@@ -111,8 +109,8 @@ class ArticleRefListObject(ListObject):
     objimpl_id = 'article-ref-list'
 
     @classmethod
-    def from_state(cls, state, ref_resolver, service_registry):
-        blog_service = service_registry.resolve(state.blog_service)
+    def from_state(cls, state, ref_resolver):
+        #blog_service = service_registry.resolve(state.blog_service)
         return cls(ref_resolver, blog_service, state.blog_id, state.article_id)
 
     def __init__(self, ref_resolver, blog_service, blog_id, article_id):
@@ -170,8 +168,8 @@ class ArticleRefListObject(ListObject):
 class SelectorCallback(object):
 
     @classmethod
-    def from_data(cls, state, ref_registry, ref_resolver, service_registry):
-        blog_service = service_registry.resolve(state.blog_service)
+    def from_data(cls, state, ref_registry, ref_resolver):
+        #blog_service = service_registry.resolve(state.blog_service)
         return cls(ref_registry, ref_resolver, blog_service, state.blog_id, state.article_id, state.ref_id)
 
     def __init__(self, ref_registry, ref_resolver, blog_service, blog_id, article_id, ref_id):
@@ -247,18 +245,18 @@ class ThisModule(Module):
         self._proxy_factory = services.proxy_factory
         self._url2service = {}
         services.referred_registry.register(blog_types.blog_ref, self.resolve_blog_object)
-        # services.ref_object_registry.register(blog_types.blog_article_ref.id, self.resolve_blog_article_object)
+        services.referred_registry.register(blog_types.blog_article_ref, self.resolve_blog_article_object)
         # services.ref_object_registry.register(blog_types.blog_article_ref_list_ref.id, self.resolve_blog_article_ref_list_object)
         # services.service_registry.register(
         #     blog_types.blog_service.id, self.blog_service_from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
-            BlogObject.objimpl_id, BlogObject.from_state, services.ref_registry, services.ref_resolver, services.service_registry)
+            BlogObject.objimpl_id, BlogObject.from_state, services.ref_registry, services.ref_resolver)
         services.objimpl_registry.register(
-            BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.ref_registry, services.ref_resolver, services.service_registry)
+            BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.ref_registry, services.ref_resolver)
         services.objimpl_registry.register(
-            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.ref_resolver, services.service_registry)
+            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.ref_resolver)
         object_selector.this_module.register_callback(
-            blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.ref_resolver, services.service_registry)
+            blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.ref_resolver)
 
     def blog_service_from_data(self, service_object):
         service_url = Url.from_data(self._iface_registry, service_object.service_url)
@@ -278,9 +276,9 @@ class ThisModule(Module):
         return handle_t('list', list_object, resource_id, sort_column_id, key=None)
 
     async def resolve_blog_article_object(self, blog_article_object):
-        blog_service_object = await self._ref_resolver.resolve_service_ref(blog_article_object.blog_service_ref)
+        blog_service = await self._ref_resolver.resolve_ref_to_object(blog_article_object.blog_service_ref)
         text_object = blog_types.blog_article_object(
-            BlogArticleObject.objimpl_id, blog_service_object, blog_article_object.blog_id, blog_article_object.article_id)
+            BlogArticleObject.objimpl_id, blog_service, blog_article_object.blog_id, blog_article_object.article_id)
         return core_types.obj_handle('text_view', text_object)
 
     async def resolve_blog_article_ref_list_object(self, ref_list_object):
