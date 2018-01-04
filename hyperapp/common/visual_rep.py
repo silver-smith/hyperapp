@@ -74,6 +74,13 @@ class VisualRepEncoder(object):
             return RepNode('None')
         return self.dispatch(t.base_t, value)
 
+    @staticmethod
+    def _make_name(t, type_name):
+        if t.full_name:
+            return '%s (%s)' % ('.'.join(t.full_name), type_name)
+        else:
+            return type_name
+
     @dispatch.register(TList)
     def encode_list(self, t, value):
         if t is tPath:
@@ -83,7 +90,7 @@ class VisualRepEncoder(object):
         if self._packet_types and t is self._resource_types.resource_id:
             return RepNode(encode_path(value))
         children = [self.dispatch(t.element_t, elt) for elt in value]
-        return RepNode('list (with %d elements)' % len(value), children)
+        return RepNode('%s (%d elements)' % (self._make_name(t, 'list'), len(value)), children)
 
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
@@ -108,9 +115,9 @@ class VisualRepEncoder(object):
             return RepNode('iface=%s public_key=%s, path=%s'
                            % (value.iface, public_key.get_short_id_hex(), encode_path(value.path)))
         if children:
-            return RepNode('record', children)
+            return RepNode(self._make_name(t, 'record'), children)
         else:
-            return RepNode('empty record')
+            return RepNode('%s: empty' % self._make_name(t, 'record'))
 
     def _make_type_module_rep(self, type_module):
         return RepNode('type module %r' % type_module.module_name, children=[
@@ -136,7 +143,7 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TEmbedded)
     def encode_list(self, t, value):
-        return RepNode('<embedded>')
+        return RepNode('<%s>' % self._make_name(t, 'embedded'))
 
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj(self, t, value):
@@ -150,7 +157,7 @@ class VisualRepEncoder(object):
             if issubclass(tclass, self._packet_types.server_error_response):
                 custom_encoders = dict(error=self.encode_error_response_error)
         children = self.encode_record_fields(tclass.get_fields(), value, custom_encoders)
-        return RepNode('%s %r' % (t.hierarchy_id, tclass.id), children)
+        return RepNode('%s %r %r' % (self._make_name(t, 'hierarchy'), t.hierarchy_id, tclass.id), children)
 
     @dispatch.register(TClass)
     def encode_tclass_obj(self, t, value):

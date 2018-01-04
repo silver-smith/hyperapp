@@ -10,8 +10,12 @@ class TClassRecord(Record):
         self._class = tclass
 
     def __repr__(self):
-        return 'ClassRecord<%s.%s: %s>' % (self._class.hierarchy.hierarchy_id, self._class.id, ', '.join(
-            '%s=%s' % (field.name, getattr(self, field.name)) for field in self._type.fields))
+        if self._class.hierarchy.full_name:
+            name = '.'.join(self._class.hierarchy.full_name + [self._class.id])
+        else:
+            name = '.'.join('ClassRecord', self._class.hierarchy.hierarchy_id, self._class.id)
+        return '%s<%s>' % (name, ', '.join(
+            '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields))
 
     # public
     @property
