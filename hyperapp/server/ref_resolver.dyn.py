@@ -49,13 +49,13 @@ class RefResolver(Object):
                 ref_list_service=service_ref,
                 ref_list_id='server-management',
                 )
-            referred = self._encode_referred('ref_list.dynamic_ref_list', ref_list_types.dynamic_ref_list, object)
+            referred = self._encode_referred(ref_list_types.dynamic_ref_list, object)
             return request.make_response_result(referred=referred)
         if ref == b'ref-list-service':
             service_url = Url(RefListResolverService.iface, self._server.get_public_key(), RefListResolverService.get_path())
             object = ref_list_types.ref_list_service(
                 service_url=service_url.to_data())
-            referred = self._encode_referred('ref_list.ref_list_service', ref_list_types.ref_list_service, object)
+            referred = self._encode_referred(ref_list_types.ref_list_service, object)
             return request.make_response_result(referred=referred)
         if ref == b'test-fs-ref':
             fs_service_ref = b'test-fs-service-ref'
@@ -86,11 +86,11 @@ class RefResolver(Object):
             return request.make_response_result(service=service)
         raise href_types.unknown_ref_error(ref)
 
-    def _encode_referred(self, full_type_name, t, object):
+    def _encode_referred(self, t, object):
         hash_algorithm = 'dummy'
         encoding = DEFAULT_ENCODING
         encoded_object = packet_coders.encode(encoding, object, t)
-        return href_types.referred(full_type_name.split('.'), hash_algorithm, encoding, encoded_object)
+        return href_types.referred(t.full_name, hash_algorithm, encoding, encoded_object)
 
 
 class ThisModule(module_mod.Module):
