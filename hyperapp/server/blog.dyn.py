@@ -60,15 +60,15 @@ class BlogService(Object):
         return blog_types.article_ref(
             id=rec.id,
             title=rec.title,
-            href=href_types.href('sha256', rec.href),
+            ref=rec.ref,
             )
 
     @command('update_ref')
     @db_session
     def command_update_ref(self, request):
         rec = this_module.ArticleRef[request.params.ref_id]
-        rec.href = request.params.ref.hash
-        log.info('Article ref#%d is updated to %s', rec.id, rec.href.decode())
+        rec.ref = request.params.ref.hash
+        log.info('Article ref#%d is updated to %s', rec.id, rec.ref.decode())
 
 
 class ThisModule(PonyOrmModule):
@@ -86,7 +86,7 @@ class ThisModule(PonyOrmModule):
             'ArticleRef',
             article=Required(self.Article),
             title=Required(str),
-            href=Required(bytes),
+            ref=Required(bytes),
             )
         self.BlogEntry = self.make_inherited_entity(
             'BlogEntry', self.Article,

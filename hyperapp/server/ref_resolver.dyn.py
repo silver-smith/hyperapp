@@ -80,12 +80,14 @@ class RefResolver(Object):
                 blog_id='test-blog',
                 current_article_id=None,
                 )
-            return request.make_response_result(ref_object=object)
+            referred = self._encode_referred(blog_types.blog_ref, object)
+            return request.make_response_result(referred=referred)
         if ref == b'test-blog-service-ref':
             blog_service_url = Url(blog_types.blog_service_iface, self._server.get_public_key(), BlogService.get_path())
-            service = blog_types.blog_service(
+            object = blog_types.blog_service(
                 service_url=blog_service_url.to_data())
-            return request.make_response_result(service=service)
+            referred = self._encode_referred(blog_types.blog_service, object)
+            return request.make_response_result(referred=referred)
         raise href_types.unknown_ref_error(ref)
 
     def _encode_referred(self, t, object):
