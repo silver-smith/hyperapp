@@ -25,7 +25,7 @@ def resolve_typedefs(meta_type_registry, name_resolver, module_name, typedefs):
     resolver = TypeResolver([resolved_registry], next=name_resolver)
     for typedef in typedefs:
         full_name = [module_name, typedef.name]
-        t = meta_type_registry.resolve(resolver, full_name, typedef.type)
+        t = meta_type_registry.resolve(resolver, typedef.type, full_name)
         resolved_registry.register(typedef.name, t)
     return resolved_registry
 

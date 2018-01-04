@@ -34,8 +34,8 @@ def list_handle_type(core_types, key_t):
 class Column(object):
 
     @classmethod
-    def from_data(cls, meta_type_registry, type_registry, full_name, rec):
-        t = meta_type_registry.resolve(type_registry, full_name, rec.type)
+    def from_data(cls, meta_type_registry, type_registry, rec, full_name):
+        t = meta_type_registry.resolve(type_registry, rec.type, full_name)
         return cls(rec.id, t, rec.is_key)
 
     def __init__(self, id, type=tString, is_key=False):
@@ -56,18 +56,18 @@ class Column(object):
         return hash((self.id, self.type, self.is_key))
 
 
-tColumn = TRecord(['meta_type', 'column'], [
+tColumn = TRecord([
     Field('id', tString),
     Field('type', tMetaType),
     Field('is_key', tBool),
-    ])
+    ], full_name=['meta_type', 'column'])
 
-tColumnType = THierarchy(['meta_type', 'column_type'], 'column_type')
-tSimpleColumnType = tColumnType.register(['meta_type', 'simple_column_type'], 'simple', fields=[Field('impl_id', tString)])
+tColumnType = THierarchy('column_type', full_name=['meta_type', 'column_type'])
+tSimpleColumnType = tColumnType.register('simple', fields=[Field('impl_id', tString)], full_name=['meta_type', 'simple_column_type'])
 
-tListInterface = tMetaType.register(['meta_type', 'list_interface'], 'list_interface', base=tInterfaceMeta, fields=[
+tListInterface = tMetaType.register('list_interface', base=tInterfaceMeta, fields=[
     Field('columns', TList(tColumn)),
-    ])
+    ], full_name=['meta_type', 'list_interface'])
 
 
 def t_column_meta(id, type, is_key):
@@ -76,11 +76,11 @@ def t_column_meta(id, type, is_key):
 def t_list_interface_meta(iface_id, base_iface_id, commands, columns, contents_fields=None, diff_type=None):
     return tListInterface(tListInterface.id, iface_id, base_iface_id, contents_fields or [], diff_type, commands, columns)
 
-def list_interface_from_data(meta_type_registry, type_registry, full_name, rec):
-    contents_fields = field_list_from_data(meta_type_registry, type_registry, full_name, rec.contents_fields)
+def list_interface_from_data(meta_type_registry, type_registry, rec, full_name):
+    contents_fields = field_list_from_data(meta_type_registry, type_registry, rec.contents_fields, full_name)
     assert rec.diff_type is None, repr(rec.diff_type)  # list interface makes it's own diff type
-    commands = [command_from_data(meta_type_registry, type_registry, full_name, command) for command in rec.commands]
-    columns = [Column.from_data(meta_type_registry, type_registry, full_name, column) for column in rec.columns]
+    commands = [command_from_data(meta_type_registry, type_registry, command, full_name) for command in rec.commands]
+    columns = [Column.from_data(meta_type_registry, type_registry, column, full_name) for column in rec.columns]
     return ListInterface(rec.iface_id, contents_fields=contents_fields, commands=commands, columns=columns)
 
 

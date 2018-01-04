@@ -93,7 +93,7 @@ def register_typedef(p, name_token_num, name, type):
     typedef = tTypeDef(name=name, type=type)
     full_name = [parser.module_name, name]
     try:
-        t = parser.meta_type_registry.resolve(parser.resolver, full_name, typedef.type)
+        t = parser.meta_type_registry.resolve(parser.resolver, typedef.type, full_name)
     except UnknownTypeError as x:
         syntax_error(p, name_token_num, 'Unknown type: %r' % x.name)
     parser.new_type_registry.register(typedef.name, t)

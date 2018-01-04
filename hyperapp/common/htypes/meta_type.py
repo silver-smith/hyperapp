@@ -19,66 +19,66 @@ from .hierarchy import TClass, THierarchy, TExceptionHierarchy
 from .interface import IfaceCommand, Interface
 
 
-tMetaType = THierarchy(['meta_type', 'type'], 'type')
-tRootMetaType = tMetaType.register(['meta_type', 'root'], 'root', fields=[Field('type_id', tString)])
+tMetaType = THierarchy('type', full_name=['meta_type', 'type'])
+tRootMetaType = tMetaType.register('root', fields=[Field('type_id', tString)], full_name=['meta_type', 'root'])
 
 
-tProvidedClass = TRecord(['meta_type', 'provided_class'], [
+tProvidedClass = TRecord([
     Field('hierarchy_id', tString),
     Field('class_id', tString),
-    ])
+    ], full_name=['meta_type', 'provided_class'])
 
-tTypeDef = TRecord(['meta_type', 'typedef'], [
+tTypeDef = TRecord([
     Field('name', tString),
     Field('type', tMetaType),
-    ])
+    ], full_name=['meta_type', 'typedef'])
 
-tTypeModule = TRecord(['meta_type', 'type_module'], [
+tTypeModule = TRecord([
     Field('module_name', tString),
     Field('provided_classes', TList(tProvidedClass)),
     Field('used_modules', TList(tString)),
     Field('typedefs', TList(tTypeDef)),
-    ])
+    ], full_name=['meta_type', 'type_module'])
 
 
-tNamed = tMetaType.register(['meta_type', 'named'], 'named', base=tRootMetaType, fields=[Field('name', tString)])
+tNamed = tMetaType.register('named', base=tRootMetaType, fields=[Field('name', tString)], full_name=['meta_type', 'named'])
 
 def t_named(name):
     return tNamed(tNamed.id, name)
 
-def named_from_data(meta_type_registry, name_resolver, full_name, rec):
+def named_from_data(meta_type_registry, name_resolver, rec, full_name):
     return name_resolver.resolve(rec.name)
 
 
 tOptionalMeta = tMetaType.register(
-    ['meta_type', 'optional'], 'optional', base=tRootMetaType, fields=[Field('base', tMetaType)])
+    'optional', base=tRootMetaType, fields=[Field('base', tMetaType)], full_name=['meta_type', 'optional'])
 
 def t_optional_meta(base_t):
     return tOptionalMeta(tOptionalMeta.id, base_t)
 
-def optional_from_data(meta_type_registry, name_resolver, full_name, rec):
-    base_t = meta_type_registry.resolve(name_resolver, full_name, rec.base)
+def optional_from_data(meta_type_registry, name_resolver, rec, full_name):
+    base_t = meta_type_registry.resolve(name_resolver, rec.base, full_name)
     return TOptional(base_t)
 
 
 tListMeta = tMetaType.register(
-    ['meta_type', 'list'], 'list', base=tRootMetaType, fields=[Field('element', tMetaType)])
+    'list', base=tRootMetaType, fields=[Field('element', tMetaType)], full_name=['meta_type', 'list'])
 
 def t_list_meta(element_t):
     return tListMeta(tListMeta.id, element_t)
 
-def list_from_data(meta_type_registry, name_resolver, full_name, rec):
-    element_t = meta_type_registry.resolve(name_resolver, full_name, rec.element)
+def list_from_data(meta_type_registry, name_resolver, rec, full_name):
+    element_t = meta_type_registry.resolve(name_resolver, rec.element, full_name)
     return TList(element_t)
 
 
-tFieldMeta = TRecord(['meta_type', 'field'], [
+tFieldMeta = TRecord([
     Field('name', tString),
     Field('type', tMetaType),
-    ])
+    ], full_name=['meta_type', 'field'])
 
 tRecordMeta = tMetaType.register(
-    ['meta_type', 'record'], 'record', base=tRootMetaType, fields=[Field('fields', TList(tFieldMeta))])
+    'record', base=tRootMetaType, fields=[Field('fields', TList(tFieldMeta))], full_name=['meta_type', 'record'])
 
 def t_field_meta(name, type):
     return tFieldMeta(name, type)
@@ -86,28 +86,28 @@ def t_field_meta(name, type):
 def t_record_meta(fields):
     return tRecordMeta(tRecordMeta.id, fields)
 
-def field_from_data(meta_type_registry, name_resolver, full_name, rec):
-    t = meta_type_registry.resolve(name_resolver, full_name, rec.type)
+def field_from_data(meta_type_registry, name_resolver, rec, full_name):
+    t = meta_type_registry.resolve(name_resolver, rec.type, full_name)
     return Field(rec.name, t)
 
-def field_list_from_data(meta_type_registry, name_resolver, full_name, fields):
-    return [field_from_data(meta_type_registry, name_resolver, full_name, field) for field in fields]
+def field_list_from_data(meta_type_registry, name_resolver, fields, full_name):
+    return [field_from_data(meta_type_registry, name_resolver, field, full_name) for field in fields]
 
-def record_from_data(meta_type_registry, name_resolver, full_name, rec):
-    return TRecord(field_list_from_data(meta_type_registry, name_resolver, full_name, rec.fields))
+def record_from_data(meta_type_registry, name_resolver, rec, full_name):
+    return TRecord(field_list_from_data(meta_type_registry, name_resolver, rec.fields, full_name))
 
 
 tHierarchyMeta = tMetaType.register(
-    ['meta_type', 'hierarchy'], 'hierarchy', base=tRootMetaType, fields=[Field('hierarchy_id', tString)])
+    'hierarchy', base=tRootMetaType, fields=[Field('hierarchy_id', tString)], full_name=['meta_type', 'hierarchy'])
 
-tExceptionHierarchyMeta = tMetaType.register(['meta_type', 'exception_hierarchy'], 'exception_hierarchy', base=tHierarchyMeta)
+tExceptionHierarchyMeta = tMetaType.register('exception_hierarchy', base=tHierarchyMeta, full_name=['meta_type', 'exception_hierarchy'])
 
-tHierarchyClassMeta = tMetaType.register(['meta_type', 'hierarchy_class'], 'hierarchy_class', base=tRootMetaType, fields=[
+tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, fields=[
     Field('hierarchy', tMetaType),  # tNamed is expected
     Field('class_id', tString),
     Field('base', TOptional(tMetaType)),  # tRecordMeta is expected
     Field('fields', TList(tFieldMeta)),
-    ])
+    ], full_name=['meta_type', 'hierarchy_class'])
 
 def t_hierarchy_meta(hierarchy_id):
     return tHierarchyMeta(tHierarchyMeta.id, hierarchy_id)
@@ -120,37 +120,37 @@ def t_hierarchy_class_meta(hierarchy_name, class_id, base_name, fields):
                                t_named(hierarchy_name), class_id,
                                t_named(base_name) if base_name else None, fields)
 
-def hierarchy_from_data(meta_type_registry, name_resolver, full_name, rec):
-    return THierarchy(full_name, rec.hierarchy_id)
+def hierarchy_from_data(meta_type_registry, name_resolver, rec, full_name):
+    return THierarchy(rec.hierarchy_id, full_name)
 
-def exception_hierarchy_from_data(meta_type_registry, name_resolver, full_name, rec):
-    return TExceptionHierarchy(full_name, rec.hierarchy_id)
+def exception_hierarchy_from_data(meta_type_registry, name_resolver, rec, full_name):
+    return TExceptionHierarchy(rec.hierarchy_id, full_name)
 
-def hierarchy_class_from_data(meta_type_registry, name_resolver, full_name, rec):
-    hierarchy = meta_type_registry.resolve(name_resolver, full_name, rec.hierarchy)
+def hierarchy_class_from_data(meta_type_registry, name_resolver, rec, full_name):
+    hierarchy = meta_type_registry.resolve(name_resolver, rec.hierarchy, full_name)
     assert isinstance(hierarchy, THierarchy), repr(hierarchy)
     if rec.base is not None:
-        base = meta_type_registry.resolve(name_resolver, full_name, rec.base)
+        base = meta_type_registry.resolve(name_resolver, rec.base, full_name)
     else:
         base = None
-    fields = field_list_from_data(meta_type_registry, name_resolver, full_name, rec.fields)
-    return hierarchy.register(full_name, rec.class_id, base=base, fields=fields)
+    fields = field_list_from_data(meta_type_registry, name_resolver, rec.fields, full_name)
+    return hierarchy.register(rec.class_id, base=base, fields=fields, full_name=full_name)
 
 
-tIfaceCommandMeta = TRecord(['meta_type', 'iface_command'], [
+tIfaceCommandMeta = TRecord([
     Field('request_type', tString),
     Field('command_id', tString),
     Field('params_fields', TList(tFieldMeta)),
     Field('result_fields', TList(tFieldMeta)),
-    ])
+    ], full_name=['meta_type', 'iface_command'])
 
-tInterfaceMeta = tMetaType.register(['meta_type', 'interface'], 'interface', base=tRootMetaType, fields=[
+tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
     Field('iface_id', tString),
     Field('base_iface_id', TOptional(tString)),
     Field('contents_fields', TList(tFieldMeta)),
     Field('diff_type', TOptional(tMetaType)),
     Field('commands', TList(tIfaceCommandMeta)),
-    ])
+    ], full_name=['meta_type', 'interface'])
 
 
 def t_command_meta(request_type, command_id, params_fields, result_fields=None):
@@ -160,16 +160,16 @@ def t_command_meta(request_type, command_id, params_fields, result_fields=None):
 def t_interface_meta(iface_id, base_iface_id, commands, contents_fields=None, diff_type=None, ):
     return tInterfaceMeta(tInterfaceMeta.id, iface_id, base_iface_id, contents_fields or [], diff_type, commands)
 
-def command_from_data(meta_type_registry, name_resolver, full_name, rec):
-    params_fields = field_list_from_data(meta_type_registry, name_resolver, full_name, rec.params_fields)
-    result_fields = field_list_from_data(meta_type_registry, name_resolver, full_name, rec.result_fields)
+def command_from_data(meta_type_registry, name_resolver, rec, full_name):
+    params_fields = field_list_from_data(meta_type_registry, name_resolver, rec.params_fields, full_name)
+    result_fields = field_list_from_data(meta_type_registry, name_resolver, rec.result_fields, full_name)
     return IfaceCommand(rec.request_type, rec.command_id, params_fields, result_fields)
 
-def interface_from_data(meta_type_registry, name_resolver, full_name, rec):
+def interface_from_data(meta_type_registry, name_resolver, rec, full_name):
     base_iface = name_resolver.resolve(rec.base_iface_id) if rec.base_iface_id else None
-    contents_fields = field_list_from_data(meta_type_registry, name_resolver, full_name, rec.contents_fields)
-    diff_type = meta_type_registry.resolve(name_resolver, full_name, rec.diff_type)  if rec.diff_type is not None else None
-    commands = [command_from_data(meta_type_registry, name_resolver, full_name, command) for command in rec.commands]
+    contents_fields = field_list_from_data(meta_type_registry, name_resolver, rec.contents_fields, full_name)
+    diff_type = meta_type_registry.resolve(name_resolver, rec.diff_type, full_name)  if rec.diff_type is not None else None
+    commands = [command_from_data(meta_type_registry, name_resolver, command, full_name) for command in rec.commands]
     return Interface(rec.iface_id, base_iface, contents_fields=contents_fields, diff_type=diff_type, commands=commands)
 
 
@@ -223,13 +223,13 @@ class MetaTypeRegistry(object):
         assert isinstance(type_id, str), repr(type_id)
         self._registry[type_id] = t
 
-    def resolve(self, name_resolver, full_name, rec):
+    def resolve(self, name_resolver, rec, full_name=None):
         assert isinstance(name_resolver, TypeResolver), repr(name_resolver)
-        assert is_list_inst(full_name, str), repr(full_name)
+        assert full_name is None or is_list_inst(full_name, str), repr(full_name)
         assert isinstance(rec, tRootMetaType), repr(rec)
         factory = self._registry.get(rec.type_id)
         assert factory, 'Unknown type_id: %r' % rec.type_id
-        return factory(self, name_resolver, full_name, rec)
+        return factory(self, name_resolver, rec, full_name)
 
 
 class TypeRegistryRegistry(object):

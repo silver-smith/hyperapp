@@ -62,21 +62,21 @@ class MetaTypeTest(unittest.TestCase):
     def test_named(self):
         resolver = TypeResolver([builtin_type_registry()])
         data = t_named('int')
-        t = self.meta_type_registry.resolve(resolver, ['test_module', 'test_int'], data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(t, tInt)
         self.assertIs(t, tInt)  # must resolve to same instance
 
     def test_optional(self):
         resolver = TypeResolver([builtin_type_registry()])
         data = t_optional_meta(t_named('string'))
-        t = self.meta_type_registry.resolve(resolver, ['test_module', 'test_string'], data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(t, TOptional(tString))
         self.assertIs(t.base_t, tString)
 
     def test_list(self):
         resolver = TypeResolver([builtin_type_registry()])
         data = t_list_meta(t_optional_meta(t_named('datetime')))
-        t = self.meta_type_registry.resolve(resolver, ['test_module', 'test_datetime'], data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(TList(TOptional(tDateTime)), t)
 
     ## def test_indexed_list(self):
@@ -91,7 +91,7 @@ class MetaTypeTest(unittest.TestCase):
             t_field_meta('string_list_field', t_list_meta(t_named('string'))),
             t_field_meta('bool_optional_field', t_optional_meta(t_named('bool'))),
             ])
-        t = self.meta_type_registry.resolve(resolver, ['test_module', 'test_record'], data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(TRecord([
             Field('int_field', tInt),
             Field('string_list_field', TList(tString)),
@@ -103,7 +103,7 @@ class MetaTypeTest(unittest.TestCase):
         type_names = builtin_type_registry()
         resolver = TypeResolver([type_names])
         hdata = t_hierarchy_meta('test_hierarchy')
-        hierarchy = self.meta_type_registry.resolve(resolver, ['test_module', 'some_test_hierarchy'], hdata)
+        hierarchy = self.meta_type_registry.resolve(resolver, hdata)
         type_names.register('my_test_hierarchy', hierarchy)
 
         cdata_a = t_hierarchy_class_meta('my_test_hierarchy', 'class_a', base_name=None, fields=[
@@ -112,10 +112,10 @@ class MetaTypeTest(unittest.TestCase):
         cdata_b = t_hierarchy_class_meta('my_test_hierarchy', 'class_b', base_name='my_class_a', fields=[
             t_field_meta('field_b_1', t_list_meta(t_named('int'))),
             ])
-        self.assertTrue(THierarchy(['test_module', 'some_test_hierarchy'], 'test_hierarchy').matches(hierarchy))
-        class_a = self.meta_type_registry.resolve(resolver, ['test_module', 'test_class_a'], cdata_a)
+        self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
+        class_a = self.meta_type_registry.resolve(resolver, cdata_a)
         type_names.register('my_class_a', class_a)
-        class_b = self.meta_type_registry.resolve(resolver, ['test_module', 'test_class_b'], cdata_b)
+        class_b = self.meta_type_registry.resolve(resolver, cdata_b)
         self.assertEqual(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])), class_a)
         self.assertEqual(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
                                                                Field('field_b_1', TList(tInt))])), class_b)
@@ -136,7 +136,7 @@ class MetaTypeTest(unittest.TestCase):
                 t_field_meta('text', t_named('string')),
             ], diff_type=t_named('string')
             )
-        t = self.meta_type_registry.resolve(resolver, ['test_module', 'test_iface'], data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(Interface('unit_test_iface',
             contents_fields=[
                 Field('text', tString),
@@ -165,7 +165,7 @@ class MetaTypeTest(unittest.TestCase):
             ], contents_fields=[
                 t_field_meta('text', t_named('string')),
             ])
-        t = self.meta_type_registry.resolve(resolver, ['test_module', 'test_iface'], data)
+        t = self.meta_type_registry.resolve(resolver, data)
         self.assertEqual(ListInterface('unit_test_list_iface',
             contents_fields=[
                 Field('text', tString),

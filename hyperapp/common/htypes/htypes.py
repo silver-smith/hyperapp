@@ -46,8 +46,8 @@ class Type(object):
 
 class TPrimitive(Type):
 
-    def __init__(self):
-        super().__init__(['builtins', self.type_name])
+    def __init__(self, full_name=None):
+        super().__init__(full_name or ['builtins', self.type_name])
 
     def __repr__(self):
         return 'TPrimitive<%s>' % self.get_type().__name__
@@ -163,7 +163,11 @@ class Record(object):
         self._type = type
 
     def __repr__(self):
-        return 'Record<%d: %s>' % (id(self._type), ', '.join(
+        if self._type.full_name:
+            name = '.'.join(self._type.full_name)
+        else:
+            name = 'Record'
+        return '%s<%d: %s>' % (name, id(self._type), ', '.join(
             '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields))
 
     def __eq__(self, other):
@@ -178,7 +182,7 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__(self, full_name, fields=None, base=None):
+    def __init__(self, fields=None, base=None, full_name=None):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
         super().__init__(full_name)
@@ -188,7 +192,10 @@ class TRecord(Type):
         self.base = base
 
     def __repr__(self):
-        return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.fields)))
+        if self.full_name:
+            return '.'.join(self.full_name)
+        else:
+            return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.fields)))
 
     def __eq__(self, other):
         return isinstance(other, TRecord) and other.fields == self.fields
@@ -289,29 +296,29 @@ class TList(Type):
 class TIndexedList(TList):
     pass
 
-tRoute = TList(tString, ['builtins', 'route'])
+tRoute = TList(tString, full_name=['builtins', 'route'])
 
-tServerRoutes = TRecord(['builtins', 'server_routes'], [
+tServerRoutes = TRecord([
     Field('public_key_der', tBinary),
     Field('routes', TList(tRoute)),
-    ])
+    ], full_name=['builtins', 'server_routes'])
 
-tIfaceId = tString
+tIfaceId = TString(full_name=['builtins', 'iface_id'])
 
-tPath = TList(tString, ['builtins', 'path'])
+tPath = TList(tString, full_name=['builtins', 'path'])
 
-tUrl = TRecord(['builtins', 'url'], [
+tUrl = TRecord([
     Field('iface', tIfaceId),
     Field('public_key_der', tBinary),
     Field('path', tPath),
-    ])
+    ], full_name=['builtins', 'url'])
 
-tUrlWithRoutes = TRecord(['builtins', 'url_with_routes'], base=tUrl, fields=[
+tUrlWithRoutes = TRecord(base=tUrl, fields=[
     Field('routes', TList(tRoute)),
-    ])
+    ], full_name=['builtins', 'url_with_routes'])
 
-tCommand = TRecord(['builtins', 'command'], [
+tCommand = TRecord([
     Field('command_id', tString),
     Field('kind', tString),
     Field('resource_id', TList(tString)),
-    ])
+    ], full_name=['builtins', 'command'])
