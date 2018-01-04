@@ -67,8 +67,8 @@ class BlogService(Object):
     @db_session
     def command_update_ref(self, request):
         rec = this_module.ArticleRef[request.params.ref_id]
-        rec.ref = request.params.ref.hash
-        log.info('Article ref#%d is updated to %s', rec.id, rec.ref.decode())
+        rec.ref = request.params.ref
+        log.info('Article ref#%d is updated to %s', rec.id, rec.ref)
 
 
 class ThisModule(PonyOrmModule):

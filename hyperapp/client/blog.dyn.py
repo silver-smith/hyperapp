@@ -167,7 +167,7 @@ class SelectorCallback(object):
 
     @classmethod
     def from_data(cls, state, ref_registry, ref_resolver):
-        #blog_service = service_registry.resolve(state.blog_service)
+        blog_service = this_module.blog_service_from_data(state.blog_service)
         return cls(ref_registry, ref_resolver, blog_service, state.blog_id, state.article_id, state.ref_id)
 
     def __init__(self, ref_registry, ref_resolver, blog_service, blog_id, article_id, ref_id):
@@ -185,10 +185,8 @@ class SelectorCallback(object):
         else:
             ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, ref)
         blog_service_ref = self._blog_service.to_service_ref()
-        ref_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
-        assert 0, 'todo'
-        ref = ref_types.ref('sha256', ('test-blog-article-ref-list-ref:%d:%d' % (self._article_id, ref_id)).encode())
-        self._ref_registry.register(ref, ref_object)
+        object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
+        ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._ref_resolver.resolve_ref_to_handle(ref))
 
     def to_data(self):
