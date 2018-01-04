@@ -97,10 +97,8 @@ class BlogArticleObject(TextObject):
     @command('refs')
     async def command_refs(self):
         blog_service_ref = self._blog_service.to_service_ref()
-        ref_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
-        assert 0, 'todo'
-        ref = ref_types.ref('sha256', ('test-blog-article-ref-list-ref:%d' % self._article_id).encode())
-        self._ref_registry.register(ref, ref_object)
+        object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
+        ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._ref_resolver.resolve_ref_to_handle(ref))
         
 
@@ -110,7 +108,7 @@ class ArticleRefListObject(ListObject):
 
     @classmethod
     def from_state(cls, state, ref_resolver):
-        #blog_service = service_registry.resolve(state.blog_service)
+        blog_service = this_module.blog_service_from_data(state.blog_service)
         return cls(ref_resolver, blog_service, state.blog_id, state.article_id)
 
     def __init__(self, ref_resolver, blog_service, blog_id, article_id):
@@ -246,7 +244,7 @@ class ThisModule(Module):
         self._url2service = {}
         services.referred_registry.register(blog_types.blog_ref, self.resolve_blog_object)
         services.referred_registry.register(blog_types.blog_article_ref, self.resolve_blog_article_object)
-        # services.ref_object_registry.register(blog_types.blog_article_ref_list_ref.id, self.resolve_blog_article_ref_list_object)
+        services.referred_registry.register(blog_types.blog_article_ref_list_ref, self.resolve_blog_article_ref_list_object)
         # services.service_registry.register(
         #     blog_types.blog_service.id, self.blog_service_from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
@@ -282,9 +280,9 @@ class ThisModule(Module):
         return core_types.obj_handle('text_view', text_object)
 
     async def resolve_blog_article_ref_list_object(self, ref_list_object):
-        blog_service_object = await self._ref_resolver.resolve_service_ref(ref_list_object.blog_service_ref)
+        blog_service = await self._ref_resolver.resolve_ref_to_object(ref_list_object.blog_service_ref)
         list_object = blog_types.article_ref_list_object(
-            ArticleRefListObject.objimpl_id, blog_service_object, ref_list_object.blog_id, ref_list_object.article_id)
+            ArticleRefListObject.objimpl_id, blog_service, ref_list_object.blog_id, ref_list_object.article_id)
         handle_t = list_handle_type(core_types, tInt)
         sort_column_id = 'id'
         resource_id = ['client_module', 'blog', 'BlogArticleRefListObject']
