@@ -88,12 +88,12 @@ class Services(ServicesBase):
 
     def _load_server_modules(self):
         for module_name in [
-                'server_management',
                 'client_code_repository',
                 'form',
                 'admin',
                 'module_list',
                 'ref_resolver',
+                'server_management',
                 'fs',
                 'blog',
                 'simple_text_object',

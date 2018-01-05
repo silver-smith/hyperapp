@@ -13,7 +13,6 @@ from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH, save_url_to
 from .command import command
 from .object import Object
 from .ponyorm_module import PonyOrmModule
-from .server_management import RefListResolverService
 
 log = logging.getLogger(__name__)
 
@@ -40,12 +39,19 @@ class RefStorage(object):
     @db_session
     def store_ref(self, ref, referred):
         rec = this_module.Ref.get(ref=ref)
-        if not rec:
-            rec = this_module.Ref(ref=ref)
-        rec.full_type_name = '.'.join(referred.full_type_name)
-        rec.hash_algorithm = referred.hash_algorithm
-        rec.encoding = referred.encoding
-        rec.encoded_object = referred.encoded_object
+        if rec:
+            rec.full_type_name = '.'.join(referred.full_type_name)
+            rec.hash_algorithm = referred.hash_algorithm
+            rec.encoding = referred.encoding
+            rec.encoded_object = referred.encoded_object
+        else:
+            rec = this_module.Ref(
+                ref=ref,
+                full_type_name='.'.join(referred.full_type_name),
+                hash_algorithm=referred.hash_algorithm,
+                encoding=referred.encoding,
+                encoded_object=referred.encoded_object,
+                )
 
     def add_object(self, t, object):
         referred = make_referred(t, object)
@@ -80,20 +86,6 @@ class RefResolver(Object):
             raise href_types.unknown_ref_error(ref)
         return request.make_response_result(referred=referred)
         
-        if ref == b'server-ref-list':
-            service_ref = b'ref-list-service'
-            object = ref_list_types.dynamic_ref_list(
-                ref_list_service=service_ref,
-                ref_list_id='server-management',
-                )
-            referred = self._encode_referred(ref_list_types.dynamic_ref_list, object)
-            return request.make_response_result(referred=referred)
-        if ref == b'ref-list-service':
-            service_url = Url(RefListResolverService.iface, self._server.get_public_key(), RefListResolverService.get_path())
-            object = ref_list_types.ref_list_service(
-                service_url=service_url.to_data())
-            referred = self._encode_referred(ref_list_types.ref_list_service, object)
-            return request.make_response_result(referred=referred)
         if ref == b'test-blog-ref':
             blog_service_ref = b'test-blog-service-ref'
             object = blog_types.blog_ref(
@@ -110,12 +102,6 @@ class RefResolver(Object):
             referred = self._encode_referred(blog_types.blog_service, object)
             return request.make_response_result(referred=referred)
         raise href_types.unknown_ref_error(ref)
-
-    def _encode_referred(self, t, object):
-        hash_algorithm = 'dummy'
-        encoding = DEFAULT_ENCODING
-        encoded_object = packet_coders.encode(encoding, object, t)
-        return href_types.referred(t.full_name, hash_algorithm, encoding, encoded_object)
 
 
 class ThisModule(PonyOrmModule):

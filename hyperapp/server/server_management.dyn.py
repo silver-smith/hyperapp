@@ -6,7 +6,10 @@ from ..common.interface import server_management as server_management_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
-from ..common.local_server_paths import LOCAL_SERVER_REF_LIST_URL_PATH, save_url_to_file
+from ..common.local_server_paths import (
+    LOCAL_SERVER_REF_LIST_REF_PATH,
+    save_data_to_file,
+    )
 from .object import Object, SmallListObject
 from .module import Module
 from .command import command
@@ -89,8 +92,9 @@ class ThisModule(Module):
         self._module_registry = services.module_registry
         self._server = services.server
         self._tcp_server = services.tcp_server
-        services.management_ref_list = management_ref_list = ManagementRefList()
-        self._ref_list_resolver_service = RefListResolverService(management_ref_list)
+        self._ref_storage = services.ref_storage
+        services.management_ref_list = self._management_ref_list = ManagementRefList()
+        self._ref_list_resolver_service = RefListResolverService(self._management_ref_list)
 
     def resolve(self, iface, path):
         class_name = path.pop_str_opt()
@@ -99,13 +103,18 @@ class ThisModule(Module):
         path.check_empty()
         return CommandList(self._module_registry)
 
-    def init_phase2(self):
-        public_key = self._server.get_public_key()
-        url = Url(RefListResolverService.iface, public_key, RefListResolverService.get_path())
-        url_with_routes = url.clone_with_routes(self._tcp_server.get_routes())
-        url_path = save_url_to_file(url_with_routes, LOCAL_SERVER_REF_LIST_URL_PATH)
-        log.info('Management service url is saved to: %s', url_path)
-
+    def init_phase3(self):
+        service_url = Url(RefListResolverService.iface, self._server.get_public_key(), RefListResolverService.get_path())
+        service = ref_list_types.ref_list_service(service_url=service_url.to_data())
+        service_ref = self._ref_storage.add_object(ref_list_types.ref_list_service, service)
+        ref_list = ref_list_types.dynamic_ref_list(
+            ref_list_service=service_ref,
+            ref_list_id='server-management',
+            )
+        ref = self._ref_storage.add_object(ref_list_types.dynamic_ref_list, ref_list)
+        self._management_ref_list.add_ref('server-ref-list', ref)
+        ref_path = save_data_to_file(ref, LOCAL_SERVER_REF_LIST_REF_PATH)
+        log.info('Server ref list ref is saved to: %s', ref_path)
 
 def get_management_url(public_key):
     return Url(CommandList.iface, public_key, CommandList.get_path())
