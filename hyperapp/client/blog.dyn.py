@@ -195,7 +195,8 @@ class SelectorCallback(object):
 
 class BlogService(object):
 
-    def __init__(self, service_proxy):
+    def __init__(self, ref_registry, service_proxy):
+        self._ref_registry = ref_registry
         self._service_proxy = service_proxy
         self._blog_id_article_id_to_row = {}  # (blog_id, article_id) -> blog_row, already fetched rows
 
@@ -204,7 +205,8 @@ class BlogService(object):
         return blog_types.blog_service(service_url.to_data())
 
     def to_service_ref(self):
-        return b'test-blog-service-ref'
+        object = blog_types.blog_service(service_url=self._service_proxy.get_url().to_data())
+        return self._ref_registry.register_new_object(blog_types.blog_service, object)
 
     async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
@@ -237,6 +239,7 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._iface_registry = services.iface_registry
+        self._ref_registry = services.ref_registry
         self._ref_resolver = services.ref_resolver
         self._proxy_factory = services.proxy_factory
         self._url2service = {}
@@ -257,7 +260,7 @@ class ThisModule(Module):
         service = self._url2service.get(service_url)
         if not service:
             service_proxy = self._proxy_factory.from_url(service_url)
-            service = BlogService(service_proxy)
+            service = BlogService(self._ref_registry, service_proxy)
             self._url2service[service_url] = service
         return service
 
