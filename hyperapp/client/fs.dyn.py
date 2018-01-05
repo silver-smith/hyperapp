@@ -79,7 +79,7 @@ class FsDirObject(ListObject):
             return [command for command in all_command_list if command.id != 'open']
 
     def _get_path_ref(self, path):
-        fs_service_ref = self._fs_service.to_service_ref()
+        fs_service_ref = self._fs_service.to_ref()
         object = fs_types.fs_ref(fs_service_ref, self._host, path)
         return self._ref_registry.register_new_object(fs_types.fs_ref, object)
 
@@ -114,7 +114,7 @@ class FsService(object):
         service_url = self._service_proxy.get_url()
         return fs_types.fs_service(service_url.to_data())
 
-    def to_service_ref(self):
+    def to_ref(self):
         return b'test-fs-service-ref'
 
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):

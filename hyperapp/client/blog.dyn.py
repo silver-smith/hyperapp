@@ -67,7 +67,7 @@ class BlogObject(ListObject):
     @command('open', kind='element')
     async def command_open(self, element_key):
         article_id = element_key
-        blog_service_ref = self._blog_service.to_service_ref()
+        blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
         ref = self._ref_registry.register_new_object(blog_types.blog_article_ref, object)
         return (await self._ref_resolver.resolve_ref_to_handle(ref))
@@ -96,7 +96,7 @@ class BlogArticleObject(TextObject):
 
     @command('refs')
     async def command_refs(self):
-        blog_service_ref = self._blog_service.to_service_ref()
+        blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
         ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._ref_resolver.resolve_ref_to_handle(ref))
@@ -184,7 +184,7 @@ class SelectorCallback(object):
             ref_id = self._ref_id
         else:
             ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, ref)
-        blog_service_ref = self._blog_service.to_service_ref()
+        blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
         ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._ref_resolver.resolve_ref_to_handle(ref))
@@ -204,7 +204,7 @@ class BlogService(object):
         service_url = self._service_proxy.get_url()
         return blog_types.blog_service(service_url.to_data())
 
-    def to_service_ref(self):
+    def to_ref(self):
         object = blog_types.blog_service(service_url=self._service_proxy.get_url().to_data())
         return self._ref_registry.register_new_object(blog_types.blog_service, object)
 
