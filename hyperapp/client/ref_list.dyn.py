@@ -1,6 +1,8 @@
 import logging
+import codecs
 from operator import attrgetter
 from collections import namedtuple
+
 from ..common.htypes import tInt, tString, Column, list_handle_type
 from ..common.interface import core as core_types
 from ..common.interface import ref_list as ref_list_types
@@ -51,7 +53,7 @@ class RefListObject(ListObject):
         if not self._rows:
             ref_list = await self._ref_list_service.get_ref_list(self._ref_list_id)
             assert sort_column_id in ['id', 'ref'], repr(sort_column_id)
-            self._rows = [self.Row(ref_item.id, ref_item.ref.decode())
+            self._rows = [self.Row(ref_item.id, codecs.encode(ref_item.ref, 'hex'))
                           for ref_item in ref_list.ref_list]
             self._id2ref = {ref_item.id: ref_item.ref for ref_item in ref_list.ref_list}
         sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))

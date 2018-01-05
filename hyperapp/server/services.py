@@ -93,13 +93,13 @@ class Services(ServicesBase):
                 'form',
                 'admin',
                 'module_list',
+                'ref_resolver',
                 'fs',
                 'blog',
                 'simple_text_object',
                 'sample_list',
                 'exception_test',
                 'hyperref_test',
-                'ref_resolver',
                 ]:
             fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:

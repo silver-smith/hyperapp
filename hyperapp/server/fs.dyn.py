@@ -5,6 +5,7 @@ from operator import itemgetter
 from ..common.htypes import Column
 from ..common.interface import core as core_types
 from ..common.interface import fs as fs_types
+from ..common.url import Url
 from .command import command
 from .object import Object, SmallListObject
 from .module import Module, ModuleCommand
@@ -118,14 +119,16 @@ class FsService(Object):
     iface = fs_types.fs_service_iface
     class_name = 'service'
 
-    @classmethod
-    def get_path(cls):
-        return this_module.make_path(cls.class_name)
+    def __init__(self, module):
+        super().__init__()
+        self._module = module
 
-    @classmethod
-    def resolve(cls, path):
+    def get_path(self):
+        return self._module.make_path(self.class_name)
+
+    def resolve(self, path):
         path.check_empty()
-        return cls()
+        return self
 
     @command('fetch_dir_contents')
     def command_fetch_dir_contents(self, request):
@@ -176,11 +179,28 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
+        self._server = services.server
+        self._fs_service = FsService(self)
+        self._ref_storage = services.ref_storage
+        self._management_ref_list = services.management_ref_list
+
+    def init_phase3(self):
+        fs_service_url = Url(fs_types.fs_service_iface, self._server.get_public_key(), self._fs_service.get_path())
+        fs_service = fs_types.fs_service(service_url=fs_service_url.to_data())
+        fs_service_ref = self._ref_storage.add_object(fs_types.fs_service, fs_service)
+        fs = fs_types.fs_ref(
+            fs_service_ref=fs_service_ref,
+            host='localhost',
+            path=['usr', 'share'],
+            current_file_name='dpkg',
+            )
+        fs_ref = self._ref_storage.add_object(fs_types.fs_ref, fs)
+        self._management_ref_list.add_ref('fs', fs_ref)
 
     def resolve(self, iface, path):
         name = path.pop_str()
-        if name == FsService.class_name:
-            return FsService.resolve(path)
+        if name == self._fs_service.class_name:
+            return self._fs_service.resolve(path)
         else:
             return self.open(name)
 

@@ -55,9 +55,9 @@ class RefListResolverService(Object):
     def get_path(cls):
         return this_module.make_path(cls.class_name)
 
-    def __init__(self, module_registry):
+    def __init__(self, management_ref_list):
         Object.__init__(self)
-        self._module_registry = module_registry
+        self._management_ref_list = management_ref_list
 
     def resolve(self, path):
         path.check_empty()
@@ -65,17 +65,23 @@ class RefListResolverService(Object):
     
     @command('get_ref_list')
     def command_get_ref_list(self, request):
-        ref_list_id = request.params.ref_list_id
-        ref_item_list = [ref_list_types.ref_item(id='%s.%s' % (command.module_name, command.id),
-                                                 ref=command.id.encode())
-                          for command in self._module_registry.get_all_modules_commands()]
-        ref_item_list = [
-            ref_list_types.ref_item('fs', b'test-fs-ref'),
-            ref_list_types.ref_item('blog', b'test-blog-ref'),
-            ] + ref_item_list
-        return request.make_response_result(ref_list=ref_list_types.ref_list(ref_list=ref_item_list))
+        unused_ref_list_id = request.params.ref_list_id
+        ref_list = self._management_ref_list.get_ref_list()
+        return request.make_response_result(ref_list=ref_list_types.ref_list(ref_list=ref_list))
 
-    
+
+class ManagementRefList(object):
+
+    def __init__(self):
+        self._ref_list = []
+
+    def add_ref(self, id, ref):
+        self._ref_list.append(ref_list_types.ref_item(id, ref))
+
+    def get_ref_list(self):
+        return self._ref_list
+
+
 class ThisModule(Module):
 
     def __init__(self, services):
@@ -83,12 +89,13 @@ class ThisModule(Module):
         self._module_registry = services.module_registry
         self._server = services.server
         self._tcp_server = services.tcp_server
-        self._management_service = RefListResolverService(services.module_registry)
+        services.management_ref_list = management_ref_list = ManagementRefList()
+        self._ref_list_resolver_service = RefListResolverService(management_ref_list)
 
     def resolve(self, iface, path):
         class_name = path.pop_str_opt()
         if class_name and class_name == RefListResolverService.class_name:
-            return self._management_service.resolve(path)
+            return self._ref_list_resolver_service.resolve(path)
         path.check_empty()
         return CommandList(self._module_registry)
 
