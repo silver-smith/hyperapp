@@ -1,5 +1,7 @@
 import logging
 import json
+import codecs
+
 from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route
 from .htypes import (
@@ -62,7 +64,7 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TBinary)
     def encode_binary(self, t, value):
-        return RepNode('binary, len=%d' % len(value))
+        return RepNode('binary, len=%d: %s' % (len(value), codecs.encode(value[:40], 'hex')))
 
     @dispatch.register(TDateTime)
     def encode_datetime(self, t, value):
