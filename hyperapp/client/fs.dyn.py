@@ -17,7 +17,7 @@ class FsDirObject(ListObject):
 
     @classmethod
     def from_state(cls, state, iface_registry, ref_registry, ref_resolver, proxy_factory):
-        fs_service = FsService.from_data(state.fs_service, iface_registry, proxy_factory)
+        fs_service = FsService.from_data(state.fs_service, iface_registry, ref_registry, proxy_factory)
         return cls(ref_registry, ref_resolver, fs_service, state.host, state.path)
 
     def __init__(self, ref_registry, ref_resolver, fs_service, host, path):
@@ -102,12 +102,13 @@ class FsDirObject(ListObject):
 class FsService(object):
 
     @classmethod
-    def from_data(cls, service_object, iface_registry, proxy_factory):
+    def from_data(cls, service_object, iface_registry, ref_registry, proxy_factory):
         service_url = Url.from_data(iface_registry, service_object.service_url)
         service_proxy = proxy_factory.from_url(service_url)
-        return cls(service_proxy)
+        return cls(ref_registry, service_proxy)
 
-    def __init__(self, service_proxy):
+    def __init__(self, ref_registry, service_proxy):
+        self._ref_registry = ref_registry
         self._service_proxy = service_proxy
 
     def to_data(self):
@@ -115,7 +116,9 @@ class FsService(object):
         return fs_types.fs_service(service_url.to_data())
 
     def to_ref(self):
-        return b'test-fs-service-ref'
+        service_url = self._service_proxy.get_url()
+        object = fs_types.fs_service(service_url=service_url.to_data())
+        return self._ref_registry.register_new_object(fs_types.fs_service, object)
 
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
