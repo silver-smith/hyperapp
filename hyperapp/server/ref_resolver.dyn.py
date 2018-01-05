@@ -85,23 +85,6 @@ class RefResolver(Object):
         if not referred:
             raise href_types.unknown_ref_error(ref)
         return request.make_response_result(referred=referred)
-        
-        if ref == b'test-blog-ref':
-            blog_service_ref = b'test-blog-service-ref'
-            object = blog_types.blog_ref(
-                blog_service_ref=blog_service_ref,
-                blog_id='test-blog',
-                current_article_id=None,
-                )
-            referred = self._encode_referred(blog_types.blog_ref, object)
-            return request.make_response_result(referred=referred)
-        if ref == b'test-blog-service-ref':
-            blog_service_url = Url(blog_types.blog_service_iface, self._server.get_public_key(), BlogService.get_path())
-            object = blog_types.blog_service(
-                service_url=blog_service_url.to_data())
-            referred = self._encode_referred(blog_types.blog_service, object)
-            return request.make_response_result(referred=referred)
-        raise href_types.unknown_ref_error(ref)
 
 
 class ThisModule(PonyOrmModule):

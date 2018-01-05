@@ -6,6 +6,7 @@ from ..common.list_object import ListDiff
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
+from ..common.url import Url
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
 from .command import command
@@ -75,6 +76,9 @@ class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
+        self._server = services.server
+        self._ref_storage = services.ref_storage
+        self._management_ref_list = services.management_ref_list
 
     def init_phase2(self):
         self.Article = self.make_entity(
@@ -92,6 +96,18 @@ class ThisModule(PonyOrmModule):
             'BlogEntry', self.Article,
             created_at=Required(datetime),
             )
+
+    def init_phase3(self):
+        blog_service_url = Url(blog_types.blog_service_iface, self._server.get_public_key(), BlogService.get_path())
+        blog_service = blog_types.blog_service(service_url=blog_service_url.to_data())
+        blog_service_ref = self._ref_storage.add_object(blog_types.blog_service, blog_service)
+        blog = blog_types.blog_ref(
+            blog_service_ref=blog_service_ref,
+            blog_id='test-blog',
+            current_article_id=None,
+            )
+        blog_ref = self._ref_storage.add_object(blog_types.blog_ref, blog)
+        self._management_ref_list.add_ref('blog', blog_ref)
 
     def resolve(self, iface, path):
         name = path.pop_str()
