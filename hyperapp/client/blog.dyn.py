@@ -243,8 +243,6 @@ class ThisModule(Module):
         services.referred_registry.register(blog_types.blog_ref, self.resolve_blog_object)
         services.referred_registry.register(blog_types.blog_article_ref, self.resolve_blog_article_object)
         services.referred_registry.register(blog_types.blog_article_ref_list_ref, self.resolve_blog_article_ref_list_object)
-        # services.service_registry.register(
-        #     blog_types.blog_service.id, self.blog_service_from_data, services.iface_registry, services.proxy_factory)
         services.objimpl_registry.register(
             BlogObject.objimpl_id, BlogObject.from_state, services.ref_registry, services.ref_resolver)
         services.objimpl_registry.register(
