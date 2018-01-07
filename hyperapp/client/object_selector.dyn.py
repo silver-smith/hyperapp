@@ -27,8 +27,8 @@ class ObjectSelectorObject(Object):
     def get_state(self):
         return object_selector_types.object_selector_object(self.impl_id, self._callback.to_data())
 
-    async def set_ref(self, ref):
-        return (await self._callback.set_ref(ref))
+    async def set_ref(self, title, ref):
+        return (await self._callback.set_ref(title, ref))
 
 
 class ObjectSelectorView(View, QtGui.QWidget):
@@ -76,8 +76,9 @@ class ObjectSelectorView(View, QtGui.QWidget):
     async def object_command_choose(self):
         ref_list = self.target_view.pick_current_refs()
         assert len(ref_list) <= 1, repr(ref_list)  # multiple refs are not supported yet
+        title = self.target_view.get_title()
         if ref_list:
-            handle = await self.object.set_ref(ref_list[0])
+            handle = await self.object.set_ref(title, ref_list[0])
             if handle:
                 View.open(self, handle)
 

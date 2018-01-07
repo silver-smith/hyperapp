@@ -71,27 +71,30 @@ class BlogService(Object):
     @db_session
     def command_add_ref(self, request):
         article_id = request.params.article_id
+        title = request.params.title
         ref = request.params.ref
         article_rec = this_module.Article.get(id=article_id)
         if not article_rec:
             raise blog_types.unknown_article_error(article_id)
         rec = this_module.ArticleRef(
             article=article_rec,
-            title='Untitled',
+            title=title,
             ref=ref,
             )
         flush()  # make rec.id
-        log.info('Article ref#%d is is added: %s', rec.id, codecs.encode(rec.ref, 'hex'))
+        log.info('Article ref#%d %r is is added: %s', rec.id, title, codecs.encode(rec.ref, 'hex'))
         return request.make_response_result(ref_id=rec.id)
 
     @command('update_ref')
     @db_session
     def command_update_ref(self, request):
         ref_id = request.params.ref_id
+        title = request.params.title
         ref = request.params.ref
         rec = this_module.ArticleRef[ref_id]
+        rec.title = title
         rec.ref = ref
-        log.info('Article ref#%d is updated to %s', rec.id, codecs.encode(rec.ref, 'hex'))
+        log.info('Article ref#%d is updated to %r: %s', rec.id, title, codecs.encode(rec.ref, 'hex'))
 
     @command('delete_ref')
     @db_session

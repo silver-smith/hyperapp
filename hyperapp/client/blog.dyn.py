@@ -193,12 +193,12 @@ class SelectorCallback(object):
         self._article_id = article_id
         self._ref_id = ref_id
 
-    async def set_ref(self, ref):
+    async def set_ref(self, title, ref):
         if self._ref_id is not None:
-            await self._blog_service.update_ref(self._blog_id, self._article_id, self._ref_id, ref)
+            await self._blog_service.update_ref(self._blog_id, self._article_id, self._ref_id, title, ref)
             ref_id = self._ref_id
         else:
-            ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, ref)
+            ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, title, ref)
         blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
         ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
@@ -241,11 +241,11 @@ class BlogService(object):
         row = await self.get_blog_row(blog_id, article_id)
         return row.ref_list
 
-    async def update_ref(self, blog_id, article_id, ref_id, ref):
-        await self._service_proxy.update_ref(blog_id, article_id, ref_id, ref)
+    async def update_ref(self, blog_id, article_id, ref_id, title, ref):
+        await self._service_proxy.update_ref(blog_id, article_id, ref_id, title, ref)
 
-    async def add_ref(self, blog_id, article_id, ref):
-        result = await self._service_proxy.add_ref(blog_id, article_id, ref)
+    async def add_ref(self, blog_id, article_id, title, ref):
+        result = await self._service_proxy.add_ref(blog_id, article_id, title, ref)
         return result.ref_id
 
     async def delete_ref(self, blog_id, article_id, ref_id):
