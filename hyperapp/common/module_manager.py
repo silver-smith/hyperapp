@@ -78,6 +78,7 @@ class ModuleManager(object):
         importlib.import_module(fullname)
 
     def _exec_code_module(self, module, code_module):
+        log.info('   executing module %r package=%r fpath=%r', code_module.id, code_module.package, code_module.fpath)
         ast = compile(code_module.source, code_module.fpath, 'exec')  # using compile allows to associate file path with loaded module
         exec(ast, module.__dict__)
         self._register_provided_services(code_module, module.__dict__)
