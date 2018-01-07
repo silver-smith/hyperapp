@@ -36,6 +36,7 @@ class Transport(metaclass=abc.ABCMeta):
         self._module_manager = services.module_manager
         self._iface_registry = services.iface_registry
         self._type_module_repository = services.type_module_repository
+        self._ref_registry = services.ref_registry
         self._route_storage = services.route_storage
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
@@ -99,15 +100,17 @@ class Transport(metaclass=abc.ABCMeta):
         server_pks = server_pks_collector.collect_public_key_ders(self._packet_types.payload, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
         payload = request_or_notification.to_data()
-        ref_list = self._collect_refs(payload)
+        ref_list = list(self._collect_refs(payload))
         aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[], ref_list=ref_list)
         return self._packet_types.packet(aux_info, payload)
 
     def _collect_refs(self, payload):
         collector = RefCollector(self._error_types, self._packet_types, self._core_types, self._iface_registry, self._href_types)
         ref_list = collector.collect(self._packet_types.payload, payload)
-        log.debug('##### ref_list=%r', ref_list)
-        return []
+        for ref in ref_list:
+            referred = self._ref_registry.resolve(ref)
+            if referred:
+                yield self._packet_types.ref_and_referred(ref, referred)
 
     @abc.abstractmethod
     async def send_request_rec(self, remoting, public_key, route, request_or_notification):
