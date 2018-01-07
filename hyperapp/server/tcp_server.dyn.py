@@ -5,12 +5,14 @@ import threading
 import socket
 import select
 import traceback
+
 from .module import Module
 from .tcp_client import TcpClient
 
 log = logging.getLogger(__name__)
 
 
+MODULE_NAME = 'tcp_server'
 #TRANSPORT_ID = 'tcp.cdr'
 TRANSPORT_ID = 'encrypted_tcp'
 STOP_DELAY_TIME_SEC = 0.3
@@ -100,3 +102,10 @@ class TcpServer(object):
         self._finished_threads.append(self._client2thread[client])
         del self._client2thread[client]
         log.info('client %s:%d is gone' % client.get_addr())
+
+
+class ThisModule(Module):
+
+    def __init__(self, services):
+        super().__init__(MODULE_NAME)
+        services.tcp_server = TcpServer.create(services, services.start_args)

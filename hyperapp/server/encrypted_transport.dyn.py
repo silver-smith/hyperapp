@@ -18,6 +18,7 @@ from ..common.encrypted_packet import (
 from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from ..common.identity import PublicKey
+from .module import Module
 from .request import NotAuthorizedError, PeerChannel, Peer, RequestBase, ServerNotification
 from .remoting import Transport
 from .transport_session import TransportSession
@@ -25,8 +26,7 @@ from .transport_session import TransportSession
 log = logging.getLogger(__name__)
 
 
-def register_transports(registry, services):
-    EncryptedTcpTransport(services).register(registry)
+MODULE_NAME = 'encrypted_transport'
 
 
 class EncryptedTcpChannel(PeerChannel):
@@ -165,3 +165,10 @@ class EncryptedTcpTransport(Transport):
         session.pop_challenge = challenge
         return tPopChallengePacket(
             challenge=challenge)
+
+
+class ThisModule(Module):
+
+    def __init__(self, services):
+        Module.__init__(self, MODULE_NAME)
+        EncryptedTcpTransport(services).register(services.remoting.transport_registry)

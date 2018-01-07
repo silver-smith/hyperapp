@@ -5,7 +5,6 @@ import time
 import select
 from ..common.transport_packet import encode_transport_packet, decode_transport_packet
 from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
-from .remoting import Remoting
 from .transport_session import TransportSessionList
 
 log = logging.getLogger(__name__)
@@ -58,7 +57,6 @@ class TcpConnection(object):
 class TcpClient(object):
 
     def __init__(self, remoting, server, tcp_server, socket, addr, on_close):
-        assert isinstance(remoting, Remoting), repr(remoting)
         self._remoting = remoting
         self._server = server
         #self.tcp_server = tcp_server

@@ -6,11 +6,7 @@ from ..common.services import ServicesBase
 from .module import ModuleRegistry
 from . import ponyorm_module
 from . import route_storage
-from .remoting import Remoting
 from .server import Server
-from .tcp_server import TcpServer
-from . import tcp_transport
-from . import encrypted_transport
 from .resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)
@@ -22,6 +18,7 @@ DYN_MODULE_EXT = '.dyn.py'
 class Services(ServicesBase):
 
     def __init__(self, start_args):
+        self.start_args = start_args
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
@@ -58,11 +55,8 @@ class Services(ServicesBase):
         self._register_static_modules()
         self.server = Server.create(self, start_args)
         self.route_storage = RouteStorage(route_storage.DbRouteRepository())
-        self.remoting = Remoting(self.iface_registry)
-        self.tcp_server = TcpServer.create(self, start_args)
         self._load_server_modules()
         self.module_registry.init_phases()
-        self._register_transports()
 
     def start(self):
         self.tcp_server.start()
@@ -83,17 +77,18 @@ class Services(ServicesBase):
             module.__dict__['this_module'] = this_module
             self.module_registry.register(this_module)
 
-    def _register_transports(self):
-        for module in [tcp_transport, encrypted_transport]:
-            module.register_transports(self.remoting.transport_registry, self)
-
     def _load_server_modules(self):
         for module_name in [
+                'ref_storage',
                 'client_code_repository',
+                'remoting',
+                'tcp_transport',
+                'encrypted_transport',
+                'tcp_server',
+                'ref_resolver',
                 'form',
                 'admin',
                 'module_list',
-                'ref_resolver',
                 'server_management',
                 'fs',
                 'blog',

@@ -10,10 +10,14 @@ from ..common.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
 from ..common.server_public_key_collector import ServerPksCollector
+from .module import Module
 from .request import RequestBase
 from .transport_session import TransportSessionList
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'remoting'
 
 
 class Transport(object):
@@ -125,3 +129,10 @@ class Remoting(object):
         responses = transport.process_packet(iface_registry, server, session_list, request_packet.data)
         return [tTransportPacket(request_packet.transport_id, response_data)
                 for response_data in responses]
+
+
+class ThisModule(Module):
+
+    def __init__(self, services):
+        Module.__init__(self, MODULE_NAME)
+        services.remoting = Remoting(services.iface_registry)
