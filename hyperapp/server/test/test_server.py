@@ -32,9 +32,6 @@ from hyperapp.common.services import ServicesBase
 from hyperapp.server.module import ModuleRegistry
 from hyperapp.server import route_storage
 from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
-from hyperapp.server.remoting import Remoting
-from hyperapp.server import tcp_transport
-from hyperapp.server import encrypted_transport
 from hyperapp.server.command import command
 import hyperapp.server.module as module_mod
 from hyperapp.server.object import Object, subscription
@@ -166,7 +163,6 @@ class Services(ServicesBase):
         self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
-        self.remoting = Remoting(self.iface_registry)
         self.client_code_repository = PhonyClientCodeRepository()
         self._load_type_modules([
             'error',
@@ -181,7 +177,6 @@ class Services(ServicesBase):
         self.module_manager.register_meta_hook()
         try:
             self._load_server_modules()
-            self._register_transports()
         except:
             self.module_manager.unregister_meta_hook()
             raise
@@ -189,6 +184,10 @@ class Services(ServicesBase):
     def _load_server_modules(self):
         for module_name in [
                 'client_code_repository',
+                'ref_storage',
+                'remoting',
+                'tcp_transport',
+                'encrypted_transport',
                 ]:
             fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
             with open(fpath) as f:
@@ -196,10 +195,6 @@ class Services(ServicesBase):
             package = 'hyperapp.server'
             module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.load_code_module(module)
-
-    def _register_transports(self):
-        for module in [tcp_transport, encrypted_transport]:
-            module.register_transports(self.remoting.transport_registry, self)
 
 
 server_identity = Identity.generate(fast=True)
