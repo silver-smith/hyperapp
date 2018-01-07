@@ -6,6 +6,7 @@ from ..common.htypes import tServerRoutes
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from ..common.server_public_key_collector import ServerPksCollector
+from ..common.ref_collector import RefCollector
 from ..common.identity import PublicKey
 from ..common.url import Url, UrlWithRoutes
 from ..common.transport_packet import tTransportPacket
@@ -28,6 +29,7 @@ class Transport(metaclass=abc.ABCMeta):
 
     def __init__(self, services):
         self._error_types = services.types.error
+        self._href_types = services.types.hyper_ref
         self._packet_types = services.types.packet
         self._core_types = services.types.core
         self._resource_types = services.types.resource
@@ -96,9 +98,16 @@ class Transport(metaclass=abc.ABCMeta):
         server_pks_collector = ServerPksCollector(self._error_types, self._packet_types, self._core_types, self._iface_registry)
         server_pks = server_pks_collector.collect_public_key_ders(self._packet_types.payload, request_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
-        aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[], ref_list=[])
         payload = request_or_notification.to_data()
+        ref_list = self._collect_refs(payload)
+        aux_info = self._packet_types.aux_info(requirements=[], type_modules=[], modules=[], routes=routes, resources=[], ref_list=ref_list)
         return self._packet_types.packet(aux_info, payload)
+
+    def _collect_refs(self, payload):
+        collector = RefCollector(self._error_types, self._packet_types, self._core_types, self._iface_registry, self._href_types)
+        ref_list = collector.collect(self._packet_types.payload, payload)
+        log.debug('##### ref_list=%r', ref_list)
+        return []
 
     @abc.abstractmethod
     async def send_request_rec(self, remoting, public_key, route, request_or_notification):

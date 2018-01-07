@@ -21,6 +21,9 @@ class Visitor(object):
     def visit(self, t, value):
         self.dispatch(t, value)
 
+    def visit_primitive(self, t, value):
+        pass
+
     def visit_record(self, t, value):
         pass
 
@@ -33,7 +36,7 @@ class Visitor(object):
 
     @dispatch.register(TPrimitive)
     def process_primitive(self, t, value):
-        pass
+        self.visit_primitive(t, value)
 
     @dispatch.register(TOptional)
     def process_optional(self, t, value):
