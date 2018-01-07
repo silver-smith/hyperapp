@@ -30,7 +30,6 @@ from hyperapp.common.module_manager import ModuleManager
 from hyperapp.common.route_storage import RouteStorage
 from hyperapp.common.services import ServicesBase
 from hyperapp.server.module import ModuleRegistry
-from hyperapp.server import route_storage
 from hyperapp.server.request import NotAuthorizedError, PeerChannel, Peer, RequestBase
 from hyperapp.server.command import command
 import hyperapp.server.module as module_mod
@@ -183,6 +182,7 @@ class Services(ServicesBase):
 
     def _load_server_modules(self):
         for module_name in [
+                'ponyorm_module',
                 'client_code_repository',
                 'ref_storage',
                 'remoting',

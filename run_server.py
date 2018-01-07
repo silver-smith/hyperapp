@@ -9,9 +9,6 @@ from hyperapp.server.services import Services
 
 log = logging.getLogger(__name__)
 
-# self-registering modules:
-import hyperapp.server.ponyorm_module
-
 
 DEFAULT_ADDR = 'localhost:8888'
 

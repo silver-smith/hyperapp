@@ -4,8 +4,6 @@ from ..common.route_storage import RouteStorage
 from ..common.module_manager import ModuleManager
 from ..common.services import ServicesBase
 from .module import ModuleRegistry
-from . import ponyorm_module
-from . import route_storage
 from .server import Server
 from .resources_loader import ResourcesLoader
 
@@ -52,9 +50,7 @@ class Services(ServicesBase):
                                                 self.types.param_editor,
                                                 iface_resources_dir=self.server_dir,
                                                 client_modules_resources_dir=self.dynamic_module_dir)
-        self._register_static_modules()
         self.server = Server.create(self, start_args)
-        self.route_storage = RouteStorage(route_storage.DbRouteRepository())
         self._load_server_modules()
         self.module_registry.init_phases()
 
@@ -68,18 +64,11 @@ class Services(ServicesBase):
     def stop(self):
         self.tcp_server.stop()
 
-    def _register_static_modules(self):
-        for module in [
-                ponyorm_module,
-                route_storage,
-            ]:
-            this_module = module.ThisModule(self)
-            module.__dict__['this_module'] = this_module
-            self.module_registry.register(this_module)
-
     def _load_server_modules(self):
         for module_name in [
+                'ponyorm_module',
                 'ref_storage',
+                'route_storage',
                 'client_code_repository',
                 'remoting',
                 'tcp_transport',
