@@ -33,7 +33,7 @@ class FsDirObject(ListObject):
         return fs_types.fs_dir_object(self.objimpl_id, self._fs_service.to_data(), self._host, self._path)
 
     def get_title(self):
-        return '%s:%s' % (self._host, '/'.join(self._path))
+        return '%s:/%s' % (self._host, '/'.join(self._path))
 
     def get_command_list(self, kinds):
         command_list = ListObject.get_command_list(self, kinds)
