@@ -16,6 +16,7 @@ class Server(object):
     @classmethod
     def create(cls, services, start_args):
         return cls(
+            services.types.error,
             services.types.packet,
             services.types.core,
             services.module_registry,
@@ -24,8 +25,9 @@ class Server(object):
             start_args.test_delay,
             )
 
-    def __init__(self, packet_types, core_types, module_registry, iface_registry, identity, test_delay_sec=None):
+    def __init__(self, error_types, packet_types, core_types, module_registry, iface_registry, identity, test_delay_sec=None):
         assert isinstance(identity, Identity), repr(identity)
+        self._error_types = error_types
         self._packet_types = packet_types
         self._core_types = core_types
         self._module_registry = module_registry
@@ -66,18 +68,18 @@ class Server(object):
         except NotAuthorizedError:
             raise
         except Exception as x:
-            if isinstance(x, self._packet_types.error):
+            if isinstance(x, self._error_types.error):
                 error = x
             else:
                 traceback.print_exc()
-                error = self._packet_types.server_error()
+                error = self._error_types.server_error()
             return request.make_response(error=error)
 
     def _resolve(self, iface, path):
         return self._module_registry.run_resolver(iface, path)
 
     def _subscribe_objects(self, peer_channel, response):
-        collector = ObjectPathCollector(self._packet_types, self._core_types, self._iface_registry)
+        collector = ObjectPathCollector(self._error_types, self._packet_types, self._core_types, self._iface_registry)
         object_paths = collector.collect(self._packet_types.payload, response.to_data())
         for path in object_paths:
             subscription.add(path, peer_channel)

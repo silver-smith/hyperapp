@@ -90,13 +90,15 @@ class Services(ServicesBase):
         self.code_repository = PhonyCodeRepository()
         self.identity_controller = PhonyIdentityController()
         self._load_type_modules([
-                'resource',
-                'core',
-                'packet',
-                'form',
-                'server_management',
-                'code_repository',
-                ])
+            'error',
+            'resource',
+            'core',
+            'hyper_ref',
+            'packet',
+            'form',
+            'server_management',
+            'code_repository',
+            ])
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.module_registry, self.iface_registry, self.remoting)

@@ -1,5 +1,5 @@
 from core import handle
-from packet import error, client_error
+from error import error, client_error
 
 
 test_error = error class test(client_error):

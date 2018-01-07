@@ -43,8 +43,9 @@ class RepNode(object):
 
 class VisualRepEncoder(object):
 
-    def __init__(self, resource_types=None, packet_types=None, iface_registry=None):
+    def __init__(self, resource_types=None, error_types=None, packet_types=None, iface_registry=None):
         self._resource_types = resource_types
+        self._error_types = error_types
         self._packet_types = packet_types
         self._iface_registry = iface_registry
 
@@ -182,14 +183,14 @@ class VisualRepEncoder(object):
         return self.dispatch(result_t, result)
 
     def encode_error_response_error(self, server_error_response):
-        error = server_error_response.error.decode(self._packet_types.error)
-        return self.dispatch(self._packet_types.error, error)
+        error = server_error_response.error.decode(self._error_types.error)
+        return self.dispatch(self._error_types.error, error)
 
     def encode_update_diff(self, update):
         iface = self._iface_registry.resolve(update.iface)
         diff = update.diff.decode(iface.diff_type)
         return self.dispatch(iface.diff_type, diff)
 
-def pprint(t, value, resource_types=None, packet_types=None, iface_registry=None):
-    rep = VisualRepEncoder(resource_types, packet_types, iface_registry).encode(t, value)
+def pprint(t, value, resource_types=None, error_types=None, packet_types=None, iface_registry=None):
+    rep = VisualRepEncoder(resource_types, error_types, packet_types, iface_registry).encode(t, value)
     rep.pprint()

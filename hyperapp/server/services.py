@@ -28,25 +28,26 @@ class Services(ServicesBase):
         ServicesBase.init_services(self)
         self.module_registry = ModuleRegistry()
         self._load_type_modules([
-                'resource',
-                'core',
-                'packet',
-                'hyper_ref',
-                'ref_list',
-                'param_editor',
-                'server_management',
-                'code_repository',
-                'splitter',
-                'form',
-                'admin',
-                'object_selector',
-                'blog',
-                'module_list',
-                'test_list',
-                'text_object_types',
-                'exception_test',
-                'fs',
-                ])
+            'error',
+            'resource',
+            'core',
+            'hyper_ref',
+            'packet',
+            'ref_list',
+            'param_editor',
+            'server_management',
+            'code_repository',
+            'splitter',
+            'form',
+            'admin',
+            'object_selector',
+            'blog',
+            'module_list',
+            'test_list',
+            'text_object_types',
+            'exception_test',
+            'fs',
+            ])
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()

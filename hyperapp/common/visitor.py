@@ -12,7 +12,8 @@ from .htypes import (
 
 class Visitor(object):
 
-    def __init__(self, packet_types, core_types, iface_registry):
+    def __init__(self, error_types, packet_types, core_types, iface_registry):
+        self._error_types = error_types
         self._packet_types = packet_types
         self._core_types = core_types
         self._iface_registry = iface_registry
@@ -89,5 +90,5 @@ class Visitor(object):
         self.visit(result_t, result)
 
     def visit_server_response_error(self, server_error_response):
-        error = server_error_response.error.decode(self._packet_types.error)
-        self.visit(self._packet_types.error, error)
+        error = server_error_response.error.decode(self._error_types.error)
+        self.visit(self._error_types.error, error)

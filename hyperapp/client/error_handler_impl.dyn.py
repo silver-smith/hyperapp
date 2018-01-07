@@ -1,5 +1,5 @@
 from ..common.htypes import Field
-from ..common.interface import packet as packet_types
+from ..common.interface import error as error_types
 from ..common.interface import core as core_types
 from ..common.interface import text_object_types
 from .module import Module
@@ -21,7 +21,7 @@ class ThisModule(Module):
         self._resources_manager = services.resources_manager
         self._error_handle_t = services.types.core.handle.register(
             ERROR_HANDLER_CLASS_ID, base=services.types.core.view_handle, fields=[
-                Field('error', packet_types.error),
+                Field('error', error_types.error),
                 ])
         set_error_handler(self.error_handler)
 
@@ -38,7 +38,7 @@ class ThisModule(Module):
         return core_types.obj_handle('text_view', obj)
 
     def error_handler(self, exception):
-        if not isinstance(exception, packet_types.error):
-            exception = packet_types.unknown_client_error()
+        if not isinstance(exception, error_types.error):
+            exception = error_types.unknown_client_error()
         # using intermediate handle is the simplest way to get current locale
         return self._error_handle_t(ERROR_HANDLER_VIEW_ID, exception)

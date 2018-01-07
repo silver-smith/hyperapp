@@ -169,8 +169,10 @@ class Services(ServicesBase):
         self.remoting = Remoting(self.iface_registry)
         self.client_code_repository = PhonyClientCodeRepository()
         self._load_type_modules([
+            'error',
             'resource',
             'core',
+            'hyper_ref',
             'packet',
             'param_editor',
             'code_repository',
@@ -208,16 +210,18 @@ class ServerTest(unittest.TestCase):
     def setUp(self):
         self.services = Services()
         self.types = self.services.types
+
+        self.error_types = self.services.types.error
         self.packet_types = self.services.types.packet
         self.module_registry = self.services.module_registry
         self.iface_registry = self.services.iface_registry
         test_iface.register_types(self.services.types.core)
         self.iface_registry.register(test_iface)
         self._init_test_module()
-        self.server = Server(self.packet_types, self.services.types.core, self.services.module_registry, self.iface_registry, server_identity)
+        self.server = Server(self.error_types, self.packet_types, self.services.types.core, self.services.module_registry, self.iface_registry, server_identity)
 
     def _init_test_module(self):
-        self.test_error = self.types.packet.error.register('test_error', base=self.types.packet.client_error, fields=[
+        self.test_error = self.types.error.error.register('test_error', base=self.types.error.client_error, fields=[
             Field('invalid_param', tString),
             ])
         self.test_module = StubModule(self.test_error)
@@ -243,7 +247,7 @@ class ServerRequestHandlingTest(ServerTest):
             )
         pprint(self.packet_types.payload, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
-                                        self.packet_types, self.types.core, self.iface_registry, request_data)
+                                        self.error_types, self.packet_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
 
@@ -260,7 +264,7 @@ class ServerRequestHandlingTest(ServerTest):
             )
         pprint(self.packet_types.payload, request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
-                                        self.packet_types, self.types.core, self.iface_registry, request_data)
+                                        self.error_types, self.packet_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
         pprint(self.packet_types.payload, response.to_data())
@@ -273,7 +277,7 @@ class ServerRequestHandlingTest(ServerTest):
     def test_check_ok_error(self):
         response = self.execute_check_ok_request('fail me')
         assert isinstance(response.to_data(), self.packet_types.server_error_response)
-        error = response.to_data().error.decode(self.packet_types.error)
+        error = response.to_data().error.decode(self.error_types.error)
         assert isinstance(error, self.test_error)
         self.assertEqual('fail me', response.error.invalid_param)
         self.assertEqual('fail me', error.invalid_param)
@@ -337,7 +341,7 @@ class TransportRequestHandlingTest(ServerTest):
         log.info('Sending request:')
         pprint(self.packet_types.payload, request)
         request_packet = self.types.packet.packet(
-            aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
+            aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[], ref_list=[]),
             payload=request)
         request_packet_data = self.encode_packet(transport_id, request_packet, self.types.packet.packet)
         transport_request = tTransportPacket(
@@ -355,7 +359,7 @@ class TransportRequestHandlingTest(ServerTest):
         log.info('Sending client notification:')
         pprint(self.packet_types.payload, request)
         request_packet = self.types.packet.packet(
-            aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[]),
+            aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[], ref_list=[]),
             payload=request)
         request_packet_data = self.encode_packet(transport_id, request_packet, self.types.packet.packet)
         transport_request = tTransportPacket(
@@ -430,7 +434,7 @@ class TransportRequestHandlingTest(ServerTest):
 
     def _test_tcp_check_ok_error_request(self, transport_id):
         response = self.execute_tcp_request(transport_id, obj_id='1', command_id='check_ok', test_param='fail me')
-        self.assertEqual('fail me', response.error.decode(self.packet_types.error).invalid_param)
+        self.assertEqual('fail me', response.error.decode(self.error_types.error).invalid_param)
 
 
     def test_tcp_cdr_broadcast_request(self):

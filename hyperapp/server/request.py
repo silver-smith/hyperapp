@@ -37,18 +37,19 @@ class Peer(object):
 class RequestBase(object):
 
     @classmethod
-    def from_data(cls, me, peer, packet_types, core_types, iface_registry, rec):
+    def from_data(cls, me, peer, error_types, packet_types, core_types, iface_registry, rec):
         assert isinstance(peer, Peer), repr(peer)
         assert isinstance(rec, packet_types.client_packet), repr(rec)
         iface = iface_registry.resolve(rec.iface)
         params = rec.params.decode(iface.get_command(rec.command_id).params_type)
         if isinstance(rec, packet_types.client_request):
-            return Request(packet_types, core_types, me, peer, iface, rec.path, rec.command_id, params, rec.request_id)
+            return Request(error_types, packet_types, core_types, me, peer, iface, rec.path, rec.command_id, params, rec.request_id)
         if isinstance(rec, packet_types.client_notification):
-            return ClientNotification(packet_types, core_types, me, peer, iface, rec.path, rec.command_id, params)
+            return ClientNotification(error_types, packet_types, core_types, me, peer, iface, rec.path, rec.command_id, params)
         assert False, 'Unsupported packet type: %s' % rec
 
-    def __init__(self, packet_types, core_types, me, peer, iface, path, command_id, params):
+    def __init__(self, error_types, packet_types, core_types, me, peer, iface, path, command_id, params):
+        self._error_types = error_types
         self._packet_types = packet_types
         self._core_types = core_types
         self.me = me      # Server instance
@@ -65,8 +66,8 @@ class ClientNotification(RequestBase):
 
 class Request(RequestBase):
 
-    def __init__(self, packet_types, core_types, me, peer, iface, path, command_id, params, request_id):
-        RequestBase.__init__(self, packet_types, core_types, me, peer, iface, path, command_id, params)
+    def __init__(self, error_types, packet_types, core_types, me, peer, iface, path, command_id, params, request_id):
+        RequestBase.__init__(self, error_types, packet_types, core_types, me, peer, iface, path, command_id, params)
         self.request_id = request_id
 
     def make_response(self, result=None, error=None):
@@ -75,7 +76,7 @@ class Request(RequestBase):
             result = result_type()
         assert result is None or isinstance(result, result_type), \
           '%s.Request.%s.result is expected to be %r, but is %r' % (self.iface.iface_id, self.command_id, result_type, result)
-        return Response(self._packet_types, self.peer, self.iface, self.command_id, self.request_id, result, error)
+        return Response(self._error_types, self._packet_types, self.peer, self.iface, self.command_id, self.request_id, result, error)
 
     def make_response_object(self, obj):
         return self.make_response_handle(obj.get_handle(self))
@@ -102,7 +103,8 @@ class Request(RequestBase):
 
 class ResponseBase(object):
 
-    def __init__(self, packet_types):
+    def __init__(self, error_types, packet_types):
+        self._error_types = error_types
         self._packet_types = packet_types
         self.updates = []
 
@@ -131,9 +133,9 @@ class ServerNotification(ResponseBase):
 
 class Response(ResponseBase):
 
-    def __init__(self, packet_types, peer, iface, command_id, request_id, result=None, error=None):
+    def __init__(self, error_types, packet_types, peer, iface, command_id, request_id, result=None, error=None):
         assert isinstance(peer, Peer), repr(peer)
-        ResponseBase.__init__(self, packet_types)
+        ResponseBase.__init__(self, error_types, packet_types)
         self.peer = peer
         self.iface = iface
         self.command_id = command_id
@@ -143,7 +145,7 @@ class Response(ResponseBase):
 
     def to_data(self):
         if self.error is not None:
-            error = EncodableEmbedded(self._packet_types.error, self.error)
+            error = EncodableEmbedded(self._error_types.error, self.error)
             return self._packet_types.server_error_response(self._encoded_updates, self.iface.iface_id, self.command_id, self.request_id, error)
         else:
             result = EncodableEmbedded(self.iface.get_command(self.command_id).result_type, self.result)

@@ -26,10 +26,12 @@ class Services(ServicesBase):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         ServicesBase.init_services(self)
         self._load_type_modules([
-                'resource',
-                'packet',
-                'core',
-                ])
+            'error',
+            'resource',
+            'core',
+            'hyper_ref',
+            'packet',
+            ])
 
 
 # override pytest-asyncio event_loop to test-scoped, or it will be still running and run_until_complete from other tests will fail

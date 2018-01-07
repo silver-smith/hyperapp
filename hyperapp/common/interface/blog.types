@@ -1,4 +1,4 @@
-from packet import error, client_error
+from error import error, client_error
 from core import object, object_base, handle
 from hyper_ref import ref
 from object_selector import object_selector_callback

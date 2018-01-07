@@ -19,8 +19,9 @@ STATE_FILE_ENCODING = 'json'
 
 class ApplicationStateStorage(object):
 
-    def __init__(self, packet_types, resource_types, core_types, param_editor_types, iface_registry,
+    def __init__(self, error_types, packet_types, resource_types, core_types, param_editor_types, iface_registry,
                  objimpl_registry, view_registry, param_editor_registry, type_module_repository, resources_manager, module_manager, code_repository):
+        self._error_types = error_types
         self._packet_types = packet_types
         self._resource_types = resource_types
         self._core_types = core_types
@@ -42,7 +43,7 @@ class ApplicationStateStorage(object):
         self._state_type = TList(window.get_state_type())
         
     def save_state(self, state):
-        collector = RequirementsCollector(self._packet_types, self._core_types, self._param_editor_types, self._iface_registry)
+        collector = RequirementsCollector(self._error_types, self._packet_types, self._core_types, self._param_editor_types, self._iface_registry)
         ui_requirements = collector.collect(self._state_type, state)
         resources1 = self._load_required_resources(ui_requirements)
         resource_requirements = collector.collect(self._resource_types.resource_rec_list, resources1)

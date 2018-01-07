@@ -31,6 +31,7 @@ class Application(AsyncApplication, view.View):
         self._modules = self.services.modules
         self._windows = []
         self._state_storage = ApplicationStateStorage(
+            self.services.types.error,
             self.services.types.packet,
             self.services.types.resource,
             self.services.types.core,

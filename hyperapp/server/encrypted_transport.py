@@ -68,7 +68,7 @@ class EncryptedTcpSession(TransportSession):
         updates = self.channel._pop_all()
         if not updates:
             return []
-        notification = ServerNotification(self.transport._packet_types)
+        notification = ServerNotification(self.transport._error_types, self.transport._packet_types)
         for update in updates:
             notification.add_update(update)
         log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())

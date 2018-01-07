@@ -47,20 +47,21 @@ class Services(ServicesBase):
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self._load_type_modules([
-                'resource',
-                'core',
-                'packet',
-                'param_editor',
-                'server_management',
-                'code_repository',
-                'splitter',
-                'form',
-                'text_object_types',
-                'hyper_ref',
-                'ref_list',
-                'fs',
-                'object_selector',
-                'blog',
+            'error',
+            'resource',
+            'core',
+            'hyper_ref',
+            'packet',
+            'param_editor',
+            'server_management',
+            'code_repository',
+            'splitter',
+            'form',
+            'text_object_types',
+            'ref_list',
+            'fs',
+            'object_selector',
+            'blog',
             ])
         self.objimpl_registry = ObjImplRegistry()
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
