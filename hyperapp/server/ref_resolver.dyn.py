@@ -8,7 +8,7 @@ from ..common.interface import hyper_ref as href_types
 from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
 from ..common.packet_coders import packet_coders
-from ..common.referred import make_referred, make_ref
+from ..common.ref import make_referred, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH, save_url_to_file
 from .command import command
 from .object import Object

@@ -1,10 +1,12 @@
 import logging
+
 from ..common.util import flatten, decode_path, encode_route
 from ..common.htypes import tServerRoutes
 from ..common.identity import PublicKey
 from ..common.transport_packet import tTransportPacket
 from ..common import dict_coders, cdr_coders
 from ..common.packet_coders import packet_coders
+#from ..common.ref import ref_repr
 from ..common.visual_rep import pprint
 from ..common.requirements_collector import RequirementsCollector
 from ..common.server_public_key_collector import ServerPksCollector
@@ -23,6 +25,7 @@ class Transport(object):
         self._resource_types = services.types.resource
         self._param_editor_types = services.types.param_editor
         self._iface_registry = services.iface_registry
+        self._ref_storage = services.ref_storage
         self._route_storage = services.route_storage
         self._resources_loader = services.resources_loader
         self._type_module_repository = services.type_module_repository
@@ -31,6 +34,7 @@ class Transport(object):
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
         pprint(self._packet_types.aux_info, packet.aux_info)
         pprint(self._packet_types.payload, packet.payload, self._resource_types, self._error_types, self._packet_types, self._iface_registry)
+        self._add_references(packet.aux_info.ref_list)
         self._add_routes(packet.aux_info.routes)
         request = RequestBase.from_data(server, peer, self._error_types, self._packet_types, self._core_types, iface_registry, packet.payload)
         response_or_notification = server.process_request(request)
@@ -47,6 +51,12 @@ class Transport(object):
             log.info('received routes for %s: %s',
                      public_key.get_short_id_hex(), ', '.join(encode_route(route) for route in srv_routes.routes))
             self._route_storage.add_routes(public_key, srv_routes.routes)
+
+    def _add_references(self, ref_list):
+        for ref_and_referred in ref_list:
+            #log.info('received ref %s: %r', ref_repr(ref_and_referred.ref), ref_and_referred.referred)
+            log.info('received ref %s: %r', ref_and_referred.ref, ref_and_referred.referred)
+            self._ref_storage.store_ref(ref_and_referred.ref, ref_and_referred.referred)
 
     def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)

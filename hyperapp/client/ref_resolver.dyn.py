@@ -4,7 +4,7 @@ from ..common.htypes import Type
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
-from ..common.referred import make_referred, make_ref
+from ..common.ref import make_referred, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH
 from .registry import Registry
 from .module import Module

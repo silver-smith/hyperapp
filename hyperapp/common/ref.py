@@ -1,3 +1,5 @@
+import codecs
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
@@ -8,7 +10,15 @@ from ..common.packet_coders import packet_coders
 
 DEFAULT_ENCODING = 'cdr'
 DEFAULT_HASH_ALGORITHM = 'sha512'
+MAX_REF_REPR_LEN = 60
 
+
+def ref_repr(ref):
+    hex = str(codecs.encode(ref, 'hex'))
+    if len(hex) > MAX_REF_REPR_LEN:
+        return hex[:MAX_REF_REPR_LEN] + '...'
+    else:
+        return hex
 
 def make_referred(t, object):
     assert isinstance(t, Type), repr(t)
