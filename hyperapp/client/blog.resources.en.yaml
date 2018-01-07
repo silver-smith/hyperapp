@@ -20,9 +20,14 @@ BlogArticleObject:
         - Ctrl+R
 ArticleRefListObject:
   commands:
+    add:
+      text: Add
+      description: Add new reference
+      shortcuts:
+        - Ins
     open:
       text: Open
-      description: Open selected hyper ref
+      description: Open selected hyper reference
       is_default: yes
     change:
       text: Change

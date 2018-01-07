@@ -1,6 +1,9 @@
 from datetime import datetime
 import logging
-from pony.orm import db_session, commit, desc, Required, Set
+import codecs
+
+from pony.orm import db_session, flush, desc, Required, Set
+
 from ..common.diff import SimpleDiff
 from ..common.list_object import ListDiff
 from ..common.interface import core as core_types
@@ -64,12 +67,30 @@ class BlogService(Object):
             ref=rec.ref,
             )
 
+    @command('add_ref')
+    @db_session
+    def command_add_ref(self, request):
+        article_id = request.params.article_id
+        ref = request.params.ref
+        article_rec = this_module.Article.get(id=article_id)
+        if not article_rec:
+            raise blog_types.unknown_article_error(article_id)
+        rec = this_module.ArticleRef(
+            article=article_rec,
+            title='Untitled',
+            ref=ref,
+            )
+        flush()  # make rec.id
+        log.info('Article ref#%d is is added: %s', rec.id, codecs.encode(rec.ref, 'hex'))
+        return request.make_response_result(ref_id=rec.id)
+
     @command('update_ref')
     @db_session
     def command_update_ref(self, request):
+        ref = request.params.ref
         rec = this_module.ArticleRef[request.params.ref_id]
-        rec.ref = request.params.ref
-        log.info('Article ref#%d is updated to %s', rec.id, rec.ref)
+        rec.ref = ref
+        log.info('Article ref#%d is updated to %s', rec.id, codecs.encode(rec.ref, 'hex'))
 
 
 class ThisModule(PonyOrmModule):

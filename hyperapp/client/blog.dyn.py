@@ -107,12 +107,13 @@ class ArticleRefListObject(ListObject):
     objimpl_id = 'article-ref-list'
 
     @classmethod
-    def from_state(cls, state, ref_resolver):
+    def from_state(cls, state, ref_registry, ref_resolver):
         blog_service = this_module.blog_service_from_data(state.blog_service)
-        return cls(ref_resolver, blog_service, state.blog_id, state.article_id)
+        return cls(ref_registry, ref_resolver, blog_service, state.blog_id, state.article_id)
 
-    def __init__(self, ref_resolver, blog_service, blog_id, article_id):
+    def __init__(self, ref_registry, ref_resolver, blog_service, blog_id, article_id):
         ListObject.__init__(self)
+        self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
@@ -154,6 +155,16 @@ class ArticleRefListObject(ListObject):
     @command('open', kind='element')
     async def command_open(self, element_key):
         return (await self.get_ref_handle(element_key))
+
+    @command('add')
+    async def command_add(self):
+        blog_service_ref = self._blog_service.to_ref()
+        article_ref_list_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
+        target_ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, article_ref_list_object)
+        target_handle = await self._ref_resolver.resolve_ref_to_handle(target_ref)
+        callback = blog_types.selector_callback(self._blog_service.to_data(), self._blog_id, self._article_id)
+        object = object_selector_types.object_selector_object('object_selector', callback)
+        return object_selector_types.object_selector_view('object_selector', object, target_handle)
 
     @command('change', kind='element')
     async def command_change(self, element_key):
@@ -230,8 +241,8 @@ class BlogService(object):
         await self._service_proxy.update_ref(blog_id, article_id, ref_id, ref)
 
     async def add_ref(self, blog_id, article_id, ref):
-        ref_id = await self._service_proxy.update_ref(blog_id, article_id, ref)
-        return ref_id
+        result = await self._service_proxy.add_ref(blog_id, article_id, ref)
+        return result.ref_id
 
 
 class ThisModule(Module):
@@ -251,7 +262,7 @@ class ThisModule(Module):
         services.objimpl_registry.register(
             BlogArticleObject.objimpl_id, BlogArticleObject.from_state, services.ref_registry, services.ref_resolver)
         services.objimpl_registry.register(
-            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.ref_resolver)
+            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.ref_registry, services.ref_resolver)
         object_selector.this_module.register_callback(
             blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.ref_resolver)
 
