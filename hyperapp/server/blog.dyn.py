@@ -87,10 +87,18 @@ class BlogService(Object):
     @command('update_ref')
     @db_session
     def command_update_ref(self, request):
+        ref_id = request.params.ref_id
         ref = request.params.ref
-        rec = this_module.ArticleRef[request.params.ref_id]
+        rec = this_module.ArticleRef[ref_id]
         rec.ref = ref
         log.info('Article ref#%d is updated to %s', rec.id, codecs.encode(rec.ref, 'hex'))
+
+    @command('delete_ref')
+    @db_session
+    def command_update_ref(self, request):
+        ref_id = request.params.ref_id
+        this_module.ArticleRef[ref_id].delete()
+        log.info('Article ref#%d is deleted', ref_id)
 
 
 class ThisModule(PonyOrmModule):

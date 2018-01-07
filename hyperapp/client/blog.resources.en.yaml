@@ -34,3 +34,8 @@ ArticleRefListObject:
       description: Select another object for this reference
       shortcuts:
         - Space
+    delete:
+      text: Delete
+      description: Delete selected hyper reference
+      shortcuts:
+        - Del

@@ -173,6 +173,10 @@ class ArticleRefListObject(ListObject):
         object = object_selector_types.object_selector_object('object_selector', callback)
         return object_selector_types.object_selector_view('object_selector', object, target_handle)
 
+    @command('delete', kind='element')
+    async def command_delete(self, element_key):
+        await self._blog_service.delete_ref(self._blog_id, self._article_id, element_key)
+
 
 class SelectorCallback(object):
 
@@ -243,6 +247,9 @@ class BlogService(object):
     async def add_ref(self, blog_id, article_id, ref):
         result = await self._service_proxy.add_ref(blog_id, article_id, ref)
         return result.ref_id
+
+    async def delete_ref(self, blog_id, article_id, ref_id):
+        await self._service_proxy.delete_ref(blog_id, article_id, ref_id)
 
 
 class ThisModule(Module):

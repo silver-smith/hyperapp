@@ -58,6 +58,7 @@ blog_service_iface = interface blog_service:
         request fetch_blog_contents (blog_id: string, fetch_request: row_fetch_request) -> (chunk: blog_chunk)
         request update_ref (blog_id: string, article_id: int, ref_id: int, ref: ref) -> ()
         request add_ref (blog_id: string, article_id: int, ref: ref) -> (ref_id: int)
+        request delete_ref (blog_id: string, article_id: int, ref_id: int) -> ()
 
 
 blog_object = object class blog_object(object_base):
