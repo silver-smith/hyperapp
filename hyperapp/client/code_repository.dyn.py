@@ -9,6 +9,7 @@ from ..common.htypes import (
     Column,
     list_handle_type,
     )
+from ..common.interface import packet as packet_types
 from ..common.interface import core as core_types
 from ..common.interface import code_repository as code_repository_types
 from ..common.interface import form as form_types
@@ -77,7 +78,7 @@ class CodeRepositoryProxy(ProxyObject):
     def from_url(cls, iface_registry, remoting, cache_repository, url):
         assert isinstance(url, Url), repr(url)
         server = Server.from_public_key(remoting, url.public_key)
-        return cls(this_module.packet_types, core_types, iface_registry, cache_repository,
+        return cls(packet_types, core_types, iface_registry, cache_repository,
                    this_module.resources_manager, this_module.param_editor_registry, server, url.path, url.iface)
         
     def __init__( self, packet_types, core_types, iface_registry, cache_repository,
@@ -187,7 +188,6 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self.packet_types = services.types.packet
         self.resources_manager = services.resources_manager
         self.param_editor_registry = services.param_editor_registry
         services.code_repository = CodeRepository(
