@@ -56,6 +56,7 @@ unknown_article_error = error class unknown_article(client_error):
 blog_service_iface = interface blog_service:
     commands:
         request fetch_blog_contents (blog_id: string, fetch_request: row_fetch_request) -> (chunk: blog_chunk)
+        request create_article(blog_id: string) -> (blog_row: blog_row)
         request save_article(blog_id: string, article_id: int, text: string) -> ()
         request update_ref (blog_id: string, article_id: int, ref_id: int, title: string, ref: ref) -> ()
         request add_ref (blog_id: string, article_id: int, title: string, ref: ref) -> (ref_id: int)

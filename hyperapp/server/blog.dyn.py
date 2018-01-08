@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 import codecs
 
-from pony.orm import db_session, flush, desc, Required, Set
+from pony.orm import db_session, flush, desc, Required, Optional, Set
 
 from ..common.diff import SimpleDiff
 from ..common.list_object import ListDiff
@@ -46,10 +46,10 @@ class BlogService(Object):
     @db_session
     def fetch_blog_contents(self, blog_id):
         # blog_id is ignored now
-        return list(map(self.rec2element, this_module.BlogEntry.select()))
+        return list(map(self.rec2row, this_module.BlogEntry.select()))
 
     @classmethod
-    def rec2element(cls, rec):
+    def rec2row(cls, rec):
         ref_list = map(cls.rec2ref, rec.refs.select().order_by(this_module.ArticleRef.id))
         return blog_types.blog_row(
             id=rec.id,
@@ -67,8 +67,17 @@ class BlogService(Object):
             ref=rec.ref,
             )
 
+    @command('create_article')
+    @db_session
+    def command_create_article(self, request):
+        blog_id = request.params.blog_id
+        article = this_module.BlogEntry(created_at=utcnow())
+        flush()
+        log.info('Article#%d is created', article.id)
+        return request.make_response_result(blog_row=self.rec2row(article))
+
     def _get_article(self, blog_id, article_id):
-        article = this_module.Article.get(id=article_id)
+        article = this_module.BlogEntry.get(id=article_id)
         if article:
             return article
         else:
@@ -131,7 +140,7 @@ class ThisModule(PonyOrmModule):
     def init_phase2(self):
         self.Article = self.make_entity(
             'Article',
-            text=Required(str),
+            text=Optional(str),
             refs=Set('ArticleRef'),
             )
         self.ArticleRef = self.make_entity(

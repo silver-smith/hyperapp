@@ -66,7 +66,14 @@ class BlogObject(ListObject):
 
     @command('open', kind='element')
     async def command_open(self, element_key):
-        article_id = element_key
+        return (await self._open_article(article_id=element_key))
+
+    @command('add')
+    async def command_add(self):
+        article_id = await self._blog_service.create_article(self._blog_id)
+        return (await self._open_article(article_id))
+
+    async def _open_article(self, article_id):
         blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
         ref = self._ref_registry.register_new_object(blog_types.blog_article_ref, object)
@@ -240,6 +247,12 @@ class BlogService(object):
             row = self._blog_id_article_id_to_row.get((blog_id, article_id))
             assert row, repr((blog_id, article_id))  # expecting it to be fetched now
         return row
+
+    async def create_article(self, blog_id):
+        result = await self._service_proxy.create_article(blog_id)
+        row = result.blog_row
+        self._blog_id_article_id_to_row[(blog_id, row.id)] = row
+        return row.id
 
     async def save_article(self, blog_id, article_id, text):
         await self._service_proxy.save_article(blog_id, article_id, text)
