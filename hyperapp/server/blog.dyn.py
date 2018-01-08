@@ -67,17 +67,33 @@ class BlogService(Object):
             ref=rec.ref,
             )
 
+    def _get_article(self, blog_id, article_id):
+        article = this_module.Article.get(id=article_id)
+        if article:
+            return article
+        else:
+            raise blog_types.unknown_article_error(article_id)
+
+    @command('save_article')
+    @db_session
+    def command_save_article(self, request):
+        blog_id = request.params.blog_id
+        article_id = request.params.article_id
+        text = request.params.text
+        article = self._get_article(blog_id, article_id)
+        article.text = text
+        log.info('Article#%d new text is saved: %r', article_id, text)
+
     @command('add_ref')
     @db_session
     def command_add_ref(self, request):
+        blog_id = request.params.blog_id
         article_id = request.params.article_id
         title = request.params.title
         ref = request.params.ref
-        article_rec = this_module.Article.get(id=article_id)
-        if not article_rec:
-            raise blog_types.unknown_article_error(article_id)
+        article = self._get_article(blog_id, article_id)
         rec = this_module.ArticleRef(
-            article=article_rec,
+            article=article,
             title=title,
             ref=ref,
             )

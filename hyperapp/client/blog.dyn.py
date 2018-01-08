@@ -100,7 +100,11 @@ class BlogArticleObject(TextObject):
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
         ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._ref_resolver.resolve_ref_to_handle(ref))
-        
+
+    @command('save')
+    async def command_save(self):
+        await self._blog_service.save_article(self._blog_id, self._article_id, self.text)
+
 
 class ArticleRefListObject(ListObject):
 
@@ -236,6 +240,9 @@ class BlogService(object):
             row = self._blog_id_article_id_to_row.get((blog_id, article_id))
             assert row, repr((blog_id, article_id))  # expecting it to be fetched now
         return row
+
+    async def save_article(self, blog_id, article_id, text):
+        await self._service_proxy.save_article(blog_id, article_id, text)
 
     async def get_article_ref_list(self, blog_id, article_id):
         row = await self.get_blog_row(blog_id, article_id)

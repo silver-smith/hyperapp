@@ -13,6 +13,11 @@ BlogObject:
       is_default: yes
 BlogArticleObject:
   commands:
+    save:
+      text: Save
+      description: Save edited text
+      shortcuts:
+        - Ctrl+S
     refs:
       text: Refs
       description: Open references list
