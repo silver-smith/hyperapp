@@ -71,8 +71,9 @@ class ModuleManager(object):
         assert isinstance(module, self._packet_types.module), repr(module)
         if fullname is None:
             fullname = module.package + '.' + module.id.replace('-', '_')
-        if fullname in sys.modules:
-            return  # already loaded
+        if fullname in sys.modules:  # already loaded
+            self._register_provided_services(module, sys.modules[fullname].__dict__)
+            return
         self._code_modules[fullname] = module
         self._name2code_module[fullname.split('.')[-1]] = module
         importlib.import_module(fullname)
