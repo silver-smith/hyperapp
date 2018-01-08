@@ -3,6 +3,7 @@ import logging
 from ..common.interface import error as error_types
 from ..common.interface import packet as packet_types
 from ..common.interface import core as core_types
+from ..common.interface import resource as resource_types
 from ..common.util import flatten, decode_path, encode_route
 from ..common.htypes import tServerRoutes
 from ..common.identity import PublicKey
@@ -26,7 +27,6 @@ MODULE_NAME = 'remoting'
 class Transport(object):
 
     def __init__(self, services):
-        self._resource_types = services.types.resource
         self._param_editor_types = services.types.param_editor
         self._iface_registry = services.iface_registry
         self._ref_storage = services.ref_storage
@@ -37,7 +37,7 @@ class Transport(object):
 
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
         pprint(packet_types.aux_info, packet.aux_info)
-        pprint(packet_types.payload, packet.payload, self._resource_types, error_types, packet_types, self._iface_registry)
+        pprint(packet_types.payload, packet.payload, resource_types, error_types, packet_types, self._iface_registry)
         self._add_references(packet.aux_info.ref_list)
         self._add_routes(packet.aux_info.routes)
         request = RequestBase.from_data(server, peer, error_types, packet_types, core_types, iface_registry, packet.payload)
@@ -45,8 +45,8 @@ class Transport(object):
         if response_or_notification is None:
             return None
         aux_info = self.prepare_aux_info(response_or_notification)
-        pprint(packet_types.aux_info, aux_info, self._resource_types, error_types, packet_types, self._iface_registry)
-        pprint(packet_types.payload, response_or_notification.to_data(), self._resource_types, error_types, packet_types, self._iface_registry)
+        pprint(packet_types.aux_info, aux_info, resource_types, error_types, packet_types, self._iface_registry)
+        pprint(packet_types.payload, response_or_notification.to_data(), resource_types, error_types, packet_types, self._iface_registry)
         return packet_types.packet(aux_info, response_or_notification.to_data())
 
     def _add_routes(self, routes):
@@ -64,8 +64,8 @@ class Transport(object):
 
     def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)
-        pprint(packet_types.aux_info, aux_info, self._resource_types, error_types, packet_types, self._iface_registry)
-        pprint(packet_types.payload, notification.to_data(), self._resource_types, error_types, packet_types, self._iface_registry)
+        pprint(packet_types.aux_info, aux_info, resource_types, error_types, packet_types, self._iface_registry)
+        pprint(packet_types.payload, notification.to_data(), resource_types, error_types, packet_types, self._iface_registry)
         return packet_types.packet(aux_info, notification.to_data())
 
     def process_packet(self, server, peer, transport_packet_data):
@@ -76,7 +76,7 @@ class Transport(object):
         packet_requirements = collector.collect(packet_types.payload, response_or_notification.to_data())
         resources1 = self._load_required_resources(packet_requirements)
         # resources themselves can contain requirements for more resources
-        resource_requirements = collector.collect(self._resource_types.resource_rec_list, resources1)
+        resource_requirements = collector.collect(resource_types.resource_rec_list, resources1)
         resources2 = self._load_required_resources(resource_requirements)
         requirements = packet_requirements + resource_requirements
         type_modules = self._type_module_repository.get_type_modules_by_requirements(requirements)
