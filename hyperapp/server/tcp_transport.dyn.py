@@ -1,6 +1,7 @@
 import logging
 from queue import Queue
 
+from ..common.interface import error as error_types
 from ..common.interface import packet as packet_types
 from ..common.request import Update
 from ..common.transport_packet import tTransportPacket
@@ -50,7 +51,7 @@ class TcpSession(TransportSession):
         updates = self.channel._pop_all()
         if not updates:
             return []
-        notification = ServerNotification(self.transport._error_types, packet_types)
+        notification = ServerNotification(error_types, packet_types)
         for update in updates:
             notification.add_update(update)
         log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())
