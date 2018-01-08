@@ -4,6 +4,7 @@ from ..common.interface import error as error_types
 from ..common.interface import packet as packet_types
 from ..common.interface import core as core_types
 from ..common.interface import resource as resource_types
+from ..common.interface import param_editor as param_editor_types
 from ..common.util import flatten, decode_path, encode_route
 from ..common.htypes import tServerRoutes
 from ..common.identity import PublicKey
@@ -27,7 +28,6 @@ MODULE_NAME = 'remoting'
 class Transport(object):
 
     def __init__(self, services):
-        self._param_editor_types = services.types.param_editor
         self._iface_registry = services.iface_registry
         self._ref_storage = services.ref_storage
         self._route_storage = services.route_storage
@@ -72,7 +72,7 @@ class Transport(object):
         raise NotImplementedError(self.__class__)
 
     def prepare_aux_info(self, response_or_notification):
-        collector = RequirementsCollector(error_types, packet_types, core_types, self._param_editor_types, self._iface_registry)
+        collector = RequirementsCollector(error_types, packet_types, core_types, param_editor_types, self._iface_registry)
         packet_requirements = collector.collect(packet_types.payload, response_or_notification.to_data())
         resources1 = self._load_required_resources(packet_requirements)
         # resources themselves can contain requirements for more resources
