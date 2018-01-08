@@ -11,8 +11,10 @@ log = logging.getLogger(__name__)
 class ModuleManager(common_module_manager.ModuleManager):
 
     def __init__(self, services):
-        common_module_manager.ModuleManager.__init__(self, services, services.type_registry_registry, services.types.packet, services.module_registry)
+        super().__init__(services, services.type_registry_registry, services.module_registry)
         self._id2module = {}
+
+    def init_types(self, services):
         self._objimpl_registry = services.objimpl_registry
         self._view_registry = services.view_registry
         self._param_editor_registry = services.param_editor_registry

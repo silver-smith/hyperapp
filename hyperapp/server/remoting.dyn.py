@@ -1,5 +1,6 @@
 import logging
 
+from ..common.interface import packet as packet_types
 from ..common.util import flatten, decode_path, encode_route
 from ..common.htypes import tServerRoutes
 from ..common.identity import PublicKey
@@ -36,18 +37,18 @@ class Transport(object):
         self._client_code_repository = services.client_code_repository
 
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
-        pprint(self._packet_types.aux_info, packet.aux_info)
-        pprint(self._packet_types.payload, packet.payload, self._resource_types, self._error_types, self._packet_types, self._iface_registry)
+        pprint(packet_types.aux_info, packet.aux_info)
+        pprint(packet_types.payload, packet.payload, self._resource_types, self._error_types, packet_types, self._iface_registry)
         self._add_references(packet.aux_info.ref_list)
         self._add_routes(packet.aux_info.routes)
-        request = RequestBase.from_data(server, peer, self._error_types, self._packet_types, self._core_types, iface_registry, packet.payload)
+        request = RequestBase.from_data(server, peer, self._error_types, packet_types, self._core_types, iface_registry, packet.payload)
         response_or_notification = server.process_request(request)
         if response_or_notification is None:
             return None
         aux_info = self.prepare_aux_info(response_or_notification)
-        pprint(self._packet_types.aux_info, aux_info, self._resource_types, self._error_types, self._packet_types, self._iface_registry)
-        pprint(self._packet_types.payload, response_or_notification.to_data(), self._resource_types, self._error_types, self._packet_types, self._iface_registry)
-        return self._packet_types.packet(aux_info, response_or_notification.to_data())
+        pprint(packet_types.aux_info, aux_info, self._resource_types, self._error_types, packet_types, self._iface_registry)
+        pprint(packet_types.payload, response_or_notification.to_data(), self._resource_types, self._error_types, packet_types, self._iface_registry)
+        return packet_types.packet(aux_info, response_or_notification.to_data())
 
     def _add_routes(self, routes):
         for srv_routes in routes:
@@ -64,16 +65,16 @@ class Transport(object):
 
     def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)
-        pprint(self._packet_types.aux_info, aux_info, self._resource_types, self._error_types, self._packet_types, self._iface_registry)
-        pprint(self._packet_types.payload, notification.to_data(), self._resource_types, self._error_types, self._packet_types, self._iface_registry)
-        return self._packet_types.packet(aux_info, notification.to_data())
+        pprint(packet_types.aux_info, aux_info, self._resource_types, self._error_types, packet_types, self._iface_registry)
+        pprint(packet_types.payload, notification.to_data(), self._resource_types, self._error_types, packet_types, self._iface_registry)
+        return packet_types.packet(aux_info, notification.to_data())
 
     def process_packet(self, server, peer, transport_packet_data):
         raise NotImplementedError(self.__class__)
 
     def prepare_aux_info(self, response_or_notification):
-        collector = RequirementsCollector(self._error_types, self._packet_types, self._core_types, self._param_editor_types, self._iface_registry)
-        packet_requirements = collector.collect(self._packet_types.payload, response_or_notification.to_data())
+        collector = RequirementsCollector(self._error_types, packet_types, self._core_types, self._param_editor_types, self._iface_registry)
+        packet_requirements = collector.collect(packet_types.payload, response_or_notification.to_data())
         resources1 = self._load_required_resources(packet_requirements)
         # resources themselves can contain requirements for more resources
         resource_requirements = collector.collect(self._resource_types.resource_rec_list, resources1)
@@ -82,10 +83,10 @@ class Transport(object):
         type_modules = self._type_module_repository.get_type_modules_by_requirements(requirements)
         modules = self._client_code_repository.get_modules_by_requirements(requirements)
         modules = []  # force separate request to code repository
-        server_pks_collector = ServerPksCollector(self._error_types, self._packet_types, self._core_types, self._iface_registry)
-        server_pks = server_pks_collector.collect_public_key_ders(self._packet_types.payload, response_or_notification.to_data())
+        server_pks_collector = ServerPksCollector(self._error_types, packet_types, self._core_types, self._iface_registry)
+        server_pks = server_pks_collector.collect_public_key_ders(packet_types.payload, response_or_notification.to_data())
         routes = [tServerRoutes(pk, self._route_storage.get_routes(PublicKey.from_der(pk))) for pk in server_pks]
-        return self._packet_types.aux_info(
+        return packet_types.aux_info(
             requirements=requirements,
             type_modules=type_modules,
             modules=modules,

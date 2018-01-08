@@ -46,6 +46,9 @@ class Services(ServicesBase):
         self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
+        self.module_manager = ModuleManager(self)
+        self.modules = self.module_manager.modules
+        self.module_manager.register_meta_hook()
         self._load_type_modules([
             'error',
             'resource',
@@ -67,9 +70,7 @@ class Services(ServicesBase):
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.view_registry = ViewRegistry(self.module_registry, self.iface_registry, self.remoting)
         self.param_editor_registry = ParamEditorRegistry()
-        self.module_manager = ModuleManager(self)
-        self.modules = self.module_manager.modules
-        self.module_manager.register_meta_hook()
+        self.module_manager.init_types(self)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.view_registry.set_core_types(self.types.core)
         self.resources_registry = ResourcesRegistry(self.types.resource)

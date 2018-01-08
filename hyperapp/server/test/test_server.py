@@ -163,6 +163,8 @@ class Services(ServicesBase):
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.resources_loader = PhonyResourcesLoader()
         self.client_code_repository = PhonyClientCodeRepository()
+        self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
+        self.module_manager.register_meta_hook()
         self._load_type_modules([
             'error',
             'resource',
@@ -172,8 +174,6 @@ class Services(ServicesBase):
             'param_editor',
             'code_repository',
             ])
-        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)
-        self.module_manager.register_meta_hook()
         try:
             self._load_server_modules()
         except:

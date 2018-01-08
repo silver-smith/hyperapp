@@ -1,6 +1,9 @@
 import os
 import os.path
 import logging
+import sys
+import importlib
+
 from .util import is_list_inst, encode_path
 from .htypes import (
     Interface,
@@ -17,8 +20,10 @@ from .htypes import (
     )
 from .type_module import resolve_typedefs, load_types_file
 
-
 log = logging.getLogger(__name__)
+
+
+TYPE_MODULES_PACKAGE = 'hyperapp.common.interface'
 
 
 class TypeModuleRepository(object):
@@ -119,6 +124,10 @@ class TypeModuleRepository(object):
         self._module_id2type_module[module.module_name] = module
         self._type_registry_registry.register(module.module_name, type_registry)
         self._register_ifaces(type_registry)
+        fullname = TYPE_MODULES_PACKAGE + '.' + module.module_name
+        if fullname in sys.modules:  # already loaded - must reload, or old one will be used by reloaded code modules
+            importlib.reload(sys.modules[fullname])
+
 
     def _get_dep_modules(self, modules):
         if not modules: return []

@@ -1,5 +1,9 @@
+import logging
+
 from ..util import is_list_inst
 from .htypes import join_path, Type, tString, Field, Record, TRecord, TList
+
+log = logging.getLogger(__name__)
 
 
 class TClassRecord(Record):

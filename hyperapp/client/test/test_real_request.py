@@ -89,6 +89,8 @@ class Services(ServicesBase):
         self.resources_manager = PhonyResourcesManager()
         self.code_repository = PhonyCodeRepository()
         self.identity_controller = PhonyIdentityController()
+        self.module_manager = ModuleManager(self)
+        self.module_manager.register_meta_hook()
         self._load_type_modules([
             'error',
             'resource',
@@ -103,8 +105,7 @@ class Services(ServicesBase):
         self.objimpl_registry = ObjImplRegistry()
         self.view_registry = ViewRegistry(self.module_registry, self.iface_registry, self.remoting)
         self.param_editor_registry = ParamEditorRegistry()
-        self.module_manager = ModuleManager(self)
-        self.module_manager.register_meta_hook()
+        self.module_manager.init_types(self)
         try:
             self._load_modules()
             #self.code_repository.set_url_repository(PhonyNamedUrlRepository())

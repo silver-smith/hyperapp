@@ -1,5 +1,7 @@
 import logging
 from queue import Queue
+
+from ..common.interface import packet as packet_types
 from ..common.request import Update
 from ..common.transport_packet import tTransportPacket
 from ..common.packet_coders import packet_coders
@@ -48,12 +50,12 @@ class TcpSession(TransportSession):
         updates = self.channel._pop_all()
         if not updates:
             return []
-        notification = ServerNotification(self.transport._error_types, self.transport._packet_types)
+        notification = ServerNotification(self.transport._error_types, packet_types)
         for update in updates:
             notification.add_update(update)
         log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())
         notification_packet = self.transport.make_notification_packet(self.transport.encoding, notification)
-        packet_data = packet_coders.encode(self.transport.encoding, notification_packet, self.transport._packet_types.packet)
+        packet_data = packet_coders.encode(self.transport.encoding, notification_packet, packet_types.packet)
         return [tTransportPacket(self.transport.get_transport_id(), packet_data)]
 
 
@@ -74,11 +76,11 @@ class TcpTransport(Transport):
         if session is None:
            session = TcpSession(self)
            session_list.set_transport_session(self.get_transport_id(), session) 
-        request_packet = packet_coders.decode(self.encoding, data, self._packet_types.packet)
+        request_packet = packet_coders.decode(self.encoding, data, packet_types.packet)
         response_packet = self.process_request_packet(iface_registry, server, Peer(session.channel), self.encoding, request_packet)
         if response_packet is None:
             return []
-        packet_data = packet_coders.encode(self.encoding, response_packet, self._packet_types.packet)
+        packet_data = packet_coders.encode(self.encoding, response_packet, packet_types.packet)
         return [packet_data]
 
 

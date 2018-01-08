@@ -22,6 +22,9 @@ class Services(ServicesBase):
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         ServicesBase.init_services(self)
         self.module_registry = ModuleRegistry()
+        self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
+        self.modules = self.module_manager.modules
+        self.module_manager.register_meta_hook()
         self._load_type_modules([
             'error',
             'resource',
@@ -43,9 +46,6 @@ class Services(ServicesBase):
             'exception_test',
             'fs',
             ])
-        self.module_manager = ModuleManager(self, self.type_registry_registry, self.types.packet, self.module_registry)
-        self.modules = self.module_manager.modules
-        self.module_manager.register_meta_hook()
         self.resources_loader = ResourcesLoader(self.types.resource,
                                                 self.types.param_editor,
                                                 iface_resources_dir=self.server_dir,
