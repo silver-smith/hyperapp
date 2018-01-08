@@ -98,7 +98,7 @@ class BlogService(Object):
 
     @command('delete_ref')
     @db_session
-    def command_update_ref(self, request):
+    def command_delete_ref(self, request):
         ref_id = request.params.ref_id
         this_module.ArticleRef[ref_id].delete()
         log.info('Article ref#%d is deleted', ref_id)
