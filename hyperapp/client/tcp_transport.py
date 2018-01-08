@@ -45,4 +45,4 @@ class TcpTransport(Transport):
         await self.process_aux_info(packet.aux_info)
         response_or_notification_rec = packet_coders.decode(self.encoding, packet.payload, self._packet_types.payload)
         pprint(self._packet_types.payload, response_or_notification_rec, self._resource_types, self._error_types, self._packet_types, self._iface_registry)
-        return ResponseBase.from_data(server_public_key, self._iface_registry, response_or_notification_rec)
+        return ResponseBase.from_data(self._error_types, self._packet_types, self._iface_registry, server_public_key, response_or_notification_rec)

@@ -79,7 +79,7 @@ class Request(RequestBase):
 class ResponseBase(object):
 
     @classmethod
-    def from_data(cls, packet_types, iface_registry, server_public_key, rec):
+    def from_data(cls, error_types, packet_types, iface_registry, server_public_key, rec):
         assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
         assert isinstance(rec, packet_types.server_packet), repr(rec)
 
@@ -91,7 +91,7 @@ class ResponseBase(object):
             if isinstance(rec, packet_types.server_result_response):
                 result = rec.result.decode(iface.get_command(rec.command_id).result_type)
             if isinstance(rec, packet_types.server_error_response):
-                error = rec.error.decode(packet_types.error)
+                error = rec.error.decode(error_types.error)
             return Response(packet_types, server_public_key, updates, iface, rec.command_id, rec.request_id, result, error)
         if isinstance(rec, packet_types.server_notification):
             return ServerNotification(packet_types, server_public_key, updates)

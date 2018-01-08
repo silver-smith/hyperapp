@@ -83,7 +83,7 @@ class EncryptedTransport(Transport):
         pprint(self._packet_types.aux_info, packet.aux_info, self._resource_types, self._error_types, self._packet_types, self._iface_registry)
         await self.process_aux_info(packet.aux_info)
         pprint(self._packet_types.payload, packet.payload, self._resource_types, self._error_types, self._packet_types, self._iface_registry)
-        return ResponseBase.from_data(self._packet_types, self._iface_registry, server_public_key, packet.payload)
+        return ResponseBase.from_data(self._error_types, self._packet_types, self._iface_registry, server_public_key, packet.payload)
 
     async def _process_pop_challenge_packet(self, protocol, server_public_key, session, encrypted_packet):
         challenge = encrypted_packet.challenge
