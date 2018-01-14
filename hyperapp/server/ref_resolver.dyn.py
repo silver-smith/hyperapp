@@ -35,8 +35,7 @@ class RefResolver(Object):
         return self
 
     @command('resolve_ref')
-    def command_resolve_ref(self, request):
-        ref = request.params.ref
+    def command_resolve_ref(self, request, ref):
         referred = self._ref_storage.resolve_ref(ref)
         if not referred:
             raise href_types.unknown_ref_error(ref)

@@ -178,7 +178,10 @@ class Record(object):
 
     def __hash__(self):
         return self._type.instance_hash(self)
-    
+
+    def _asdict(self):
+        return {field.name: getattr(self, field.name) for field in self._type.fields}
+        
 
 class TRecord(Type):
 

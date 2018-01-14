@@ -74,16 +74,15 @@ class SampleObject(Object):
         return self.module.make_path(self.class_name, self.id)
 
     @command('echo')
-    def command_echo(self, request):
-        return request.make_response_result(test_result=request.params.test_param + ' to you too')
+    def command_echo(self, request, test_param):
+        return request.make_response_result(test_result=test_param + ' to you too')
 
     @command('check_ok')
-    def command_check_ok(self, request):
-        param = request.params.test_param
-        if param == 'ok':
+    def command_check_ok(self, request, test_param):
+        if test_param == 'ok':
             return request.make_response_result(test_result='ok')
         else:
-            raise self._test_error(param)
+            raise self._test_error(test_param)
 
     @command('required_auth')
     def command_required_auth(self, request):
@@ -93,8 +92,8 @@ class SampleObject(Object):
         return request.make_response_result(test_result='ok')
 
     @command('broadcast')
-    def command_broadcast(self, request):
-        subscription.distribute_update(self.iface, self.get_path(), SimpleDiff(request.params.message))
+    def command_broadcast(self, request, message):
+        subscription.distribute_update(self.iface, self.get_path(), SimpleDiff(message))
 
 
 class StubModule(module_mod.Module):

@@ -29,7 +29,7 @@ class BoundCommand(common_command.Command):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
         log.debug('BoundCommand.run: %s, %r/%r, %r', self, self.id, self.kind, inst)
-        return self._class_method(inst, request)
+        return self._class_method(inst, request, **request.params._asdict())
 
 
 class UnboundCommand(common_command.Command):

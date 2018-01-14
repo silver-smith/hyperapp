@@ -67,8 +67,7 @@ class RefListResolverService(Object):
         return self
     
     @command('get_ref_list')
-    def command_get_ref_list(self, request):
-        unused_ref_list_id = request.params.ref_list_id
+    def command_get_ref_list(self, request, ref_list_id):
         ref_list = self._management_ref_list.get_ref_list()
         return request.make_response_result(ref_list=ref_list_types.ref_list(ref_list=ref_list))
 

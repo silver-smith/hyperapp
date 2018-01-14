@@ -108,15 +108,15 @@ class ClientCodeRepository(Object):
         return (type_modules, code_modules)
 
     @command('get_modules_by_ids')
-    def command_get_modules_by_ids(self, request):
-        log.info('command_get_modules_by_ids %r', request.params.module_ids)
-        type_modules, code_modules = self.get_modules_by_ids(request.params.module_ids)
+    def command_get_modules_by_ids(self, request, module_ids):
+        log.info('command_get_modules_by_ids %r', module_ids)
+        type_modules, code_modules = self.get_modules_by_ids(module_ids)
         return self._make_response(request, type_modules, code_modules)
 
     @command('get_modules_by_requirements')
-    def command_get_modules_by_requirements(self, request):
-        log.info('command_get_modules_by_requirements %r', request.params.requirements)
-        type_modules, code_modules = self.get_modules_by_requirements(request.params.requirements)
+    def command_get_modules_by_requirements(self, request, requirements):
+        log.info('command_get_modules_by_requirements %r', requirements)
+        type_modules, code_modules = self.get_modules_by_requirements(requirements)
         return self._make_response(request, type_modules, code_modules)
 
     def _make_response(self, request, type_modules, code_modules):

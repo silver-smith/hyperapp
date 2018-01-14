@@ -30,9 +30,9 @@ class FsService(Object):
         return self
 
     @command('fetch_dir_contents')
-    def command_fetch_dir_contents(self, request):
-        all_rows = self.fetch_dir_contents(request.params.host, request.params.fs_path)
-        chunk = rows2fetched_chunk('key', all_rows, request.params.fetch_request, fs_types.fs_dir_chunk)
+    def command_fetch_dir_contents(self, request, host, fs_path, fetch_request):
+        all_rows = self.fetch_dir_contents(host, fs_path)
+        chunk = rows2fetched_chunk('key', all_rows, fetch_request, fs_types.fs_dir_chunk)
         return request.make_response_result(chunk=chunk)
 
     def fetch_dir_contents(self, host, fs_path):

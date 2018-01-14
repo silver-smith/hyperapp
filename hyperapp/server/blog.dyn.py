@@ -38,9 +38,9 @@ class BlogService(Object):
         return cls()
 
     @command('fetch_blog_contents')
-    def command_fetch_blog_contents(self, request):
-        all_rows = self.fetch_blog_contents(request.params.blog_id)
-        chunk = rows2fetched_chunk('id', all_rows, request.params.fetch_request, blog_types.blog_chunk)
+    def command_fetch_blog_contents(self, request, blog_id, fetch_request):
+        all_rows = self.fetch_blog_contents(blog_id)
+        chunk = rows2fetched_chunk('id', all_rows, fetch_request, blog_types.blog_chunk)
         return request.make_response_result(chunk=chunk)
 
     @db_session
@@ -69,8 +69,7 @@ class BlogService(Object):
 
     @command('create_article')
     @db_session
-    def command_create_article(self, request):
-        blog_id = request.params.blog_id
+    def command_create_article(self, request, blog_id):
         article = this_module.BlogEntry(created_at=utcnow())
         flush()
         log.info('Article#%d is created', article.id)
@@ -85,21 +84,14 @@ class BlogService(Object):
 
     @command('save_article')
     @db_session
-    def command_save_article(self, request):
-        blog_id = request.params.blog_id
-        article_id = request.params.article_id
-        text = request.params.text
+    def command_save_article(self, request, blog_id, article_id, text):
         article = self._get_article(blog_id, article_id)
         article.text = text
         log.info('Article#%d new text is saved: %r', article_id, text)
 
     @command('add_ref')
     @db_session
-    def command_add_ref(self, request):
-        blog_id = request.params.blog_id
-        article_id = request.params.article_id
-        title = request.params.title
-        ref = request.params.ref
+    def command_add_ref(self, request, blog_id, article_id, title, ref):
         article = self._get_article(blog_id, article_id)
         rec = this_module.ArticleRef(
             article=article,
@@ -112,10 +104,7 @@ class BlogService(Object):
 
     @command('update_ref')
     @db_session
-    def command_update_ref(self, request):
-        ref_id = request.params.ref_id
-        title = request.params.title
-        ref = request.params.ref
+    def command_update_ref(self, request, blog_id, article_id, ref_id, title, ref):
         rec = this_module.ArticleRef[ref_id]
         rec.title = title
         rec.ref = ref
@@ -123,8 +112,7 @@ class BlogService(Object):
 
     @command('delete_ref')
     @db_session
-    def command_delete_ref(self, request):
-        ref_id = request.params.ref_id
+    def command_delete_ref(self, request, ref_id):
         this_module.ArticleRef[ref_id].delete()
         log.info('Article ref#%d is deleted', ref_id)
 
