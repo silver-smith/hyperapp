@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 class BoundCommand(common_command.Command):
 
-    def __init__(self, id, kind, resource_id, class_method, inst_wr, args=None):
+    def __init__(self, id, kind, resource_id, class_method, inst_wr):
         common_command.Command.__init__(self, id)
         assert isinstance(kind, str), repr(kind)
         assert is_list_inst(resource_id, str), repr(resource_id)
@@ -18,26 +18,18 @@ class BoundCommand(common_command.Command):
         self.resource_id = resource_id
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
-        self._args = args or ()
 
     def __repr__(self):
-        return 'BoundCommand(%r/%r -> %r, args=%r)' % (self.id, self.kind, self._inst_wr, self._args)
+        return 'BoundCommand(%r/%r -> %r)' % (self.id, self.kind, self._inst_wr)
 
     def to_data(self):
         return tCommand(self.id, self.kind, self.resource_id)
 
-    def clone(self, args=None):
-        if args is None:
-            args = self._args
-        else:
-            args = self._args + args
-        return BoundCommand(self.id, self.kind, self.resource_id, self.enabled, self._class_method, self._inst_wr, args)
-
-    def run(self, request, *args, **kw):
+    def run(self, request):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
-        log.debug('BoundCommand.run: %s, %r/%r, %r, (%s/%s, %s)', self, self.id, self.kind, inst, self._args, args, kw)
-        return self._class_method(inst, request, *(self._args + args), **kw)
+        log.debug('BoundCommand.run: %s, %r/%r, %r', self, self.id, self.kind, inst)
+        return self._class_method(inst, request)
 
 
 class UnboundCommand(common_command.Command):
