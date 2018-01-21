@@ -2,7 +2,7 @@ import logging
 import os.path
 
 from ..common.interface import fs as fs_types
-from ..common.fs_service import FsService
+from ..common.fs_service_impl import FsServiceImpl
 from .command import command
 from .module import Module
 
@@ -20,7 +20,7 @@ class LocalFsService(object):
 
     def __init__(self, ref_registry):
         self._ref_registry = ref_registry
-        self._fs_service = FsService(fs_types)
+        self._impl = FsServiceImpl(fs_types)
 
     def to_data(self):
         return fs_types.local_fs_service()
@@ -31,7 +31,7 @@ class LocalFsService(object):
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         assert host == LOCAL_HOST_NAME, repr(host)
         fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
-        return self._fs_service.fetch_dir_contents(path, fetch_request)
+        return self._impl.fetch_dir_contents(path, fetch_request)
 
 
 class ThisModule(Module):

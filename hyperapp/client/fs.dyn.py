@@ -115,4 +115,4 @@ class ThisModule(Module):
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']
-        return handle_t('list', dir_object, resource_id, sort_column_id, None)
+        return handle_t('list', dir_object, resource_id, sort_column_id, key=None)

@@ -1,6 +1,6 @@
 from ..common.interface import fs as fs_types
 from ..common.url import Url
-from ..common.fs_service import FsService
+from ..common.fs_service_impl import FsServiceImpl
 from .command import command
 from .object import Object
 from .module import Module
@@ -17,7 +17,7 @@ class ServerFsService(Object):
     def __init__(self, module):
         super().__init__()
         self._module = module
-        self._fs_service = FsService(fs_types)
+        self._impl = FsServiceImpl(fs_types)
 
     def get_path(self):
         return self._module.make_path(self.class_name)
@@ -29,7 +29,7 @@ class ServerFsService(Object):
     @command('fetch_dir_contents')
     def command_fetch_dir_contents(self, request, host, fs_path, fetch_request):
         assert host == 'localhost', repr(host)  # remote hosts not supported
-        chunk = self._fs_service.fetch_dir_contents(fs_path, fetch_request)
+        chunk = self._impl.fetch_dir_contents(fs_path, fetch_request)
         return request.make_response_result(chunk=chunk)
 
 

@@ -7,7 +7,7 @@ from operator import itemgetter
 from .list_object import rows2fetched_chunk
 
 
-class FsService(object):
+class FsServiceImpl(object):
 
     def __init__(self, fs_types):
         self._fs_types = fs_types
