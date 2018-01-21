@@ -15,22 +15,6 @@ fs_ref = record:
     current_file_name: string opt
 
 
-fs_file = list_interface fs_file:
-    columns:
-        @idx: int
-        line: string
-
-fs_dir = list_interface fs_dir:
-    columns:
-        @key: string
-        ftype: string
-        ftime: int
-        fsize: int
-    commands:
-        request parent () -> (handle: handle opt)
-        request open (element_key: string) -> (handle: handle opt)
-
-
 row_fetch_request = record:
     sort_column_id: string
     from_key: string opt
