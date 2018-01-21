@@ -1,19 +1,15 @@
-import sys
-import os.path
-import stat
-from operator import itemgetter
 from ..common.interface import fs as fs_types
 from ..common.url import Url
+from ..common.fs_service import FsService
 from .command import command
 from .object import Object
 from .module import Module
-from .list_object import rows2fetched_chunk
 
 
 MODULE_NAME = 'file'
 
 
-class FsService(Object):
+class ServerFsService(Object):
 
     iface = fs_types.fs_service_iface
     class_name = 'service'
@@ -21,6 +17,7 @@ class FsService(Object):
     def __init__(self, module):
         super().__init__()
         self._module = module
+        self._fs_service = FsService(fs_types)
 
     def get_path(self):
         return self._module.make_path(self.class_name)
@@ -31,47 +28,9 @@ class FsService(Object):
 
     @command('fetch_dir_contents')
     def command_fetch_dir_contents(self, request, host, fs_path, fetch_request):
-        all_rows = self.fetch_dir_contents(host, fs_path)
-        chunk = rows2fetched_chunk('key', all_rows, fetch_request, fs_types.fs_dir_chunk)
-        return request.make_response_result(chunk=chunk)
-
-    def fetch_dir_contents(self, host, fs_path):
-        dir_path = '/' + '/'.join(fs_path)
         assert host == 'localhost', repr(host)  # remote hosts not supported
-        dirs  = []
-        files = []
-        try:
-            names = os.listdir(dir_path)
-        except OSError:  # path may be invalid
-            names = []
-        for fname in names:
-            fname = fsname2uni(fname)
-            if fname[0] == '.': continue  # skip special and hidden names
-            item_fs_path = os.path.join(dir_path, fname)
-            finfo = self.get_file_info(fname, item_fs_path)
-            if finfo['ftype'] == 'dir':
-                dirs.append(finfo)
-            else:
-                files.append(finfo)
-        return [fs_types.fs_dir_row(key=finfo['key'], ftype=finfo['ftype'], ftime=finfo['ftime'], fsize=finfo['fsize'])
-                for finfo in sorted(dirs, key=itemgetter('key')) +
-                             sorted(files, key=itemgetter('key'))]
-
-    def get_file_info(self, fname, fspath):
-        try:
-            s = os.stat(fspath)
-        except OSError:
-            return dict(
-                key=fname,
-                ftype='file',
-                ftime=0,
-                fsize=0)
-        return dict(
-            key=fname,
-            ftype='dir' if os.path.isdir(fspath) else 'file',
-            ftime=s[stat.ST_MTIME],
-            fsize=s[stat.ST_SIZE],
-            )
+        chunk = self._fs_service.fetch_dir_contents(fs_path, fetch_request)
+        return request.make_response_result(chunk=chunk)
 
 
 class ThisModule(Module):
@@ -79,7 +38,7 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
         self._server = services.server
-        self._fs_service = FsService(self)
+        self._fs_service = ServerFsService(self)
         self._ref_storage = services.ref_storage
         self._management_ref_list = services.management_ref_list
 
@@ -101,15 +60,5 @@ class ThisModule(Module):
         if name == self._fs_service.class_name:
             return self._fs_service.resolve(path)
         path.raise_not_found()
-
-
-if sys.platform == 'win32':
-    fs_encoding = sys.getfilesystemencoding()
-else:
-    fs_encoding = 'utf-8'
-
-def fsname2uni(v):
-    if type(v) is str:
-        return v
-    else:
-       return str(v, fs_encoding)
+        all_rows = self.fetch_dir_contents(host, fs_path)
+        chunk = rows2fetched_chunk('key', all_rows, fetch_request, fs_types.fs_dir_chunk)

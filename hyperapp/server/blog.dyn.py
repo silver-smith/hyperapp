@@ -10,12 +10,12 @@ from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
 from ..common.url import Url
+from ..common.list_object import rows2fetched_chunk
 from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
 from .command import command
 from .object import Object, subscription
 from .module import ModuleCommand
-from .list_object import rows2fetched_chunk
 
 log = logging.getLogger(__name__)
 
