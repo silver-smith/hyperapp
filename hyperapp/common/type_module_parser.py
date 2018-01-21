@@ -178,9 +178,13 @@ def p_typedef_5(p):
     p[0] = register_typedef(p, 1, p[1], p[3])
 
 
-def p_record_def(p):
+def p_record_def_1(p):
     'record_def : RECORD COLON BLOCK_BEGIN field_list BLOCK_END'
     p[0] = t_record_meta(p[4])
+
+def p_record_def_2(p):
+    'record_def : RECORD'
+    p[0] = t_record_meta([])
 
 
 def p_hierarchy_def_1(p):
