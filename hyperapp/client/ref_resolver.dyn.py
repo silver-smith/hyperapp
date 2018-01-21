@@ -1,12 +1,12 @@
 import os.path
 import logging
-from ..common.htypes import Type
+
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
 from ..common.ref import make_referred, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH
-from .registry import Registry
+from .referred_registry import ReferredRegistry
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -67,25 +67,6 @@ class RefRegistry(object):
         return self._registry.get(ref)
 
 
-class ReferredRegistry(Registry):
-
-    def __init__(self, type_registry_registry):
-        super().__init__()
-        self._type_registry_registry = type_registry_registry
-
-    def register(self, t, factory, *args, **kw):
-        assert isinstance(t, Type), repr(t)
-        assert t.full_name, repr(t)  # type must have a name
-        super().register(tuple(t.full_name), factory, *args, **kw)
-        
-    async def resolve(self, referred):
-        t = self._type_registry_registry.resolve_type(referred.full_type_name)
-        object = packet_coders.decode(referred.encoding, referred.encoded_object, t)
-        rec = self._resolve(tuple(referred.full_type_name))
-        log.info('producing handle for %s using %s(%s, %s) for object %r', '.'.join(referred.full_type_name), rec.factory, rec.args, rec.kw, object)
-        return (await rec.factory(object, *rec.args, **rec.kw))
-
-
 class ThisModule(Module):
 
     def __init__(self, services):
@@ -97,5 +78,5 @@ class ThisModule(Module):
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         ref_resolver_proxy = services.proxy_factory.from_url(url)
         services.ref_registry = self._ref_registry
-        services.referred_registry = ReferredRegistry(services.type_registry_registry)
+        services.referred_registry = ReferredRegistry('handle', services.type_registry_registry)
         services.ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, services.referred_registry, ref_resolver_proxy)

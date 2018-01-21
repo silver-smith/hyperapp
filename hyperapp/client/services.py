@@ -113,6 +113,7 @@ class Services(ServicesBase):
                 'bookmarks',
                 'categorized_list_view',
                 'remoting_proxy',
+                'referred_registry',
                 'ref_resolver',
                 'ref_redirect_handle',
                 'proxy_list_object_',
