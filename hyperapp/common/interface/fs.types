@@ -2,10 +2,6 @@ from core import object, object_base, handle
 from hyper_ref import ref
 
 
-remote_fs_service = record:
-    service_url: url
-
-
 host_id = string
 
 fs_ref = record:
@@ -45,3 +41,9 @@ fs_dir_object = object class fs_dir_object(object_base):
     fs_service_ref: ref
     host: string
     path: fs_path
+
+
+remote_fs_service = record:
+    service_url: url
+
+local_fs_service = record

@@ -1,0 +1,7 @@
+ThisModule:
+  commands:
+    open_local_fs:
+      text: Open local file system
+      description: Open local file system (home directory)
+      shortcuts:
+      - Alt+Ctrl+F

@@ -121,6 +121,7 @@ class Services(ServicesBase):
                 'local_server_ref_list',
                 'fs',
                 'fs_remote_service',
+                'fs_local_service',
                 'object_selector',
                 'blog',
                 ]:
