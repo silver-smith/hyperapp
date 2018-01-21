@@ -17,14 +17,14 @@ class FsDirObject(ListObject):
     objimpl_id = 'fs_dir'
 
     @classmethod
-    async def from_state(cls, state, ref_registry, ref_resolver, fs_service_resolver):
+    async def from_state(cls, state, ref_registry, handle_resolver, fs_service_resolver):
         fs_service = await fs_service_resolver.resolve(state.fs_service_ref)
-        return cls(ref_registry, ref_resolver, fs_service, state.host, state.path)
+        return cls(ref_registry, handle_resolver, fs_service, state.host, state.path)
 
-    def __init__(self, ref_registry, ref_resolver, fs_service, host, path):
+    def __init__(self, ref_registry, handle_resolver, fs_service, host, path):
         ListObject.__init__(self)
         self._ref_registry = ref_registry
-        self._ref_resolver = ref_resolver
+        self._handle_resolver = handle_resolver
         self._fs_service = fs_service
         self._host = host
         self._path = path
@@ -86,7 +86,7 @@ class FsDirObject(ListObject):
 
     async def _open_path(self, path):
         ref = self._get_path_ref(path)
-        return (await self._ref_resolver.resolve_ref_to_handle(ref))
+        return (await self._handle_resolver.resolve(ref))
 
     @command('open', kind='element')
     async def command_open(self, element_key):
@@ -108,7 +108,7 @@ class ThisModule(Module):
         services.fs_service_resolver = fs_service_resolver = ReferredResolver(services.ref_resolver, fs_service_registry)
         services.handle_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
-            FsDirObject.objimpl_id, FsDirObject.from_state, services.ref_registry, services.ref_resolver, fs_service_resolver)
+            FsDirObject.objimpl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
     async def resolve_fs_object(self, fs_object):
         dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_object.fs_service_ref, fs_object.host, fs_object.path)

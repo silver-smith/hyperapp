@@ -6,7 +6,7 @@ from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
 from ..common.ref import make_referred, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH
-from .referred_registry import ReferredRegistry
+from .referred_registry import ReferredRegistry, ReferredResolver
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -14,18 +14,10 @@ log = logging.getLogger(__name__)
 
 class RefResolver(object):
 
-    def __init__(self, type_registry_registry, ref_registry, handle_registry, ref_resolver_proxy):
+    def __init__(self, type_registry_registry, ref_registry, ref_resolver_proxy):
         self._type_registry_registry = type_registry_registry
         self._ref_registry = ref_registry
-        self._handle_registry = handle_registry
         self._ref_resolver_proxy = ref_resolver_proxy
-
-    async def resolve_ref_to_handle(self, ref):
-        referred = await self.resolve_ref(ref)
-        handle = await self._handle_registry.resolve(referred)
-        assert handle, repr(handle)
-        log.debug('ref resolver: referred resolved to handle %r', handle)
-        return handle
 
     async def resolve_ref(self, ref):
         referred = self._ref_registry.resolve(ref)
@@ -78,5 +70,6 @@ class ThisModule(Module):
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         ref_resolver_proxy = services.proxy_factory.from_url(url)
         services.ref_registry = self._ref_registry
-        services.handle_registry = ReferredRegistry('handle', services.type_registry_registry)
-        services.ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, services.handle_registry, ref_resolver_proxy)
+        services.ref_resolver = ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, ref_resolver_proxy)
+        services.handle_registry = handle_registry = ReferredRegistry('handle', services.type_registry_registry)
+        services.handle_resolver = ReferredResolver(ref_resolver, handle_registry)

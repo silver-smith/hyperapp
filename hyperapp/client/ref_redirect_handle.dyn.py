@@ -15,7 +15,7 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self._ref_resolver = services.ref_resolver
+        self._handle_resolver = services.handle_resolver
 
     async def resolve_redirect(self, locale, handle, parent):
-        return (await self._ref_resolver.resolve_ref_to_handle(handle.ref))
+        return (await self._handle_resolver.resolve(handle.ref))

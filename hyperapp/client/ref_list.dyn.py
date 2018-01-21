@@ -22,13 +22,13 @@ class RefListObject(ListObject):
     Row = namedtuple('RefListObject_Row', 'id ref')
 
     @classmethod
-    def from_state(cls, state, ref_resolver, iface_registry, proxy_factory):
+    def from_state(cls, state, handle_resolver, iface_registry, proxy_factory):
         ref_list_service = RefListService.from_data(state.ref_list_service, iface_registry, proxy_factory)
-        return cls(ref_resolver, ref_list_service, state.ref_list_id)
+        return cls(handle_resolver, ref_list_service, state.ref_list_id)
 
-    def __init__(self, ref_resolver, ref_list_service, ref_list_id):
+    def __init__(self, handle_resolver, ref_list_service, ref_list_id):
         ListObject.__init__(self)
-        self._ref_resolver = ref_resolver
+        self._handle_resolver = handle_resolver
         self._ref_list_service = ref_list_service
         self._ref_list_id = ref_list_id
         self._id2ref = None
@@ -67,7 +67,7 @@ class RefListObject(ListObject):
         assert self._id2ref is not None  # fetch_element was not called yet
         ref = self._id2ref[element_key]
         log.info('Opening ref %r: %r', element_key, ref)
-        return (await self._ref_resolver.resolve_ref_to_handle(ref))
+        return (await self._handle_resolver.resolve(ref))
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -105,7 +105,7 @@ class ThisModule(Module):
         self._ref_resolver = services.ref_resolver
         services.handle_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
-            RefListObject.objimpl_id, RefListObject.from_state, services.ref_resolver, services.iface_registry, services.proxy_factory)
+            RefListObject.objimpl_id, RefListObject.from_state, services.handle_resolver, services.iface_registry, services.proxy_factory)
 
     async def resolve_dynamic_ref_list_object(self, dynamic_ref_list):
         ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service)
