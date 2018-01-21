@@ -1,4 +1,5 @@
 import logging
+import inspect
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +36,13 @@ class Registry(object):
     def _resolve(self, id):
         assert id in self._registry, repr(id)  # Unknown id
         return self._registry[id]
+
+    async def _run_awaitable_factory(self, factory, *args, **kw):
+        result = factory(*args, **kw)
+        if inspect.isawaitable(result):
+            return (await result)
+        else:
+            return result
 
 
 class DynamicModuleRegistryProxy(object):

@@ -5,7 +5,7 @@ from ..common.interface import core as core_types
 from ..common.interface import fs as fs_types
 from ..common.list_object import Element, Chunk
 from .command import command
-from .referred_registry import ReferredRegistry
+from .referred_registry import ReferredRegistry, ReferredResolver
 from .module import Module
 from .list_object import ListObject
 
@@ -17,8 +17,8 @@ class FsDirObject(ListObject):
     objimpl_id = 'fs_dir'
 
     @classmethod
-    def from_state(cls, state, iface_registry, ref_registry, ref_resolver, proxy_factory):
-        fs_service = FsService.from_data(state.fs_service, iface_registry, ref_registry, proxy_factory)
+    async def from_state(cls, state, ref_registry, ref_resolver, fs_service_resolver):
+        fs_service = await fs_service_resolver.resolve(state.fs_service_ref)
         return cls(ref_registry, ref_resolver, fs_service, state.host, state.path)
 
     def __init__(self, ref_registry, ref_resolver, fs_service, host, path):
@@ -31,7 +31,7 @@ class FsDirObject(ListObject):
         self._key2row = {}  # cache for visited rows
 
     def get_state(self):
-        return fs_types.fs_dir_object(self.objimpl_id, self._fs_service.to_data(), self._host, self._path)
+        return fs_types.fs_dir_object(self.objimpl_id, self._fs_service.to_ref(), self._host, self._path)
 
     def get_title(self):
         return '%s:/%s' % (self._host, '/'.join(self._path))
@@ -100,7 +100,7 @@ class FsDirObject(ListObject):
             return (await self._open_path(path))
 
 
-class FsService(object):
+class RemoteFsService(object):
 
     @classmethod
     def from_data(cls, service_object, iface_registry, ref_registry, proxy_factory):
@@ -114,12 +114,11 @@ class FsService(object):
 
     def to_data(self):
         service_url = self._service_proxy.get_url()
-        return fs_types.fs_service(service_url.to_data())
+        return fs_types.remote_fs_service(service_url.to_data())
 
     def to_ref(self):
-        service_url = self._service_proxy.get_url()
-        object = fs_types.fs_service(service_url=service_url.to_data())
-        return self._ref_registry.register_new_object(fs_types.fs_service, object)
+        service_object = self.to_data()
+        return self._ref_registry.register_new_object(fs_types.remote_fs_service, service_object)
 
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
@@ -131,16 +130,16 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self._ref_resolver = services.ref_resolver
         services.fs_service_registry = self.fs_service_registry = ReferredRegistry('fs_service', services.type_registry_registry)
+        services.fs_service_resolver = self.fs_service_resolver = ReferredResolver(services.ref_resolver, self.fs_service_registry)
+        self.fs_service_registry.register(
+            fs_types.remote_fs_service, RemoteFsService.from_data, services.iface_registry, services.ref_registry, services.proxy_factory)
         services.handle_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
-            FsDirObject.objimpl_id, FsDirObject.from_state, services.iface_registry,
-            services.ref_registry, services.ref_resolver, services.proxy_factory)
+            FsDirObject.objimpl_id, FsDirObject.from_state, services.ref_registry, services.ref_resolver, self.fs_service_resolver)
 
     async def resolve_fs_object(self, fs_object):
-        fs_service = await self._ref_resolver.resolve_ref_to_object(fs_object.fs_service_ref)
-        dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_service, fs_object.host, fs_object.path)
+        dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_object.fs_service_ref, fs_object.host, fs_object.path)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']

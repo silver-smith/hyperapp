@@ -44,8 +44,8 @@ class ThisModule(Module):
 
     def init_phase3(self):
         fs_service_url = Url(fs_types.fs_service_iface, self._server.get_public_key(), self._fs_service.get_path())
-        fs_service = fs_types.fs_service(service_url=fs_service_url.to_data())
-        fs_service_ref = self._ref_storage.add_object(fs_types.fs_service, fs_service)
+        fs_service = fs_types.remote_fs_service(service_url=fs_service_url.to_data())
+        fs_service_ref = self._ref_storage.add_object(fs_types.remote_fs_service, fs_service)
         fs = fs_types.fs_ref(
             fs_service_ref=fs_service_ref,
             host='localhost',
