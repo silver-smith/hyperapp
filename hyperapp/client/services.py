@@ -120,6 +120,7 @@ class Services(ServicesBase):
                 'ref_list',
                 'local_server_ref_list',
                 'fs',
+                'fs_remote_service',
                 'object_selector',
                 'blog',
                 ]:
