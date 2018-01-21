@@ -103,7 +103,7 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._ref_resolver = services.ref_resolver
-        services.referred_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
+        services.handle_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
             RefListObject.objimpl_id, RefListObject.from_state, services.ref_resolver, services.iface_registry, services.proxy_factory)
 

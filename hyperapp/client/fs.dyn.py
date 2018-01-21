@@ -5,6 +5,7 @@ from ..common.interface import core as core_types
 from ..common.interface import fs as fs_types
 from ..common.list_object import Element, Chunk
 from .command import command
+from .referred_registry import ReferredRegistry
 from .module import Module
 from .list_object import ListObject
 
@@ -131,7 +132,8 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         self._ref_resolver = services.ref_resolver
-        services.referred_registry.register(fs_types.fs_ref, self.resolve_fs_object)
+        services.fs_service_registry = self.fs_service_registry = ReferredRegistry('fs_service', services.type_registry_registry)
+        services.handle_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
             FsDirObject.objimpl_id, FsDirObject.from_state, services.iface_registry,
             services.ref_registry, services.ref_resolver, services.proxy_factory)

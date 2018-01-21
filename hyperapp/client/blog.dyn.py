@@ -281,9 +281,9 @@ class ThisModule(Module):
         self._ref_resolver = services.ref_resolver
         self._proxy_factory = services.proxy_factory
         self._url2service = {}
-        services.referred_registry.register(blog_types.blog_ref, self.resolve_blog_object)
-        services.referred_registry.register(blog_types.blog_article_ref, self.resolve_blog_article_object)
-        services.referred_registry.register(blog_types.blog_article_ref_list_ref, self.resolve_blog_article_ref_list_object)
+        services.handle_registry.register(blog_types.blog_ref, self.resolve_blog_object)
+        services.handle_registry.register(blog_types.blog_article_ref, self.resolve_blog_article_object)
+        services.handle_registry.register(blog_types.blog_article_ref_list_ref, self.resolve_blog_article_ref_list_object)
         services.objimpl_registry.register(
             BlogObject.objimpl_id, BlogObject.from_state, services.ref_registry, services.ref_resolver)
         services.objimpl_registry.register(

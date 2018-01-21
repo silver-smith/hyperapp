@@ -14,15 +14,15 @@ log = logging.getLogger(__name__)
 
 class RefResolver(object):
 
-    def __init__(self, type_registry_registry, ref_registry, referred_registry, ref_resolver_proxy):
+    def __init__(self, type_registry_registry, ref_registry, handle_registry, ref_resolver_proxy):
         self._type_registry_registry = type_registry_registry
         self._ref_registry = ref_registry
-        self._referred_registry = referred_registry
+        self._handle_registry = handle_registry
         self._ref_resolver_proxy = ref_resolver_proxy
 
     async def resolve_ref_to_handle(self, ref):
         referred = await self.resolve_ref(ref)
-        handle = await self._referred_registry.resolve(referred)
+        handle = await self._handle_registry.resolve(referred)
         assert handle, repr(handle)
         log.debug('ref resolver: referred resolved to handle %r', handle)
         return handle
@@ -78,5 +78,5 @@ class ThisModule(Module):
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         ref_resolver_proxy = services.proxy_factory.from_url(url)
         services.ref_registry = self._ref_registry
-        services.referred_registry = ReferredRegistry('handle', services.type_registry_registry)
-        services.ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, services.referred_registry, ref_resolver_proxy)
+        services.handle_registry = ReferredRegistry('handle', services.type_registry_registry)
+        services.ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, services.handle_registry, ref_resolver_proxy)
