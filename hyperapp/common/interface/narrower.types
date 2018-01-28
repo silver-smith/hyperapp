@@ -1,0 +1,12 @@
+from core import object, object_base, handle, obj_handle, list_handle_base
+from line_object import line_object, line_edit_view
+
+
+narrower_object = object class narrower(object_base):
+  filter_line: line_object
+  list_object: object
+
+
+narrower_view = handle class narrower(obj_handle):
+  filter_line: line_edit_view
+  list_view: list_handle_base

@@ -1,49 +1,23 @@
 import logging
 import asyncio
 from PySide import QtCore, QtGui
-from ..common.htypes import tString, tInt, TOptional, Field
+
 from ..common.interface import core as core_types
+from ..common.interface import narrower as narrower_types
 from .util import uni2str, key_match, key_match_any
+from .module import Module
+from .object import Object
 from .list_object import ListObserver, Chunk, ListObject
 from .command import command
 from . import view
 from .line_list_panel import LineListPanel
 from . import line_edit
-from . import list_view
+
 
 log = logging.getLogger(__name__)
 
 
-NARROWER_VIEW_ID = 'narrower_list'
 FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
-
-
-def register_views(registry, services):
-    registry.register(NARROWER_VIEW_ID, View.from_state, services.objimpl_registry, services.resources_manager)
-
-
-tNarrowerListHandleBase = core_types.handle.register(
-    'narrower_list_base', base=core_types.list_handle_base, fields=[
-        Field('narrow_field_id', tString),
-        ])
-
-tStringNarrowerListHandle = core_types.handle.register(
-    'string_narrower_list', base=tNarrowerListHandleBase, fields=[
-        Field('key', TOptional(tString)),
-        ])
-
-tIntNarrowerListHandle = core_types.handle.register(
-    'int_narrower_list', base=tNarrowerListHandleBase, fields=[
-        Field('key', TOptional(tInt)),
-        ])
-
-
-def narrower_list_handle_type(key_t):
-    if key_t is tString:
-        return tStringNarrowerListHandle
-    if key_t is tInt:
-        return tIntNarrowerListHandle
-    assert False, 'Unsupported list key type: %r' % key_t
 
 
 # todo: subscription
@@ -122,40 +96,52 @@ class FilteredListObj(ListObject, ListObserver):
         log.debug('~FilteredListObj self=%s narrow_field_id=%r prefix=%r', id(self), self._narrow_field_id, self._prefix)
 
 
-class View(LineListPanel):
+class NarrowerObject(Object):
 
-    view_id = NARROWER_VIEW_ID
+    impl_id = 'narrower'
 
     @classmethod
-    async def from_state(cls, locale, state, parent, objimpl_registry, resources_manager):
-        data_type = core_types.handle.get_object_class(state)
-        object = await objimpl_registry.resolve(state.object)
-        return cls(locale, parent, data_type, object, resources_manager, state.resource_id,
-                   state.sort_column_id, state.key, state.narrow_field_id)
+    async def from_state(cls, state, objimpl_registry):
+        filter_line = await objimpl_registry.resolve(state.filter_line)
+        list_object = await objimpl_registry.resolve(state.list_object)
+        return cls(filter_line, list_object)
 
-    def __init__( self, locale, parent, data_type, object, resources_manager, resource_id, sort_column_id, key,
-                  narrow_field_id, first_visible_row=None, select_first=True, prefix=None ):
-        log.debug('new narrower self=%s', id(self))
-        self._data_type = data_type
-        self._base_obj = object
-        self._resource_id = resource_id
-        self._narrow_field_id = narrow_field_id
-        line_edit_view = line_edit.View(self, prefix)
-        list_view_view = list_view.View(
-            locale, self, resources_manager, resource_id, None, object, key, sort_column_id, first_visible_row, select_first)
-        LineListPanel.__init__(self, parent, line_edit_view, list_view_view)
-        self._line_edit.textEdited.connect(self._on_text_edited)
-        self.cancel_narrowing.set_enabled(bool(prefix))
+    def __init__(self, filter_line, list_object):
+        super().__init__()
+        self._filter_line = filter_line
+        self._list_object = list_object
+
+    def get_title(self):
+        return 'Narrowed: %s' % self._list_object.get_title()
 
     def get_state(self):
-        return self._data_type(
-            view_id=self.view_id,
-            object=self._base_obj.get_state(),
-            resource_id=self._resource_id,
-            sort_column_id=self._list_view.get_sort_column_id(),
-            key=self._list_view.get_current_key(),
-            narrow_field_id=self._narrow_field_id,
-            # lvs.first_visible_row, lvs.select_first, self._line_edit.text()
+        return narrower_types.narrower_object(self.impl_id, self._filter_line.get_state(), self._list_object.get_state())
+
+
+class NarrowerView(LineListPanel):
+
+    impl_id = 'narrower'
+
+    @classmethod
+    async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
+        narrower_object = await objimpl_registry.resolve(state.object)
+        filter_line = await view_registry.resolve(locale, state.filter_line)
+        list_view = await view_registry.resolve(locale, state.list_view)
+        return cls(parent, narrower_object, filter_line, list_view)
+
+    def __init__(self, parent, object, filter_line, list_view):
+        super().__init__(parent, filter_line, list_view)
+        self._object = object
+        self._filter_line = filter_line
+        self._list_view = list_view
+        #self.cancel_narrowing.set_enabled(self._filter_line.get_object().line != '')
+
+    def get_state(self):
+        return narrower_types.narrower_view(
+            view_id=self.impl_id,
+            object=self._object.get_state(),
+            filter_line=self._filter_line.get_state(),
+            list_view=self._list_view.get_state(),
             )
 
     def get_commands(self, kinds=None):
@@ -207,4 +193,12 @@ class View(LineListPanel):
         self._line_edit.setText(common_prefix)
 
     def __del__(self):
-        log.debug('~narrower self=%s list_view=%s title=%r', id(self), id(self._list_view), self._base_obj.get_title())
+        log.debug('~NarrowerView self=%s list_view=%s title=%r', id(self), id(self._list_view), self._object.get_title())
+
+
+class ThisModule(Module):
+
+    def __init__(self, services):
+        super().__init__(services)
+        services.objimpl_registry.register(NarrowerObject.impl_id, NarrowerObject.from_state, services.objimpl_registry)
+        services.view_registry.register(NarrowerView.impl_id, NarrowerView.from_state, services.objimpl_registry, services.view_registry)
