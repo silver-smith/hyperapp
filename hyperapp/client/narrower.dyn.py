@@ -6,13 +6,12 @@ from ..common.interface import core as core_types
 from ..common.interface import narrower as narrower_types
 from .util import uni2str, key_match, key_match_any
 from .module import Module
-from .object import Object
+from .object import ObjectObserver, Object
 from .list_object import ListObserver, Chunk, ListObject
 from .command import command
 from . import view
 from .line_list_panel import LineListPanel
 from . import line_edit
-
 
 log = logging.getLogger(__name__)
 
@@ -98,6 +97,16 @@ class FilteredListObj(ListObject, ListObserver):
 
 class NarrowerObject(Object):
 
+
+    class FilterObserver(ObjectObserver):
+
+        def __init__(self, narrower_object):
+            self._narrower_object = narrower_object
+
+        def object_changed(self):
+            self._narrower_object._filter_changed()
+
+
     impl_id = 'narrower'
 
     @classmethod
@@ -110,12 +119,17 @@ class NarrowerObject(Object):
         super().__init__()
         self._filter_line = filter_line
         self._list_object = list_object
+        self._filter_observer = self.FilterObserver(self)
+        self._filter_line.subscribe(self._filter_observer)
 
     def get_title(self):
         return 'Narrowed: %s' % self._list_object.get_title()
 
     def get_state(self):
         return narrower_types.narrower_object(self.impl_id, self._filter_line.get_state(), self._list_object.get_state())
+
+    def _filter_changed(self):
+        log.debug('NarrowerObject._filter_changed; new filter: %r', self._filter_line.line)
 
 
 class NarrowerView(LineListPanel):

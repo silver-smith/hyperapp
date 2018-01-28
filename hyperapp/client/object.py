@@ -42,7 +42,7 @@ class Object(Commander):
 
     def subscribe(self, observer):
         assert isinstance(observer, ObjectObserver), repr(observer)
-        log.debug('-- Object.subscribe self=%s, observer=%s/%r', id(self), id(observer), observer)
+        log.debug('-- Object.subscribe self=%s/%s, observer=%s/%r', id(self), self, id(observer), observer)
         self._observers.add(observer)
 
     def unsubscribe(self, observer):
@@ -70,6 +70,8 @@ class Object(Commander):
             traceback.print_exc()
 
     def _notify_object_changed(self, skip_observer=None):
+        log.debug('-- Object._notify_object_changed, self=%s/%s observers=%s', id(self), self, list(self._observers))
         for observer in self._observers:
+            log.debug('-- Object._notify_object_changed, observer=%s/%s, skip=%r', id(observer), observer, observer is skip_observer)
             if observer is not skip_observer:
                 observer.object_changed()
