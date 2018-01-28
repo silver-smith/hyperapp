@@ -34,6 +34,7 @@ class LineObject(Object):
         return self._line
 
     def line_changed(self, new_line, emitter_view=None):
+        log.debug('line_object.line_changed: %r', new_line)
         self._line = new_line
         self._notify_object_changed(emitter_view)
 
@@ -54,7 +55,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
         QtGui.QLineEdit.__init__(self, object.line)
         view.View.__init__(self, parent)
         self._object = object
-        self._notify_on_line_changed = False
+        self._notify_on_line_changed = True
         self.textChanged.connect(self._on_line_changed)
 
     def get_state(self):
@@ -63,7 +64,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
     def _on_line_changed(self, line):
         log.debug('line_edit.on_line_changed: %r', line)
         if self._notify_on_line_changed:
-            self._object.line_changed(self.text(), emitter_view=self)
+            self._object.line_changed(line, emitter_view=self)
 
     # todo: preserve cursor position
     def object_changed(self):
