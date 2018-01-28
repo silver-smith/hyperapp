@@ -120,7 +120,12 @@ class ApplicationStateStorage(object):
             self._type_module_repository.add_all_type_modules(type_module_list or [])
         except RequestError as x:
             log.warning('Unable to load latest modules and resources, using cached ones: %s' % x)
-        self._module_manager.load_code_module_list(code_modules)
+        except Exception as x:
+            if isinstance(x, self._error_types.server_error):
+                log.warning('Unable to load latest modules and resources, using cached ones: %s' % x)
+            else:
+                raise
+        #self._module_manager.load_code_module_list(code_modules)
         self._resources_manager.register(resources)
         try:
             return state.state.decode(self._state_type)
