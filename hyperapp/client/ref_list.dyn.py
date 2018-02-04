@@ -49,7 +49,7 @@ class RefListObject(ListObject):
     def get_key_column_id(self):
         return 'id'
 
-    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
         if not self._rows:
             ref_list = await self._ref_list_service.get_ref_list(self._ref_list_id)
             assert sort_column_id in ['id', 'ref'], repr(sort_column_id)
@@ -58,9 +58,7 @@ class RefListObject(ListObject):
             self._id2ref = {ref_item.id: ref_item.ref for ref_item in ref_list.ref_list}
         sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id)) for row in sorted_rows]
-        chunk = Chunk(sort_column_id, None, elements, True, True)
-        self._notify_fetch_result(chunk)
-        return chunk
+        return Chunk(sort_column_id, None, elements, True, True)
 
     @command('open', kind='element')
     async def command_open(self, element_key):

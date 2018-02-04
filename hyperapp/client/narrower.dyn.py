@@ -110,10 +110,8 @@ class NarrowerObject(Object):
     impl_id = 'narrower'
 
     @classmethod
-    async def from_state(cls, state, objimpl_registry):
-        filter_line = await objimpl_registry.resolve(state.filter_line)
-        list_object = await objimpl_registry.resolve(state.list_object)
-        return cls(filter_line, list_object)
+    async def from_state(cls, state):
+        assert False  # Unused method
 
     def __init__(self, filter_line, list_object):
         super().__init__()
@@ -126,7 +124,7 @@ class NarrowerObject(Object):
         return 'Narrowed: %s' % self._list_object.get_title()
 
     def get_state(self):
-        return narrower_types.narrower_object(self.impl_id, self._filter_line.get_state(), self._list_object.get_state())
+        return narrower_types.narrower_object(self.impl_id)
 
     def _filter_changed(self):
         log.debug('NarrowerObject._filter_changed; new filter: %r', self._filter_line.line)
@@ -138,9 +136,9 @@ class NarrowerView(LineListPanel):
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
-        narrower_object = await objimpl_registry.resolve(state.object)
         filter_line = await view_registry.resolve(locale, state.filter_line)
         list_view = await view_registry.resolve(locale, state.list_view)
+        narrower_object = NarrowerObject(filter_line.get_object(), list_view.get_object())
         return cls(parent, narrower_object, filter_line, list_view)
 
     def __init__(self, parent, object, filter_line, list_view):
@@ -214,5 +212,6 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(services)
-        services.objimpl_registry.register(NarrowerObject.impl_id, NarrowerObject.from_state, services.objimpl_registry)
+        # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy:
+        services.objimpl_registry.register(NarrowerObject.impl_id, NarrowerObject.from_state)
         services.view_registry.register(NarrowerView.impl_id, NarrowerView.from_state, services.objimpl_registry, services.view_registry)

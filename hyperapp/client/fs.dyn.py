@@ -59,15 +59,13 @@ class FsDirObject(ListObject):
     def get_key_column_id(self):
         return 'key'
 
-    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
         chunk = await self._fs_service.fetch_dir_contents(
             self._host, self._path, sort_column_id, from_key, desc_count, asc_count)
         self._key2row.update({row.key: row for row in chunk.rows})
         elements = [Element(row.key, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in chunk.rows]
-        list_chunk = Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
-        self._notify_fetch_result(list_chunk)
-        return list_chunk
+        return Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -120,6 +118,6 @@ class ThisModule(Module):
         list_handle = handle_t('list', dir_object, resource_id, sort_column_id, key=None)
         filter_object = line_object_types.line_object('line', '')
         filter_view = line_object_types.line_edit_view('line_edit', filter_object)
-        narrower_object = narrower_types.narrower_object('narrower', filter_object, dir_object)
+        narrower_object = narrower_types.narrower_object('narrower')
         narrower_view = narrower_types.narrower_view('narrower', narrower_object, filter_view, list_handle)
         return narrower_view

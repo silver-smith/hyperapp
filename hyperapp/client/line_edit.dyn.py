@@ -61,6 +61,9 @@ class LineEditView(view.View, QtGui.QLineEdit):
     def get_state(self):
         return line_object_types.line_edit_view(self.impl_id, self._object.get_state())
 
+    def get_object(self):
+        return self._object
+
     def _on_line_changed(self, line):
         log.debug('line_edit.on_line_changed: %r', line)
         if self._notify_on_line_changed:

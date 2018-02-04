@@ -78,7 +78,7 @@ class StubObject(ListObject):
     def get_key_column_id(self):
         return 'key'
 
-    async def fetch_elements(self, sort_column_id, key, desc_count, asc_count):
+    async def fetch_elements_impl(self, sort_column_id, key, desc_count, asc_count):
         sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
         log.debug('StubObject.fetch_elements: sort_column_id=%s key=%r desc_count=%d asc_count=%d sorted_rows=%r',
                   sort_column_id, key, desc_count, asc_count, [row.key for row in sorted_rows])
@@ -89,14 +89,10 @@ class StubObject(ListObject):
         else:
             start = 0
         end = min(start + self._rows_per_fetch, len(sorted_rows))
-        self.notify_fetch_result(sort_column_id, key, sorted_rows, start, end)
-
-    def notify_fetch_result(self, sort_column_id, key, sorted_rows, start, end):
         bof = start == 0
         eof = end == len(sorted_rows)
         elements = [element_for_row(row) for row in sorted_rows[start:end]]
-        chunk = Chunk(sort_column_id, key, elements, bof=bof, eof=eof)
-        self._notify_fetch_result(chunk)
+        return Chunk(sort_column_id, key, elements, bof=bof, eof=eof)
 
 
 # required to exist when creating gui objects

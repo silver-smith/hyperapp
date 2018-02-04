@@ -51,14 +51,12 @@ class BlogObject(ListObject):
     def get_key_column_id(self):
         return 'id'
 
-    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
         chunk = await self._blog_service.fetch_blog_contents(
             self._blog_id, sort_column_id, from_key, desc_count, asc_count)
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in chunk.rows]
-        list_chunk = Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
-        self._notify_fetch_result(list_chunk)
-        return list_chunk
+        return Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -150,14 +148,12 @@ class ArticleRefListObject(ListObject):
     def get_key_column_id(self):
         return 'id'
 
-    async def fetch_elements(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
         ref_list = await self._blog_service.get_article_ref_list(self._blog_id, self._article_id)
         self._id2ref.update({row.id: row.ref for row in ref_list})
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in ref_list]
-        list_chunk = Chunk(sort_column_id, from_key=None, elements=elements, bof=True, eof=True)
-        self._notify_fetch_result(list_chunk)
-        return list_chunk
+        return Chunk(sort_column_id, from_key=None, elements=elements, bof=True, eof=True)
 
     async def get_ref_handle(self, id):
         ref = self._id2ref[id]
