@@ -16,9 +16,6 @@ from . import line_edit
 log = logging.getLogger(__name__)
 
 
-FETCH_ELEMENT_COUNT = 200  # how many rows to request when request is originating from narrower itself
-
-
 # todo: subscription
 class FilteredListObj(ListObject, ListObserver):
 
@@ -110,24 +107,32 @@ class NarrowerObject(Object):
     impl_id = 'narrower'
 
     @classmethod
-    async def from_state(cls, state):
-        assert False  # Unused method
+    async def from_state(cls, filter_line, list_object, state):
+        return cls(filter_line, list_object, state.filtered_field)
 
-    def __init__(self, filter_line, list_object):
+    def __init__(self, filter_line, list_object, filtered_field):
         super().__init__()
         self._filter_line = filter_line
         self._list_object = list_object
+        self._filtered_field = filtered_field
         self._filter_observer = self.FilterObserver(self)
         self._filter_line.subscribe(self._filter_observer)
+        self._list_object.set_filter(self._list_filter)
 
     def get_title(self):
         return 'Narrowed: %s' % self._list_object.get_title()
 
     def get_state(self):
-        return narrower_types.narrower_object(self.impl_id)
+        return narrower_types.narrower_object(self.impl_id, self._filtered_field)
 
     def _filter_changed(self):
         log.debug('NarrowerObject._filter_changed; new filter: %r', self._filter_line.line)
+        self._list_object._notify_object_changed()
+
+    def _list_filter(self, row):
+        log.debug('NarrowerObject._list_filter, filtered_field=%r, row=%r, line=%r, result=%r',
+                      self._filtered_field, row, self._filter_line.line, self._filter_line.line in getattr(row, self._filtered_field))
+        return self._filter_line.line in getattr(row, self._filtered_field)
 
 
 class NarrowerView(LineListPanel):
@@ -138,7 +143,7 @@ class NarrowerView(LineListPanel):
     async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
         filter_line = await view_registry.resolve(locale, state.filter_line)
         list_view = await view_registry.resolve(locale, state.list_view)
-        narrower_object = NarrowerObject(filter_line.get_object(), list_view.get_object())
+        narrower_object = await NarrowerObject.from_state(filter_line.get_object(), list_view.get_object(), state.object)
         return cls(parent, narrower_object, filter_line, list_view)
 
     def __init__(self, parent, object, filter_line, list_view):
