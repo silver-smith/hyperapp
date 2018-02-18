@@ -26,7 +26,6 @@ from . import splitter
 from . import list_view
 
 from . import proxy_object
-from . import proxy_list_object
 
 
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
@@ -116,7 +115,6 @@ class Services(ServicesBase):
                 'referred_registry',
                 'ref_resolver',
                 'ref_redirect_handle',
-                'proxy_list_object_',
                 'ref_list',
                 'local_server_ref_list',
                 'line_edit',
@@ -138,7 +136,6 @@ class Services(ServicesBase):
     def _register_object_implementations(self):
         for module in [
                 proxy_object,
-                proxy_list_object,
                 navigator,
                 ]:
             module.register_object_implementations(self.objimpl_registry, self)
