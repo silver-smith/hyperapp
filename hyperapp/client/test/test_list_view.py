@@ -59,7 +59,6 @@ def element(key):
 def element_for_row(row):
     return Element(row.key, row)
 
-
 class StubObject(ListObject):
 
     def __init__(self, rows_per_fetch=None, row_count=None, keys=None):
@@ -223,7 +222,9 @@ async def test_overlapped_fetch_result_should_be_merged_properly(list_view_facto
     actual_row_count = get_list_view_row_count(list_view)
     check_rows(list_view, 'key', expected_row_count)
     rows = [make_row(key) for key in range(row_count)]
-    object.notify_fetch_result(sort_column_id='key', key=None, sorted_rows=rows, start=0, end=10)
+    elements = [element_for_row(row) for row in rows]
+    chunk = Chunk(sort_column_id='key', from_key=None, elements=elements, bof=True, eof=True)
+    object._notify_fetch_result(chunk)
     assert get_list_view_row_count(list_view) == actual_row_count  # no new rows are expected
     check_rows(list_view, 'key', actual_row_count)
 
