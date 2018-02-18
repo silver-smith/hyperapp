@@ -35,7 +35,7 @@ class Model(QtCore.QAbstractTableModel):
         self._columns_resource = {}  # column_id -> tColumnResource
         self._visible_columns = []
         self._key2element = {}
-        self._slice = Slice(self._key2element, sort_column_id=None)
+        self._init_slice()
 
     def get_sort_column_id(self):
         return self._slice.sort_column_id
@@ -81,7 +81,15 @@ class Model(QtCore.QAbstractTableModel):
 
     def reset(self):
         ## self._update_mapping()
+        # self._init_slice()
         QtCore.QAbstractTableModel.reset(self)
+
+    def _reset(self, sort_column_id=None):
+        self._init_slice(sort_column_id or self._slice.sort_column_id)
+        self.reset()
+
+    def _init_slice(self, sort_column_id=None):
+        self._slice = Slice(self._key2element, sort_column_id)
 
     def set_object(self, object, sort_column_id):
         self._object = object
@@ -90,9 +98,8 @@ class Model(QtCore.QAbstractTableModel):
             column.id: self._resources_manager.resolve(self._resource_id + ['column', column.id, self._locale])
             for column in self._columns}
         self._visible_columns = [column for column in self._columns if self._is_column_visible(column.id)]
-        self._slice = Slice(self._key2element, sort_column_id or self._slice.sort_column_id)
         self._key_column_id = object.get_key_column_id()
-        self.reset()
+        self._reset(sort_column_id)
         self._fetch_pending = False
 
     def _is_column_visible(self, column_id):
@@ -233,6 +240,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def object_changed(self):
         log.info('-- list_view.object_changed self=%s / %r', id(self), self)
         view.View.object_changed(self)
+        self.model()._reset()
         ## old_key = self._selected_elt.key if self._selected_elt else None
         ## self.model().reset()
         ## ## self.reset()  # selection etc must be cleared
