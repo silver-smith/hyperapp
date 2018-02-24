@@ -211,7 +211,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self.set_object(object, sort_column_id)
-        self.wanted_current_key = key  # will set it to current when rows are loaded
+        self._wanted_current_key = key  # will set it to current when rows are loaded
 
     def get_state(self):
         first_visible_row, visible_row_count = self._get_visible_rows()
@@ -240,6 +240,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
     def object_changed(self):
         log.info('-- list_view.object_changed self=%s / %r', id(self), self)
         view.View.object_changed(self)
+        self._wanted_current_key = self.get_current_key()
         self.model()._reset()
         self.fetch_elements_if_required()
         ## old_key = self._selected_elt.key if self._selected_elt else None
@@ -266,9 +267,9 @@ class View(view.View, ListObserver, QtGui.QTableView):
         assert isinstance(chunk, Chunk), repr(chunk)
         self.model().process_fetch_result(chunk)
         self.resizeColumnsToContents()
-        if self.wanted_current_key is not None:
-            if self.set_current_key(self.wanted_current_key):
-                self.wanted_current_key = None
+        if self._wanted_current_key is not None:
+            if self.set_current_key(self._wanted_current_key):
+                self._wanted_current_key = None
         elif self.currentIndex().row() == -1:
             self.set_current_key(select_first=True)
         self.fetch_elements_if_required()
@@ -385,7 +386,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def fetch_elements_if_required(self):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        asyncio.async(self.model().fetch_elements_if_required(first_visible_row, visible_row_count, force=self.wanted_current_key is not None))
+        asyncio.async(self.model().fetch_elements_if_required(first_visible_row, visible_row_count, force=self._wanted_current_key is not None))
 
     ## def check_if_elements_must_be_fetched(self):
     ##     last_visible_row = self.get_last_visible_row()
