@@ -54,7 +54,7 @@ class FilteredListObj(ListObject, ListObserver):
     def process_fetch_result(self, result):
         log.info('-- narrower.process_fetch_result sort_column_id=%r bof=%r eof=%r elements-len=%r', result.sort_column_id, result.bof, result.eof, len(result.elements))
         elements = list(filter(self._element_matched, result.elements))
-        filtered = result.clone_with_elements(elements)
+        filtered = result.clone(elements=elements)
         # When there is no filtered elements list view can not fetch more elements - it does not have element key
         # to start from. So we issue fetch request ourselves. Yet we have to notify list view about eof.
         if not filtered.elements and result.elements and not result.eof:
@@ -132,6 +132,8 @@ class NarrowerObject(Object):
     def _list_filter(self, row):
         log.debug('NarrowerObject._list_filter, filtered_field=%r, row=%r, line=%r, result=%r',
                       self._filtered_field, row, self._filter_line.line, self._filter_line.line in getattr(row, self._filtered_field))
+        if not self._filter_line.line:
+            return True
         return self._filter_line.line in getattr(row, self._filtered_field)
 
 

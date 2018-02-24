@@ -241,6 +241,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         log.info('-- list_view.object_changed self=%s / %r', id(self), self)
         view.View.object_changed(self)
         self.model()._reset()
+        self.fetch_elements_if_required()
         ## old_key = self._selected_elt.key if self._selected_elt else None
         ## self.model().reset()
         ## ## self.reset()  # selection etc must be cleared

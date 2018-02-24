@@ -79,8 +79,14 @@ class Chunk(object):
         elements = [elt.to_data(iface) for elt in self.elements]
         return iface.Chunk(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
 
-    def clone_with_elements(self, elements):
-        return Chunk(self.sort_column_id, self.from_key, elements, self.bof, self.eof)
+    def clone(self, from_key=None, elements=None, bof=None):
+        if from_key is None:
+            from_key = self.from_key
+        if elements is None:
+            elements = self.elements
+        if bof is None:
+            bof = self.bof
+        return Chunk(self.sort_column_id, from_key, elements, bof, self.eof)
 
 
 class ListDiff(Diff):
