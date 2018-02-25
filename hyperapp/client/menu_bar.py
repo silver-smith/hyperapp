@@ -106,8 +106,8 @@ class MenuBar(object):
 
     def _update_window_menu(self, window, used_shortcuts):
         self.window_menu.clear()
-        # latter commands are from deeper views;
-        # must iterate in reverse order so deeper view's shortcuts override shallow ones
+        # later commands are from deeper views
+        # we must iterate in reverse order so deeper view's shortcuts override shallow ones
         last_view = None
         last_action = None
         for command in reversed(window.get_command_list()):
