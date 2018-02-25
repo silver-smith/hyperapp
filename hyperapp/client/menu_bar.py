@@ -96,29 +96,33 @@ class MenuBar(object):
 
     def _update_dir_menu(self, window, used_shortcuts):
         self.dir_menu.clear()
-        commands = window.get_command_list()
-        for cmd in commands:
-            assert isinstance(cmd, Command), repr(cmd)
-            if cmd.kind != 'object': continue
-            #if cmd.is_system(): continue
-            self.dir_menu.addAction(self._make_action(self.dir_menu, cmd, used_shortcuts))
-        self.dir_menu.setEnabled(commands != [])
+        command_list = window.get_command_list()
+        for command in command_list:
+            assert isinstance(command, Command), repr(command)
+            if command.kind != 'object': continue
+            #if command.is_system(): continue
+            self.dir_menu.addAction(self._make_action(self.dir_menu, command, used_shortcuts))
+        self.dir_menu.setEnabled(command_list != [])
 
     def _update_window_menu(self, window, used_shortcuts):
         self.window_menu.clear()
-        # latter commands are from deeper views
-        commands = []  # in reversed order
-        for cmd in reversed(window.get_command_list()):
-            assert isinstance(cmd, Command), repr(cmd)
-            if cmd.kind != 'view': continue
-            #if cmd.is_system(): continue
-            commands.append(cmd)
+        # latter commands are from deeper views;
+        # must iterate in reverse order so deeper view's shortcuts override shallow ones
         last_view = None
-        for cmd in reversed(commands):
-            if last_view is not None and cmd.get_view() is not last_view:
-                self.window_menu.addSeparator()
-            self.window_menu.addAction(self._make_action(self.window_menu, cmd, used_shortcuts))
-            last_view = cmd.get_view()
+        last_action = None
+        for command in reversed(window.get_command_list()):
+            assert isinstance(command, Command), repr(command)
+            if command.kind != 'view': continue
+            #if command.is_system(): continue
+            action = self._make_action(self.window_menu, command, used_shortcuts)
+            if last_action:
+                self.window_menu.insertAction(last_action, action)
+            else:
+                self.window_menu.addAction(action)
+            if last_view and command.get_view() is not last_view:
+                self.window_menu.insertSeparator(last_action)
+            last_action = action
+            last_view = command.get_view()
 
     def __del__(self):
         log.info('~menu_bar')
