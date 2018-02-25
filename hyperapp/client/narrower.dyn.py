@@ -128,8 +128,8 @@ class NarrowerObject(Object):
 
     @command('wider', enabled=False)
     def cancel_narrowing(self):
-        if self._line_edit.text():
-            self._set_prefix('')
+        if self._filter_line.line:
+            self._filter_line.line = ''
 
     def _filter_changed(self):
         log.debug('NarrowerObject._filter_changed; new filter: %r', self._filter_line.line)

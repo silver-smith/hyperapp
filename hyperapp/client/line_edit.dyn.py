@@ -33,6 +33,11 @@ class LineObject(Object):
     def line(self):
         return self._line
 
+    @line.setter
+    def line(self, line):
+        self._line = line
+        self._notify_object_changed()
+
     def line_changed(self, new_line, emitter_view=None):
         log.debug('line_object.line_changed: %r', new_line)
         self._line = new_line
@@ -57,6 +62,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
         self._object = object
         self._notify_on_line_changed = True
         self.textChanged.connect(self._on_line_changed)
+        self._object.subscribe(self)
 
     def get_state(self):
         return line_object_types.line_edit_view(self.impl_id, self._object.get_state())
@@ -73,7 +79,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
     def object_changed(self):
         self._notify_on_line_changed = False
         try:
-            self.setText(self.object.line)
+            self.setText(self._object.line)
         finally:
             self._notify_on_line_changed = True
         view.View.object_changed(self)
