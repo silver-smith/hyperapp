@@ -2,9 +2,9 @@ import logging
 import asyncio
 import weakref
 import abc
+
 from ..common.util import is_list_inst
 from ..common import command as common_command
-
 
 log = logging.getLogger(__name__)
 
@@ -30,9 +30,10 @@ class Command(common_command.Command, metaclass=abc.ABCMeta):
     def set_enabled(self, enabled):
         if enabled == self.enabled: return
         self.enabled = enabled
-        view = self.get_view()
-        if view:
-            view.view_changed()
+        object = self.get_view()
+        log.debug('-- Command.set_enabled %r object=%r', self.id, object)
+        if object:
+            object._notify_object_changed()
 
     def enable(self):
         self.set_enabled(True)

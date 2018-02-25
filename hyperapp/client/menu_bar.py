@@ -66,6 +66,7 @@ class MenuBar(object):
         ## self._current_view().open(cmd_view.Handle(None, [self.selected_elts], take_dir_commands=False))
 
     def view_changed(self, window):
+        log.debug('-- menu_bar view_changed object=%r', window.get_object())
         self.current_dir = dir = window.get_object()
         self.help_menu.setEnabled(dir is not None)
         self._update_dir_menu(window)

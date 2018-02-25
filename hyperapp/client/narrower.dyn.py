@@ -118,6 +118,7 @@ class NarrowerObject(Object):
         self._filter_observer = self.FilterObserver(self)
         self._filter_line.subscribe(self._filter_observer)
         self._list_object.set_filter(self._list_filter)
+        self.cancel_narrowing.set_enabled(self._filter_line.line != '')
 
     def get_title(self):
         return 'Narrowed: %s' % self._list_object.get_title()
@@ -125,13 +126,19 @@ class NarrowerObject(Object):
     def get_state(self):
         return narrower_types.narrower_object(self.impl_id, self._filtered_field)
 
+    @command('wider', enabled=False)
+    def cancel_narrowing(self):
+        if self._line_edit.text():
+            self._set_prefix('')
+
     def _filter_changed(self):
         log.debug('NarrowerObject._filter_changed; new filter: %r', self._filter_line.line)
         self._list_object._notify_object_changed()
+        self.cancel_narrowing.set_enabled(self._filter_line.line != '')
 
     def _list_filter(self, row):
-        log.debug('NarrowerObject._list_filter, filtered_field=%r, row=%r, line=%r, result=%r',
-                      self._filtered_field, row, self._filter_line.line, self._filter_line.line in getattr(row, self._filtered_field))
+        # log.debug('NarrowerObject._list_filter, filtered_field=%r, row=%r, line=%r, result=%r',
+        #               self._filtered_field, row, self._filter_line.line, self._filter_line.line in getattr(row, self._filtered_field))
         if not self._filter_line.line:
             return True
         return self._filter_line.line in getattr(row, self._filtered_field)
@@ -153,6 +160,7 @@ class NarrowerView(LineListPanel):
         self._object = object
         self._filter_line = filter_line
         self._list_view = list_view
+        self._object.subscribe(self)
         #self.cancel_narrowing.set_enabled(self._filter_line.get_object().line != '')
 
     def get_state(self):
@@ -165,6 +173,9 @@ class NarrowerView(LineListPanel):
 
     def get_commands(self, kinds=None):
         return LineListPanel.get_commands(self, ['view', 'object'])
+
+    def get_object(self):
+        return self._object
 
     def _set_prefix(self, prefix):
         self._line_edit.setText('')
@@ -193,11 +204,6 @@ class NarrowerView(LineListPanel):
         if not self._line_edit.text() and key_match(evt, 'Ctrl+Backspace'):
             return True
         return LineListPanel.is_list_event(self, evt)
-
-    @command('wider', kind='object', enabled=False)
-    def cancel_narrowing(self):
-        if self._line_edit.text():
-            self._set_prefix('')
 
     def eventFilter(self, obj, evt):
         if self._line_edit.text() and key_match(evt, 'Space'):

@@ -114,6 +114,7 @@ class View(ObjectObserver, Commander):
         return self._parent().get_global_commands()
 
     def view_changed(self, view=None):
+        log.debug('-- View.view_changed self=%s/%r view=%r', id(self), self, view)
         if self._parent:
             self._parent().view_changed(self)
 
