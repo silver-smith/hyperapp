@@ -69,13 +69,14 @@ class MenuBar(object):
         log.debug('-- menu_bar view_changed object=%r', window.get_object())
         self.current_dir = dir = window.get_object()
         self.help_menu.setEnabled(dir is not None)
-        self._update_dir_menu(window)
-        self._update_window_menu(window)
+        used_shortcuts = set()
+        self._update_dir_menu(window, used_shortcuts)
+        self._update_window_menu(window, used_shortcuts)
 
     def view_commands_changed(self, window, command_kinds):
         pass
         
-    def _make_action(self, menu, cmd):
+    def _make_action(self, menu, cmd, used_shortcuts=None):
         resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
         if resource:
             text = resource.text
@@ -83,44 +84,40 @@ class MenuBar(object):
         else:
             text = '%s/%s' % (cmd.resource_id, cmd.id)
             shortcuts = None
+        if not cmd.is_enabled():
+            shortcuts = None
+        if used_shortcuts is not None:
+            # remove duplicates
+            shortcuts = [sc for sc in shortcuts or [] if sc not in used_shortcuts]
+            used_shortcuts |= set(shortcuts)
         action = make_async_action(menu, text, shortcuts, cmd.run)
         action.setEnabled(cmd.is_enabled())
         return action
 
-    def _update_dir_menu(self, window):
+    def _update_dir_menu(self, window, used_shortcuts):
         self.dir_menu.clear()
         commands = window.get_command_list()
         for cmd in commands:
             assert isinstance(cmd, Command), repr(cmd)
             if cmd.kind != 'object': continue
             #if cmd.is_system(): continue
-            self.dir_menu.addAction(self._make_action(self.dir_menu, cmd))
+            self.dir_menu.addAction(self._make_action(self.dir_menu, cmd, used_shortcuts))
         self.dir_menu.setEnabled(commands != [])
 
-    def _update_window_menu(self, window):
+    def _update_window_menu(self, window, used_shortcuts):
         self.window_menu.clear()
-        # remove duplicate shortcuts, with latter (from deeper views) commands overriding former ones
+        # latter commands are from deeper views
         commands = []  # in reversed order
-        shortcuts = set()
         for cmd in reversed(window.get_command_list()):
             assert isinstance(cmd, Command), repr(cmd)
             if cmd.kind != 'view': continue
             #if cmd.is_system(): continue
-            if not cmd.is_enabled():
-                commands.append(cmd)
-                continue
-            #cmd_shortcuts = set(cmd.get_shortcut_list())
-            cmd_shortcuts = set()
-            dups = shortcuts & cmd_shortcuts
-            if dups:
-                cmd = cmd.clone_without_shortcuts(dups)
             commands.append(cmd)
-            shortcuts |= cmd_shortcuts
         last_view = None
         for cmd in reversed(commands):
             if last_view is not None and cmd.get_view() is not last_view:
                 self.window_menu.addSeparator()
-            self.window_menu.addAction(self._make_action(self.window_menu, cmd))
+            self.window_menu.addAction(self._make_action(self.window_menu, cmd, used_shortcuts))
             last_view = cmd.get_view()
 
     def __del__(self):
