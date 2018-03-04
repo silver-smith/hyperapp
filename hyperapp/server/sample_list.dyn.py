@@ -1,14 +1,14 @@
 import logging
 from ..common.htypes import Column
 from ..common.interface import core as core_types
-from ..common.interface import form as form_types
+#from ..common.interface import form as form_types
 from ..common.interface import test_list as test_list_types
 from ..common.list_object import Element, Chunk
 from .util import path_part_to_str
 from .command import command
 from .object import Object, ListObject
 from .module import Module, ModuleCommand
-from .form import intFieldHandle, formHandle
+#from .form import intFieldHandle, formHandle
 
 log = logging.getLogger(__name__)
 

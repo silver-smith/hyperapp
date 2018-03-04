@@ -1,22 +1,13 @@
-from core import handle, obj_handle
+from core import object, object_base, handle, obj_handle
 
 
-field_handle = hierarchy form_field
-
-field_handle_base = field_handle class base:
-    field_view_id: string
-
-string_field_handle = field_handle class string(field_handle_base):
-    value: string
-
-int_field_handle = field_handle class int(field_handle_base):
-    value: int
+form_object = object class form(object_base)
 
 
-form_field = record:
-    name: string
-    field_handle: field_handle
+form_view_field = record:
+    id: string
+    view: handle
 
 form_handle = handle class form(obj_handle):
-    fields: form_field list
-    current_field: int
+    field_list: form_view_field list
+    current_field: string

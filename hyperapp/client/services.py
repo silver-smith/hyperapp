@@ -108,7 +108,7 @@ class Services(ServicesBase):
                 'text_object',
                 'text_view',
                 'text_edit',
-                'form_view',
+#                'form_view',
                 'error_handler_impl',
                 'bookmarks',
                 'remoting_proxy',

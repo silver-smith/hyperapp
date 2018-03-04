@@ -5,6 +5,8 @@ from ..common.url import Url
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
+from ..common.interface import line_object as line_object_types
+from ..common.interface import form as form_types
 from ..common.interface import object_selector as object_selector_types
 from ..common.list_object import Element, Chunk
 from .module import Module
@@ -323,7 +325,15 @@ class ThisModule(Module):
         blog_service = await self._ref_resolver.resolve_ref_to_object(blog_article_object.blog_service_ref)
         text_object = blog_types.blog_article_object(
             BlogArticleObject.objimpl_id, blog_service, blog_article_object.blog_id, blog_article_object.article_id)
-        return core_types.obj_handle('text_view', text_object)
+        text_view = core_types.obj_handle('text_view', text_object)
+        title_object = line_object_types.line_object('line', '')
+        title_view = line_object_types.line_edit_view('line_edit', title_object)
+        form_object = form_types.form_object('form')
+        form_view = form_types.form_handle('form', form_object, [
+            form_types.form_view_field('title', title_view),
+            form_types.form_view_field('text', text_view),
+            ], current_field='text')
+        return form_view
 
     async def resolve_blog_article_ref_list_object(self, ref_list_object):
         blog_service = await self._ref_resolver.resolve_ref_to_object(ref_list_object.blog_service_ref)

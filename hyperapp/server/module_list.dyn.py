@@ -1,7 +1,7 @@
 import uuid
 from pony.orm import db_session, select, commit, desc, PrimaryKey, Required, Set
 from ..common.interface import core as core_types
-from ..common.interface import form as form_types
+#from ..common.interface import form as form_types
 from ..common.interface import splitter as splitter_types
 from ..common.interface import module_list as module_list_types
 from ..common.list_object import Element, ListDiff
@@ -9,7 +9,7 @@ from .ponyorm_module import PonyOrmModule
 from .command import command
 from .object import Object, SmallListObject, subscription
 from .module import ModuleCommand
-from .form import stringFieldHandle, formHandle
+#from .form import stringFieldHandle, formHandle
 
 
 MODULE_NAME = 'module_list'

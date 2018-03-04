@@ -14,7 +14,7 @@ from .command import command
 from .module import Module
 from .object import Object
 from .list_object import Element, Chunk, ListObject
-from .form import formHandle
+#from .form import formHandle
 
 log = logging.getLogger(__name__)
 

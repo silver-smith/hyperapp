@@ -21,7 +21,7 @@ from .proxy_object import ProxyObject
 from .command import command
 from .object import Object
 from .list_object import Element, Chunk, ListObject
-from .form import formHandle
+#from .form import formHandle
 from .named_url_file_repository import NamedUrl, NamedUrlRepository, FileNamedUrlRepository
 
 log = logging.getLogger(__name__)
