@@ -332,7 +332,7 @@ class ThisModule(Module):
         form_view = form_types.form_handle('form', form_object, [
             form_types.form_view_field('title', title_view),
             form_types.form_view_field('text', text_view),
-            ], current_field='text')
+            ], current_field_id='text')
         return form_view
 
     async def resolve_blog_article_ref_list_object(self, ref_list_object):

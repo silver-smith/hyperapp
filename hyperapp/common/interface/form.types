@@ -10,4 +10,4 @@ form_view_field = record:
 
 form_handle = handle class form(obj_handle):
     field_list: form_view_field list
-    current_field: string
+    current_field_id: string

@@ -1,6 +1,9 @@
 import logging
+from collections import OrderedDict
+from PySide import QtCore, QtGui
 
 from ..common.interface import form as form_types
+from .util import call_after
 from .module import Module
 from .object import Object
 from .view import View
@@ -26,21 +29,37 @@ class FormObject(Object):
         return form_types.form_object(self.impl_id)
 
 
-class FormView(View):
+class FormView(View, QtGui.QWidget):
 
     impl_id = 'form'
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
-        field_view_map = {}
+        field_view_map = OrderedDict()
         for field in state.field_list:
             field_view_map[field.id] = await view_registry.resolve(locale, field.view)
         object = FormObject.from_state({id: view.get_object() for id, view in field_view_map.items()}, state.object)
-        return cls(parent, object, field_view_map)
+        return cls(parent, object, field_view_map, state.current_field_id)
 
-    def __init__(self, parent, object, field_view_map):
-        super().__init__(parent)
+    def __init__(self, parent, object, field_view_map, current_field_id):
+        QtGui.QWidget.__init__(self)
+        View.__init__(self, parent)
         self._object = object
+        self._field_view_map = field_view_map
+        layout = QtGui.QVBoxLayout()
+        for id, field_view in field_view_map.items():
+            self._construct_field(layout, id, field_view, focus_it = id==current_field_id)
+        layout.addStretch()
+        self.setLayout(layout)
+
+    def _construct_field(self, layout, id, field_view, focus_it):
+        label = QtGui.QLabel(id)
+        label.setBuddy(field_view)
+        layout.addWidget(label)
+        layout.addWidget(field_view)
+        layout.addSpacing(10)
+        if focus_it:
+            call_after(field_view.ensure_has_focus)
 
 
 class ThisModule(Module):
