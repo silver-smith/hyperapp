@@ -73,7 +73,7 @@ class NarrowerView(LineListPanel):
     impl_id = 'narrower'
 
     @classmethod
-    async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
+    async def from_state(cls, locale, state, parent, view_registry):
         filter_line = await view_registry.resolve(locale, state.filter_line)
         list_view = await view_registry.resolve(locale, state.list_view)
         narrower_object = await NarrowerObject.from_state(filter_line.get_object(), list_view.get_object(), state.object)
@@ -137,4 +137,4 @@ class ThisModule(Module):
         super().__init__(services)
         # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy:
         services.objimpl_registry.register(NarrowerObject.impl_id, NarrowerObject.from_state)
-        services.view_registry.register(NarrowerView.impl_id, NarrowerView.from_state, services.objimpl_registry, services.view_registry)
+        services.view_registry.register(NarrowerView.impl_id, NarrowerView.from_state, services.view_registry)
