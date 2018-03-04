@@ -97,6 +97,9 @@ class BlogArticleObject(TextObject):
         self._article_id = article_id
         self._row = row
 
+    def get_title(self):
+        return self._row.title
+
     def get_state(self):
         return blog_types.blog_article_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
 
