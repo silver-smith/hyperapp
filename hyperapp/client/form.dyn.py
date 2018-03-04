@@ -52,6 +52,21 @@ class FormView(View, QtGui.QWidget):
         layout.addStretch()
         self.setLayout(layout)
 
+    def get_state(self):
+        current_field_id = list(self._field_view_map.keys())[0]
+        field_list = []
+        for id, field_view in self._field_view_map.items():
+            field_list.append(form_types.form_view_field(id, field_view.get_state()))
+            if field_view.has_focus():
+                current_field_id = id
+        return form_types.form_handle(self.impl_id, self._object.get_state(), field_list, current_field_id)
+
+    def get_object(self):
+        return self._object
+
+    def get_widget_to_focus(self):
+        return list(self._field_view_map.values())[0]
+
     def _construct_field(self, layout, id, field_view, focus_it):
         label = QtGui.QLabel(id)
         label.setBuddy(field_view)
@@ -66,5 +81,6 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(services)
-        #services.objimpl_registry.register(FormObject.impl_id, FormObject.from_state)
+        # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy, not use otherwise:
+        services.objimpl_registry.register(FormObject.impl_id, FormObject.from_state)
         services.view_registry.register(FormView.impl_id, FormView.from_state, services.objimpl_registry, services.view_registry)
