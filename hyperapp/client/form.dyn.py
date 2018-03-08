@@ -5,6 +5,7 @@ from PySide import QtCore, QtGui
 from ..common.interface import form as form_types
 from .util import call_after
 from .module import Module
+from .objimpl_registry import ObjImplRegistry
 from .object import Object
 from .composite import Composite
 
@@ -16,11 +17,12 @@ class FormObject(Object):
     impl_id = 'form'
 
     @classmethod
-    def from_state(cls, field_object_map, state):
-        return cls(field_object_map, state)
+    def from_state(cls, state, field_object_map):
+        return cls(field_object_map)
 
-    def __init__(self, field_object_map, state):
+    def __init__(self, field_object_map):
         super().__init__()
+        self._fields = field_object_map
 
     def get_title(self):
         return 'form'
@@ -34,13 +36,13 @@ class FormView(Composite, QtGui.QWidget):
     impl_id = 'form'
 
     @classmethod
-    async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
+    async def from_state(cls, locale, state, parent, form_impl_registry, view_registry):
         field_view_map = OrderedDict()
         field_object_map = {}
         for field in state.field_list:
             field_view_map[field.id] = view = await view_registry.resolve(locale, field.view)
             field_object_map[field.id] = view.get_object()
-        object = FormObject.from_state(field_object_map, state.object)
+        object = await form_impl_registry.resolve(state.object, field_object_map)
         return cls(parent, object, field_view_map, state.current_field_id)
 
     def __init__(self, parent, object, field_view_map, current_field_id):
@@ -85,6 +87,6 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(services)
-        # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy, not use otherwise:
-        services.objimpl_registry.register(FormObject.impl_id, FormObject.from_state)
-        services.view_registry.register(FormView.impl_id, FormView.from_state, services.objimpl_registry, services.view_registry)
+        services.form_impl_registry = form_impl_registry = ObjImplRegistry('form')
+        form_impl_registry.register(FormObject.impl_id, FormObject.from_state)
+        services.view_registry.register(FormView.impl_id, FormView.from_state, services.form_impl_registry, services.view_registry)

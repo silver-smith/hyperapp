@@ -16,7 +16,7 @@ BlogObject:
       description: Create new article
       shortcuts:
         - Ins
-BlogArticleObject:
+BlogArticleForm:
   commands:
     save:
       text: Save
