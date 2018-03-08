@@ -24,7 +24,7 @@ REF_LIST_RESOLVER_SERVICE_CLASS_NAME = 'ref_list_resolver'
 class CommandList(SmallListObject):
 
     iface = server_management_types.server_management
-    objimpl_id = 'proxy_list'
+    impl_id = 'proxy_list'
 
     @classmethod
     def get_path(cls):

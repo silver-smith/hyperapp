@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 class BlogObject(ListObject):
 
-    objimpl_id = 'blog'
+    impl_id = 'blog'
 
     @classmethod
     def from_state(cls, state, ref_registry, handle_resolver):
@@ -36,7 +36,7 @@ class BlogObject(ListObject):
         self._blog_id = blog_id
 
     def get_state(self):
-        return blog_types.blog_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id)
+        return blog_types.blog_object(self.impl_id, self._blog_service.to_data(), self._blog_id)
 
     def get_title(self):
         return self._blog_id
@@ -156,7 +156,7 @@ class BlogArticleContents(TextObject):
 
 class ArticleRefListObject(ListObject):
 
-    objimpl_id = 'article-ref-list'
+    impl_id = 'article-ref-list'
 
     @classmethod
     def from_state(cls, state, ref_registry, handle_resolver):
@@ -173,7 +173,7 @@ class ArticleRefListObject(ListObject):
         self._id2ref = {}
 
     def get_state(self):
-        return blog_types.article_ref_list_object(self.objimpl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
+        return blog_types.article_ref_list_object(self.impl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
 
     def get_title(self):
         return 'refs for %s:%d' % (self._blog_id, self._article_id)
@@ -324,13 +324,13 @@ class ThisModule(Module):
         services.handle_registry.register(blog_types.blog_article_ref, self.resolve_blog_article_object)
         services.handle_registry.register(blog_types.blog_article_ref_list_ref, self.resolve_blog_article_ref_list_object)
         services.objimpl_registry.register(
-            BlogObject.objimpl_id, BlogObject.from_state, services.ref_registry, services.handle_resolver)
+            BlogObject.impl_id, BlogObject.from_state, services.ref_registry, services.handle_resolver)
         services.form_impl_registry.register(
             BlogArticleForm.impl_id, BlogArticleForm.from_state, services.ref_registry, services.handle_resolver)
         services.objimpl_registry.register(
             BlogArticleContents.impl_id, BlogArticleContents.from_state, services.handle_resolver)
         services.objimpl_registry.register(
-            ArticleRefListObject.objimpl_id, ArticleRefListObject.from_state, services.ref_registry, services.handle_resolver)
+            ArticleRefListObject.impl_id, ArticleRefListObject.from_state, services.ref_registry, services.handle_resolver)
         object_selector.this_module.register_callback(
             blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.handle_resolver)
 
@@ -345,7 +345,7 @@ class ThisModule(Module):
 
     async def resolve_blog_object(self, blog_object):
         blog_service = await self._ref_resolver.resolve_ref_to_object(blog_object.blog_service_ref)
-        list_object = blog_types.blog_object(BlogObject.objimpl_id, blog_service, blog_object.blog_id)
+        list_object = blog_types.blog_object(BlogObject.impl_id, blog_service, blog_object.blog_id)
         handle_t = list_handle_type(core_types, tInt)
         sort_column_id = 'created_at'
         resource_id = ['client_module', 'blog', 'BlogObject']
@@ -369,7 +369,7 @@ class ThisModule(Module):
     async def resolve_blog_article_ref_list_object(self, ref_list_object):
         blog_service = await self._ref_resolver.resolve_ref_to_object(ref_list_object.blog_service_ref)
         list_object = blog_types.article_ref_list_object(
-            ArticleRefListObject.objimpl_id, blog_service, ref_list_object.blog_id, ref_list_object.article_id)
+            ArticleRefListObject.impl_id, blog_service, ref_list_object.blog_id, ref_list_object.article_id)
         handle_t = list_handle_type(core_types, tInt)
         sort_column_id = 'id'
         resource_id = ['client_module', 'blog', 'BlogArticleRefListObject']

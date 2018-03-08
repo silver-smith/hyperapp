@@ -73,11 +73,11 @@ class RemoteCommand(Command):
 
 class ProxyObject(Object):
 
-    objimpl_id = 'proxy'
+    impl_id = 'proxy'
 
     @classmethod
     def register(cls, registry, services):
-        registry.register(cls.objimpl_id, cls.from_state, services.types.packet, services.types.core,
+        registry.register(cls.impl_id, cls.from_state, services.types.packet, services.types.core,
                           services.iface_registry, services.remoting, services.proxy_registry,
                           services.cache_repository, services.resources_manager, services.param_editor_registry)
 
@@ -135,7 +135,7 @@ class ProxyObject(Object):
 
     def get_state(self):
         return self._core_types.proxy_object(
-            objimpl_id=self.objimpl_id,
+            impl_id=self.impl_id,
             public_key_der=self.server.public_key.to_der(),
             iface=self.iface.iface_id,
             facets=[facet.iface_id for facet in self.facets],
@@ -226,7 +226,7 @@ class ProxyObject(Object):
         return self.make_cache_key('commands')
 
     def make_cache_key(self, name):
-        return [self.objimpl_id, self.server.public_key.get_id_hex()] + list(map(self._quote_name, self.path)) + [name]
+        return [self.impl_id, self.server.public_key.get_id_hex()] + list(map(self._quote_name, self.path)) + [name]
 
     def _quote_name(self, name):
         return re.sub(r'[^%s]' % self.cache_repository.allowed_chars_pattern, '-', name)

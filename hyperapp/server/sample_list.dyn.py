@@ -21,7 +21,7 @@ MAX_ROWS_RETURNED = 100
 class ParamsForm(Object):
 
     iface = test_list_types.params_form
-    objimpl_id = 'proxy'
+    impl_id = 'proxy'
     class_name = 'params'
 
     def get_path(self):
@@ -47,7 +47,7 @@ class ParamsForm(Object):
 class TestList(ListObject):
 
     iface = test_list_types.test_list
-    objimpl_id = 'proxy_list'
+    impl_id = 'proxy_list'
     class_name = 'list'
 
     @classmethod

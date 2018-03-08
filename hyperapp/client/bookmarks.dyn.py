@@ -20,7 +20,7 @@ from .named_url_file_repository import NamedUrl, NamedUrlRepository
 
 
 def register_object_implementations(registry, services):
-    registry.register(BookmarkList.objimpl_id, BookmarkList.from_state,
+    registry.register(BookmarkList.impl_id, BookmarkList.from_state,
                       services.iface_registry, services.remoting, services.bookmarks)
 
 
@@ -53,7 +53,7 @@ bookmark_list_handle_type = list_handle_type(core_types, tString)
 
 class BookmarkList(ListObject):
 
-    objimpl_id = 'bookmark_list'
+    impl_id = 'bookmark_list'
 
     @classmethod
     def from_state(cls, state, iface_registry, remoting, bookmarks):
@@ -70,7 +70,7 @@ class BookmarkList(ListObject):
 
     @classmethod
     def get_state(cls):
-        return bookmark_list_type(cls.objimpl_id)
+        return bookmark_list_type(cls.impl_id)
 
     def get_title(self):
         return 'Bookmarks'

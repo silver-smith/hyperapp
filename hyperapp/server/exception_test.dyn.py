@@ -10,7 +10,7 @@ MODULE_NAME = 'exception_test'
 class TestObject(SmallListObject):
 
     iface = exception_test_types.test_object
-    objimpl_id = 'proxy_list'
+    impl_id = 'proxy_list'
     class_name = 'test_object'
     default_sort_column_id = 'id'
 

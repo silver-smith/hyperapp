@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 class RefListObject(ListObject):
 
-    objimpl_id = 'ref_list'
+    impl_id = 'ref_list'
 
     Row = namedtuple('RefListObject_Row', 'id ref')
 
@@ -35,7 +35,7 @@ class RefListObject(ListObject):
         self._rows = None
 
     def get_state(self):
-        return ref_list_types.ref_list_object(self.objimpl_id, self._ref_list_service.to_data(), self._ref_list_id)
+        return ref_list_types.ref_list_object(self.impl_id, self._ref_list_service.to_data(), self._ref_list_id)
 
     def get_title(self):
         return 'Ref List %s' % self._ref_list_id
@@ -103,11 +103,11 @@ class ThisModule(Module):
         self._ref_resolver = services.ref_resolver
         services.handle_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
-            RefListObject.objimpl_id, RefListObject.from_state, services.handle_resolver, services.iface_registry, services.proxy_factory)
+            RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.iface_registry, services.proxy_factory)
 
     async def resolve_dynamic_ref_list_object(self, dynamic_ref_list):
         ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service)
-        object = ref_list_types.ref_list_object(RefListObject.objimpl_id, ref_list_service, dynamic_ref_list.ref_list_id)
+        object = ref_list_types.ref_list_object(RefListObject.impl_id, ref_list_service, dynamic_ref_list.ref_list_id)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'id'
         resource_id = ['client_module', 'ref_list', 'RefListObject']

@@ -15,12 +15,12 @@ state_type = text_object_types.text_object
 
 
 def register_object_implementations(registry, serevices):
-    registry.register(TextObject.objimpl_id, TextObject.from_state)
+    registry.register(TextObject.impl_id, TextObject.from_state)
 
 
 class TextObject(Object):
 
-    objimpl_id = 'test_text'
+    impl_id = 'test_text'
 
     mode_view = original_text_object.TextObject.mode_view
     mode_edit = original_text_object.TextObject.mode_edit
@@ -37,7 +37,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def get_state(self):
-        return state_type(self.objimpl_id, self.text)
+        return state_type(self.impl_id, self.text)
 
     def get_commands(self, mode):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)

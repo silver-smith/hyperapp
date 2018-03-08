@@ -112,7 +112,7 @@ class View(view.View):
     @command('open_history')
     def open_history(self):
         state = self.get_state()
-        object = self._this_module.history_list_type(HistoryList.objimpl_id, state.history)
+        object = self._this_module.history_list_type(HistoryList.impl_id, state.history)
         self.open(self._this_module.history_list_handle_type('list', object, resource_id=HISTORY_LIST_RESOURCE_ID, sort_column_id='idx', key=state.current_pos))
 
     def __del__(self):

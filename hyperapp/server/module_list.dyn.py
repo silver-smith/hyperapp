@@ -22,7 +22,7 @@ def splitter_handle(x, y):
 class ModuleList(SmallListObject):
 
     iface = module_list_types.module_list
-    objimpl_id = 'proxy_list'
+    impl_id = 'proxy_list'
     class_name = 'module_list'
     default_sort_column_id = 'id'
 
@@ -81,7 +81,7 @@ class ModuleList(SmallListObject):
 class ModuleForm(Object):
 
     iface = module_list_types.module_form
-    objimpl_id = 'proxy'
+    impl_id = 'proxy'
     class_name = 'module_form'
 
     @classmethod
@@ -120,7 +120,7 @@ class ModuleForm(Object):
 class ModuleDepList(SmallListObject):
 
     iface = module_list_types.module_dep_list
-    objimpl_id = 'proxy_list'
+    impl_id = 'proxy_list'
     class_name = 'module_dep_list'
     default_sort_column_id = 'dep_id'
 
@@ -165,7 +165,7 @@ class ModuleDepList(SmallListObject):
 class AvailableDepList(SmallListObject):
 
     iface = module_list_types.available_dep_list
-    objimpl_id = 'proxy_list'
+    impl_id = 'proxy_list'
     class_name = 'available_dep_list'
     default_sort_column_id = 'id'
 

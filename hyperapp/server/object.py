@@ -76,7 +76,7 @@ class Object(Commander):
         path = self.get_path()
         assert is_list_inst(path, str), '%s.get_path must return list of strings, but returned: %r' % (self.__class__.__name__, path)
         return self.iface.Object(
-            objimpl_id=self.objimpl_id,
+            impl_id=self.impl_id,
             public_key_der=request.me.get_public_key().to_der(),
             iface=self.iface.iface_id,
             facets=[facet.iface_id for facet in self.get_facets()],

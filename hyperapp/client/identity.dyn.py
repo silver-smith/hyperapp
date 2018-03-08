@@ -20,8 +20,8 @@ log = logging.getLogger(__name__)
 
 
 def register_object_implementations(registry, services):
-    registry.register(IdentityFormObject.objimpl_id, IdentityFormObject.from_state, services.identity_controller)
-    registry.register(IdentityList.objimpl_id, IdentityList.from_state, services.identity_controller)
+    registry.register(IdentityFormObject.impl_id, IdentityFormObject.from_state, services.identity_controller)
+    registry.register(IdentityList.impl_id, IdentityList.from_state, services.identity_controller)
 
 
 class IdentityItem(object):
@@ -86,7 +86,7 @@ tIdentityFormObject = core_types.object.register('identity_form', base=core_type
 
 class IdentityFormObject(Object):
 
-    objimpl_id = 'identity_form'
+    impl_id = 'identity_form'
 
     @classmethod
     def from_state(cls, state, identity_controller):
@@ -94,7 +94,7 @@ class IdentityFormObject(Object):
 
     @classmethod
     def get_state(cls):
-        return tIdentityFormObject(cls.objimpl_id)
+        return tIdentityFormObject(cls.impl_id)
 
     def __init__(self, identity_controller):
         Object.__init__(self)
@@ -123,7 +123,7 @@ identity_list_handle_type = list_handle_type(core_types, tString)
 
 class IdentityList(ListObject):
 
-    objimpl_id = 'identity_list'
+    impl_id = 'identity_list'
 
     @classmethod
     def from_state(cls, state, identity_controller):
@@ -136,7 +136,7 @@ class IdentityList(ListObject):
 
     @classmethod
     def get_state(cls):
-        return identity_list_type(cls.objimpl_id)
+        return identity_list_type(cls.impl_id)
 
     def get_title(self):
         return 'Identity list'

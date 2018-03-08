@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 def register_object_implementations(registry, services):
     this_module = get_this_module()
-    registry.register(HistoryList.objimpl_id, HistoryList.from_state, this_module)
+    registry.register(HistoryList.impl_id, HistoryList.from_state, this_module)
 
 
 class HistoryList(ListObject):
@@ -22,7 +22,7 @@ class HistoryList(ListObject):
             self.title = title
 
 
-    objimpl_id = 'history_list'
+    impl_id = 'history_list'
 
     @classmethod
     def from_state(cls, state, this_module):
@@ -36,7 +36,7 @@ class HistoryList(ListObject):
         self._history = history
 
     def get_state(self):
-        return self._this_module.history_list_type(self.objimpl_id, self._history)
+        return self._this_module.history_list_type(self.impl_id, self._history)
 
     def get_title(self):
         return 'Navigation history'

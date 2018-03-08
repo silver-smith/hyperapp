@@ -10,12 +10,12 @@ log = logging.getLogger(__name__)
 
 
 def register_object_implementations(registry, serevices):
-    registry.register(TextObject.objimpl_id, TextObject.from_state)
+    registry.register(TextObject.impl_id, TextObject.from_state)
 
 
 class TextObject(Object):
 
-    objimpl_id = 'text'
+    impl_id = 'text'
 
     mode_view = object()
     mode_edit = object()
@@ -36,7 +36,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def get_state(self):
-        return this_module.state_type(self.objimpl_id, self.text)
+        return this_module.state_type(self.impl_id, self.text)
 
     def get_command_list(self, mode, kinds):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)

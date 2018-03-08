@@ -15,7 +15,7 @@ class UserList(SmallListObject):
 
     iface = admin_iface.user_list
     class_name = 'user_list'
-    objimpl_id = 'proxy_list'
+    impl_id = 'proxy_list'
     default_sort_column_id = 'id'
 
     @classmethod

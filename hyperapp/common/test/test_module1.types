@@ -7,7 +7,7 @@ some_bool_list_opt = some_bool_list opt
 object = hierarchy object
 
 object_base = object class base:
-  objimpl_id: string
+  impl_id: string
 
 handle = hierarchy handle
 

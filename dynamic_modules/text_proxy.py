@@ -12,7 +12,7 @@ def register_object_implementations(registry, services):
 
 class ProxyTextObject(ProxyObject, TextObject):
 
-    objimpl_id = 'proxy.text'
+    impl_id = 'proxy.text'
 
     def __init__( self, packet_types, core_types, iface_registry, cache_repository,
                   resources_manager, param_editor_registry, server, path, iface, facets=None ):

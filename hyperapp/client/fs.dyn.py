@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class FsDirObject(ListObject):
 
-    objimpl_id = 'fs_dir'
+    impl_id = 'fs_dir'
 
     @classmethod
     async def from_state(cls, state, ref_registry, handle_resolver, fs_service_resolver):
@@ -33,7 +33,7 @@ class FsDirObject(ListObject):
         self._key2row = {}  # cache for visited rows
 
     def get_state(self):
-        return fs_types.fs_dir_object(self.objimpl_id, self._fs_service.to_ref(), self._host, self._path)
+        return fs_types.fs_dir_object(self.impl_id, self._fs_service.to_ref(), self._host, self._path)
 
     def get_title(self):
         return '%s:/%s' % (self._host, '/'.join(self._path))
@@ -108,10 +108,10 @@ class ThisModule(Module):
         services.fs_service_resolver = fs_service_resolver = ReferredResolver(services.ref_resolver, fs_service_registry)
         services.handle_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
-            FsDirObject.objimpl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
+            FsDirObject.impl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
     async def resolve_fs_object(self, fs_object):
-        dir_object = fs_types.fs_dir_object(FsDirObject.objimpl_id, fs_object.fs_service_ref, fs_object.host, fs_object.path)
+        dir_object = fs_types.fs_dir_object(FsDirObject.impl_id, fs_object.fs_service_ref, fs_object.host, fs_object.path)
         handle_t = list_handle_type(core_types, tString)
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']

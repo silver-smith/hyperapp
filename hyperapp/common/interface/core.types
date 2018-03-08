@@ -4,7 +4,7 @@ from resource import resource_id
 object = hierarchy object
 
 object_base = object class base:
-    objimpl_id: string
+    impl_id: string
 
 proxy_object = object class proxy(object_base):
     public_key_der: binary

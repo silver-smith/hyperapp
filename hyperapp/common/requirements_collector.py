@@ -21,7 +21,7 @@ class RequirementsCollector(Visitor):
     def visit_hierarchy_obj(self, t, tclass, value):
         self._collected_requirements.add(('class', encode_path([value._class.hierarchy.hierarchy_id, value._class.id])))
         if t is self._core_types.object:
-            self._collected_requirements.add(('object', value.objimpl_id))
+            self._collected_requirements.add(('object', value.impl_id))
             if isinstance(value, self._core_types.proxy_object):
                 for iface in value.facets:
                     self._collected_requirements.add(('interface', iface))
