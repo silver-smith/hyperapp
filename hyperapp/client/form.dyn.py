@@ -36,9 +36,11 @@ class FormView(View, QtGui.QWidget):
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
         field_view_map = OrderedDict()
+        field_object_map = {}
         for field in state.field_list:
-            field_view_map[field.id] = await view_registry.resolve(locale, field.view)
-        object = FormObject.from_state({id: view.get_object() for id, view in field_view_map.items()}, state.object)
+            field_view_map[field.id] = view = await view_registry.resolve(locale, field.view)
+            field_object_map[field.id] = view.get_object()
+        object = FormObject.from_state(field_object_map, state.object)
         return cls(parent, object, field_view_map, state.current_field_id)
 
     def __init__(self, parent, object, field_view_map, current_field_id):
@@ -73,6 +75,7 @@ class FormView(View, QtGui.QWidget):
         layout.addWidget(label)
         layout.addWidget(field_view)
         layout.addSpacing(10)
+        field_view.set_parent(self)
         if focus_it:
             call_after(field_view.ensure_has_focus)
 
