@@ -51,7 +51,8 @@ class FormView(View, QtGui.QWidget):
         layout = QtGui.QVBoxLayout()
         for id, field_view in field_view_map.items():
             self._construct_field(layout, id, field_view, focus_it = id==current_field_id)
-        layout.addStretch()
+        if not any(view.sizePolicy().verticalPolicy() & QtGui.QSizePolicy.ExpandFlag for view in field_view_map.values()):
+            layout.addStretch()
         self.setLayout(layout)
 
     def get_state(self):
