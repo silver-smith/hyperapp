@@ -1,7 +1,7 @@
 from error import error, client_error
 from core import object, object_base, handle
 from hyper_ref import ref
-from form import form_object
+from form import form, form_base
 from object_selector import object_selector_callback
 
 
@@ -68,7 +68,7 @@ blog_object = object class blog_object(object_base):
     blog_service: blog_service
     blog_id: string
 
-blog_article_form = object class blog_article_form(form_object):
+blog_article_form = form class blog_article_form(form_base):
     blog_service: blog_service
     blog_id: string
     article_id: int
