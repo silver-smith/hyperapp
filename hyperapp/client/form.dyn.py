@@ -6,7 +6,7 @@ from ..common.interface import form as form_types
 from .util import call_after
 from .module import Module
 from .object import Object
-from .view import View
+from .composite import Composite
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class FormObject(Object):
         return form_types.form_object(self.impl_id)
 
 
-class FormView(View, QtGui.QWidget):
+class FormView(Composite, QtGui.QWidget):
 
     impl_id = 'form'
 
@@ -45,7 +45,7 @@ class FormView(View, QtGui.QWidget):
 
     def __init__(self, parent, object, field_view_map, current_field_id):
         QtGui.QWidget.__init__(self)
-        View.__init__(self, parent)
+        Composite.__init__(self, parent, list(field_view_map.values()))
         self._object = object
         self._field_view_map = field_view_map
         layout = QtGui.QVBoxLayout()
