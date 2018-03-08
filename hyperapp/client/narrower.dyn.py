@@ -84,6 +84,8 @@ class NarrowerView(LineListPanel):
         self._object = object
         self._filter_line = filter_line
         self._list_view = list_view
+        self._filter_line.set_parent(self)
+        self._list_view.set_parent(self)
         self._object.subscribe(self)
 
     def get_state(self):
