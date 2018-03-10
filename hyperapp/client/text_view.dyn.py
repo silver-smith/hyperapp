@@ -45,7 +45,7 @@ class View(view.View, QtGui.QTextBrowser):
         return self.object
 
     def get_object_command_list(self, object, kinds=None):
-        return object.get_command_list(TextObject.mode_view, kinds)
+        return object.get_command_list(TextObject.Mode.VIEW, kinds)
 
     def text2html(self, text):
         return re.sub(r'\[([^\]]+)\]', r'<a href="\1">\1</a>', text or '')

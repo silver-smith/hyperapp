@@ -1,4 +1,6 @@
 import logging
+from enum import Enum
+
 from ..common.htypes import tString, Field
 from ..common.interface import core as core_types
 from ..common.interface import text_object_types
@@ -17,8 +19,9 @@ class TextObject(Object):
 
     impl_id = 'text'
 
-    mode_view = object()
-    mode_edit = object()
+    class Mode(Enum):
+        VIEW = 'view'
+        EDIT = 'edit'
 
     @classmethod
     def from_state(cls, state, server=None):
@@ -39,7 +42,7 @@ class TextObject(Object):
         return text_object_types.text_object(self.impl_id, self._text)
 
     def get_command_list(self, mode, kinds):
-        assert mode in [self.mode_view, self.mode_edit], repr(mode)
+        assert mode in self.Mode, repr(mode)
         return self.filter_mode_commands(Object.get_command_list(self, kinds), mode)
 
     @property
@@ -56,9 +59,9 @@ class TextObject(Object):
                 if self.command_must_be_visible_for_mode(command, mode)]
 
     def command_must_be_visible_for_mode(self, command, mode):
-        if mode is self.mode_view:
+        if mode is self.Mode.VIEW:
             return command.id != 'view'
-        if mode is self.mode_edit:
+        if mode is self.Mode.EDIT:
             return command.id != 'edit'
         assert False, repr(mode)  # Unknown mode
 

@@ -22,8 +22,7 @@ class TextObject(Object):
 
     impl_id = 'test_text'
 
-    mode_view = original_text_object.TextObject.mode_view
-    mode_edit = original_text_object.TextObject.mode_edit
+    Mode = original_text_object.TextObject.Mode
 
     @classmethod
     def from_state(cls, state, server=None):
@@ -40,7 +39,7 @@ class TextObject(Object):
         return state_type(self.impl_id, self.text)
 
     def get_commands(self, mode):
-        assert mode in [self.mode_view, self.mode_edit], repr(mode)
+        assert mode in self.Mode, repr(mode)
         return Object.get_commands(self)
 
     def text_changed(self, new_text, emitter_view=None):

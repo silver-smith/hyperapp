@@ -27,11 +27,11 @@ class ProxyTextObject(ProxyObject, TextObject):
         self._store_text_to_cache()
 
     def get_commands(self, mode):
-        assert mode in [self.mode_view, self.mode_edit], repr(mode)
+        assert mode in self.Mode, repr(mode)
         return self.filter_mode_commands(ProxyObject.get_commands(self), mode)
 
     def command_must_be_visible_for_mode(self, command, mode):
-        if mode is self.mode_view and command.id == 'save':
+        if mode is self.Mode.VIEW and command.id == 'save':
             return False
         return TextObject.command_must_be_visible_for_mode(self, command, mode)
     
