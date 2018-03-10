@@ -54,7 +54,7 @@ class BlogService(Object):
         return blog_types.blog_row(
             id=rec.id,
             created_at=rec.created_at,
-            title='Article #%d' % rec.id,
+            title=rec.title,
             text=rec.text,
             ref_list=list(ref_list),
             )
@@ -84,10 +84,11 @@ class BlogService(Object):
 
     @command('save_article')
     @db_session
-    def command_save_article(self, request, blog_id, article_id, text):
+    def command_save_article(self, request, blog_id, article_id, title, text):
         article = self._get_article(blog_id, article_id)
+        article.title = title
         article.text = text
-        log.info('Article#%d new text is saved: %r', article_id, text)
+        log.info('Article#%d is saved: %r/%r', article_id, title, text)
 
     @command('add_ref')
     @db_session
@@ -128,6 +129,7 @@ class ThisModule(PonyOrmModule):
     def init_phase2(self):
         self.Article = self.make_entity(
             'Article',
+            title=Required(str),
             text=Optional(str),
             refs=Set('ArticleRef'),
             )

@@ -6,6 +6,7 @@ from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
 from ..common.interface import line_object as line_object_types
+from ..common.interface import text_object_types
 from ..common.interface import form as form_types
 from ..common.interface import object_selector as object_selector_types
 from ..common.list_object import Element, Chunk
@@ -99,6 +100,8 @@ class BlogArticleForm(FormObject):
         self._blog_id = blog_id
         self._article_id = article_id
         self._row = row
+        self._fields['title'].line = row.title
+        self._fields['text'].init(handle_resolver, blog_service, blog_id, article_id, row)
 
     def get_title(self):
         return self._row.title
@@ -116,33 +119,35 @@ class BlogArticleForm(FormObject):
     @command('save')
     async def command_save(self):
         title = self._fields['title'].line
-        contents = self._fields['contents'].text
-        await self._blog_service.save_article(self._blog_id, self._article_id, contents)
+        text = self._fields['text'].text
+        await self._blog_service.save_article(self._blog_id, self._article_id, title, text)
 
 
 class BlogArticleContents(TextObject):
 
     impl_id = 'blog_article_contents'
 
-    @classmethod
-    async def from_state(cls, state, handle_resolver):
-        blog_service = this_module.blog_service_from_data(state.blog_service)
-        row = await blog_service.get_blog_row(state.blog_id, state.article_id)
-        return cls(handle_resolver, blog_service, state.blog_id, state.article_id, row)
+    def __init__(self, text):
+        super().__init__(text)
+        self._handle_resolver = None
+        self._blog_service = None
+        self._blog_id = None
+        self._article_id = None
+        self._row = None
 
-    def __init__(self, handle_resolver, blog_service, blog_id, article_id, row):
-        TextObject.__init__(self, text=row.text)
+    def init(self, handle_resolver, blog_service, blog_id, article_id, row):
         self._handle_resolver = handle_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
         self._row = row
+        self.text = row.text
 
     def get_title(self):
-        return self._row.title
-
-    def get_state(self):
-        return blog_types.blog_article_contents(self.impl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
+        if self._row:
+            return self._row.title
+        else:
+            return None
 
     async def open_ref(self, id):
         log.info('Opening ref: %r', id)
@@ -293,8 +298,8 @@ class BlogService(object):
         self._blog_id_article_id_to_row[(blog_id, row.id)] = row
         return row.id
 
-    async def save_article(self, blog_id, article_id, text):
-        await self._service_proxy.save_article(blog_id, article_id, text)
+    async def save_article(self, blog_id, article_id, title, text):
+        await self._service_proxy.save_article(blog_id, article_id, title, text)
 
     async def get_article_ref_list(self, blog_id, article_id):
         row = await self.get_blog_row(blog_id, article_id)
@@ -355,14 +360,13 @@ class ThisModule(Module):
         blog_service = await self._ref_resolver.resolve_ref_to_object(blog_article_object.blog_service_ref)
         title_object = line_object_types.line_object('line', '')
         title_view = line_object_types.line_edit_view('line_edit', title_object)
-        contents_object = blog_types.blog_article_contents(
-            BlogArticleContents.impl_id, blog_service, blog_article_object.blog_id, blog_article_object.article_id)
+        contents_object = text_object_types.text_object(BlogArticleContents.impl_id, '')
         contents_view = core_types.obj_handle('text_view', contents_object)
         form_object = blog_types.blog_article_form(
             BlogArticleForm.impl_id, blog_service, blog_article_object.blog_id, blog_article_object.article_id)
         form_view = form_types.form_handle('form', form_object, [
             form_types.form_view_field('title', title_view),
-            form_types.form_view_field('contents', contents_view),
+            form_types.form_view_field('text', contents_view),
             ], current_field_id='text')
         return form_view
 

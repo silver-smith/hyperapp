@@ -26,21 +26,30 @@ class TextObject(Object):
 
     @staticmethod
     def get_state_type():
-        return this_module.state_type
+        return text_object_types.text_object
 
     def __init__(self, text):
+        self._text = text
         Object.__init__(self)
-        self.text = text
 
     def get_title(self):
         return 'Local text object'
 
     def get_state(self):
-        return this_module.state_type(self.impl_id, self.text)
+        return text_object_types.text_object(self.impl_id, self._text)
 
     def get_command_list(self, mode, kinds):
         assert mode in [self.mode_view, self.mode_edit], repr(mode)
         return self.filter_mode_commands(Object.get_command_list(self, kinds), mode)
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, text):
+        self._text = text
+        self._notify_object_changed()
 
     def filter_mode_commands(self, commands, mode):
         return [command for command in commands
@@ -54,7 +63,7 @@ class TextObject(Object):
         assert False, repr(mode)  # Unknown mode
 
     def text_changed(self, new_text, emitter_view=None):
-        self.text = new_text
+        self._text = new_text
         self._notify_object_changed(emitter_view)
 
     @command('edit')
@@ -76,4 +85,3 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        self.state_type = text_object_types.text_object
