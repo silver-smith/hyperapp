@@ -117,7 +117,7 @@ class ThisModule(Module):
         resource_id = ['client_module', 'fs', 'FsDirObject']
         list_handle = handle_t('list', dir_object, resource_id, sort_column_id, key=None)
         filter_object = line_object_types.line_object('line', '')
-        filter_view = line_object_types.line_edit_view('line_edit', filter_object)
+        filter_view = line_object_types.line_edit_view('line_edit', filter_object, mode='edit')
         narrower_object = narrower_types.narrower_object('narrower', filtered_field='key')
         narrower_view = narrower_types.narrower_view('narrower', narrower_object, filter_view, list_handle)
         return narrower_view
