@@ -18,6 +18,16 @@ BlogObject:
         - Ins
 BlogArticleForm:
   commands:
+    edit:
+      text: Edit
+      description: Switch to edit mode
+      shortcuts:
+      - E
+    view:
+      text: View
+      description: Finish editing, switch to view mode
+      shortcuts:
+      - Ctrl+F
     save:
       text: Save
       description: Save edited text

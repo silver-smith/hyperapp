@@ -69,14 +69,6 @@ class TextObject(Object):
         self._text = new_text
         self._notify_object_changed(emitter_view)
 
-    @command('edit')
-    def command_edit(self):
-        return core_types.obj_handle('text_edit', self.get_state())
-
-    @command('view')
-    def command_view(self):
-        return core_types.obj_handle('text_view', self.get_state())
-
     async def open_ref(self, ref_id):
         pass  # not implemented for local text
 
