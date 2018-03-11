@@ -70,7 +70,7 @@ class FormView(Composite, QtGui.QWidget):
             field_list.append(form_types.form_view_field(id, field_view.get_state()))
             if field_view.has_focus():
                 current_field_id = id
-        return form_types.form_handle(self.impl_id, self._object.get_state(), field_list, current_field_id)
+        return form_types.form_handle(self.impl_id, self._object.get_state(), field_list, self._mode.value, current_field_id)
 
     def get_object(self):
         return self._object

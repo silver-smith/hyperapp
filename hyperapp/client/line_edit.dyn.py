@@ -72,7 +72,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
         self._object.subscribe(self)
 
     def get_state(self):
-        return line_object_types.line_edit_view(self.impl_id, self._object.get_state())
+        return line_object_types.line_edit_view(self.impl_id, self._object.get_state(), self._mode.value)
 
     def get_object(self):
         return self._object
