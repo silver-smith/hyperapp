@@ -59,7 +59,7 @@ class Services(ServicesBase):
             'code_repository',
             'splitter',
             'form',
-            'text_object_types',
+            'text_object',
             'ref_list',
             'line_object',
             'narrower',

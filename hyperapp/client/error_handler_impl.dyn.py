@@ -1,7 +1,7 @@
 from ..common.htypes import Field
 from ..common.interface import error as error_types
 from ..common.interface import core as core_types
-from ..common.interface import text_object_types
+from ..common.interface import text_object as text_object_types
 from .module import Module
 from .error_handler_hook import set_error_handler
 

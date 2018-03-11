@@ -6,7 +6,7 @@ from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
 from ..common.interface import line_object as line_object_types
-from ..common.interface import text_object_types
+from ..common.interface import text_object as text_object_types
 from ..common.interface import form as form_types
 from ..common.interface import object_selector as object_selector_types
 from ..common.list_object import Element, Chunk

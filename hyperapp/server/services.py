@@ -38,7 +38,7 @@ class Services(ServicesBase):
             'splitter',
             'admin',
             'object_selector',
-            'text_object_types',
+            'text_object',
             'form',
             'blog',
             'module_list',

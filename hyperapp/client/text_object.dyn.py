@@ -3,7 +3,7 @@ from enum import Enum
 
 from ..common.htypes import tString, Field
 from ..common.interface import core as core_types
-from ..common.interface import text_object_types
+from ..common.interface import text_object as text_object_types
 from .module import Module
 from .command import command
 from .object import Object
