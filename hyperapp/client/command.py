@@ -88,7 +88,10 @@ class command(object):
         module_name = class_method.__module__.split('.')[2]   # hyperapp.client.module [.submodule]
         class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
         resource_id = ['client_module', module_name, class_name, 'command', self.id]
-        return UnboundCommand(self.id, self.kind, resource_id, self.enabled, self.wrap_method(class_method))
+        return self.instantiate(self.wrap_method(class_method), resource_id)
+
+    def instantiate(self, wrapped_class_method, resource_id):
+        return UnboundCommand(self.id, self.kind, resource_id, self.enabled, wrapped_class_method)
 
     def wrap_method(self, method):
         return method

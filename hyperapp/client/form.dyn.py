@@ -9,6 +9,7 @@ from .module import Module
 from .objimpl_registry import ObjImplRegistry
 from .object import Object
 from .composite import Composite
+from .mode_command import BoundModeCommand
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +78,16 @@ class FormView(Composite, QtGui.QWidget):
 
     def get_widget_to_focus(self):
         return list(self._field_view_map.values())[0]
+
+    def get_object_command_list(self, object, kinds=None):
+        command_list = Composite.get_object_command_list(self, object, kinds)
+        return list(filter(self._mode_command_pred, command_list))
+
+    def _mode_command_pred(self, command):
+        if isinstance(command, BoundModeCommand):
+            return command.mode == self._mode
+        else:
+            return True
 
     def _construct_field(self, layout, id, field_view, focus_it):
         label = QtGui.QLabel(id)

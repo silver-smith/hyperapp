@@ -12,9 +12,10 @@ from ..common.interface import object_selector as object_selector_types
 from ..common.list_object import Element, Chunk
 from .module import Module
 from .command import command
+from .mode_command import mode_command
 from .text_object import TextObject
 from .list_object import ListObject
-from .form import FormObject
+from .form import FormObject, FormView
 from . import object_selector
 
 log = logging.getLogger(__name__)
@@ -122,11 +123,11 @@ class BlogArticleForm(FormObject):
     def get_state(self):
         return blog_types.blog_article_form(self.impl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
 
-    @command('edit')
+    @mode_command('edit', mode=FormView.Mode.VIEW)
     def command_edit(self):
         return self._open_in_mode('edit')
 
-    @command('view')
+    @mode_command('view', mode=FormView.Mode.EDIT)
     def command_view(self):
         return self._open_in_mode('view')
 
@@ -146,7 +147,7 @@ class BlogArticleForm(FormObject):
         ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._handle_resolver.resolve(ref))
 
-    @command('save')
+    @mode_command('save', mode=FormView.Mode.EDIT)
     async def command_save(self):
         title = self._fields['title'].line
         text = self._fields['text'].text

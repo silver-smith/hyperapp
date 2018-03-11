@@ -101,7 +101,10 @@ class UnboundCommand(object):
     def bind(self, inst, kind):
         if self.kind is not None:
             kind = self.kind
-        return BoundCommand(self.id, kind, self._resource_id, self.enabled, self._class_method, weakref.ref(inst))
+        return self._bind(weakref.ref(inst), kind)
+
+    def _bind(self, inst_wr, kind):
+        return BoundCommand(self.id, kind, self._resource_id, self.enabled, self._class_method, inst_wr)
 
 
 class Commander(object):
