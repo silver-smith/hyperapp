@@ -1,4 +1,5 @@
 import logging
+from enum import Enum
 from collections import OrderedDict
 from PySide import QtCore, QtGui
 
@@ -35,6 +36,10 @@ class FormView(Composite, QtGui.QWidget):
 
     impl_id = 'form'
 
+    class Mode(Enum):
+        VIEW = 'view'
+        EDIT = 'edit'
+
     @classmethod
     async def from_state(cls, locale, state, parent, form_impl_registry, view_registry):
         field_view_map = OrderedDict()
@@ -43,13 +48,14 @@ class FormView(Composite, QtGui.QWidget):
             field_view_map[field.id] = view = await view_registry.resolve(locale, field.view)
             field_object_map[field.id] = view.get_object()
         object = await form_impl_registry.resolve(state.object, field_object_map)
-        return cls(parent, object, field_view_map, state.current_field_id)
+        return cls(parent, object, field_view_map, cls.Mode(state.mode), state.current_field_id)
 
-    def __init__(self, parent, object, field_view_map, current_field_id):
+    def __init__(self, parent, object, field_view_map, mode, current_field_id):
         QtGui.QWidget.__init__(self)
         Composite.__init__(self, parent, list(field_view_map.values()))
         self._object = object
         self._field_view_map = field_view_map
+        self._mode = mode
         layout = QtGui.QVBoxLayout()
         for id, field_view in field_view_map.items():
             self._construct_field(layout, id, field_view, focus_it = id==current_field_id)

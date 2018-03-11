@@ -359,7 +359,7 @@ class ThisModule(Module):
     async def resolve_blog_article_object(self, blog_article_object):
         blog_service = await self._ref_resolver.resolve_ref_to_object(blog_article_object.blog_service_ref)
         title_object = line_object_types.line_object('line', '')
-        title_view = line_object_types.line_edit_view('line_edit', title_object)
+        title_view = line_object_types.line_edit_view('line_edit', title_object, mode='view')
         contents_object = text_object_types.text_object(BlogArticleContents.impl_id, '')
         contents_view = core_types.obj_handle('text_view', contents_object)
         form_object = blog_types.blog_article_form(
@@ -367,7 +367,7 @@ class ThisModule(Module):
         form_view = form_types.form_handle('form', form_object, [
             form_types.form_view_field('title', title_view),
             form_types.form_view_field('text', contents_view),
-            ], current_field_id='text')
+            ], mode='view', current_field_id='text')
         return form_view
 
     async def resolve_blog_article_ref_list_object(self, ref_list_object):

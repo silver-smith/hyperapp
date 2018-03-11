@@ -1,6 +1,7 @@
 # line edit component / widget
 
 import logging
+from enum import Enum
 from PySide import QtCore, QtGui
 
 from ..common.interface import line_object as line_object_types
@@ -51,16 +52,22 @@ class LineEditView(view.View, QtGui.QLineEdit):
 
     impl_id = 'line_edit'
 
+    class Mode(Enum):
+        VIEW = 'view'
+        EDIT = 'edit'
+
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry):
         object = await objimpl_registry.resolve(state.object)
-        return cls(object, parent)
+        return cls(object, cls.Mode(state.mode), parent)
 
-    def __init__(self, object, parent):
+    def __init__(self, object, mode, parent):
         QtGui.QLineEdit.__init__(self, object.line)
         view.View.__init__(self, parent)
         self._object = object
+        self._mode = mode
         self._notify_on_line_changed = True
+        self.setReadOnly(self._mode == self.Mode.VIEW)
         self.textChanged.connect(self._on_line_changed)
         self._object.subscribe(self)
 
