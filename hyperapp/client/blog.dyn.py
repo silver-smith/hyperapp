@@ -90,8 +90,7 @@ class BlogArticleForm(FormObject):
     @classmethod
     async def from_state(cls, state, field_object_map, ref_registry, handle_resolver):
         blog_service = this_module.blog_service_from_data(state.blog_service)
-        row = await blog_service.get_blog_row(state.blog_id, state.article_id)
-        return cls(field_object_map, ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id, row)
+        return cls(field_object_map, ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id)
 
     @classmethod
     def construct(cls, blog_service, form_object, title_object, contents_object, mode, current_field_id=None):
@@ -106,19 +105,16 @@ class BlogArticleForm(FormObject):
             ], mode=mode, current_field_id=current_field_id or 'text')
         return form_view
 
-    def __init__(self, field_object_map, ref_registry, handle_resolver, blog_service, blog_id, article_id, row):
+    def __init__(self, field_object_map, ref_registry, handle_resolver, blog_service, blog_id, article_id):
         super().__init__(field_object_map)
         self._ref_registry = ref_registry
         self._handle_resolver = handle_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
-        self._row = row
-        self._fields['title'].line = row.title
-        self._fields['text'].init(handle_resolver, blog_service, blog_id, article_id, row)
 
     def get_title(self):
-        return self._row.title
+        return self._fields['title'].line
 
     def get_state(self):
         return blog_types.blog_article_form(self.impl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
@@ -158,34 +154,27 @@ class BlogArticleContents(TextObject):
 
     impl_id = 'blog_article_contents'
 
-    def __init__(self, text):
-        super().__init__(text)
-        self._handle_resolver = None
-        self._blog_service = None
-        self._blog_id = None
-        self._article_id = None
-        self._row = None
+    @classmethod
+    def from_state(cls, state, handle_resolver):
+        return cls(handle_resolver, state.text, state.ref_list)
 
-    def init(self, handle_resolver, blog_service, blog_id, article_id, row):
+    def __init__(self, handle_resolver, text, ref_list):
+        super().__init__(text)
         self._handle_resolver = handle_resolver
-        self._blog_service = blog_service
-        self._blog_id = blog_id
-        self._article_id = article_id
-        self._row = row
-        self.text = row.text
+        self._ref_list = ref_list
 
     def get_title(self):
-        if self._row:
-            return self._row.title
-        else:
-            return None
+        return None
+
+    def get_state(self):
+        return blog_types.blog_article_text(self.impl_id, self._text, self._ref_list)
 
     async def open_ref(self, id):
         log.info('Opening ref: %r', id)
-        id2ref = {ref.id: ref.ref for ref in self._row.ref_list}
+        id2ref = {ref.id: ref.ref for ref in self._ref_list}
         ref = id2ref.get(int(id))
         if not ref:
-            log.warning('Blog %r article#%d has missing ref inside its text: %r', self._blog_id, self._article_id, id)
+            log.warning('ref is missing: %r', id)
             return
         return (await self._handle_resolver.resolve(ref))
 
@@ -388,12 +377,14 @@ class ThisModule(Module):
         return handle_t('list', list_object, resource_id, sort_column_id, key=None)
 
     async def resolve_blog_article_object(self, blog_article_object):
-        blog_service = await self._ref_resolver.resolve_ref_to_object(blog_article_object.blog_service_ref)
+        blog_service_state = await self._ref_resolver.resolve_ref_to_object(blog_article_object.blog_service_ref)
+        blog_service = self.blog_service_from_data(blog_service_state)
+        row = await blog_service.get_blog_row(blog_article_object.blog_id, blog_article_object.article_id)
         form_object = blog_types.blog_article_form(
-            BlogArticleForm.impl_id, blog_service, blog_article_object.blog_id, blog_article_object.article_id)
-        title_object = line_object_types.line_object('line', '')
-        contents_object = text_object_types.text_object(BlogArticleContents.impl_id, '')
-        return BlogArticleForm.construct(blog_service, form_object, title_object, contents_object, mode='view')
+            BlogArticleForm.impl_id, blog_service_state, blog_article_object.blog_id, blog_article_object.article_id)
+        title_object = line_object_types.line_object('line', row.title)
+        contents_object = blog_types.blog_article_text(BlogArticleContents.impl_id, row.text, row.ref_list)
+        return BlogArticleForm.construct(blog_service_state, form_object, title_object, contents_object, mode='view')
 
     async def resolve_blog_article_ref_list_object(self, ref_list_object):
         blog_service = await self._ref_resolver.resolve_ref_to_object(ref_list_object.blog_service_ref)

@@ -38,11 +38,11 @@ class Services(ServicesBase):
             'splitter',
             'admin',
             'object_selector',
+            'text_object_types',
             'form',
             'blog',
             'module_list',
             'test_list',
-            'text_object_types',
             'exception_test',
             'fs',
             ])

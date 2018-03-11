@@ -24,7 +24,7 @@ class TextObject(Object):
         EDIT = 'edit'
 
     @classmethod
-    def from_state(cls, state, server=None):
+    def from_state(cls, state):
         return cls(state.text)
 
     @staticmethod
