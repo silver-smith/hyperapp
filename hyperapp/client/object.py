@@ -1,7 +1,9 @@
 import logging
 import weakref
 import traceback
-from .util import WeakSetWithCallback
+from collections import namedtuple
+
+from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
 from .command_class import Commander
 
 log = logging.getLogger(__name__)
@@ -9,11 +11,13 @@ log = logging.getLogger(__name__)
 
 class ObjectObserver(object):
 
-    def object_changed(self):
+    def object_changed(self, *args, **kw):
         pass
 
 
 class Object(Commander):
+
+    ObserverArgs = namedtuple('ObserverArgs', 'args kw')
 
     def __init__(self):
         Commander.__init__(self, commands_kind='object')
@@ -40,13 +44,13 @@ class Object(Commander):
         assert command, 'Unknown command: %r; known are: %r' % (command_id, [cmd.id for cmd in self._commands])  # Unknown command
         return (await command.run(*args, **kw))
 
-    def subscribe(self, observer):
+    def subscribe(self, observer, *args, **kw):
         assert isinstance(observer, ObjectObserver), repr(observer)
         log.debug('-- Object.subscribe self=%s/%s, observer=%s/%r', id(self), self, id(observer), observer)
-        self._observers.add(observer)
+        self._observers[observer] = self.ObserverArgs(args, kw)
 
     def unsubscribe(self, observer):
-        self._observers.remove(observer)
+        del self._observers[observer]
 
     async def server_subscribe(self):
         pass
@@ -59,9 +63,10 @@ class Object(Commander):
             self = self_ref()
             if self:
                 self._on_subscriber_removed()
-        self._observers = WeakSetWithCallback(on_remove=on_remove)
+        self._observers = WeakKeyDictionaryWithCallback(on_remove=on_remove)
 
     def _on_subscriber_removed(self):
+        log.debug('-- Object._on_subscriber_removed self=%s/%r', id(self), self)
         try:
             if not self._observers:  # this was last reference to me
                 log.debug('-- Object.observers_gone self=%s/%r', id(self), self)
@@ -71,7 +76,8 @@ class Object(Commander):
 
     def _notify_object_changed(self, skip_observer=None):
         log.debug('-- Object._notify_object_changed, self=%s/%s observers=%s', id(self), self, list(self._observers))
-        for observer in self._observers:
-            log.debug('-- Object._notify_object_changed, observer=%s/%s, skip=%r', id(observer), observer, observer is skip_observer)
+        for observer, rec in self._observers.items():
+            log.debug('-- Object._notify_object_changed, observer=%s/%s (*%s, **%s), skip=%r',
+                          id(observer), observer, rec.args, rec.kw, observer is skip_observer)
             if observer is not skip_observer:
-                observer.object_changed()
+                observer.object_changed(*rec.args, **rec.kw)
