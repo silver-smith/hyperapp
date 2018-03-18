@@ -13,8 +13,8 @@ class AsyncExceptionHandler(object):
 
 
 def pytest_configure(config):
-    if not config.getvalue('capturelog'):
-        # dump log to stdout if no capturelog is enabled
+    if config.getvalue('capture') == 'no':
+        # when capturing stdout dump log to stdout too
         logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)-25s %(lineno)4d %(levelname)-8s %(message)s', datefmt='%H:%M:%S')
 
 

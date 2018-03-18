@@ -6,3 +6,4 @@ parser.out
 parsetab.py
 .cache
 .idea
+.pytest_cache
