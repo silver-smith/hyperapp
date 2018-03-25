@@ -42,9 +42,6 @@ from hyperapp.common.htypes import (
 log = logging.getLogger(__name__)
 
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
-
-
 class MetaTypeTest(unittest.TestCase):
 
     primitive_types = [
