@@ -76,6 +76,8 @@ class Services(ServicesBase):
                 'tcp_transport',
                 'encrypted_transport',
                 'tcp_server',
+                'transport.tcp',
+                'transport.encrypted',
                 'ref_resolver',
 #                'form',
                 'admin',
@@ -87,8 +89,6 @@ class Services(ServicesBase):
                 'sample_list',
                 'exception_test',
                 'hyperref_test',
-                'transport.tcp',
-                'transport.encrypted',
                 ]:
             fpath = os.path.join(self.server_dir, '/'.join(module_name.split('.')) + DYN_MODULE_EXT)
             with open(fpath) as f:

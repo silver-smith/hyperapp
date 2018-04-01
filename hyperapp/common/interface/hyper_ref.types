@@ -13,6 +13,11 @@ referred = record:
     encoded_object: binary
     
 
+service_ref = record:
+    service_id: string
+    transport_ref: ref
+
+
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref
 

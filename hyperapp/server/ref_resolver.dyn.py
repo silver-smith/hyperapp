@@ -3,6 +3,7 @@ import os
 import os.path
 
 from ..common.interface import hyper_ref as href_types
+from ..common.ref import make_object_ref
 from ..common.url import Url
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH, save_url_to_file
 from .module import Module
@@ -14,6 +15,7 @@ log = logging.getLogger(__name__)
 
 MODULE_NAME = 'ref_resolver'
 REF_RESOLVER_CLASS_NAME = 'ref_resolver'
+REF_RESOLVER_SERVICE_ID = 'ref_resolver'
 
 
 class RefResolver(Object):
@@ -49,6 +51,8 @@ class ThisModule(Module):
         self._server = services.server
         self._tcp_server = services.tcp_server
         self._ref_storage = services.ref_storage
+        service_ref = href_types.service_ref(REF_RESOLVER_SERVICE_ID, services.encrypted_transport_ref)
+        ref_resolver_ref = make_object_ref(href_types.service_ref, service_ref)
 
     def init_phase2(self):
         public_key = self._server.get_public_key()
