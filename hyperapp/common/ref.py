@@ -33,3 +33,7 @@ def make_ref(referred):
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
     digest.update(referred.encoded_object)
     return digest.finalize()
+
+def make_object_ref(t, object):
+    referred = make_referred(t, object)
+    return make_ref(referred)

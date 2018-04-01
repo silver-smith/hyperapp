@@ -39,10 +39,10 @@ class Server(object):
         return self.identity
 
     def get_public_key(self):
-        return self.identity.get_public_key()
+        return self.identity.public_key
 
     def make_url(self, iface, path):
-        return Url(iface, self.identity.get_public_key(), path)
+        return Url(iface, self.identity.public_key, path)
 
     def is_mine_url(self, url):
         assert isinstance(url, Url), repr(url)

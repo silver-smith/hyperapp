@@ -75,12 +75,13 @@ class PublicKey(object):
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
 
-    def save_to_file(self, fpath):
-        with open(fpath, 'w') as f:
-            f.write(self._public_key.public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo
-                ))
+    def save_to_file(self, fpath, create_dirs=False):
+        if create_dirs and not fpath.parent.is_dir():
+            fpath.parent.mkdir(parents=True)
+        fpath.write_bytes(self._public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            ))
 
     def encrypt(self, plain_text):
         hash_alg = hashes.SHA1()
@@ -124,8 +125,8 @@ class Identity(object):
 
     @classmethod
     def load_from_file(cls, fpath):
-        with open(fpath, 'rb') as f:
-            private_key = serialization.load_pem_private_key(f.read(), password=None, backend=default_backend())
+        pem = fpath.read_bytes()
+        private_key = serialization.load_pem_private_key(pem, password=None, backend=default_backend())
         return cls('rsa', private_key)
 
     @classmethod
@@ -141,22 +142,24 @@ class Identity(object):
         assert isinstance(algorithm, str), repr(algorithm)
         assert algorithm == 'rsa', repr(algorithm)  # only algorithm supported for now
         self._algorithm = algorithm
-        self.private_key = private_key
+        self._private_key = private_key
 
-    def save_to_file(self, fpath):
-        with open(fpath, 'wb') as f:
-            f.write(self.private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.PKCS8,
-                encryption_algorithm=serialization.NoEncryption()
-                ))
+    def save_to_file(self, fpath, create_dirs=False):
+        if create_dirs and not fpath.parent.is_dir():
+            fpath.parent.mkdir(parents=True)
+        fpath.write_bytes(self._private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+            ))
 
-    def get_public_key(self):
-        return PublicKey.from_public_key(self._algorithm, self.private_key.public_key())
+    @property
+    def public_key(self):
+        return PublicKey.from_public_key(self._algorithm, self._private_key.public_key())
 
     def decrypt(self, cipher_text):
         hash_alg = hashes.SHA1()
-        plain_text = self.private_key.decrypt(
+        plain_text = self._private_key.decrypt(
             cipher_text,
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hash_alg),
@@ -166,7 +169,7 @@ class Identity(object):
 
     def sign(self, message):
         hashalg = hashes.SHA256()
-        signer = self.private_key.signer(
+        signer = self._private_key.signer(
             padding.PSS(
                 mgf=padding.MGF1(hashalg),
                 salt_length=padding.PSS.MAX_LENGTH

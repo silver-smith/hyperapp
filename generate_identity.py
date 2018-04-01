@@ -27,7 +27,7 @@ def create_identity(fpath, overwrite):
     public_key = identity.private_key.public_key()
     identity.save_to_file(private_fpath)
     log.info('identity is written to %r', private_fpath)
-    identity.get_public_key().save_to_file(public_fpath)
+    identity.public_key.save_to_file(public_fpath)
     log.info('public key is written to %r', public_fpath)
 
 def main():

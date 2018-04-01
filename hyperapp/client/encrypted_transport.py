@@ -90,7 +90,7 @@ class EncryptedTransport(Transport):
         pop_records = []
         for item in self._identity_controller.get_items():
             pop_records.append(tPopRecord(
-                item.identity.get_public_key().to_der(),
+                item.identity.public_key.to_der(),
                 item.identity.sign(challenge)))
         pop_packet = tProofOfPossessionPacket(challenge, pop_records)
         transport_packet = self._make_transport_packet(pop_packet)

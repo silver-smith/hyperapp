@@ -31,6 +31,8 @@ class Services(ServicesBase):
             'core',
             'hyper_ref',
             'packet',
+            'tcp_transport',
+            'encrypted_transport',
             'ref_list',
             'param_editor',
             'server_management',
@@ -85,8 +87,10 @@ class Services(ServicesBase):
                 'sample_list',
                 'exception_test',
                 'hyperref_test',
+                'transport.tcp',
+                'transport.encrypted',
                 ]:
-            fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
+            fpath = os.path.join(self.server_dir, '/'.join(module_name.split('.')) + DYN_MODULE_EXT)
             with open(fpath) as f:
                 source = f.read()
             package = 'hyperapp.server'

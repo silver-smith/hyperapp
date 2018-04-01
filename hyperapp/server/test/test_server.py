@@ -86,7 +86,7 @@ class SampleObject(Object):
 
     @command('required_auth')
     def command_required_auth(self, request):
-        pk = authorized_peer_identity.get_public_key()
+        pk = authorized_peer_identity.public_key
         if pk not in request.peer.public_keys:
             raise NotAuthorizedError(pk)
         return request.make_response_result(test_result='ok')
@@ -304,7 +304,7 @@ class TransportRequestHandlingTest(ServerTest):
             session = StubSession()
             session.session_key = make_session_key()
             session_list.set_transport_session('test.encrypted_tcp', session)
-        packet = encrypt_initial_packet(session.session_key, server_identity.get_public_key(), data)
+        packet = encrypt_initial_packet(session.session_key, server_identity.public_key, data)
         return self.encode_packet(transport_id, packet, tEncryptedPacket)
 
     def decrypt_transport_response_packets(self, session_list, transport_id, packets):
@@ -521,18 +521,18 @@ class TransportRequestHandlingTest(ServerTest):
         identity_2 = Identity.generate(fast=True)
 
         pop_record_1 = tPopRecord(
-            identity_1.get_public_key().to_der(),
+            identity_1.public_key.to_der(),
             identity_1.sign(challenge))
         pop_record_2 = tPopRecord(
-            identity_2.get_public_key().to_der(),
+            identity_2.public_key.to_der(),
             identity_2.sign(challenge + b'x'))  # make invlid signature; verification must fail
         transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record_1, pop_record_2])
 
         response_transport_packets = self.remoting.process_packet(self.iface_registry, self.server, self.session_list, transport_request)
 
         session = self.session_list.get_transport_session(transport_id)
-        self.assertIn(identity_1.get_public_key(), session.peer_public_keys)
-        self.assertNotIn(identity_2.get_public_key(), session.peer_public_keys)
+        self.assertIn(identity_1.public_key, session.peer_public_keys)
+        self.assertNotIn(identity_2.public_key, session.peer_public_keys)
 
     # when NotAuthorizedError raised in first request before pop is returned, that request must be reprocessed when pop is processed
     def test_unauthorized_request_reprocess(self):
@@ -543,7 +543,7 @@ class TransportRequestHandlingTest(ServerTest):
         challenge = self.pick_pop_channelge_from_responses(transport_id, response_transport_packets)
 
         pop_record = tPopRecord(
-            authorized_peer_identity.get_public_key().to_der(),
+            authorized_peer_identity.public_key.to_der(),
             authorized_peer_identity.sign(challenge))
         transport_request = self.encode_pop_transport_request(transport_id, challenge, [pop_record])
 

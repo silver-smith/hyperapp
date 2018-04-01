@@ -3,6 +3,8 @@
 import logging
 import argparse
 import time
+from pathlib import Path
+
 from types import SimpleNamespace
 from hyperapp.common.identity import Identity
 from hyperapp.server.services import Services
@@ -17,7 +19,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
 
     parser = argparse.ArgumentParser(description='Hyperapp server')
-    parser.add_argument('identity_fpath', help='path to identity file')
+    parser.add_argument('identity_fpath', type=Path, help='path to identity file')
     parser.add_argument('addr', nargs='?', help='address to listen at', default=DEFAULT_ADDR)
     parser.add_argument('--test-delay', type=float, help='artificial delay for handling requests, seconds')
     args = parser.parse_args()
