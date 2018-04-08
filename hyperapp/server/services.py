@@ -70,6 +70,7 @@ class Services(ServicesBase):
         for module_name in [
                 'ponyorm_module',
                 'ref_storage',
+                'ref_registry',
                 'route_storage',
                 'client_code_repository',
                 'remoting',

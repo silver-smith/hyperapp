@@ -11,7 +11,19 @@ MODULE_NAME = 'ref_registry'
 
 
 class RefRegistry(object):
-    pass
+
+    def __init__(self):
+        self._registry = {}  # ref -> referred
+
+    def register_object(self, t, object):
+        referred = make_referred(t, object)
+        ref = make_ref(referred)
+        assert ref not in self._registry  # already registered
+        self._registry[ref] = referred
+        return ref
+
+    def resolve_ref(self, ref):
+        return self._registry.get(ref)
 
 
 class ThisModule(Module):

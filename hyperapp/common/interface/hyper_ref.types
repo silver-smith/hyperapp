@@ -18,6 +18,11 @@ service_ref = record:
     transport_ref: ref
 
 
+parcel = record:
+    ref: ref
+    referred_list: referred list
+
+
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref
 

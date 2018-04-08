@@ -27,9 +27,10 @@ class RefResolver(Object):
     def get_path(cls):
         return this_module.make_path(cls.class_name)
 
-    def __init__(self, server, ref_storage):
+    def __init__(self, server, ref_registry, ref_storage):
         Object.__init__(self)
         self._server = server
+        self._ref_registry = ref_registry
         self._ref_storage = ref_storage
 
     def resolve(self, path):
@@ -38,10 +39,19 @@ class RefResolver(Object):
 
     @command('resolve_ref')
     def command_resolve_ref(self, request, ref):
-        referred = self._ref_storage.resolve_ref(ref)
+        referred = self.resolve_ref(ref)
         if not referred:
             raise href_types.unknown_ref_error(ref)
         return request.make_response_result(referred=referred)
+
+    def resolve_ref(self, ref):
+        referred = self._ref_registry.resolve_ref(ref)
+        if not referred:
+            referred = self._ref_storage.resolve_ref(ref)
+        return referred
+
+    def resolve_ref_recursive(self, rev):
+        pass
 
 
 class ThisModule(Module):
@@ -51,8 +61,9 @@ class ThisModule(Module):
         self._server = services.server
         self._tcp_server = services.tcp_server
         self._ref_storage = services.ref_storage
+        self._ref_registry = services.ref_registry
         service_ref = href_types.service_ref(REF_RESOLVER_SERVICE_ID, services.encrypted_transport_ref)
-        ref_resolver_ref = make_object_ref(href_types.service_ref, service_ref)
+        ref_resolver_ref = self._ref_registry.register_object(href_types.service_ref, service_ref)
 
     def init_phase2(self):
         public_key = self._server.get_public_key()
