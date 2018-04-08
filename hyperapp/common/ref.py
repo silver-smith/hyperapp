@@ -37,3 +37,7 @@ def make_ref(referred):
 def make_object_ref(t, object):
     referred = make_referred(t, object)
     return make_ref(referred)
+
+def decode_object(t, referred):
+    assert t.full_name == referred.full_type_name
+    return packet_coders.decode(referred.encoding, referred.encoded_object, t)

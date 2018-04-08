@@ -1,7 +1,7 @@
 import logging
 
 from ..common.interface import hyper_ref as href_types
-from ..common.ref import make_referred, make_ref
+from ..common.ref import ref_repr, make_referred, make_ref
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -20,6 +20,7 @@ class RefRegistry(object):
         ref = make_ref(referred)
         assert ref not in self._registry  # already registered
         self._registry[ref] = referred
+        log.debug('Registered ref for %s: %s', '.'.join(t.full_name), ref_repr(ref))
         return ref
 
     def resolve_ref(self, ref):

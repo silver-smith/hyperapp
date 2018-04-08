@@ -12,7 +12,7 @@ from .htypes import (
 
 class Visitor(object):
 
-    def __init__(self, error_types, packet_types, core_types, iface_registry):
+    def __init__(self, error_types, packet_types, core_types, iface_registry=None):
         self._error_types = error_types
         self._packet_types = packet_types
         self._core_types = core_types
@@ -81,12 +81,16 @@ class Visitor(object):
             self.dispatch(t.element_t, elt)
 
     def visit_client_packet_params(self, client_packet):
+        if not self._iface_registry:
+            return
         iface = self._iface_registry.resolve(client_packet.iface)
         params_t = iface.get_command(client_packet.command_id).params_type
         params = client_packet.params.decode(params_t)
         self.visit(params_t, params)
 
     def visit_server_response_result(self, server_result_response):
+        if not self._iface_registry:
+            return
         iface = self._iface_registry.resolve(server_result_response.iface)
         result_t = iface.get_command(server_result_response.command_id).result_type
         result = server_result_response.result.decode(result_t)

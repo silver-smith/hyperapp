@@ -18,6 +18,7 @@ class Services(ServicesBase):
     def __init__(self, start_args):
         self.start_args = start_args
         self.server_dir = os.path.abspath(os.path.dirname(__file__))
+        self.hyperapp_dir = os.path.dirname(self.server_dir)
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
         ServicesBase.init_services(self)
@@ -68,32 +69,34 @@ class Services(ServicesBase):
 
     def _load_server_modules(self):
         for module_name in [
-                'ponyorm_module',
-                'ref_storage',
-                'ref_registry',
-                'route_storage',
-                'client_code_repository',
-                'remoting',
-                'tcp_transport',
-                'encrypted_transport',
-                'tcp_server',
-                'transport.tcp',
-                'transport.encrypted',
-                'ref_resolver',
-#                'form',
-                'admin',
-                'module_list',
-                'server_management',
-                'fs',
-                'blog',
-                'simple_text_object',
-                'sample_list',
-                'exception_test',
-                'hyperref_test',
+                'server.ponyorm_module',
+                'server.ref_storage',
+                'server.ref_registry',
+                'server.route_storage',
+                'server.client_code_repository',
+                'server.remoting',
+                'server.tcp_transport',
+                'server.encrypted_transport',
+                'server.tcp_server',
+                'server.transport.tcp',
+                'server.transport.encrypted',
+                'common.ref_collector',
+                'server.ref_resolver',
+#                'server.form',
+                'server.admin',
+                'server.module_list',
+                'server.server_management',
+                'server.fs',
+                'server.blog',
+                'server.simple_text_object',
+                'server.sample_list',
+                'server.exception_test',
+                'server.hyperref_test',
                 ]:
-            fpath = os.path.join(self.server_dir, '/'.join(module_name.split('.')) + DYN_MODULE_EXT)
+            fpath = os.path.join(self.hyperapp_dir, '/'.join(module_name.split('.')) + DYN_MODULE_EXT)
             with open(fpath) as f:
                 source = f.read()
-            package = 'hyperapp.server'
-            module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            package = '.'.join(['hyperapp'] + module_name.split('.')[:-1])
+            module_id = module_name.split('.')[-1]
+            module = self.types.packet.module(id=module_id, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
             self.module_manager.load_code_module(module)
