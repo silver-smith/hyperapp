@@ -1,3 +1,5 @@
+# storage for permanent references, backed by database table
+
 import logging
 
 from pony.orm import db_session, Required, PrimaryKey
