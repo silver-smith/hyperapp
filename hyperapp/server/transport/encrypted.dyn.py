@@ -22,7 +22,7 @@ class ThisModule(Module):
         route = encrypted_transport_types.route(
             public_key_der=self._identity.public_key.to_der(),
             base_transport_ref=services.tcp_transport_ref)
-        services.encrypted_transport_ref = self._transport_ref = make_object_ref(encrypted_transport_types.route, route)
+        services.encrypted_transport_ref = services.ref_registry.register_object(encrypted_transport_types.route, route)
 
     @staticmethod
     def _produce_identity():

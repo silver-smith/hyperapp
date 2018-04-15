@@ -15,14 +15,14 @@ log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'ref_resolver'
-REF_RESOLVER_CLASS_NAME = 'ref_resolver'
+#REF_RESOLVER_CLASS_NAME = 'ref_resolver'
 REF_RESOLVER_SERVICE_ID = 'ref_resolver'
 
 
 class RefResolver(Object):
 
     iface = href_types.ref_resolver
-    class_name = REF_RESOLVER_CLASS_NAME
+    #class_name = REF_RESOLVER_CLASS_NAME
 
     @classmethod
     def get_path(cls):
@@ -70,8 +70,7 @@ class ThisModule(Module):
         service_ref = href_types.service_ref(REF_RESOLVER_SERVICE_ID, self._encrypted_transport_ref)
         ref_resolver_ref = self._ref_registry.register_object(href_types.service_ref, service_ref)
         ref_collector = RefCollector(self._type_registry_registry, self._ref_resolver)
-        referred_list = ref_collector.collect_referred(href_types.service_ref, service_ref)
-        print(referred_list)
+        referred_list = ref_collector.collect_referred(ref_resolver_ref)
 
 #    def init_phase2(self):
 #        public_key = self._server.get_public_key()

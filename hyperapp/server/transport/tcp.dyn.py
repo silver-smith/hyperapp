@@ -18,4 +18,4 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
         route = tcp_transport_types.route(LISTEN_HOST, LISTEN_PORT)
-        services.tcp_transport_ref = self._transport_ref = make_object_ref(tcp_transport_types.route, route)
+        services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.route, route)

@@ -19,48 +19,37 @@ class RefCollector(Visitor):
         super().__init__(error_types, packet_types, core_types)
         self._type_registry_registry = type_registry_registry
         self._ref_resolver = ref_resolver
-        self._missing_ref_count = None
+        self._collected_ref_set = None
 
-    def collect_referred(self, t, value):
-        self._missing_ref_count = 0
-        self._collected_referred_set = set()
+    def collect_referred(self, ref):
+        referred_set = set()
         missing_ref_count = 0
+        ref_set = set([ref])
         for i in range(RECURSION_LIMIT):
-            ref_set = self._collect_refs(t, value)
             new_ref_set = set()
             for ref in ref_set:
                 referred = self._ref_resolver.resolve_ref(ref)
                 if not referred:
                     missing_ref_count += 1
                     continue
-                self._collected_referred_set.add(referred)
-                t = self._type_registry_registry.resolve_type(referred.full_type_name)
-                object = decode_object(t, referred)
-                new_ref_set = self._collect_refs(t, object)
+                referred_set.add(referred)
+                new_ref_set |= self._collect_refs(referred)
             if not new_ref_set:
                 break
             ref_set = new_ref_set
         else:
             assert False, 'Reached recursion limit %d while resolving refs' % RECURSION_LIMIT
         if missing_ref_count:
-            log.warning('Unable to resolve %d refs', missing_ref_count)
-        return list(self._collected_referred_set)
+            log.warning('Failed to resolve %d refs', missing_ref_count)
+        return list(referred_set)
 
-    def _collect_refs(self, ref):
-        referred_set = set()
-        referred = self._ref_resolver.resolve_ref(ref)
-        if not referred:
-            self._missing_ref_count += 1
-                continue
-            referred_set.add(referred)
-            t = self._type_registry_registry.resolve_type(referred.full_type_name)
-            object = decode_object(t, referred)
-            new_ref_set = self._collect_refs(t, object)
-
+    def _collect_refs(self, referred):
+        t = self._type_registry_registry.resolve_type(referred.full_type_name)
+        object = decode_object(t, referred)
         self._collected_ref_set = set()
-        self.visit(t, value)
+        self.visit(t, object)
         log.debug('Collected %d refs from %s %s: %s',
-                      len(self._collected_ref_set), '.'.join(t.full_name), value, ', '.join(map(ref_repr, self._collected_ref_set)))
+                      len(self._collected_ref_set), '.'.join(t.full_name), object, ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
 
     def visit_primitive(self, t, value):
