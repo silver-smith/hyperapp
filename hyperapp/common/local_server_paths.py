@@ -1,18 +1,19 @@
 import os.path
+from pathlib import Path
+
+from .interface import hyper_ref as href_types
+from .packet_coders import packet_coders
 
 
-LOCAL_REF_RESOLVER_URL_PATH = '~/.local/share/hyperapp/common/local_ref_resolver.url'
-LOCAL_SERVER_REF_LIST_REF_PATH = '~/.local/share/hyperapp/common/local_server_ref_list.ref'
+LOCAL_REF_RESOLVER_URL_PATH = Path('~/.local/share/hyperapp/common/local_ref_resolver.ref.json').expanduser()
+LOCAL_SERVER_REF_LIST_REF_PATH = Path('~/.local/share/hyperapp/common/local_server_ref_list.ref.json').expanduser()
+ENCODING = 'json'
 
 
 def save_data_to_file(data, path):
-    full_path = os.path.expanduser(path)
-    dir = os.path.dirname(full_path)
-    if not os.path.isdir(dir):
-        os.makedirs(dir)
-    with open(full_path, 'wb') as f:
-        f.write(data)
-    return full_path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
 
-def save_url_to_file(url_with_routes, path):
-    return save_data_to_file(url_with_routes.to_str().encode(), path)
+def save_parcel_to_file(parcel, path):
+    data = packet_coders.encode(ENCODING, parcel, href_types.parcel)
+    save_data_to_file(data, path)
