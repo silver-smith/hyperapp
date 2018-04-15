@@ -5,7 +5,7 @@ from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
 from ..common.ref import make_referred, make_ref
-from ..common.local_server_paths import LOCAL_REF_RESOLVER_URL_PATH
+from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_parcel_from_file
 from .referred_registry import ReferredRegistry, ReferredResolver
 from .module import Module
 
@@ -55,6 +55,11 @@ class RefRegistry(object):
         self.register(ref, referred)
         return ref
 
+    def register_referred_list(self, referred_list):
+        for referred in reffered_list:
+            ref = make_ref(referred)
+            self.register(ref, referred)
+
     def resolve(self, ref):
         return self._registry.get(ref)
 
@@ -65,7 +70,9 @@ class ThisModule(Module):
         Module.__init__(self, services)
         self._remoting = services.remoting
         self._ref_registry = RefRegistry()
-        url_path = os.path.expanduser(LOCAL_REF_RESOLVER_URL_PATH)
+        parcel = load_parcel_from_file(LOCAL_REF_RESOLVER_REF_PATH)
+        self._ref_registry.register_referred_list(parcel.referred_list)
+
         with open(url_path) as f:
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         ref_resolver_proxy = services.proxy_factory.from_url(url)

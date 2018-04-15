@@ -4,7 +4,6 @@ from pathlib import Path
 from hyperapp.common.interface import encrypted_transport as encrypted_transport_types
 from hyperapp.common.ref import make_object_ref
 from hyperapp.common.identity import Identity
-from hyperapp.common.local_server_paths import save_data_to_file
 from ..module import Module
 
 log = logging.getLogger(__name__)

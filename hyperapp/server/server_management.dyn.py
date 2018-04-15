@@ -8,7 +8,7 @@ from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
 from ..common.local_server_paths import (
     LOCAL_SERVER_REF_LIST_REF_PATH,
-    save_data_to_file,
+    save_bytes_to_file,
     )
 from .object import Object, SmallListObject
 from .module import Module
@@ -112,7 +112,7 @@ class ThisModule(Module):
             )
         ref = self._ref_storage.add_object(ref_list_types.dynamic_ref_list, ref_list)
         self._management_ref_list.add_ref('server-ref-list', ref)
-        ref_path = save_data_to_file(ref, LOCAL_SERVER_REF_LIST_REF_PATH)
+        ref_path = save_bytes_to_file(ref, LOCAL_SERVER_REF_LIST_REF_PATH)
         log.info('Server ref list ref is saved to: %s', ref_path)
 
 def get_management_url(public_key):
