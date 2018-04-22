@@ -32,6 +32,7 @@ class Services(ServicesBase):
             'resource',
             'core',
             'hyper_ref',
+            'module',
             'packet',
             'tcp_transport',
             'encrypted_transport',
@@ -72,7 +73,7 @@ class Services(ServicesBase):
         for module_name in [
                 'server.ponyorm_module',
                 'server.ref_storage',
-                'server.ref_registry',
+                'common.ref_registry',
                 'server.route_storage',
                 'server.client_code_repository',
                 'server.remoting',
@@ -94,9 +95,4 @@ class Services(ServicesBase):
                 'server.exception_test',
                 'server.hyperref_test',
                 ]:
-            fpath = self.hyperapp_dir.joinpath('/'.join(module_name.split('.')) + DYN_MODULE_EXT)
-            source = fpath.read_text()
-            package = '.'.join(['hyperapp'] + module_name.split('.')[:-1])
-            module_id = module_name.split('.')[-1]
-            module = self.types.packet.module(id=module_id, package=package, deps=[], satisfies=[], source=source, fpath=str(fpath))
-            self.module_manager.load_code_module(module)
+            self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)

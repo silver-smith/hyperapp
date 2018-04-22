@@ -1,0 +1,14 @@
+
+requirement = string list
+
+module_dep = record:
+    module_id: string
+    visible_at: string
+
+module = record:
+    id: string  # uuid
+    package: string  # like 'hyperapp.client'
+    deps: module_dep list
+    satisfies: requirement list
+    source: string
+    fpath: string

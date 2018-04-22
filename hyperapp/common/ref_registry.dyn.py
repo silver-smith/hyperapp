@@ -2,8 +2,8 @@
 
 import logging
 
-from ..common.interface import hyper_ref as href_types
-from ..common.ref import ref_repr, make_referred, make_ref
+from .interface import hyper_ref as href_types
+from .ref import ref_repr, make_referred, make_ref
 from .module import Module
 
 log = logging.getLogger(__name__)

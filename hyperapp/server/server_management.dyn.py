@@ -11,7 +11,7 @@ from ..common.local_server_paths import (
     save_bytes_to_file,
     )
 from .object import Object, SmallListObject
-from .module import Module
+from .module import ServerModule
 from .command import command
 
 log = logging.getLogger(__name__)
@@ -84,10 +84,10 @@ class ManagementRefList(object):
         return self._ref_list
 
 
-class ThisModule(Module):
+class ThisModule(ServerModule):
 
     def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+        super().__init__(MODULE_NAME)
         self._module_registry = services.module_registry
         self._server = services.server
         self._tcp_server = services.tcp_server

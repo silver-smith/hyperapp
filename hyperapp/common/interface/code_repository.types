@@ -1,5 +1,5 @@
 from resource import resource_rec_list
-from packet import requirement, module
+from module import requirement, module
 
 
 code_repository = interface code_repository:

@@ -140,6 +140,6 @@ class TypeModuleRepository(object):
     def _register_ifaces(self, type_registry):
         for name, t in type_registry.items():
             if not isinstance(t, Interface): continue
-            assert self._core_types  # 'core' module must be loaded first
-            t.register_types(self._core_types)
-            self._iface_registry.register(t)
+#            assert self._core_types  # 'core' module must be loaded first
+#            t.register_types(self._core_types)
+#            self._iface_registry.register(t)

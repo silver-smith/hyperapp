@@ -1,20 +1,7 @@
 from resource import resource_rec_list
 from hyper_ref import ref, referred
+from module import requirement, module
 
-
-requirement = string list
-
-module_dep = record:
-    module_id: string
-    visible_at: string
-
-module = record:
-    id: string  # uuid
-    package: string  # like 'hyperapp.client'
-    deps: module_dep list
-    satisfies: requirement list
-    source: string
-    fpath: string
 
 ref_and_referred = record:
     ref: ref

@@ -11,6 +11,10 @@ from .type_module_repository import TYPE_MODULES_PACKAGE
 
 log = logging.getLogger(__name__)
 
+DYN_MODULE_EXT = '.dyn.py'
+
+
+
 
 class ModuleManager(object):
 
@@ -65,6 +69,14 @@ class ModuleManager(object):
     def load_code_module_list(self, module_list):
         for module in module_list:
             self.load_code_module(module)
+
+    def load_code_module_by_name(self, types, root_dir, full_module_name):
+        fpath = root_dir.joinpath('/'.join(full_module_name.split('.')) + DYN_MODULE_EXT)
+        source = fpath.read_text()
+        package = '.'.join(['hyperapp'] + full_module_name.split('.')[:-1])
+        module_id = full_module_name.split('.')[-1]
+        module = types.module.module(id=module_id, package=package, deps=[], satisfies=[], source=source, fpath=str(fpath))
+        self.load_code_module(module)
 
     def load_code_module(self, module, fullname=None):
         log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)

@@ -1,5 +1,6 @@
 import logging
 from ..common import module_registry as common_module_registry
+from ..common.module import Module
 from .util import Path
 
 log = logging.getLogger(__name__)
@@ -16,10 +17,7 @@ class ModuleCommand(object):
 
 
 # base class for modules
-class Module(object):
-
-    def __init__(self, name):
-        self.name = name
+class ServerModule(Module):
 
     def init_phase2(self):
         pass
@@ -53,9 +51,11 @@ class ModuleRegistry(common_module_registry.ModuleRegistry):
 
     def init_phases(self):
         for module in self._module_list:
-            module.init_phase2()
+            if isinstance(module, ServerModule):
+                module.init_phase2()
         for module in self._module_list:
-            module.init_phase3()
+            if isinstance(module, ServerModule):
+                module.init_phase3()
 
     def get_module_by_name(self, name):
         return self._name2module[name]
