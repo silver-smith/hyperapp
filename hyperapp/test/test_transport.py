@@ -9,6 +9,9 @@ from hyperapp.common.module_manager import ModuleManager
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 
 
+HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
+
+
 class PhonyModuleRegistry(ModuleRegistry):
 
     def register(self, module):
@@ -18,8 +21,8 @@ class PhonyModuleRegistry(ModuleRegistry):
 class Services(ServicesBase):
 
     def __init__(self):
-        self.interface_dir = Path(__file__).parent.joinpath('../common/interface').resolve()
-        self.hyperapp_dir = Path(__file__).parent.parent.resolve()
+        self.hyperapp_dir = HYPERAPP_DIR
+        self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
         ServicesBase.init_services(self)
         self._load_type_modules([
             'module',
