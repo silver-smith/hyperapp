@@ -33,6 +33,7 @@ class Services(ServicesBase):
         self.module_manager.register_meta_hook()
         for module_name in [
                 'common.ref_registry',
+                'server.ref_resolver',
                 ]:
             self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
 

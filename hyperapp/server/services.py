@@ -84,6 +84,7 @@ class Services(ServicesBase):
                 'server.transport.encrypted',
                 'common.ref_collector',
                 'server.ref_resolver',
+                'server.server_ref_resolver',
 #                'server.form',
                 'server.admin',
                 'server.module_list',
