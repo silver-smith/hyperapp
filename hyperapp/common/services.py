@@ -20,7 +20,7 @@ class ServicesBase(object):
         self.type_module_repository = TypeModuleRepository(self.iface_registry, self.type_registry_registry)
 
     def _load_type_module(self, module_name):
-        fpath = os.path.join(self.interface_dir, module_name + TYPE_MODULE_EXT)
+        fpath = self.interface_dir.joinpath(module_name + TYPE_MODULE_EXT)
         ns = self.type_module_repository.load_type_module(module_name, fpath)
         setattr(self.types, module_name, ns)
         

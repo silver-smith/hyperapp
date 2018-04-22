@@ -1,8 +1,7 @@
-import os.path
 import re
-import glob
 import yaml
 import logging
+
 from .dict_decoders import DictDecoder
 
 
@@ -16,21 +15,21 @@ class ResourcesLoader(object):
         self._param_editor_types = param_editor_types
 
     def load_unlocalized_resources_from_dir(self, dir):
-        for fpath in glob.glob(os.path.join(dir, '*.resources.yaml')):
-            module_name = re.match(r'([^.]+)\.resources\.yaml', os.path.basename(fpath)).group(1)
+        for fpath in dir.glob('*.resources.yaml'):
+            module_name = re.match(r'([^.]+)\.resources\.yaml', fpath.name).group(1)
             log.info('Loading resources from %s', fpath)
             for rec in self._load_resources_from_file(fpath):
                 yield self._resource_types.resource_rec([module_name] + rec.id, rec.resource)
 
     def load_localized_resources_from_dir(self, dir):
-        for fpath in glob.glob(os.path.join(dir, '*.resources.*.yaml')):
-            module_name, lang = re.match(r'([^.]+)\.resources\.([^.]+)\.yaml', os.path.basename(fpath)).groups()
+        for fpath in dir.glob('*.resources.*.yaml'):
+            module_name, lang = re.match(r'([^.]+)\.resources\.([^.]+)\.yaml', fpath.name).groups()
             log.info('Loading resources for language %r from %s', lang, fpath)
             for rec in self._load_resources_from_file(fpath):
                 yield self._resource_types.resource_rec([module_name] + rec.id + [lang], rec.resource)
 
     def _load_resources_from_file(self, fpath):
-        with open(fpath) as f:
+        with fpath.open() as f:
             object_items = yaml.load(f)
             for object_id, sections in object_items.items():
                 if object_id == 'error_messages':

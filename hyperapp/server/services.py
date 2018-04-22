@@ -1,5 +1,6 @@
-import os.path
 import logging
+from pathlib import Path
+
 from ..common.route_storage import RouteStorage
 from ..common.module_manager import ModuleManager
 from ..common.services import ServicesBase
@@ -17,10 +18,10 @@ class Services(ServicesBase):
 
     def __init__(self, start_args):
         self.start_args = start_args
-        self.server_dir = os.path.abspath(os.path.dirname(__file__))
-        self.hyperapp_dir = os.path.dirname(self.server_dir)
-        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
-        self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dynamic_modules'))
+        self.server_dir = Path(__file__).parent.resolve()
+        self.hyperapp_dir = self.server_dir.parent
+        self.interface_dir = Path(__file__).parent.joinpath('../common/interface').resolve()
+        self.dynamic_module_dir = Path(__file__).parent.joinpath('../../dynamic_modules').resolve()
         ServicesBase.init_services(self)
         self.module_registry = ModuleRegistry()
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
@@ -93,9 +94,8 @@ class Services(ServicesBase):
                 'server.exception_test',
                 'server.hyperref_test',
                 ]:
-            fpath = os.path.join(self.hyperapp_dir, '/'.join(module_name.split('.')) + DYN_MODULE_EXT)
-            with open(fpath) as f:
-                source = f.read()
+            fpath = self.hyperapp_dir.joinpath('/'.join(module_name.split('.')) + DYN_MODULE_EXT)
+            source = fpath.read_text()
             package = '.'.join(['hyperapp'] + module_name.split('.')[:-1])
             module_id = module_name.split('.')[-1]
             module = self.types.packet.module(id=module_id, package=package, deps=[], satisfies=[], source=source, fpath=fpath)

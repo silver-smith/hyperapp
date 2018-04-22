@@ -34,8 +34,7 @@ def resolve_typedefs_from_yaml_file(meta_type_registry, name_resolver, module_na
     return resolve_typedefs(meta_type_registry, name_resolver, module_name, typedefs)
 
 def load_types_file(meta_type_registry, type_registry_registry, module_name, fpath):
-    with open(fpath, 'r') as f:
-        contents = f.read()
+    contents = fpath.read_text()
     used_modules, typedefs, loaded_types = parse_type_module(meta_type_registry, type_registry_registry, module_name, fpath, contents)
     return (used_modules, typedefs, loaded_types)
 
