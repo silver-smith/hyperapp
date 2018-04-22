@@ -34,11 +34,15 @@ class Services(ServicesBase):
         self.module_registry = PhonyModuleRegistry()
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
         self.module_manager.register_meta_hook()
-        for module_name in [
-                'common.ref_registry',
-                'server.ref_resolver',
-                ]:
-            self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
+        try:
+            for module_name in [
+                    'common.ref_registry',
+                    'server.ref_resolver',
+                    ]:
+                self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
+        except:
+            self.module_manager.unregister_meta_hook()
+            raise
 
             
 
