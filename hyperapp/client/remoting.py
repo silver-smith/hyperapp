@@ -6,7 +6,7 @@ from ..common.htypes import tServerRoutes
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from ..common.server_public_key_collector import ServerPksCollector
-from ..common.ref_collector import RefCollector
+#from ..common.ref_collector import RefCollector
 from ..common.identity import PublicKey
 from ..common.url import Url, UrlWithRoutes
 from ..common.transport_packet import tTransportPacket
