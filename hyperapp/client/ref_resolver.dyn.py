@@ -56,7 +56,7 @@ class RefRegistry(object):
         return ref
 
     def register_referred_list(self, referred_list):
-        for referred in reffered_list:
+        for referred in referred_list:
             ref = make_ref(referred)
             self.register(ref, referred)
 
