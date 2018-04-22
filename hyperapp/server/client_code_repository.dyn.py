@@ -1,4 +1,3 @@
-import os.path
 import logging
 import yaml
 from ..common.util import flatten
@@ -38,9 +37,9 @@ class ClientModuleRepository(object):
         return self._requirement2module.get((registry, key))
 
     def _load_dynamic_modules(self):
-        for fname in os.listdir(self._dynamic_module_dir):
-            if fname.endswith(DYNAMIC_MODULE_INFO_EXT):
-                self._load_dynamic_module(os.path.join(self._dynamic_module_dir, fname))
+        for fname in self._dynamic_module_dir.iterdir():
+            if fname.suffix == DYNAMIC_MODULE_INFO_EXT:
+                self._load_dynamic_module(self._dynamic_module_dir / fname)
 
     def _load_dynamic_module(self, info_path):
         with open(info_path) as f:

@@ -98,5 +98,5 @@ class Services(ServicesBase):
             source = fpath.read_text()
             package = '.'.join(['hyperapp'] + module_name.split('.')[:-1])
             module_id = module_name.split('.')[-1]
-            module = self.types.packet.module(id=module_id, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            module = self.types.packet.module(id=module_id, package=package, deps=[], satisfies=[], source=source, fpath=str(fpath))
             self.module_manager.load_code_module(module)
