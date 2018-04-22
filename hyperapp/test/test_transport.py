@@ -12,6 +12,20 @@ from hyperapp.common import dict_coders, cdr_coders  # self-registering
 HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
 
 
+type_module_list = [
+    'module',
+    'error',
+    'hyper_ref',
+    'phony_transport',
+    'encrypted_transport',
+    ]
+
+code_module_list = [
+    'common.ref_registry',
+    'server.ref_resolver',
+    ]
+
+
 class PhonyModuleRegistry(ModuleRegistry):
 
     def register(self, module):
@@ -24,21 +38,12 @@ class Services(ServicesBase):
         self.hyperapp_dir = HYPERAPP_DIR
         self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
         ServicesBase.init_services(self)
-        self._load_type_modules([
-            'module',
-            'error',
-            'hyper_ref',
-            'phony_transport',
-            'encrypted_transport',
-            ])
+        self._load_type_modules(type_module_list)
         self.module_registry = PhonyModuleRegistry()
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
         self.module_manager.register_meta_hook()
         try:
-            for module_name in [
-                    'common.ref_registry',
-                    'server.ref_resolver',
-                    ]:
+            for module_name in code_module_list:
                 self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
         except:
             self.module_manager.unregister_meta_hook()
