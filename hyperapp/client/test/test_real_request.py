@@ -103,7 +103,7 @@ class Services(ServicesBase):
             ])
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.objimpl_registry = ObjImplRegistry('object')
-        self.view_registry = ViewRegistry(self.module_registry, self.iface_registry, self.remoting)
+        self.view_registry = ViewRegistry(self.module_registry, self.iface_registry)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager.init_types(self)
         try:

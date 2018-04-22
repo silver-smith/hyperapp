@@ -69,7 +69,7 @@ class Services(ServicesBase):
             ])
         self.objimpl_registry = ObjImplRegistry('object')
         self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
-        self.view_registry = ViewRegistry(self.module_registry, self.iface_registry, self.remoting)
+        self.view_registry = ViewRegistry(self.module_registry, self.iface_registry)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager.init_types(self)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
