@@ -2,6 +2,8 @@ import os
 import os.path
 import glob
 import logging
+from pathlib import Path
+
 from ..common.htypes import (
     tString,
     list_handle_type,
@@ -57,11 +59,10 @@ class FileIdentityRepository(IdentityRepository):
         identity_item.identity.save_to_file(fpath)
 
     def enumerate(self):
-        for fpath in glob.glob(os.path.join(self.dir, '*' + self.fext)):
-            fname = os.path.basename(fpath)
-            name, ext = os.path.splitext(fname)
+        for fpath in self.dir.glob('*' + self.fext):
+            fname = fpath.parent
             identity = Identity.load_from_file(fpath)
-            yield IdentityItem(name, identity)
+            yield IdentityItem(fpath.stem, identity)
 
 
 class IdentityController(object):
@@ -172,7 +173,7 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, services)
         repository = (getattr(services, 'identity_repository', None)  # overriden by test
-                      or FileIdentityRepository(os.path.expanduser('~/.local/share/hyperapp/client/identities')))
+                      or FileIdentityRepository(Path('~/.local/share/hyperapp/client/identities').expanduser()))
         services.identity_controller = IdentityController(repository)
 
     @command('identity_list')
