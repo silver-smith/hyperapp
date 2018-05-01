@@ -38,22 +38,27 @@ class Services(ServicesBase):
         self.hyperapp_dir = HYPERAPP_DIR
         self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
         ServicesBase.init_services(self)
-        self._load_type_modules(type_module_list)
         self.module_registry = PhonyModuleRegistry()
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
         self.module_manager.register_meta_hook()
         try:
+            self._load_type_modules(type_module_list)
             for module_name in code_module_list:
                 self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
         except:
-            self.module_manager.unregister_meta_hook()
+            self.close()
             raise
+
+    def close(self):
+        self.module_manager.unregister_meta_hook()
 
             
 
 @pytest.fixture
 def services():
-    return Services()
+    services = Services()
+    yield services
+    services.close()
 
 
 @pytest.fixture

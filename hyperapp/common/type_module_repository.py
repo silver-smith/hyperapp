@@ -126,6 +126,7 @@ class TypeModuleRepository(object):
         self._register_ifaces(type_registry)
         fullname = TYPE_MODULES_PACKAGE + '.' + module.module_name
         if fullname in sys.modules:  # already loaded - must reload, or old one will be used by reloaded code modules
+            log.debug('  reloading module %r', fullname)
             importlib.reload(sys.modules[fullname])
 
 
