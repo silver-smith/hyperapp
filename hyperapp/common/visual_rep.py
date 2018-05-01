@@ -43,11 +43,12 @@ class RepNode(object):
 
 class VisualRepEncoder(object):
 
-    def __init__(self, resource_types=None, error_types=None, packet_types=None, iface_registry=None):
+    def __init__(self, resource_types=None, error_types=None, packet_types=None, iface_registry=None, module_types=None):
         self._resource_types = resource_types
         self._error_types = error_types
         self._packet_types = packet_types
         self._iface_registry = iface_registry
+        self._module_types = module_types
 
     def encode(self, t, value):
         assert isinstance(value, t), repr(value)
@@ -88,9 +89,9 @@ class VisualRepEncoder(object):
     def encode_list(self, t, value):
         if t is tPath:
             return self.encode_path(value)
-        if self._packet_types and t is self._packet_types.requirement:
+        if self._module_types and t is self._module_types.requirement:
             return RepNode('requirement: %s' % ':'.join(value))
-        if self._packet_types and t is self._resource_types.resource_id:
+        if self._resource_types and t is self._resource_types.resource_id:
             return RepNode(encode_path(value))
         children = [self.dispatch(t.element_t, elt) for elt in value]
         return RepNode('%s (%d elements)' % (self._make_name(t, 'list'), len(value)), children)
@@ -98,7 +99,7 @@ class VisualRepEncoder(object):
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.fields]
-        if self._packet_types and t is self._packet_types.module:
+        if self._module_types and t is self._module_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
         if t is tCommand:
             return RepNode('command: command_id=%r, kind=%r, resource_id=%s'
@@ -191,6 +192,6 @@ class VisualRepEncoder(object):
         diff = update.diff.decode(iface.diff_type)
         return self.dispatch(iface.diff_type, diff)
 
-def pprint(t, value, resource_types=None, error_types=None, packet_types=None, iface_registry=None):
-    rep = VisualRepEncoder(resource_types, error_types, packet_types, iface_registry).encode(t, value)
+def pprint(t, value, resource_types=None, error_types=None, packet_types=None, iface_registry=None, module_types=None):
+    rep = VisualRepEncoder(resource_types, error_types, packet_types, iface_registry, module_types).encode(t, value)
     rep.pprint()

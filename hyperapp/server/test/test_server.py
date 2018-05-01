@@ -2,8 +2,11 @@ import os
 import logging
 import unittest
 from types import SimpleNamespace
+from pathlib import Path
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
+
 from hyperapp.common.htypes import (
     tString,
     Field,
@@ -42,6 +45,7 @@ log = logging.getLogger(__name__)
 
 
 DYN_MODULE_EXT = '.dyn.py'
+HYPERAPP_DIR = Path(__file__).parent.joinpath('../../..').resolve()
 
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
@@ -96,12 +100,12 @@ class SampleObject(Object):
         subscription.distribute_update(self.iface, self.get_path(), SimpleDiff(message))
 
 
-class StubModule(module_mod.Module):
+class StubModule(module_mod.ServerModule):
 
     name = 'test_module'
 
     def __init__(self, test_error):
-        module_mod.Module.__init__(self, self.name)
+        super().__init__(self.name)
         self._test_error = test_error
 
     def resolve(self, iface, path):
@@ -154,9 +158,9 @@ class StubSession(TransportSession):
 class Services(ServicesBase):
 
     def __init__(self):
-        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
-        self.server_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        self.dynamic_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../dynamic_modules'))
+        self.interface_dir = HYPERAPP_DIR / 'hyperapp' / 'common' / 'interface'
+        self.server_dir = HYPERAPP_DIR / 'hyperapp' / 'server'
+        self.dynamic_module_dir = HYPERAPP_DIR / 'dynamic_modules'
         ServicesBase.init_services(self)
         self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(PhonyRouteRepository())
@@ -169,6 +173,7 @@ class Services(ServicesBase):
             'resource',
             'core',
             'hyper_ref',
+            'module',
             'packet',
             'param_editor',
             'code_repository',
@@ -188,11 +193,10 @@ class Services(ServicesBase):
                 'tcp_transport',
                 'encrypted_transport',
                 ]:
-            fpath = os.path.join(self.server_dir, module_name + DYN_MODULE_EXT)
-            with open(fpath) as f:
-                source = f.read()
+            fpath = self.server_dir.joinpath(module_name + DYN_MODULE_EXT)
+            source = fpath.read_text()
             package = 'hyperapp.server'
-            module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
+            module = self.types.module.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=str(fpath))
             self.module_manager.load_code_module(module)
 
 

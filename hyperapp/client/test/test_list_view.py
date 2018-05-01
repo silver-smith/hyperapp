@@ -5,9 +5,12 @@ import time
 from collections import namedtuple
 from itertools import chain
 from operator import attrgetter
+from pathlib import Path
+
 import pytest
 from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
+
 from hyperapp.common.htypes import tString, tInt, list_handle_type, Column
 from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.common.services import ServicesBase
@@ -20,6 +23,8 @@ log = logging.getLogger(__name__)
 
 DEFAULT_ROW_COUNT = 50
 DEFAULT_ROWS_PER_FETCH = 10
+
+HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
 
 
 class ResourcesManager(object):
@@ -35,7 +40,7 @@ class ResourcesManager(object):
 class Services(ServicesBase):
 
     def __init__(self):
-        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
+        self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
         ServicesBase.init_services(self)
         self._load_type_modules([
                 'resource',

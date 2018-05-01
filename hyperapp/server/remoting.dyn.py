@@ -2,6 +2,7 @@ import logging
 
 from ..common.interface import error as error_types
 from ..common.interface import packet as packet_types
+from ..common.interface import module as module_types
 from ..common.interface import core as core_types
 from ..common.interface import resource as resource_types
 from ..common.interface import param_editor as param_editor_types
@@ -37,7 +38,7 @@ class Transport(object):
 
     def process_request_packet(self, iface_registry, server, peer, payload_encoding, packet):
         pprint(packet_types.aux_info, packet.aux_info)
-        pprint(packet_types.payload, packet.payload, resource_types, error_types, packet_types, self._iface_registry)
+        pprint(packet_types.payload, packet.payload, resource_types, error_types, packet_types, self._iface_registry, module_types)
         self._add_references(packet.aux_info.ref_list)
         self._add_routes(packet.aux_info.routes)
         request = RequestBase.from_data(server, peer, error_types, packet_types, core_types, iface_registry, packet.payload)

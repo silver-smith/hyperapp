@@ -15,8 +15,7 @@ TYPEDEF_MODULE_ENCODING = 'yaml'
 tFileContents = TList(tTypeDef)
 
 def load_typedefs_from_yaml_file(fpath):
-    with open(fpath, 'rb') as f:
-        contents = f.read()
+    contents = fpath.read_bytes()
     return packet_coders.decode(TYPEDEF_MODULE_ENCODING, contents, tFileContents)
 
 def resolve_typedefs(meta_type_registry, name_resolver, module_name, typedefs):

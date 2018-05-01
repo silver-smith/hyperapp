@@ -1,5 +1,7 @@
 import os.path
 import unittest
+from pathlib import Path
+
 from hyperapp.common.htypes import (
     tInt,
     tString,
@@ -22,13 +24,16 @@ from hyperapp.common.type_module import (
 from hyperapp.common import dict_coders, cdr_coders
 
 
+TEST_TYPE_MODULES_DIR = Path(__file__).parent.resolve()
+
+
 class TypeModuleTest(unittest.TestCase):
 
     def setUp(self):
         self.meta_type_registry = make_meta_type_registry()
 
     def make_fpath(self, module_name):
-        return os.path.join(os.path.dirname(__file__), module_name)
+        return TEST_TYPE_MODULES_DIR / module_name
 
     def test_yaml_module(self):
         type_resolver = TypeResolver([builtin_type_registry()])
