@@ -1,7 +1,6 @@
 import logging
 
 from ..common.interface import hyper_ref as href_types
-from ..common.ref_collector import RefCollector
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, save_parcel_to_file
 from .command import command
 from .object import Object
@@ -44,15 +43,14 @@ class ThisModule(ServerModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         self._ref_registry = services.ref_registry
-        self._type_registry_registry = services.type_registry_registry
-        self._ref_resolver = services.ref_resolver
+        self._ref_collector_factory = services.ref_collector_factory
         self._encrypted_transport_ref = services.encrypted_transport_ref
 
     # depends on mapping being generated for ref_storage
     def init_phase3(self):
         service_ref = href_types.service_ref(['hyper_ref', 'ref_resolver'], REF_RESOLVER_SERVICE_ID, self._encrypted_transport_ref)
         ref_resolver_ref = self._ref_registry.register_object(href_types.service_ref, service_ref)
-        ref_collector = RefCollector(self._type_registry_registry, self._ref_resolver)
+        ref_collector = self._ref_collector_factory()
         referred_list = ref_collector.collect_referred(ref_resolver_ref)
         parcel = href_types.parcel(ref_resolver_ref, referred_list)
         save_parcel_to_file(parcel, LOCAL_REF_RESOLVER_REF_PATH)
