@@ -33,4 +33,5 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.ref_registry = RefRegistry()
+        services.ref_registry = ref_registry = RefRegistry()
+        services.ref_resolver.add_source(ref_registry)

@@ -6,10 +6,12 @@ from .interface import core as core_types
 from .interface import hyper_ref as href_types
 from .ref import ref_repr, decode_object
 from .visitor import Visitor
+from .module import Module
 
 log = logging.getLogger(__name__)
 
 
+MODULE_NAME = 'ref_collector'
 RECURSION_LIMIT = 100
 
 
@@ -55,3 +57,15 @@ class RefCollector(Visitor):
     def visit_primitive(self, t, value):
         if t == href_types.ref:
             self._collected_ref_set.add(value)
+
+
+class ThisModule(Module):
+
+    def __init__(self, services):
+        super().__init__(MODULE_NAME)
+        self._type_registry_registry = services.type_registry_registry
+        self._ref_resolver = services.ref_resolver
+        services.ref_collector_factory = self._ref_collector_factory
+
+    def _ref_collector_factory(self):
+        return RefCollector(self._type_registry_registry, self._ref_resolver)

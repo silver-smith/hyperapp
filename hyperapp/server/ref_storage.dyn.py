@@ -56,7 +56,8 @@ class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.ref_storage = RefStorage()
+        services.ref_storage = ref_storage = RefStorage()
+        services.ref_resolver.add_source(ref_storage)
 
     def init_phase2(self):
         self.Ref = self.make_entity(

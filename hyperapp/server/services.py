@@ -14,6 +14,58 @@ log = logging.getLogger(__name__)
 DYN_MODULE_EXT = '.dyn.py'
 
 
+type_module_list = [
+    'error',
+    'resource',
+    'core',
+    'hyper_ref',
+    'module',
+    'packet',
+    'tcp_transport',
+    'encrypted_transport',
+    'ref_list',
+    'param_editor',
+    'server_management',
+    'code_repository',
+    'splitter',
+    'admin',
+    'object_selector',
+    'text_object',
+    'form',
+    'blog',
+    'module_list',
+    'test_list',
+    'exception_test',
+    'fs',
+    ]
+
+code_module_list = [
+    'common.ref_resolver',
+    'common.ref_registry',
+    'common.ref_collector',
+    'server.ponyorm_module',
+    'server.ref_storage',
+    'server.route_storage',
+    'server.client_code_repository',
+    'server.remoting',
+    'server.tcp_transport',
+    'server.encrypted_transport',
+    'server.tcp_server',
+    'server.transport.tcp',
+    'server.transport.encrypted',
+    'server.ref_resolver_service',
+    # 'server.form',
+    'server.admin',
+    'server.module_list',
+    'server.server_management',
+    'server.fs',
+    'server.blog',
+    'server.simple_text_object',
+    'server.sample_list',
+    'server.exception_test',
+    'server.hyperref_test',
+    ]
+
 class Services(ServicesBase):
 
     def __init__(self, start_args):
@@ -27,30 +79,7 @@ class Services(ServicesBase):
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()
-        self._load_type_modules([
-            'error',
-            'resource',
-            'core',
-            'hyper_ref',
-            'module',
-            'packet',
-            'tcp_transport',
-            'encrypted_transport',
-            'ref_list',
-            'param_editor',
-            'server_management',
-            'code_repository',
-            'splitter',
-            'admin',
-            'object_selector',
-            'text_object',
-            'form',
-            'blog',
-            'module_list',
-            'test_list',
-            'exception_test',
-            'fs',
-            ])
+        self._load_type_modules(type_module_list)
         self.resources_loader = ResourcesLoader(self.types.resource,
                                                 self.types.param_editor,
                                                 iface_resources_dir=self.server_dir,
@@ -70,30 +99,5 @@ class Services(ServicesBase):
         self.tcp_server.stop()
 
     def _load_server_modules(self):
-        for module_name in [
-                'server.ponyorm_module',
-                'server.ref_storage',
-                'common.ref_registry',
-                'server.route_storage',
-                'server.client_code_repository',
-                'server.remoting',
-                'server.tcp_transport',
-                'server.encrypted_transport',
-                'server.tcp_server',
-                'server.transport.tcp',
-                'server.transport.encrypted',
-                'common.ref_collector',
-                'server.ref_resolver',
-                'server.server_ref_resolver',
-#                'server.form',
-                'server.admin',
-                'server.module_list',
-                'server.server_management',
-                'server.fs',
-                'server.blog',
-                'server.simple_text_object',
-                'server.sample_list',
-                'server.exception_test',
-                'server.hyperref_test',
-                ]:
+        for module_name in code_module_list:
             self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)

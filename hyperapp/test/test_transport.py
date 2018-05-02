@@ -10,19 +10,27 @@ from hyperapp.common import dict_coders, cdr_coders  # self-registering
 
 
 HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
+REF_RESOLVER_SERVICE_ID = 'ref_resolver'  # todo: copy-paste from server.server_ref_resolver
 
 
 type_module_list = [
-    'module',
     'error',
+    'resource',
+    'core',
     'hyper_ref',
+    'module',
+    'packet',
     'phony_transport',
+    'tcp_transport',
     'encrypted_transport',
     ]
 
 code_module_list = [
+    'common.ref_resolver',
+    'common.ref_collector',
     'common.ref_registry',
-    'server.ref_resolver',
+    'server.transport.tcp',
+    'server.transport.encrypted',
     ]
 
 
@@ -71,7 +79,16 @@ def transport_ref(services):
         public_key_der=identity.public_key.to_der(),
         base_transport_ref=phony_transport_ref)
     encrypted_transport_ref = services.ref_registry.register_object(types.encrypted_transport.route, encrypted_transport_route)
-    
+    return encrypted_transport_ref
 
-def test_services_should_load(services, transport_ref):
+@pytest.fixture
+def ref_resolver_parcel(services, transport_ref):
+    href_types = services.types.hyper_ref
+    service_ref = href_types.service_ref(['hyper_ref', 'ref_resolver'], REF_RESOLVER_SERVICE_ID, transport_ref)
+    ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
+    ref_collector = services.ref_collector_factory()
+    referred_list = ref_collector.collect_referred(ref_resolver_ref)
+    return href_types.parcel(ref_resolver_ref, referred_list)
+
+def test_services_should_load(services, ref_resolver_parcel):
     pass
