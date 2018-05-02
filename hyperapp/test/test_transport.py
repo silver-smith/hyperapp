@@ -31,6 +31,7 @@ code_module_list = [
     'common.ref_registry',
     'server.transport.tcp',
     'server.transport.encrypted',
+    'client.async_ref_resolver',
     ]
 
 

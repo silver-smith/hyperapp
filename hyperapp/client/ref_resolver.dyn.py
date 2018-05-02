@@ -1,4 +1,3 @@
-import os.path
 import logging
 
 from ..common.interface import hyper_ref as href_types
