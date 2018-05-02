@@ -42,13 +42,34 @@ from hyperapp.server.transport_session import TransportSession, TransportSession
 from hyperapp.common.test.util import PhonyRouteRepository
 
 log = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
 
 
 DYN_MODULE_EXT = '.dyn.py'
 HYPERAPP_DIR = Path(__file__).parent.joinpath('../../..').resolve()
 
+type_module_list = [
+    'error',
+    'resource',
+    'core',
+    'hyper_ref',
+    'module',
+    'packet',
+    'param_editor',
+    'code_repository',
+    ]
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
+code_module_list = [
+    'common.ref_resolver',
+    'common.ref_collector',
+    'common.ref_registry',
+    'server.ponyorm_module',
+    'server.client_code_repository',
+    'server.ref_storage',
+    'server.remoting',
+    'server.tcp_transport',
+    'server.encrypted_transport',
+    ]
 
 
 test_iface = Interface('test_iface', commands=[
@@ -158,6 +179,7 @@ class StubSession(TransportSession):
 class Services(ServicesBase):
 
     def __init__(self):
+        self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
         self.interface_dir = HYPERAPP_DIR / 'hyperapp' / 'common' / 'interface'
         self.server_dir = HYPERAPP_DIR / 'hyperapp' / 'server'
         self.dynamic_module_dir = HYPERAPP_DIR / 'dynamic_modules'
@@ -168,36 +190,13 @@ class Services(ServicesBase):
         self.client_code_repository = PhonyClientCodeRepository()
         self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
         self.module_manager.register_meta_hook()
-        self._load_type_modules([
-            'error',
-            'resource',
-            'core',
-            'hyper_ref',
-            'module',
-            'packet',
-            'param_editor',
-            'code_repository',
-            ])
+        self._load_type_modules(type_module_list)
         try:
-            self._load_server_modules()
+            for module_name in code_module_list:
+                self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
         except:
             self.module_manager.unregister_meta_hook()
             raise
-
-    def _load_server_modules(self):
-        for module_name in [
-                'ponyorm_module',
-                'client_code_repository',
-                'ref_storage',
-                'remoting',
-                'tcp_transport',
-                'encrypted_transport',
-                ]:
-            fpath = self.server_dir.joinpath(module_name + DYN_MODULE_EXT)
-            source = fpath.read_text()
-            package = 'hyperapp.server'
-            module = self.types.module.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=str(fpath))
-            self.module_manager.load_code_module(module)
 
 
 server_identity = Identity.generate(fast=True)

@@ -1,17 +1,19 @@
-from ..common import module_registry as common_module_registry
+from ..common.module_registry import ModuleRegistry
+from ..common.module import Module
 from .command_class import Commander
 
 
-class Module(Commander):
+class ClientModule(Module, Commander):
 
-    def __init__(self, services):
+    def __init__(self, name, services):
+        Module.__init__(self, name)
         Commander.__init__(self, commands_kind='global')
 
     def get_object_command_list(self, object, kinds=None):
         return []
 
 
-class ModuleRegistry(common_module_registry.ModuleRegistry):
+class ClientModuleRegistry(ModuleRegistry):
 
     def __init__(self):
         self._modules = []

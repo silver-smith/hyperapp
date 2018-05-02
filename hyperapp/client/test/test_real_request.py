@@ -16,7 +16,7 @@ from hyperapp.common.test.util import PhonyRouteRepository
 from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
 from hyperapp.client.module_manager import ModuleManager
-from hyperapp.client.module import ModuleRegistry
+from hyperapp.client.module import ClientModuleRegistry
 from hyperapp.client.remoting import Remoting
 from hyperapp.client.objimpl_registry import ObjImplRegistry
 from hyperapp.client.named_url_file_repository import NamedUrlRepository
@@ -81,7 +81,7 @@ class Services(ServicesBase):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
         ServicesBase.init_services(self)
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        self.module_registry = ModuleRegistry()
+        self.module_registry = ClientModuleRegistry()
         self.route_storage = RouteStorage(PhonyRouteRepository())
         self.proxy_registry = ProxyRegistry()
         self.identity_repository = PhonyIdentityRepository()

@@ -60,7 +60,6 @@ class Services(ServicesBase):
     def close(self):
         self.module_manager.unregister_meta_hook()
 
-            
 
 @pytest.fixture
 def services():

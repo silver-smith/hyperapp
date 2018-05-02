@@ -9,7 +9,7 @@ from .param_editor_registry import ParamEditorRegistry
 from .remoting import Remoting
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
-from .module import ModuleRegistry
+from .module import ClientModuleRegistry
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
@@ -42,7 +42,7 @@ class Services(ServicesBase):
         self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         ServicesBase.init_services(self)
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-        self.module_registry = ModuleRegistry()
+        self.module_registry = ClientModuleRegistry()
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self.module_manager = ModuleManager(self)
