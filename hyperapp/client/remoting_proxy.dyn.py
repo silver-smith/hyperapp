@@ -52,19 +52,24 @@ class RemotingProxy(object):
 
 class ProxyFactory(object):
 
-    def __init__(self, remoting):
-        self._remoting = remoting
+    def __init__(self, type_registry_registry, async_ref_resolver):
+        self._type_registry_registry = type_registry_registry
+        self._async_ref_resolver = async_ref_resolver
 
-    def from_url(self, url):
+    async def from_ref(self, ref):
+        service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type='hyper_ref.service_ref')
+        iface = self._type_registry_registry.resolve_type(service.iface_full_type_name)
+        assert False, (service.iface_full_type_name, iface)
+
         assert isinstance(url, Url), repr(url)
         if isinstance(url, UrlWithRoutes):
             self._remoting.add_routes(url.public_key, url.routes)
         server = Server.from_public_key(self._remoting, url.public_key)
         return RemotingProxy(url.iface, server, url.path)
-        
-        
+
+
 class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        services.proxy_factory = ProxyFactory(services.remoting)
+        services.proxy_factory = ProxyFactory(services.type_registry_registry, services.async_ref_resolver)

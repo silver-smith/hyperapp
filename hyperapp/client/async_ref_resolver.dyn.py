@@ -1,5 +1,6 @@
 import logging
 
+from ..common.util import full_type_name_to_str
 from ..common.packet_coders import packet_coders
 from .module import ClientModule
 
@@ -28,8 +29,10 @@ class AsyncRefResolver(object):
         assert referred, repr(referred)
         return referred
 
-    async def resolve_ref_to_object(self, ref):
+    async def resolve_ref_to_object(self, ref, expected_type=None):
         referred = await self.resolve_ref(ref)
+        if expected_type:
+            assert full_type_name_to_str(referred.full_type_name) == expected_type
         t = self._type_registry_registry.resolve_type(referred.full_type_name)
         return packet_coders.decode(referred.encoding, referred.encoded_object, t)
 

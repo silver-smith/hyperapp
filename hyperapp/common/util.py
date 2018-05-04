@@ -64,6 +64,9 @@ def flatten(list_of_lists):
     "Flatten one level of nesting"
     return list(itertools.chain.from_iterable(list_of_lists))
 
+def full_type_name_to_str(full_type_name):
+    return '.'.join(full_type_name)
+
 # todo: quote/unquote '|' chars
 def encode_path(path):
     return '|'.join(path)

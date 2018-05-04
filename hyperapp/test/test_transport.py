@@ -32,6 +32,7 @@ code_module_list = [
     'server.transport.tcp',
     'server.transport.encrypted',
     'client.async_ref_resolver',
+    'client.remoting_proxy',
     ]
 
 
@@ -90,5 +91,6 @@ def ref_resolver_parcel(services, transport_ref):
     referred_list = ref_collector.collect_referred(ref_resolver_ref)
     return href_types.parcel(ref_resolver_ref, referred_list)
 
-def test_services_should_load(services, ref_resolver_parcel):
-    pass
+@pytest.mark.asyncio
+async def test_services_should_load(services, ref_resolver_parcel):
+    proxy = await services.proxy_factory.from_ref(ref_resolver_parcel.ref)
