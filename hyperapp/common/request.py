@@ -1,6 +1,6 @@
 import logging
 from .util import is_list_inst
-from .htypes import Interface, ListInterface
+from .htypes import Interface
 from .diff import Diff, SimpleDiff
 from .list_object import ListDiff
 from .visual_rep import pprint

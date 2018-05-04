@@ -2,7 +2,6 @@ from operator import attrgetter
 from functools import total_ordering
 
 from .util import is_list_inst
-from .htypes import ListInterface
 from .diff import Diff
 from .command import Command
 

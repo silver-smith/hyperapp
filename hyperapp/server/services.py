@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 
+from ..common import cdr_coders, dict_coders  # self-registering
 from ..common.route_storage import RouteStorage
 from ..common.module_manager import ModuleManager
 from ..common.services import ServicesBase
@@ -25,18 +26,18 @@ type_module_list = [
     'encrypted_transport',
     'ref_list',
     'param_editor',
-    'server_management',
-    'code_repository',
-    'splitter',
-    'admin',
-    'object_selector',
-    'text_object',
-    'form',
-    'blog',
-    'module_list',
-    'test_list',
-    'exception_test',
-    'fs',
+#    'server_management',
+#    'code_repository',
+#    'splitter',
+#    'admin',
+#    'object_selector',
+#    'text_object',
+#    'form',
+#    'blog',
+#    'module_list',
+#    'test_list',
+#    'exception_test',
+#    'fs',
     ]
 
 code_module_list = [
@@ -46,24 +47,24 @@ code_module_list = [
     'server.ponyorm_module',
     'server.ref_storage',
     'server.route_storage',
-    'server.client_code_repository',
-    'server.remoting',
-    'server.tcp_transport',
-    'server.encrypted_transport',
-    'server.tcp_server',
+#    'server.client_code_repository',
+#    'server.remoting',
+#    'server.tcp_transport',
+#    'server.encrypted_transport',
+#    'server.tcp_server',
     'server.transport.tcp',
     'server.transport.encrypted',
     'server.ref_resolver_service',
     # 'server.form',
-    'server.admin',
-    'server.module_list',
-    'server.server_management',
-    'server.fs',
-    'server.blog',
-    'server.simple_text_object',
-    'server.sample_list',
-    'server.exception_test',
-    'server.hyperref_test',
+#    'server.admin',
+#    'server.module_list',
+#    'server.server_management',
+#    'server.fs',
+#    'server.blog',
+#    'server.simple_text_object',
+#    'server.sample_list',
+#    'server.exception_test',
+#    'server.hyperref_test',
     ]
 
 class Services(ServicesBase):
@@ -89,14 +90,17 @@ class Services(ServicesBase):
         self.module_registry.init_phases()
 
     def start(self):
-        self.tcp_server.start()
+        pass
+        #self.tcp_server.start()
 
     @property
     def is_running(self):
-        return self.tcp_server.is_running
+        return True
+        #return self.tcp_server.is_running
 
     def stop(self):
-        self.tcp_server.stop()
+        pass
+        #self.tcp_server.stop()
 
     def _load_server_modules(self):
         for module_name in code_module_list:

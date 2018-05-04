@@ -10,44 +10,32 @@ from .module import Module
 
 class ProxyMethod(object):
 
-    def __init__(self, iface, server, path, command):
+    def __init__(self, iface, service_id, transport, command):
         self._iface = iface
-        self._server = server
-        self._path = path
+        self._service_id = service_id
+        self._transport = transport
         self._command = command
 
     async def __call__(self, *args, **kw):
-        params = self._iface.make_params(self._command.command_id, *args, **kw)
-        if self._command.request_type == IfaceCommand.rt_request:
-            request_id = str(uuid.uuid4())
-            request = Request(packet_types, self._iface, self._path, self._command.command_id, request_id, params)
-            response = await self._server.execute_request(request)
-            if response.error is not None:
-                raise response.error
-            else:
-                return response.result
-        elif self._command.request_type == IfaceCommand.rt_notification:
-            notification = ClientNotification(packet_types, self._iface, self._path, self._command.command_id, params)
-            await self._server.send_notification(notification)
-        else:
-            assert False, repr(self._command.request_type)
+        fields = (self._command.command_id,) + args
+        if self._command.is_request:
+            fields = (str(uuid.uuid4()),) + fields
+        request = self._command.request_t(*fields, **kw)
+        
 
         
 class RemotingProxy(object):
 
-    def __init__(self, iface, server, path):
+    def __init__(self, iface, service_id, transport):
         self._iface = iface
-        self._server = server
-        self._path = path
-
-    def get_url(self):
-        return self._server.make_url(self._iface, self._path)
+        self._service_id = service_id
+        self._transport = transport
 
     def __getattr__(self, name):
         command = self._iface.get_command_if_exists(name)
         if not command:
             raise AttributeError(name)
-        return ProxyMethod(self._iface, self._server, self._path, command)
+        return ProxyMethod(self._iface, self._service_id, self._transport, command)
 
 
 class ProxyFactory(object):
@@ -59,13 +47,8 @@ class ProxyFactory(object):
     async def from_ref(self, ref):
         service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type='hyper_ref.service_ref')
         iface = self._type_registry_registry.resolve_type(service.iface_full_type_name)
-        assert False, (service.iface_full_type_name, iface)
-
-        assert isinstance(url, Url), repr(url)
-        if isinstance(url, UrlWithRoutes):
-            self._remoting.add_routes(url.public_key, url.routes)
-        server = Server.from_public_key(self._remoting, url.public_key)
-        return RemotingProxy(url.iface, server, url.path)
+        transport = None
+        return RemotingProxy(iface, service.service_id, transport)
 
 
 class ThisModule(Module):

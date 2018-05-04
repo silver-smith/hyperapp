@@ -46,11 +46,26 @@ class IfaceCommand(object):
     def __hash__(self):
         return hash((self.request_type, self.command_id, tuple(self.params_fields), tuple(self.result_fields)))
 
-    def bind(self, iface, params_fields=None, result_fields=None, result_type=None):
-        return BoundIfaceCommand(iface, self.request_type, self.command_id,
-                                 params_fields or self.params_fields,
-                                 result_fields or self.result_fields,
-                                 result_type)
+    @property
+    def is_request(self):
+        return self.request_type == self.rt_request
+
+    @property
+    def request_t(self):
+        field_list = [
+            Field('command_id', tString),
+            ] + self.params_fields
+        if self.request_type == self.rt_request:
+            field_list = [Field('request_id', tString)] + field_list
+        return field_list
+
+    @property
+    def response_t(self):
+        assert self.request_type == self.rt_request
+        return [
+            Field('request_id', tString),
+            Field('command_id', tString),
+            ] + self.result_fields
 
 
 class RequestCmd(IfaceCommand):
@@ -65,129 +80,36 @@ class NotificationCmd(IfaceCommand):
         IfaceCommand.__init__(self, self.rt_notification, command_id, params_fields)
 
 
-class ContentsCommand(RequestCmd):
-    pass
-
-
-class BoundIfaceCommand(object):
-
-    def __init__(self, iface, request_type, command_id, params_fields, result_fields, result_type):
-        assert not (result_fields and result_type)  # only one can be specified
-        self.iface = iface
-        self.request_type = request_type
-        self.command_id = command_id
-        self.params_fields = params_fields
-        self.result_fields = result_fields
-        self.params_type = TRecord(self.params_fields)
-        self.result_type = result_type or TRecord(self.result_fields)
-
-
 class Interface(object):
 
     def __init__(self, iface_id, base=None, contents_fields=None, diff_type=None, commands=None):
         assert base is None or isinstance(base, Interface), repr(base)
-        assert is_list_inst(contents_fields or [], Field), repr(contents_fields)
-        assert diff_type is None or isinstance(diff_type, Type), repr(diff_type)
         assert is_list_inst(commands or [], IfaceCommand), repr(commands)
-        self.iface_id = iface_id
-        self.base = base
-        self._contents_fields = contents_fields or []
-        self.diff_type = diff_type
-        self._unbound_commands = commands or []
-        if base:
-            self._contents_fields = base._contents_fields + self._contents_fields
-            assert diff_type is None, repr(diff_type)  # Inherited from base
-            self.diff_type = base.diff_type
-
-    def register_types(self, core_types):
-        self._contents_t = TRecord(self.get_contents_fields())  # used by the following commands params/result
-        self._bound_commands = list(map(self._resolve_and_bind_command, self.get_basic_commands(core_types) + self._unbound_commands))
-        self._id2command = dict((cmd.command_id, cmd) for cmd in self._bound_commands)
-        self._object_t = core_types.object.register(
-            self.iface_id, base=core_types.proxy_object_with_contents, fields=[Field('contents', self._contents_t)])
+        self._base = base
+        self._command_list = commands
+        self._id2command = {command.command_id: command for command in self._command_list}
 
     def __eq__(self, other):
         return (isinstance(other, Interface) and
-                other.iface_id == self.iface_id and
-                other.base == self.base and
-                other._contents_fields == self._contents_fields and
-                other.diff_type == self.diff_type and
-                other._unbound_commands == self._unbound_commands)
+                other._base == self._base and
+                other._command_list == self._command_list)
 
     def __hash__(self):
         return hash((
-            self.iface_id,
-            self.base,
-            tuple(self._contents_fields),
-            self.diff_type,
-            tuple(self._unbound_commands),
+            self._base,
+            tuple(self._command_list),
             ))
 
-    def get_object_type(self):
-        return self._object_t
-
-    def get_contents_type(self):
-        return self._contents_t
-
-    def get_basic_commands(self, core_types):
-        return [
-            self._make_open_command(core_types, 'get'),
-            ContentsCommand('subscribe'),
-            NotificationCmd('unsubscribe'),
-            ]
-
-    def _resolve_and_bind_command(self, command, params_fields=None, result_fields=None, result_type=None):
-        if isinstance(command, ContentsCommand):
-            result_type = self.get_contents_type()
-        return command.bind(self, params_fields, result_fields, result_type)
-        
-    def _make_open_command(self, core_types, command_id, params_fields=None, result_fields=None):
-        result_fields = [Field('handle', TOptional(core_types.handle))] + (result_fields or [])
-        return RequestCmd(command_id, params_fields, result_fields)
-
-    def get_commands(self):
-        if self.base:
-            return self.base._bound_commands + self._bound_commands
-        else:
-            return self._bound_commands
-
-    def get_command_if_exists(self, command_id):
-        cmd = self._id2command.get(command_id)
-        if cmd:
-            return cmd
-        if self.base:
-            return self.base.get_command(command_id)
+    def get_command(self, command_id):
+        command = self._id2command.get(command_id)
+        if command:
+            return command
+        if self._base:
+            return self._base.get_command(command_id)
         return None
 
-    def get_command(self, command_id):
-        cmd = self.get_command_if_exists(command_id)
-        if not cmd:
-            raise TypeError('%s: Unsupported command id: %r' % (self.iface_id, command_id))
-        return cmd
 
-    def make_params(self, command_id, *args, **kw):
-        return self.get_command(command_id).params_type(*args, **kw)
-
-    def make_result(self, command_id, *args, **kw):
-        return self.get_command(command_id).result_type(*args, **kw)
-
-    def get_default_contents_fields(self):
-        return []
-
-    def get_contents_fields(self):
-        return self.get_default_contents_fields() + self._contents_fields
-
-    def Object(self, **kw):
-        return self._object_t(**kw)
-
-    def Contents(self, **kw):
-        return self._contents_t(**kw)
-        
-
-# all interfaces support this one too:
-## get_iface = Interface('base_get')
-
-
+# todo: obsolete, remove
 class IfaceRegistry(object):
 
     def __init__(self):

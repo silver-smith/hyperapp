@@ -3,7 +3,6 @@ from .hierarchy import *
 from .embedded import *
 from .meta_type import*
 from .interface import *
-from .list_interface import *
 
 
 def make_meta_type_registry():
@@ -16,7 +15,6 @@ def make_meta_type_registry():
     registry.register('exception_hierarchy', exception_hierarchy_from_data)
     registry.register('hierarchy_class', hierarchy_class_from_data)
     registry.register('interface', interface_from_data)
-    registry.register('list_interface', list_interface_from_data)
     return registry
 
 def builtin_type_registry():

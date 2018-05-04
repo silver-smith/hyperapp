@@ -6,8 +6,6 @@ from ..common.htypes import (
     tInt,
     Field,
     Interface,
-    list_handle_type,
-    categorized_list_handle_type,
     )
 from ..common.request import Update
 from ..common.command import Command

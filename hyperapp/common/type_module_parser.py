@@ -15,8 +15,6 @@ from .htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
-    t_column_meta,
-    t_list_interface_meta,
     TypeRegistry,
     TypeResolver,
     UnknownTypeError,
@@ -242,7 +240,7 @@ def p_interface_parent_def_2(p):
 
 def p_list_interface_def_1(p):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_list_interface_meta(p[2], None, p[7], p[5])
+    #p[0] = t_list_interface_meta(p[2], None, p[7], p[5])
 
 def p_list_interface_def_2(p):
     'interface_def : LIST_INTERFACE NAME COLON BLOCK_BEGIN interface_columns_defs BLOCK_END'
@@ -318,11 +316,11 @@ def p_columns_defs_2(p):
 
 def p_column_def_1(p):
     'column_def : NAME COLON type_expr'
-    p[0] = t_column_meta(p[1], p[3], is_key=False)
+    #p[0] = t_column_meta(p[1], p[3], is_key=False)
 
 def p_column_def_2(p):
     'column_def : AT NAME COLON type_expr'
-    p[0] = t_column_meta(p[2], p[4], is_key=True)
+    #p[0] = t_column_meta(p[2], p[4], is_key=True)
 
 
 def p_field_list_1(p):
