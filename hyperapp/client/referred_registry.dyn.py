@@ -37,13 +37,13 @@ class ReferredRegistry(Registry):
 
 class ReferredResolver(object):
 
-    def __init__(self, ref_resolver, referred_registry):
-        self._ref_resolver = ref_resolver
+    def __init__(self, async_ref_resolver, referred_registry):
+        self._async_ref_resolver = async_ref_resolver
         self._referred_registry = referred_registry
 
     async def resolve(self, ref):
         assert isinstance(ref, bytes), repr(ref)
-        referred = await self._ref_resolver.resolve_ref(ref)
+        referred = await self._async_ref_resolver.resolve_ref(ref)
         produce = await self._referred_registry.resolve(referred)
         assert produce, repr(produce)
         log.debug('referred resolved to %s %r', self._referred_registry.produce_name, produce)

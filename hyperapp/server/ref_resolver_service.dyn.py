@@ -1,7 +1,7 @@
 import logging
 
 from ..common.interface import hyper_ref as href_types
-from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, save_parcel_to_file
+from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, save_bundle_to_file
 from .command import command
 from .object import Object
 from .module import ServerModule
@@ -52,8 +52,8 @@ class ThisModule(ServerModule):
         ref_resolver_ref = self._ref_registry.register_object(href_types.service_ref, service_ref)
         ref_collector = self._ref_collector_factory()
         referred_list = ref_collector.collect_referred(ref_resolver_ref)
-        parcel = href_types.parcel(ref_resolver_ref, referred_list)
-        save_parcel_to_file(parcel, LOCAL_REF_RESOLVER_REF_PATH)
+        bundle = href_types.bundle(ref_resolver_ref, referred_list)
+        save_bundle_to_file(bundle, LOCAL_REF_RESOLVER_REF_PATH)
         log.info('Ref resolver ref is saved to %s', LOCAL_REF_RESOLVER_REF_PATH)
 
 #    def init_phase2(self):

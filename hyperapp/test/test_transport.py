@@ -32,6 +32,9 @@ code_module_list = [
     'server.transport.tcp',
     'server.transport.encrypted',
     'client.async_ref_resolver',
+    'client.referred_registry',
+    'client.transport.registry',
+    'client.transport.phony',
     'client.remoting_proxy',
     ]
 
@@ -80,17 +83,18 @@ def transport_ref(services):
         public_key_der=identity.public_key.to_der(),
         base_transport_ref=phony_transport_ref)
     encrypted_transport_ref = services.ref_registry.register_object(types.encrypted_transport.route, encrypted_transport_route)
-    return encrypted_transport_ref
+    #return encrypted_transport_ref
+    return phony_transport_ref
 
 @pytest.fixture
-def ref_resolver_parcel(services, transport_ref):
+def ref_resolver_bundle(services, transport_ref):
     href_types = services.types.hyper_ref
     service_ref = href_types.service_ref(['hyper_ref', 'ref_resolver'], REF_RESOLVER_SERVICE_ID, transport_ref)
     ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
     ref_collector = services.ref_collector_factory()
     referred_list = ref_collector.collect_referred(ref_resolver_ref)
-    return href_types.parcel(ref_resolver_ref, referred_list)
+    return href_types.bundle(ref_resolver_ref, referred_list)
 
 @pytest.mark.asyncio
-async def test_services_should_load(services, ref_resolver_parcel):
-    proxy = await services.proxy_factory.from_ref(ref_resolver_parcel.ref)
+async def test_services_should_load(services, ref_resolver_bundle):
+    proxy = await services.proxy_factory.from_ref(ref_resolver_bundle.ref)

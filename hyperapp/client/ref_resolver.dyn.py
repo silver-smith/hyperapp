@@ -4,7 +4,7 @@ from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
 from ..common.ref import make_referred, make_ref
-from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_parcel_from_file
+from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_bundle_from_file
 from .referred_registry import ReferredRegistry, ReferredResolver
 from .module import Module
 
@@ -69,8 +69,8 @@ class ThisModule(Module):
         Module.__init__(self, services)
         self._remoting = services.remoting
         self._ref_registry = RefRegistry()
-        parcel = load_parcel_from_file(LOCAL_REF_RESOLVER_REF_PATH)
-        self._ref_registry.register_referred_list(parcel.referred_list)
+        bundle = load_bundle_from_file(LOCAL_REF_RESOLVER_REF_PATH)
+        self._ref_registry.register_referred_list(bundle.referred_list)
 
         with open(url_path) as f:
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())

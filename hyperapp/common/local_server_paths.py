@@ -14,9 +14,9 @@ def save_bytes_to_file(data, path):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
 
-def save_parcel_to_file(parcel, path):
-    data = packet_coders.encode(ENCODING, parcel, href_types.parcel)
+def save_bundle_to_file(bundle, path):
+    data = packet_coders.encode(ENCODING, bundle, href_types.bundle)
     save_bytes_to_file(data, path)
 
-def load_parcel_from_file(path):
-    return packet_coders.decode(ENCODING, path.read_bytes(), href_types.parcel)
+def load_bundle_from_file(path):
+    return packet_coders.decode(ENCODING, path.read_bytes(), href_types.bundle)

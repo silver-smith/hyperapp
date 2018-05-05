@@ -40,14 +40,15 @@ class RemotingProxy(object):
 
 class ProxyFactory(object):
 
-    def __init__(self, type_registry_registry, async_ref_resolver):
+    def __init__(self, type_registry_registry, async_ref_resolver, transport_resolver):
         self._type_registry_registry = type_registry_registry
         self._async_ref_resolver = async_ref_resolver
+        self._transport_resolver = transport_resolver
 
     async def from_ref(self, ref):
         service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type='hyper_ref.service_ref')
         iface = self._type_registry_registry.resolve_type(service.iface_full_type_name)
-        transport = None
+        transport = await self._transport_resolver.resolve(service.transport_ref)
         return RemotingProxy(iface, service.service_id, transport)
 
 
@@ -55,4 +56,4 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        services.proxy_factory = ProxyFactory(services.type_registry_registry, services.async_ref_resolver)
+        services.proxy_factory = ProxyFactory(services.type_registry_registry, services.async_ref_resolver, services.transport_resolver)
