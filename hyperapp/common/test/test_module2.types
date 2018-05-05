@@ -1,4 +1,4 @@
-from test_module1 import object, some_bool_list, text_object, test_list_iface
+from test_module1 import object, some_bool_list, text_object, test_iface
 
 some_bool_list_opt = some_bool_list opt
 

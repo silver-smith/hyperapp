@@ -218,15 +218,15 @@ def p_class_fields_def_2(p):
 
 def p_interface_def_1(p):
     'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[3], p[6])
+    p[0] = t_interface_meta(p[3], p[6])
 
 def p_interface_def_2(p):
     'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[3], p[8], contents_fields=p[6])
+    p[0] = t_interface_meta(p[3], p[8])
 
 def p_interface_def_3(p):
     'interface_def : INTERFACE NAME interface_parent_def COLON BLOCK_BEGIN interface_diff_type_def STMT_SEP interface_contents_defs STMT_SEP interface_command_defs BLOCK_END'
-    p[0] = t_interface_meta(p[2], p[3], p[10], contents_fields=p[8], diff_type=p[6])
+    p[0] = t_interface_meta(p[3], p[10])
 
 
 def p_interface_parent_def_1(p):
