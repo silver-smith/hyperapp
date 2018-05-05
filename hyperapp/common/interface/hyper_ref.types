@@ -18,7 +18,7 @@ service_ref = record:
     transport_ref: ref
 
 
-parcel = record:
+bundle = record:
     ref: ref
     referred_list: referred list
 

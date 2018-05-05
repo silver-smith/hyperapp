@@ -1,6 +1,6 @@
 from hyper_ref import ref
 
 
-route = record:
+address = record:
     public_key_der: binary
     base_transport_ref: ref

@@ -18,10 +18,10 @@ class ThisModule(Module):
     def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
         self._identity = self._produce_identity()
-        route = encrypted_transport_types.route(
+        address = encrypted_transport_types.address(
             public_key_der=self._identity.public_key.to_der(),
             base_transport_ref=services.tcp_transport_ref)
-        services.encrypted_transport_ref = services.ref_registry.register_object(encrypted_transport_types.route, route)
+        services.encrypted_transport_ref = services.ref_registry.register_object(encrypted_transport_types.address, address)
 
     @staticmethod
     def _produce_identity():

@@ -1,4 +1,4 @@
 
-route = record:
+address = record:
     host: string
     port: int

@@ -76,13 +76,13 @@ def services():
 @pytest.fixture
 def transport_ref(services):
     types = services.types
-    phony_transport_route = types.phony_transport.route()
-    phony_transport_ref = services.ref_registry.register_object(types.phony_transport.route, phony_transport_route)
+    phony_transport_address = types.phony_transport.address()
+    phony_transport_ref = services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
     identity = Identity.generate(fast=True)
-    encrypted_transport_route = types.encrypted_transport.route(
+    encrypted_transport_address = types.encrypted_transport.address(
         public_key_der=identity.public_key.to_der(),
         base_transport_ref=phony_transport_ref)
-    encrypted_transport_ref = services.ref_registry.register_object(types.encrypted_transport.route, encrypted_transport_route)
+    encrypted_transport_ref = services.ref_registry.register_object(types.encrypted_transport.address, encrypted_transport_address)
     #return encrypted_transport_ref
     return phony_transport_ref
 
