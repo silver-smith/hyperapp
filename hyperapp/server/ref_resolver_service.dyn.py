@@ -51,8 +51,7 @@ class ThisModule(ServerModule):
         service_ref = href_types.service_ref(['hyper_ref', 'ref_resolver'], REF_RESOLVER_SERVICE_ID, self._encrypted_transport_ref)
         ref_resolver_ref = self._ref_registry.register_object(href_types.service_ref, service_ref)
         ref_collector = self._ref_collector_factory()
-        referred_list = ref_collector.collect_referred(ref_resolver_ref)
-        bundle = href_types.bundle(ref_resolver_ref, referred_list)
+        bundle = ref_collector.make_bundle(ref_resolver_ref)
         save_bundle_to_file(bundle, LOCAL_REF_RESOLVER_REF_PATH)
         log.info('Ref resolver ref is saved to %s', LOCAL_REF_RESOLVER_REF_PATH)
 

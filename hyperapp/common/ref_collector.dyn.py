@@ -23,6 +23,10 @@ class RefCollector(Visitor):
         self._ref_resolver = ref_resolver
         self._collected_ref_set = None
 
+    def make_bundle(self, ref):
+        referred_list = self.collect_referred(ref)
+        return href_types.bundle(ref, referred_list)
+
     def collect_referred(self, ref):
         referred_set = set()
         missing_ref_count = 0
