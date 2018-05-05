@@ -23,6 +23,7 @@ type_module_list = [
     'phony_transport',
     'tcp_transport',
     'encrypted_transport',
+    'test',
     ]
 
 code_module_list = [
@@ -89,7 +90,7 @@ def transport_ref(services):
 @pytest.fixture
 def ref_resolver_bundle(services, transport_ref):
     href_types = services.types.hyper_ref
-    service_ref = href_types.service_ref(['hyper_ref', 'ref_resolver'], REF_RESOLVER_SERVICE_ID, transport_ref)
+    service_ref = href_types.service_ref(['test', 'echo'], REF_RESOLVER_SERVICE_ID, transport_ref)
     ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
     ref_collector = services.ref_collector_factory()
     referred_list = ref_collector.collect_referred(ref_resolver_ref)
@@ -98,3 +99,4 @@ def ref_resolver_bundle(services, transport_ref):
 @pytest.mark.asyncio
 async def test_services_should_load(services, ref_resolver_bundle):
     proxy = await services.proxy_factory.from_ref(ref_resolver_bundle.ref)
+    await proxy.say('hello')

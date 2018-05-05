@@ -163,14 +163,12 @@ def t_interface_meta(iface_id, base_iface_id, commands, contents_fields=None, di
 def command_from_data(meta_type_registry, name_resolver, rec, full_name):
     params_fields = field_list_from_data(meta_type_registry, name_resolver, rec.params_fields)
     result_fields = field_list_from_data(meta_type_registry, name_resolver, rec.result_fields)
-    return IfaceCommand(rec.request_type, rec.command_id, params_fields, result_fields)
+    return IfaceCommand(full_name + [rec.command_id], rec.request_type, rec.command_id, params_fields, result_fields)
 
 def interface_from_data(meta_type_registry, name_resolver, rec, full_name):
     base_iface = name_resolver.resolve(rec.base_iface_id) if rec.base_iface_id else None
-    contents_fields = field_list_from_data(meta_type_registry, name_resolver, rec.contents_fields)
-    diff_type = meta_type_registry.resolve(name_resolver, rec.diff_type, full_name)  if rec.diff_type is not None else None
     commands = [command_from_data(meta_type_registry, name_resolver, command, full_name) for command in rec.commands]
-    return Interface(rec.iface_id, base_iface, contents_fields=contents_fields, diff_type=diff_type, commands=commands)
+    return Interface(full_name, base_iface, commands)
 
 
 class TypeRegistry(object):

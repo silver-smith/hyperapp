@@ -1,5 +1,5 @@
 import logging
-from ..util import is_list_inst
+from ..util import is_list_inst, cached_property
 from .htypes import (
     join_path,
     Type,
@@ -26,11 +26,12 @@ class IfaceCommand(object):
     rt_request = 'request'
     rt_notification = 'notification'
 
-    def __init__(self, request_type, command_id, params_fields=None, result_fields=None):
+    def __init__(self, full_name, request_type, command_id, params_fields=None, result_fields=None):
         assert request_type in [self.rt_request, self.rt_notification], repr(request_type)
         assert isinstance(command_id, str), repr(command_id)
         assert is_list_inst(params_fields or [], Field), repr(params_fields)
         assert is_list_inst(result_fields or [], Field), repr(result_fields)
+        self._full_name = full_name
         self.request_type = request_type
         self.command_id = command_id
         self.params_fields = params_fields or []
@@ -38,34 +39,36 @@ class IfaceCommand(object):
 
     def __eq__(self, other):
         assert isinstance(other, IfaceCommand), repr(other)
-        return (other.request_type == self.request_type and
-                other.command_id == self.command_id and
-                other.params_fields == self.params_fields and
-                self.result_fields == self.result_fields)
+        return (self._full_name == other._full_name and
+                self.request_type == other.request_type and
+                self.command_id == other.command_id and
+                self.params_fields == other.params_fields and
+                self.result_fields == other.result_fields)
 
     def __hash__(self):
-        return hash((self.request_type, self.command_id, tuple(self.params_fields), tuple(self.result_fields)))
+        return hash((tuple(self._full_name), self.request_type, self.command_id, tuple(self.params_fields), tuple(self.result_fields)))
 
     @property
     def is_request(self):
         return self.request_type == self.rt_request
 
-    @property
+    @cached_property
     def request_t(self):
         field_list = [
             Field('command_id', tString),
             ] + self.params_fields
         if self.request_type == self.rt_request:
             field_list = [Field('request_id', tString)] + field_list
-        return field_list
+        return TRecord(field_list, full_name=self._full_name + ['request'])
 
-    @property
+    @cached_property
     def response_t(self):
         assert self.request_type == self.rt_request
-        return [
+        field_list = [
             Field('request_id', tString),
             Field('command_id', tString),
             ] + self.result_fields
+        return TRecord(field_list, full_name=self._full_name + ['response'])
 
 
 class RequestCmd(IfaceCommand):
@@ -82,9 +85,10 @@ class NotificationCmd(IfaceCommand):
 
 class Interface(object):
 
-    def __init__(self, iface_id, base=None, contents_fields=None, diff_type=None, commands=None):
+    def __init__(self, full_name, base=None, commands=None):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(commands or [], IfaceCommand), repr(commands)
+        self._full_name = full_name
         self._base = base
         self._command_list = commands
         self._id2command = {command.command_id: command for command in self._command_list}

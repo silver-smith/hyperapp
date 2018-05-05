@@ -1,0 +1,3 @@
+echo = interface echo:
+    commands:
+        request say (msg: string) -> (response: string)

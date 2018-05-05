@@ -10,7 +10,8 @@ from .module import Module
 
 class ProxyMethod(object):
 
-    def __init__(self, iface, service_id, transport, command):
+    def __init__(self, ref_registry, iface, service_id, transport, command):
+        self._ref_registry = ref_registry
         self._iface = iface
         self._service_id = service_id
         self._transport = transport
@@ -21,27 +22,30 @@ class ProxyMethod(object):
         if self._command.is_request:
             fields = (str(uuid.uuid4()),) + fields
         request = self._command.request_t(*fields, **kw)
-        
+        request_ref = self._ref_registry.register_object(self._command.request_t, request)
+        assert 0, request_ref
 
-        
+
 class RemotingProxy(object):
 
-    def __init__(self, iface, service_id, transport):
+    def __init__(self, ref_registry, iface, service_id, transport):
+        self._ref_registry = ref_registry
         self._iface = iface
         self._service_id = service_id
         self._transport = transport
 
     def __getattr__(self, name):
-        command = self._iface.get_command_if_exists(name)
+        command = self._iface.get_command(name)
         if not command:
             raise AttributeError(name)
-        return ProxyMethod(self._iface, self._service_id, self._transport, command)
+        return ProxyMethod(self._ref_registry, self._iface, self._service_id, self._transport, command)
 
 
 class ProxyFactory(object):
 
-    def __init__(self, type_registry_registry, async_ref_resolver, transport_resolver):
+    def __init__(self, type_registry_registry, ref_registry, async_ref_resolver, transport_resolver):
         self._type_registry_registry = type_registry_registry
+        self._ref_registry = ref_registry
         self._async_ref_resolver = async_ref_resolver
         self._transport_resolver = transport_resolver
 
@@ -49,11 +53,16 @@ class ProxyFactory(object):
         service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type='hyper_ref.service_ref')
         iface = self._type_registry_registry.resolve_type(service.iface_full_type_name)
         transport = await self._transport_resolver.resolve(service.transport_ref)
-        return RemotingProxy(iface, service.service_id, transport)
+        return RemotingProxy(self._ref_registry, iface, service.service_id, transport)
 
 
 class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        services.proxy_factory = ProxyFactory(services.type_registry_registry, services.async_ref_resolver, services.transport_resolver)
+        services.proxy_factory = ProxyFactory(
+            services.type_registry_registry,
+            services.ref_registry,
+            services.async_ref_resolver,
+            services.transport_resolver,
+            )
