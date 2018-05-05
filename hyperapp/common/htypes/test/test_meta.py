@@ -20,8 +20,6 @@ from hyperapp.common.htypes import (
     RequestCmd,
     NotificationCmd,
     Interface,
-    Column,
-    ListInterface,
     tMetaType,
     t_named,
     t_optional_meta,
@@ -32,8 +30,6 @@ from hyperapp.common.htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
-    t_column_meta,
-    t_list_interface_meta,
     make_meta_type_registry,
     builtin_type_registry,
     TypeResolver,
@@ -120,7 +116,7 @@ class MetaTypeTest(unittest.TestCase):
     def test_interface(self):
         type_names = builtin_type_registry()
         resolver = TypeResolver([type_names])
-        data = t_interface_meta('unit_test_iface', None, [
+        data = t_interface_meta(None, [
             t_command_meta('request', 'request_one',
                            [t_field_meta('req_param1', t_named('string'))],
                            [t_field_meta('req_result1', t_list_meta(t_named('int')))]),
@@ -129,47 +125,16 @@ class MetaTypeTest(unittest.TestCase):
                             t_field_meta('noti_param2', t_named('datetime'))]),
             t_command_meta('request', 'request_open', [],
                            [t_field_meta('result', t_optional_meta(t_named('int')))]),
-            ], contents_fields=[
-                t_field_meta('text', t_named('string')),
-            ], diff_type=t_named('string')
-            )
-        t = self.meta_type_registry.resolve(resolver, data)
-        self.assertEqual(Interface('unit_test_iface',
-            contents_fields=[
-                Field('text', tString),
-            ],
-            diff_type=tString,
+            ])
+        t = self.meta_type_registry.resolve(resolver, data, full_name=['test_meta', 'test_iface'])
+        self.assertEqual(Interface(['test_meta', 'test_iface'],
             commands=[
-                RequestCmd('request_one',
+                RequestCmd(['test_meta', 'test_iface', 'request_one'], 'request_one',
                            [Field('req_param1', tString)],
                            [Field('req_result1', TList(tInt))]),
-                NotificationCmd('notification_one',
+                NotificationCmd(['test_meta', 'test_iface', 'notification_one'], 'notification_one',
                                 [Field('noti_param1', TOptional(tBool)),
                                  Field('noti_param2', tDateTime)]),
-                RequestCmd('request_open', [],
+                RequestCmd(['test_meta', 'test_iface', 'request_open'], 'request_open', [],
                            [Field('result', TOptional(tInt))]),
-            ]), t)
-
-    def test_list_interface(self):
-        type_names = builtin_type_registry()
-        resolver = TypeResolver([type_names])
-        data = t_list_interface_meta('unit_test_list_iface', None, commands=[
-                t_command_meta('request', 'request_open', [],
-                               [t_field_meta('result', t_optional_meta(t_named('int')))]),
-            ], columns=[
-                t_column_meta('key', t_named('int'), is_key=True),
-                t_column_meta('text', t_named('string'), is_key=False),
-            ], contents_fields=[
-                t_field_meta('text', t_named('string')),
-            ])
-        t = self.meta_type_registry.resolve(resolver, data)
-        self.assertEqual(ListInterface('unit_test_list_iface',
-            contents_fields=[
-                Field('text', tString),
-            ],
-            commands=[
-                RequestCmd('request_open', [], [Field('result', TOptional(tInt))]),
-            ], columns=[
-                Column('key', tInt, is_key=True),
-                Column('text', tString),
             ]), t)

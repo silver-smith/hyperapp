@@ -73,14 +73,14 @@ class IfaceCommand(object):
 
 class RequestCmd(IfaceCommand):
 
-    def __init__(self, command_id, params_fields=None, result_fields=None):
-        IfaceCommand.__init__(self, self.rt_request, command_id, params_fields, result_fields)
+    def __init__(self, full_name, command_id, params_fields=None, result_fields=None):
+        IfaceCommand.__init__(self, full_name, self.rt_request, command_id, params_fields, result_fields)
 
 
 class NotificationCmd(IfaceCommand):
 
-    def __init__(self, command_id, params_fields=None):
-        IfaceCommand.__init__(self, self.rt_notification, command_id, params_fields)
+    def __init__(self, full_name, command_id, params_fields=None):
+        IfaceCommand.__init__(self, full_name, self.rt_notification, command_id, params_fields)
 
 
 class Interface(object):
