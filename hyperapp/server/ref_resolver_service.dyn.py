@@ -32,10 +32,10 @@ class RefResolverService(Object):
 
     @command('resolve_ref')
     def command_resolve_ref(self, request, ref):
-        referred = self._ref_resolver.resolve_ref(ref)
-        if not referred:
+        piece = self._ref_resolver.resolve_ref(ref)
+        if not piece:
             raise href_types.unknown_ref_error(ref)
-        return request.make_response_result(referred=referred)
+        return request.make_response_result(piece=piece)
 
 
 class ThisModule(ServerModule):

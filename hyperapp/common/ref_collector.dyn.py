@@ -24,22 +24,22 @@ class RefCollector(Visitor):
         self._collected_ref_set = None
 
     def make_bundle(self, ref):
-        referred_list = self.collect_referred(ref)
-        return href_types.bundle(ref, referred_list)
+        piece_list = self.collect_piece(ref)
+        return href_types.bundle(ref, piece_list)
 
-    def collect_referred(self, ref):
-        referred_set = set()
+    def collect_piece(self, ref):
+        piece_set = set()
         missing_ref_count = 0
         ref_set = set([ref])
         for i in range(RECURSION_LIMIT):
             new_ref_set = set()
             for ref in ref_set:
-                referred = self._ref_resolver.resolve_ref(ref)
-                if not referred:
+                piece = self._ref_resolver.resolve_ref(ref)
+                if not piece:
                     missing_ref_count += 1
                     continue
-                referred_set.add(referred)
-                new_ref_set |= self._collect_refs(referred)
+                piece_set.add(piece)
+                new_ref_set |= self._collect_refs(piece)
             if not new_ref_set:
                 break
             ref_set = new_ref_set
@@ -47,11 +47,11 @@ class RefCollector(Visitor):
             assert False, 'Reached recursion limit %d while resolving refs' % RECURSION_LIMIT
         if missing_ref_count:
             log.warning('Failed to resolve %d refs', missing_ref_count)
-        return list(referred_set)
+        return list(piece_set)
 
-    def _collect_refs(self, referred):
-        t = self._type_registry_registry.resolve_type(referred.full_type_name)
-        object = decode_object(t, referred)
+    def _collect_refs(self, piece):
+        t = self._type_registry_registry.resolve_type(piece.full_type_name)
+        object = decode_object(t, piece)
         self._collected_ref_set = set()
         self.visit(t, object)
         log.debug('Collected %d refs from %s %s: %s',

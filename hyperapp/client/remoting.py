@@ -108,9 +108,9 @@ class Transport(metaclass=abc.ABCMeta):
         collector = RefCollector(self._error_types, self._packet_types, self._core_types, self._iface_registry, self._href_types)
         ref_list = collector.collect(self._packet_types.payload, payload)
         for ref in ref_list:
-            referred = self._ref_registry.resolve(ref)
-            if referred:
-                yield self._packet_types.ref_and_referred(ref, referred)
+            piece = self._ref_registry.resolve(ref)
+            if piece:
+                yield self._packet_types.ref_and_piece(ref, piece)
 
     @abc.abstractmethod
     async def send_request_rec(self, remoting, public_key, route, request_or_notification):

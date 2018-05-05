@@ -20,24 +20,24 @@ def ref_repr(ref):
     else:
         return hex
 
-def make_referred(t, object):
+def make_piece(t, object):
     assert isinstance(t, Type), repr(t)
     assert isinstance(object, t), repr((t, object))
     encoding = DEFAULT_ENCODING
     encoded_object = packet_coders.encode(encoding, object, t)
-    return href_types.referred(t.full_name, DEFAULT_HASH_ALGORITHM, encoding, encoded_object)
+    return href_types.piece(t.full_name, DEFAULT_HASH_ALGORITHM, encoding, encoded_object)
 
-def make_ref(referred):
-    assert isinstance(referred, href_types.referred)
-    assert referred.hash_algorithm == DEFAULT_HASH_ALGORITHM, repr(referred.hash_algorithm)
+def make_ref(piece):
+    assert isinstance(piece, href_types.piece)
+    assert piece.hash_algorithm == DEFAULT_HASH_ALGORITHM, repr(piece.hash_algorithm)
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
-    digest.update(referred.encoded_object)
+    digest.update(piece.encoded_object)
     return digest.finalize()
 
 def make_object_ref(t, object):
-    referred = make_referred(t, object)
-    return make_ref(referred)
+    piece = make_piece(t, object)
+    return make_ref(piece)
 
-def decode_object(t, referred):
-    assert t.full_name == referred.full_type_name
-    return packet_coders.decode(referred.encoding, referred.encoded_object, t)
+def decode_object(t, piece):
+    assert t.full_name == piece.full_type_name
+    return packet_coders.decode(piece.encoding, piece.encoded_object, t)

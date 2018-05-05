@@ -33,7 +33,7 @@ code_module_list = [
     'server.transport.tcp',
     'server.transport.encrypted',
     'client.async_ref_resolver',
-    'client.referred_registry',
+    'client.piece_registry',
     'client.transport.registry',
     'client.transport.phony',
     'client.remoting_proxy',
@@ -93,8 +93,8 @@ def ref_resolver_bundle(services, transport_ref):
     service_ref = href_types.service_ref(['test', 'echo'], REF_RESOLVER_SERVICE_ID, transport_ref)
     ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
     ref_collector = services.ref_collector_factory()
-    referred_list = ref_collector.collect_referred(ref_resolver_ref)
-    return href_types.bundle(ref_resolver_ref, referred_list)
+    piece_list = ref_collector.collect_piece(ref_resolver_ref)
+    return href_types.bundle(ref_resolver_ref, piece_list)
 
 @pytest.mark.asyncio
 async def test_services_should_load(services, ref_resolver_bundle):

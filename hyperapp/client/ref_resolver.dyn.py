@@ -3,9 +3,9 @@ import logging
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
 from ..common.packet_coders import packet_coders
-from ..common.ref import make_referred, make_ref
+from ..common.ref import make_piece, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_bundle_from_file
-from .referred_registry import ReferredRegistry, ReferredResolver
+from .piece_registry import PieceRegistry, PieceResolver
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -19,19 +19,19 @@ class RefResolver(object):
         self._ref_resolver_proxy = ref_resolver_proxy
 
     async def resolve_ref(self, ref):
-        referred = self._ref_registry.resolve(ref)
-        if not referred:
+        piece = self._ref_registry.resolve(ref)
+        if not piece:
             result = await self._ref_resolver_proxy.resolve_ref(ref)
-            referred = result.referred
-            self._ref_registry.register(ref, referred)
-        log.debug('ref resolver: ref resolved to %r', referred)
-        assert referred, repr(referred)
-        return referred
+            piece = result.piece
+            self._ref_registry.register(ref, piece)
+        log.debug('ref resolver: ref resolved to %r', piece)
+        assert piece, repr(piece)
+        return piece
 
     async def resolve_ref_to_object(self, ref):
-        referred = await self.resolve_ref(ref)
-        t = self._type_registry_registry.resolve_type(referred.full_type_name)
-        return packet_coders.decode(referred.encoding, referred.encoded_object, t)
+        piece = await self.resolve_ref(ref)
+        t = self._type_registry_registry.resolve_type(piece.full_type_name)
+        return packet_coders.decode(piece.encoding, piece.encoded_object, t)
 
 
 class RefRegistry(object):
@@ -39,25 +39,25 @@ class RefRegistry(object):
     def __init__(self):
         self._registry = {}
 
-    # check if referred is matching if ref is already registered
-    def register(self, ref, referred):
+    # check if piece is matching if ref is already registered
+    def register(self, ref, piece):
         assert isinstance(ref, href_types.ref), repr(ref)
-        assert isinstance(referred, href_types.referred), repr(referred)
-        existing_referred = self._registry.get(ref)
-        if existing_referred:
-            assert referred == existing_referred, repr((existing_referred, referred))  # new referred does not match existing one
-        self._registry[ref] = referred
+        assert isinstance(piece, href_types.piece), repr(piece)
+        existing_piece = self._registry.get(ref)
+        if existing_piece:
+            assert piece == existing_piece, repr((existing_piece, piece))  # new piece does not match existing one
+        self._registry[ref] = piece
 
     def register_new_object(self, t, object):
-        referred = make_referred(t, object)
-        ref = make_ref(referred)
-        self.register(ref, referred)
+        piece = make_piece(t, object)
+        ref = make_ref(piece)
+        self.register(ref, piece)
         return ref
 
-    def register_referred_list(self, referred_list):
-        for referred in referred_list:
-            ref = make_ref(referred)
-            self.register(ref, referred)
+    def register_piece_list(self, piece_list):
+        for piece in piece_list:
+            ref = make_ref(piece)
+            self.register(ref, piece)
 
     def resolve(self, ref):
         return self._registry.get(ref)
@@ -70,12 +70,12 @@ class ThisModule(Module):
         self._remoting = services.remoting
         self._ref_registry = RefRegistry()
         bundle = load_bundle_from_file(LOCAL_REF_RESOLVER_REF_PATH)
-        self._ref_registry.register_referred_list(bundle.referred_list)
+        self._ref_registry.register_piece_list(bundle.piece_list)
 
         with open(url_path) as f:
             url = UrlWithRoutes.from_str(services.iface_registry, f.read())
         ref_resolver_proxy = services.proxy_factory.from_url(url)
         services.ref_registry = self._ref_registry
         services.ref_resolver = ref_resolver = RefResolver(services.type_registry_registry, self._ref_registry, ref_resolver_proxy)
-        services.handle_registry = handle_registry = ReferredRegistry('handle', services.type_registry_registry)
-        services.handle_resolver = ReferredResolver(ref_resolver, handle_registry)
+        services.handle_registry = handle_registry = PieceRegistry('handle', services.type_registry_registry)
+        services.handle_resolver = PieceResolver(ref_resolver, handle_registry)

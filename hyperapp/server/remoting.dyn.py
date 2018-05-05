@@ -58,10 +58,10 @@ class Transport(object):
             self._route_storage.add_routes(public_key, srv_routes.routes)
 
     def _add_references(self, ref_list):
-        for ref_and_referred in ref_list:
-            #log.info('received ref %s: %r', ref_repr(ref_and_referred.ref), ref_and_referred.referred)
-            log.info('received ref %s: %r', ref_and_referred.ref, ref_and_referred.referred)
-            self._ref_storage.store_ref(ref_and_referred.ref, ref_and_referred.referred)
+        for ref_and_piece in ref_list:
+            #log.info('received ref %s: %r', ref_repr(ref_and_piece.ref), ref_and_piece.piece)
+            log.info('received ref %s: %r', ref_and_piece.ref, ref_and_piece.piece)
+            self._ref_storage.store_ref(ref_and_piece.ref, ref_and_piece.piece)
 
     def make_notification_packet(self, payload_encoding, notification):
         aux_info = self.prepare_aux_info(notification)

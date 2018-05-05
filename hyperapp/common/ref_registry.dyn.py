@@ -3,7 +3,7 @@
 import logging
 
 from .interface import hyper_ref as href_types
-from .ref import ref_repr, make_referred, make_ref
+from .ref import ref_repr, make_piece, make_ref
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -15,13 +15,13 @@ MODULE_NAME = 'ref_registry'
 class RefRegistry(object):
 
     def __init__(self):
-        self._registry = {}  # ref -> referred
+        self._registry = {}  # ref -> piece
 
     def register_object(self, t, object):
-        referred = make_referred(t, object)
-        ref = make_ref(referred)
+        piece = make_piece(t, object)
+        ref = make_ref(piece)
         assert ref not in self._registry  # already registered
-        self._registry[ref] = referred
+        self._registry[ref] = piece
         log.debug('Registered ref for %s: %s', '.'.join(t.full_name), ref_repr(ref))
         return ref
 

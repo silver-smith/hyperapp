@@ -20,9 +20,9 @@ class RefResolver(object):
     def resolve_ref(self, ref):
         log.debug('Resolving ref: %s', ref_repr(ref))
         for source in self._sources:
-            referred = source.resolve_ref(ref)
-            if referred:
-                return referred
+            piece = source.resolve_ref(ref)
+            if piece:
+                return piece
         return None
 
     def resolve_ref_recursive(self, rev):
