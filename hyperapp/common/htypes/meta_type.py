@@ -23,21 +23,26 @@ tMetaType = THierarchy('type', full_name=['meta_type', 'type'])
 tRootMetaType = tMetaType.register('root', fields=[Field('type_id', tString)], full_name=['meta_type', 'root'])
 
 
-tProvidedClass = TRecord([
-    Field('hierarchy_id', tString),
-    Field('class_id', tString),
-    ], full_name=['meta_type', 'provided_class'])
+tImport = TRecord([
+    Field('module_name', tString),
+    Field('imported_name', tString),
+    ])
 
 tTypeDef = TRecord([
     Field('name', tString),
     Field('type', tMetaType),
     ], full_name=['meta_type', 'typedef'])
 
+tProvidedClass = TRecord([
+    Field('hierarchy_id', tString),
+    Field('class_id', tString),
+    ], full_name=['meta_type', 'provided_class'])
+
 tTypeModule = TRecord([
     Field('module_name', tString),
-    Field('provided_classes', TList(tProvidedClass)),
-    Field('used_modules', TList(tString)),
+    Field('import_list', TList(tImport)),
     Field('typedefs', TList(tTypeDef)),
+    Field('provided_classes', TList(tProvidedClass)),
     ], full_name=['meta_type', 'type_module'])
 
 
@@ -192,6 +197,9 @@ class TypeRegistry(object):
         if self._next:
             return self._next.get_name(name)
         return None
+
+    def keys(self):
+        return self._registry.keys()
 
     def items(self):
         return self._registry.items()

@@ -35,25 +35,6 @@ class TypeModuleTest(unittest.TestCase):
     def make_fpath(self, module_name):
         return TEST_TYPE_MODULES_DIR / module_name
 
-    def test_yaml_module(self):
-        type_resolver = TypeResolver([builtin_type_registry()])
-        fpath = self.make_fpath('test_module1.types.yaml')
-        registry = resolve_typedefs_from_yaml_file(self.meta_type_registry, type_resolver, 'test_module1', fpath)
-
-        self.assertTrue(registry.has_name('some_int'))
-        self.assertEqual(tInt, registry.get_name('some_int'))
-
-        self.assertTrue(registry.has_name('object'))
-        object_t = registry.get_name('object')
-
-        self.assertTrue(registry.has_name('simple_class'))
-        simple_class = registry.get_name('simple_class')
-        self.assertEqual(TClass(object_t, 'simple', TRecord([])), simple_class)
-
-        self.assertTrue(registry.has_name('text_object'))
-        self.assertEqual(TClass(object_t, 'text', base=simple_class, trec=TRecord([Field('text', tString)])),
-                         registry.get_name('text_object'))
-
     def test_types_module(self):
         type_registry_registry = builtin_type_registry_registry()
         used_modules1, typedefs1, registry1 = load_types_file(

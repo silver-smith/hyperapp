@@ -6,8 +6,9 @@ import argparse
 from hyperapp.common.htypes import (
     TList,
     tTypeDef,
+    tTypeModule,
     make_meta_type_registry,
-    builtin_type_registry_registry,
+    builtin_type_registry,
     )    
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module_parser import Lexer, parse_type_module
@@ -29,23 +30,22 @@ def test_lex(fpaths):
                 break
 
 def test_yacc(fpaths):
-    type_registry_registry = builtin_type_registry_registry()
+    builtins = builtin_type_registry()
     for fpath in fpaths:
         log.info('%s:', fpath)
         dir, fname = os.path.split(fpath)
         module_name = os.path.splitext(fname)[0]
         with open(fpath) as f:
             input = f.read()
-        log.info('parsing:')
-        used_modules, typedefs, type_registry = parse_type_module(
-            make_meta_type_registry(), type_registry_registry, module_name, fpath, input, debug=True)
-        log.info('used modules: %s', used_modules)
-        log.info('typedefs: %s', typedefs)
-        for name, t in type_registry.items():
-            log.info('type %s: %s', name, t)
-        if typedefs:
-            pprint(TList(tTypeDef), typedefs)
-        type_registry_registry.register(module_name, type_registry)
+        log.info('parsing %s:', module_name)
+        module = parse_type_module(builtins, module_name, fpath, input, debug=True)
+        log.info('%d imports:', len(module.import_list))
+        for imp in module.import_list:
+            log.info('\t%s.%s', imp.module_name, imp.imported_name)
+        log.info('%d typedefs:', len(module.typedefs))
+        for typedef in module.typedefs:
+            log.info('\t%s: %s', typedef.name, typedef.type)
+        pprint(tTypeModule, module)
 
 
 def main():

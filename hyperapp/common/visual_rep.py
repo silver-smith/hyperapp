@@ -104,8 +104,8 @@ class VisualRepEncoder(object):
         if t is tCommand:
             return RepNode('command: command_id=%r, kind=%r, resource_id=%s'
                            % (value.command_id, value.kind, encode_path(value.resource_id)))
-        if t is tTypeModule:
-            return self._make_type_module_rep(value)
+#        if t is tTypeModule:
+#            return self._make_type_module_rep(value)
         custom_encoders = None
         if self._packet_types and self._iface_registry and issubclass(t, self._packet_types.update):
             custom_encoders = dict(diff=self.encode_update_diff)
@@ -123,12 +123,12 @@ class VisualRepEncoder(object):
         else:
             return RepNode('%s: empty' % self._make_name(t, 'record'))
 
-    def _make_type_module_rep(self, type_module):
-        return RepNode('type module %r' % type_module.module_name, children=[
-            RepNode('provided classes: %s' % ', '.join('%s/%s' % (pc.hierarchy_id, pc.class_id) for pc in type_module.provided_classes)),
-            RepNode('used_modules: %s' % ', '.join(type_module.used_modules)),
-            RepNode('%d typedefs: %s' % (len(type_module.typedefs), ', '.join(typedef.name for typedef in type_module.typedefs))),
-            ])
+#    def _make_type_module_rep(self, type_module):
+#        return RepNode('type module %r' % type_module.module_name, children=[
+#            RepNode('provided classes: %s' % ', '.join('%s/%s' % (pc.hierarchy_id, pc.class_id) for pc in type_module.provided_classes)),
+#            RepNode('used_modules: %s' % ', '.join(type_module.used_modules)),
+#            RepNode('%d typedefs: %s' % (len(type_module.typedefs), ', '.join(typedef.name for typedef in type_module.typedefs))),
+#            ])
 
     def encode_record_fields(self, fields, value, custom_encoders=None):
         children = []

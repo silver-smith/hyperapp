@@ -4,7 +4,9 @@ from io import BytesIO
 import ply.lex as lex
 import ply.yacc as yacc
 from .htypes import (
+    tImport,
     tTypeDef,
+    tTypeModule,
     t_named,
     t_field_meta,
     t_optional_meta,
@@ -76,7 +78,6 @@ tokens = [tok_name[t] for t in token_types] + [
     ] + [keyword.upper() for keyword in keywords]
 
 
-
 def syntax_error(p, token_num, msg):
     line_num = p.lineno(token_num)
     print(p.parser.lines[line_num - 1])
@@ -86,22 +87,6 @@ def syntax_error(p, token_num, msg):
 def unknown_name_error(p, token_num, name):
     syntax_error(p, token_num, 'Unknown name: %r' % name)
 
-def register_typedef(p, name_token_num, name, type):
-    parser = p.parser
-    typedef = tTypeDef(name=name, type=type)
-    full_name = [parser.module_name, name]
-    try:
-        t = parser.meta_type_registry.resolve(parser.resolver, typedef.type, full_name)
-    except UnknownTypeError as x:
-        syntax_error(p, name_token_num, 'Unknown type: %r' % x.name)
-    parser.new_type_registry.register(typedef.name, t)
-    return typedef
-
-def import_names(parser, module_name, names):
-    registry = parser.type_registry_registry.resolve_type_registry(module_name)
-    for name in names:
-        parser.imported_type_registry.register(name, registry.resolve(name))
-
 
 def p_module(p):
     'module : ENCODING module_contents ENDMARKER'
@@ -109,26 +94,35 @@ def p_module(p):
 
 def p_module_contents_1(p):
     'module_contents : import_list STMT_SEP typedef_list'
-    p[0] = (p[1], p[3])
+    p[0] = tTypeModule(
+        module_name=p.parser.module_name,
+        import_list=p[1],
+        typedefs=p[3],
+        provided_classes=[],
+        )
 
 def p_module_contents_2(p):
     'module_contents : typedef_list_opt'
-    p[0] = ([], p[1])
+    p[0] = tTypeModule(
+        module_name=p.parser.module_name,
+        import_list=[],
+        typedefs=p[1],
+        provided_classes=[],
+        )
 
 
 def p_import_list_1(p):
     'import_list : import_list STMT_SEP import_def'
-    p[0] = p[1] + [p[3]]
+    p[0] = p[1] + p[3]
 
 def p_import_list_2(p):
     'import_list : import_def'
-    p[0] = [p[1]]
+    p[0] = p[1]
 
 
 def p_import_def(p):
     'import_def : FROM NAME IMPORT name_list'
-    p[0] = p[2]
-    import_names(p.parser, p[2], p[4])
+    p[0] = [tImport(p[2], name) for name in p[4]]
 
 def p_name_list_1(p):
     'name_list : NAME'
@@ -157,7 +151,8 @@ def p_typedef_list_2(p):
 
 def p_typedef(p):
     'typedef : NAME EQUAL typedef_rhs'
-    p[0] = register_typedef(p, 1, p[1], p[3])
+    p[0] = tTypeDef(name=p[1], type=p[3])
+    p.parser.known_name_set.add(p[1])
 
 def p_typedef_rhs_1(p):
     'typedef_rhs : type_expr'
@@ -363,7 +358,7 @@ def p_field_def(p):
 def p_type_expr_1(p):
     'type_expr : NAME'
     name = p[1]
-    if not p.parser.resolver.has_name(name):
+    if not name in p.parser.known_name_set:
         unknown_name_error(p, 1, name)
     p[0] = t_named(name)
 
@@ -446,20 +441,15 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module(meta_type_registry, type_registry_registry, module_name, fname, contents, debug=False):
+def parse_type_module(builtins, module_name, fname, contents, debug=False):
     parser = yacc.yacc(debug=debug)
     parser.module_name = module_name
     parser.fname = fname
     parser.lines = contents.splitlines()
-    parser.meta_type_registry = meta_type_registry
-    parser.type_registry_registry = type_registry_registry
-    parser.imported_type_registry = TypeRegistry()
-    parser.new_type_registry = TypeRegistry()
-    parser.resolver = TypeResolver([type_registry_registry.resolve_type_registry('builtins'),
-                                    parser.imported_type_registry,
-                                    parser.new_type_registry])
-    used_modules, typedefs = parser.parse(contents, lexer=Lexer())
-    return (used_modules, typedefs, parser.new_type_registry)
+    parser.known_name_set = set(builtins.keys())
+    module = parser.parse(contents, lexer=Lexer())
+    assert module, 'Failed to parse %r' % fname
+    return module
  
 
 if __name__ == '__main__':
