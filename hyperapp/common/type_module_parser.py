@@ -6,6 +6,7 @@ import ply.yacc as yacc
 from .htypes import (
     tImport,
     tTypeDef,
+    tProvidedClass,
     tTypeModule,
     t_named,
     t_field_meta,
@@ -98,7 +99,7 @@ def p_module_contents_1(p):
         module_name=p.parser.module_name,
         import_list=p[1],
         typedefs=p[3],
-        provided_classes=[],
+        provided_classes=p.parser.provided_class_list,
         )
 
 def p_module_contents_2(p):
@@ -107,7 +108,7 @@ def p_module_contents_2(p):
         module_name=p.parser.module_name,
         import_list=[],
         typedefs=p[1],
-        provided_classes=[],
+        provided_classes=p.parser.provided_class_list,
         )
 
 
@@ -216,6 +217,7 @@ def p_hierarchy_def_2(p):
 def p_class_def(p):
     'class_def : NAME CLASS NAME class_base_def class_fields_def'
     p[0] = t_hierarchy_class_meta(p[1], p[3], p[4], p[5])
+    p.parser.provided_class_list.append(tProvidedClass(p[1], p[3]))
 
 def p_class_base_def_1(p):
     'class_base_def : LPAR NAME RPAR'
@@ -447,6 +449,7 @@ def parse_type_module(builtins, module_name, fname, contents, debug=False):
     parser.fname = fname
     parser.lines = contents.splitlines()
     parser.known_name_set = set(builtins.keys())
+    parser.provided_class_list = []
     module = parser.parse(contents, lexer=Lexer())
     assert module, 'Failed to parse %r' % fname
     return module
