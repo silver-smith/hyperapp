@@ -11,7 +11,6 @@ from .type_module_parser import parse_type_module
 TYPEDEF_MODULE_ENCODING = 'yaml'
 
 
-
 tFileContents = TList(tTypeDef)
 
 def load_typedefs_from_yaml_file(fpath):

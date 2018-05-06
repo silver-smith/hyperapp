@@ -155,25 +155,49 @@ def p_typedef_list_2(p):
     'typedef_list : typedef'
     p[0] = [p[1]]
 
-def p_typedef_1(p):
-    'typedef : NAME EQUAL type_expr'
+def p_typedef(p):
+    'typedef : NAME EQUAL typedef_rhs'
     p[0] = register_typedef(p, 1, p[1], p[3])
 
-def p_typedef_2(p):
-    'typedef : NAME EQUAL record_def'
-    p[0] = register_typedef(p, 1, p[1], p[3])
+def p_typedef_rhs_1(p):
+    'typedef_rhs : type_expr'
+    p[0] = p[1]
 
-def p_typedef_3(p):
-    'typedef : NAME EQUAL class_def'
-    p[0] = register_typedef(p, 1, p[1], p[3])
+def p_typedef_rhs_2(p):
+    'typedef_rhs : record_def'
+    p[0] = p[1]
 
-def p_typedef_4(p):
-    'typedef : NAME EQUAL hierarchy_def'
-    p[0] = register_typedef(p, 1, p[1], p[3])
+def p_typedef_rhs_3(p):
+    'typedef_rhs : class_def'
+    p[0] = p[1]
 
-def p_typedef_5(p):
-    'typedef : NAME EQUAL interface_def'
-    p[0] = register_typedef(p, 1, p[1], p[3])
+def p_typedef_rhs_4(p):
+    'typedef_rhs : hierarchy_def'
+    p[0] = p[1]
+
+def p_typedef_rhs_5(p):
+    'typedef_rhs : interface_def'
+    p[0] = p[1]
+
+def p_typedef_rhs_1(p):
+    'typedef_rhs : type_expr'
+    p[0] = p[1]
+
+def p_typedef_rhs_2(p):
+    'typedef_rhs : record_def'
+    p[0] = p[1]
+
+def p_typedef_rhs_3(p):
+    'typedef_rhs : class_def'
+    p[0] = p[1]
+
+def p_typedef_rhs_4(p):
+    'typedef_rhs : hierarchy_def'
+    p[0] = p[1]
+
+def p_typedef_rhs_5(p):
+    'typedef_rhs : interface_def'
+    p[0] = p[1]
 
 
 def p_record_def_1(p):
