@@ -27,18 +27,7 @@ def resolve_typedefs(meta_type_registry, name_resolver, module_name, typedefs):
         resolved_registry.register(typedef.name, t)
     return resolved_registry
 
-def resolve_typedefs_from_yaml_file(meta_type_registry, name_resolver, module_name, fpath):
-    typedefs = load_typedefs_from_yaml_file(fpath)
-    return resolve_typedefs(meta_type_registry, name_resolver, module_name, typedefs)
-
 def load_types_file(meta_type_registry, type_registry_registry, module_name, fpath):
     contents = fpath.read_text()
     used_modules, typedefs, loaded_types = parse_type_module(meta_type_registry, type_registry_registry, module_name, fpath, contents)
     return (used_modules, typedefs, loaded_types)
-
-def load_module_from_types_file(meta_type_registry, type_registry_registry, module_name, fpath):
-    used_modules, typedefs, loaded_types = load_types_file(meta_type_registry, type_registry_registry, module_name, fpath)
-    module = TypeModule()
-    for name, t in loaded_types.items():
-        module._add_type(name, t)
-    return module
