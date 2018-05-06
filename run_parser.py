@@ -12,35 +12,37 @@ from hyperapp.common.htypes import (
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module_parser import Lexer, parse_type_module
 
+log = logging.getLogger(__name__)
+
 
 def test_lex(fpaths):
     for fpath in fpaths:
-        print('%s:' % fpath)
+        log.info('%s:' % fpath)
         lexer = Lexer()
         with open(fpath) as f:
             input = f.read()
         lexer.input(input)
         while True:
             tok = lexer.token()
-            print(tok)
+            log.info(tok)
             if not tok:
                 break
 
 def test_yacc(fpaths):
     type_registry_registry = builtin_type_registry_registry()
     for fpath in fpaths:
-        print('%s:' % fpath)
+        log.info('%s:', fpath)
         dir, fname = os.path.split(fpath)
         module_name = os.path.splitext(fname)[0]
         with open(fpath) as f:
             input = f.read()
-        print('parsing:')
+        log.info('parsing:')
         used_modules, typedefs, type_registry = parse_type_module(
             make_meta_type_registry(), type_registry_registry, module_name, fpath, input, debug=True)
-        print('used modules:', used_modules)
-        print('typedefs:', typedefs)
+        log.info('used modules: %s', used_modules)
+        log.info('typedefs: %s', typedefs)
         for name, t in type_registry.items():
-            print('type %s: %s' % (name, t))
+            log.info('type %s: %s', name, t)
         if typedefs:
             pprint(TList(tTypeDef), typedefs)
         type_registry_registry.register(module_name, type_registry)
