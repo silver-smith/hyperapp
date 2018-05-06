@@ -77,7 +77,7 @@ class Services(ServicesBase):
         self.dynamic_module_dir = Path(__file__).parent.joinpath('../../dynamic_modules').resolve()
         ServicesBase.init_services(self)
         self.module_registry = ModuleRegistry()
-        self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
+        self.module_manager = ModuleManager(self, self.types, self.module_registry)
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()
         self._load_type_modules(type_module_list)

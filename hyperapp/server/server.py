@@ -20,18 +20,16 @@ class Server(object):
             services.types.packet,
             services.types.core,
             services.module_registry,
-            services.iface_registry,
             start_args.identity,
             start_args.test_delay,
             )
 
-    def __init__(self, error_types, packet_types, core_types, module_registry, iface_registry, identity, test_delay_sec=None):
+    def __init__(self, error_types, packet_types, core_types, module_registry, identity, test_delay_sec=None):
         assert isinstance(identity, Identity), repr(identity)
         self._error_types = error_types
         self._packet_types = packet_types
         self._core_types = core_types
         self._module_registry = module_registry
-        self._iface_registry = iface_registry
         self.identity = identity
         self.test_delay_sec = test_delay_sec  # float
 
