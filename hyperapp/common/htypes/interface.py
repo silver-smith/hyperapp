@@ -20,7 +20,7 @@ from .meta_type import TypeNamespace
 log = logging.getLogger(__name__)
 
 
-class IfaceCommand(object):
+class IfaceCommand(TypeNamespace):
 
     # client request types
     rt_request = 'request'
@@ -31,11 +31,15 @@ class IfaceCommand(object):
         assert isinstance(command_id, str), repr(command_id)
         assert is_list_inst(params_fields or [], Field), repr(params_fields)
         assert is_list_inst(result_fields or [], Field), repr(result_fields)
+        super().__init__()
         self._full_name = full_name
         self.request_type = request_type
         self.command_id = command_id
         self.params_fields = params_fields or []
         self.result_fields = result_fields or []
+        self['request'] = TRecord(self._make_request_fields(), full_name=self._full_name + ['request'])
+        if self.is_request:
+            self['response'] = TRecord(self._make_response_fields(), full_name=self._full_name + ['response'])
 
     def __eq__(self, other):
         assert isinstance(other, IfaceCommand), repr(other)
@@ -52,23 +56,21 @@ class IfaceCommand(object):
     def is_request(self):
         return self.request_type == self.rt_request
 
-    @cached_property
-    def request_t(self):
+    def _make_request_fields(self):
         field_list = [
             Field('command_id', tString),
             ] + self.params_fields
         if self.request_type == self.rt_request:
             field_list = [Field('request_id', tString)] + field_list
-        return TRecord(field_list, full_name=self._full_name + ['request'])
+        return field_list
 
-    @cached_property
-    def response_t(self):
+    def _make_response_fields(self):
         assert self.request_type == self.rt_request
         field_list = [
             Field('request_id', tString),
             Field('command_id', tString),
             ] + self.result_fields
-        return TRecord(field_list, full_name=self._full_name + ['response'])
+        return field_list
 
 
 class RequestCmd(IfaceCommand):
@@ -92,7 +94,11 @@ class Interface(TypeNamespace):
         self._full_name = full_name
         self._base = base
         self._command_list = commands
-        self._id2command = {command.command_id: command for command in self._command_list}
+        all_commands = self._command_list
+        if base:
+            all_commands += base._command_list
+        for command in all_commands:
+            self[command.command_id] = command
 
     def __eq__(self, other):
         return (isinstance(other, Interface) and
@@ -104,29 +110,3 @@ class Interface(TypeNamespace):
             self._base,
             tuple(self._command_list),
             ))
-
-    def get_command(self, command_id):
-        command = self._id2command.get(command_id)
-        if command:
-            return command
-        if self._base:
-            return self._base.get_command(command_id)
-        return None
-
-
-# todo: obsolete, remove
-class IfaceRegistry(object):
-
-    def __init__(self):
-        self.registry = {}  # iface id -> Interface
-        ## self.register(get_iface)
-
-    def register(self, iface):
-        assert isinstance(iface, Interface), repr(iface)
-        self.registry[iface.iface_id] = iface
-
-    def is_registered(self, iface_id):
-        return iface_id in self.registry
-
-    def resolve(self, iface_id):
-        return self.registry[iface_id]

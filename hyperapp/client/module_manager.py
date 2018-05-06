@@ -1,7 +1,4 @@
 import logging
-from ..common.htypes import (
-    builtin_type_registry,
-    )
 from ..common import module_manager as common_module_manager
 from .registry import DynamicModuleRegistryProxy
 
@@ -11,7 +8,7 @@ log = logging.getLogger(__name__)
 class ModuleManager(common_module_manager.ModuleManager):
 
     def __init__(self, services):
-        super().__init__(services, services.type_registry_registry, services.module_registry)
+        super().__init__(services, services.types, services.module_registry)
         self._id2module = {}
 
     def init_types(self, services):
@@ -26,7 +23,7 @@ class ModuleManager(common_module_manager.ModuleManager):
     def resolve_ids(self, module_ids):
         modules = []
         for id in module_ids:
-            if self._type_registry_registry.has_type_registry(id): continue  # do not return type modules
+            if id in self._types: continue  # do not return type modules
             module = self._id2module[id]
             modules.append(module)
         return modules

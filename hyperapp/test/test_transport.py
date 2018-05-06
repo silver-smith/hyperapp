@@ -53,7 +53,7 @@ class Services(ServicesBase):
         self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
         ServicesBase.init_services(self)
         self.module_registry = PhonyModuleRegistry()
-        self.module_manager = ModuleManager(self, self.type_registry_registry, self.module_registry)
+        self.module_manager = ModuleManager(self, self.types, self.module_registry)
         self.module_manager.register_meta_hook()
         try:
             self._load_type_modules(type_module_list)

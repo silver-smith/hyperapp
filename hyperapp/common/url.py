@@ -3,7 +3,7 @@ import binascii
 import base64
 from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
-from ..common.htypes import tUrl, tUrlWithRoutes, Interface, IfaceRegistry
+from ..common.htypes import tUrl, tUrlWithRoutes, Interface
 from ..common.packet_coders import packet_coders
 
 

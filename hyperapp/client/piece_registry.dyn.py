@@ -8,13 +8,12 @@ from .registry import Registry
 log = logging.getLogger(__name__)
 
 
-
 class PieceRegistry(Registry):
 
-    def __init__(self, produce_name, type_registry_registry):
+    def __init__(self, produce_name, types):
         super().__init__()
         self._produce_name = produce_name
-        self._type_registry_registry = type_registry_registry
+        self._types = types
 
     @property
     def produce_name(self):
@@ -27,7 +26,7 @@ class PieceRegistry(Registry):
         
     async def resolve(self, piece):
         assert isinstance(piece, href_types.piece), repr(piece)
-        t = self._type_registry_registry.resolve_type(piece.full_type_name)
+        t = self._types.resolve(piece.full_type_name)
         object = packet_coders.decode(piece.encoding, piece.encoded_object, t)
         rec = self._resolve(tuple(piece.full_type_name))
         log.info('producing %s for %s using %s(%s, %s) for object %r',

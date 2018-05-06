@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import abc
 import importlib
 import importlib.machinery
-from .htypes import TypeRegistry, TypeRegistryRegistry
+from .htypes import TypeNamespace
 from .module_registry import ModuleRegistry
 from .type_module_repository import TYPE_MODULES_PACKAGE
 
@@ -18,11 +18,11 @@ DYN_MODULE_EXT = '.dyn.py'
 
 class ModuleManager(object):
 
-    def __init__(self, services, type_registry_registry, module_registry):
-        assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
+    def __init__(self, services, types, module_registry):
+        assert isinstance(types, TypeNamespace), repr(types)
         assert isinstance(module_registry, ModuleRegistry), repr(module_registry)
         self._services = services
-        self._type_registry_registry = type_registry_registry
+        self._types = types
         self._module_registry = module_registry
         self._type_modules = {}  # fullname -> ModuleType
         self._code_modules = {}  # fullname -> tModule
@@ -40,7 +40,7 @@ class ModuleManager(object):
             return importlib.machinery.ModuleSpec(fullname, self)
         if fullname.startswith(TYPE_MODULES_PACKAGE + '.'):
             l = fullname.split('.')
-            if len(l) == 4 and self._type_registry_registry.has_type_registry(l[-1]):
+            if len(l) == 4 and l[-1] in self._types:
                 return importlib.machinery.ModuleSpec(fullname, self)
 
     def exec_module(self, module):
@@ -51,7 +51,7 @@ class ModuleManager(object):
             return
         if module.__name__.startswith(TYPE_MODULES_PACKAGE + '.'):
             l = module.__name__.split('.')
-            if len(l) == 4 and self._type_registry_registry.has_type_registry(l[-1]):
+            if len(l) == 4 and l[-1] in self._types:
                 self._exec_type_module(module, l[-1])
             return
         assert False, repr(module.__name__)
@@ -99,8 +99,8 @@ class ModuleManager(object):
 
     def _exec_type_module(self, module, module_name):
         log.info('    executing type module %r', module_name)
-        type_registry = self._type_registry_registry.resolve_type_registry(module_name)
-        for name, t in type_registry.items():
+        ns = self._types[module_name]
+        for name, t in ns.items():
             module.__dict__[name] = t
             log.info('        resolved type %r -> %r', name, t)
         self._type_modules[module.__name__] = module

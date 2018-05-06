@@ -2,8 +2,7 @@ import os.path
 import sys
 from types import SimpleNamespace
 from hyperapp.common.htypes import (
-    IfaceRegistry,
-    builtin_type_registry_registry,
+    make_root_type_namespace,
     )
 from hyperapp.common.type_module_repository import TypeModuleRepository
 
@@ -14,15 +13,12 @@ TYPE_MODULE_EXT = '.types'
 class ServicesBase(object):
 
     def init_services(self):
-        self.types = SimpleNamespace()
-        self.iface_registry = IfaceRegistry()
-        self.type_registry_registry = builtin_type_registry_registry()
-        self.type_module_repository = TypeModuleRepository(self.iface_registry, self.type_registry_registry)
+        self.types = make_root_type_namespace()
+        self.type_module_repository = TypeModuleRepository(self.types)
 
     def _load_type_module(self, module_name):
         fpath = self.interface_dir.joinpath(module_name + TYPE_MODULE_EXT)
-        ns = self.type_module_repository.load_type_module(module_name, fpath)
-        setattr(self.types, module_name, ns)
+        self.type_module_repository.load_type_module(module_name, fpath)
         
     def _load_type_modules(self, module_name_list):
         for module_name in module_name_list:

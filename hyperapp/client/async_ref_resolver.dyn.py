@@ -12,8 +12,8 @@ MODULE_NAME = 'async_ref_resolver'
 
 class AsyncRefResolver(object):
 
-    def __init__(self, type_registry_registry, ref_resolver):
-        self._type_registry_registry = type_registry_registry
+    def __init__(self, types, ref_resolver):
+        self._types = types
         self._ref_resolver = ref_resolver
         self._async_sources = []
 
@@ -33,7 +33,7 @@ class AsyncRefResolver(object):
         piece = await self.resolve_ref(ref)
         if expected_type:
             assert full_type_name_to_str(piece.full_type_name) == expected_type
-        t = self._type_registry_registry.resolve_type(piece.full_type_name)
+        t = self._types.resolve(piece.full_type_name)
         return packet_coders.decode(piece.encoding, piece.encoded_object, t)
 
 
@@ -41,4 +41,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.async_ref_resolver = AsyncRefResolver(services.type_registry_registry, services.ref_resolver)
+        services.async_ref_resolver = AsyncRefResolver(services.types, services.ref_resolver)

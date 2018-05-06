@@ -1,7 +1,6 @@
 import logging
 
 from ..common.ref import ref_repr, make_object_ref
-from ..common.url import Url
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, save_bundle_to_file
 from .module import Module
 

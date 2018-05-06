@@ -7,18 +7,15 @@ import importlib
 from .util import is_list_inst, encode_path
 from .htypes import (
     Interface,
-    IfaceRegistry,
     tHierarchyClassMeta,
     tNamed,
     tProvidedClass,
     tTypeModule,
     tInterfaceMeta,
-    TypeRegistry,
-    TypeRegistryRegistry,
-    TypeResolver,
-    make_meta_type_registry,
+    TypeNamespace,
     )
-from .type_module import resolve_typedefs, load_types_file
+from .type_module_parser import load_type_module
+from .type_module import resolve_type_module
 
 log = logging.getLogger(__name__)
 
@@ -28,13 +25,9 @@ TYPE_MODULES_PACKAGE = 'hyperapp.common.interface'
 
 class TypeModuleRepository(object):
 
-    def __init__(self, iface_registry, type_registry_registry):
-        assert isinstance(iface_registry, IfaceRegistry), repr(iface_registry)
-        assert isinstance(type_registry_registry, TypeRegistryRegistry), repr(type_registry_registry)
-        self._meta_type_registry = make_meta_type_registry()
-        self._iface_registry = iface_registry
-        self._type_registry_registry = type_registry_registry
-        self._core_types = None  # set when 'core' types module is loaded
+    def __init__(self, types):
+        assert isinstance(types, TypeNamespace), repr(types)
+        self._types = types
         self._class_id2type_module = {}  # str -> tTypeModule
         self._iface_id2type_module = {}  # str -> tTypeModule
         self._module_id2type_module = {}  # str -> tTypeModule
@@ -80,22 +73,8 @@ class TypeModuleRepository(object):
     
     def load_type_module(self, name, fpath):
         log.info('loading type module %r from %r', name, fpath)
-        used_modules, typedefs, type_registry = load_types_file(self._meta_type_registry, self._type_registry_registry, name, fpath)
-        provided_classes = []
-        for typedef in typedefs:
-            t = typedef.type
-            log.info('    registered name %r: %r', typedef.name, t.type_id)
-            if isinstance(t, tHierarchyClassMeta):
-                assert isinstance(t.hierarchy, tNamed), repr(typedef.name)  # tHierarchyClassMeta.hierarchy must be tNamed
-                pclass = tProvidedClass(t.hierarchy.name, t.class_id)
-                provided_classes.append(pclass)
-                log.info('    provides class %s:%s', pclass.hierarchy_id, pclass.class_id)
-        module = tTypeModule(name, provided_classes, used_modules, typedefs)
-        self._register_type_module(module, type_registry)
-        ns = type_registry.to_namespace()
-        if name == 'core':  # we need it ourselves
-            self._core_types = ns
-        return ns
+        module = load_type_module(self._types.builtins, name, fpath)
+        return self._register_type_module(module)
 
     def add_all_type_modules(self, type_module_list):
         assert is_list_inst(type_module_list, tTypeModule), repr(type_module_list)
@@ -106,11 +85,9 @@ class TypeModuleRepository(object):
     def add_type_module(self, module):
         log.info('  adding type module %r', module.module_name)
         assert isinstance(module, tTypeModule), repr(module)
-        resolver = TypeResolver(self._type_registry_registry.get_all_type_registries())
-        type_registry = resolve_typedefs(self._meta_type_registry, resolver, module.module_name, module.typedefs)
-        self._register_type_module(module, type_registry)
+        return self._register_type_module(module)
 
-    def _register_type_module(self, module, type_registry):
+    def _register_type_module(self, module):
         provided_ifaces = []
         for typedef in module.typedefs:
             if isinstance(typedef.type, tInterfaceMeta):
@@ -122,13 +99,13 @@ class TypeModuleRepository(object):
         self._iface_id2type_module.update({
             name: module for name in provided_ifaces})
         self._module_id2type_module[module.module_name] = module
-        self._type_registry_registry.register(module.module_name, type_registry)
-        self._register_ifaces(type_registry)
+        ns = resolve_type_module(self._types, module)
+        self._types[module.module_name] = ns
         fullname = TYPE_MODULES_PACKAGE + '.' + module.module_name
         if fullname in sys.modules:  # already loaded - must reload, or old one will be used by reloaded code modules
             log.debug('  reloading module %r', fullname)
             importlib.reload(sys.modules[fullname])
-
+        return ns
 
     def _get_dep_modules(self, modules):
         if not modules: return []
@@ -137,10 +114,3 @@ class TypeModuleRepository(object):
             dep_modules += [self.get_type_module_by_id(module_id) for module_id in module.used_modules
                             if not self._type_registry_registry.is_builtin_module(module_id)]
         return self._get_dep_modules(dep_modules) + dep_modules
-
-    def _register_ifaces(self, type_registry):
-        for name, t in type_registry.items():
-            if not isinstance(t, Interface): continue
-#            assert self._core_types  # 'core' module must be loaded first
-#            t.register_types(self._core_types)
-#            self._iface_registry.register(t)

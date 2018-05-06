@@ -17,9 +17,9 @@ RECURSION_LIMIT = 100
 
 class RefCollector(Visitor):
 
-    def __init__(self, type_registry_registry, ref_resolver):
+    def __init__(self, types, ref_resolver):
         super().__init__(error_types, packet_types, core_types)
-        self._type_registry_registry = type_registry_registry
+        self._types = types
         self._ref_resolver = ref_resolver
         self._collected_ref_set = None
 
@@ -50,7 +50,7 @@ class RefCollector(Visitor):
         return list(piece_set)
 
     def _collect_refs(self, piece):
-        t = self._type_registry_registry.resolve_type(piece.full_type_name)
+        t = self._types.resolve(piece.full_type_name)
         object = decode_object(t, piece)
         self._collected_ref_set = set()
         self.visit(t, object)
@@ -67,9 +67,9 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        self._type_registry_registry = services.type_registry_registry
+        self._types = services.types
         self._ref_resolver = services.ref_resolver
         services.ref_collector_factory = self._ref_collector_factory
 
     def _ref_collector_factory(self):
-        return RefCollector(self._type_registry_registry, self._ref_resolver)
+        return RefCollector(self._types, self._ref_resolver)

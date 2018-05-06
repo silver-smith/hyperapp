@@ -13,5 +13,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.transport_registry = transport_registry = PieceRegistry('transport', services.type_registry_registry)
+        services.transport_registry = transport_registry = PieceRegistry('transport', services.types)
         services.transport_resolver = PieceResolver(services.async_ref_resolver, transport_registry)

@@ -14,6 +14,17 @@ class TypeNamespace(object):
     def keys(self):
         return self._items.keys()
 
+    def items(self):
+        return self._items.items()
+
+    def resolve(self, full_name):
+        assert full_name
+        value = self[full_name[0]]
+        if len(full_name) == 1:
+            return value
+        assert isinstance(value, TypeNamespace)
+        return value.resolve(full_name[1:])
+
     def __setitem__(self, name, value):
         assert isinstance(name, str), repr(name)
         assert isinstance(value, (Type, TypeNamespace)), repr((name, value))
