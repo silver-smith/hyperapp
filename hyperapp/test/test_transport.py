@@ -26,12 +26,18 @@ type_module_list = [
     'test',
     ]
 
-code_module_list = [
+server_code_module_list = [
     'common.ref_resolver',
     'common.ref_collector',
     'common.ref_registry',
     'server.transport.tcp',
     'server.transport.encrypted',
+    ]
+
+client_code_module_list = [
+    'common.ref_resolver',
+    'common.ref_collector',
+    'common.ref_registry',
     'client.async_ref_resolver',
     'client.piece_registry',
     'client.transport.registry',
@@ -48,7 +54,7 @@ class PhonyModuleRegistry(ModuleRegistry):
 
 class Services(ServicesBase):
 
-    def __init__(self):
+    def __init__(self, code_module_list):
         self.hyperapp_dir = HYPERAPP_DIR
         self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
         ServicesBase.init_services(self)
@@ -59,44 +65,50 @@ class Services(ServicesBase):
             self._load_type_modules(type_module_list)
             for module_name in code_module_list:
                 self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
-        except:
-            self.close()
-            raise
+        finally:
+            self.module_manager.unregister_meta_hook()
 
     def close(self):
-        self.module_manager.unregister_meta_hook()
+        pass
 
 
 @pytest.fixture
-def services():
-    services = Services()
+def client_services():
+    services = Services(client_code_module_list)
+    yield services
+    services.close()
+
+@pytest.fixture
+def server_services():
+    services = Services(server_code_module_list)
     yield services
     services.close()
 
 
 @pytest.fixture
-def transport_ref(services):
-    types = services.types
+def transport_ref(server_services):
+    types = server_services.types
     phony_transport_address = types.phony_transport.address()
-    phony_transport_ref = services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
+    phony_transport_ref = server_services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
     identity = Identity.generate(fast=True)
     encrypted_transport_address = types.encrypted_transport.address(
         public_key_der=identity.public_key.to_der(),
         base_transport_ref=phony_transport_ref)
-    encrypted_transport_ref = services.ref_registry.register_object(types.encrypted_transport.address, encrypted_transport_address)
+    encrypted_transport_ref = server_services.ref_registry.register_object(types.encrypted_transport.address, encrypted_transport_address)
     #return encrypted_transport_ref
     return phony_transport_ref
 
 @pytest.fixture
-def ref_resolver_bundle(services, transport_ref):
-    href_types = services.types.hyper_ref
+def ref_resolver_bundle(server_services, transport_ref):
+    href_types = server_services.types.hyper_ref
     service_ref = href_types.service_ref(['test', 'echo'], REF_RESOLVER_SERVICE_ID, transport_ref)
-    ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
-    ref_collector = services.ref_collector_factory()
+    ref_resolver_ref = server_services.ref_registry.register_object(href_types.service_ref, service_ref)
+    ref_collector = server_services.ref_collector_factory()
     piece_list = ref_collector.collect_piece(ref_resolver_ref)
     return href_types.bundle(ref_resolver_ref, piece_list)
 
 @pytest.mark.asyncio
-async def test_services_should_load(services, ref_resolver_bundle):
-    proxy = await services.proxy_factory.from_ref(ref_resolver_bundle.ref)
+async def test_services_should_load(client_services, ref_resolver_bundle):
+    client_services.ref_registry.register_bundle(ref_resolver_bundle)
+    proxy = await client_services.proxy_factory.from_ref(ref_resolver_bundle.ref)
     await proxy.say('hello')
