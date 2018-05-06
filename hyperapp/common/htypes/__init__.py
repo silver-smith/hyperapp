@@ -1,4 +1,5 @@
 from .htypes import *
+from .namespace import *
 from .hierarchy import *
 from .embedded import *
 from .meta_type import*
@@ -17,8 +18,8 @@ def make_meta_type_registry():
     registry.register('interface', interface_from_data)
     return registry
 
-def builtin_type_registry():
-    registry = TypeRegistry()
+def make_builtins_type_namespace():
+    namespace = TypeNamespace()
     for t in [
         tNone,
         tString,
@@ -33,8 +34,8 @@ def builtin_type_registry():
         tTypeModule,
         tServerRoutes,
         ]:
-        registry.register(t.name, t)
-    return registry
+        namespace[t.name] = t
+    return namespace
 
-def builtin_type_registry_registry(**kw):
-    return TypeRegistryRegistry(dict(builtins=builtin_type_registry(), **kw))
+def make_root_type_namespace():
+    return TypeNamespace(builtins=make_builtins_type_namespace())

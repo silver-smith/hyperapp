@@ -15,6 +15,7 @@ from .htypes import (
     TRecord,
     TList,
     )
+from .namespace import TypeNamespace
 from .hierarchy import TClass, THierarchy, TExceptionHierarchy
 from .interface import IfaceCommand, Interface
 
@@ -25,7 +26,7 @@ tRootMetaType = tMetaType.register('root', fields=[Field('type_id', tString)], f
 
 tImport = TRecord([
     Field('module_name', tString),
-    Field('imported_name', tString),
+    Field('name', tString),
     ])
 
 tTypeDef = TRecord([
@@ -41,8 +42,8 @@ tProvidedClass = TRecord([
 tTypeModule = TRecord([
     Field('module_name', tString),
     Field('import_list', TList(tImport)),
-    Field('typedefs', TList(tTypeDef)),
     Field('provided_classes', TList(tProvidedClass)),
+    Field('typedefs', TList(tTypeDef)),
     ], full_name=['meta_type', 'type_module'])
 
 
@@ -173,50 +174,6 @@ def interface_from_data(meta_type_registry, name_resolver, rec, full_name):
     return Interface(full_name, base_iface, commands)
 
 
-class TypeRegistry(object):
-
-    def __init__(self, next=None):
-        assert next is None or isinstance(next, TypeRegistry), repr(next)
-        self._registry = {}
-        self._next = next
-
-    def register(self, name, t):
-        assert isinstance(name, str), repr(name)
-        assert isinstance(t, (Type, Interface)), repr(t)
-        self._registry[name] = t
-
-    def has_name(self, name):
-        if name in self._registry: return True
-        if self._next:
-            return self._next.has_name(name)
-        return False
-
-    def get_name(self, name):
-        if name in self._registry:
-            return self._registry[name]
-        if self._next:
-            return self._next.get_name(name)
-        return None
-
-    def keys(self):
-        return self._registry.keys()
-
-    def items(self):
-        return self._registry.items()
-
-    def resolve(self, name):
-        assert isinstance(name, str), repr(name)
-        t = self._registry.get(name)
-        if t is not None:
-            return t
-        if self._next:
-            return self._next.resolve(name)
-        raise KeyError('Unknown type: %r' % name)
-
-    def to_namespace(self):
-        return SimpleNamespace(**dict(self._registry.items()))
-
-
 class MetaTypeRegistry(object):
 
     def __init__(self):
@@ -227,44 +184,12 @@ class MetaTypeRegistry(object):
         self._registry[type_id] = t
 
     def resolve(self, name_resolver, rec, full_name=None):
-        assert isinstance(name_resolver, TypeResolver), repr(name_resolver)
+        assert isinstance(name_resolver, TypeNameResolver), repr(name_resolver)
         assert full_name is None or is_list_inst(full_name, str), repr(full_name)
         assert isinstance(rec, tRootMetaType), repr(rec)
         factory = self._registry.get(rec.type_id)
         assert factory, 'Unknown type_id: %r' % rec.type_id
         return factory(self, name_resolver, rec, full_name)
-
-
-class TypeRegistryRegistry(object):
-
-    def __init__(self, builtin_registries=None):
-        self._registry = builtin_registries or {}  # str -> TypeRegistry
-        self._builtin_module_ids = set(builtin_registries.keys())
-            
-    def register(self, module_name, type_registry):
-        assert isinstance(module_name, str), repr(module_name)
-        assert isinstance(type_registry, TypeRegistry), repr(type_registry)
-        self._registry[module_name] = type_registry
-
-    def is_builtin_module(self, module_name):
-        return module_name in self._builtin_module_ids
-
-    def has_type_registry(self, module_name):
-        return module_name in self._registry
-
-    def resolve_type_registry(self, module_name):
-        return self._registry[module_name]
-
-    def get_all_type_registries(self):
-        return list(self._registry.values())
-
-    def resolve_type(self, full_type_name):
-        assert len(full_type_name) == 2, repr(full_type_name)  # currently it is: <module>.<name>
-        registry = self._registry.get(full_type_name[0])
-        assert registry, 'Unknown type module name: %s' % full_type_name[0]
-        t = registry.get_name(full_type_name[1])
-        assert t, 'Unknown type: %s' % '.'.join(full_type_name)
-        return t
 
 
 class UnknownTypeError(KeyError):
@@ -274,25 +199,15 @@ class UnknownTypeError(KeyError):
         self.name = name
 
 
-class TypeResolver(object):
+class TypeNameResolver(object):
 
-    def __init__(self, type_registry_list=None, next=None):
-        assert is_list_inst(type_registry_list or [], TypeRegistry), repr(type_registry_list)
-        self._type_registry_list = type_registry_list or []
-        self._next = next
-
-    def has_name(self, name):
-        for registry in self._type_registry_list:
-            if registry.has_name(name):
-                return True
-        if self._next and self._next.has_name(name):
-            return True
-        return False
+    def __init__(self, type_namespace_list):
+        assert type_namespace_list is None or is_list_inst(type_namespace_list, TypeNamespace), repr(type_namespace_list)
+        self._type_namespace_list = type_namespace_list or []
 
     def resolve(self, name):
-        for registry in self._type_registry_list:
-            if registry.has_name(name):
-                return registry.resolve(name)
-        if self._next:
-            return self._next.resolve(name)
+        for namespace in self._type_namespace_list:
+            value = namespace.get(name)
+            if value is not None:
+                return value
         raise UnknownTypeError(name)

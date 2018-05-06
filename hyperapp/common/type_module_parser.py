@@ -18,9 +18,6 @@ from .htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
-    TypeRegistry,
-    TypeResolver,
-    UnknownTypeError,
     )
 
 
@@ -98,8 +95,8 @@ def p_module_contents_1(p):
     p[0] = tTypeModule(
         module_name=p.parser.module_name,
         import_list=p[1],
-        typedefs=p[3],
         provided_classes=p.parser.provided_class_list,
+        typedefs=p[3],
         )
 
 def p_module_contents_2(p):
@@ -107,8 +104,8 @@ def p_module_contents_2(p):
     p[0] = tTypeModule(
         module_name=p.parser.module_name,
         import_list=[],
-        typedefs=p[1],
         provided_classes=p.parser.provided_class_list,
+        typedefs=p[1],
         )
 
 
@@ -124,6 +121,7 @@ def p_import_list_2(p):
 def p_import_def(p):
     'import_def : FROM NAME IMPORT name_list'
     p[0] = [tImport(p[2], name) for name in p[4]]
+    p.parser.known_name_set |= set(p[4])
 
 def p_name_list_1(p):
     'name_list : NAME'
@@ -454,6 +452,10 @@ def parse_type_module(builtins, module_name, fname, contents, debug=False):
     assert module, 'Failed to parse %r' % fname
     return module
  
+def load_type_module(builtins, module_name, fpath, debug=False):
+    contents = fpath.read_text()
+    return parse_type_module(builtins, module_name, fpath, contents, debug)
+
 
 if __name__ == '__main__':
     main()

@@ -1,63 +1,53 @@
 import os.path
-import unittest
 from pathlib import Path
 
 from hyperapp.common.htypes import (
     tInt,
     tString,
+    tBool,
+    TOptional,
     Field,
     TRecord,
     TList,
     TClass,
+    tProvidedClass,
     tTypeDef,
     t_named,
-    make_meta_type_registry,
-    builtin_type_registry,
-    builtin_type_registry_registry,
-    TypeResolver,
+    make_root_type_namespace,
     )
-from hyperapp.common.type_module import (
-    resolve_typedefs_from_yaml_file,
-    load_types_file,
-    resolve_typedefs,
-    )
-from hyperapp.common import dict_coders, cdr_coders
+from hyperapp.common.type_module_parser import load_type_module
+from hyperapp.common.type_module import resolve_type_module
 
 
 TEST_TYPE_MODULES_DIR = Path(__file__).parent.resolve()
 
 
-class TypeModuleTest(unittest.TestCase):
+def make_fpath(module_name):
+    return TEST_TYPE_MODULES_DIR / module_name
 
-    def setUp(self):
-        self.meta_type_registry = make_meta_type_registry()
+def test_types_module():
+    types = make_root_type_namespace()
+    module = load_type_module(types.builtins, 'test_module1', make_fpath('test_module1.types'))
+    ns = resolve_type_module(types, module)
 
-    def make_fpath(self, module_name):
-        return TEST_TYPE_MODULES_DIR / module_name
+    assert tInt == ns.get('some_int')
 
-    def test_types_module(self):
-        type_registry_registry = builtin_type_registry_registry()
-        used_modules1, typedefs1, registry1 = load_types_file(
-            self.meta_type_registry, type_registry_registry, 'test_module1', self.make_fpath('test_module1.types'))
+    assert 'object' in ns
+    object_t = ns.object
 
-        self.assertTrue(registry1.has_name('some_int'))
-        self.assertEqual(tInt, registry1.get_name('some_int'))
+    assert 'simple_class' in ns
+    simple_class = ns.simple_class
+    assert TClass(object_t, 'simple_2', TRecord([])) == simple_class
 
-        self.assertTrue(registry1.has_name('object'))
-        object_t = registry1.get_name('object')
+    assert 'text_object' in ns
+    assert TClass(object_t, 'text_2', base=simple_class, trec=TRecord([Field('text', tString)])) == ns.text_object
 
-        self.assertTrue(registry1.has_name('simple_class'))
-        simple_class = registry1.get_name('simple_class')
-        self.assertEqual(TClass(object_t, 'simple_2', TRecord([])), simple_class)
+    assert [] == module.import_list
 
-        self.assertTrue(registry1.has_name('text_object'))
-        self.assertEqual(TClass(object_t, 'text_2', base=simple_class, trec=TRecord([Field('text', tString)])),
-                         registry1.get_name('text_object'))
+    types[module.module_name] = ns
+    module2 = load_type_module(types.builtins, 'test_module2', make_fpath('test_module2.types'))
+    assert tProvidedClass('object', 'text_object_2') in module2.provided_classes
 
-        self.assertEqual([], used_modules1)
+    ns2 = resolve_type_module(types, module2)
 
-        type_registry_registry.register('test_module1', registry1)
-
-        used_modules2, typedefs2, registry2 = load_types_file(
-            self.meta_type_registry, type_registry_registry, 'test_module2', self.make_fpath('test_module2.types'))
-
+    assert TOptional(TList(tBool)) == ns2.some_bool_list_opt

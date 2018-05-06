@@ -15,7 +15,7 @@ from .htypes import (
     tIfaceId,
     tCommand,
     )
-from .hierarchy import THierarchy
+from .meta_type import TypeNamespace
 
 log = logging.getLogger(__name__)
 
@@ -83,11 +83,12 @@ class NotificationCmd(IfaceCommand):
         IfaceCommand.__init__(self, full_name, self.rt_notification, command_id, params_fields)
 
 
-class Interface(object):
+class Interface(TypeNamespace):
 
     def __init__(self, full_name, base=None, commands=None):
         assert base is None or isinstance(base, Interface), repr(base)
         assert is_list_inst(commands or [], IfaceCommand), repr(commands)
+        super().__init__()
         self._full_name = full_name
         self._base = base
         self._command_list = commands
