@@ -1,6 +1,7 @@
 import uuid
 
-from ..common.interface import packet as packet_types
+from ..common.htypes import EncodableEmbedded
+from ..common.interface import hyper_ref as href_types
 from .module import Module
 
 
@@ -14,11 +15,19 @@ class ProxyMethod(object):
         self._command = command
 
     async def __call__(self, *args, **kw):
-        fields = (self._command.command_id,) + args
         if self._command.is_request:
-            fields = (str(uuid.uuid4()),) + fields
-        request = self._command.request(*fields, **kw)
-        request_ref = self._ref_registry.register_object(self._command.request, request)
+            request_id = str(uuid.uuid4())
+        else:
+            request_id = None
+        params = self._command.request(*args, **kw)
+        request = href_types.service_request(
+            iface_full_type_name=self._iface.full_name,
+            service_id=self._service_id,
+            command_id=self._command.command_id,
+            request_id=request_id,
+            params=EncodableEmbedded(self._command.request, params),
+            )
+        request_ref = self._ref_registry.register_object(href_types.service_request, request)
         self._transport.send(request_ref)
 
 

@@ -37,7 +37,7 @@ class IfaceCommand(TypeNamespace):
         self.command_id = command_id
         self.params_fields = params_fields or []
         self.result_fields = result_fields or []
-        self['request'] = TRecord(self._make_request_fields(), full_name=self._full_name + ['request'])
+        self['request'] = TRecord(self.params_fields, full_name=self._full_name + ['request'])
         if self.is_request:
             self['response'] = TRecord(self._make_response_fields(), full_name=self._full_name + ['response'])
 
@@ -110,3 +110,7 @@ class Interface(TypeNamespace):
             self._base,
             tuple(self._command_list),
             ))
+
+    @property
+    def full_name(self):
+        return self._full_name

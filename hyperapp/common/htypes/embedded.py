@@ -8,6 +8,7 @@ from ..packet_coders import packet_coders
 class EncodableEmbedded(object):
 
     def __init__(self, t, value):
+        assert isinstance(value, t)
         self.type = t
         self.value = value
 

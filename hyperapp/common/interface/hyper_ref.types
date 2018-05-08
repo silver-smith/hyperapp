@@ -23,6 +23,14 @@ bundle = record:
     piece_list: piece list
 
 
+service_request = record:
+    iface_full_type_name: full_type_name
+    service_id: string
+    command_id: string
+    request_id: string opt
+    params: embedded
+
+
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref
 
