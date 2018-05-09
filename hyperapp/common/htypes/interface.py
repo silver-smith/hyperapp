@@ -56,13 +56,13 @@ class IfaceCommand(TypeNamespace):
     def is_request(self):
         return self.request_type == self.rt_request
 
-    def _make_request_fields(self):
-        field_list = [
-            Field('command_id', tString),
-            ] + self.params_fields
-        if self.request_type == self.rt_request:
-            field_list = [Field('request_id', tString)] + field_list
-        return field_list
+#    def _make_request_fields(self):
+#        field_list = [
+#            Field('command_id', tString),
+#            ] + self.params_fields
+#        if self.request_type == self.rt_request:
+#            field_list = [Field('request_id', tString)] + field_list
+#        return field_list
 
     def _make_response_fields(self):
         assert self.request_type == self.rt_request

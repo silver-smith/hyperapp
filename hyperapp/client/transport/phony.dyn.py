@@ -1,6 +1,8 @@
 import logging
 
+from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import phony_transport as phony_transport_types
+from hyperapp.common.packet_coders import packet_coders
 from ..module import ClientModule
 
 log = logging.getLogger(__name__)
@@ -28,6 +30,13 @@ class BundleList(object):
 
     def put(self, bundle):
         self._bundle_list.append(bundle)
+
+    def pop(self, bundle_t):
+        bundle = self._bundle_list.pop(0)
+        # we must recode bundle to server's bundle type
+        encoding = 'cdr'
+        encoded_bundle = packet_coders.encode(encoding, bundle, href_types.bundle)
+        return packet_coders.decode(encoding, encoded_bundle, bundle_t)
 
 
 class ThisModule(ClientModule):

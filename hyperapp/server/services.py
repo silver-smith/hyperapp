@@ -41,6 +41,7 @@ type_module_list = [
     ]
 
 code_module_list = [
+    'common.ref',
     'common.ref_resolver',
     'common.ref_registry',
     'common.ref_collector',
@@ -52,8 +53,10 @@ code_module_list = [
 #    'server.tcp_transport',
 #    'server.encrypted_transport',
 #    'server.tcp_server',
+    'server.transport.registry',
     'server.transport.tcp',
     'server.transport.encrypted',
+    'server.remoting',
     'server.ref_resolver_service',
     # 'server.form',
 #    'server.admin',

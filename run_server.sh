@@ -12,6 +12,7 @@ watch_mask_list=(
 	hyperapp/common/*.py
 	hyperapp/common/interface/*.types
 	hyperapp/server/*.py
+	hyperapp/server/transport/*.py
 	hyperapp/server/*.dyn.py
 	hyperapp/server/*.yaml
 	dynamic_modules/*

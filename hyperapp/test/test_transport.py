@@ -27,14 +27,18 @@ type_module_list = [
     ]
 
 server_code_module_list = [
+    'common.ref',
     'common.ref_resolver',
     'common.ref_collector',
     'common.ref_registry',
+    'server.transport.registry',
     'server.transport.tcp',
     'server.transport.encrypted',
+    'server.remoting',
     ]
 
 client_code_module_list = [
+    'common.ref',
     'common.ref_resolver',
     'common.ref_collector',
     'common.ref_registry',
@@ -108,7 +112,10 @@ def ref_resolver_bundle(server_services, transport_ref):
     return href_types.bundle(ref_resolver_ref, piece_list)
 
 @pytest.mark.asyncio
-async def test_services_should_load(client_services, ref_resolver_bundle):
+async def test_services_should_load(client_services, server_services, ref_resolver_bundle):
     client_services.ref_registry.register_bundle(ref_resolver_bundle)
     proxy = await client_services.proxy_factory.from_ref(ref_resolver_bundle.ref)
     await proxy.say('hello')
+    request_bundle = client_services.phony_transport_bundle_list.pop(client_services.types.hyper_ref.bundle)
+    server_services.ref_registry.register_bundle(request_bundle)
+    server_services.transport_resolver.resolve(request_bundle.ref)
