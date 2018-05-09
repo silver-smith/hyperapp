@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from hyperapp.common.identity import Identity
+from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common.module_registry import ModuleRegistry
 from hyperapp.common.services import ServicesBase
 from hyperapp.common.module_manager import ModuleManager
@@ -11,6 +12,7 @@ from hyperapp.common import dict_coders, cdr_coders  # self-registering
 
 HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
 REF_RESOLVER_SERVICE_ID = 'ref_resolver'  # todo: copy-paste from server.server_ref_resolver
+BUNDLE_ENCODING = 'json'
 
 
 type_module_list = [
@@ -76,46 +78,52 @@ class Services(ServicesBase):
         pass
 
 
-@pytest.fixture
-def client_services():
-    services = Services(client_code_module_list)
-    yield services
-    services.close()
+def encode_bundle(services, bundle):
+    return packet_coders.encode(BUNDLE_ENCODING, bundle, services.types.hyper_ref.bundle)
 
-@pytest.fixture
-def server_services():
-    services = Services(server_code_module_list)
-    yield services
-    services.close()
+def decode_bundle(services, encoded_bundle):
+    return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, services.types.hyper_ref.bundle)
 
-
-@pytest.fixture
-def transport_ref(server_services):
-    types = server_services.types
+def make_transport_ref(services):
+    types = services.types
     phony_transport_address = types.phony_transport.address()
-    phony_transport_ref = server_services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
+    phony_transport_ref = services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
     identity = Identity.generate(fast=True)
     encrypted_transport_address = types.encrypted_transport.address(
         public_key_der=identity.public_key.to_der(),
         base_transport_ref=phony_transport_ref)
-    encrypted_transport_ref = server_services.ref_registry.register_object(types.encrypted_transport.address, encrypted_transport_address)
+    encrypted_transport_ref = services.ref_registry.register_object(types.encrypted_transport.address, encrypted_transport_address)
     #return encrypted_transport_ref
     return phony_transport_ref
 
-@pytest.fixture
-def ref_resolver_bundle(server_services, transport_ref):
-    href_types = server_services.types.hyper_ref
+def make_echo_service_bundle():
+    services = Services(server_code_module_list)
+    transport_ref = make_transport_ref(services)
+    href_types = services.types.hyper_ref
     service_ref = href_types.service_ref(['test', 'echo'], REF_RESOLVER_SERVICE_ID, transport_ref)
-    ref_resolver_ref = server_services.ref_registry.register_object(href_types.service_ref, service_ref)
-    ref_collector = server_services.ref_collector_factory()
+    ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
+    ref_collector = services.ref_collector_factory()
     piece_list = ref_collector.collect_piece(ref_resolver_ref)
-    return href_types.bundle(ref_resolver_ref, piece_list)
+    echo_service_bundle = href_types.bundle(ref_resolver_ref, piece_list)
+    return encode_bundle(services, echo_service_bundle)
+
+async def make_request_bundle(encoded_echo_service_bundle):
+    services = Services(client_code_module_list)
+    echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
+    services.ref_registry.register_bundle(echo_service_bundle)
+    proxy = await services.proxy_factory.from_ref(echo_service_bundle.ref)
+    await proxy.say('hello')
+    request_bundle = services.phony_transport_bundle_list.pop()
+    return encode_bundle(services, request_bundle)
+
+def process_request_bundle(encoded_request_bundle):
+    services = Services(server_code_module_list)
+    request_bundle = decode_bundle(services, encoded_request_bundle)
+    services.ref_registry.register_bundle(request_bundle)
+    services.transport_resolver.resolve(request_bundle.ref)
 
 @pytest.mark.asyncio
-async def test_services_should_load(client_services, server_services, ref_resolver_bundle):
-    client_services.ref_registry.register_bundle(ref_resolver_bundle)
-    proxy = await client_services.proxy_factory.from_ref(ref_resolver_bundle.ref)
-    await proxy.say('hello')
-    request_bundle = client_services.phony_transport_bundle_list.pop(client_services.types.hyper_ref.bundle)
-    server_services.ref_registry.register_bundle(request_bundle)
-    server_services.transport_resolver.resolve(request_bundle.ref)
+async def test_services_should_load():
+    encoded_echo_service_bundle = make_echo_service_bundle()
+    encoded_request_bundle = await make_request_bundle(encoded_echo_service_bundle)
+    process_request_bundle(encoded_request_bundle)
