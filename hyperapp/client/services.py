@@ -38,8 +38,8 @@ DYN_MODULE_EXT = '.dyn.py'
 class Services(ServicesBase):
 
     def __init__(self):
+        super().__init__()
         self._dir = os.path.abspath(os.path.dirname(__file__))
-        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../common/interface'))
         ServicesBase.init_services(self)
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
         self.module_registry = ClientModuleRegistry()

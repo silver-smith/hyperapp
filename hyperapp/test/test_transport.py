@@ -61,8 +61,9 @@ class PhonyModuleRegistry(ModuleRegistry):
 class Services(ServicesBase):
 
     def __init__(self, code_module_list):
-        self.hyperapp_dir = HYPERAPP_DIR
-        self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
+        super().__init__()
+        self.on_start = []
+        self.on_stop = []
         ServicesBase.init_services(self)
         self.module_registry = PhonyModuleRegistry()
         self.module_manager = ModuleManager(self, self.types, self.module_registry)
@@ -73,6 +74,14 @@ class Services(ServicesBase):
                 self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
         finally:
             self.module_manager.unregister_meta_hook()
+
+    def start(self):
+        for start in self.on_start:
+            start()
+
+    def stop(self):
+        for stop in self.on_stop:
+            stop()
 
     def close(self):
         pass

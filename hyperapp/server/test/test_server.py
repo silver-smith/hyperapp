@@ -179,8 +179,7 @@ class StubSession(TransportSession):
 class Services(ServicesBase):
 
     def __init__(self):
-        self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
-        self.interface_dir = HYPERAPP_DIR / 'hyperapp' / 'common' / 'interface'
+        super().__init__()
         self.server_dir = HYPERAPP_DIR / 'hyperapp' / 'server'
         self.dynamic_module_dir = HYPERAPP_DIR / 'dynamic_modules'
         ServicesBase.init_services(self)

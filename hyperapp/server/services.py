@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 
 DYN_MODULE_EXT = '.dyn.py'
+HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 
 
 type_module_list = [
@@ -70,14 +71,16 @@ code_module_list = [
 #    'server.hyperref_test',
     ]
 
+
 class Services(ServicesBase):
 
     def __init__(self, start_args):
+        super().__init__()
         self.start_args = start_args
-        self.server_dir = Path(__file__).parent.resolve()
-        self.hyperapp_dir = self.server_dir.parent
-        self.interface_dir = Path(__file__).parent.joinpath('../common/interface').resolve()
-        self.dynamic_module_dir = Path(__file__).parent.joinpath('../../dynamic_modules').resolve()
+        self.server_dir = HYPERAPP_DIR / 'hyperapp' / 'server'
+        self.dynamic_module_dir = HYPERAPP_DIR / 'dynamic_modules'
+        self.on_start = []
+        self.on_stop = []
         ServicesBase.init_services(self)
         self.module_registry = ModuleRegistry()
         self.module_manager = ModuleManager(self, self.types, self.module_registry)
@@ -93,8 +96,8 @@ class Services(ServicesBase):
         self.module_registry.init_phases()
 
     def start(self):
-        pass
-        #self.tcp_server.start()
+        for start in self.on_start:
+            start()
 
     @property
     def is_running(self):
@@ -102,8 +105,8 @@ class Services(ServicesBase):
         #return self.tcp_server.is_running
 
     def stop(self):
-        pass
-        #self.tcp_server.stop()
+        for stop in self.on_stop:
+            stop()
 
     def _load_server_modules(self):
         for module_name in code_module_list:

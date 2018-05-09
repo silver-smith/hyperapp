@@ -78,7 +78,7 @@ class PhonyIdentityController(object):
 class Services(ServicesBase):
 
     def __init__(self):
-        self.interface_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../common/interface'))
+        super().__init__()
         ServicesBase.init_services(self)
         self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
         self.module_registry = ClientModuleRegistry()

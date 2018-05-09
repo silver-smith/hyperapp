@@ -1,6 +1,7 @@
-import os.path
+from pathlib import Path
 import sys
 from types import SimpleNamespace
+
 from hyperapp.common.htypes import (
     make_root_type_namespace,
     )
@@ -8,9 +9,14 @@ from hyperapp.common.type_module_repository import TypeModuleRepository
 
 
 TYPE_MODULE_EXT = '.types'
+HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 
 
 class ServicesBase(object):
+
+    def __init__(self):
+        self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
+        self.interface_dir = HYPERAPP_DIR / 'hyperapp' / 'common' / 'interface'
 
     def init_services(self):
         self.types = make_root_type_namespace()

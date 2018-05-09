@@ -40,7 +40,7 @@ class ResourcesManager(object):
 class Services(ServicesBase):
 
     def __init__(self):
-        self.interface_dir = HYPERAPP_DIR / 'common' / 'interface'
+        super().__init__()
         ServicesBase.init_services(self)
         self._load_type_modules([
                 'resource',
