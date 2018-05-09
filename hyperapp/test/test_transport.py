@@ -11,7 +11,6 @@ from hyperapp.common import dict_coders, cdr_coders  # self-registering
 
 
 HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
-REF_RESOLVER_SERVICE_ID = 'ref_resolver'  # todo: copy-paste from server.server_ref_resolver
 BUNDLE_ENCODING = 'json'
 
 
@@ -37,6 +36,7 @@ server_code_module_list = [
     'server.transport.tcp',
     'server.transport.encrypted',
     'server.remoting',
+    'server.echo_service',
     ]
 
 client_code_module_list = [
@@ -100,7 +100,7 @@ def make_echo_service_bundle():
     services = Services(server_code_module_list)
     transport_ref = make_transport_ref(services)
     href_types = services.types.hyper_ref
-    service_ref = href_types.service_ref(['test', 'echo'], REF_RESOLVER_SERVICE_ID, transport_ref)
+    service_ref = href_types.service_ref(['test', 'echo'], services.ECHO_SERVICE_ID, transport_ref)
     ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
     ref_collector = services.ref_collector_factory()
     piece_list = ref_collector.collect_piece(ref_resolver_ref)
