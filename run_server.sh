@@ -6,16 +6,7 @@ cd $(dirname $0)
 
 killall python3 || true
 
-watch_mask_list=(
-	*.py
-	hyperapp/common/htypes/*.py
-	hyperapp/common/*.py
-	hyperapp/common/interface/*.types
-	hyperapp/server/*.py
-	hyperapp/server/transport/*.py
-	hyperapp/server/*.dyn.py
-	hyperapp/server/*.yaml
-	dynamic_modules/*
-)
+# using python autoreload script:
+#   https://gist.github.com/jmingtan/1171288
 
-autoreload.sh "${watch_mask_list[*]}" ./run_server.py server.identity.pem
+$HOME/bin/autoreload.py -f '*.types' -f '*.yaml' -f '*.py'  ./run_server.py server.identity.pem
