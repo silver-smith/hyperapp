@@ -23,17 +23,24 @@ class ThisModule(ServerModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
+        self._ref_registry = services.ref_registry
         services.service_registry = service_registry = ServiceRegistry()
         services.transport_registry.register(href_types.service_request, self._process_request, services.types, service_registry)
 
-    def _process_request(self, request, types, service_registry):
-        iface = types.resolve(request.iface_full_type_name)
-        command = iface[request.command_id]
-        params = request.params.decode(command.request)
-        servant = service_registry.resolve(request.service_id)
-        request_util = Request(command)
-        method = getattr(servant, 'remote_' + request.command_id, None)
-        assert method, '%r does not implement method remote_%s' % (servant, request.command_id)
-        response = method(request_util, **params._asdict())
-        assert response is None or isinstance(response, Response)
-        assert 0, response._result
+    def _process_request(self, service_request, types, service_registry):
+        iface = types.resolve(service_request.iface_full_type_name)
+        command = iface[service_request.command_id]
+        params = service_request.params.decode(command.request)
+        servant = service_registry.resolve(service_request.service_id)
+        request = Request(command)
+        method = getattr(servant, 'remote_' + service_request.command_id, None)
+        assert method, '%r does not implement method remote_%s' % (servant, service_request.command_id)
+        response = method(request, **params._asdict())
+        if not command.is_request:
+            assert not response, 'No results are expected from notifications'
+            return
+        assert response, 'Use request.make_response... method to return results from requests'
+        assert isinstance(response, Response)
+        service_response = response.make_service_response(command, service_request.request_id)
+        response_ref = self._ref_registry.register_object(href_types.service_response, service_response)
+        assert 0, service_response

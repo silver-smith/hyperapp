@@ -12,6 +12,9 @@ class EncodableEmbedded(object):
         self.type = t
         self.value = value
 
+    def __repr__(self):
+        return '<EncodableEmbedded: %r>' % self.value
+
     def __hash__(self):
         return hash((self.type, self.value))
 

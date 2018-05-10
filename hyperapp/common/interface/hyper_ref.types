@@ -30,6 +30,11 @@ service_request = record:
     request_id: string opt
     params: embedded
 
+service_response = record:
+    request_id: string
+    is_succeeded: bool
+    result_or_error: embedded
+
 
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref

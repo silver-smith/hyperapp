@@ -1,4 +1,7 @@
 
+from ..common.interface import hyper_ref as href_types
+from ..common.htypes import EncodableEmbedded
+
 
 class Request(object):
 
@@ -6,6 +9,7 @@ class Request(object):
         self._command = command
 
     def make_response(self, result=None, error=None):
+        assert self._command.is_request, 'This is not a request, response is not expected here'
         result_t = self._command.response
         if result is None and error is None:
             result = result_t()
@@ -22,3 +26,12 @@ class Response(object):
     def __init__(self, result, error):
         self._result = result
         self._error = error
+
+    def make_service_response(self, command, request_id):
+        if self._error:
+            assert 0  # todo
+        return href_types.service_response(
+            request_id=request_id,
+            is_succeeded=True,
+            result_or_error=EncodableEmbedded(command.response, self._result),
+            )
