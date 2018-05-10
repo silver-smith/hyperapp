@@ -44,6 +44,7 @@ client_code_module_list = [
     'client.piece_registry',
     'client.transport.registry',
     'client.transport.phony',
+    'client.remoting',
     'client.remoting_proxy',
     ]
 
@@ -73,8 +74,7 @@ def make_echo_service_bundle():
     service_ref = href_types.service_ref(['test', 'echo'], services.ECHO_SERVICE_ID, transport_ref)
     ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
     ref_collector = services.ref_collector_factory()
-    piece_list = ref_collector.collect_piece(ref_resolver_ref)
-    echo_service_bundle = href_types.bundle(ref_resolver_ref, piece_list)
+    echo_service_bundle = ref_collector.make_bundle(ref_resolver_ref)
     return encode_bundle(services, echo_service_bundle)
 
 async def make_request_bundle(encoded_echo_service_bundle):
@@ -90,10 +90,14 @@ def process_request_bundle(encoded_request_bundle):
     services = Services(type_module_list, server_code_module_list)
     request_bundle = decode_bundle(services, encoded_request_bundle)
     services.ref_registry.register_bundle(request_bundle)
-    services.transport_resolver.resolve(request_bundle.ref)
+    service_response = services.transport_resolver.resolve(request_bundle.ref)
+    service_response_ref = services.ref_registry.register_object(services.types.hyper_ref.service_response, service_response)
+    ref_collector = services.ref_collector_factory()
+    service_response_bundle = ref_collector.make_bundle(service_response_ref)
+    return encode_bundle(services, service_response_bundle)
 
 @pytest.mark.asyncio
 async def test_services_should_load():
     encoded_echo_service_bundle = make_echo_service_bundle()
     encoded_request_bundle = await make_request_bundle(encoded_echo_service_bundle)
-    process_request_bundle(encoded_request_bundle)
+    encoded_response_bundle = process_request_bundle(encoded_request_bundle)

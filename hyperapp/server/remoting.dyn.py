@@ -42,5 +42,5 @@ class ThisModule(ServerModule):
         assert response, 'Use request.make_response... method to return results from requests'
         assert isinstance(response, Response)
         service_response = response.make_service_response(command, service_request.request_id)
-        response_ref = self._ref_registry.register_object(href_types.service_response, service_response)
-        assert 0, service_response
+        return service_response
+    # todo: do not use piece registry to produce responses, service_response is not the corresponding piece for request ref
