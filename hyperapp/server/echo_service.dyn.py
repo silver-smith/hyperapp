@@ -14,6 +14,7 @@ class EchoService(object):
 
     def remote_say(self, request, message):
         log.info('Echo.say(%r): message=%r', request, message)
+        return request.make_response_result(message)
 
 
 class ThisModule(ServerModule):

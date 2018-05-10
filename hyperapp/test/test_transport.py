@@ -1,13 +1,10 @@
-
 from pathlib import Path
 import pytest
 
 from hyperapp.common.identity import Identity
 from hyperapp.common.packet_coders import packet_coders
-from hyperapp.common.module_registry import ModuleRegistry
-from hyperapp.common.services import ServicesBase
-from hyperapp.common.module_manager import ModuleManager
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
+from hyperapp.test.test_services import Services
 
 
 HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
@@ -33,8 +30,7 @@ server_code_module_list = [
     'common.ref_collector',
     'common.ref_registry',
     'server.transport.registry',
-    'server.transport.tcp',
-    'server.transport.encrypted',
+    'server.request',
     'server.remoting',
     'server.echo_service',
     ]
@@ -50,41 +46,6 @@ client_code_module_list = [
     'client.transport.phony',
     'client.remoting_proxy',
     ]
-
-
-class PhonyModuleRegistry(ModuleRegistry):
-
-    def register(self, module):
-        pass
-
-
-class Services(ServicesBase):
-
-    def __init__(self, code_module_list):
-        super().__init__()
-        self.on_start = []
-        self.on_stop = []
-        ServicesBase.init_services(self)
-        self.module_registry = PhonyModuleRegistry()
-        self.module_manager = ModuleManager(self, self.types, self.module_registry)
-        self.module_manager.register_meta_hook()
-        try:
-            self._load_type_modules(type_module_list)
-            for module_name in code_module_list:
-                self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
-        finally:
-            self.module_manager.unregister_meta_hook()
-
-    def start(self):
-        for start in self.on_start:
-            start()
-
-    def stop(self):
-        for stop in self.on_stop:
-            stop()
-
-    def close(self):
-        pass
 
 
 def encode_bundle(services, bundle):
@@ -106,7 +67,7 @@ def make_transport_ref(services):
     return phony_transport_ref
 
 def make_echo_service_bundle():
-    services = Services(server_code_module_list)
+    services = Services(type_module_list, server_code_module_list)
     transport_ref = make_transport_ref(services)
     href_types = services.types.hyper_ref
     service_ref = href_types.service_ref(['test', 'echo'], services.ECHO_SERVICE_ID, transport_ref)
@@ -117,7 +78,7 @@ def make_echo_service_bundle():
     return encode_bundle(services, echo_service_bundle)
 
 async def make_request_bundle(encoded_echo_service_bundle):
-    services = Services(client_code_module_list)
+    services = Services(type_module_list, client_code_module_list)
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.ref_registry.register_bundle(echo_service_bundle)
     proxy = await services.proxy_factory.from_ref(echo_service_bundle.ref)
@@ -126,7 +87,7 @@ async def make_request_bundle(encoded_echo_service_bundle):
     return encode_bundle(services, request_bundle)
 
 def process_request_bundle(encoded_request_bundle):
-    services = Services(server_code_module_list)
+    services = Services(type_module_list, server_code_module_list)
     request_bundle = decode_bundle(services, encoded_request_bundle)
     services.ref_registry.register_bundle(request_bundle)
     services.transport_resolver.resolve(request_bundle.ref)

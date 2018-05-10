@@ -39,7 +39,7 @@ class IfaceCommand(TypeNamespace):
         self.result_fields = result_fields or []
         self['request'] = TRecord(self.params_fields, full_name=self._full_name + ['request'])
         if self.is_request:
-            self['response'] = TRecord(self._make_response_fields(), full_name=self._full_name + ['response'])
+            self['response'] = TRecord(self.result_fields, full_name=self._full_name + ['response'])
 
     def __eq__(self, other):
         assert isinstance(other, IfaceCommand), repr(other)
@@ -53,24 +53,12 @@ class IfaceCommand(TypeNamespace):
         return hash((tuple(self._full_name), self.request_type, self.command_id, tuple(self.params_fields), tuple(self.result_fields)))
 
     @property
+    def full_name(self):
+        return self._full_name
+
+    @property
     def is_request(self):
         return self.request_type == self.rt_request
-
-#    def _make_request_fields(self):
-#        field_list = [
-#            Field('command_id', tString),
-#            ] + self.params_fields
-#        if self.request_type == self.rt_request:
-#            field_list = [Field('request_id', tString)] + field_list
-#        return field_list
-
-    def _make_response_fields(self):
-        assert self.request_type == self.rt_request
-        field_list = [
-            Field('request_id', tString),
-            Field('command_id', tString),
-            ] + self.result_fields
-        return field_list
 
 
 class RequestCmd(IfaceCommand):

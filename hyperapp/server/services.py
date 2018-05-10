@@ -6,7 +6,6 @@ from ..common.route_storage import RouteStorage
 from ..common.module_manager import ModuleManager
 from ..common.services import ServicesBase
 from .module import ModuleRegistry
-from .server import Server
 from .resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)
@@ -57,6 +56,7 @@ code_module_list = [
     'server.transport.registry',
     'server.transport.tcp',
     'server.transport.encrypted',
+    'server.request',
     'server.remoting',
     'server.ref_resolver_service',
     # 'server.form',
@@ -91,7 +91,6 @@ class Services(ServicesBase):
                                                 self.types.param_editor,
                                                 iface_resources_dir=self.server_dir,
                                                 client_modules_resources_dir=self.dynamic_module_dir)
-        self.server = Server.create(self, start_args)
         self._load_server_modules()
         self.module_registry.init_phases()
 

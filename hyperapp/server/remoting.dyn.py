@@ -2,6 +2,7 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from .registry import Registry
+from .request import Request, Response
 from .module import ServerModule
 
 log = logging.getLogger(__name__)
@@ -27,11 +28,12 @@ class ThisModule(ServerModule):
 
     def _process_request(self, request, types, service_registry):
         iface = types.resolve(request.iface_full_type_name)
-        params_t = iface[request.command_id].request
-        params = request.params.decode(params_t)
+        command = iface[request.command_id]
+        params = request.params.decode(command.request)
         servant = service_registry.resolve(request.service_id)
-        request_util = None
+        request_util = Request(command)
         method = getattr(servant, 'remote_' + request.command_id, None)
         assert method, '%r does not implement method remote_%s' % (servant, request.command_id)
-        method(request_util, **params._asdict())
-        assert 0, servant
+        response = method(request_util, **params._asdict())
+        assert response is None or isinstance(response, Response)
+        assert 0, response._result
