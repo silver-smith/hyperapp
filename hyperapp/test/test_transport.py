@@ -127,8 +127,8 @@ def server_make_echo_service_bundle(queues):
 async def client_make_request_bundle(services, encoded_echo_service_bundle):
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.ref_registry.register_bundle(echo_service_bundle)
-    proxy = await services.proxy_factory.from_ref(echo_service_bundle.ref)
-    result = await proxy.say('hello')
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.ref)
+    result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 
 def server_process_request_bundle(queues):
