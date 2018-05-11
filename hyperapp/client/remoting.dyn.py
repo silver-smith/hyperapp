@@ -43,18 +43,24 @@ class Remoting(object):
         future = asyncio.Future()
         self._pending_requests[request_id] = PendingRequest(iface, command, future)
         try:
-            return (await future)
+            log.info('Remoting: awaiting for response future...')
+            result = (await future)
+            log.info('Remoting: got response future: %r', result)
+            return result
         finally:
             del self._pending_requests[request_id]
 
     def process_response(self, service_response):
+        log.info('Remoting: processing response: %r', service_response)
         assert service_response.is_succeeded  # todo
         request = self._pending_requests.get(service_response.request_id)
         if not request:
             log.warning('No one is waiting for response %r; ignoring', service_response.request_id)
             return
-        response = service_response.result.decode(request.iface[request.command.command_id].response)
-        future.set_result(response)
+        response = service_response.result_or_error.decode(request.iface[request.command.command_id].response)
+        request.future.set_result(response)
+        log.info('Remoting: processing response: done')
+        return True  # todo: do not use registry to process packets
 
 
 class ThisModule(ClientModule):

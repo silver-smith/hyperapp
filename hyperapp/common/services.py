@@ -17,10 +17,20 @@ class ServicesBase(object):
     def __init__(self):
         self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
         self.interface_dir = HYPERAPP_DIR / 'hyperapp' / 'common' / 'interface'
+        self.on_start = []
+        self.on_stop = []
 
     def init_services(self):
         self.types = make_root_type_namespace()
         self.type_module_repository = TypeModuleRepository(self.types)
+
+    def start(self):
+        for start in self.on_start:
+            start()
+
+    def stop(self):
+        for stop in self.on_stop:
+            stop()
 
     def _load_type_module(self, module_name):
         fpath = self.interface_dir.joinpath(module_name + TYPE_MODULE_EXT)

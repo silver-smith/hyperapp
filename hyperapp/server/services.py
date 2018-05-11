@@ -79,8 +79,6 @@ class Services(ServicesBase):
         self.start_args = start_args
         self.server_dir = HYPERAPP_DIR / 'hyperapp' / 'server'
         self.dynamic_module_dir = HYPERAPP_DIR / 'dynamic_modules'
-        self.on_start = []
-        self.on_stop = []
         ServicesBase.init_services(self)
         self.module_registry = ModuleRegistry()
         self.module_manager = ModuleManager(self, self.types, self.module_registry)
@@ -94,18 +92,10 @@ class Services(ServicesBase):
         self._load_server_modules()
         self.module_registry.init_phases()
 
-    def start(self):
-        for start in self.on_start:
-            start()
-
     @property
     def is_running(self):
         return True
         #return self.tcp_server.is_running
-
-    def stop(self):
-        for stop in self.on_stop:
-            stop()
 
     def _load_server_modules(self):
         for module_name in code_module_list:

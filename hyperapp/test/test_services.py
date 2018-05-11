@@ -9,7 +9,9 @@ class PhonyModuleRegistry(ModuleRegistry):
         pass
 
 
-class Services(ServicesBase):
+class TestServices(ServicesBase):
+
+    __test__ = False
 
     def __init__(self, type_module_list, code_module_list):
         super().__init__()
@@ -25,14 +27,6 @@ class Services(ServicesBase):
                 self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
         finally:
             self.module_manager.unregister_meta_hook()
-
-    def start(self):
-        for start in self.on_start:
-            start()
-
-    def stop(self):
-        for stop in self.on_stop:
-            stop()
 
     def close(self):
         pass

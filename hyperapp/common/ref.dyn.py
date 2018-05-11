@@ -3,14 +3,15 @@ import codecs
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from ..common.htypes import Type
 from ..common.interface import hyper_ref as href_types
+from ..common.htypes import Type
 from ..common.packet_coders import packet_coders
 
 
 DEFAULT_ENCODING = 'cdr'
 DEFAULT_HASH_ALGORITHM = 'sha512'
 MAX_REF_REPR_LEN = 60
+BUNDLE_ENCODING = 'json'
 
 
 def ref_repr(ref):
@@ -41,3 +42,9 @@ def make_object_ref(t, object):
 def decode_object(t, piece):
     assert t.full_name == piece.full_type_name
     return packet_coders.decode(piece.encoding, piece.encoded_object, t)
+
+def encode_bundle(bundle):
+    return packet_coders.encode(BUNDLE_ENCODING, bundle, href_types.bundle)
+
+def decode_bundle(encoded_bundle):
+    return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, href_types.bundle)
