@@ -97,15 +97,15 @@ class PublicKey(object):
         sign_alg, hash_alg, sign = signature.split(b':', 2)
         assert sign_alg == b'rsa' and hash_alg == b'sha256', repr((sign_alg, hash_alg))
         hashalg = hashes.SHA256()
-        verifier = self._public_key.verifier(
-            sign,
-            padding.PSS(
-                mgf=padding.MGF1(hashalg),
-                salt_length=padding.PSS.MAX_LENGTH),
-            hashalg)
-        verifier.update(message)
         try:
-            verifier.verify()
+            self._public_key.verify(
+                sign,
+                message,
+                padding.PSS(
+                    mgf=padding.MGF1(hashalg),
+                    salt_length=padding.PSS.MAX_LENGTH),
+                    hashalg,
+                )
             return True
         except cryptography.exceptions.InvalidSignature:
             return False
@@ -169,12 +169,12 @@ class Identity(object):
 
     def sign(self, message):
         hashalg = hashes.SHA256()
-        signer = self._private_key.signer(
+        signature = self._private_key.sign(
+            message,
             padding.PSS(
                 mgf=padding.MGF1(hashalg),
                 salt_length=padding.PSS.MAX_LENGTH
             ),
-            hashalg)
-        signer.update(message)
-        signature = signer.finalize()
+            hashalg,
+            )
         return b'rsa:sha256:' + signature
