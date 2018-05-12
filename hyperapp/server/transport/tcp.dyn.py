@@ -74,9 +74,6 @@ class TcpClient(object):
         self._stop_flag = False
         self._thread = threading.Thread(target=self._thread_main)
 
-    def is_running(self):
-        return self._thread.is_alive()
-
     def start(self):
         self._thread.start()
 
@@ -107,8 +104,8 @@ class TcpClient(object):
     def _process_packet(self, data):
         assert 0, data
 
-    def _log(self, message):
-        log.info('tcp client %s:%d: %s', self._peer_address[0], self._peer_address[1], message)
+    def _log(self, message, *args):
+        log.info('tcp client %s:%d: %s' % (self._peer_address[0], self._peer_address[1], message), *args)
 
 
 class TcpServer(object):
@@ -135,13 +132,17 @@ class TcpServer(object):
         self._listen_thread.join()
         for client in self._client_set:
             client.stop()
-        while any(lambda client: client.is_running() for client in self._client_set):
+        while True:
+            with self._client_lock:
+                if not self._client_set:
+                    break
             self._join_finished_clients()
             time.sleep(0.1)
         log.info('Tcp transport is stopped.')
 
     def client_finished(self, client):
         with self._client_lock:
+            assert client in self._client_set
             self._finished_client_set.add(client)
 
     def _main(self):
@@ -166,6 +167,7 @@ class TcpServer(object):
         with self._client_lock:
             for client in self._finished_client_set:
                 client.join()
+                self._client_set.remove(client)
             self._finished_client_set.clear()
 
 

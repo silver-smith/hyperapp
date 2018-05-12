@@ -92,4 +92,4 @@ async def test_packet_should_be_delivered(mp_pool, client_services):
     started_barrier = mp_manager.Barrier(2)
     server_finished_result = mp_pool.apply_async(server, (started_barrier,))
     await client_send_packet(client_services, started_barrier)
-    server_finished_result.get(timeout=2)
+    server_finished_result.get(timeout=3)
