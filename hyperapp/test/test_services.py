@@ -30,3 +30,10 @@ class TestServices(ServicesBase):
 
     def close(self):
         pass
+
+
+class TestClientServices(TestServices):
+
+    def __init__(self, type_module_list, code_module_list, event_loop):
+        self.event_loop = event_loop
+        super().__init__(type_module_list, code_module_list)

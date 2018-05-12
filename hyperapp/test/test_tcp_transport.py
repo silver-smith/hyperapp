@@ -5,10 +5,17 @@ import multiprocessing
 import pytest
 
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
-from hyperapp.test.test_services import TestServices
+from hyperapp.test.test_services import TestServices, TestClientServices
 
 log = logging.getLogger()
 
+
+TCP_ADDRESS = ('localhost', 8888)
+
+
+config = {
+    'transport.tcp': dict(bind_address=TCP_ADDRESS),
+    }
 
 type_module_list = [
     'error',
@@ -43,19 +50,19 @@ client_code_module_list = [
     'client.async_ref_resolver',
     'client.piece_registry',
     'client.transport.registry',
-    'client.transport.phony',
-    'client.remoting_proxy',
+    'client.transport.tcp',
     ]
 
-config = {
-    'transport.tcp': dict(bind_address=('localhost', 8888)),
-    }
 
 @pytest.fixture
 def mp_pool():
     #multiprocessing.log_to_stderr()
     with multiprocessing.Pool(1) as pool:
         yield pool
+
+@pytest.fixture
+def client_services(event_loop):
+    return TestClientServices(type_module_list, client_code_module_list, event_loop)
 
 @contextmanager
 def server_services():
@@ -64,11 +71,24 @@ def server_services():
     yield services
     services.stop()
 
-def server():
+
+def server(started_barrier):
     with server_services() as services:
-        time.sleep(2)
+        started_barrier.wait()
+        time.sleep(1)
+
         
+async def client_send_packet(services, started_barrier):
+    types = services.types
+    address = types.tcp_transport.address(TCP_ADDRESS[0], TCP_ADDRESS[1])
+    tcp_transport_ref = services.ref_registry.register_object(types.tcp_transport.address, address)
+    started_barrier.wait()
+    transport = await services.transport_resolver.resolve(tcp_transport_ref)
 
 @pytest.mark.asyncio
-async def test_packet_should_be_delivered(mp_pool):
-    mp_pool.apply(server)
+async def test_packet_should_be_delivered(mp_pool, client_services):
+    mp_manager = multiprocessing.Manager()
+    started_barrier = mp_manager.Barrier(2)
+    server_finished_result = mp_pool.apply_async(server, (started_barrier,))
+    await client_send_packet(client_services, started_barrier)
+    server_finished_result.get(timeout=2)

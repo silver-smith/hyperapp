@@ -7,7 +7,7 @@ import pytest
 from hyperapp.common.identity import Identity
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
-from hyperapp.test.test_services import TestServices
+from hyperapp.test.test_services import TestServices, TestClientServices
 
 log = logging.getLogger()
 
@@ -64,13 +64,12 @@ class Services(TestServices):
         super().__init__(type_module_list, code_module_list)
 
 
-class ClientServices(Services):
+class ClientServices(TestClientServices):
 
-    def __init__(self, type_module_list, code_module_list, queues, event_loop):
+    def __init__(self, type_module_list, code_module_list, event_loop, queues):
         self.request_queue = queues.request
         self.response_queue = queues.response
-        self.event_loop = event_loop
-        super().__init__(type_module_list, code_module_list, queues)
+        super().__init__(type_module_list, code_module_list, event_loop)
 
 
 def encode_bundle(services, bundle):
@@ -94,7 +93,7 @@ def queues():
 @pytest.fixture
 def client_services(queues, event_loop):
     asyncio.get_event_loop().set_debug(True)
-    services = ClientServices(type_module_list, client_code_module_list, queues, event_loop)
+    services = ClientServices(type_module_list, client_code_module_list, event_loop, queues)
     services.start()
     yield services
     services.stop()

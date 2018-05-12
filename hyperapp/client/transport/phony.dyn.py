@@ -73,4 +73,4 @@ class ThisModule(ClientModule):
             await self._transport_resolver.resolve(response_bundle.ref)
             log.debug('phony transport: processing response bundle: done')
         except:
-            traceback.print_exc()
+            traceback.print_exc()  # traceback is not shown when scheduled by run_coroutine_threadsafe
