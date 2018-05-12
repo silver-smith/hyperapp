@@ -112,7 +112,7 @@ class Services(ServicesBase):
                 'error_handler_impl',
                 'bookmarks',
                 'remoting_proxy',
-                'piece_registry',
+                'capsule_registry',
                 'ref_resolver',
                 'ref_redirect_handle',
                 'ref_list',

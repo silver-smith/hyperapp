@@ -43,4 +43,4 @@ class ThisModule(ServerModule):
         assert isinstance(response, Response)
         service_response = response.make_service_response(command, service_request.request_id)
         return service_response
-    # todo: do not use piece registry to produce responses, service_response is not the corresponding piece for request ref
+    # todo: do not use capsule registry to produce responses, service_response is not the corresponding capsule for request ref

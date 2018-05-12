@@ -1,11 +1,11 @@
 from resource import resource_rec_list
-from hyper_ref import ref, piece
+from hyper_ref import ref, capsule
 from module import requirement, module
 
 
-ref_and_piece = record:
+ref_and_capsule = record:
     ref: ref
-    piece: piece
+    capsule: capsule
 
 aux_info = record:
     requirements: requirement list
@@ -13,7 +13,7 @@ aux_info = record:
     modules: module list
     routes: server_routes list
     resources: resource_rec_list
-    ref_list: ref_and_piece list
+    ref_list: ref_and_capsule list
 
 
 payload = hierarchy packet_payload

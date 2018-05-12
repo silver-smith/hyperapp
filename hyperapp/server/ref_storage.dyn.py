@@ -5,7 +5,7 @@ import logging
 from pony.orm import db_session, Required, PrimaryKey
 
 from ..common.interface import hyper_ref as href_types
-from ..common.ref import make_piece, make_ref
+from ..common.ref import make_capsule, make_ref
 from .ponyorm_module import PonyOrmModule
 
 log = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class RefStorage(object):
         rec = this_module.Ref.get(ref=ref)
         if not rec:
             return None
-        return href_types.piece(
+        return href_types.capsule(
             full_type_name=rec.full_type_name.split('.'),
             hash_algorithm=rec.hash_algorithm,
             encoding=rec.encoding,
@@ -29,26 +29,26 @@ class RefStorage(object):
             )
 
     @db_session
-    def store_ref(self, ref, piece):
+    def store_ref(self, ref, capsule):
         rec = this_module.Ref.get(ref=ref)
         if rec:
-            rec.full_type_name = '.'.join(piece.full_type_name)
-            rec.hash_algorithm = piece.hash_algorithm
-            rec.encoding = piece.encoding
-            rec.encoded_object = piece.encoded_object
+            rec.full_type_name = '.'.join(capsule.full_type_name)
+            rec.hash_algorithm = capsule.hash_algorithm
+            rec.encoding = capsule.encoding
+            rec.encoded_object = capsule.encoded_object
         else:
             rec = this_module.Ref(
                 ref=ref,
-                full_type_name='.'.join(piece.full_type_name),
-                hash_algorithm=piece.hash_algorithm,
-                encoding=piece.encoding,
-                encoded_object=piece.encoded_object,
+                full_type_name='.'.join(capsule.full_type_name),
+                hash_algorithm=capsule.hash_algorithm,
+                encoding=capsule.encoding,
+                encoded_object=capsule.encoded_object,
                 )
 
     def add_object(self, t, object):
-        piece = make_piece(t, object)
-        ref = make_ref(piece)
-        self.store_ref(ref, piece)
+        capsule = make_capsule(t, object)
+        ref = make_ref(capsule)
+        self.store_ref(ref, capsule)
         return ref
 
 

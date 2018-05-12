@@ -49,7 +49,7 @@ client_code_module_list = [
     'common.ref_collector',
     'common.ref_registry',
     'client.async_ref_resolver',
-    'client.piece_registry',
+    'client.capsule_registry',
     'client.transport.registry',
     'client.transport.tcp',
     ]

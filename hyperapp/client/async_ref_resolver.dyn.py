@@ -18,23 +18,23 @@ class AsyncRefResolver(object):
         self._async_sources = []
 
     async def resolve_ref(self, ref):
-        piece = self._ref_resolver.resolve_ref(ref)
-        if piece:
-            return piece
+        capsule = self._ref_resolver.resolve_ref(ref)
+        if capsule:
+            return capsule
         for source in self._async_sources:
-            piece = await source.resolve_ref(ref)
-            if piece:
-                return piece
-        log.debug('ref resolver: ref resolved to %r', piece)
-        assert piece, repr(piece)
-        return piece
+            capsule = await source.resolve_ref(ref)
+            if capsule:
+                return capsule
+        log.debug('ref resolver: ref resolved to %r', capsule)
+        assert capsule, repr(capsule)
+        return capsule
 
     async def resolve_ref_to_object(self, ref, expected_type=None):
-        piece = await self.resolve_ref(ref)
+        capsule = await self.resolve_ref(ref)
         if expected_type:
-            assert full_type_name_to_str(piece.full_type_name) == expected_type
-        t = self._types.resolve(piece.full_type_name)
-        return packet_coders.decode(piece.encoding, piece.encoded_object, t)
+            assert full_type_name_to_str(capsule.full_type_name) == expected_type
+        t = self._types.resolve(capsule.full_type_name)
+        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
 
 class ThisModule(ClientModule):

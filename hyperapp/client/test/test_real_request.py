@@ -117,7 +117,7 @@ class Services(ServicesBase):
     def _load_modules(self):
         for module_name in [
                 'remoting_proxy',
-                'piece_registry',
+                'capsule_registry',
                 'ref_resolver',
                 'form',
                 'code_repository',

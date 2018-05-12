@@ -21,27 +21,27 @@ def ref_repr(ref):
     else:
         return hex
 
-def make_piece(t, object):
+def make_capsule(t, object):
     assert isinstance(t, Type), repr(t)
     assert isinstance(object, t), repr((t, object))
     encoding = DEFAULT_ENCODING
     encoded_object = packet_coders.encode(encoding, object, t)
-    return href_types.piece(t.full_name, DEFAULT_HASH_ALGORITHM, encoding, encoded_object)
+    return href_types.capsule(t.full_name, DEFAULT_HASH_ALGORITHM, encoding, encoded_object)
 
-def make_ref(piece):
-    assert isinstance(piece, href_types.piece)
-    assert piece.hash_algorithm == DEFAULT_HASH_ALGORITHM, repr(piece.hash_algorithm)
+def make_ref(capsule):
+    assert isinstance(capsule, href_types.capsule)
+    assert capsule.hash_algorithm == DEFAULT_HASH_ALGORITHM, repr(capsule.hash_algorithm)
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
-    digest.update(piece.encoded_object)
+    digest.update(capsule.encoded_object)
     return digest.finalize()
 
 def make_object_ref(t, object):
-    piece = make_piece(t, object)
-    return make_ref(piece)
+    capsule = make_capsule(t, object)
+    return make_ref(capsule)
 
-def decode_object(t, piece):
-    assert t.full_name == piece.full_type_name
-    return packet_coders.decode(piece.encoding, piece.encoded_object, t)
+def decode_object(t, capsule):
+    assert t.full_name == capsule.full_type_name
+    return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
 def encode_bundle(bundle):
     return packet_coders.encode(BUNDLE_ENCODING, bundle, href_types.bundle)

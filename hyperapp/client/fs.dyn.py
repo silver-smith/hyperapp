@@ -7,7 +7,7 @@ from ..common.interface import narrower as narrower_types
 from ..common.interface import fs as fs_types
 from ..common.list_object import Element, Chunk
 from .command import command
-from .piece_registry import PieceRegistry, PieceResolver
+from .capsule_registry import CapsuleRegistry, CapsuleResolver
 from .module import Module
 from .list_object import ListObject
 
@@ -104,8 +104,8 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, services)
-        services.fs_service_registry = fs_service_registry = PieceRegistry('fs_service', services.type_registry_registry)
-        services.fs_service_resolver = fs_service_resolver = PieceResolver(services.ref_resolver, fs_service_registry)
+        services.fs_service_registry = fs_service_registry = CapsuleRegistry('fs_service', services.type_registry_registry)
+        services.fs_service_resolver = fs_service_resolver = CapsuleResolver(services.ref_resolver, fs_service_registry)
         services.handle_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
             FsDirObject.impl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)

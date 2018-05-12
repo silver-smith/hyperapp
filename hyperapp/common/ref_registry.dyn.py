@@ -3,7 +3,7 @@
 import logging
 
 from .interface import hyper_ref as href_types
-from .ref import ref_repr, make_piece, make_ref
+from .ref import ref_repr, make_capsule, make_ref
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -15,29 +15,29 @@ MODULE_NAME = 'ref_registry'
 class RefRegistry(object):
 
     def __init__(self):
-        self._registry = {}  # ref -> piece
+        self._registry = {}  # ref -> capsule
 
-    def register(self, piece):
-        assert isinstance(piece, href_types.piece), repr(piece)
-        ref = make_ref(piece)
-        existing_piece = self._registry.get(ref)
-        if existing_piece:
-            assert piece == existing_piece, repr((existing_piece, piece))  # new piece does not match existing one
-        self._registry[ref] = piece
+    def register(self, capsule):
+        assert isinstance(capsule, href_types.capsule), repr(capsule)
+        ref = make_ref(capsule)
+        existing_capsule = self._registry.get(ref)
+        if existing_capsule:
+            assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
+        self._registry[ref] = capsule
         return ref
 
     def register_object(self, t, object):
-        piece = make_piece(t, object)
-        return self.register(piece)
+        capsule = make_capsule(t, object)
+        return self.register(capsule)
         log.debug('Registered ref for %s: %s', '.'.join(t.full_name), ref_repr(ref))
         return ref
 
-    def register_piece_list(self, piece_list):
-        for piece in piece_list:
-            self.register(piece)
+    def register_capsule_list(self, capsule_list):
+        for capsule in capsule_list:
+            self.register(capsule)
 
     def register_bundle(self, bundle):
-        self.register_piece_list(bundle.piece_list)
+        self.register_capsule_list(bundle.capsule_list)
 
     def resolve_ref(self, ref):
         return self._registry.get(ref)
