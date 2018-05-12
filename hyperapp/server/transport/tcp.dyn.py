@@ -2,10 +2,13 @@ import logging
 import threading
 import socket
 import select
+import time
 import traceback
 
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.ref import make_object_ref
+from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
+
 from ..module import Module
 
 log = logging.getLogger(__name__)
@@ -13,16 +16,110 @@ log = logging.getLogger(__name__)
 
 DEFAULT_BIND_ADDRESS = ('localhost', 9999)
 STOP_DELAY_TIME_SEC = 0.3
+NOTIFICATION_DELAY_TIME_SEC = 1
+RECV_SIZE = 4096
 
 MODULE_NAME = 'transport.tcp'
 
 
-class Server(object):
+class SocketClosedError(Exception):
+
+    def __init__(self):
+        super().__init__('Socket is closed by remote peer')
+
+
+class TcpChannel(object):
+
+    def __init__(self, socket):
+        self.socket = socket
+        self.recv_buf = b''
+
+    def close(self):
+        self.socket.close()
+
+    def send(self, contents):
+        data = encode_tcp_packet(contents)
+        ofs = 0
+        while ofs < len(data):
+            sent_size = self.socket.send(data[ofs:])
+            log.info('  sent (%d) %s...', sent_size, data[ofs:ofs + min(sent_size, 100)])
+            if sent_size == 0:
+                raise SocketClosedError()
+            ofs += sent_size
+
+    def receive(self, timeout_sec):
+        while not has_full_tcp_packet(self.recv_buf):
+            ## print '  receiving...'
+            rd, wr, xc = select.select([self.socket], [], [self.socket], timeout_sec)
+            if not rd and not xc:
+                return None
+            chunk = self.socket.recv(RECV_SIZE)
+            log.info('  received (%d) %s...', len(chunk), chunk[:100])
+            if chunk == b'':
+                raise SocketClosedError()
+            self.recv_buf += chunk
+        packet_data, packet_size = decode_tcp_packet(self.recv_buf)
+        self.recv_buf = self.recv_buf[packet_size:]
+        ## print 'received:'
+        ## pprint.pprint(json_data)
+        return packet_data
+
+
+class TcpClient(object):
+
+    def __init__(self, tcp_server, peer_address, socket):
+        self._tcp_server = tcp_server
+        self._peer_address = peer_address
+        self._channel = TcpChannel(socket)
+        self._stop_flag = False
+        self._thread = threading.Thread(target=self._thread_main)
+
+    def is_running(self):
+        return self._thread.is_alive()
+
+    def start(self):
+        self._thread.start()
+
+    def stop(self):
+        self._stop_flag = True
+
+    def join(self):
+        self._thread.join()
+
+    def _thread_main(self):
+        self._log('started')
+        try:
+            while not self._stop_flag:
+                self._receive_and_process_packet()
+        except SocketClosedError:
+            self._log('connection is closed by remote peer')
+        except:
+            traceback.print_exc()
+        self._channel.close()
+        self._tcp_server.client_finished(self)
+        self._log('finished')
+
+    def _receive_and_process_packet(self):
+        packet_data = self._channel.receive(NOTIFICATION_DELAY_TIME_SEC)
+        if packet_data:  # receive timed out otherwise
+            self._process_packet(packet_data)
+
+    def _process_packet(self, data):
+        assert 0, data
+
+    def _log(self, message):
+        log.info('tcp client %s:%d: %s', self._peer_address[0], self._peer_address[1], message)
+
+
+class TcpServer(object):
 
     def __init__(self, bind_address):
         self._bind_address = bind_address  # (host, port)
         self._listen_thread = threading.Thread(target=self._main)
         self._stop_flag = False
+        self._client_set = set()
+        self._finished_client_set = set()
+        self._client_lock = threading.Lock()
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._socket.bind(self._bind_address)
@@ -36,7 +133,16 @@ class Server(object):
         log.info('Stopping tcp transport...')
         self._stop_flag = True
         self._listen_thread.join()
+        for client in self._client_set:
+            client.stop()
+        while any(lambda client: client.is_running() for client in self._client_set):
+            self._join_finished_clients()
+            time.sleep(0.1)
         log.info('Tcp transport is stopped.')
+
+    def client_finished(self, client):
+        with self._client_lock:
+            self._finished_client_set.add(client)
 
     def _main(self):
         try:
@@ -49,14 +155,18 @@ class Server(object):
         while not self._stop_flag:
             rd, wr, err = select.select([self._socket], [], [self._socket], STOP_DELAY_TIME_SEC)
             if rd or err:
-                cln_socket, cln_addr = self._socket.accept()
-                log.info('accepted connection from %s:%d' % cln_addr)
-                assert 0, cln_addr
-                client = TcpClient(self._remoting, self._server, self, cln_socket, cln_addr, on_close=self._on_client_closed)
-                thread = threading.Thread(target=client.serve)
-                thread.start()
-                self._client2thread[client] = thread
-            #self._join_finished_threads()
+                channel_socket, peer_address = self._socket.accept()
+                log.info('accepted connection from %s:%d' % peer_address)
+                client = TcpClient(self, peer_address, channel_socket)
+                client.start()
+                self._client_set.add(client)
+            self._join_finished_clients()
+
+    def _join_finished_clients(self):
+        with self._client_lock:
+            for client in self._finished_client_set:
+                client.join()
+            self._finished_client_set.clear()
 
 
 class ThisModule(Module):
@@ -69,7 +179,7 @@ class ThisModule(Module):
             bind_address = config.get('bind_address')
         if not bind_address:
             bind_address = DEFAULT_BIND_ADDRESS
-        self.server = Server(bind_address=bind_address)
+        self.server = TcpServer(bind_address=bind_address)
         address = tcp_transport_types.address(bind_address[0], bind_address[1])
         services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
         services.on_start.append(self.server.start)

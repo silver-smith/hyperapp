@@ -60,7 +60,7 @@ class ThisModule(ClientModule):
         protocol = self._address_to_protocol.get(address)
         if protocol:
             return protocol
-        constructor = lambda: cls(self._event_loop, address)
+        constructor = lambda: TcpProtocol(self._event_loop, address)
         transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
         self._address_to_protocol[address] = protocol
         return protocol

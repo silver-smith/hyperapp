@@ -35,6 +35,7 @@ server_code_module_list = [
     'common.ref_resolver',
     'common.ref_collector',
     'common.ref_registry',
+    'common.tcp_packet',
     'server.transport.registry',
     'server.transport.tcp',
     'server.request',
