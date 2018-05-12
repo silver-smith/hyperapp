@@ -11,8 +11,7 @@ from ..module import Module
 log = logging.getLogger(__name__)
 
 
-LISTEN_HOST = 'localhost'
-LISTEN_PORT = 9999
+DEFAULT_BIND_ADDRESS = ('localhost', 9999)
 STOP_DELAY_TIME_SEC = 0.3
 
 MODULE_NAME = 'transport.tcp'
@@ -64,8 +63,14 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
-        self.server = Server(bind_address=(LISTEN_HOST, LISTEN_PORT))
-        address = tcp_transport_types.address(LISTEN_HOST, LISTEN_PORT)
+        config = services.config.get(MODULE_NAME)
+        bind_address = None
+        if config:
+            bind_address = config.get('bind_address')
+        if not bind_address:
+            bind_address = DEFAULT_BIND_ADDRESS
+        self.server = Server(bind_address=bind_address)
+        address = tcp_transport_types.address(bind_address[0], bind_address[1])
         services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
         services.on_start.append(self.server.start)
         services.on_stop.append(self.server.stop)

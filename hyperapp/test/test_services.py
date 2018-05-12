@@ -13,11 +13,11 @@ class TestServices(ServicesBase):
 
     __test__ = False
 
-    def __init__(self, type_module_list, code_module_list):
+    def __init__(self, type_module_list, code_module_list, config=None):
         super().__init__()
         self.on_start = []
         self.on_stop = []
-        ServicesBase.init_services(self)
+        ServicesBase.init_services(self, config)
         self.module_registry = PhonyModuleRegistry()
         self.module_manager = ModuleManager(self, self.types, self.module_registry)
         self.module_manager.register_meta_hook()

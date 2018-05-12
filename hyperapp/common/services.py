@@ -19,8 +19,10 @@ class ServicesBase(object):
         self.interface_dir = HYPERAPP_DIR / 'hyperapp' / 'common' / 'interface'
         self.on_start = []
         self.on_stop = []
+        self.config = {}
 
-    def init_services(self):
+    def init_services(self, config=None):
+        self.config.update(config or {})
         self.types = make_root_type_namespace()
         self.type_module_repository = TypeModuleRepository(self.types)
 
