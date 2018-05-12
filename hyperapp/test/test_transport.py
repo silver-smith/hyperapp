@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from collections import namedtuple
 import multiprocessing
 import asyncio
@@ -13,7 +12,6 @@ from hyperapp.test.test_services import TestServices
 log = logging.getLogger()
 
 
-HYPERAPP_DIR = Path(__file__).parent.parent.resolve()
 BUNDLE_ENCODING = 'json'
 
 
@@ -60,7 +58,7 @@ Queues = namedtuple('Queues', 'request response')
 
 class Services(TestServices):
 
-    def __init__(self, queues, type_module_list, code_module_list):
+    def __init__(self, type_module_list, code_module_list, queues):
         self.request_queue = queues.request
         self.response_queue = queues.response
         super().__init__(type_module_list, code_module_list)
@@ -68,11 +66,11 @@ class Services(TestServices):
 
 class ClientServices(Services):
 
-    def __init__(self, queues, type_module_list, code_module_list, event_loop):
+    def __init__(self, type_module_list, code_module_list, queues, event_loop):
         self.request_queue = queues.request
         self.response_queue = queues.response
         self.event_loop = event_loop
-        super().__init__(queues, type_module_list, code_module_list)
+        super().__init__(type_module_list, code_module_list, queues)
 
 
 def encode_bundle(services, bundle):
@@ -96,7 +94,7 @@ def queues():
 @pytest.fixture
 def client_services(queues, event_loop):
     asyncio.get_event_loop().set_debug(True)
-    services = ClientServices(queues, type_module_list, client_code_module_list, event_loop)
+    services = ClientServices(type_module_list, client_code_module_list, queues, event_loop)
     services.start()
     yield services
     services.stop()
@@ -115,7 +113,7 @@ def make_transport_ref(services):
     return phony_transport_ref
 
 def server_make_echo_service_bundle(queues):
-    services = Services(queues, type_module_list, server_code_module_list)
+    services = Services(type_module_list, server_code_module_list, queues)
     transport_ref = make_transport_ref(services)
     href_types = services.types.hyper_ref
     service_ref = href_types.service_ref(['test', 'echo'], services.ECHO_SERVICE_ID, transport_ref)
@@ -132,7 +130,7 @@ async def client_make_request_bundle(services, encoded_echo_service_bundle):
     assert result.response == 'hello'
 
 def server_process_request_bundle(queues):
-    services = Services(queues, type_module_list, server_code_module_list)
+    services = Services(type_module_list, server_code_module_list, queues)
     log.info('Server: picking request bundle:')
     encoded_request_bundle = services.request_queue.get(timeout=1)  # seconds
     log.info('Server: got request bundle')
@@ -148,7 +146,7 @@ def server_process_request_bundle(queues):
     log.info('Server: finished.')
 
 @pytest.mark.asyncio
-async def test_services_should_load(mp_pool, queues, client_services):
+async def test_echo_must_respond_with_hello(mp_pool, queues, client_services):
     encoded_echo_service_bundle = mp_pool.apply(server_make_echo_service_bundle, (queues,))
     mp_pool.apply_async(server_process_request_bundle, (queues,))
     encoded_request_bundle = await client_make_request_bundle(client_services, encoded_echo_service_bundle)
