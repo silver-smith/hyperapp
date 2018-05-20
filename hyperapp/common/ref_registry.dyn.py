@@ -17,7 +17,7 @@ class RefRegistry(object):
     def __init__(self):
         self._registry = {}  # ref -> capsule
 
-    def register(self, capsule):
+    def _register(self, capsule):
         assert isinstance(capsule, href_types.capsule), repr(capsule)
         ref = make_ref(capsule)
         existing_capsule = self._registry.get(ref)
@@ -28,13 +28,13 @@ class RefRegistry(object):
 
     def register_object(self, t, object):
         capsule = make_capsule(t, object)
-        return self.register(capsule)
+        return self._register(capsule)
         log.debug('Registered ref for %s: %s', '.'.join(t.full_name), ref_repr(ref))
         return ref
 
     def register_capsule_list(self, capsule_list):
         for capsule in capsule_list:
-            self.register(capsule)
+            self._register(capsule)
 
     def register_bundle(self, bundle):
         self.register_capsule_list(bundle.capsule_list)
