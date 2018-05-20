@@ -63,6 +63,10 @@ class RefRegistry(object):
         return self._registry.get(ref)
 
 
+# ===================================================================================================
+# this module is outdated
+# ===================================================================================================
+
 class ThisModule(Module):
 
     def __init__(self, services):
