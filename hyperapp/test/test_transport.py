@@ -116,9 +116,9 @@ def server_make_echo_service_bundle(queues):
     transport_ref = make_transport_ref(services)
     href_types = services.types.hyper_ref
     service_ref = href_types.service_ref(['test', 'echo'], services.ECHO_SERVICE_ID, transport_ref)
-    ref_resolver_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
+    service_ref_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
     ref_collector = services.ref_collector_factory()
-    echo_service_bundle = ref_collector.make_bundle(ref_resolver_ref)
+    echo_service_bundle = ref_collector.make_bundle(service_ref_ref)
     return encode_bundle(services, echo_service_bundle)
 
 async def client_make_request_bundle(services, encoded_echo_service_bundle):
