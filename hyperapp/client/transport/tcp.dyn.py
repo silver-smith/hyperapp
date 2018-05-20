@@ -1,18 +1,23 @@
 import logging
 import asyncio
 
+from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
+from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 from ..module import ClientModule
 
 log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'transport.tcp'
+TCP_PACKET_ENCODING = 'cdr'
 
 
 class TcpProtocol(asyncio.Protocol):
 
-    def __init__(self, event_loop, address):
+    def __init__(self, event_loop, ref_registry, ref_collector_factory, address):
+        self._ref_registry = ref_registry
+        self._ref_collector_factory = ref_collector_factory
         self._address = address
         self._recv_buf = b''
 
@@ -31,10 +36,14 @@ class TcpProtocol(asyncio.Protocol):
             self._recv_buf = self._recv_buf[packet_size:]
             self._log('consumed %d bytes, remained %d' % (packet_size, len(self._recv_buf)))
 
-    def send_packet(self, packet):
-        assert isinstance(packet, tTransportPacket), repr(packet)
-        contents = encode_transport_packet(packet)
-        data = encode_tcp_packet(contents)
+    def send(self, ref, dest):
+        assert isinstance(ref, href_types.ref), repr(ref)
+        assert isinstance(dest, href_types.ref), repr(dest)
+        packet = tcp_transport_types.packet(ref, dest)
+        packet_ref = self._ref_registry.register_object(tcp_transport_types.packet, packet)
+        ref_collector = self._ref_collector_factory()
+        bundle = ref_collector.make_bundle(packet_ref)
+        data = encode_tcp_packet(bundle, TCP_PACKET_ENCODING)
         self._log('sending data, size=%d' % len(data))
         self.transport.write(data)
 
@@ -54,13 +63,16 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._event_loop = services.event_loop
         self._address_to_protocol = {}  # tcp_transport_types.address -> TcpProtocol
-        services.transport_registry.register(tcp_transport_types.address, self._resolve_address)
+        services.transport_registry.register(
+            tcp_transport_types.address, self._resolve_address, services.ref_registry, services.ref_collector_factory)
 
-    async def _resolve_address(self, address):
+    async def _resolve_address(self, address, ref_registry, ref_collector_factory):
         protocol = self._address_to_protocol.get(address)
         if protocol:
             return protocol
-        constructor = lambda: TcpProtocol(self._event_loop, address)
+        constructor = lambda: TcpProtocol(self._event_loop, ref_registry, ref_collector_factory, address)
         transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
         self._address_to_protocol[address] = protocol
         return protocol
+
+    

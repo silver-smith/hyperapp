@@ -1,4 +1,10 @@
+from hyper_ref import ref, bundle
+
 
 address = record:
     host: string
     port: int
+
+packet = record:
+    message: ref
+    to: ref

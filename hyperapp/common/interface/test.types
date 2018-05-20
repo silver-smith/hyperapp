@@ -1,3 +1,7 @@
+
+packet = record:
+    message: string
+
 echo = interface echo:
     commands:
         request say (message: string) -> (response: string)
