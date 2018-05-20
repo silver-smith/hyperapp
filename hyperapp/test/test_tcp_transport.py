@@ -98,19 +98,20 @@ async def test_packet_should_be_delivered(mp_pool, client_services):
 
 @pytest.mark.parametrize('encoding', ['json', 'cdr'])
 def test_tcp_packet(client_services, encoding):
+    from hyperapp.common.ref import make_ref, make_capsule
     from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
-    capsule_t = client_services.types.hyper_ref.capsule
+    test_packet_t = client_services.types.test.packet
+    bundle_t = client_services.types.hyper_ref.bundle
 
-    capsule = capsule_t(
-        full_type_name=['module', 'type'],
-        hash_algorithm='phony_algorithm',
-        encoding='phony_encoding',
-        encoded_object=b'\x01\x02\x03',
-        )
-    packet = encode_tcp_packet(capsule, encoding)
+    test_packet = test_packet_t(message='hello')
+    capsule = make_capsule(test_packet_t, test_packet)
+    ref = make_ref(capsule)
+    bundle = bundle_t(ref, [capsule])
+
+    packet = encode_tcp_packet(bundle, encoding)
     assert has_full_tcp_packet(packet)
     assert has_full_tcp_packet(packet + b'x')
     assert not has_full_tcp_packet(packet[:len(packet) - 1])
-    decoded_capsule, packet_size = decode_tcp_packet(packet + b'xx')
+    decoded_bundle, packet_size = decode_tcp_packet(packet + b'xx')
     assert packet_size == len(packet)
-    assert decoded_capsule == capsule
+    assert decoded_bundle == bundle

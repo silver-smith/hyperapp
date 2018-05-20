@@ -20,12 +20,12 @@ def decode_tcp_packet(data):
     encoding_size, size = struct.unpack(struct_format, data[:header_size])
     encoding = data[header_size:header_size + encoding_size].decode()
     packet_data = data[header_size + encoding_size:header_size + encoding_size + size]
-    capsule = packet_coders.decode(encoding, packet_data, href_types.capsule)
-    return (capsule, header_size + encoding_size + size)
+    bundle = packet_coders.decode(encoding, packet_data, href_types.bundle)
+    return (bundle, header_size + encoding_size + size)
 
-def encode_tcp_packet(capsule, encoding):
-    assert isinstance(capsule, href_types.capsule), repr(capsule)
-    packet_data = packet_coders.encode(encoding, capsule, href_types.capsule)
+def encode_tcp_packet(bundle, encoding):
+    assert isinstance(bundle, href_types.bundle), repr(bundle)
+    packet_data = packet_coders.encode(encoding, bundle, href_types.bundle)
     encoded_encoding = encoding.encode()
     header = struct.pack(struct_format, len(encoded_encoding), len(packet_data))
     return header + encoded_encoding + packet_data
