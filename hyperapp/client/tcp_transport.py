@@ -2,7 +2,7 @@ from ..common.transport_packet import tTransportPacket
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .request import ResponseBase
-from .remoting import Transport
+#from .remoting import Transport
 from .tcp_protocol import TcpProtocol
 
 

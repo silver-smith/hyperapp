@@ -1,9 +1,9 @@
 import logging
 import asyncio
 from ..common.identity import PublicKey
-from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
+#from ..common.tcp_packet import has_full_tcp_packet, decode_tcp_packet, encode_tcp_packet
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
-from .remoting import Remoting
+#from .remoting import Remoting
 from .transport_session import TransportSessionList
 
 log = logging.getLogger(__name__)

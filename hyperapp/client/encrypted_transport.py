@@ -12,7 +12,7 @@ from ..common.transport_packet import tTransportPacket, encode_transport_packet,
 from ..common.visual_rep import pprint
 from ..common.packet_coders import packet_coders
 from .request import ResponseBase
-from .remoting import TransportError, Transport
+#from .remoting import TransportError, Transport
 from .tcp_protocol import TcpProtocol
 
 

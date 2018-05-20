@@ -3,10 +3,10 @@ import os.path
 import logging
 import asyncio
 import unittest
-from hyperapp.common.htypes import (
-    IfaceRegistry,
-    builtin_type_registry,
-    )
+#from hyperapp.common.htypes import (
+#    IfaceRegistry,
+#    builtin_type_registry,
+#    )
 from hyperapp.common.url import UrlWithRoutes
 from hyperapp.common import dict_coders, cdr_coders
 from hyperapp.common.visual_rep import pprint
@@ -17,14 +17,14 @@ from hyperapp.client.request import Request, ClientNotification, Response
 from hyperapp.client.server import Server
 from hyperapp.client.module_manager import ModuleManager
 from hyperapp.client.module import ClientModuleRegistry
-from hyperapp.client.remoting import Remoting
+#from hyperapp.client.remoting import Remoting
 from hyperapp.client.objimpl_registry import ObjImplRegistry
 from hyperapp.client.named_url_file_repository import NamedUrlRepository
 from hyperapp.client.proxy_registry import ProxyRegistry
 from hyperapp.client.view_registry import ViewRegistry
 from hyperapp.client.param_editor_registry import ParamEditorRegistry
-from hyperapp.client import tcp_transport
-from hyperapp.client import encrypted_transport
+#from hyperapp.client import tcp_transport
+#from hyperapp.client import encrypted_transport
 
 
 TYPE_MODULE_EXT = '.types'

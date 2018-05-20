@@ -5,7 +5,7 @@ from ..common.util import encode_path
 from ..common.identity import Identity
 from ..common.url import Url
 from ..common.object_path_collector import ObjectPathCollector
-from .request import NotAuthorizedError, RequestBase, Request, ServerNotification, Response
+#from .request import NotAuthorizedError, RequestBase, Request, ServerNotification, Response
 from .object import subscription
 
 log = logging.getLogger(__name__)

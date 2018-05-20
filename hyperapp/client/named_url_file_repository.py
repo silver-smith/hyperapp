@@ -8,7 +8,7 @@ from ..common.htypes import (
     Field,
     TRecord,
     tUrl,
-    IfaceRegistry,
+#    IfaceRegistry,
     )
 from ..common.url import Url
 from ..common.packet_coders import packet_coders

@@ -1,7 +1,7 @@
 from collections import namedtuple
 import pytest
 from hyperapp.common.list_object import Element, Chunk, ListDiff
-from hyperapp.client.list_object import ListObject
+#from hyperapp.client.list_object import ListObject
 from hyperapp.client.slice import Slice, SliceList
 
 

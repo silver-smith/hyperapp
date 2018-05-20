@@ -2,7 +2,7 @@ import logging
 from ..common.identity import PublicKey
 from ..common.url import Url
 from .request import ClientNotification, Request
-from .remoting import Remoting
+#from .remoting import Remoting
 
 log = logging.getLogger(__name__)
 

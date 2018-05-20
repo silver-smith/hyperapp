@@ -4,7 +4,7 @@ import asyncio
 from PySide import QtCore, QtGui
 
 from ..common.util import is_list_inst, dt2local_str
-from ..common.htypes import ListInterface
+#from ..common.htypes import ListInterface
 from ..common.list_object import Element, Chunk, ListDiff
 from .object import ObjectObserver, Object
 

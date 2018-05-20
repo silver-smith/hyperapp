@@ -3,7 +3,7 @@ from ..common.htypes import (
     EncodableEmbedded,
     tEmbedded,
     Interface,
-    IfaceRegistry,
+#    IfaceRegistry,
     )
 from ..common.request import Update
 from ..common.identity import PublicKey
