@@ -1,25 +1,31 @@
 import struct
 
+from ..common.interface import hyper_ref as href_types
+from .packet_coders import packet_coders
 
-struct_format = '!Q'
+
+struct_format = '!QQ'
 
 
 def has_full_tcp_packet(data):
-    hsize = struct.calcsize(struct_format)
-    if len(data) < hsize:
+    header_size = struct.calcsize(struct_format)
+    if len(data) < header_size:
         return False
-    size, = struct.unpack(struct_format, data[:hsize])
-    return len(data) >= hsize + size
+    encoding_size, size = struct.unpack(struct_format, data[:header_size])
+    return len(data) >= header_size + encoding_size + size
 
 def decode_tcp_packet(data):
     assert has_full_tcp_packet(data)
-    hsize = struct.calcsize(struct_format)
-    if len(data) < hsize:
-        return False
-    size, = struct.unpack(struct_format, data[:hsize])
-    packet_data = data[hsize:hsize + size]
-    return (packet_data, hsize + size)
+    header_size = struct.calcsize(struct_format)
+    encoding_size, size = struct.unpack(struct_format, data[:header_size])
+    encoding = data[header_size:header_size + encoding_size].decode()
+    packet_data = data[header_size + encoding_size:header_size + encoding_size + size]
+    capsule = packet_coders.decode(encoding, packet_data, href_types.capsule)
+    return (capsule, header_size + encoding_size + size)
 
-def encode_tcp_packet(packet_data):
-    header = struct.pack(struct_format, len(packet_data))
-    return header + packet_data
+def encode_tcp_packet(capsule, encoding):
+    assert isinstance(capsule, href_types.capsule), repr(capsule)
+    packet_data = packet_coders.encode(encoding, capsule, href_types.capsule)
+    encoded_encoding = encoding.encode()
+    header = struct.pack(struct_format, len(encoded_encoding), len(packet_data))
+    return header + encoded_encoding + packet_data

@@ -48,6 +48,7 @@ client_code_module_list = [
     'common.ref_resolver',
     'common.ref_collector',
     'common.ref_registry',
+    'common.tcp_packet',
     'client.async_ref_resolver',
     'client.capsule_registry',
     'client.transport.registry',
@@ -93,3 +94,23 @@ async def test_packet_should_be_delivered(mp_pool, client_services):
     server_finished_result = mp_pool.apply_async(server, (started_barrier,))
     await client_send_packet(client_services, started_barrier)
     server_finished_result.get(timeout=3)
+
+
+@pytest.mark.parametrize('encoding', ['json', 'cdr'])
+def test_tcp_packet(client_services, encoding):
+    from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
+    capsule_t = client_services.types.hyper_ref.capsule
+
+    capsule = capsule_t(
+        full_type_name=['module', 'type'],
+        hash_algorithm='phony_algorithm',
+        encoding='phony_encoding',
+        encoded_object=b'\x01\x02\x03',
+        )
+    packet = encode_tcp_packet(capsule, encoding)
+    assert has_full_tcp_packet(packet)
+    assert has_full_tcp_packet(packet + b'x')
+    assert not has_full_tcp_packet(packet[:len(packet) - 1])
+    decoded_capsule, packet_size = decode_tcp_packet(packet + b'xx')
+    assert packet_size == len(packet)
+    assert decoded_capsule == capsule
