@@ -52,6 +52,7 @@ class RefCollector(Visitor):
     def _collect_refs(self, capsule):
         t = self._types.resolve(capsule.full_type_name)
         object = decode_object(t, capsule)
+        log.info('Collecting refs from %r:', object)
         self._collected_ref_set = set()
         self.visit(t, object)
         log.debug('Collected %d refs from %s %s: %s',

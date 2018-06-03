@@ -21,6 +21,7 @@ class RefResolver(object):
         for source in self._sources:
             capsule = source.resolve_ref(ref)
             if capsule:
+                log.debug(' -> %r', capsule)
                 return capsule
         return None
 

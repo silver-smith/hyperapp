@@ -15,7 +15,6 @@ capsule = record:
 service_ref = record:
     iface_full_type_name: full_type_name
     service_id: string
-    transport_ref: ref
 
 
 bundle = record:

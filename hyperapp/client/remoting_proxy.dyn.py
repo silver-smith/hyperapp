@@ -6,31 +6,29 @@ MODULE_NAME = 'remoting_proxy'
 
 class ProxyMethod(object):
 
-    def __init__(self, remoting, transport_ref, iface, service_id, command):
+    def __init__(self, remoting, service_ref, iface, command):
         self._remoting = remoting
-        self._transport_ref = transport_ref
+        self._service_ref = service_ref
         self._iface = iface
-        self._service_id = service_id
         self._command = command
 
     async def __call__(self, *args, **kw):
         params = self._command.request(*args, **kw)
-        return await self._remoting.send_request(self._transport_ref, self._iface, self._service_id, self._command, params)
+        return await self._remoting.send_request(self._service_ref, self._iface, self._command, params)
 
 
 class RemotingProxy(object):
 
-    def __init__(self, remoting, transport_ref, iface, service_id):
+    def __init__(self, remoting, service_ref, iface):
         self._remoting = remoting
-        self._transport_ref = transport_ref
+        self._service_ref = service_ref
         self._iface = iface
-        self._service_id = service_id
 
     def __getattr__(self, name):
         command = self._iface.get(name)
         if not command:
             raise AttributeError(name)
-        return ProxyMethod(self._remoting, self._transport_ref, self._iface, self._service_id, command)
+        return ProxyMethod(self._remoting, self._service_ref, self._iface, command)
 
 
 class ProxyFactory(object):
@@ -43,7 +41,7 @@ class ProxyFactory(object):
     async def from_ref(self, ref):
         service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type='hyper_ref.service_ref')
         iface = self._types.resolve(service.iface_full_type_name)
-        return RemotingProxy(self._remoting, service.transport_ref, iface, service.service_id)
+        return RemotingProxy(self._remoting, ref, iface)
 
 
 class ThisModule(ClientModule):

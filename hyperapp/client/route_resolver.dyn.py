@@ -31,11 +31,9 @@ class RouteResolver(object):
     async def resolve(self, service_ref):
         transport_ref_set = set()
         for source in self._source_list:
-            transport_ref_set |= source.resolve(service_ref)
+            transport_ref_set |= await source.resolve(service_ref)
         return transport_ref_set
 
-
-    
 
 class ThisModule(ClientModule):
 
