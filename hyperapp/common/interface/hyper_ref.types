@@ -24,7 +24,7 @@ bundle = record:
 
 service_request = record:
     iface_full_type_name: full_type_name
-    service_id: string
+    service_id: binary
     command_id: string
     request_id: string opt
     params: embedded

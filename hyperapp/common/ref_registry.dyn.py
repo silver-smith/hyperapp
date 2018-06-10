@@ -20,6 +20,7 @@ class RefRegistry(object):
     def _register(self, capsule):
         assert isinstance(capsule, href_types.capsule), repr(capsule)
         ref = make_ref(capsule)
+        log.debug('Registering ref %s for capsule %s', ref_repr(ref), capsule)
         existing_capsule = self._registry.get(ref)
         if existing_capsule:
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one

@@ -162,7 +162,13 @@ def client_services(queues, event_loop):
     services.stop()
 
 
+async def client_make_phony_transport_ref(services):
+    types = services.types
+    phony_transport_address = types.phony_transport.address()
+    return services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
+
 async def client_make_request_bundle(services, transport_ref, encoded_echo_service_bundle):
+    phony_transport_ref = await client_make_phony_transport_ref(services)
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.ref_registry.register_bundle(echo_service_bundle)
     services.route_registry.register(echo_service_bundle.ref, transport_ref)

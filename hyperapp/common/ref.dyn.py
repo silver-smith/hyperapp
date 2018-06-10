@@ -15,11 +15,7 @@ BUNDLE_ENCODING = 'json'
 
 
 def ref_repr(ref):
-    hex = str(codecs.encode(ref, 'hex'))
-    if len(hex) > MAX_REF_REPR_LEN:
-        return hex[:MAX_REF_REPR_LEN] + '...'
-    else:
-        return hex
+    return str(codecs.encode(ref[:4], 'hex'))
 
 def make_capsule(t, object):
     assert isinstance(t, Type), repr(t)

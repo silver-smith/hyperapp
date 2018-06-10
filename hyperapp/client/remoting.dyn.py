@@ -26,7 +26,7 @@ class Remoting(object):
 
     async def send_request(self, service_ref, iface, command, params):
         transport_ref_set = await self._route_resolver.resolve(service_ref)
-        assert len(transport_ref_set) == 1  # todo
+        assert len(transport_ref_set) == 1  # todo: multiple transport support
         transport = await self._transport_resolver.resolve(transport_ref_set.pop())
         if command.is_request:
             request_id = str(uuid.uuid4())
@@ -34,7 +34,7 @@ class Remoting(object):
             request_id = None
         request = href_types.service_request(
             iface_full_type_name=iface.full_name,
-            service_id=service_id,
+            service_id=service_ref,
             command_id=command.command_id,
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
