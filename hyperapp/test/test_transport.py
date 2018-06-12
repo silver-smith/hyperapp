@@ -1,6 +1,7 @@
 import logging
 from collections import namedtuple
 import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import pytest
 import traceback
@@ -87,6 +88,11 @@ def mp_pool():
     with multiprocessing.Pool(1) as pool:
         yield pool
 
+@pytest.fixture
+def thread_pool():
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        yield executor
+
 
 class Server(object):
 
@@ -153,6 +159,23 @@ def server_process():
     with ServerProcess() as sp:
         yield sp
 
+def apply_async(event_loop, thread_pool, mp_pool, method, *args):
+    mp_future = mp_pool.apply_async(Server.call, (method,) + args)
+    async_future = event_loop.create_future()
+    def handle_result():
+        log.debug('handle_result: started')
+        try:
+            result = mp_future.get(timeout=1)
+            log.debug('handle_result: result=%r', result)
+            event_loop.call_soon_threadsafe(async_future.set_result, result)
+            log.debug('handle_result: succeeded')
+        except Exception as x:
+            log.debug('handle_result: exception')
+            traceback.print_exc()
+            event_loop.call_soon_threadsafe(async_future.set_exception, x)
+    thread_pool.submit(handle_result)
+    return async_future
+    
 @pytest.fixture
 def client_services(queues, event_loop):
     asyncio.get_event_loop().set_debug(True)
@@ -177,9 +200,12 @@ async def client_make_request_bundle(services, transport_ref, encoded_echo_servi
     assert result.response == 'hello'
 
 @pytest.mark.asyncio
-async def test_echo_must_respond_with_hello(mp_pool, queues, client_services):
+async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, queues, client_services):
     mp_pool.apply(Server.construct, (queues,))
     transport_ref = mp_pool.apply(Server.call, (Server.make_transport_ref,))
     encoded_echo_service_bundle = mp_pool.apply(Server.call, (Server.make_echo_service_bundle,))
-    mp_pool.apply_async(Server.call, (Server.process_request_bundle,))
-    encoded_request_bundle = await client_make_request_bundle(client_services, transport_ref, encoded_echo_service_bundle)
+    async_future = apply_async(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
+    encoded_request_bundle = await asyncio.gather(
+        client_make_request_bundle(client_services, transport_ref, encoded_echo_service_bundle),
+        async_future,
+        )
