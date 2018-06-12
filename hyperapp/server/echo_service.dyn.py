@@ -1,5 +1,6 @@
 import logging
 
+from ..common.interface import hyper_ref as href_types
 from ..common.interface import test as test_types
 from .module import ServerModule
 
@@ -21,5 +22,7 @@ class ThisModule(ServerModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.service_registry.register(ECHO_SERVICE_ID, EchoService)
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
+        service_ref = href_types.service_ref(['test', 'echo'], ECHO_SERVICE_ID)
+        service_ref_ref = services.ref_registry.register_object(href_types.service_ref, service_ref)
+        services.service_registry.register(service_ref_ref, EchoService)
