@@ -103,12 +103,34 @@ class Server(object):
         cls.instance = cls(*args, **kw)
 
     @classmethod
-    def call(cls, method, *args, **kw):
+    def _call(cls, method, *args, **kw):
         try:
             return method(cls.instance, *args, **kw)
         except:
             traceback.print_exc()
             raise
+
+    @classmethod
+    def call(cls, mp_pool, method, *args):
+        return mp_pool.apply(cls._call, (method,) + args)
+
+    @classmethod
+    def call_async(cls, event_loop, thread_pool, mp_pool, method, *args):
+        mp_future = mp_pool.apply_async(cls._call, (method,) + args)
+        async_future = event_loop.create_future()
+        def handle_result():
+            log.debug('handle_result: started')
+            try:
+                result = mp_future.get(timeout=1)
+                log.debug('handle_result: result=%r', result)
+                event_loop.call_soon_threadsafe(async_future.set_result, result)
+                log.debug('handle_result: succeeded')
+            except Exception as x:
+                log.debug('handle_result: exception')
+                traceback.print_exc()
+                event_loop.call_soon_threadsafe(async_future.set_exception, x)
+        thread_pool.submit(handle_result)
+        return async_future
 
     def __init__(self, queues):
         self.services = Services(type_module_list, server_code_module_list, queues)
@@ -158,23 +180,6 @@ def queues():
 def server_process():
     with ServerProcess() as sp:
         yield sp
-
-def apply_async(event_loop, thread_pool, mp_pool, method, *args):
-    mp_future = mp_pool.apply_async(Server.call, (method,) + args)
-    async_future = event_loop.create_future()
-    def handle_result():
-        log.debug('handle_result: started')
-        try:
-            result = mp_future.get(timeout=1)
-            log.debug('handle_result: result=%r', result)
-            event_loop.call_soon_threadsafe(async_future.set_result, result)
-            log.debug('handle_result: succeeded')
-        except Exception as x:
-            log.debug('handle_result: exception')
-            traceback.print_exc()
-            event_loop.call_soon_threadsafe(async_future.set_exception, x)
-    thread_pool.submit(handle_result)
-    return async_future
     
 @pytest.fixture
 def client_services(queues, event_loop):
@@ -202,9 +207,9 @@ async def client_make_request_bundle(services, transport_ref, encoded_echo_servi
 @pytest.mark.asyncio
 async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, queues, client_services):
     mp_pool.apply(Server.construct, (queues,))
-    transport_ref = mp_pool.apply(Server.call, (Server.make_transport_ref,))
-    encoded_echo_service_bundle = mp_pool.apply(Server.call, (Server.make_echo_service_bundle,))
-    async_future = apply_async(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
+    transport_ref = Server.call(mp_pool, Server.make_transport_ref)
+    encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
+    async_future = Server.call_async(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
     encoded_request_bundle = await asyncio.gather(
         client_make_request_bundle(client_services, transport_ref, encoded_echo_service_bundle),
         async_future,
