@@ -78,6 +78,7 @@ def server(started_barrier):
     with server_services() as services:
         started_barrier.wait()
         time.sleep(1)
+        assert not services.is_failed
 
         
 async def client_send_packet(services, started_barrier):

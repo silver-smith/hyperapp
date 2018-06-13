@@ -20,6 +20,7 @@ class ServicesBase(object):
         self.on_start = []
         self.on_stop = []
         self.config = {}
+        self.failure_reason_list = []
 
     def init_services(self, config=None):
         self.config.update(config or {})
@@ -33,6 +34,14 @@ class ServicesBase(object):
     def stop(self):
         for stop in self.on_stop:
             stop()
+
+    def failed(self, reason):
+        self.failure_reason_list.append(reason)
+        self.stop()
+
+    @property
+    def is_failed(self):
+        return self.failure_reason_list != []
 
     def _load_type_module(self, module_name):
         fpath = self.interface_dir.joinpath(module_name + TYPE_MODULE_EXT)

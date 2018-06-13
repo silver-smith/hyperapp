@@ -67,12 +67,13 @@ class TcpChannel(object):
 
 class TcpClient(object):
 
-    def __init__(self, tcp_server, peer_address, socket):
+    def __init__(self, tcp_server, peer_address, socket, on_failure):
         self._tcp_server = tcp_server
         self._peer_address = peer_address
         self._channel = TcpChannel(socket)
         self._stop_flag = False
         self._thread = threading.Thread(target=self._thread_main)
+        self._on_failure = on_failure
 
     def start(self):
         self._thread.start()
@@ -90,8 +91,9 @@ class TcpClient(object):
                 self._receive_and_process_packet()
         except SocketClosedError:
             self._log('connection is closed by remote peer')
-        except:
+        except Exception as x:
             traceback.print_exc()
+            self._on_failure('Tcp client thread is failed: %r' % x)
         self._channel.close()
         self._tcp_server.client_finished(self)
         self._log('finished')
@@ -110,8 +112,9 @@ class TcpClient(object):
 
 class TcpServer(object):
 
-    def __init__(self, bind_address):
+    def __init__(self, bind_address, on_failure):
         self._bind_address = bind_address  # (host, port)
+        self._on_failure = on_failure
         self._listen_thread = threading.Thread(target=self._main)
         self._stop_flag = False
         self._client_set = set()
@@ -158,7 +161,7 @@ class TcpServer(object):
             if rd or err:
                 channel_socket, peer_address = self._socket.accept()
                 log.info('accepted connection from %s:%d' % peer_address)
-                client = TcpClient(self, peer_address, channel_socket)
+                client = TcpClient(self, peer_address, channel_socket, self._on_failure)
                 client.start()
                 self._client_set.add(client)
             self._join_finished_clients()
@@ -181,7 +184,7 @@ class ThisModule(Module):
             bind_address = config.get('bind_address')
         if not bind_address:
             bind_address = DEFAULT_BIND_ADDRESS
-        self.server = TcpServer(bind_address=bind_address)
+        self.server = TcpServer(bind_address=bind_address, on_failure=services.failed)
         address = tcp_transport_types.address(bind_address[0], bind_address[1])
         services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
         services.on_start.append(self.server.start)
