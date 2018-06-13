@@ -195,7 +195,7 @@ async def client_make_phony_transport_ref(services):
     phony_transport_address = types.phony_transport.address()
     return services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
 
-async def client_make_request_bundle(services, transport_ref, encoded_echo_service_bundle):
+async def client_call_echo_service(services, transport_ref, encoded_echo_service_bundle):
     phony_transport_ref = await client_make_phony_transport_ref(services)
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.ref_registry.register_bundle(echo_service_bundle)
@@ -211,6 +211,6 @@ async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, qu
     encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
     async_future = Server.call_async(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
     encoded_request_bundle = await asyncio.gather(
-        client_make_request_bundle(client_services, transport_ref, encoded_echo_service_bundle),
+        client_call_echo_service(client_services, transport_ref, encoded_echo_service_bundle),
         async_future,
         )

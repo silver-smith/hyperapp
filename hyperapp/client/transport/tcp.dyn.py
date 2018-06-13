@@ -21,9 +21,9 @@ class TcpProtocol(asyncio.Protocol):
         self._address = address
         self._recv_buf = b''
 
-    def connection_made(self, transport):
+    def connection_made(self, asyncio_transport):
         log.info('tcp connection made')
-        self.transport = transport
+        self._asyncio_transport = asyncio_transport
 
     def data_received(self, data):
         self._log('%d bytes is received' % len(data))
@@ -45,7 +45,7 @@ class TcpProtocol(asyncio.Protocol):
         bundle = ref_collector.make_bundle(packet_ref)
         data = encode_tcp_packet(bundle, TCP_PACKET_ENCODING)
         self._log('sending data, size=%d' % len(data))
-        self.transport.write(data)
+        self._asyncio_transport.write(data)
 
     def _log(self, message):
         log.info('tcp to %s:%d: %s', self._address.host, self._address.port, message)
@@ -71,8 +71,6 @@ class ThisModule(ClientModule):
         if protocol:
             return protocol
         constructor = lambda: TcpProtocol(self._event_loop, ref_registry, ref_collector_factory, address)
-        transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
+        asyncio_transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
         self._address_to_protocol[address] = protocol
         return protocol
-
-    
