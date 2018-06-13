@@ -88,7 +88,7 @@ async def client_send_packet(services, started_barrier):
     transport = await services.transport_resolver.resolve(tcp_transport_ref)
     packet = services.types.test.packet(message='hello')
     ref = services.ref_registry.register_object(services.types.test.packet, packet)
-    transport.send()
+    transport.send(ref)
 
 @pytest.mark.asyncio
 async def test_packet_should_be_delivered(mp_pool, client_services):

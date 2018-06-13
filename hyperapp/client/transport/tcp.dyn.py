@@ -36,13 +36,10 @@ class TcpProtocol(asyncio.Protocol):
             self._recv_buf = self._recv_buf[packet_size:]
             self._log('consumed %d bytes, remained %d' % (packet_size, len(self._recv_buf)))
 
-    def send(self, ref, dest):
+    def send(self, ref):
         assert isinstance(ref, href_types.ref), repr(ref)
-        assert isinstance(dest, href_types.ref), repr(dest)
-        packet = tcp_transport_types.packet(ref, dest)
-        packet_ref = self._ref_registry.register_object(tcp_transport_types.packet, packet)
         ref_collector = self._ref_collector_factory()
-        bundle = ref_collector.make_bundle(packet_ref)
+        bundle = ref_collector.make_bundle(ref)
         data = encode_tcp_packet(bundle, TCP_PACKET_ENCODING)
         self._log('sending data, size=%d' % len(data))
         self._asyncio_transport.write(data)
