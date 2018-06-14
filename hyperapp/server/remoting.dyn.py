@@ -19,12 +19,28 @@ class ServiceRegistry(Registry):
         return rec.factory(*rec.args, **rec.kw)
 
 
+class Remoting(object):
+
+    def __init__(self, ref_registry, route_resolver, transport_resolver):
+        self._ref_registry = ref_registry
+        self._route_resolver = route_resolver
+        self._transport_resolver = transport_resolver
+
+    def process_incoming_bundle(self, bundle):
+        self._ref_registry.register_bundle(bundle)
+        transport_ref_set = self._route_resolver.resolve(bundle.ref)
+        assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple transport support
+        transport = self._transport_resolver.resolve(transport_ref_set.pop())
+        assert 0, transport
+
+
 class ThisModule(ServerModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         self._ref_registry = services.ref_registry
         services.service_registry = service_registry = ServiceRegistry()
+        services.remoting = Remoting(services.ref_registry, services.route_resolver, services.transport_resolver)
         services.transport_registry.register(href_types.service_request, self._process_request, services.types, service_registry)
 
     def _process_request(self, service_request, types, service_registry):

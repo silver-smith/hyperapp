@@ -2,10 +2,13 @@ import logging
 from contextlib import contextmanager
 import time
 import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 import pytest
 
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.test_services import TestServices, TestClientServices
+from hyperapp.test.utils import mp_call_async
 
 log = logging.getLogger()
 
@@ -36,10 +39,11 @@ server_code_module_list = [
     'common.ref_collector',
     'common.ref_registry',
     'common.tcp_packet',
-    'server.transport.registry',
-    'server.transport.tcp',
     'server.request',
+    'server.route_resolver',
+    'server.transport.registry',
     'server.remoting',
+    'server.transport.tcp',
     'server.echo_service',
     ]
 
@@ -61,6 +65,11 @@ def mp_pool():
     #multiprocessing.log_to_stderr()
     with multiprocessing.Pool(1) as pool:
         yield pool
+
+@pytest.fixture
+def thread_pool():
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        yield executor
 
 @pytest.fixture
 def client_services(event_loop):
@@ -92,12 +101,14 @@ async def client_send_packet(services, started_barrier):
     transport.send(ref)
 
 @pytest.mark.asyncio
-async def test_packet_should_be_delivered(mp_pool, client_services):
+async def test_packet_should_be_delivered(event_loop, thread_pool, mp_pool, client_services):
     mp_manager = multiprocessing.Manager()
     started_barrier = mp_manager.Barrier(2)
-    server_finished_result = mp_pool.apply_async(server, (started_barrier,))
-    await client_send_packet(client_services, started_barrier)
-    server_finished_result.get(timeout=3)
+    server_finished_future = mp_call_async(event_loop, thread_pool, mp_pool, server, (started_barrier,))
+    await asyncio.gather(
+        client_send_packet(client_services, started_barrier),
+        server_finished_future,
+        )
 
 
 @pytest.mark.parametrize('encoding', ['json', 'cdr'])

@@ -58,16 +58,15 @@ class TcpChannel(object):
             if chunk == b'':
                 raise SocketClosedError()
             self.recv_buf += chunk
-        packet_data, packet_size = decode_tcp_packet(self.recv_buf)
+        bundle, packet_size = decode_tcp_packet(self.recv_buf)
         self.recv_buf = self.recv_buf[packet_size:]
-        ## print 'received:'
-        ## pprint.pprint(json_data)
-        return packet_data
+        return bundle
 
 
 class TcpClient(object):
 
-    def __init__(self, tcp_server, peer_address, socket, on_failure):
+    def __init__(self, remoting, tcp_server, peer_address, socket, on_failure):
+        self._remoting = remoting
         self._tcp_server = tcp_server
         self._peer_address = peer_address
         self._channel = TcpChannel(socket)
@@ -88,7 +87,7 @@ class TcpClient(object):
         self._log('started')
         try:
             while not self._stop_flag:
-                self._receive_and_process_packet()
+                self._receive_and_process_bundle()
         except SocketClosedError:
             self._log('connection is closed by remote peer')
         except Exception as x:
@@ -98,13 +97,10 @@ class TcpClient(object):
         self._tcp_server.client_finished(self)
         self._log('finished')
 
-    def _receive_and_process_packet(self):
-        packet_data = self._channel.receive(NOTIFICATION_DELAY_TIME_SEC)
-        if packet_data:  # receive timed out otherwise
-            self._process_packet(packet_data)
-
-    def _process_packet(self, data):
-        assert 0, data
+    def _receive_and_process_bundle(self):
+        bundle = self._channel.receive(NOTIFICATION_DELAY_TIME_SEC)
+        if bundle:  # receive timed out otherwise
+            self._remoting.process_incoming_bundle(bundle)
 
     def _log(self, message, *args):
         log.info('tcp client %s:%d: %s' % (self._peer_address[0], self._peer_address[1], message), *args)
@@ -112,7 +108,8 @@ class TcpClient(object):
 
 class TcpServer(object):
 
-    def __init__(self, bind_address, on_failure):
+    def __init__(self, remoting, bind_address, on_failure):
+        self._remoting = remoting
         self._bind_address = bind_address  # (host, port)
         self._on_failure = on_failure
         self._listen_thread = threading.Thread(target=self._main)
@@ -161,7 +158,7 @@ class TcpServer(object):
             if rd or err:
                 channel_socket, peer_address = self._socket.accept()
                 log.info('accepted connection from %s:%d' % peer_address)
-                client = TcpClient(self, peer_address, channel_socket, self._on_failure)
+                client = TcpClient(self._remoting, self, peer_address, channel_socket, self._on_failure)
                 client.start()
                 self._client_set.add(client)
             self._join_finished_clients()
@@ -184,7 +181,7 @@ class ThisModule(Module):
             bind_address = config.get('bind_address')
         if not bind_address:
             bind_address = DEFAULT_BIND_ADDRESS
-        self.server = TcpServer(bind_address=bind_address, on_failure=services.failed)
+        self.server = TcpServer(services.remoting, bind_address=bind_address, on_failure=services.failed)
         address = tcp_transport_types.address(bind_address[0], bind_address[1])
         services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
         services.on_start.append(self.server.start)

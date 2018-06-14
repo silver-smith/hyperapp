@@ -4,6 +4,7 @@ from ..common.interface import hyper_ref as href_types
 from .packet_coders import packet_coders
 
 
+# utf-8 encoded encoding size, packet data size
 struct_format = '!QQ'
 
 

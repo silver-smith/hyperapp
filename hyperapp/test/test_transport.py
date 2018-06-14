@@ -10,6 +10,7 @@ from hyperapp.common.identity import Identity
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.test_services import TestServices, TestClientServices
+from hyperapp.test.utils import mp_call_async
 
 log = logging.getLogger()
 
@@ -116,21 +117,7 @@ class Server(object):
 
     @classmethod
     def call_async(cls, event_loop, thread_pool, mp_pool, method, *args):
-        mp_future = mp_pool.apply_async(cls._call, (method,) + args)
-        async_future = event_loop.create_future()
-        def handle_result():
-            log.debug('handle_result: started')
-            try:
-                result = mp_future.get(timeout=1)
-                log.debug('handle_result: result=%r', result)
-                event_loop.call_soon_threadsafe(async_future.set_result, result)
-                log.debug('handle_result: succeeded')
-            except Exception as x:
-                log.debug('handle_result: exception')
-                traceback.print_exc()
-                event_loop.call_soon_threadsafe(async_future.set_exception, x)
-        thread_pool.submit(handle_result)
-        return async_future
+        return mp_call_async(event_loop, thread_pool, mp_pool, cls._call, (method,) + args)
 
     def __init__(self, queues):
         self.services = Services(type_module_list, server_code_module_list, queues)
@@ -183,7 +170,7 @@ def server_process():
     
 @pytest.fixture
 def client_services(queues, event_loop):
-    asyncio.get_event_loop().set_debug(True)
+    event_loop.set_debug(True)
     services = ClientServices(type_module_list, client_code_module_list, event_loop, queues)
     services.start()
     yield services
