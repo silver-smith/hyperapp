@@ -2,6 +2,7 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import Type
+from ..common.ref import decode_capsule
 from ..common.packet_coders import packet_coders
 
 log = logging.getLogger(__name__)
@@ -56,8 +57,7 @@ class CapsuleRegistry(Registry):
 
     def resolve(self, capsule):
         assert isinstance(capsule, href_types.capsule), repr(capsule)
-        t = self._types.resolve(capsule.full_type_name)
-        object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        object = decode_capsule(self._types, capsule)
         rec = self._resolve(tuple(capsule.full_type_name))
         log.info('producing %s for %s using %s(%s, %s) for object %r',
                      self._produce_name, '.'.join(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)

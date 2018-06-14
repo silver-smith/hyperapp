@@ -1,6 +1,7 @@
 import logging
 
 from ..common.interface import hyper_ref as href_types
+from ..common.ref import decode_capsule
 from .registry import UnknownRegistryIdError, Registry
 from .request import Request, Response
 from .route_resolver import RouteSource
@@ -41,14 +42,19 @@ class LocalRouteSource(RouteSource):
 
 class Remoting(object):
 
-    def __init__(self, ref_registry, route_resolver, transport_resolver):
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, transport_resolver):
+        self._types = types
         self._ref_registry = ref_registry
+        self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
         self._transport_resolver = transport_resolver
 
     def process_incoming_bundle(self, bundle):
         self._ref_registry.register_bundle(bundle)
-        transport_ref_set = self._route_resolver.resolve(bundle.ref)
+        capsule = self._ref_resolver.resolve_ref(bundle.ref)
+        assert capsule.full_type_name == ['hyper_ref', 'service_request'], capsule.full_type_name
+        service_request = decode_capsule(self._types, capsule)
+        transport_ref_set = self._route_resolver.resolve(service_request.service_id)
         assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple transport support
         transport = self._transport_resolver.resolve(transport_ref_set.pop())
         assert 0, transport
@@ -60,7 +66,13 @@ class ThisModule(ServerModule):
         super().__init__(MODULE_NAME)
         self._ref_registry = services.ref_registry
         services.service_registry = service_registry = ServiceRegistry()
-        services.remoting = Remoting(services.ref_registry, services.route_resolver, services.transport_resolver)
+        services.remoting = Remoting(
+            services.types,
+            services.ref_registry,
+            services.ref_resolver,
+            services.route_resolver,
+            services.transport_resolver,
+            )
         services.transport_registry.register(href_types.local_transport_address, LocalTransport)
         local_transport_ref = services.ref_registry.register_object(href_types.local_transport_address, href_types.local_transport_address())
         local_route_source = LocalRouteSource(service_registry, local_transport_ref)
