@@ -1,8 +1,9 @@
 import logging
 
 from ..common.interface import hyper_ref as href_types
-from .registry import Registry
+from .registry import UnknownRegistryIdError, Registry
 from .request import Request, Response
+from .route_resolver import RouteSource
 from .module import ServerModule
 
 log = logging.getLogger(__name__)
@@ -17,6 +18,25 @@ class ServiceRegistry(Registry):
         rec = self._resolve(service_id)
         log.info('producing service for %r using %s(%s, %s)', service_id, rec.factory, rec.args, rec.kw)
         return rec.factory(*rec.args, **rec.kw)
+
+
+class LocalTransport(object):
+
+    def send(self, ref):
+        assert 0, repr(ref)
+
+
+class LocalRouteSource(RouteSource):
+
+    def __init__(self, service_registry, local_transport_ref):
+        self._service_registry = service_registry
+        self._local_transport_ref = local_transport_ref
+
+    def resolve(self, service_ref):
+        if self._service_registry.is_registered(service_ref):
+            return set([self._local_transport_ref])
+        else:
+            return set()
 
 
 class Remoting(object):
@@ -41,6 +61,10 @@ class ThisModule(ServerModule):
         self._ref_registry = services.ref_registry
         services.service_registry = service_registry = ServiceRegistry()
         services.remoting = Remoting(services.ref_registry, services.route_resolver, services.transport_resolver)
+        services.transport_registry.register(href_types.local_transport_address, LocalTransport)
+        local_transport_ref = services.ref_registry.register_object(href_types.local_transport_address, href_types.local_transport_address())
+        local_route_source = LocalRouteSource(service_registry, local_transport_ref)
+        services.route_resolver.add_source(local_route_source)
         services.transport_registry.register(href_types.service_request, self._process_request, services.types, service_registry)
 
     def _process_request(self, service_request, types, service_registry):

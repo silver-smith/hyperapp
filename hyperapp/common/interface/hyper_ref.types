@@ -35,6 +35,8 @@ service_response = record:
     result_or_error: embedded
 
 
+local_transport_address = record
+
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref
 

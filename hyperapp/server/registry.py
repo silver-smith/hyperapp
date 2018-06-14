@@ -7,6 +7,10 @@ from ..common.packet_coders import packet_coders
 log = logging.getLogger(__name__)
 
 
+class UnknownRegistryIdError(KeyError):
+    pass
+
+
 class Registry(object):
 
     class _Rec(object):
@@ -28,8 +32,10 @@ class Registry(object):
         return id in self._registry
 
     def _resolve(self, id):
-        assert id in self._registry, repr(id)  # Unknown id
-        return self._registry[id]
+        try:
+            return self._registry[id]
+        except KeyError:
+            raise UnknownRegistryIdError('Unknown id: %r' % id)
 
 
 class CapsuleRegistry(Registry):

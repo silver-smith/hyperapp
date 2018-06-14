@@ -1,4 +1,5 @@
 import logging
+import abc
 
 from .module import ClientModule
 
@@ -8,9 +9,17 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'route_resolver'
 
 
-class RouteRegistry(object):
+class RouteSource(object, metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def resolve(self, service_ref):
+        pass
+
+
+class RouteRegistry(RouteSource):
 
     def __init__(self):
+        super().__init__()
         self._registry = {}  # service ref -> transport ref set
 
     def register(self, service_ref, transport_ref):
@@ -26,6 +35,7 @@ class RouteResolver(object):
         self._source_list = []
 
     def add_source(self, source):
+        assert isinstance(source, RouteSource), repr(source)
         self._source_list.append(source)
 
     async def resolve(self, service_ref):
