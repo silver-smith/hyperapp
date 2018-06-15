@@ -6,6 +6,7 @@ import asyncio
 import pytest
 
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
+from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServices, TestClientServices
 from hyperapp.test.server_process import ServerProcess
 
@@ -54,8 +55,11 @@ client_code_module_list = [
     'common.tcp_packet',
     'client.async_ref_resolver',
     'client.capsule_registry',
+    'client.route_resolver',
     'client.transport.registry',
     'client.transport.tcp',
+    'client.remoting',
+    'client.remoting_proxy',
     ]
 
 
@@ -85,20 +89,35 @@ class Server(ServerProcess):
         self.services.stop()
         assert not self.services.is_failed
 
+    def make_echo_service_bundle(self):
+        href_types = self.services.types.hyper_ref
+        service_ref = href_types.service_ref(['test', 'echo'], self.services.ECHO_SERVICE_ID)
+        service_ref_ref = self.services.ref_registry.register_object(href_types.service_ref, service_ref)
+        ref_collector = self.services.ref_collector_factory()
+        echo_service_bundle = ref_collector.make_bundle(service_ref_ref)
+        return encode_bundle(self.services, echo_service_bundle)
+
         
-async def client_send_packet(services):
+async def client_send_packet(services, encoded_echo_service_bundle):
     types = services.types
+
+    echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
+    services.ref_registry.register_bundle(echo_service_bundle)
+
     address = types.tcp_transport.address(TCP_ADDRESS[0], TCP_ADDRESS[1])
     tcp_transport_ref = services.ref_registry.register_object(types.tcp_transport.address, address)
-    transport = await services.transport_resolver.resolve(tcp_transport_ref)
-    packet = services.types.test.packet(message='hello')
-    ref = services.ref_registry.register_object(services.types.test.packet, packet)
-    transport.send(ref)
+    services.route_registry.register(echo_service_bundle.ref, tcp_transport_ref)
+
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.ref)
+    result = await echo_proxy.say('hello')
+    assert result.response == 'hello'
+
 
 @pytest.mark.asyncio
 async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, client_services):
     mp_pool.apply(Server.construct)
-    await client_send_packet(client_services)
+    encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
+    await client_send_packet(client_services, encoded_echo_service_bundle)
     Server.call(mp_pool, Server.stop)
 
 

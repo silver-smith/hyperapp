@@ -7,15 +7,12 @@ import pytest
 import traceback
 
 from hyperapp.common.identity import Identity
-from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
+from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServices, TestClientServices
 from hyperapp.test.server_process import ServerProcess
 
 log = logging.getLogger()
-
-
-BUNDLE_ENCODING = 'json'
 
 
 type_module_list = [
@@ -74,13 +71,6 @@ class ClientServices(TestClientServices):
         self.request_queue = queues.request
         self.response_queue = queues.response
         super().__init__(type_module_list, code_module_list, event_loop)
-
-
-def encode_bundle(services, bundle):
-    return packet_coders.encode(BUNDLE_ENCODING, bundle, services.types.hyper_ref.bundle)
-
-def decode_bundle(services, encoded_bundle):
-    return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, services.types.hyper_ref.bundle)
 
 
 @pytest.fixture

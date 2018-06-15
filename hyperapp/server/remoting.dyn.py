@@ -23,6 +23,9 @@ class ServiceRegistry(Registry):
 
 class LocalTransport(object):
 
+    def __init__(self, address):
+        pass
+
     def send(self, ref):
         assert 0, repr(ref)
 
