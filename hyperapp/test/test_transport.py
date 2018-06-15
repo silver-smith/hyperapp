@@ -164,7 +164,7 @@ async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, qu
     mp_pool.apply(Server.construct, (queues,))
     transport_ref = Server.call(mp_pool, Server.make_transport_ref)
     encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
-    async_future = Server.call_async(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
+    async_future = Server.async_call(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
     encoded_request_bundle = await asyncio.gather(
         client_call_echo_service(client_services, transport_ref, encoded_echo_service_bundle),
         async_future,

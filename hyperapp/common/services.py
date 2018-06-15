@@ -1,11 +1,15 @@
 from pathlib import Path
 import sys
 from types import SimpleNamespace
+import logging
 
 from hyperapp.common.htypes import (
     make_root_type_namespace,
     )
 from hyperapp.common.type_module_repository import TypeModuleRepository
+
+
+log = logging.getLogger(__name__)
 
 
 TYPE_MODULE_EXT = '.types'
@@ -32,16 +36,23 @@ class ServicesBase(object):
             start()
 
     def stop(self):
+        log.error('Stopping modules...')
         for stop in self.on_stop:
             stop()
+        log.error('Stopping modules: done')
+        self.on_stopped()
 
     def failed(self, reason):
+        log.error('Failed: %r', reason)
         self.failure_reason_list.append(reason)
         self.stop()
 
     @property
     def is_failed(self):
         return self.failure_reason_list != []
+
+    def on_stopped(self):
+        pass
 
     def _load_type_module(self, module_name):
         fpath = self.interface_dir.joinpath(module_name + TYPE_MODULE_EXT)

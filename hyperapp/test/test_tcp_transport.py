@@ -1,14 +1,14 @@
 import logging
 import time
 import multiprocessing
-from concurrent.futures import ThreadPoolExecutor
+import concurrent.futures
 import asyncio
 import pytest
 
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServices, TestClientServices
-from hyperapp.test.server_process import ServerProcess
+from hyperapp.test.server_process import mp2async_future, ServerProcess
 
 log = logging.getLogger()
 
@@ -63,15 +63,26 @@ client_code_module_list = [
     ]
 
 
+class ServerServices(TestServices):
+
+    def __init__(self, stopped_queue):
+        super().__init__(type_module_list, server_code_module_list, config)
+        self.stopped_queue = stopped_queue
+
+    def on_stopped(self):
+        self.stopped_queue.put(self.is_failed)
+
+
 @pytest.fixture
 def mp_pool():
     #multiprocessing.log_to_stderr()
+    # only 1 worker is expected by ServerProcess
     with multiprocessing.Pool(1) as pool:
         yield pool
 
 @pytest.fixture
 def thread_pool():
-    with ThreadPoolExecutor(max_workers=1) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         yield executor
 
 @pytest.fixture
@@ -81,8 +92,8 @@ def client_services(event_loop):
 
 class Server(ServerProcess):
 
-    def __init__(self):
-        self.services = TestServices(type_module_list, server_code_module_list, config)
+    def __init__(self, stopped_queue):
+        self.services = ServerServices(stopped_queue)
         self.services.start()
 
     def stop(self):
@@ -113,11 +124,35 @@ async def client_send_packet(services, encoded_echo_service_bundle):
     assert result.response == 'hello'
 
 
+def wait_for_server_stopped(thread_pool, stop_queue):
+    mp_future = concurrent.futures.Future()
+    def wait_for_queue():
+        log.debug('wait_for_server_stopped.wait_for_queue: started')
+        try:
+            is_failed = stop_queue.get()
+            log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
+            assert not is_failed
+            mp_future.set_result(None)
+            log.debug('wait_for_server_stopped.wait_for_queue: succeeded')
+        except Exception as x:
+            log.debug('wait_for_server_stopped.wait_for_queue: exception')
+            traceback.print_exc()
+            mp_future.set_exception(x)
+    thread_pool.submit(wait_for_queue)
+    return mp_future
+
+
 @pytest.mark.asyncio
 async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, client_services):
-    mp_pool.apply(Server.construct)
+    mp_manager = multiprocessing.Manager()
+    stopped_queue = mp_manager.Queue()
+    mp_pool.apply(Server.construct, (stopped_queue,))
     encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
-    await client_send_packet(client_services, encoded_echo_service_bundle)
+    asyncio.wait([
+        mp2async_future(event_loop, thread_pool, wait_for_server_stopped(thread_pool, stopped_queue)),
+        client_send_packet(client_services, encoded_echo_service_bundle),
+        ], return_when=asyncio.FIRST_COMPLETED)
+    log.debug('Stopping the server now...')
     Server.call(mp_pool, Server.stop)
 
 
