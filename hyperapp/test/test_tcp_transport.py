@@ -1,5 +1,4 @@
 import logging
-from contextlib import contextmanager
 import time
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
@@ -8,7 +7,7 @@ import pytest
 
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.test_services import TestServices, TestClientServices
-from hyperapp.test.utils import mp_call_async
+from hyperapp.test.server_process import ServerProcess
 
 log = logging.getLogger()
 
@@ -75,40 +74,32 @@ def thread_pool():
 def client_services(event_loop):
     return TestClientServices(type_module_list, client_code_module_list, event_loop)
 
-@contextmanager
-def server_services():
-    services = TestServices(type_module_list, server_code_module_list, config)
-    services.start()
-    yield services
-    services.stop()
 
+class Server(ServerProcess):
 
-def server(started_barrier):
-    with server_services() as services:
-        started_barrier.wait()
-        time.sleep(1)
-        assert not services.is_failed
+    def __init__(self):
+        self.services = TestServices(type_module_list, server_code_module_list, config)
+        self.services.start()
+
+    def stop(self):
+        self.services.stop()
+        assert not self.services.is_failed
 
         
-async def client_send_packet(services, started_barrier):
+async def client_send_packet(services):
     types = services.types
     address = types.tcp_transport.address(TCP_ADDRESS[0], TCP_ADDRESS[1])
     tcp_transport_ref = services.ref_registry.register_object(types.tcp_transport.address, address)
-    started_barrier.wait()
     transport = await services.transport_resolver.resolve(tcp_transport_ref)
     packet = services.types.test.packet(message='hello')
     ref = services.ref_registry.register_object(services.types.test.packet, packet)
     transport.send(ref)
 
 @pytest.mark.asyncio
-async def test_packet_should_be_delivered(event_loop, thread_pool, mp_pool, client_services):
-    mp_manager = multiprocessing.Manager()
-    started_barrier = mp_manager.Barrier(2)
-    server_finished_future = mp_call_async(event_loop, thread_pool, mp_pool, server, (started_barrier,))
-    await asyncio.gather(
-        client_send_packet(client_services, started_barrier),
-        server_finished_future,
-        )
+async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, client_services):
+    mp_pool.apply(Server.construct)
+    await client_send_packet(client_services)
+    Server.call(mp_pool, Server.stop)
 
 
 @pytest.mark.parametrize('encoding', ['json', 'cdr'])

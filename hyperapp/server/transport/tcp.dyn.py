@@ -103,7 +103,7 @@ class TcpClient(object):
             self._remoting.process_incoming_bundle(bundle)
 
     def _log(self, message, *args):
-        log.info('tcp client %s:%d: %s' % (self._peer_address[0], self._peer_address[1], message), *args)
+        log.info('tcp: client %s:%d: %s' % (self._peer_address[0], self._peer_address[1], message), *args)
 
 
 class TcpServer(object):
@@ -127,7 +127,10 @@ class TcpServer(object):
         self._listen_thread.start()
 
     def stop(self):
-        log.info('Stopping tcp transport...')
+        if self._stop_flag:
+            log.info('tcp: already stopping')
+            return
+        log.info('tcp: stopping...')
         self._stop_flag = True
         self._listen_thread.join()
         for client in self._client_set:
@@ -138,7 +141,7 @@ class TcpServer(object):
                     break
             self._join_finished_clients()
             time.sleep(0.1)
-        log.info('Tcp transport is stopped.')
+        log.info('tcp: stopped.')
 
     def client_finished(self, client):
         with self._client_lock:
@@ -157,7 +160,7 @@ class TcpServer(object):
             rd, wr, err = select.select([self._socket], [], [self._socket], STOP_DELAY_TIME_SEC)
             if rd or err:
                 channel_socket, peer_address = self._socket.accept()
-                log.info('accepted connection from %s:%d' % peer_address)
+                log.info('tcp: accepted connection from %s:%d' % peer_address)
                 client = TcpClient(self._remoting, self, peer_address, channel_socket, self._on_failure)
                 client.start()
                 self._client_set.add(client)

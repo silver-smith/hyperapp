@@ -20,3 +20,28 @@ def mp_call_async(event_loop, thread_pool, mp_pool, method, args):
             event_loop.call_soon_threadsafe(async_future.set_exception, x)
     thread_pool.submit(handle_result)
     return async_future
+
+
+class ServerProcess(object):
+
+    instance = None
+
+    @classmethod
+    def construct(cls, *args, **kw):
+        cls.instance = cls(*args, **kw)
+
+    @classmethod
+    def _call(cls, method, *args, **kw):
+        try:
+            return method(cls.instance, *args, **kw)
+        except:
+            traceback.print_exc()
+            raise
+
+    @classmethod
+    def call(cls, mp_pool, method, *args):
+        return mp_pool.apply(cls._call, (method,) + args)
+
+    @classmethod
+    def call_async(cls, event_loop, thread_pool, mp_pool, method, *args):
+        return mp_call_async(event_loop, thread_pool, mp_pool, cls._call, (method,) + args)

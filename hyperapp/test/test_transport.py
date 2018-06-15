@@ -10,7 +10,7 @@ from hyperapp.common.identity import Identity
 from hyperapp.common.packet_coders import packet_coders
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.test_services import TestServices, TestClientServices
-from hyperapp.test.utils import mp_call_async
+from hyperapp.test.server_process import ServerProcess
 
 log = logging.getLogger()
 
@@ -95,29 +95,7 @@ def thread_pool():
         yield executor
 
 
-class Server(object):
-
-    instrance = None
-
-    @classmethod
-    def construct(cls, *args, **kw):
-        cls.instance = cls(*args, **kw)
-
-    @classmethod
-    def _call(cls, method, *args, **kw):
-        try:
-            return method(cls.instance, *args, **kw)
-        except:
-            traceback.print_exc()
-            raise
-
-    @classmethod
-    def call(cls, mp_pool, method, *args):
-        return mp_pool.apply(cls._call, (method,) + args)
-
-    @classmethod
-    def call_async(cls, event_loop, thread_pool, mp_pool, method, *args):
-        return mp_call_async(event_loop, thread_pool, mp_pool, cls._call, (method,) + args)
+class Server(ServerProcess):
 
     def __init__(self, queues):
         self.services = Services(type_module_list, server_code_module_list, queues)
