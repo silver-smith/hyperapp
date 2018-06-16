@@ -86,7 +86,7 @@ class ServerServicesBase(ServicesBase):
 
     def stop(self):
         log.debug('Stopping thread pool...')
-        self.thread_pool.shutdown(wait=True)
+        self.thread_pool.shutdown(wait=False)
         super().stop()
 
 

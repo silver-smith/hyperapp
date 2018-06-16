@@ -26,6 +26,7 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         self.on_stop = []
         self.config = {}
         self.failure_reason_list = []
+        self._is_stopped = False
 
     def init_services(self, config=None):
         self.config.update(config or {})
@@ -37,11 +38,15 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
             start()
 
     def stop(self):
+        if self._is_stopped:
+            log.info('Already stopped.')
+            return
         log.info('Stopping modules...')
         for stop in self.on_stop:
             stop()
         log.info('Stopping modules: done')
         self.on_stopped()
+        self._is_stopped = True
 
     def failed(self, reason):
         log.error('Failed: %r', reason)

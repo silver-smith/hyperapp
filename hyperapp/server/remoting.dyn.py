@@ -23,11 +23,34 @@ class ServiceRegistry(Registry):
 
 class LocalTransport(object):
 
-    def __init__(self, address):
-        pass
+    def __init__(self, address, types, ref_resolver, service_registry):
+        self._types = types
+        self._ref_resolver = ref_resolver
+        self._service_registry = service_registry
 
     def send(self, ref):
-        assert 0, repr(ref)
+        capsule = self._ref_resolver.resolve_ref(ref)
+        assert capsule.full_type_name == ['hyper_ref', 'service_request'], capsule.full_type_name
+        service_request = decode_capsule(self._types, capsule)
+        service_response = self._process_request(service_request)
+        assert 0, repr(service_response)
+
+    def _process_request(self, service_request):
+        iface = self._types.resolve(service_request.iface_full_type_name)
+        command = iface[service_request.command_id]
+        params = service_request.params.decode(command.request)
+        servant = self._service_registry.resolve(service_request.service_id)
+        request = Request(command)
+        method = getattr(servant, 'remote_' + service_request.command_id, None)
+        assert method, '%r does not implement method remote_%s' % (servant, service_request.command_id)
+        response = method(request, **params._asdict())
+        if not command.is_request:
+            assert not response, 'No results are expected from notifications'
+            return
+        assert response, 'Use request.make_response... method to return results from requests'
+        assert isinstance(response, Response)
+        service_response = response.make_service_response(command, service_request.request_id)
+        return service_response
 
 
 class LocalRouteSource(RouteSource):
@@ -60,7 +83,7 @@ class Remoting(object):
         transport_ref_set = self._route_resolver.resolve(service_request.service_id)
         assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple transport support
         transport = self._transport_resolver.resolve(transport_ref_set.pop())
-        assert 0, transport
+        transport.send(bundle.ref)
 
 
 class ThisModule(ServerModule):
@@ -76,26 +99,13 @@ class ThisModule(ServerModule):
             services.route_resolver,
             services.transport_resolver,
             )
-        services.transport_registry.register(href_types.local_transport_address, LocalTransport)
+        services.transport_registry.register(
+            href_types.local_transport_address,
+            LocalTransport,
+            services.types,
+            services.ref_resolver,
+            services.service_registry,
+            )
         local_transport_ref = services.ref_registry.register_object(href_types.local_transport_address, href_types.local_transport_address())
         local_route_source = LocalRouteSource(service_registry, local_transport_ref)
         services.route_resolver.add_source(local_route_source)
-        services.transport_registry.register(href_types.service_request, self._process_request, services.types, service_registry)
-
-    def _process_request(self, service_request, types, service_registry):
-        iface = types.resolve(service_request.iface_full_type_name)
-        command = iface[service_request.command_id]
-        params = service_request.params.decode(command.request)
-        servant = service_registry.resolve(service_request.service_id)
-        request = Request(command)
-        method = getattr(servant, 'remote_' + service_request.command_id, None)
-        assert method, '%r does not implement method remote_%s' % (servant, service_request.command_id)
-        response = method(request, **params._asdict())
-        if not command.is_request:
-            assert not response, 'No results are expected from notifications'
-            return
-        assert response, 'Use request.make_response... method to return results from requests'
-        assert isinstance(response, Response)
-        service_response = response.make_service_response(command, service_request.request_id)
-        return service_response
-    # todo: do not use capsule registry to produce responses, service_response is not the corresponding capsule for request ref
