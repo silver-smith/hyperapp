@@ -7,7 +7,7 @@ import pytest
 
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
-from hyperapp.test.test_services import TestServices, TestClientServices
+from hyperapp.test.test_services import TestServerServices, TestClientServices
 from hyperapp.test.server_process import mp2async_future, ServerProcess
 
 log = logging.getLogger()
@@ -63,7 +63,7 @@ client_code_module_list = [
     ]
 
 
-class ServerServices(TestServices):
+class ServerServices(TestServerServices):
 
     def __init__(self, stopped_queue):
         super().__init__(type_module_list, server_code_module_list, config)
@@ -148,11 +148,11 @@ async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, cl
     stopped_queue = mp_manager.Queue()
     mp_pool.apply(Server.construct, (stopped_queue,))
     encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
-    result = await asyncio.wait([
+    await asyncio.wait([
         mp2async_future(event_loop, thread_pool, wait_for_server_stopped(thread_pool, stopped_queue)),
         client_send_packet(client_services, encoded_echo_service_bundle),
         ], return_when=asyncio.FIRST_COMPLETED)
-    log.debug('Stopping the server now...')
+    log.debug('Test is finished, stopping the server now...')
     Server.call(mp_pool, Server.stop)
 
 

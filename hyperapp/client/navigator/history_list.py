@@ -1,6 +1,6 @@
 import logging
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import tInt, Column
+#from hyperapp.common.htypes import tInt, Column
 from ..command import command
 from ..list_object import Element, Chunk, ListObject
 from .module import get_this_module

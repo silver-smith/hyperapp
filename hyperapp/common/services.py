@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 import logging
+import abc
 
 from hyperapp.common.htypes import (
     make_root_type_namespace,
@@ -16,7 +17,7 @@ TYPE_MODULE_EXT = '.types'
 HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 
 
-class ServicesBase(object):
+class ServicesBase(object, metaclass=abc.ABCMeta):
 
     def __init__(self):
         self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
@@ -36,16 +37,20 @@ class ServicesBase(object):
             start()
 
     def stop(self):
-        log.error('Stopping modules...')
+        log.info('Stopping modules...')
         for stop in self.on_stop:
             stop()
-        log.error('Stopping modules: done')
+        log.info('Stopping modules: done')
         self.on_stopped()
 
     def failed(self, reason):
         log.error('Failed: %r', reason)
         self.failure_reason_list.append(reason)
-        self.stop()
+        self.schedule_stopping()
+
+    @abc.abstractmethod
+    def schedule_stopping(self):
+        pass
 
     @property
     def is_failed(self):

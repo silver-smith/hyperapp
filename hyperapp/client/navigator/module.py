@@ -4,7 +4,6 @@ from hyperapp.common.htypes import (
     TList,
     Field,
     TRecord,
-    list_handle_type,
     )
 from ..module import Module
 

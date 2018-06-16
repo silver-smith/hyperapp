@@ -133,6 +133,7 @@ class TcpServer(object):
         log.info('tcp: stopping...')
         self._stop_flag = True
         self._listen_thread.join()
+        log.info('tcp: listening thread is joined.')
         for client in self._client_set:
             client.stop()
         while True:
@@ -154,6 +155,7 @@ class TcpServer(object):
         except:
             traceback.print_exc()
             self._stop_flag = True
+        log.debug('tcp: listening thread is stopped.')
 
     def _accept_loop(self):
         while not self._stop_flag:

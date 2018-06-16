@@ -1,12 +1,11 @@
 import os.path
-from ..common.htypes import TypeRegistryRegistry
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry
 from .view_registry import ViewRegistry
 from .param_editor_registry import ParamEditorRegistry
-from .remoting import Remoting
+#from .remoting import Remoting
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
 from .module import ClientModuleRegistry
@@ -15,8 +14,8 @@ from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
 from . import url_clipboard
 
-from . import tcp_transport
-from . import encrypted_transport
+#from . import tcp_transport
+#from . import encrypted_transport
 
 from . import command
 from . import tab_view
@@ -35,7 +34,13 @@ TYPE_MODULE_EXT = '.types'
 DYN_MODULE_EXT = '.dyn.py'
 
 
-class Services(ServicesBase):
+class ClientServicesBase(ServicesBase):
+
+    def schedule_stopping(self):
+        assert 0  # todo
+
+
+class Services(ClientServicesBase):
 
     def __init__(self):
         super().__init__()
