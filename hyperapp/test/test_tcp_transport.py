@@ -102,10 +102,10 @@ class Server(ServerProcess):
 
     def make_echo_service_bundle(self):
         href_types = self.services.types.hyper_ref
-        service_ref = href_types.service_ref(['test', 'echo'], self.services.ECHO_SERVICE_ID)
-        service_ref_ref = self.services.ref_registry.register_object(href_types.service_ref, service_ref)
+        service = href_types.service(['test', 'echo'], self.services.ECHO_SERVICE_ID)
+        service_ref = self.services.ref_registry.register_object(href_types.service, service)
         ref_collector = self.services.ref_collector_factory()
-        echo_service_bundle = ref_collector.make_bundle(service_ref_ref)
+        echo_service_bundle = ref_collector.make_bundle(service_ref)
         return encode_bundle(self.services, echo_service_bundle)
 
         

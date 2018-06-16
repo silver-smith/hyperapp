@@ -12,7 +12,7 @@ capsule = record:
     encoded_object: binary
     
 
-service_ref = record:
+service = record:
     iface_full_type_name: full_type_name
     service_id: string
 
