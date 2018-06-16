@@ -34,7 +34,7 @@ class Remoting(object):
             request_id = None
         request = href_types.service_request(
             iface_full_type_name=iface.full_name,
-            service_id=service_ref,
+            target_service_ref=service_ref,
             command_id=command.command_id,
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),

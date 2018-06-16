@@ -15,9 +15,9 @@ MODULE_NAME = 'remoting'
 
 class ServiceRegistry(Registry):
 
-    def resolve(self, service_id):
-        rec = self._resolve(service_id)
-        log.info('producing service for %r using %s(%s, %s)', service_id, rec.factory, rec.args, rec.kw)
+    def resolve(self, service_ref):
+        rec = self._resolve(service_ref)
+        log.info('producing service for %r using %s(%s, %s)', service_ref, rec.factory, rec.args, rec.kw)
         return rec.factory(*rec.args, **rec.kw)
 
 
@@ -39,7 +39,7 @@ class LocalTransport(object):
         iface = self._types.resolve(service_request.iface_full_type_name)
         command = iface[service_request.command_id]
         params = service_request.params.decode(command.request)
-        servant = self._service_registry.resolve(service_request.service_id)
+        servant = self._service_registry.resolve(service_request.target_service_ref)
         request = Request(command)
         method = getattr(servant, 'remote_' + service_request.command_id, None)
         assert method, '%r does not implement method remote_%s' % (servant, service_request.command_id)
@@ -80,7 +80,7 @@ class Remoting(object):
         capsule = self._ref_resolver.resolve_ref(bundle.ref)
         assert capsule.full_type_name == ['hyper_ref', 'service_request'], capsule.full_type_name
         service_request = decode_capsule(self._types, capsule)
-        transport_ref_set = self._route_resolver.resolve(service_request.service_id)
+        transport_ref_set = self._route_resolver.resolve(service_request.target_service_ref)
         assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple transport support
         transport = self._transport_resolver.resolve(transport_ref_set.pop())
         transport.send(bundle.ref)
