@@ -148,7 +148,7 @@ async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, cl
     stopped_queue = mp_manager.Queue()
     mp_pool.apply(Server.construct, (stopped_queue,))
     encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
-    asyncio.wait([
+    result = await asyncio.wait([
         mp2async_future(event_loop, thread_pool, wait_for_server_stopped(thread_pool, stopped_queue)),
         client_send_packet(client_services, encoded_echo_service_bundle),
         ], return_when=asyncio.FIRST_COMPLETED)
