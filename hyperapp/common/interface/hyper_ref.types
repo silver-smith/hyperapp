@@ -22,14 +22,17 @@ bundle = record:
     capsule_list: capsule list
 
 
-service_request = record:
+rpc_message = hierarchy rpc_message
+
+rpc_request = rpc_message class request:
     iface_full_type_name: full_type_name
+    source_service_ref: ref
     target_service_ref: ref
     command_id: string
     request_id: string opt
     params: embedded
 
-service_response = record:
+rpc_response = rpc_message class response:
     request_id: string
     is_succeeded: bool
     result_or_error: embedded

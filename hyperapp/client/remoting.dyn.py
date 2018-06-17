@@ -23,6 +23,7 @@ class Remoting(object):
         self._route_resolver = route_resolver
         self._transport_resolver = transport_resolver
         self._pending_requests = {}  # request id -> PendingRequest
+        self._my_service_ref = str(uuid.uuid4()).encode('ascii')  # todo: real service ref
 
     async def send_request(self, service_ref, iface, command, params):
         transport_ref_set = await self._route_resolver.resolve(service_ref)
@@ -32,14 +33,15 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
-        request = href_types.service_request(
+        request = href_types.rpc_request(
             iface_full_type_name=iface.full_name,
+            source_service_ref=self._my_service_ref,
             target_service_ref=service_ref,
             command_id=command.command_id,
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        request_ref = self._ref_registry.register_object(href_types.service_request, request)
+        request_ref = self._ref_registry.register_object(href_types.rpc_message, request)
         transport.send(request_ref)
         if not command.is_request:
             return
@@ -53,14 +55,14 @@ class Remoting(object):
         finally:
             del self._pending_requests[request_id]
 
-    def process_response(self, service_response):
-        log.info('Remoting: processing response: %r', service_response)
-        assert service_response.is_succeeded  # todo
-        request = self._pending_requests.get(service_response.request_id)
+    def process_response(self, rpc_response):
+        log.info('Remoting: processing response: %r', rpc_response)
+        assert rpc_response.is_succeeded  # todo
+        request = self._pending_requests.get(rpc_response.request_id)
         if not request:
-            log.warning('No one is waiting for response %r; ignoring', service_response.request_id)
+            log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
             return
-        response = service_response.result_or_error.decode(request.iface[request.command.command_id].response)
+        response = rpc_response.result_or_error.decode(request.iface[request.command.command_id].response)
         request.future.set_result(response)
         log.info('Remoting: processing response: done')
         return True  # todo: do not use registry to process packets
@@ -71,4 +73,4 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         services.remoting = remoting = Remoting(services.ref_registry, services.route_resolver, services.transport_resolver)
-        services.transport_registry.register(href_types.service_response, remoting.process_response)
+        services.transport_registry.register(href_types.rpc_message, remoting.process_response)

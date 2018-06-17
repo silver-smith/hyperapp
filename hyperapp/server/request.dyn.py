@@ -27,10 +27,10 @@ class Response(object):
         self._result = result
         self._error = error
 
-    def make_service_response(self, command, request_id):
+    def make_rpc_response(self, command, request_id):
         if self._error:
             assert 0  # todo
-        return href_types.service_response(
+        return href_types.rpc_response(
             request_id=request_id,
             is_succeeded=True,
             result_or_error=EncodableEmbedded(command.response, self._result),

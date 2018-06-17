@@ -44,6 +44,10 @@ class TClass(Type):
         assert isinstance(other, TClass), repr(other)
         return other.hierarchy is self.hierarchy and other.id == self.id and other.trec == self.trec
 
+    @property
+    def full_name(self):
+        return self.trec.full_name
+
     def __call__(self, *args, **kw):
         return self.instantiate(*args, **kw)
 
