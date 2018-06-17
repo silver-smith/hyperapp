@@ -32,6 +32,7 @@ class LocalTransport(object):
         capsule = self._ref_resolver.resolve_ref(ref)
         assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
         rpc_request = decode_capsule(self._types, capsule)
+        assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
         rpc_response = self._process_request(rpc_request)
         assert 0, repr(rpc_response)
 
