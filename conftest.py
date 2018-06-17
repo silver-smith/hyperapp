@@ -15,7 +15,8 @@ class AsyncExceptionHandler(object):
 def pytest_configure(config):
     if config.getvalue('capture') == 'no':
         # when capturing stdout dump log to stdout too
-        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(processName)-17s %(filename)-25s %(lineno)4d %(levelname)-8s %(message)s', datefmt='%H:%M:%S')
+        format = '%(asctime)s %(processName)-17s %(filename)-25s %(lineno)4d %(levelname)-8s %(message)s'
+        logging.basicConfig(level=logging.DEBUG, format=format, datefmt='%H:%M:%S')
 
 
 @pytest.mark.hookwrapper
