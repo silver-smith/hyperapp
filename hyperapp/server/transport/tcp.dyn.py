@@ -91,7 +91,7 @@ class TcpClient(object):
         except SocketClosedError:
             self._log('connection is closed by remote peer')
         except Exception as x:
-            traceback.print_exc()
+            log.exception('Tcp client thread is failed')
             self._on_failure('Tcp client thread is failed: %r' % x)
         self._channel.close()
         self._tcp_server.client_finished(self)

@@ -3,6 +3,7 @@ import time
 import multiprocessing
 import concurrent.futures
 import asyncio
+import traceback
 import pytest
 
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
@@ -70,6 +71,7 @@ class ServerServices(TestServerServices):
         self.stopped_queue = stopped_queue
 
     def on_stopped(self):
+        log.info('ServerServices.on_stopped')
         self.stopped_queue.put(self.is_failed)
 
 
@@ -82,7 +84,7 @@ def mp_pool():
 
 @pytest.fixture
 def thread_pool():
-    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         yield executor
 
 @pytest.fixture
@@ -124,19 +126,18 @@ async def client_send_packet(services, encoded_echo_service_bundle):
     assert result.response == 'hello'
 
 
-def wait_for_server_stopped(thread_pool, stop_queue):
+def wait_for_server_stopped(thread_pool, stopped_queue):
     mp_future = concurrent.futures.Future()
     def wait_for_queue():
         log.debug('wait_for_server_stopped.wait_for_queue: started')
         try:
-            is_failed = stop_queue.get()
+            is_failed = stopped_queue.get()
             log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
             assert not is_failed
             mp_future.set_result(None)
             log.debug('wait_for_server_stopped.wait_for_queue: succeeded')
         except Exception as x:
-            log.debug('wait_for_server_stopped.wait_for_queue: exception')
-            traceback.print_exc()
+            log.exception('wait_for_server_stopped.wait_for_queue:')
             mp_future.set_exception(x)
     thread_pool.submit(wait_for_queue)
     return mp_future
