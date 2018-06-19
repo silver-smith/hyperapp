@@ -143,11 +143,11 @@ class TcpServer(object):
         self._client_lock = threading.Lock()
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self._socket.bind(self._bind_address)
-        self._socket.listen(5)
         log.info('Tcp transport: listening on %s:%d' % self._bind_address)
 
     def start(self):
+        self._socket.bind(self._bind_address)
+        self._socket.listen(5)
         self._listen_thread.start()
 
     def stop(self):
