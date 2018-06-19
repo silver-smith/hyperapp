@@ -23,6 +23,6 @@ class ThisModule(ServerModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
-        service = href_types.service(['test', 'echo'], ECHO_SERVICE_ID)
+        service = href_types.service(ECHO_SERVICE_ID, ['test', 'echo'])
         service_ref = services.ref_registry.register_object(href_types.service, service)
         services.service_registry.register(service_ref, EchoService)

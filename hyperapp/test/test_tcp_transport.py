@@ -57,6 +57,7 @@ client_code_module_list = [
     'client.async_ref_resolver',
     'client.capsule_registry',
     'client.route_resolver',
+    'client.endpoint_registry',
     'client.transport.registry',
     'client.transport.tcp',
     'client.remoting',
@@ -104,7 +105,7 @@ class Server(ServerProcess):
 
     def make_echo_service_bundle(self):
         href_types = self.services.types.hyper_ref
-        service = href_types.service(['test', 'echo'], self.services.ECHO_SERVICE_ID)
+        service = href_types.service(self.services.ECHO_SERVICE_ID, ['test', 'echo'])
         service_ref = self.services.ref_registry.register_object(href_types.service, service)
         ref_collector = self.services.ref_collector_factory()
         echo_service_bundle = ref_collector.make_bundle(service_ref)
