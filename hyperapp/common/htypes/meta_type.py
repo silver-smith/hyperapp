@@ -84,13 +84,17 @@ tFieldMeta = TRecord([
     ], full_name=['meta_type', 'field'])
 
 tRecordMeta = tMetaType.register(
-    'record', base=tRootMetaType, fields=[Field('fields', TList(tFieldMeta))], full_name=['meta_type', 'record'])
+    'record', base=tRootMetaType, fields=[
+        Field('base', TOptional(tMetaType)),
+        Field('fields', TList(tFieldMeta)),
+        ], full_name=['meta_type', 'record'])
 
 def t_field_meta(name, type):
     return tFieldMeta(name, type)
 
-def t_record_meta(fields):
-    return tRecordMeta(tRecordMeta.id, fields)
+def t_record_meta(fields, base=None):
+    assert base is None or isinstance(base, tRecordMeta), repr(base)
+    return tRecordMeta(tRecordMeta.id, base, fields)
 
 def field_from_data(meta_type_registry, name_resolver, rec):
     t = meta_type_registry.resolve(name_resolver, rec.type)
@@ -100,7 +104,11 @@ def field_list_from_data(meta_type_registry, name_resolver, fields):
     return [field_from_data(meta_type_registry, name_resolver, field) for field in fields]
 
 def record_from_data(meta_type_registry, name_resolver, rec, full_name):
-    return TRecord(field_list_from_data(meta_type_registry, name_resolver, rec.fields), full_name=full_name)
+    if rec.base:
+        base = meta_type_registry.resolve(name_resolver, rec.base)
+    else:
+        base = None
+    return TRecord(field_list_from_data(meta_type_registry, name_resolver, rec.fields), base=base, full_name=full_name)
 
 
 tHierarchyMeta = tMetaType.register(

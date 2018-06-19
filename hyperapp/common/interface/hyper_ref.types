@@ -12,9 +12,11 @@ capsule = record:
     encoded_object: binary
     
 
-service = record:
-    iface_full_type_name: full_type_name
+endpoint = record:
     service_id: string
+
+service = record(endpoint):
+    iface_full_type_name: full_type_name
 
 
 bundle = record:

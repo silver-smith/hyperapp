@@ -92,8 +92,20 @@ class MetaTypeTest(unittest.TestCase):
             Field('int_field', tInt),
             Field('string_list_field', TList(tString)),
             Field('bool_optional_field', TOptional(tBool)),
-            ]),
-            t)
+            ]), t)
+
+    def test_based_record(self):
+        base_record_data = t_record_meta([
+            t_field_meta('int_field', t_named('int')),
+            ])
+        record_data = t_record_meta([
+            t_field_meta('string_field', t_named('string')),
+            ], base=base_record_data)
+        t = self.resolve(record_data)
+        self.assertEqual(TRecord([
+            Field('int_field', tInt),
+            Field('string_field', tString),
+            ]), t)
 
     def test_hierarchy(self):
         hdata = t_hierarchy_meta('test_hierarchy')
