@@ -6,7 +6,7 @@ import time
 import traceback
 
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
-from hyperapp.common.ref import make_object_ref
+from hyperapp.common.ref import make_object_ref, decode_capsule
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 
 from ..module import Module
@@ -65,7 +65,10 @@ class TcpChannel(object):
 
 class TcpClient(object):
 
-    def __init__(self, remoting, tcp_server, peer_address, socket, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, remoting, tcp_server, peer_address, socket, on_failure):
+        self._types = types
+        self._ref_registry = ref_registry
+        self._ref_resolver = ref_resolver
         self._remoting = remoting
         self._tcp_server = tcp_server
         self._peer_address = peer_address
@@ -100,7 +103,25 @@ class TcpClient(object):
     def _receive_and_process_bundle(self):
         bundle = self._channel.receive(NOTIFICATION_DELAY_TIME_SEC)
         if bundle:  # receive timed out otherwise
-            self._remoting.process_incoming_bundle(bundle)
+            self._process_incoming_bundle(bundle)
+
+    def _process_incoming_bundle(self, bundle):
+        self._ref_registry.register_bundle(bundle)
+        for root_ref in bundle.roots:
+            capsule = self._ref_resolver.resolve_ref(root_ref)
+            if capsule.full_type_name == ['tcp_transport', 'peer_endpoints']:
+                self._process_peer_endpoints(capsule)
+            elif capsule.full_type_name == ['hyper_ref', 'rpc_message']:
+                self._process_rpc_request(root_ref, capsule)
+            else:
+                assert False, 'Unexpected capsule type: %r' % '.'.join(capsule.full_type_name)
+
+    def _process_peer_endpoints(self, capsule):
+        peer_endpoints = decode_capsule(self._types, capsule)
+
+    def _process_rpc_request(self, rpc_request_ref, rpc_request_capsule):
+        rpc_request = decode_capsule(self._types, rpc_request_capsule)
+        self._remoting.process_rpc_request(rpc_request_ref, rpc_request)
 
     def _log(self, message, *args):
         log.info('tcp: client %s:%d: %s' % (self._peer_address[0], self._peer_address[1], message), *args)
@@ -108,7 +129,10 @@ class TcpClient(object):
 
 class TcpServer(object):
 
-    def __init__(self, remoting, bind_address, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, remoting, bind_address, on_failure):
+        self._types = types
+        self._ref_registry = ref_registry
+        self._ref_resolver = ref_resolver
         self._remoting = remoting
         self._bind_address = bind_address  # (host, port)
         self._on_failure = on_failure
@@ -163,7 +187,16 @@ class TcpServer(object):
             if rd or err:
                 channel_socket, peer_address = self._socket.accept()
                 log.info('tcp: accepted connection from %s:%d' % peer_address)
-                client = TcpClient(self._remoting, self, peer_address, channel_socket, self._on_failure)
+                client = TcpClient(
+                    self._types,
+                    self._ref_registry,
+                    self._ref_resolver,
+                    self._remoting,
+                    self,
+                    peer_address,
+                    channel_socket,
+                    self._on_failure,
+                    )
                 client.start()
                 self._client_set.add(client)
             self._join_finished_clients()
@@ -186,7 +219,14 @@ class ThisModule(Module):
             bind_address = config.get('bind_address')
         if not bind_address:
             bind_address = DEFAULT_BIND_ADDRESS
-        self.server = TcpServer(services.remoting, bind_address=bind_address, on_failure=services.failed)
+        self.server = TcpServer(
+            services.types,
+            services.ref_registry,
+            services.ref_resolver,
+            services.remoting,
+            bind_address=bind_address,
+            on_failure=services.failed,
+            )
         address = tcp_transport_types.address(bind_address[0], bind_address[1])
         services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
         services.on_start.append(self.server.start)

@@ -76,15 +76,11 @@ class Remoting(object):
         self._route_resolver = route_resolver
         self._transport_resolver = transport_resolver
 
-    def process_incoming_bundle(self, bundle):
-        self._ref_registry.register_bundle(bundle)
-        capsule = self._ref_resolver.resolve_ref(bundle.roots[0])
-        assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
-        rpc_request = decode_capsule(self._types, capsule)
+    def process_rpc_request(self, rpc_request_ref, rpc_request):
         transport_ref_set = self._route_resolver.resolve(rpc_request.target_service_ref)
         assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple transport support
         transport = self._transport_resolver.resolve(transport_ref_set.pop())
-        transport.send(bundle.roots[0])
+        transport.send(rpc_request_ref)
 
 
 class ThisModule(ServerModule):
