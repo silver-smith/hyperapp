@@ -32,6 +32,9 @@ def test_types_module():
 
     assert tInt == ns.get('some_int')
 
+    assert ns.record1 == TRecord([Field('int_field', tInt)])
+    assert ns.record2 == TRecord([Field('int_field', tInt), Field('string_field', tString)])
+
     assert 'object' in ns
     object_t = ns.object
 

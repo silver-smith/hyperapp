@@ -93,7 +93,7 @@ def t_field_meta(name, type):
     return tFieldMeta(name, type)
 
 def t_record_meta(fields, base=None):
-    assert base is None or isinstance(base, tRecordMeta), repr(base)
+    assert base is None or isinstance(base, tMetaType), repr(base)
     return tRecordMeta(tRecordMeta.id, base, fields)
 
 def field_from_data(meta_type_registry, name_resolver, rec):
@@ -106,6 +106,8 @@ def field_list_from_data(meta_type_registry, name_resolver, fields):
 def record_from_data(meta_type_registry, name_resolver, rec, full_name):
     if rec.base:
         base = meta_type_registry.resolve(name_resolver, rec.base)
+        assert isinstance(base, TRecord), (
+            'Base for record %s, %s is not a record' % ('.'.join(full_name), '.'.join(base.full_name)))
     else:
         base = None
     return TRecord(field_list_from_data(meta_type_registry, name_resolver, rec.fields), base=base, full_name=full_name)

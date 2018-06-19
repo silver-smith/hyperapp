@@ -173,34 +173,27 @@ def p_typedef_rhs_5(p):
     'typedef_rhs : interface_def'
     p[0] = p[1]
 
-def p_typedef_rhs_1(p):
-    'typedef_rhs : type_expr'
-    p[0] = p[1]
-
-def p_typedef_rhs_2(p):
-    'typedef_rhs : record_def'
-    p[0] = p[1]
-
-def p_typedef_rhs_3(p):
-    'typedef_rhs : class_def'
-    p[0] = p[1]
-
-def p_typedef_rhs_4(p):
-    'typedef_rhs : hierarchy_def'
-    p[0] = p[1]
-
-def p_typedef_rhs_5(p):
-    'typedef_rhs : interface_def'
-    p[0] = p[1]
-
 
 def p_record_def_1(p):
-    'record_def : RECORD COLON BLOCK_BEGIN field_list BLOCK_END'
-    p[0] = t_record_meta(p[4])
+    'record_def : RECORD record_base_name_def'
+    p[0] = t_record_meta([])
 
 def p_record_def_2(p):
-    'record_def : RECORD'
-    p[0] = t_record_meta([])
+    'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
+    base_name = p[2]
+    if base_name:
+        base = t_named(base_name)
+    else:
+        base = None
+    p[0] = t_record_meta(p[5], base)
+
+def p_record_base_name_def_1(p):
+    'record_base_name_def : empty'
+    p[0] = None
+
+def p_record_base_name_def_2(p):
+    'record_base_name_def : LPAR NAME RPAR'
+    p[0] = p[2]
 
 
 def p_hierarchy_def_1(p):
