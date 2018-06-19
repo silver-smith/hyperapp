@@ -18,12 +18,13 @@ PendingRequest = namedtuple('PendingRequest', 'iface command future')
 
 class Remoting(object):
 
-    def __init__(self, ref_registry, route_resolver, transport_resolver):
+    def __init__(self, ref_registry, route_resolver, endpoint_registry, transport_resolver):
         self._ref_registry = ref_registry
         self._route_resolver = route_resolver
         self._transport_resolver = transport_resolver
         self._pending_requests = {}  # request id -> PendingRequest
-        self._my_service_ref = str(uuid.uuid4()).encode('ascii')  # todo: real service ref
+        self._my_endpoint_ref = endpoint_registry.register_endpoint(href_types.endpoint(
+            service_id=str(uuid.uuid4())))
 
     async def send_request(self, service_ref, iface, command, params):
         transport_ref_set = await self._route_resolver.resolve(service_ref)
@@ -35,7 +36,7 @@ class Remoting(object):
             request_id = None
         request = href_types.rpc_request(
             iface_full_type_name=iface.full_name,
-            source_service_ref=self._my_service_ref,
+            source_endpoint_ref=self._my_endpoint_ref,
             target_service_ref=service_ref,
             command_id=command.command_id,
             request_id=request_id,
@@ -72,5 +73,10 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.remoting = remoting = Remoting(services.ref_registry, services.route_resolver, services.transport_resolver)
+        services.remoting = remoting = Remoting(
+            services.ref_registry,
+            services.route_resolver,
+            services.endpoint_registry,
+            services.transport_resolver,
+            )
         services.transport_registry.register(href_types.rpc_message, remoting.process_response)

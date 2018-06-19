@@ -14,6 +14,7 @@ class EndpointRegistry(object):
     def register_endpoint(self, endpoint):
         endpoint_ref = self._ref_registry.register_object(href_types.endpoint, endpoint)
         self._endpoint_set.add(endpoint_ref)
+        return endpoint_ref
 
     def get_endpoint_ref_list(self):
         return list(self._endpoint_set)
