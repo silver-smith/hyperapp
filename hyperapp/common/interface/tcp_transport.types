@@ -5,6 +5,11 @@ address = record:
     host: string
     port: int
 
+
+peer_endpoints = record:
+    endpoint_ref_list: ref list
+
+
 packet = record:
     message: ref
     to: ref

@@ -20,7 +20,7 @@ service = record(endpoint):
 
 
 bundle = record:
-    ref: ref
+    roots: ref list
     capsule_list: capsule list
 
 

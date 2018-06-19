@@ -39,7 +39,7 @@ class TcpProtocol(asyncio.Protocol):
     def send(self, ref):
         assert isinstance(ref, href_types.ref), repr(ref)
         ref_collector = self._ref_collector_factory()
-        bundle = ref_collector.make_bundle(ref)
+        bundle = ref_collector.make_bundle([ref])
         data = encode_tcp_packet(bundle, TCP_PACKET_ENCODING)
         self._log('sending data, size=%d' % len(data))
         self._asyncio_transport.write(data)

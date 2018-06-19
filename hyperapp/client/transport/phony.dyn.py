@@ -21,7 +21,7 @@ class Transport(object):
 
     def send(self, ref):
         ref_collector = self._ref_collector_factory()
-        bundle = ref_collector.make_bundle(ref)
+        bundle = ref_collector.make_bundle([ref])
         log.debug('phony transport: enqueueing request bundle')
         self._request_queue.put(encode_bundle(bundle))
 
@@ -70,7 +70,7 @@ class ThisModule(ClientModule):
             log.debug('phony transport: processing response bundle...')
             response_bundle = decode_bundle(encoded_response_bundle)
             self._ref_registry.register_bundle(response_bundle)
-            await self._transport_resolver.resolve(response_bundle.ref)
+            await self._transport_resolver.resolve(response_bundle.roots[0])
             log.debug('phony transport: processing response bundle: done')
         except:
             traceback.print_exc()  # traceback is not shown when scheduled by run_coroutine_threadsafe

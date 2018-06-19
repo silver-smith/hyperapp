@@ -107,7 +107,7 @@ class Server(ServerProcess):
         service = href_types.service(['test', 'echo'], self.services.ECHO_SERVICE_ID)
         service_ref = self.services.ref_registry.register_object(href_types.service, service)
         ref_collector = self.services.ref_collector_factory()
-        echo_service_bundle = ref_collector.make_bundle(service_ref)
+        echo_service_bundle = ref_collector.make_bundle([service_ref])
         return encode_bundle(self.services, echo_service_bundle)
 
     def process_request_bundle(self):
@@ -116,10 +116,10 @@ class Server(ServerProcess):
         log.info('Server: got request bundle')
         request_bundle = decode_bundle(self.services, encoded_request_bundle)
         self.services.ref_registry.register_bundle(request_bundle)
-        rpc_response = self.services.transport_resolver.resolve(request_bundle.ref)
+        rpc_response = self.services.transport_resolver.resolve(request_bundle.roots[0])
         rpc_response_ref = self.services.ref_registry.register_object(self.services.types.hyper_ref.rpc_message, rpc_response)
         ref_collector = self.services.ref_collector_factory()
-        rpc_response_bundle = ref_collector.make_bundle(rpc_response_ref)
+        rpc_response_bundle = ref_collector.make_bundle([rpc_response_ref])
         encoded_response_bundle = encode_bundle(self.services, rpc_response_bundle)
         log.info('Server: putting response bundle...')
         self.services.response_queue.put(encoded_response_bundle)
@@ -154,8 +154,8 @@ async def client_call_echo_service(services, transport_ref, encoded_echo_service
     phony_transport_ref = await client_make_phony_transport_ref(services)
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.ref_registry.register_bundle(echo_service_bundle)
-    services.route_registry.register(echo_service_bundle.ref, transport_ref)
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.ref)
+    services.route_registry.register(echo_service_bundle.roots[0], transport_ref)
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.roots[0])
     result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 

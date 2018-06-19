@@ -108,7 +108,7 @@ class Server(ServerProcess):
         service = href_types.service(self.services.ECHO_SERVICE_ID, ['test', 'echo'])
         service_ref = self.services.ref_registry.register_object(href_types.service, service)
         ref_collector = self.services.ref_collector_factory()
-        echo_service_bundle = ref_collector.make_bundle(service_ref)
+        echo_service_bundle = ref_collector.make_bundle([service_ref])
         return encode_bundle(self.services, echo_service_bundle)
 
         
@@ -120,9 +120,9 @@ async def client_send_packet(services, encoded_echo_service_bundle):
 
     address = types.tcp_transport.address(TCP_ADDRESS[0], TCP_ADDRESS[1])
     tcp_transport_ref = services.ref_registry.register_object(types.tcp_transport.address, address)
-    services.route_registry.register(echo_service_bundle.ref, tcp_transport_ref)
+    services.route_registry.register(echo_service_bundle.roots[0], tcp_transport_ref)
 
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.ref)
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.roots[0])
     result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 

@@ -1,5 +1,6 @@
 import logging
 
+from .util import is_list_inst
 from .interface import error as error_types
 from .interface import packet as packet_types
 from .interface import core as core_types
@@ -23,14 +24,15 @@ class RefCollector(Visitor):
         self._ref_resolver = ref_resolver
         self._collected_ref_set = None
 
-    def make_bundle(self, ref):
-        capsule_list = self.collect_capsule(ref)
-        return href_types.bundle(ref, capsule_list)
+    def make_bundle(self, ref_list):
+        assert is_list_inst(ref_list, href_types.ref), repr(ref_list)
+        capsule_list = self.collect_capsule(ref_list)
+        return href_types.bundle(ref_list, capsule_list)
 
-    def collect_capsule(self, ref):
+    def collect_capsule(self, ref_list):
         capsule_set = set()
         missing_ref_count = 0
-        ref_set = set([ref])
+        ref_set = set(ref_list)
         for i in range(RECURSION_LIMIT):
             new_ref_set = set()
             for ref in ref_set:
