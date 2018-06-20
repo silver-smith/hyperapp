@@ -168,7 +168,7 @@ def test_tcp_packet(client_services, encoding):
     test_packet = test_packet_t(message='hello')
     capsule = make_capsule(test_packet_t, test_packet)
     ref = make_ref(capsule)
-    bundle = bundle_t(ref, [capsule])
+    bundle = bundle_t([ref], [capsule])
 
     packet = encode_tcp_packet(bundle, encoding)
     assert has_full_tcp_packet(packet)
