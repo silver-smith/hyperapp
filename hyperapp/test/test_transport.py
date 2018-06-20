@@ -9,7 +9,7 @@ import traceback
 from hyperapp.common.identity import Identity
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
-from hyperapp.test.test_services import TestServices, TestClientServices
+from hyperapp.test.test_services import TestServerServices, TestClientServices
 from hyperapp.test.server_process import ServerProcess
 
 log = logging.getLogger()
@@ -33,6 +33,7 @@ server_code_module_list = [
     'common.ref_resolver',
     'common.ref_collector',
     'common.ref_registry',
+    'server.route_resolver',
     'server.transport.registry',
     'server.request',
     'server.remoting',
@@ -47,6 +48,7 @@ client_code_module_list = [
     'client.async_ref_resolver',
     'client.capsule_registry',
     'client.route_resolver',
+    'client.endpoint_registry',
     'client.transport.registry',
     'client.transport.phony',
     'client.remoting',
@@ -57,7 +59,7 @@ client_code_module_list = [
 Queues = namedtuple('Queues', 'request response')
 
 
-class Services(TestServices):
+class ServerServices(TestServerServices):
 
     def __init__(self, type_module_list, code_module_list, queues):
         self.request_queue = queues.request
@@ -88,7 +90,7 @@ def thread_pool():
 class Server(ServerProcess):
 
     def __init__(self, queues):
-        self.services = Services(type_module_list, server_code_module_list, queues)
+        self.services = ServerServices(type_module_list, server_code_module_list, queues)
 
     def make_transport_ref(self):
         types = self.services.types
