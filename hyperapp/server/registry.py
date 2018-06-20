@@ -36,7 +36,7 @@ class Registry(object):
         try:
             return self._registry[id]
         except KeyError:
-            raise UnknownRegistryIdError('Unknown id: %r' % id)
+            raise UnknownRegistryIdError('Unknown id: %s' % repr(id))
 
 
 class CapsuleRegistry(Registry):

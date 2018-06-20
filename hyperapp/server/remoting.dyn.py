@@ -23,9 +23,12 @@ class ServiceRegistry(Registry):
 
 class LocalTransport(object):
 
-    def __init__(self, address, types, ref_resolver, service_registry):
+    def __init__(self, address, types, ref_registry, ref_resolver, route_resolver, transport_resolver, service_registry):
         self._types = types
+        self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
+        self._route_resolver = route_resolver
+        self._transport_resolver = transport_resolver
         self._service_registry = service_registry
 
     def send(self, ref):
@@ -34,14 +37,21 @@ class LocalTransport(object):
         rpc_request = decode_capsule(self._types, capsule)
         assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
         rpc_response = self._process_request(rpc_request)
-        assert 0, repr(rpc_response)
+        self._send_rpc_response(rpc_response)
+
+    def _send_rpc_response(self, rpc_response):
+        rpc_response_ref = self._ref_registry.register_object(href_types.rpc_message, rpc_response)
+        transport_ref_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
+        assert len(transport_ref_set) == 1  # todo: multiple transport support
+        transport = self._transport_resolver.resolve(transport_ref_set.pop())
+        transport.send(rpc_response_ref)
 
     def _process_request(self, rpc_request):
         iface = self._types.resolve(rpc_request.iface_full_type_name)
         command = iface[rpc_request.command_id]
         params = rpc_request.params.decode(command.request)
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
-        request = Request(command)
+        request = Request(rpc_request.source_endpoint_ref, command)
         method = getattr(servant, 'remote_' + rpc_request.command_id, None)
         assert method, '%r does not implement method remote_%s' % (servant, rpc_request.command_id)
         response = method(request, **params._asdict())
@@ -100,7 +110,10 @@ class ThisModule(ServerModule):
             href_types.local_transport_address,
             LocalTransport,
             services.types,
+            services.ref_registry,
             services.ref_resolver,
+            services.route_resolver,
+            services.transport_resolver,
             services.service_registry,
             )
         local_transport_ref = services.ref_registry.register_object(href_types.local_transport_address, href_types.local_transport_address())

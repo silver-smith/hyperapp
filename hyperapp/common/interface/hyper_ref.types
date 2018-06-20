@@ -35,6 +35,7 @@ rpc_request = rpc_message class request:
     params: embedded
 
 rpc_response = rpc_message class response:
+    target_endpoint_ref: ref
     request_id: string
     is_succeeded: bool
     result_or_error: embedded

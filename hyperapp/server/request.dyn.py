@@ -5,7 +5,8 @@ from ..common.htypes import EncodableEmbedded
 
 class Request(object):
 
-    def __init__(self, command):
+    def __init__(self, source_endpoint_ref, command):
+        self._source_endpoint_ref = source_endpoint_ref
         self._command = command
 
     def make_response(self, result=None, error=None):
@@ -15,7 +16,7 @@ class Request(object):
             result = result_t()
         assert result is None or isinstance(result, result_t), \
           'result for %s is expected to be %r, but is %r' % (self._command.full_name, result_t, result)
-        return Response(result, error)
+        return Response(self._source_endpoint_ref, result, error)
     
     def make_response_result(self, *args, **kw):
         return self.make_response(result=self._command.response(*args, **kw))
@@ -23,7 +24,8 @@ class Request(object):
 
 class Response(object):
 
-    def __init__(self, result, error):
+    def __init__(self, target_endpoint_ref, result, error):
+        self._target_endpoint_ref = target_endpoint_ref
         self._result = result
         self._error = error
 
@@ -31,6 +33,7 @@ class Response(object):
         if self._error:
             assert 0  # todo
         return href_types.rpc_response(
+            target_endpoint_ref=self._target_endpoint_ref,
             request_id=request_id,
             is_succeeded=True,
             result_or_error=EncodableEmbedded(command.response, self._result),
