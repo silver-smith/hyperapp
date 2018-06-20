@@ -5,6 +5,7 @@ import select
 import time
 import traceback
 import uuid
+from queue import Queue
 
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.ref import make_object_ref, decode_capsule
@@ -66,13 +67,14 @@ class TcpChannel(object):
 
 class TcpClient(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, remoting, tcp_server, peer_address, socket, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, remoting, tcp_server, outcoming_queue, peer_address, socket, on_failure):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
         self._remoting = remoting
         self._tcp_server = tcp_server
+        self._outcoming_queue = outcoming_queue
         self._peer_address = peer_address
         self._on_failure = on_failure
         self._connection_id = str(uuid.uuid4())
@@ -156,6 +158,7 @@ class TcpServer(object):
         self._on_failure = on_failure
         self._listen_thread = threading.Thread(target=self._main)
         self._stop_flag = False
+        self._id2outcoming_queue = {}
         self._id2client = {}
         self._finished_client_set = set()
         self._client_lock = threading.Lock()
@@ -186,6 +189,9 @@ class TcpServer(object):
             time.sleep(0.1)
         log.info('tcp: stopped.')
 
+    def get_outcoming_queue(self, client_id):
+        return self._id2outcoming_queue[client_id]
+
     def client_finished(self, client):
         with self._client_lock:
             assert client.id in self._id2client
@@ -205,6 +211,7 @@ class TcpServer(object):
             if rd or err:
                 channel_socket, peer_address = self._socket.accept()
                 log.info('tcp: accepted connection from %s:%d' % peer_address)
+                outcoming_queue = Queue()
                 client = TcpClient(
                     self._types,
                     self._ref_registry,
@@ -212,11 +219,13 @@ class TcpServer(object):
                     self._route_resolver,
                     self._remoting,
                     self,
+                    outcoming_queue,
                     peer_address,
                     channel_socket,
                     self._on_failure,
                     )
                 client.start()
+                self._id2outcoming_queue[client.id] = outcoming_queue
                 self._id2client[client.id] = client
             self._join_finished_clients()
 
@@ -225,9 +234,19 @@ class TcpServer(object):
             for client in self._finished_client_set:
                 client.join()
                 del self._id2client[client.id]
+                del self._id2outcoming_queue[client.id]
             self._finished_client_set.clear()
 
 
+class IncomingConnectionTransport(object):
+
+    def __init__(self, address, server):
+        self._queue = server.get_outcoming_queue(address.connection_id)
+
+    def send(self, message_ref):
+        self._queue.put(message_ref)
+
+        
 class ThisModule(Module):
 
     def __init__(self, services):
@@ -238,7 +257,7 @@ class ThisModule(Module):
             bind_address = config.get('bind_address')
         if not bind_address:
             bind_address = DEFAULT_BIND_ADDRESS
-        self.server = TcpServer(
+        self.server = server = TcpServer(
             services.types,
             services.ref_registry,
             services.ref_resolver,
@@ -248,6 +267,7 @@ class ThisModule(Module):
             on_failure=services.failed,
             )
         address = tcp_transport_types.address(bind_address[0], bind_address[1])
+        services.transport_registry.register(tcp_transport_types.incoming_connection_address, IncomingConnectionTransport, server)
         services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
         services.on_start.append(self.server.start)
         services.on_stop.append(self.server.stop)
