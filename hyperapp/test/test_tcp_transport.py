@@ -59,9 +59,9 @@ client_code_module_list = [
     'client.route_resolver',
     'client.endpoint_registry',
     'client.transport.registry',
-    'client.transport.tcp',
     'client.remoting',
     'client.remoting_proxy',
+    'client.transport.tcp',
     ]
 
 

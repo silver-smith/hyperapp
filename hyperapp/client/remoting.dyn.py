@@ -56,7 +56,7 @@ class Remoting(object):
         finally:
             del self._pending_requests[request_id]
 
-    def process_response(self, rpc_response):
+    def process_rpc_response(self, rpc_response_ref, rpc_response):
         log.info('Remoting: processing response: %r', rpc_response)
         assert rpc_response.is_succeeded  # todo
         request = self._pending_requests.get(rpc_response.request_id)
@@ -79,4 +79,3 @@ class ThisModule(ClientModule):
             services.endpoint_registry,
             services.transport_resolver,
             )
-        services.transport_registry.register(href_types.rpc_message, remoting.process_response)
