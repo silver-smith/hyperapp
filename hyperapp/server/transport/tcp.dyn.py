@@ -7,6 +7,7 @@ import traceback
 import uuid
 from queue import Queue
 
+from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.ref import make_object_ref, decode_capsule
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
@@ -20,6 +21,7 @@ DEFAULT_BIND_ADDRESS = ('localhost', 9999)
 STOP_DELAY_TIME_SEC = 0.3
 NOTIFICATION_DELAY_TIME_SEC = 1
 RECV_SIZE = 4096
+TCP_PACKET_ENCODING = 'cdr'
 
 MODULE_NAME = 'transport.tcp'
 
@@ -39,12 +41,12 @@ class TcpChannel(object):
     def close(self):
         self.socket.close()
 
-    def send(self, contents):
-        data = encode_tcp_packet(contents)
+    def send(self, bundle):
+        data = encode_tcp_packet(bundle, TCP_PACKET_ENCODING)
         ofs = 0
         while ofs < len(data):
             sent_size = self.socket.send(data[ofs:])
-            log.info('  sent (%d) %s...', sent_size, data[ofs:ofs + min(sent_size, 100)])
+            log.debug('  sent (%d) %s...', sent_size, data[ofs:ofs + min(sent_size, 100)])
             if sent_size == 0:
                 raise SocketClosedError()
             ofs += sent_size
@@ -56,7 +58,7 @@ class TcpChannel(object):
             if not rd and not xc:
                 return None
             chunk = self.socket.recv(RECV_SIZE)
-            log.info('  received (%d) %s...', len(chunk), chunk[:100])
+            log.debug('  received (%d) %s...', len(chunk), chunk[:100])
             if chunk == b'':
                 raise SocketClosedError()
             self.recv_buf += chunk
@@ -67,11 +69,12 @@ class TcpChannel(object):
 
 class TcpClient(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, remoting, tcp_server, outcoming_queue, peer_address, socket, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, ref_collector_factory, remoting, tcp_server, outcoming_queue, peer_address, socket, on_failure):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
+        self._ref_collector_factory = ref_collector_factory
         self._remoting = remoting
         self._tcp_server = tcp_server
         self._outcoming_queue = outcoming_queue
@@ -108,6 +111,7 @@ class TcpClient(object):
         try:
             while not self._stop_flag:
                 self._receive_and_process_bundle()
+                self._send_outcoming_messages()
         except SocketClosedError:
             self._log('connection is closed by remote peer')
         except Exception as x:
@@ -142,17 +146,27 @@ class TcpClient(object):
         rpc_request = decode_capsule(self._types, rpc_request_capsule)
         self._remoting.process_rpc_request(rpc_request_ref, rpc_request)
 
+    def _send_outcoming_messages(self):
+        while not self._outcoming_queue.empty():
+            self._send_message(self._outcoming_queue.get())
+
+    def _send_message(self, message_ref):
+        ref_collector = self._ref_collector_factory()
+        bundle = ref_collector.make_bundle([message_ref])
+        self._channel.send(bundle)
+
     def _log(self, message, *args):
         log.info('tcp: client %s:%d: %s' % (self._peer_address[0], self._peer_address[1], message), *args)
 
 
 class TcpServer(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, remoting, bind_address, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, ref_collector_factory, remoting, bind_address, on_failure):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
+        self._ref_collector_factory = ref_collector_factory
         self._remoting = remoting
         self._bind_address = bind_address  # (host, port)
         self._on_failure = on_failure
@@ -217,6 +231,7 @@ class TcpServer(object):
                     self._ref_registry,
                     self._ref_resolver,
                     self._route_resolver,
+                    self._ref_collector_factory,
                     self._remoting,
                     self,
                     outcoming_queue,
@@ -244,6 +259,7 @@ class IncomingConnectionTransport(object):
         self._queue = server.get_outcoming_queue(address.connection_id)
 
     def send(self, message_ref):
+        assert isinstance(message_ref, href_types.ref), repr(message_ref)
         self._queue.put(message_ref)
 
         
@@ -262,6 +278,7 @@ class ThisModule(Module):
             services.ref_registry,
             services.ref_resolver,
             services.route_resolver,
+            services.ref_collector_factory,
             services.remoting,
             bind_address=bind_address,
             on_failure=services.failed,
