@@ -4,11 +4,12 @@ import socket
 import select
 import time
 import traceback
+import uuid
 
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.ref import make_object_ref, decode_capsule
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
-
+from ..route_resolver import RouteRegistry
 from ..module import Module
 
 log = logging.getLogger(__name__)
@@ -65,22 +66,36 @@ class TcpChannel(object):
 
 class TcpClient(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, remoting, tcp_server, peer_address, socket, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, remoting, tcp_server, peer_address, socket, on_failure):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
+        self._route_resolver = route_resolver
         self._remoting = remoting
         self._tcp_server = tcp_server
         self._peer_address = peer_address
+        self._on_failure = on_failure
+        self._connection_id = str(uuid.uuid4())
         self._channel = TcpChannel(socket)
         self._stop_flag = False
         self._thread = threading.Thread(target=self._thread_main)
-        self._on_failure = on_failure
+        self._my_route_registry = RouteRegistry()
+        self._my_address_ref = None
+
+    @property
+    def id(self):
+        return self._connection_id
 
     def start(self):
+        self._my_address_ref = self._ref_registry.register_object(
+            tcp_transport_types.incoming_connection_address,
+            tcp_transport_types.incoming_connection_address(connection_id=self._connection_id),
+            )
+        self._route_resolver.add_source(self._my_route_registry)
         self._thread.start()
 
     def stop(self):
+        self._route_resolver.remove_source(self._my_route_registry)
         self._stop_flag = True
 
     def join(self):
@@ -118,6 +133,8 @@ class TcpClient(object):
 
     def _process_peer_endpoints(self, capsule):
         peer_endpoints = decode_capsule(self._types, capsule)
+        for endpoint_ref in peer_endpoints.endpoint_ref_list:
+            self._my_route_registry.add_route(endpoint_ref, self._my_address_ref)
 
     def _process_rpc_request(self, rpc_request_ref, rpc_request_capsule):
         rpc_request = decode_capsule(self._types, rpc_request_capsule)
@@ -129,16 +146,17 @@ class TcpClient(object):
 
 class TcpServer(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, remoting, bind_address, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, remoting, bind_address, on_failure):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
+        self._route_resolver = route_resolver
         self._remoting = remoting
         self._bind_address = bind_address  # (host, port)
         self._on_failure = on_failure
         self._listen_thread = threading.Thread(target=self._main)
         self._stop_flag = False
-        self._client_set = set()
+        self._id2client = {}
         self._finished_client_set = set()
         self._client_lock = threading.Lock()
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -158,11 +176,11 @@ class TcpServer(object):
         self._stop_flag = True
         self._listen_thread.join()
         log.info('tcp: listening thread is joined.')
-        for client in self._client_set:
+        for client in self._id2client.values():
             client.stop()
         while True:
             with self._client_lock:
-                if not self._client_set:
+                if not self._id2client:
                     break
             self._join_finished_clients()
             time.sleep(0.1)
@@ -170,7 +188,7 @@ class TcpServer(object):
 
     def client_finished(self, client):
         with self._client_lock:
-            assert client in self._client_set
+            assert client.id in self._id2client
             self._finished_client_set.add(client)
 
     def _main(self):
@@ -191,6 +209,7 @@ class TcpServer(object):
                     self._types,
                     self._ref_registry,
                     self._ref_resolver,
+                    self._route_resolver,
                     self._remoting,
                     self,
                     peer_address,
@@ -198,14 +217,14 @@ class TcpServer(object):
                     self._on_failure,
                     )
                 client.start()
-                self._client_set.add(client)
+                self._id2client[client.id] = client
             self._join_finished_clients()
 
     def _join_finished_clients(self):
         with self._client_lock:
             for client in self._finished_client_set:
                 client.join()
-                self._client_set.remove(client)
+                del self._id2client[client.id]
             self._finished_client_set.clear()
 
 
@@ -223,6 +242,7 @@ class ThisModule(Module):
             services.types,
             services.ref_registry,
             services.ref_resolver,
+            services.route_resolver,
             services.remoting,
             bind_address=bind_address,
             on_failure=services.failed,
