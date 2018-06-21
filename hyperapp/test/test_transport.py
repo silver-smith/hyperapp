@@ -50,9 +50,9 @@ client_code_module_list = [
     'client.route_resolver',
     'client.endpoint_registry',
     'client.transport.registry',
-    'client.transport.phony',
     'client.remoting',
     'client.remoting_proxy',
+    'client.transport.phony',
     ]
 
 
@@ -106,19 +106,34 @@ class Server(ServerProcess):
 
     def make_echo_service_bundle(self):
         href_types = self.services.types.hyper_ref
-        service = href_types.service(['test', 'echo'], self.services.ECHO_SERVICE_ID)
+        service = href_types.service(self.services.ECHO_SERVICE_ID, ['test', 'echo'])
         service_ref = self.services.ref_registry.register_object(href_types.service, service)
         ref_collector = self.services.ref_collector_factory()
         echo_service_bundle = ref_collector.make_bundle([service_ref])
         return encode_bundle(self.services, echo_service_bundle)
 
     def process_request_bundle(self):
+        from hyperapp.common.ref import decode_capsule
+        types = self.services.types
+
         log.info('Server: picking request bundle:')
         encoded_request_bundle = self.services.request_queue.get(timeout=1)  # seconds
         log.info('Server: got request bundle')
+
+        # decode bundle
         request_bundle = decode_bundle(self.services, encoded_request_bundle)
         self.services.ref_registry.register_bundle(request_bundle)
-        rpc_response = self.services.transport_resolver.resolve(request_bundle.roots[0])
+        rpc_request_capsule = self.services.ref_resolver.resolve_ref(request_bundle.roots[0])
+        rpc_request = decode_capsule(self.services.types, rpc_request_capsule)
+
+        # resolve transport
+        local_transport_ref = self.services.ref_registry.register_object(types.hyper_ref.local_transport_address, types.hyper_ref.local_transport_address())
+        local_transport = self.services.transport_resolver.resolve(local_transport_ref)
+
+        # handle request
+        rpc_response = local_transport._process_request(rpc_request)
+
+        # encode response
         rpc_response_ref = self.services.ref_registry.register_object(self.services.types.hyper_ref.rpc_message, rpc_response)
         ref_collector = self.services.ref_collector_factory()
         rpc_response_bundle = ref_collector.make_bundle([rpc_response_ref])

@@ -3,7 +3,7 @@ import traceback
 import threading
 import asyncio
 
-from hyperapp.common.ref import encode_bundle, decode_bundle
+from hyperapp.common.ref import encode_bundle, decode_bundle, decode_capsule
 from hyperapp.common.interface import phony_transport as phony_transport_types
 from ..module import ClientModule
 
@@ -32,8 +32,10 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._event_loop = services.event_loop
         self._response_queue = services.response_queue
+        self._types = services.types
         self._ref_registry = services.ref_registry
-        self._transport_resolver = services.transport_resolver
+        self._ref_resolver = services.ref_resolver
+        self._remoting = services.remoting
         self._queue_thread = threading.Thread(
             target=self._queue_thread_main)
         services.transport_registry.register(
@@ -68,9 +70,12 @@ class ThisModule(ClientModule):
     async def _process_response_bundle(self, encoded_response_bundle):
         try:
             log.debug('phony transport: processing response bundle...')
-            response_bundle = decode_bundle(encoded_response_bundle)
-            self._ref_registry.register_bundle(response_bundle)
-            await self._transport_resolver.resolve(response_bundle.roots[0])
+            rpc_response_bundle = decode_bundle(encoded_response_bundle)
+            self._ref_registry.register_bundle(rpc_response_bundle)
+            assert len(rpc_response_bundle.roots) == 1
+            rpc_response_capsule = self._ref_resolver.resolve_ref(rpc_response_bundle.roots[0])
+            rpc_response = decode_capsule(self._types, rpc_response_capsule)
+            self._remoting.process_rpc_response(rpc_response_bundle.roots[0], rpc_response)
             log.debug('phony transport: processing response bundle: done')
         except:
             traceback.print_exc()  # traceback is not shown when scheduled by run_coroutine_threadsafe
