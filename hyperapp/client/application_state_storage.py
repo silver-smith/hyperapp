@@ -7,7 +7,7 @@ from ..common.htypes import TList, TRecord, Field, tString, tEmbedded, Encodable
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from ..common.packet_coders import DecodeError, packet_coders
-from .remoting import RequestError
+#from .remoting import RequestError
 from . import window
 
 log = logging.getLogger(__name__)

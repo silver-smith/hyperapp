@@ -12,10 +12,9 @@ MAX_REDIRECT_COUNT = 10
 
 class ViewRegistry(Registry):
 
-    def __init__(self, module_registry, iface_registry):
+    def __init__(self, module_registry):
         Registry.__init__(self)
         self._module_registry = module_registry
-        self._iface_registry = iface_registry
         self._core_types = None
 
     def set_core_types(self, core_types):

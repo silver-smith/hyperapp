@@ -1,4 +1,6 @@
 import os.path
+from pathlib import Path
+
 from ..common.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
@@ -27,11 +29,72 @@ from . import list_view
 from . import proxy_object
 
 
+HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
 CACHE_CONTENTS_ENCODING = 'json'
 CACHE_FILE_EXT = '.json'
 TYPE_MODULE_EXT = '.types'
 DYN_MODULE_EXT = '.dyn.py'
+
+
+type_module_list = [
+    'error',
+    'resource',
+    'core',
+    'hyper_ref',
+    'module',
+    'packet',
+    'tcp_transport',
+    'param_editor',
+#    'server_management',
+#    'code_repository',
+    'splitter',
+    'form',
+    'text_object',
+    'ref_list',
+    'line_object',
+    'narrower',
+    'fs',
+    'object_selector',
+    'blog',
+    ]
+
+code_module_list = [
+    'common.ref',
+    'common.ref_resolver',
+    'common.ref_registry',
+    'common.ref_collector',
+    'common.tcp_packet',
+    'client.async_ref_resolver',
+    'client.capsule_registry',
+    'client.route_resolver',
+    'client.endpoint_registry',
+    'client.transport.registry',
+    'client.remoting',
+    'client.remoting_proxy',
+    'client.transport.tcp',
+    'client.form',
+#    'code_repository',
+#    'identity',
+#    'redirect_handle',
+    'client.text_object',
+    'client.text_view',
+    'client.text_edit',
+    #                'form_view',
+    'client.error_handler_impl',
+#    'bookmarks',
+    'client.ref_redirect_handle',
+    'client.ref_list',
+    'client.local_server_ref_list',
+    'client.line_edit',
+    'client.line_list_panel',
+    'client.narrower',
+    'client.fs',
+    'client.fs_remote_service',
+    'client.fs_local_service',
+    'client.object_selector',
+    'client.blog',
+    ]
 
 
 class ClientServicesBase(ServicesBase):
@@ -44,47 +107,30 @@ class Services(ClientServicesBase):
 
     def __init__(self):
         super().__init__()
-        self._dir = os.path.abspath(os.path.dirname(__file__))
+        self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
+        self._hyperapp_client_dir = HYPERAPP_DIR / 'hyperapp' / 'client'
         ServicesBase.init_services(self)
-        self.client_module_dir = os.path.abspath(os.path.join(os.path.dirname(__file__)))
+        self.client_module_dir = self._hyperapp_client_dir
         self.module_registry = ClientModuleRegistry()
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self.module_manager = ModuleManager(self)
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()
-        self._load_type_modules([
-            'error',
-            'resource',
-            'core',
-            'hyper_ref',
-            'packet',
-            'param_editor',
-            'server_management',
-            'code_repository',
-            'splitter',
-            'form',
-            'text_object',
-            'ref_list',
-            'line_object',
-            'narrower',
-            'fs',
-            'object_selector',
-            'blog',
-            ])
+        self._load_type_modules(type_module_list)
         self.objimpl_registry = ObjImplRegistry('object')
-        self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
-        self.view_registry = ViewRegistry(self.module_registry, self.iface_registry)
+        #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
+        self.view_registry = ViewRegistry(self.module_registry)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager.init_types(self)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.view_registry.set_core_types(self.types.core)
         self.resources_registry = ResourcesRegistry(self.types.resource)
         self.resources_manager = ResourcesManager(
-            self.types.resource, self.types.param_editor, self.resources_registry, self.cache_repository, self._dir)
-        self._load_modules()
+            self.types.resource, self.types.param_editor, self.resources_registry, self.cache_repository, self._hyperapp_client_dir)
+        self._load_code_modules()
         self._register_static_modules()
-        self._register_transports()
+        #self._register_transports()
         self._register_object_implementations()
         self._register_views()
 
@@ -104,39 +150,9 @@ class Services(ClientServicesBase):
         tcp_transport.register_transports(self.remoting.transport_registry, self)
         encrypted_transport.register_transports(self.remoting.transport_registry, self)
 
-    def _load_modules(self):
-        for module_name in [
-                'form',
-                'code_repository',
-                'identity',
-                'redirect_handle',
-                'text_object',
-                'text_view',
-                'text_edit',
-#                'form_view',
-                'error_handler_impl',
-                'bookmarks',
-                'remoting_proxy',
-                'capsule_registry',
-                'ref_resolver',
-                'ref_redirect_handle',
-                'ref_list',
-                'local_server_ref_list',
-                'line_edit',
-                'line_list_panel',
-                'narrower',
-                'fs',
-                'fs_remote_service',
-                'fs_local_service',
-                'object_selector',
-                'blog',
-                ]:
-            fpath = os.path.join(self.client_module_dir, module_name + DYN_MODULE_EXT)
-            with open(fpath) as f:
-                source = f.read()
-            package = 'hyperapp.client'
-            module = self.types.packet.module(id=module_name, package=package, deps=[], satisfies=[], source=source, fpath=fpath)
-            self.module_manager.load_code_module(module)
+    def _load_code_modules(self):
+        for module_name in code_module_list:
+            self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
 
     def _register_object_implementations(self):
         for module in [
