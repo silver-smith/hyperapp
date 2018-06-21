@@ -84,7 +84,7 @@ class Application(AsyncApplication, view.View):
     def quit(self):
         ## module.set_shutdown_flag()
         state = self.get_state()
-        self._state_storage.save_state(state)
+        #self._state_storage.save_state(state)
         self.stop_loop()
 
     def exec_(self):
