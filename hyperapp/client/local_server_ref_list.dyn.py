@@ -3,13 +3,13 @@ import os.path
 from ..common.interface import hyper_ref as href_types
 from ..common.local_server_paths import LOCAL_SERVER_REF_LIST_REF_PATH
 from .command import command
-from .module import Module
+from .module import ClientModule
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         self._handle_resolver = services.handle_resolver
         ref_path = os.path.expanduser(LOCAL_SERVER_REF_LIST_REF_PATH)
         with open(ref_path, 'rb') as f:

@@ -4,7 +4,7 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, Field, TRecord, Interface
 from .util import DEBUG_FOCUS, call_after
-from .module import Module
+from .module import ClientModule
 from .command import command
 from . import view
 from .menu_bar import MenuBar
@@ -13,6 +13,8 @@ from . import tab_view
 
 log = logging.getLogger(__name__)
 
+
+MODULE_NAME = 'window'
 
 LOCALE = 'en'
 
@@ -122,10 +124,10 @@ class Window(view.View, QtGui.QMainWindow):
         log.info('~window')
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)
         self.point_type = TRecord([
             Field('x', tInt),
             Field('y', tInt),

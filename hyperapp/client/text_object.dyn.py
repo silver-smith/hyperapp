@@ -4,11 +4,14 @@ from enum import Enum
 from ..common.htypes import tString, Field
 from ..common.interface import core as core_types
 from ..common.interface import text_object as text_object_types
-from .module import Module
+from .module import ClientModule
 from .command import command
 from .object import Object
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'text_object'
 
 
 def register_object_implementations(registry, serevices):
@@ -76,7 +79,7 @@ class TextObject(Object):
         log.info('~text_object %r', self)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)

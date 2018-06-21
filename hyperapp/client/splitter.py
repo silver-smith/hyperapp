@@ -2,11 +2,13 @@ import logging
 import importlib
 from PySide import QtCore, QtGui
 from .util import DEBUG_FOCUS, call_after, focused_index, key_match
-from .module import Module
+from .module import ClientModule
 from . import view
 
 log = logging.getLogger(__name__)
 
+
+MODULE_NAME = 'splitter'
 
 # orientation constants
 horizontal = 'horizontal'
@@ -195,10 +197,10 @@ def unsplit(handle):
     return map_current(handle, unsplit)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)
         self.splitter_types = importlib.import_module('hyperapp.common.interface.splitter')
 
     def splitter_handle(self, x, y, orientation, focused=0, sizes=None):

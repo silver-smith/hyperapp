@@ -5,10 +5,13 @@ from .command import command
 from .object import Object
 from .view import View
 from .registry import Registry
-from .module import Module
+from .module import ClientModule
 from ..common.interface import object_selector as object_selector_types
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'object_selector'
 
 
 class ObjectSelectorObject(Object):
@@ -96,10 +99,10 @@ class CallbackRegistry(Registry):
         return rec.factory(callback, *rec.args, **rec.kw)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)
         services.objimpl_registry.register(ObjectSelectorObject.impl_id, ObjectSelectorObject.from_state)
         services.view_registry.register(ObjectSelectorView.impl_id, ObjectSelectorView.from_state, services.objimpl_registry, services.view_registry)
         self.callback_registry = CallbackRegistry()

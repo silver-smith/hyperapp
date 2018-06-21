@@ -13,7 +13,7 @@ from ..common.interface import core as core_types
 from ..common.interface import form as form_types
 from ..common.identity import Identity
 from .command import command
-from .module import Module
+from .module import ClientModule
 from .object import Object
 from .list_object import Element, Chunk, ListObject
 #from .form import formHandle
@@ -168,10 +168,10 @@ def make_identity_list(key=None):
     return identity_list_handle_type('list', object, ['client_module', 'identity', 'IdentityList'], sort_column_id='name', key=key)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         repository = (getattr(services, 'identity_repository', None)  # overriden by test
                       or FileIdentityRepository(Path('~/.local/share/hyperapp/client/identities').expanduser()))
         services.identity_controller = IdentityController(repository)

@@ -83,17 +83,17 @@ code_module_list = [
     #                'form_view',
     'client.error_handler_impl',
 #    'bookmarks',
-    'client.ref_redirect_handle',
-    'client.ref_list',
-    'client.local_server_ref_list',
+#    'client.ref_redirect_handle',
+#    'client.ref_list',
+#    'client.local_server_ref_list',
     'client.line_edit',
     'client.line_list_panel',
     'client.narrower',
-    'client.fs',
-    'client.fs_remote_service',
-    'client.fs_local_service',
+#    'client.fs',
+#    'client.fs_remote_service',
+#    'client.fs_local_service',
     'client.object_selector',
-    'client.blog',
+#    'client.blog',
     ]
 
 
@@ -105,8 +105,9 @@ class ClientServicesBase(ServicesBase):
 
 class Services(ClientServicesBase):
 
-    def __init__(self):
+    def __init__(self, event_loop):
         super().__init__()
+        self.event_loop = event_loop
         self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
         self._hyperapp_client_dir = HYPERAPP_DIR / 'hyperapp' / 'client'
         ServicesBase.init_services(self)
@@ -156,7 +157,7 @@ class Services(ClientServicesBase):
 
     def _register_object_implementations(self):
         for module in [
-                proxy_object,
+                #proxy_object,
                 navigator,
                 ]:
             module.register_object_implementations(self.objimpl_registry, self)

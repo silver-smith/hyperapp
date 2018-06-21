@@ -4,11 +4,14 @@ import re
 from PySide import QtCore, QtGui
 from ..common.htypes import tString, Field
 from ..common.interface import core as core_types
-from .module import Module
+from .module import ClientModule
 from . import view
 from .text_object import TextObject
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'text_view'
 
 
 def register_views(registry, services):
@@ -67,8 +70,8 @@ class View(view.View, QtGui.QTextBrowser):
         log.info('~text_view %r', self)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)
         self.state_type = core_types.obj_handle

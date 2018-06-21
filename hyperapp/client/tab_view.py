@@ -3,12 +3,15 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst
 from ..common.htypes import tInt, TList, Field, TRecord
 from .util import DEBUG_FOCUS, call_after, key_match
-from .module import Module
+from .module import ClientModule
 from .command import command
 from . import view
 from . import splitter
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'tab_view'
 
 
 def get_state_type():
@@ -138,10 +141,10 @@ class View(QtGui.QTabWidget, view.View):
         log.info('~tab_view')
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)
         self.state_type = TRecord([
             Field('tabs', TList(services.types.core.handle)),
             Field('current_tab', tInt),

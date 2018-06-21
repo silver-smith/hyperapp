@@ -10,7 +10,7 @@ from ..common.htypes import (
 from ..common.interface import packet as packet_types
 from ..common.interface import core as core_types
 from ..common.url import Url
-from .module import Module
+from .module import ClientModule
 from .named_url_file_repository import FileNamedUrlRepository
 from .command import command
 from .remoting import Remoting
@@ -112,10 +112,10 @@ def make_bookmark_list(key=None):
     return bookmark_list_handle_type('list', object, ['client_module', 'bookmarks', 'BookmarkList'], sort_column_id='id', key=key)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         self.bookmarks = Bookmarks(FileNamedUrlRepository(
             services.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         services.bookmarks = self.bookmarks

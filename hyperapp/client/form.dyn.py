@@ -5,13 +5,16 @@ from PySide import QtCore, QtGui
 
 from ..common.interface import form as form_types
 from .util import call_after
-from .module import Module
+from .module import ClientModule
 from .objimpl_registry import ObjImplRegistry
 from .object import Object
 from .composite import Composite
 from .mode_command import BoundModeCommand
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'form'
 
 
 class FormObject(Object):
@@ -100,10 +103,10 @@ class FormView(Composite, QtGui.QWidget):
             call_after(field_view.ensure_has_focus)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        super().__init__(services)
+        super().__init__(MODULE_NAME, services)
         services.form_impl_registry = form_impl_registry = ObjImplRegistry('form')
         form_impl_registry.register(FormObject.impl_id, FormObject.from_state)
         services.view_registry.register(FormView.impl_id, FormView.from_state, services.form_impl_registry, services.view_registry)

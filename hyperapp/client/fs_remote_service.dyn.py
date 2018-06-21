@@ -2,7 +2,7 @@ import logging
 
 from ..common.interface import fs as fs_types
 from ..common.url import Url
-from .module import Module
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -33,9 +33,9 @@ class RemoteFsService(object):
         return result.chunk
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         services.fs_service_registry.register(
             fs_types.remote_fs_service, RemoteFsService.from_data, services.iface_registry, services.ref_registry, services.proxy_factory)

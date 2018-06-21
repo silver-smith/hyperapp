@@ -5,7 +5,7 @@ import weakref
 from PySide import QtCore, QtGui
 from .qt_keys import print_key_event
 from .util import DEBUG_FOCUS, focused_index
-from .module import Module
+from .module import ClientModule
 from .object import ObjectObserver
 from .command_class import Commander
 from .command import ViewCommand

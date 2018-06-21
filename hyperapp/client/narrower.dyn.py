@@ -5,7 +5,7 @@ from PySide import QtCore, QtGui
 from ..common.interface import core as core_types
 from ..common.interface import narrower as narrower_types
 from .util import uni2str, key_match, key_match_any
-from .module import Module
+from .module import ClientModule
 from .object import ObjectObserver, Object
 from .list_object import ListObserver, Chunk, ListObject
 from .command import command
@@ -14,6 +14,9 @@ from .line_list_panel import LineListPanel
 from . import line_edit
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'narrower'
 
 
 class NarrowerObject(Object):
@@ -133,10 +136,10 @@ class NarrowerView(LineListPanel):
         log.debug('~NarrowerView self=%s list_view=%s title=%r', id(self), id(self._list_view), self._object.get_title())
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        super().__init__(services)
+        super().__init__(MODULE_NAME, services)
         # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy, not use otherwise:
         services.objimpl_registry.register(NarrowerObject.impl_id, NarrowerObject.from_state)
         services.view_registry.register(NarrowerView.impl_id, NarrowerView.from_state, services.view_registry)

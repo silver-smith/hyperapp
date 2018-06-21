@@ -5,7 +5,10 @@ from hyperapp.common.htypes import (
     Field,
     TRecord,
     )
-from ..module import Module
+from ..module import ClientModule
+
+
+MODULE_NAME = 'navigator'
 
 
 this_module = None
@@ -14,12 +17,12 @@ def get_this_module():
     return this_module
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
         global this_module
         core_types = services.types.core
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)
         self.item_type = TRecord([
             Field('title', tString),
             Field('handle', core_types.handle),
@@ -31,5 +34,5 @@ class ThisModule(Module):
         self.history_list_type = core_types.object.register('history_list', base=core_types.object_base, fields=[
             Field('history', TList(self.item_type)),
             ])
-        self.history_list_handle_type = list_handle_type(core_types, tInt)
+        #self.history_list_handle_type = list_handle_type(core_types, tInt)
         this_module = self

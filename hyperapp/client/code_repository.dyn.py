@@ -14,7 +14,7 @@ from ..common.interface import core as core_types
 from ..common.interface import code_repository as code_repository_types
 from ..common.interface import form as form_types
 from ..common.url import Url
-from .module import Module
+from .module import ClientModule
 from .request import Request
 from .server import Server
 from .proxy_object import ProxyObject
@@ -181,10 +181,10 @@ def make_code_repository_list(key=None):
     return code_repository_list_handle_type('list', object, ['client_module', 'code_repository', 'CodeRepositoryList'], sort_column_id='name', key=key)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         self.resources_manager = services.resources_manager
         self.param_editor_registry = services.param_editor_registry
         services.code_repository = CodeRepository(

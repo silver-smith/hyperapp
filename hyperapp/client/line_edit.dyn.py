@@ -5,11 +5,14 @@ from enum import Enum
 from PySide import QtCore, QtGui
 
 from ..common.interface import line_object as line_object_types
-from .module import Module
+from .module import ClientModule
 from .object import Object
 from . import view
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'line_edit'
 
 
 class LineObject(Object):
@@ -95,9 +98,9 @@ class LineEditView(view.View, QtGui.QLineEdit):
         log.info('~line_edit')
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        super().__init__(services)
+        super().__init__(MODULE_NAME, services)
         services.objimpl_registry.register(LineObject.impl_id, LineObject.from_state)
         services.view_registry.register(LineEditView.impl_id, LineEditView.from_state, services.objimpl_registry)

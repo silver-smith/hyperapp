@@ -10,7 +10,7 @@ from ..common.interface import text_object as text_object_types
 from ..common.interface import form as form_types
 from ..common.interface import object_selector as object_selector_types
 from ..common.list_object import Element, Chunk
-from .module import Module
+from .module import ClientModule
 from .command import command
 from .mode_command import mode_command
 from .text_object import TextObject
@@ -336,10 +336,10 @@ class BlogService(object):
         await self._service_proxy.delete_ref(blog_id, article_id, ref_id)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         self._iface_registry = services.iface_registry
         self._ref_registry = services.ref_registry
         self._ref_resolver = services.ref_resolver

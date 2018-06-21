@@ -4,7 +4,7 @@ import os.path
 from ..common.interface import fs as fs_types
 from ..common.fs_service_impl import FsServiceImpl
 from .command import command
-from .module import Module
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -34,10 +34,10 @@ class LocalFsService(object):
         return self._impl.fetch_dir_contents(path, fetch_request)
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         ref_registry = services.ref_registry
         self._handle_resolver = services.handle_resolver
         services.fs_service_registry.register(

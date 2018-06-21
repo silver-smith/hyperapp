@@ -25,11 +25,13 @@ class ClientModuleRegistry(ModuleRegistry):
     def get_all_commands(self):
         commands = []
         for module in self._modules:
-            commands += module.get_command_list()
+            if isinstance(module, ClientModule):
+                commands += module.get_command_list()
         return commands
 
     def get_all_object_commands(self, object):
         commands = []
         for module in self._modules:
-            commands += module.get_object_command_list(object)
+            if isinstance(module, ClientModule):
+                commands += module.get_object_command_list(object)
         return [cmd.clone(args=(object,)) for cmd in commands]

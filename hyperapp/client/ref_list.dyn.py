@@ -9,7 +9,7 @@ from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
 from ..common.list_object import Element, Chunk
 from .command import command
-from .module import Module
+from .module import ClientModule
 from .list_object import ListObject
 
 log = logging.getLogger(__name__)
@@ -96,10 +96,10 @@ class RefListService(object):
         return result.ref_list
 
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         self._ref_resolver = services.ref_resolver
         services.handle_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(

@@ -21,10 +21,9 @@ class Application(AsyncApplication, view.View):
     def __init__(self, sys_argv):
         AsyncApplication.__init__(self, sys_argv)
         view.View.__init__(self)
-        self.services = Services()
+        self.services = Services(self.event_loop)
         self._packet_types = self.services.types.packet
         self._module_registry = self.services.module_registry
-        self._iface_registry = self.services.iface_registry
         self._remoting = self.services.remoting
         self._resources_manager = self.services.resources_manager
         self._view_registry = self.services.view_registry
@@ -32,18 +31,18 @@ class Application(AsyncApplication, view.View):
         self._windows = []
         self._state_storage = ApplicationStateStorage(
             self.services.types.error,
+            self.services.types.module,
             self.services.types.packet,
             self.services.types.resource,
             self.services.types.core,
             self.services.types.param_editor,
-            self.services.iface_registry,
             self.services.objimpl_registry,
             self.services.view_registry,
             self.services.param_editor_registry,
             self.services.type_module_repository,
             self.services.resources_manager,
             self.services.module_manager,
-            self.services.code_repository,
+            #self.services.code_repository,
             )
 
     def get_state(self):
@@ -89,7 +88,8 @@ class Application(AsyncApplication, view.View):
         self.stop_loop()
 
     def exec_(self):
-        state = self._state_storage.load_state_with_requirements(self.event_loop)
+        #state = self._state_storage.load_state_with_requirements(self.event_loop)
+        state = None
         if not state:
             state = build_default_state(self._modules)
         self.event_loop.run_until_complete(self.open_windows(state))

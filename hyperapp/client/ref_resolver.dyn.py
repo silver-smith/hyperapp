@@ -6,7 +6,7 @@ from ..common.packet_coders import packet_coders
 from ..common.ref import make_capsule, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_bundle_from_file
 from .capsule_registry import CapsuleRegistry, CapsuleResolver
-from .module import Module
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -67,10 +67,10 @@ class RefRegistry(object):
 # this module is outdated
 # ===================================================================================================
 
-class ThisModule(Module):
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(services)
         self._remoting = services.remoting
         self._ref_registry = RefRegistry()
         bundle = load_bundle_from_file(LOCAL_REF_RESOLVER_REF_PATH)

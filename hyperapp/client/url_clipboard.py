@@ -1,16 +1,19 @@
 from PySide import QtCore, QtGui
 from ..common.url import UrlWithRoutes
 from .command import command
-from .module import Module
+from .module import ClientModule
 from .proxy_object import execute_get_request
 
 
-class ThisModule(Module):
+MODULE_NAME = 'url_clipboard'
+
+
+class ThisModule(ClientModule):
 
     def __init__(self, services):
-        Module.__init__(self, services)
+        super().__init__(MODULE_NAME, services)
         self._packet_types = services.types.packet
-        self._iface_registry = services.iface_registry
+        #self._iface_registry = services.iface_registry
         self._remoting = services.remoting
 
     def get_object_command_list(self, object, kinds=None):
