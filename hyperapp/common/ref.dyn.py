@@ -31,8 +31,10 @@ def decode_capsule(types, capsule):
 def make_ref(capsule):
     assert isinstance(capsule, href_types.capsule)
     assert capsule.hash_algorithm == DEFAULT_HASH_ALGORITHM, repr(capsule.hash_algorithm)
+    # use same encoding for capsule as for object
+    encoded_capsule = packet_coders.encode(capsule.encoding, capsule, href_types.capsule)
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
-    digest.update(capsule.encoded_object)
+    digest.update(encoded_capsule)
     return digest.finalize()
 
 def make_object_ref(t, object):
