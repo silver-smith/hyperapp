@@ -65,7 +65,7 @@ class Application(AsyncApplication, view.View):
         state = self.get_state()
         self._windows.remove(view)
         if not self._windows:  # Was it the last window? Then it is time to exit
-            self._state_storage.save_state(state)
+            #self._state_storage.save_state(state)
             self.stop_loop()
 
     @command('open_server')
