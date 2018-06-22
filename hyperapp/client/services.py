@@ -89,9 +89,10 @@ code_module_list = [
     'client.line_edit',
     'client.line_list_panel',
     'client.narrower',
-#    'client.fs',
+    'client.handle_resolver',
+    'client.fs',
 #    'client.fs_remote_service',
-#    'client.fs_local_service',
+    'client.fs_local_service',
     'client.object_selector',
 #    'client.blog',
     ]

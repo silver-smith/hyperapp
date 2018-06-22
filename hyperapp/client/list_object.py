@@ -4,7 +4,7 @@ import asyncio
 from PySide import QtCore, QtGui
 
 from ..common.util import is_list_inst, dt2local_str
-#from ..common.htypes import ListInterface
+from ..common.htypes import Type, tString
 from ..common.list_object import Element, Chunk, ListDiff
 from .object import ObjectObserver, Object
 
@@ -12,6 +12,26 @@ log = logging.getLogger(__name__)
 
 
 FETCH_ELEMENT_COUNT = 200  # how many rows to re-request when all fetched elements are filtered out
+
+
+class Column(object):
+
+    def __init__(self, id, type=tString, is_key=False):
+        assert isinstance(id, str), repr(id)
+        assert isinstance(type, Type), repr(type)
+        assert isinstance(is_key, bool), repr(is_key)
+        self.id = id
+        self.type = type
+        self.is_key = is_key
+
+    def __eq__(self, other):
+        assert isinstance(other, Column), repr(other)
+        return (other.id == self.id and
+                other.type == self.type and
+                other.is_key == self.is_key)
+
+    def __hash__(self):
+        return hash((self.id, self.type, self.is_key))
 
 
 class ListObserver(ObjectObserver):

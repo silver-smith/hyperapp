@@ -1,6 +1,6 @@
 import logging
 
-from ..common.htypes import tInt, tString, Column, list_handle_type
+from ..common.htypes import tInt, tString
 from ..common.interface import core as core_types
 from ..common.interface import line_object as line_object_types
 from ..common.interface import narrower as narrower_types
@@ -9,9 +9,12 @@ from ..common.list_object import Element, Chunk
 from .command import command
 from .capsule_registry import CapsuleRegistry, CapsuleResolver
 from .module import ClientModule
-from .list_object import ListObject
+from .list_object import Column, ListObject
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'fs'
 
 
 class FsDirObject(ListObject):
@@ -82,7 +85,7 @@ class FsDirObject(ListObject):
     def _get_path_ref(self, path):
         fs_service_ref = self._fs_service.to_ref()
         object = fs_types.fs_ref(fs_service_ref, self._host, path)
-        return self._ref_registry.register_new_object(fs_types.fs_ref, object)
+        return self._ref_registry.register_object(fs_types.fs_ref, object)
 
     async def _open_path(self, path):
         ref = self._get_path_ref(path)
@@ -103,16 +106,16 @@ class FsDirObject(ListObject):
 class ThisModule(ClientModule):
 
     def __init__(self, services):
-        super().__init__(services)
-        services.fs_service_registry = fs_service_registry = CapsuleRegistry('fs_service', services.type_registry_registry)
-        services.fs_service_resolver = fs_service_resolver = CapsuleResolver(services.ref_resolver, fs_service_registry)
+        super().__init__(MODULE_NAME, services)
+        services.fs_service_registry = fs_service_registry = CapsuleRegistry('fs_service', services.types)
+        services.fs_service_resolver = fs_service_resolver = CapsuleResolver(services.async_ref_resolver, fs_service_registry)
         services.handle_registry.register(fs_types.fs_ref, self.resolve_fs_object)
         services.objimpl_registry.register(
             FsDirObject.impl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
     async def resolve_fs_object(self, fs_object):
         dir_object = fs_types.fs_dir_object(FsDirObject.impl_id, fs_object.fs_service_ref, fs_object.host, fs_object.path)
-        handle_t = list_handle_type(core_types, tString)
+        handle_t = core_types.string_list_handle
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']
         list_handle = handle_t('list', dir_object, resource_id, sort_column_id, key=None)
