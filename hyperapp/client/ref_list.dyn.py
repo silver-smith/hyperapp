@@ -3,16 +3,20 @@ import codecs
 from operator import attrgetter
 from collections import namedtuple
 
-from ..common.htypes import tInt, tString, Column, list_handle_type
+from ..common.htypes import tInt, tString
 from ..common.interface import core as core_types
 from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
 from ..common.list_object import Element, Chunk
+from .list_object import Column
 from .command import command
 from .module import ClientModule
 from .list_object import ListObject
 
 log = logging.getLogger(__name__)
+
+
+MODULE_NAME = 'ref_list'
 
 
 class RefListObject(ListObject):
@@ -99,7 +103,7 @@ class RefListService(object):
 class ThisModule(ClientModule):
 
     def __init__(self, services):
-        super().__init__(services)
+        super().__init__(MODULE_NAME, services)
         self._ref_resolver = services.ref_resolver
         services.handle_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
@@ -108,7 +112,7 @@ class ThisModule(ClientModule):
     async def resolve_dynamic_ref_list_object(self, dynamic_ref_list):
         ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service)
         object = ref_list_types.ref_list_object(RefListObject.impl_id, ref_list_service, dynamic_ref_list.ref_list_id)
-        handle_t = list_handle_type(core_types, tString)
+        handle_t = core_types.string_list_handle
         sort_column_id = 'id'
         resource_id = ['client_module', 'ref_list', 'RefListObject']
         return handle_t('list', object, resource_id, sort_column_id, None)
