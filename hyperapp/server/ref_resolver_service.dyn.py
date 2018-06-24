@@ -2,8 +2,6 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, save_bundle_to_file
-from .command import command
-from .object import Object
 from .module import ServerModule
 
 log = logging.getLogger(__name__)
@@ -13,25 +11,12 @@ REF_RESOLVER_SERVICE_ID = 'ref_resolver'
 MODULE_NAME = 'ref_resolver_service'
 
 
-class RefResolverService(Object):
-
-    iface = href_types.ref_resolver
-    #class_name = REF_RESOLVER_CLASS_NAME
-
-    @classmethod
-    def get_path(cls):
-        return this_module.make_path(cls.class_name)
+class RefResolverService(object):
 
     def __init__(self, ref_resolver):
-        Object.__init__(self)
         self._ref_resolver = ref_resolver
 
-    def resolve(self, path):
-        path.check_empty()
-        return self
-
-    @command('resolve_ref')
-    def command_resolve_ref(self, request, ref):
+    def rpc_resolve_ref(self, request, ref):
         capsule = self._ref_resolver.resolve_ref(ref)
         if not capsule:
             raise href_types.unknown_ref_error(ref)
@@ -43,15 +28,17 @@ class ThisModule(ServerModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         self._ref_registry = services.ref_registry
+        self._ref_resolver = services.ref_resolver
+        self._service_registry = services.service_registry
         self._ref_collector_factory = services.ref_collector_factory
-        self._encrypted_transport_ref = services.encrypted_transport_ref
 
     # depends on mapping being generated for ref_storage
     def init_phase3(self):
         service = href_types.service(REF_RESOLVER_SERVICE_ID, ['hyper_ref', 'ref_resolver'])
-        ref_resolver_ref = self._ref_registry.register_object(href_types.service, service)
+        service_ref = self._ref_registry.register_object(href_types.service, service)
+        self._service_registry.register(service_ref, RefResolverService, self._ref_resolver)
         ref_collector = self._ref_collector_factory()
-        bundle = ref_collector.make_bundle([ref_resolver_ref])
+        bundle = ref_collector.make_bundle([service_ref])
         save_bundle_to_file(bundle, LOCAL_REF_RESOLVER_REF_PATH)
         log.info('Ref resolver ref is saved to %s', LOCAL_REF_RESOLVER_REF_PATH)
 

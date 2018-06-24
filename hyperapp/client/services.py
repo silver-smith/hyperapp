@@ -73,6 +73,7 @@ code_module_list = [
     'client.remoting',
     'client.remoting_proxy',
     'client.transport.tcp',
+    'client.remote_ref_resolver',
     'client.form',
 #    'code_repository',
 #    'identity',

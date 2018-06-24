@@ -1,4 +1,6 @@
 import logging
+import abc
+
 
 from ..common.util import full_type_name_to_str
 from ..common.packet_coders import packet_coders
@@ -10,12 +12,23 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'async_ref_resolver'
 
 
+class AsyncRefSource(object, metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    async def resolve_ref(self, ref):
+        pass
+
+
 class AsyncRefResolver(object):
 
     def __init__(self, types, ref_resolver):
         self._types = types
         self._ref_resolver = ref_resolver
         self._async_sources = []
+
+    def add_async_source(self, source):
+        assert isinstance(source, AsyncRefSource), repr(source)
+        self._async_sources.append(source)
 
     async def resolve_ref(self, ref):
         capsule = self._ref_resolver.resolve_ref(ref)
