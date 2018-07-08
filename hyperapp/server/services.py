@@ -66,7 +66,7 @@ code_module_list = [
     # 'server.form',
 #    'server.admin',
 #    'server.module_list',
-#    'server.server_management',
+    'server.server_management',
 #    'server.fs',
 #    'server.blog',
 #    'server.simple_text_object',

@@ -39,8 +39,9 @@ class ThisModule(ServerModule):
         self._service_registry.register(service_ref, RefResolverService, self._ref_resolver)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([service_ref])
-        save_bundle_to_file(bundle, LOCAL_REF_RESOLVER_REF_PATH)
-        log.info('Ref resolver ref is saved to %s', LOCAL_REF_RESOLVER_REF_PATH)
+        ref_path = LOCAL_REF_RESOLVER_REF_PATH
+        save_bundle_to_file(bundle, ref_path)
+        log.info('Ref resolver ref is saved to %s', ref_path)
 
 #    def init_phase2(self):
 #        public_key = self._server.get_public_key()
