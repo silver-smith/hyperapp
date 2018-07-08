@@ -6,7 +6,10 @@ from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
-from ..common.local_server_paths import LOCAL_SERVER_MANAGEMENT_REF_LIST_REF_PATH, save_bundle_to_file
+from ..common.local_server_paths import (
+    LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH,
+    save_bundle_to_file,
+    )
 from .object import Object, SmallListObject
 from .module import ServerModule
 from .command import command
@@ -15,7 +18,8 @@ log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'management'
-SERVER_MANAGEMENT_REF_LIST_SERVICE_ID = 'server_management_ref_list'
+DYNAMIC_REF_LIST_SERVICE_ID = 'dynamic_ref_list'
+SERVER_MANAGEMENT_REF_LIST_ID = 'server_management'
 
 
 ## class CommandList(SmallListObject):
@@ -46,13 +50,17 @@ SERVER_MANAGEMENT_REF_LIST_SERVICE_ID = 'server_management_ref_list'
 ##         return module.run_command(request, command_id)
 
 
-class ManagementRefListService(object):
+class DynamicRefListService(object):
 
-    def __init__(self, management_ref_list):
-        self._management_ref_list = management_ref_list
+    def __init__(self):
+        self._id2ref_list = {}
+
+    def register_ref_list(self, id, ref_list):
+        self._id2ref_list[id] = ref_list
     
     def rpc_get_ref_list(self, request, ref_list_id):
-        ref_list = self._management_ref_list.get_ref_list()
+        dynamic_ref_list = self._id2ref_list[ref_list_id]
+        ref_list = dynamic_ref_list.get_ref_list()
         return request.make_response_result(ref_list=ref_list_types.ref_list(ref_list=ref_list))
 
 
@@ -73,21 +81,27 @@ class ThisModule(ServerModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         self._module_registry = services.module_registry
+        self._dynamic_ref_list_service = DynamicRefListService()
         services.management_ref_list = management_ref_list = ManagementRefList()
-        self._init_management_ref_list_service(services, management_ref_list,
-            )
+        self._dynamic_ref_list_service.register_ref_list(SERVER_MANAGEMENT_REF_LIST_ID, management_ref_list)
+        self._init_dynamic_ref_list_service(services)
 
-    def _init_management_ref_list_service(self, services, management_ref_list):
-        service = href_types.service(SERVER_MANAGEMENT_REF_LIST_SERVICE_ID, ['ref_list', 'ref_list_resolver'])
+    def _init_dynamic_ref_list_service(self, services):
+        service = href_types.service(DYNAMIC_REF_LIST_SERVICE_ID, ['ref_list', 'ref_list_resolver'])
         service_ref = services.ref_registry.register_object(href_types.service, service)
-        services.service_registry.register(service_ref, ManagementRefListService, management_ref_list)
+        services.service_registry.register(service_ref, self._resolve_dynamic_ref_list_service)
+
+        dynamic_ref_list = ref_list_types.dynamic_ref_list(
+            ref_list_service=service_ref,
+            ref_list_id=SERVER_MANAGEMENT_REF_LIST_ID,
+            )
+        dynamic_ref_list_ref = services.ref_registry.register_object(ref_list_types.dynamic_ref_list, dynamic_ref_list)
 
         ref_collector = services.ref_collector_factory()
-        bundle = ref_collector.make_bundle([service_ref])
-        ref_path = LOCAL_SERVER_MANAGEMENT_REF_LIST_REF_PATH
+        bundle = ref_collector.make_bundle([dynamic_ref_list_ref])
+        ref_path = LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH
         save_bundle_to_file(bundle, ref_path)
         log.info('Server management ref list ref is saved to: %s', ref_path)
 
-
-## def get_management_url(public_key):
-##     return Url(CommandList.iface, public_key, CommandList.get_path())
+    def _resolve_dynamic_ref_list_service(self):
+        return self._dynamic_ref_list_service
