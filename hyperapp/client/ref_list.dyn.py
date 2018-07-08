@@ -107,7 +107,7 @@ class ThisModule(ClientModule):
         self._ref_resolver = services.ref_resolver
         services.handle_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
-            RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.iface_registry, services.proxy_factory)
+            RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.proxy_factory)
 
     async def resolve_dynamic_ref_list_object(self, dynamic_ref_list):
         ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service)
