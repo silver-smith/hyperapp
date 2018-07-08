@@ -24,6 +24,10 @@ class RemotingProxy(object):
         self._service_ref = service_ref
         self._iface = iface
 
+    @property
+    def service_ref(self):
+        return self._service_ref
+
     def __getattr__(self, name):
         command = self._iface.get(name)
         if not command:

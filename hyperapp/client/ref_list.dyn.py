@@ -40,7 +40,7 @@ class RefListObject(ListObject):
         self._rows = None
 
     def get_state(self):
-        return ref_list_types.ref_list_object(self.impl_id, self._ref_list_service.to_data(), self._ref_list_id)
+        return ref_list_types.ref_list_object(self.impl_id, self._ref_list_service.to_ref(), self._ref_list_id)
 
     def get_title(self):
         return 'Ref List %s' % self._ref_list_id
@@ -88,9 +88,7 @@ class RefListService(object):
         self._proxy = proxy
 
     def to_ref(self):
-        assert 0  # todo
-        service_url = self._service_proxy.get_url()
-        return ref_list_types.ref_list_service(service_url.to_data())
+        return self._proxy.service_ref
 
     async def get_ref_list(self, ref_list_id):
         result = await self._proxy.get_ref_list(ref_list_id)
