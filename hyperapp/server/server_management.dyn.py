@@ -87,7 +87,7 @@ class ThisModule(ServerModule):
         self._init_dynamic_ref_list_service(services)
 
     def _init_dynamic_ref_list_service(self, services):
-        service = href_types.service(DYNAMIC_REF_LIST_SERVICE_ID, ['ref_list', 'ref_list_resolver'])
+        service = href_types.service(DYNAMIC_REF_LIST_SERVICE_ID, ['ref_list', 'ref_list_service'])
         service_ref = services.ref_registry.register_object(href_types.service, service)
         services.service_registry.register(service_ref, self._resolve_dynamic_ref_list_service)
 

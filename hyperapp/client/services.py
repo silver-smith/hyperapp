@@ -137,6 +137,9 @@ class Services(ClientServicesBase):
         self._register_object_implementations()
         self._register_views()
 
+    async def async_init(self):
+        await self.module_registry.async_init(self)
+
     def _register_static_modules(self):
         for module in [
                 navigator,

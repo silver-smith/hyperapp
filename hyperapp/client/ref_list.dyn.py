@@ -4,6 +4,7 @@ from operator import attrgetter
 from collections import namedtuple
 
 from ..common.htypes import tInt, tString
+from ..common.interface import hyper_ref as href_types
 from ..common.interface import core as core_types
 from ..common.interface import ref_list as ref_list_types
 from ..common.url import Url
@@ -26,8 +27,8 @@ class RefListObject(ListObject):
     Row = namedtuple('RefListObject_Row', 'id ref')
 
     @classmethod
-    def from_state(cls, state, handle_resolver, iface_registry, proxy_factory):
-        ref_list_service = RefListService.from_data(state.ref_list_service, iface_registry, proxy_factory)
+    async def from_state(cls, state, handle_resolver, proxy_factory):
+        ref_list_service = await RefListService.from_ref(state.ref_list_service, proxy_factory)
         return cls(handle_resolver, ref_list_service, state.ref_list_id)
 
     def __init__(self, handle_resolver, ref_list_service, ref_list_id):
@@ -79,24 +80,20 @@ class RefListObject(ListObject):
 class RefListService(object):
 
     @classmethod
-    def from_data(cls, service_object, iface_registry, proxy_factory):
-        return cls.from_url(service_object.service_url, iface_registry, proxy_factory)
+    async def from_ref(cls, service_ref, proxy_factory):
+        proxy = await proxy_factory.from_ref(service_ref)
+        return cls(proxy)
 
-    @classmethod
-    def from_url(cls, url, iface_registry, proxy_factory):
-        service_url = Url.from_data(iface_registry, url)
-        service_proxy = proxy_factory.from_url(service_url)
-        return cls(service_proxy)
+    def __init__(self, proxy):
+        self._proxy = proxy
 
-    def __init__(self, service_proxy):
-        self._service_proxy = service_proxy
-
-    def to_data(self):
+    def to_ref(self):
+        assert 0  # todo
         service_url = self._service_proxy.get_url()
         return ref_list_types.ref_list_service(service_url.to_data())
 
     async def get_ref_list(self, ref_list_id):
-        result = await self._service_proxy.get_ref_list(ref_list_id)
+        result = await self._proxy.get_ref_list(ref_list_id)
         return result.ref_list
 
 
@@ -104,14 +101,13 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self._ref_resolver = services.ref_resolver
-        services.handle_registry.register(ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
+        services.handle_registry.register(
+            ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
             RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.proxy_factory)
 
     async def resolve_dynamic_ref_list_object(self, dynamic_ref_list):
-        ref_list_service = await self._ref_resolver.resolve_ref_to_object(dynamic_ref_list.ref_list_service)
-        object = ref_list_types.ref_list_object(RefListObject.impl_id, ref_list_service, dynamic_ref_list.ref_list_id)
+        object = ref_list_types.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
         handle_t = core_types.string_list_handle
         sort_column_id = 'id'
         resource_id = ['client_module', 'ref_list', 'RefListObject']

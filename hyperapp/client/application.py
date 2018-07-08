@@ -92,5 +92,6 @@ class Application(AsyncApplication, view.View):
         state = None
         if not state:
             state = build_default_state(self._modules)
+        self.event_loop.run_until_complete(self.services.async_init())
         self.event_loop.run_until_complete(self.open_windows(state))
         AsyncApplication.exec_(self)

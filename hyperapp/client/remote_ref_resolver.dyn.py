@@ -12,9 +12,14 @@ MODULE_NAME = 'remote_ref_resolver'
 
 class RemoteRefResolver(AsyncRefSource):
 
-    def __init__(self, ref_registry, proxy_factory, service_ref):
+    @classmethod
+    async def from_ref(cls, ref_registry, proxy_factory, service_ref):
+        proxy = await proxy_factory.from_ref(service_ref)
+        return cls(ref_registry, proxy)
+
+    def __init__(self, ref_registry, proxy):
         self._ref_registry = ref_registry
-        self._proxy = proxy_factory.from_ref(service_ref)
+        self._proxy = proxy
 
     async def resolve_ref(self, ref):
         result = await self._proxy.resolve_ref(ref)
@@ -26,8 +31,10 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
+
+    async def async_init(self, services):
         service_ref = self._load_ref_resolver_ref(services.ref_registry)
-        remote_ref_resolver = RemoteRefResolver(services.ref_registry, services.proxy_factory, service_ref)
+        remote_ref_resolver = await RemoteRefResolver.from_ref(services.ref_registry, services.proxy_factory, service_ref)
         services.async_ref_resolver.add_async_source(remote_ref_resolver)
 
     def _load_ref_resolver_ref(self, ref_registry):
