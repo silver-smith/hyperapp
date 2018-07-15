@@ -18,16 +18,16 @@ PendingRequest = namedtuple('PendingRequest', 'iface command future')
 
 class Remoting(object):
 
-    def __init__(self, ref_registry, route_resolver, endpoint_registry, transport_resolver):
+    def __init__(self, ref_registry, async_route_resolver, endpoint_registry, transport_resolver):
         self._ref_registry = ref_registry
-        self._route_resolver = route_resolver
+        self._async_route_resolver = async_route_resolver
         self._transport_resolver = transport_resolver
         self._pending_requests = {}  # request id -> PendingRequest
         self._my_endpoint_ref = endpoint_registry.register_endpoint(href_types.endpoint(
             service_id=str(uuid.uuid4())))
 
     async def send_request(self, service_ref, iface, command, params):
-        transport_ref_set = await self._route_resolver.resolve(service_ref)
+        transport_ref_set = await self._async_route_resolver.resolve(service_ref)
         assert len(transport_ref_set) == 1  # todo: multiple transport support
         transport = await self._transport_resolver.resolve(transport_ref_set.pop())
         if command.is_request:
@@ -75,7 +75,7 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         services.remoting = remoting = Remoting(
             services.ref_registry,
-            services.route_resolver,
+            services.async_route_resolver,
             services.endpoint_registry,
             services.transport_resolver,
             )

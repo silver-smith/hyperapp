@@ -2,9 +2,9 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.ref import decode_capsule
+from ..common.route_resolver import RouteSource
 from .registry import UnknownRegistryIdError, Registry
 from .request import Request, Response
-from .route_resolver import RouteSource
 from .module import ServerModule
 
 log = logging.getLogger(__name__)

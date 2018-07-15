@@ -1,13 +1,13 @@
 import logging
 import abc
 
-from ..common.ref import ref_repr
-from .module import ServerModule
+from .ref import ref_repr
+from .module import Module
 
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'server_info'
+MODULE_NAME = 'route_resolver'
 
 
 class RouteSource(object, metaclass=abc.ABCMeta):
@@ -20,14 +20,14 @@ class RouteSource(object, metaclass=abc.ABCMeta):
 class RouteRegistry(RouteSource):
 
     def __init__(self):
-        self._endpoint_ref_to_transport_ref_set = {}
+        self._registry = {}
 
     def add_route(self, endpoint_ref, transport_ref):
         log.info('route registry: adding route %s -> %s', ref_repr(endpoint_ref), ref_repr(transport_ref))
-        self._endpoint_ref_to_transport_ref_set.setdefault(endpoint_ref, set()).add(transport_ref)
+        self._registry.setdefault(endpoint_ref, set()).add(transport_ref)
 
     def resolve(self, endpoint_ref):
-        return self._endpoint_ref_to_transport_ref_set.get(endpoint_ref, set())
+        return self._registry.get(endpoint_ref, set())
 
         
 class RouteResolver(object):
@@ -49,7 +49,7 @@ class RouteResolver(object):
         return transport_ref_set
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
