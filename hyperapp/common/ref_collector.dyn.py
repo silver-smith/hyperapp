@@ -1,6 +1,6 @@
 import logging
 
-from .util import is_list_inst
+from .util import is_list_inst, full_type_name_to_str
 from .interface import error as error_types
 from .interface import packet as packet_types
 from .interface import core as core_types
@@ -18,10 +18,11 @@ RECURSION_LIMIT = 100
 
 class RefCollector(Visitor):
 
-    def __init__(self, types, ref_resolver):
+    def __init__(self, types, ref_resolver, route_resolver):
         super().__init__(error_types, packet_types, core_types)
         self._types = types
         self._ref_resolver = ref_resolver
+        self._route_resolver = route_resolver
         self._collected_ref_set = None
 
     def make_bundle(self, ref_list):
@@ -41,7 +42,7 @@ class RefCollector(Visitor):
                     missing_ref_count += 1
                     continue
                 capsule_set.add(capsule)
-                new_ref_set |= self._collect_refs(capsule)
+                new_ref_set |= self._collect_refs(ref, capsule)
             if not new_ref_set:
                 break
             ref_set = new_ref_set
@@ -51,14 +52,16 @@ class RefCollector(Visitor):
             log.warning('Failed to resolve %d refs', missing_ref_count)
         return list(capsule_set)
 
-    def _collect_refs(self, capsule):
+    def _collect_refs(self, ref, capsule):
         t = self._types.resolve(capsule.full_type_name)
         object = decode_object(t, capsule)
         log.info('Collecting refs from %r:', object)
         self._collected_ref_set = set()
         self.visit(t, object)
+        if full_type_name_to_str(t.full_name) in ['hyper_ref.endpoint', 'hyper_ref.service']:
+            self._collected_ref_set |= self._route_resolver.resolve(ref)
         log.debug('Collected %d refs from %s %s: %s',
-                      len(self._collected_ref_set), '.'.join(t.full_name), object, ', '.join(map(ref_repr, self._collected_ref_set)))
+                      len(self._collected_ref_set), full_type_name_to_str(t.full_name), object, ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
 
     def visit_primitive(self, t, value):
@@ -72,7 +75,8 @@ class ThisModule(Module):
         super().__init__(MODULE_NAME)
         self._types = services.types
         self._ref_resolver = services.ref_resolver
+        self._route_resolver = services.route_resolver
         services.ref_collector_factory = self._ref_collector_factory
 
     def _ref_collector_factory(self):
-        return RefCollector(self._types, self._ref_resolver)
+        return RefCollector(self._types, self._ref_resolver, self._route_resolver)
