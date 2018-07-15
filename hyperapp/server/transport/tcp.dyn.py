@@ -140,7 +140,7 @@ class TcpClient(object):
     def _process_peer_endpoints(self, capsule):
         peer_endpoints = decode_capsule(self._types, capsule)
         for endpoint_ref in peer_endpoints.endpoint_ref_list:
-            self._my_route_registry.add_route(endpoint_ref, self._my_address_ref)
+            self._my_route_registry.register(endpoint_ref, self._my_address_ref)
 
     def _process_rpc_request(self, rpc_request_ref, rpc_request_capsule):
         rpc_request = decode_capsule(self._types, rpc_request_capsule)

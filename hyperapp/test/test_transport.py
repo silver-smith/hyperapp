@@ -31,9 +31,9 @@ type_module_list = [
 server_code_module_list = [
     'common.ref',
     'common.ref_resolver',
+    'common.route_resolver',
     'common.ref_collector',
     'common.ref_registry',
-    'common.route_resolver',
     'server.transport.registry',
     'server.request',
     'server.remoting',
@@ -43,9 +43,9 @@ server_code_module_list = [
 client_code_module_list = [
     'common.ref',
     'common.ref_resolver',
+    'common.route_resolver',
     'common.ref_collector',
     'common.ref_registry',
-    'common.route_resolver',
     'client.async_ref_resolver',
     'client.capsule_registry',
     'client.async_route_resolver',

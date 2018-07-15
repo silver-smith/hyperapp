@@ -22,7 +22,7 @@ class RouteRegistry(RouteSource):
     def __init__(self):
         self._registry = {}
 
-    def add_route(self, endpoint_ref, transport_ref):
+    def register(self, endpoint_ref, transport_ref):
         log.info('route registry: adding route %s -> %s', ref_repr(endpoint_ref), ref_repr(transport_ref))
         self._registry.setdefault(endpoint_ref, set()).add(transport_ref)
 
@@ -53,4 +53,6 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.route_resolver = RouteResolver()
+        services.route_resolver = route_resolver = RouteResolver()
+        services.route_registry = route_registry = RouteRegistry()
+        route_resolver.add_source(route_registry)
