@@ -28,7 +28,7 @@ class Remoting(object):
 
     async def send_request(self, service_ref, iface, command, params):
         transport_ref_set = await self._async_route_resolver.resolve(service_ref)
-        assert len(transport_ref_set) == 1  # todo: multiple transport support
+        assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple transport support
         transport = await self._transport_resolver.resolve(transport_ref_set.pop())
         if command.is_request:
             request_id = str(uuid.uuid4())
