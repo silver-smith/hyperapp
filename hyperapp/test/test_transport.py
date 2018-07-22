@@ -127,12 +127,8 @@ class Server(ServerProcess):
         rpc_request_capsule = self.services.ref_resolver.resolve_ref(request_bundle.roots[0])
         rpc_request = decode_capsule(self.services.types, rpc_request_capsule)
 
-        # resolve transport
-        local_transport_ref = self.services.ref_registry.register_object(types.hyper_ref.local_transport_address, types.hyper_ref.local_transport_address())
-        local_transport = self.services.transport_resolver.resolve(local_transport_ref)
-
         # handle request
-        rpc_response = local_transport._process_request(rpc_request)
+        rpc_response = self.services.remoting._process_request(rpc_request)
 
         # encode response
         rpc_response_ref = self.services.ref_registry.register_object(self.services.types.hyper_ref.rpc_message, rpc_response)

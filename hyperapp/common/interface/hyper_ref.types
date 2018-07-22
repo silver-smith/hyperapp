@@ -10,6 +10,11 @@ capsule = record:
     hash_algorithm: string
     encoding: string
     encoded_object: binary
+
+
+bundle = record:
+    roots: ref list
+    capsule_list: capsule list
     
 
 endpoint = record:
@@ -19,9 +24,9 @@ service = record(endpoint):
     iface_full_type_name: full_type_name
 
 
-bundle = record:
-    roots: ref list
-    capsule_list: capsule list
+route = record:
+    service_ref: ref
+    transport_ref: ref
 
 
 rpc_message = hierarchy rpc_message
@@ -40,8 +45,6 @@ rpc_response = rpc_message class response:
     is_succeeded: bool
     result_or_error: embedded
 
-
-local_transport_address = record
 
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref

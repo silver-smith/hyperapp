@@ -21,9 +21,23 @@ class ServiceRegistry(Registry):
         return rec.factory(*rec.args, **rec.kw)
 
 
-class LocalTransport(object):
 
-    def __init__(self, address, types, ref_registry, ref_resolver, route_resolver, transport_resolver, service_registry):
+class LocalRouteSource(RouteSource):
+
+    def __init__(self, service_registry, local_transport_ref_set):
+        self._service_registry = service_registry
+        self._local_transport_ref_set = local_transport_ref_set
+
+    def resolve(self, service_ref):
+        if self._service_registry.is_registered(service_ref):
+            return self._local_transport_ref_set
+        else:
+            return set()
+
+
+class Remoting(object):
+
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, transport_resolver, service_registry):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
@@ -31,8 +45,8 @@ class LocalTransport(object):
         self._transport_resolver = transport_resolver
         self._service_registry = service_registry
 
-    def send(self, ref):
-        capsule = self._ref_resolver.resolve_ref(ref)
+    def process_rpc_request(self, rpc_request_ref, rpc_request):
+        capsule = self._ref_resolver.resolve_ref(rpc_request_ref)
         assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
         rpc_request = decode_capsule(self._types, capsule)
         assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
@@ -64,35 +78,6 @@ class LocalTransport(object):
         return rpc_response
 
 
-class LocalRouteSource(RouteSource):
-
-    def __init__(self, service_registry, local_transport_ref_set):
-        self._service_registry = service_registry
-        self._local_transport_ref_set = local_transport_ref_set
-
-    def resolve(self, service_ref):
-        if self._service_registry.is_registered(service_ref):
-            return self._local_transport_ref_set
-        else:
-            return set()
-
-
-class Remoting(object):
-
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, transport_resolver):
-        self._types = types
-        self._ref_registry = ref_registry
-        self._ref_resolver = ref_resolver
-        self._route_resolver = route_resolver
-        self._transport_resolver = transport_resolver
-
-    def process_rpc_request(self, rpc_request_ref, rpc_request):
-        transport_ref_set = self._route_resolver.resolve(rpc_request.target_service_ref)
-        assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple transport support
-        transport = self._transport_resolver.resolve(transport_ref_set.pop())
-        transport.send(rpc_request_ref)
-
-
 class ThisModule(ServerModule):
 
     def __init__(self, services):
@@ -100,15 +85,6 @@ class ThisModule(ServerModule):
         self._ref_registry = services.ref_registry
         services.service_registry = service_registry = ServiceRegistry()
         services.remoting = Remoting(
-            services.types,
-            services.ref_registry,
-            services.ref_resolver,
-            services.route_resolver,
-            services.transport_resolver,
-            )
-        services.transport_registry.register(
-            href_types.local_transport_address,
-            LocalTransport,
             services.types,
             services.ref_registry,
             services.ref_resolver,
