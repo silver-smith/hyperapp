@@ -285,6 +285,7 @@ class ThisModule(Module):
             )
         address = tcp_transport_types.address(bind_address[0], bind_address[1])
         services.transport_registry.register(tcp_transport_types.incoming_connection_address, IncomingConnectionTransport, server)
-        services.tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
+        services.tcp_transport_ref = tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
+        services.local_transport_ref_set.add(tcp_transport_ref)
         services.on_start.append(self.server.start)
         services.on_stop.append(self.server.stop)

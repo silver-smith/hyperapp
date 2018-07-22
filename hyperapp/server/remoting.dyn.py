@@ -58,7 +58,7 @@ class LocalTransport(object):
         if not command.is_request:
             assert not response, 'No results are expected from notifications'
             return
-        assert response, 'Use request.make_response... method to return results from requests'
+        assert response, 'Use request.make_response method to return results from requests'
         assert isinstance(response, Response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
         return rpc_response
@@ -66,13 +66,13 @@ class LocalTransport(object):
 
 class LocalRouteSource(RouteSource):
 
-    def __init__(self, service_registry, local_transport_ref):
+    def __init__(self, service_registry, local_transport_ref_set):
         self._service_registry = service_registry
-        self._local_transport_ref = local_transport_ref
+        self._local_transport_ref_set = local_transport_ref_set
 
     def resolve(self, service_ref):
         if self._service_registry.is_registered(service_ref):
-            return set([self._local_transport_ref])
+            return self._local_transport_ref_set
         else:
             return set()
 
@@ -116,6 +116,5 @@ class ThisModule(ServerModule):
             services.transport_resolver,
             services.service_registry,
             )
-        local_transport_ref = services.ref_registry.register_object(href_types.local_transport_address, href_types.local_transport_address())
-        local_route_source = LocalRouteSource(service_registry, local_transport_ref)
+        local_route_source = LocalRouteSource(service_registry, services.local_transport_ref_set)
         services.route_resolver.add_source(local_route_source)
