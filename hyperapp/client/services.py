@@ -65,6 +65,7 @@ code_module_list = [
     'common.ref_registry',
     'common.route_resolver',
     'common.ref_collector',
+    'common.unbundler',
     'common.tcp_packet',
     'client.async_ref_resolver',
     'client.capsule_registry',
