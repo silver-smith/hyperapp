@@ -1,6 +1,10 @@
+import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import EncodableEmbedded
+from ..common.visual_rep import pprint
+
+log = logging.getLogger(__name__)
 
 
 class Request(object):
@@ -38,3 +42,7 @@ class Response(object):
             is_succeeded=True,
             result_or_error=EncodableEmbedded(command.response, self._result),
             )
+
+    def log_result_or_error(self, command):
+        log.info('Result:')
+        pprint(command.response, self._result)

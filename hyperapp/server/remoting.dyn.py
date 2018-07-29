@@ -3,6 +3,7 @@ import logging
 from ..common.interface import hyper_ref as href_types
 from ..common.ref import decode_capsule
 from ..common.route_resolver import RouteSource
+from ..common.visual_rep import pprint
 from .registry import UnknownRegistryIdError, Registry
 from .request import Request, Response
 from .module import ServerModule
@@ -50,6 +51,8 @@ class Remoting(object):
         assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
         rpc_request = decode_capsule(self._types, capsule)
         assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
+        log.info('RPC request:')
+        pprint(href_types.rpc_request, rpc_request)
         rpc_response = self._process_request(rpc_request)
         self._send_rpc_response(rpc_response)
 
@@ -64,17 +67,23 @@ class Remoting(object):
         iface = self._types.resolve(rpc_request.iface_full_type_name)
         command = iface[rpc_request.command_id]
         params = rpc_request.params.decode(command.request)
+        log.info('params:')
+        pprint(command.request, params)
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
         request = Request(rpc_request.source_endpoint_ref, command)
         method = getattr(servant, 'rpc_' + rpc_request.command_id, None)
+        log.info('Calling %r', method)
         assert method, '%r does not implement method remote_%s' % (servant, rpc_request.command_id)
         response = method(request, **params._asdict())
         if not command.is_request:
             assert not response, 'No results are expected from notifications'
             return
         assert response, 'Use request.make_response method to return results from requests'
-        assert isinstance(response, Response)
+        assert isinstance(response, Response), repr((response, Response))
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
+        log.info('RPC Response:')
+        pprint(href_types.rpc_response, rpc_response)
+        response.log_result_or_error(command)
         return rpc_response
 
 
