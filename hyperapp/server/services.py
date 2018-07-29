@@ -62,7 +62,6 @@ code_module_list = [
     'server.remoting',
     'server.transport.tcp',
     'server.transport.encrypted',
-    'server.request',
     'server.ref_resolver_service',
     # 'server.form',
 #    'server.admin',

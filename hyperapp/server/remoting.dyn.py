@@ -79,7 +79,7 @@ class Remoting(object):
             assert not response, 'No results are expected from notifications'
             return
         assert response, 'Use request.make_response method to return results from requests'
-        assert isinstance(response, Response), repr((response, Response))
+        assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
         log.info('RPC Response:')
         pprint(href_types.rpc_response, rpc_response)
