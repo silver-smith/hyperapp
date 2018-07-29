@@ -33,7 +33,7 @@ class ThisModule(ClientModule):
         self._event_loop = services.event_loop
         self._response_queue = services.response_queue
         self._types = services.types
-        self._ref_registry = services.ref_registry
+        self._unbundler = services.unbundler
         self._ref_resolver = services.ref_resolver
         self._remoting = services.remoting
         self._queue_thread = threading.Thread(
@@ -71,7 +71,7 @@ class ThisModule(ClientModule):
         try:
             log.debug('phony transport: processing response bundle...')
             rpc_response_bundle = decode_bundle(encoded_response_bundle)
-            self._ref_registry.register_bundle(rpc_response_bundle)
+            self._unbundler.register_bundle(rpc_response_bundle)
             assert len(rpc_response_bundle.roots) == 1
             rpc_response_capsule = self._ref_resolver.resolve_ref(rpc_response_bundle.roots[0])
             rpc_response = decode_capsule(self._types, rpc_response_capsule)

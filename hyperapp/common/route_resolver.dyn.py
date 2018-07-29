@@ -22,12 +22,15 @@ class RouteRegistry(RouteSource):
     def __init__(self):
         self._registry = {}
 
+    def resolve(self, endpoint_ref):
+        return self._registry.get(endpoint_ref, set())
+
     def register(self, endpoint_ref, transport_ref):
         log.info('route registry: adding route %s -> %s', ref_repr(endpoint_ref), ref_repr(transport_ref))
         self._registry.setdefault(endpoint_ref, set()).add(transport_ref)
 
-    def resolve(self, endpoint_ref):
-        return self._registry.get(endpoint_ref, set())
+    def register_route(self, route):
+        self.register(route.endpoint_ref, route.transport_ref)
 
         
 class RouteResolver(object):

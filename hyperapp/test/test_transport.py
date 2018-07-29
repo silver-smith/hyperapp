@@ -34,6 +34,7 @@ server_code_module_list = [
     'common.route_resolver',
     'common.ref_collector',
     'common.ref_registry',
+    'common.unbundler',
     'server.transport.registry',
     'server.request',
     'server.remoting',
@@ -46,6 +47,7 @@ client_code_module_list = [
     'common.route_resolver',
     'common.ref_collector',
     'common.ref_registry',
+    'common.unbundler',
     'client.async_ref_resolver',
     'client.capsule_registry',
     'client.async_route_resolver',
@@ -123,7 +125,7 @@ class Server(ServerProcess):
 
         # decode bundle
         request_bundle = decode_bundle(self.services, encoded_request_bundle)
-        self.services.ref_registry.register_bundle(request_bundle)
+        self.services.unbundler.register_bundle(request_bundle)
         rpc_request_capsule = self.services.ref_resolver.resolve_ref(request_bundle.roots[0])
         rpc_request = decode_capsule(self.services.types, rpc_request_capsule)
 
@@ -167,7 +169,7 @@ async def client_make_phony_transport_ref(services):
 async def client_call_echo_service(services, transport_ref, encoded_echo_service_bundle):
     phony_transport_ref = await client_make_phony_transport_ref(services)
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
-    services.ref_registry.register_bundle(echo_service_bundle)
+    services.unbundler.register_bundle(echo_service_bundle)
     services.route_registry.register(echo_service_bundle.roots[0], transport_ref)
     echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.roots[0])
     result = await echo_proxy.say('hello')

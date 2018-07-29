@@ -69,12 +69,27 @@ class TcpChannel(object):
 
 class TcpClient(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, ref_collector_factory, remoting, tcp_server, outcoming_queue, peer_address, socket, on_failure):
+    def __init__(
+            self,
+            types,
+            ref_registry,
+            ref_resolver,
+            route_resolver,
+            ref_collector_factory,
+            unbundler,
+            remoting,
+            tcp_server,
+            outcoming_queue,
+            peer_address,
+            socket,
+            on_failure,
+            ):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
+        self._unbundler = unbundler
         self._remoting = remoting
         self._tcp_server = tcp_server
         self._outcoming_queue = outcoming_queue
@@ -127,7 +142,7 @@ class TcpClient(object):
             self._process_incoming_bundle(bundle)
 
     def _process_incoming_bundle(self, bundle):
-        self._ref_registry.register_bundle(bundle)
+        self._unbundler.register_bundle(bundle)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
             if capsule.full_type_name == ['tcp_transport', 'peer_endpoints']:
@@ -161,12 +176,13 @@ class TcpClient(object):
 
 class TcpServer(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, ref_collector_factory, remoting, bind_address, on_failure):
+    def __init__(self, types, ref_registry, ref_resolver, route_resolver, ref_collector_factory, unbundler, remoting, bind_address, on_failure):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
+        self._unbundler = unbundler
         self._remoting = remoting
         self._bind_address = bind_address  # (host, port)
         self._on_failure = on_failure
@@ -232,6 +248,7 @@ class TcpServer(object):
                     self._ref_resolver,
                     self._route_resolver,
                     self._ref_collector_factory,
+                    self._unbundler,
                     self._remoting,
                     self,
                     outcoming_queue,
@@ -279,6 +296,7 @@ class ThisModule(Module):
             services.ref_resolver,
             services.route_resolver,
             services.ref_collector_factory,
+            services.unbundler,
             services.remoting,
             bind_address=bind_address,
             on_failure=services.failed,

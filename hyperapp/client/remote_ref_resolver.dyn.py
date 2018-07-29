@@ -33,12 +33,12 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
 
     async def async_init(self, services):
-        service_ref = self._load_ref_resolver_ref(services.ref_registry)
+        service_ref = self._load_ref_resolver_ref(services.unbundler)
         remote_ref_resolver = await RemoteRefResolver.from_ref(services.ref_registry, services.proxy_factory, service_ref)
         services.async_ref_resolver.add_async_source(remote_ref_resolver)
 
-    def _load_ref_resolver_ref(self, ref_registry):
+    def _load_ref_resolver_ref(self, unbundler):
         bundle = load_bundle_from_file(LOCAL_REF_RESOLVER_REF_PATH)
-        ref_registry.register_bundle(bundle)
+        unbundler.register_bundle(bundle)
         assert len(bundle.roots) == 1
         return bundle.roots[0]

@@ -16,12 +16,13 @@ TCP_PACKET_ENCODING = 'cdr'
 
 class TcpProtocol(asyncio.Protocol):
 
-    def __init__(self, event_loop, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, remoting, address):
+    def __init__(self, event_loop, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, unbundler, remoting, address):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
         self._endpoint_registry = endpoint_registry
         self._ref_collector_factory = ref_collector_factory
+        self._unbundler = unbundler
         self._remoting = remoting
         self._address = address
         self._recv_buf = b''
@@ -42,7 +43,7 @@ class TcpProtocol(asyncio.Protocol):
 
     def _process_incoming_bundle(self, bundle):
         self._log('received bundle: refs: %r, %d capsules' % (list(map(ref_repr, bundle.roots)), len(bundle.capsule_list)))
-        self._ref_registry.register_bundle(bundle)
+        self._unbundler.register_bundle(bundle)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
             if capsule.full_type_name == ['hyper_ref', 'rpc_message']:
@@ -93,14 +94,25 @@ class ThisModule(ClientModule):
             services.ref_resolver,
             services.endpoint_registry,
             services.ref_collector_factory,
+            services.unbundler,
             services.remoting,
             )
 
-    async def _resolve_address(self, address, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, remoting):
+    async def _resolve_address(self, address, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, unbundler, remoting):
         protocol = self._address_to_protocol.get(address)
         if protocol:
             return protocol
-        constructor = lambda: TcpProtocol(self._event_loop, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, remoting, address)
+        constructor = lambda: TcpProtocol(
+            self._event_loop,
+            types,
+            ref_registry,
+            ref_resolver,
+            endpoint_registry,
+            ref_collector_factory,
+            unbundler,
+            remoting,
+            address,
+            )
         asyncio_transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
         self._address_to_protocol[address] = protocol
         return protocol

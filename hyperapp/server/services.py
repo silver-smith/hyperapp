@@ -48,6 +48,7 @@ code_module_list = [
     'common.route_resolver',
     'common.tcp_packet',
     'common.ref_collector',
+    'common.unbundler',
     'server.ponyorm_module',
     'server.ref_storage',
     'server.route_storage',
