@@ -38,7 +38,7 @@ type_module_list = [
 #    'module_list',
 #    'test_list',
 #    'exception_test',
-#    'fs',
+    'fs',
     ]
 
 code_module_list = [
@@ -67,7 +67,7 @@ code_module_list = [
 #    'server.admin',
 #    'server.module_list',
     'server.server_management',
-#    'server.fs',
+    'server.fs',
 #    'server.blog',
 #    'server.simple_text_object',
 #    'server.sample_list',

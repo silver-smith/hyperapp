@@ -1,33 +1,19 @@
+from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
-from ..common.url import Url
 from ..common.fs_service_impl import FsServiceImpl
-from .command import command
-from .object import Object
 from .module import Module
 
 
-MODULE_NAME = 'file'
+MODULE_NAME = 'fs'
+FS_SERVICE_ID = 'fs'
 
 
-class ServerFsService(Object):
+class FsService(object):
 
-    iface = fs_types.fs_service_iface
-    class_name = 'service'
-
-    def __init__(self, module):
-        super().__init__()
-        self._module = module
+    def __init__(self):
         self._impl = FsServiceImpl(fs_types)
 
-    def get_path(self):
-        return self._module.make_path(self.class_name)
-
-    def resolve(self, path):
-        path.check_empty()
-        return self
-
-    @command('fetch_dir_contents')
-    def command_fetch_dir_contents(self, request, host, fs_path, fetch_request):
+    def rpc_fetch_dir_contents(self, request, host, fs_path, fetch_request):
         assert host == 'localhost', repr(host)  # remote hosts not supported
         chunk = self._impl.fetch_dir_contents(fs_path, fetch_request)
         return request.make_response_result(chunk=chunk)
@@ -37,28 +23,18 @@ class ThisModule(Module):
 
     def __init__(self, services):
         Module.__init__(self, MODULE_NAME)
-        self._server = services.server
-        self._fs_service = ServerFsService(self)
-        self._ref_storage = services.ref_storage
-        self._management_ref_list = services.management_ref_list
+        self._init_fs_service(services)
 
-    def init_phase3(self):
-        fs_service_url = Url(fs_types.fs_service_iface, self._server.get_public_key(), self._fs_service.get_path())
-        fs_service = fs_types.remote_fs_service(service_url=fs_service_url.to_data())
-        fs_service_ref = self._ref_storage.add_object(fs_types.remote_fs_service, fs_service)
+    def _init_fs_service(self, services):
+        service = href_types.service(FS_SERVICE_ID, ['fs', 'fs_service_iface'])
+        service_ref = services.ref_registry.register_object(href_types.service, service)
+        services.service_registry.register(service_ref, FsService)
+
         fs = fs_types.fs_ref(
-            fs_service_ref=fs_service_ref,
+            fs_service_ref=service_ref,
             host='localhost',
             path=['usr', 'share'],
             current_file_name='dpkg',
             )
-        fs_ref = self._ref_storage.add_object(fs_types.fs_ref, fs)
-        self._management_ref_list.add_ref('fs', fs_ref)
-
-    def resolve(self, iface, path):
-        name = path.pop_str()
-        if name == self._fs_service.class_name:
-            return self._fs_service.resolve(path)
-        path.raise_not_found()
-        all_rows = self.fetch_dir_contents(host, fs_path)
-        chunk = rows2fetched_chunk('key', all_rows, fetch_request, fs_types.fs_dir_chunk)
+        fs_ref = services.ref_registry.register_object(fs_types.fs_ref, fs)
+        services.management_ref_list.add_ref('fs', fs_ref)

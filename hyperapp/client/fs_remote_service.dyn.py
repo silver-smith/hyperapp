@@ -1,5 +1,6 @@
 import logging
 
+from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
 from ..common.url import Url
 from .module import ClientModule
@@ -38,4 +39,4 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(services)
         services.fs_service_registry.register(
-            fs_types.remote_fs_service, RemoteFsService.from_data, services.iface_registry, services.ref_registry, services.proxy_factory)
+            href_types.service, RemoteFsService.from_data, services.iface_registry, services.ref_registry, services.proxy_factory)

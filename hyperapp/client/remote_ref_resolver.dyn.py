@@ -23,7 +23,7 @@ class RemoteRefResolver(AsyncRefSource):
 
     async def resolve_ref(self, ref):
         result = await self._proxy.resolve_ref(ref)
-        self._ref_registry.register(ref, result.capsule)  # cache it locally
+        self._ref_registry.register_capsule(result.capsule)  # cache it locally
         return result.capsule
 
 

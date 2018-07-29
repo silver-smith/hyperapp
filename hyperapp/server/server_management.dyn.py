@@ -1,7 +1,6 @@
 # server management module: used to expose commands from all modules in one list
 
 import logging
-from ..common.interface import core as core_types
 #from ..common.interface import server_management as server_management_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import ref_list as ref_list_types
