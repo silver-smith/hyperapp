@@ -14,7 +14,7 @@ from hyperapp.test.server_process import mp2async_future, ServerProcess
 log = logging.getLogger()
 
 
-TCP_ADDRESS = ('localhost', 8888)
+TCP_ADDRESS = ('localhost', 7777)
 
 
 config = {
@@ -169,7 +169,7 @@ def test_tcp_packet(client_services, encoding):
     test_packet = test_packet_t(message='hello')
     capsule = make_capsule(test_packet_t, test_packet)
     ref = make_ref(capsule)
-    bundle = bundle_t([ref], [capsule])
+    bundle = bundle_t([ref], [capsule], [])
 
     packet = encode_tcp_packet(bundle, encoding)
     assert has_full_tcp_packet(packet)
