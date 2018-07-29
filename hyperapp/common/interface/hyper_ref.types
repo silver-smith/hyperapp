@@ -5,28 +5,28 @@ hash = binary
 ref = hash
 full_type_name = string list
 
+
 capsule = record:
     full_type_name: full_type_name
     hash_algorithm: string
     encoding: string
     encoded_object: binary
 
+route = record:
+    endpoint_ref: ref
+    transport_ref: ref
 
 bundle = record:
     roots: ref list
     capsule_list: capsule list
-    
+    route_list: route list
+
 
 endpoint = record:
     service_id: string
 
 service = record(endpoint):
     iface_full_type_name: full_type_name
-
-
-route = record:
-    service_ref: ref
-    transport_ref: ref
 
 
 rpc_message = hierarchy rpc_message

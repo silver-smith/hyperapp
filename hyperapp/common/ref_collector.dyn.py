@@ -24,13 +24,18 @@ class RefCollector(Visitor):
         self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
         self._collected_ref_set = None
+        self._collected_route_set = set()
 
     def make_bundle(self, ref_list):
         assert is_list_inst(ref_list, href_types.ref), repr(ref_list)
-        capsule_list = self.collect_capsule(ref_list)
-        return href_types.bundle(ref_list, capsule_list)
+        capsule_list = self._collect_capsule_list(ref_list)
+        return href_types.bundle(
+            roots=ref_list,
+            capsule_list=capsule_list,
+            route_list=list(self._collected_route_set),
+            )
 
-    def collect_capsule(self, ref_list):
+    def _collect_capsule_list(self, ref_list):
         capsule_set = set()
         missing_ref_count = 0
         ref_set = set(ref_list)
@@ -59,7 +64,8 @@ class RefCollector(Visitor):
         self._collected_ref_set = set()
         self.visit(t, object)
         if full_type_name_to_str(t.full_name) in ['hyper_ref.endpoint', 'hyper_ref.service']:
-            self._collected_ref_set |= self._route_resolver.resolve(ref)
+            transport_ref_set = self._handle_endpoint_ref(ref)
+            self._collected_ref_set |= transport_ref_set
         log.debug('Collected %d refs from %s %s: %s',
                       len(self._collected_ref_set), full_type_name_to_str(t.full_name), object, ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
@@ -67,6 +73,15 @@ class RefCollector(Visitor):
     def visit_primitive(self, t, value):
         if t == href_types.ref:
             self._collected_ref_set.add(value)
+
+    def _handle_endpoint_ref(self, endpoint_ref):
+        transport_ref_set = self._route_resolver.resolve(endpoint_ref)
+        for transport_ref in transport_ref_set:
+            self._collected_route_set.add(href_types.route(
+                endpoint_ref=endpoint_ref,
+                transport_ref=transport_ref,
+                ))
+        return transport_ref_set
 
 
 class ThisModule(Module):
