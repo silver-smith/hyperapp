@@ -5,6 +5,7 @@ from collections import namedtuple
 
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import EncodableEmbedded
+from ..common.visual_rep import pprint
 from .module import ClientModule
 
 log = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
-        request = href_types.rpc_request(
+        rpc_request = href_types.rpc_request(
             iface_full_type_name=iface.full_name,
             source_endpoint_ref=self._my_endpoint_ref,
             target_service_ref=service_ref,
@@ -42,7 +43,11 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        request_ref = self._ref_registry.register_object(href_types.rpc_message, request)
+        log.info('RPC request:')
+        pprint(href_types.rpc_request, rpc_request)
+        log.info('params:')
+        pprint(command.request, params)
+        request_ref = self._ref_registry.register_object(href_types.rpc_message, rpc_request)
         transport.send(request_ref)
         if not command.is_request:
             return
@@ -51,20 +56,24 @@ class Remoting(object):
         try:
             log.info('Remoting: awaiting for response future...')
             result = (await future)
-            log.info('Remoting: got response future: %r', result)
+            log.info('Remoting: got result future: %r', result)
             return result
         finally:
             del self._pending_requests[request_id]
 
     def process_rpc_response(self, rpc_response_ref, rpc_response):
-        log.info('Remoting: processing response: %r', rpc_response)
+        log.info('Remoting: processing RPC Response: %r', rpc_response)
+        pprint(href_types.rpc_response, rpc_response)
         assert rpc_response.is_succeeded  # todo
         request = self._pending_requests.get(rpc_response.request_id)
         if not request:
             log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
             return
-        response = rpc_response.result_or_error.decode(request.iface[request.command.command_id].response)
-        request.future.set_result(response)
+        result_t = request.iface[request.command.command_id].response
+        result = rpc_response.result_or_error.decode(result_t)
+        log.info('Result:')
+        pprint(result_t, result)
+        request.future.set_result(result)
         log.info('Remoting: processing response: done')
         return True  # todo: do not use registry to process packets
 
