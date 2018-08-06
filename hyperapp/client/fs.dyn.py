@@ -109,11 +109,11 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         services.fs_service_registry = fs_service_registry = CapsuleRegistry('fs_service', services.types)
         services.fs_service_resolver = fs_service_resolver = CapsuleResolver(services.async_ref_resolver, fs_service_registry)
-        services.handle_registry.register(fs_types.fs_ref, self.resolve_fs_object)
+        services.handle_registry.register(fs_types.fs_ref, self._resolve_fs_object)
         services.objimpl_registry.register(
             FsDirObject.impl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
-    async def resolve_fs_object(self, fs_object):
+    async def _resolve_fs_object(self, fs_object_ref, fs_object):
         dir_object = fs_types.fs_dir_object(FsDirObject.impl_id, fs_object.fs_service_ref, fs_object.host, fs_object.path)
         handle_t = core_types.string_list_handle
         sort_column_id = 'key'

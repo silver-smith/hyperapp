@@ -99,12 +99,11 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.handle_registry.register(
-            ref_list_types.dynamic_ref_list, self.resolve_dynamic_ref_list_object)
+        services.handle_registry.register(ref_list_types.dynamic_ref_list, self._resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
             RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.proxy_factory)
 
-    async def resolve_dynamic_ref_list_object(self, dynamic_ref_list):
+    async def _resolve_dynamic_ref_list_object(self, dynamic_ref_list_ref, dynamic_ref_list):
         object = ref_list_types.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
         handle_t = core_types.string_list_handle
         sort_column_id = 'id'

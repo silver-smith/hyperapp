@@ -98,7 +98,7 @@ class ThisModule(ClientModule):
             services.remoting,
             )
 
-    async def _resolve_address(self, address, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, unbundler, remoting):
+    async def _resolve_address(self, address_ref, address, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, unbundler, remoting):
         protocol = self._address_to_protocol.get(address)
         if protocol:
             return protocol

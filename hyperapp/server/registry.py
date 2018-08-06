@@ -55,13 +55,13 @@ class CapsuleRegistry(Registry):
         assert t.full_name, repr(t)  # type must have a name
         super().register(tuple(t.full_name), factory, *args, **kw)
 
-    def resolve(self, capsule):
+    def resolve(self, ref, capsule):
         assert isinstance(capsule, href_types.capsule), repr(capsule)
         object = decode_capsule(self._types, capsule)
         rec = self._resolve(tuple(capsule.full_type_name))
         log.info('producing %s for %s using %s(%s, %s) for object %r',
                      self._produce_name, '.'.join(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)
-        return rec.factory(object, *rec.args, **rec.kw)
+        return rec.factory(ref, object, *rec.args, **rec.kw)
 
 
 class CapsuleResolver(object):
@@ -73,7 +73,7 @@ class CapsuleResolver(object):
     def resolve(self, ref):
         assert isinstance(ref, bytes), repr(ref)
         capsule = self._ref_resolver.resolve_ref(ref)
-        produce = self._capsule_registry.resolve(capsule)
+        produce = self._capsule_registry.resolve(ref, capsule)
         assert produce, repr(produce)
         log.debug('capsule resolved to %s %r', self._capsule_registry.produce_name, produce)
         return produce

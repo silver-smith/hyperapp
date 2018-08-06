@@ -24,14 +24,14 @@ class CapsuleRegistry(Registry):
         assert t.full_name, repr(t)  # type must have a name
         super().register(tuple(t.full_name), factory, *args, **kw)
         
-    async def resolve(self, capsule):
+    async def resolve(self, ref, capsule):
         assert isinstance(capsule, href_types.capsule), repr(capsule)
         t = self._types.resolve(capsule.full_type_name)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         rec = self._resolve(tuple(capsule.full_type_name))
         log.info('producing %s for %s using %s(%s, %s) for object %r',
                      self._produce_name, '.'.join(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)
-        return (await self._run_awaitable_factory(rec.factory, object, *rec.args, **rec.kw))
+        return (await self._run_awaitable_factory(rec.factory, ref, object, *rec.args, **rec.kw))
 
 
 class CapsuleResolver(object):
@@ -43,7 +43,7 @@ class CapsuleResolver(object):
     async def resolve(self, ref):
         assert isinstance(ref, bytes), repr(ref)
         capsule = await self._async_ref_resolver.resolve_ref(ref)
-        produce = await self._capsule_registry.resolve(capsule)
+        produce = await self._capsule_registry.resolve(ref, capsule)
         assert produce, repr(produce)
         log.debug('capsule resolved to %s %r', self._capsule_registry.produce_name, produce)
         return produce

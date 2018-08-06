@@ -16,18 +16,16 @@ LOCAL_HOST_NAME = 'local'
 class LocalFsService(object):
 
     @classmethod
-    def from_data(cls, service_object, ref_registry):
+    def from_data(cls, unused_local_fs_service_ref, unused_local_fs_service, ref_registry):
         return cls(ref_registry)
 
     def __init__(self, ref_registry):
         self._ref_registry = ref_registry
         self._impl = FsServiceImpl(fs_types)
 
-    def to_data(self):
-        return fs_types.local_fs_service()
-
     def to_ref(self):
-        return self._ref_registry.register_object(fs_types.local_fs_service, self.to_data())
+        local_fs_service = fs_types.local_fs_service()
+        return self._ref_registry.register_object(fs_types.local_fs_service, local_fs_service)
 
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         assert host == LOCAL_HOST_NAME, repr(host)
