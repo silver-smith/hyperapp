@@ -63,6 +63,7 @@ code_module_list = [
     'server.transport.tcp',
     'server.transport.encrypted',
     'server.ref_resolver_service',
+    'server.route_resolver_service',
     # 'server.form',
 #    'server.admin',
 #    'server.module_list',

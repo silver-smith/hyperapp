@@ -6,6 +6,7 @@ from .packet_coders import packet_coders
 
 
 LOCAL_REF_RESOLVER_REF_PATH = Path('~/.local/share/hyperapp/common/local_ref_resolver.ref.json').expanduser()
+LOCAL_ROUTE_RESOLVER_REF_PATH = Path('~/.local/share/hyperapp/common/local_route_resolver.ref.json').expanduser()
 LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH = Path('~/.local/share/hyperapp/common/local_server_management_ref_list.ref.json').expanduser()
 
 ENCODING = 'json'
