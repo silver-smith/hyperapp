@@ -28,10 +28,14 @@ class AsyncRouteResolver(object):
 
     async def resolve(self, endpoint_ref):
         transport_ref_set = self._route_resolver.resolve(endpoint_ref)
-        # although we may have some transport refs now, they all may be unaccessible,
-        # so we need to collect async (remote) ones too
+        # Although we may have some transport refs now, they all may be unaccessible,
+        # so we need to collect async (remote) ones too.
+        # But this leads to infinite recursion when we resolving route for
+        # remote route resolver itself, so let's just skip it then.
+        if transport_ref_set:
+            return transport_ref_set
         for source in self._async_source_list:
-            transport_ref_set |= await source.resolve(service_ref)
+            transport_ref_set |= await source.resolve(endpoint_ref)
         return transport_ref_set
 
 
