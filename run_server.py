@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 from types import SimpleNamespace
+from hyperapp.common.init_logging import init_logging
 from hyperapp.common.identity import Identity
 from hyperapp.server.services import Services
 
@@ -16,7 +17,7 @@ DEFAULT_ADDR = 'localhost:8888'
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
+    init_logging('server.yaml')
 
     parser = argparse.ArgumentParser(description='Hyperapp server')
     parser.add_argument('identity_fpath', type=Path, help='path to identity file')

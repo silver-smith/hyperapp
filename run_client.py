@@ -3,11 +3,12 @@
 import sys
 import logging
 import argparse
+from hyperapp.common.init_logging import init_logging
 from hyperapp.client.application import Application
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s  %(message)s')
+    init_logging('client.yaml')
 
     parser = argparse.ArgumentParser(description='Hyperapp client')
     args = parser.parse_args()
