@@ -131,7 +131,6 @@ class BlogArticleForm(FormObject):
 
     def _open_in_mode(self, mode):
         return self.construct(
-            blog_service=self._blog_service.to_data(),
             form_object=self.get_state(),
             title_object=self._fields['title'].get_state(),
             contents_object=self._fields['text'].get_state(),
