@@ -50,8 +50,12 @@ class BlogService(object):
             )
 
     @db_session
-    def rpc_create_article(self, request, blog_id):
-        article = this_module.BlogEntry(created_at=utcnow())
+    def rpc_create_article(self, request, blog_id, title, text):
+        article = this_module.BlogEntry(
+            created_at=utcnow(),
+            title=title,
+            text=text,
+            )
         flush()
         log.info('Article#%d is created', article.id)
         return request.make_response_result(blog_row=self.rec2row(article))

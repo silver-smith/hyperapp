@@ -75,7 +75,7 @@ class BlogObject(ListObject):
 
     @command('add')
     async def command_add(self):
-        article_id = await self._blog_service.create_article(self._blog_id)
+        article_id = await self._blog_service.create_article(self._blog_id, 'Untitled', '')
         return (await self._open_article(article_id))
 
     async def _open_article(self, article_id):
@@ -313,8 +313,8 @@ class BlogService(object):
             assert row, repr((blog_id, article_id))  # expecting it to be fetched now
         return row
 
-    async def create_article(self, blog_id):
-        result = await self._proxy.create_article(blog_id)
+    async def create_article(self, blog_id, title, text):
+        result = await self._proxy.create_article(blog_id, title, text)
         row = result.blog_row
         self._blog_id_article_id_to_row[(blog_id, row.id)] = row
         return row.id
