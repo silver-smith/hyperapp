@@ -1,7 +1,7 @@
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import fs as fs_types
 from ..common.fs_service_impl import FsServiceImpl
-from .module import Module
+from .module import ServerModule
 
 
 MODULE_NAME = 'fs'
@@ -19,10 +19,10 @@ class FsService(object):
         return request.make_response_result(chunk=chunk)
 
 
-class ThisModule(Module):
+class ThisModule(ServerModule):
 
     def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+        super().__init__(MODULE_NAME)
         self._init_fs_service(services)
 
     def _init_fs_service(self, services):
