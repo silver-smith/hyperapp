@@ -207,7 +207,8 @@ class TcpServer(object):
             return
         log.info('tcp: stopping...')
         self._stop_flag = True
-        self._listen_thread.join()
+        if self._listen_thread.is_alive():
+            self._listen_thread.join()
         log.info('tcp: listening thread is joined.')
         for client in self._id2client.values():
             client.stop()

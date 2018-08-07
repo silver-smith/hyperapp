@@ -4,7 +4,7 @@ import logging
 #from ..common.interface import server_management as server_management_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import ref_list as ref_list_types
-from ..common.url import Url
+from ..common.ref import ref_repr
 from ..common.local_server_paths import (
     LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH,
     save_bundle_to_file,
@@ -69,6 +69,7 @@ class ManagementRefList(object):
         self._ref_list = []
 
     def add_ref(self, id, ref):
+        log.info('Adding management ref for %r: %s', id, ref_repr(ref))
         self._ref_list.append(ref_list_types.ref_item(id, ref))
 
     def get_ref_list(self):

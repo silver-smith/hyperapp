@@ -34,7 +34,7 @@ type_module_list = [
 #    'object_selector',
 #    'text_object',
 #    'form',
-#    'blog',
+    'blog',
 #    'module_list',
 #    'test_list',
 #    'exception_test',
@@ -51,7 +51,7 @@ code_module_list = [
     'common.unbundler',
     'server.ponyorm_module',
     'server.ref_storage',
-    'server.route_storage',
+#    'server.route_storage',
 #    'server.client_code_repository',
 #    'server.remoting',
 #    'server.tcp_transport',
@@ -69,7 +69,7 @@ code_module_list = [
 #    'server.module_list',
     'server.server_management',
     'server.fs',
-#    'server.blog',
+    'server.blog',
 #    'server.simple_text_object',
 #    'server.sample_list',
 #    'server.exception_test',
@@ -110,8 +110,12 @@ class Services(ServerServicesBase):
                                                 self.types.param_editor,
                                                 iface_resources_dir=self.server_dir,
                                                 client_modules_resources_dir=self.dynamic_module_dir)
-        self._load_server_modules()
-        self.module_registry.init_phases(self)
+        try:
+            self._load_server_modules()
+            self.module_registry.init_phases(self)
+        except:
+            self.stop()
+            raise
 
     @property
     def is_running(self):

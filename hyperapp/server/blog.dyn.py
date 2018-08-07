@@ -4,41 +4,23 @@ import codecs
 
 from pony.orm import db_session, flush, desc, Required, Optional, Set
 
-from ..common.diff import SimpleDiff
-from ..common.list_object import ListDiff
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
-from ..common.url import Url
 from ..common.list_object import rows2fetched_chunk
-from .ponyorm_module import PonyOrmModule
 from .util import utcnow, path_part_to_str
-from .command import command
-from .object import Object, subscription
-from .module import ModuleCommand
+from .ponyorm_module import PonyOrmModule
 
 log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'blog'
+BLOG_SERVICE_ID = 'blog'
 
 
-class BlogService(Object):
+class BlogService(object):
 
-    iface = blog_types.blog_service_iface
-    class_name = 'service'
-
-    @classmethod
-    def get_path(cls):
-        return this_module.make_path(cls.class_name)
-
-    @classmethod
-    def resolve(cls, path):
-        path.check_empty()
-        return cls()
-
-    @command('fetch_blog_contents')
-    def command_fetch_blog_contents(self, request, blog_id, fetch_request):
+    def rpc_fetch_blog_contents(self, request, blog_id, fetch_request):
         all_rows = self.fetch_blog_contents(blog_id)
         chunk = rows2fetched_chunk('id', all_rows, fetch_request, blog_types.blog_chunk)
         return request.make_response_result(chunk=chunk)
@@ -67,9 +49,8 @@ class BlogService(Object):
             ref=rec.ref,
             )
 
-    @command('create_article')
     @db_session
-    def command_create_article(self, request, blog_id):
+    def rpc_create_article(self, request, blog_id):
         article = this_module.BlogEntry(created_at=utcnow())
         flush()
         log.info('Article#%d is created', article.id)
@@ -82,17 +63,15 @@ class BlogService(Object):
         else:
             raise blog_types.unknown_article_error(article_id)
 
-    @command('save_article')
     @db_session
-    def command_save_article(self, request, blog_id, article_id, title, text):
+    def rpc_save_article(self, request, blog_id, article_id, title, text):
         article = self._get_article(blog_id, article_id)
         article.title = title
         article.text = text
         log.info('Article#%d is saved: %r/%r', article_id, title, text)
 
-    @command('add_ref')
     @db_session
-    def command_add_ref(self, request, blog_id, article_id, title, ref):
+    def rpc_add_ref(self, request, blog_id, article_id, title, ref):
         article = self._get_article(blog_id, article_id)
         rec = this_module.ArticleRef(
             article=article,
@@ -103,17 +82,15 @@ class BlogService(Object):
         log.info('Article ref#%d %r is is added: %s', rec.id, title, codecs.encode(rec.ref, 'hex'))
         return request.make_response_result(ref_id=rec.id)
 
-    @command('update_ref')
     @db_session
-    def command_update_ref(self, request, blog_id, article_id, ref_id, title, ref):
+    def rpc_update_ref(self, request, blog_id, article_id, ref_id, title, ref):
         rec = this_module.ArticleRef[ref_id]
         rec.title = title
         rec.ref = ref
         log.info('Article ref#%d is updated to %r: %s', rec.id, title, codecs.encode(rec.ref, 'hex'))
 
-    @command('delete_ref')
     @db_session
-    def command_delete_ref(self, request, ref_id):
+    def rpc_delete_ref(self, request, ref_id):
         this_module.ArticleRef[ref_id].delete()
         log.info('Article ref#%d is deleted', ref_id)
 
@@ -121,10 +98,7 @@ class BlogService(Object):
 class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
-        PonyOrmModule.__init__(self, MODULE_NAME)
-        self._server = services.server
-        self._ref_storage = services.ref_storage
-        self._management_ref_list = services.management_ref_list
+        super().__init__(MODULE_NAME)
 
     def init_phase2(self, services):
         self.Article = self.make_entity(
@@ -145,32 +119,27 @@ class ThisModule(PonyOrmModule):
             )
 
     def init_phase3(self, services):
-        blog_service_url = Url(blog_types.blog_service_iface, self._server.get_public_key(), BlogService.get_path())
-        blog_service = blog_types.blog_service(service_url=blog_service_url.to_data())
-        blog_service_ref = self._ref_storage.add_object(blog_types.blog_service, blog_service)
+        service = href_types.service(BLOG_SERVICE_ID, ['blog', 'blog_service_iface'])
+        service_ref = services.ref_registry.register_object(href_types.service, service)
+        services.service_registry.register(service_ref, BlogService)
+
         blog = blog_types.blog_ref(
-            blog_service_ref=blog_service_ref,
+            blog_service_ref=service_ref,
             blog_id='test-blog',
             current_article_id=None,
             )
-        blog_ref = self._ref_storage.add_object(blog_types.blog_ref, blog)
-        self._management_ref_list.add_ref('blog', blog_ref)
+        blog_ref = services.ref_registry.register_object(blog_types.blog_ref, blog)
+        services.management_ref_list.add_ref('blog', blog_ref)
 
-    def resolve(self, iface, path):
-        name = path.pop_str()
-        if name == BlogService.class_name:
-            return BlogService.resolve(path)
-        path.raise_not_found()
+#    def get_commands(self):
+#        return [
+#            ModuleCommand('create', 'Create entry', 'Create new blog entry', None, self.name),
+#            ModuleCommand('open_blog', 'Blog', 'Open blog', 'Alt+B', self.name),
+#            ]
 
-    def get_commands(self):
-        return [
-            ModuleCommand('create', 'Create entry', 'Create new blog entry', None, self.name),
-            ModuleCommand('open_blog', 'Blog', 'Open blog', 'Alt+B', self.name),
-            ]
-
-    def run_command(self, request, command_id):
-        if command_id == 'create':
-            return request.make_response_object(BlogEntry())
-        if command_id == 'open_blog':
-            return request.make_response_object(Blog())
-        return PonyOrmModule.run_command(self, request, command_id)
+#    def run_command(self, request, command_id):
+#        if command_id == 'create':
+#            return request.make_response_object(BlogEntry())
+#        if command_id == 'open_blog':
+#            return request.make_response_object(Blog())
+#        return PonyOrmModule.run_command(self, request, command_id)
