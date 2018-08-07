@@ -66,7 +66,7 @@ blog_service_iface = interface blog_service:
 
 
 blog_object = object class blog_object(object_base):
-    blog_service: blog_service
+    blog_service_ref: ref
     blog_id: string
 
 #blog_article_form = form class blog_article_form(form_base):

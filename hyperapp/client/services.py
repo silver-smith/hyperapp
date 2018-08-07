@@ -98,7 +98,7 @@ code_module_list = [
     'client.fs_local_service',
     'client.fs_remote_service',
     'client.object_selector',
-#    'client.blog',
+    'client.blog',
     ]
 
 
