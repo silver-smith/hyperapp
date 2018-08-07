@@ -1,9 +1,9 @@
 from error import error, client_error
 from core import object, object_base, handle
 from hyper_ref import ref
-#from form import form, form_base
+from form import form, form_base
 #from object_selector import object_selector_callback
-#from text_object import text_object
+from text_object import text_object
 
 
 blog_service = record:
@@ -69,13 +69,13 @@ blog_object = object class blog_object(object_base):
     blog_service_ref: ref
     blog_id: string
 
-#blog_article_form = form class blog_article_form(form_base):
-#    blog_service: blog_service
-#    blog_id: string
-#    article_id: int
+blog_article_form = form class blog_article_form(form_base):
+    blog_service_ref: ref
+    blog_id: string
+    article_id: int
 
-#blog_article_text = object class blog_article_text(text_object):
-#    ref_list: article_ref list
+blog_article_text = object class blog_article_text(text_object):
+    ref_list: article_ref list
 
 article_ref_list_object = object class article_ref_list_object(object_base):
     blog_service: blog_service
