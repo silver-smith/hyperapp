@@ -5,3 +5,4 @@ packet = record:
 echo = interface echo:
     commands:
         request say (message: string) -> (response: string)
+        request eat (message: string) -> ()

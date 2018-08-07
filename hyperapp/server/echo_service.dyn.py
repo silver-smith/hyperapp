@@ -17,6 +17,9 @@ class EchoService(object):
         log.info('Echo.say(%r): message=%r', request, message)
         return request.make_response_result(message)
 
+    def rpc_eat(self, request, message):
+        log.info('Echo.eat(%r): message=%r', request, message)
+
 
 class ThisModule(ServerModule):
 

@@ -78,7 +78,12 @@ class Remoting(object):
         if not command.is_request:
             assert not response, 'No results are expected from notifications'
             return
-        assert response, 'Use request.make_response method to return results from requests'
+        if command.response.fields:
+            assert response, 'Use request.make_response method to return results from requests'
+        else:
+            # No fields in response, servant is allowed to return None
+            if not response:
+                response = request.make_response_result()
         assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
         log.info('RPC Response:')
