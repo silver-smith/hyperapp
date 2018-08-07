@@ -111,7 +111,7 @@ class Services(ServerServicesBase):
                                                 iface_resources_dir=self.server_dir,
                                                 client_modules_resources_dir=self.dynamic_module_dir)
         self._load_server_modules()
-        self.module_registry.init_phases()
+        self.module_registry.init_phases(self)
 
     @property
     def is_running(self):

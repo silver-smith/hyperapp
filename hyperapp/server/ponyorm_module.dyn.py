@@ -1,10 +1,12 @@
-import os.path
+from pathlib import Path
+import os
+
 from pony.orm import *
 
 from .module import ServerModule
 
 
-SQLITE_DB_PATH = os.path.expanduser('~/.hyperapp-server-db.sqlite')
+SQLITE_DB_PATH = Path('~/.local/share/hyperapp/server/db.sqlite').expanduser()
 MODULE_NAME = 'ponyorm'
 
 
@@ -26,8 +28,9 @@ class ThisModule(ServerModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        #sql_debug(True)
-        self.db = Database('sqlite', SQLITE_DB_PATH, create_db=True)
+        sql_debug('SQL_DEBUG' in os.environ)
+        SQLITE_DB_PATH.parent.mkdir(exist_ok=True)
+        self.db = Database('sqlite', str(SQLITE_DB_PATH), create_db=True)
 
-    def init_phase3(self):
+    def init_phase3(self, services):
         self.db.generate_mapping(create_tables=True)

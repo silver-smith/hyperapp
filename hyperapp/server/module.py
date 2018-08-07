@@ -19,10 +19,10 @@ class ModuleCommand(object):
 # base class for modules
 class ServerModule(Module):
 
-    def init_phase2(self):
+    def init_phase2(self, services):
         pass
 
-    def init_phase3(self):
+    def init_phase3(self, services):
         pass
 
     def resolve(self, iface, path):
@@ -49,13 +49,13 @@ class ModuleRegistry(common_module_registry.ModuleRegistry):
         self._module_list.append(module)  # preserves import order
         self._name2module[module.name] = module
 
-    def init_phases(self):
+    def init_phases(self, services):
         for module in self._module_list:
             if isinstance(module, ServerModule):
-                module.init_phase2()
+                module.init_phase2(services)
         for module in self._module_list:
             if isinstance(module, ServerModule):
-                module.init_phase3()
+                module.init_phase3(services)
 
     def get_module_by_name(self, name):
         return self._name2module[name]

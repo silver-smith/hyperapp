@@ -126,7 +126,7 @@ class ThisModule(PonyOrmModule):
         self._ref_storage = services.ref_storage
         self._management_ref_list = services.management_ref_list
 
-    def init_phase2(self):
+    def init_phase2(self, services):
         self.Article = self.make_entity(
             'Article',
             title=Required(str),
@@ -144,7 +144,7 @@ class ThisModule(PonyOrmModule):
             created_at=Required(datetime),
             )
 
-    def init_phase3(self):
+    def init_phase3(self, services):
         blog_service_url = Url(blog_types.blog_service_iface, self._server.get_public_key(), BlogService.get_path())
         blog_service = blog_types.blog_service(service_url=blog_service_url.to_data())
         blog_service_ref = self._ref_storage.add_object(blog_types.blog_service, blog_service)

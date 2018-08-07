@@ -33,7 +33,7 @@ class ThisModule(ServerModule):
         self._ref_collector_factory = services.ref_collector_factory
 
     # depends on mapping being generated for ref_storage
-    def init_phase3(self):
+    def init_phase3(self, services):
         service = href_types.service(REF_RESOLVER_SERVICE_ID, ['hyper_ref', 'ref_resolver'])
         service_ref = self._ref_registry.register_object(href_types.service, service)
         self._service_registry.register(service_ref, RefResolverService, self._ref_resolver)
@@ -43,7 +43,7 @@ class ThisModule(ServerModule):
         save_bundle_to_file(bundle, ref_path)
         log.info('Ref resolver ref is saved to %s', ref_path)
 
-#    def init_phase2(self):
+#    def init_phase2(self, services):
 #        public_key = self._server.get_public_key()
 #        url = Url(RefResolver.iface, public_key, RefResolver.get_path())
 #        url_with_routes = url.clone_with_routes(self._tcp_server.get_routes())

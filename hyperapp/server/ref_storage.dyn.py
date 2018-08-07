@@ -59,7 +59,7 @@ class ThisModule(PonyOrmModule):
         services.ref_storage = ref_storage = RefStorage()
         services.ref_resolver.add_source(ref_storage)
 
-    def init_phase2(self):
+    def init_phase2(self, services):
         self.Ref = self.make_entity(
             'Ref',
             ref=PrimaryKey(bytes),
