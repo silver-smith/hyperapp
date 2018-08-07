@@ -7,7 +7,7 @@ from ..common.interface import blog as blog_types
 from ..common.interface import line_object as line_object_types
 from ..common.interface import text_object as text_object_types
 from ..common.interface import form as form_types
-#from ..common.interface import object_selector as object_selector_types
+from ..common.interface import object_selector as object_selector_types
 from ..common.list_object import Element, Chunk
 from .module import ClientModule
 from .command import command
@@ -15,7 +15,7 @@ from .mode_command import mode_command
 from .text_object import TextObject
 from .list_object import Column, ListObject
 from .form import FormObject, FormView
-#from . import object_selector
+from . import object_selector
 
 log = logging.getLogger(__name__)
 
@@ -141,7 +141,7 @@ class BlogArticleForm(FormObject):
     async def command_refs(self):
         blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
-        ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
+        ref = self._ref_registry.register_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._handle_resolver.resolve(ref))
 
     @mode_command('save', mode=FormView.Mode.EDIT)
@@ -185,8 +185,8 @@ class ArticleRefListObject(ListObject):
     impl_id = 'article-ref-list'
 
     @classmethod
-    def from_state(cls, state, ref_registry, handle_resolver):
-        blog_service = this_module.blog_service_from_data(state.blog_service)
+    async def from_state(cls, state, ref_registry, proxy_factory, handle_resolver):
+        blog_service = await BlogService.from_data(state.blog_service_ref, proxy_factory)
         return cls(ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id)
 
     def __init__(self, ref_registry, handle_resolver, blog_service, blog_id, article_id):
@@ -199,7 +199,7 @@ class ArticleRefListObject(ListObject):
         self._id2ref = {}
 
     def get_state(self):
-        return blog_types.article_ref_list_object(self.impl_id, self._blog_service.to_data(), self._blog_id, self._article_id)
+        return blog_types.article_ref_list_object(self.impl_id, self._blog_service.to_ref(), self._blog_id, self._article_id)
 
     def get_title(self):
         return 'refs for %s:%d' % (self._blog_id, self._article_id)
@@ -236,16 +236,16 @@ class ArticleRefListObject(ListObject):
     async def command_add(self):
         blog_service_ref = self._blog_service.to_ref()
         article_ref_list_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
-        target_ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, article_ref_list_object)
+        target_ref = self._ref_registry.register_object(blog_types.blog_article_ref_list_ref, article_ref_list_object)
         target_handle = await self._handle_resolver.resolve(target_ref)
-        callback = blog_types.selector_callback(self._blog_service.to_data(), self._blog_id, self._article_id)
+        callback = blog_types.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id)
         object = object_selector_types.object_selector_object('object_selector', callback)
         return object_selector_types.object_selector_view('object_selector', object, target_handle)
 
     @command('change', kind='element')
     async def command_change(self, element_key):
         target_handle = await self.get_ref_handle(element_key)
-        callback = blog_types.selector_callback(self._blog_service.to_data(), self._blog_id, self._article_id, element_key)
+        callback = blog_types.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id, element_key)
         object = object_selector_types.object_selector_object('object_selector', callback)
         return object_selector_types.object_selector_view('object_selector', object, target_handle)
 
@@ -257,8 +257,8 @@ class ArticleRefListObject(ListObject):
 class SelectorCallback(object):
 
     @classmethod
-    def from_data(cls, state, ref_registry, handle_resolver):
-        blog_service = this_module.blog_service_from_data(state.blog_service)
+    async def from_data(cls, state, ref_registry, proxy_factory, handle_resolver):
+        blog_service = await BlogService.from_data(state.blog_service_ref, proxy_factory)
         return cls(ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id, state.ref_id)
 
     def __init__(self, ref_registry, handle_resolver, blog_service, blog_id, article_id, ref_id):
@@ -277,11 +277,11 @@ class SelectorCallback(object):
             ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, title, ref)
         blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
-        ref = self._ref_registry.register_new_object(blog_types.blog_article_ref_list_ref, object)
+        ref = self._ref_registry.register_object(blog_types.blog_article_ref_list_ref, object)
         return (await self._handle_resolver.resolve(ref))
 
     def to_data(self):
-        return blog_types.selector_callback(self._blog_service.to_data(), self._blog_id, self._article_id, self._ref_id)
+        return blog_types.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id, self._ref_id)
     
 
 class BlogService(object):
@@ -345,7 +345,7 @@ class ThisModule(ClientModule):
         self._proxy_factory = services.proxy_factory
         services.handle_registry.register(blog_types.blog_ref, self._resolve_blog_object)
         services.handle_registry.register(blog_types.blog_article_ref, self._resolve_blog_article_object, services.proxy_factory)
-        services.handle_registry.register(blog_types.blog_article_ref_list_ref, self.resolve_blog_article_ref_list_object)
+        services.handle_registry.register(blog_types.blog_article_ref_list_ref, self._resolve_blog_article_ref_list_object)
         services.objimpl_registry.register(
             BlogObject.impl_id, BlogObject.from_state, services.ref_registry, services.proxy_factory, services.handle_resolver)
         services.form_impl_registry.register(
@@ -353,9 +353,9 @@ class ThisModule(ClientModule):
         services.objimpl_registry.register(
             BlogArticleContents.impl_id, BlogArticleContents.from_state, services.handle_resolver)
         services.objimpl_registry.register(
-            ArticleRefListObject.impl_id, ArticleRefListObject.from_state, services.ref_registry, services.handle_resolver)
-#        object_selector.this_module.register_callback(
-#            blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.handle_resolver)
+            ArticleRefListObject.impl_id, ArticleRefListObject.from_state, services.ref_registry, services.proxy_factory, services.handle_resolver)
+        object_selector.this_module.register_callback(
+            blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.proxy_factory, services.handle_resolver)
 
     async def _resolve_blog_object(self, blog_object_ref, blog_object):
         list_object = blog_types.blog_object(BlogObject.impl_id, blog_object.blog_service_ref, blog_object.blog_id)
@@ -373,11 +373,10 @@ class ThisModule(ClientModule):
         contents_object = blog_types.blog_article_text(BlogArticleContents.impl_id, row.text, row.ref_list)
         return BlogArticleForm.construct(form_object, title_object, contents_object, mode='view')
 
-    async def resolve_blog_article_ref_list_object(self, ref_list_object):
-        blog_service = await self._ref_resolver.resolve_ref_to_object(ref_list_object.blog_service_ref)
+    async def _resolve_blog_article_ref_list_object(self, ref_list_object_ref, ref_list_object):
         list_object = blog_types.article_ref_list_object(
-            ArticleRefListObject.impl_id, blog_service, ref_list_object.blog_id, ref_list_object.article_id)
-        handle_t = list_handle_type(core_types, tInt)
+            ArticleRefListObject.impl_id, ref_list_object.blog_service_ref, ref_list_object.blog_id, ref_list_object.article_id)
+        handle_t = core_types.int_list_handle
         sort_column_id = 'id'
         resource_id = ['client_module', 'blog', 'BlogArticleRefListObject']
         return handle_t('list', list_object, resource_id, sort_column_id, key=None)

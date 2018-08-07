@@ -31,7 +31,7 @@ type_module_list = [
 #    'code_repository',
 #    'splitter',
 #    'admin',
-#    'object_selector',
+    'object_selector',
     'text_object',
     'form',
     'blog',

@@ -19,8 +19,8 @@ class ObjectSelectorObject(Object):
     impl_id = 'object_selector'
 
     @classmethod
-    def from_state(cls, state):
-        callback = this_module.callback_registry.resolve(state.callback)
+    async def from_state(cls, state):
+        callback = await this_module.callback_registry.resolve(state.callback)
         return cls(callback)
 
     def __init__(self, callback):
@@ -92,11 +92,11 @@ class CallbackRegistry(Registry):
         assert object_selector_types.object_selector_callback.is_my_class(tclass)
         super().register(tclass.id, factory, *args, **kw)
 
-    def resolve(self, callback):
+    async def resolve(self, callback):
         tclass = object_selector_types.object_selector_callback.get_object_class(callback)
         rec = self._resolve(tclass.id)
         log.info('producing object selector callback %r using %s(%s, %s)', tclass.id, rec.factory, rec.args, rec.kw)
-        return rec.factory(callback, *rec.args, **rec.kw)
+        return (await self._run_awaitable_factory(rec.factory, callback, *rec.args, **rec.kw))
 
 
 class ThisModule(ClientModule):
