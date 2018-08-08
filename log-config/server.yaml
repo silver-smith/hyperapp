@@ -22,5 +22,5 @@ loggers:
   hyperapp.server.resources_loader:
     level: WARNING
 root:
-    level: DEBUG
-    handlers: [console]
+  level: DEBUG
+  handlers: [console]
