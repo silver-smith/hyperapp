@@ -79,7 +79,7 @@ class ModuleManager(object):
         self.load_code_module(module)
 
     def load_code_module(self, module, fullname=None):
-        log.info('-- loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
+        log.info('Loading module %r package=%r fpath=%r', module.id, module.package, module.fpath)
         #assert isinstance(module, self._packet_types.module), repr(module)
         if fullname is None:
             fullname = module.package + '.' + module.id.replace('-', '_')
@@ -91,16 +91,16 @@ class ModuleManager(object):
             importlib.import_module(fullname)
 
     def _exec_code_module(self, module, code_module):
-        log.info('   executing code module %r package=%r fpath=%r', code_module.id, code_module.package, code_module.fpath)
+        log.debug('   executing code module %r package=%r fpath=%r', code_module.id, code_module.package, code_module.fpath)
         ast = compile(code_module.source, code_module.fpath, 'exec')  # using compile allows to associate file path with loaded module
         exec(ast, module.__dict__)
         self._register_provided_services(code_module, module.__dict__)
         setattr(self.modules, module.__name__.split('.')[-1], module)
 
     def _exec_type_module(self, module, module_name):
-        log.info('    executing type module %r', module_name)
+        log.debug('    executing type module %r', module_name)
         ns = self._types[module_name]
         for name, t in ns.items():
             module.__dict__[name] = t
-            log.info('        resolved type %r -> %r', name, t)
+            log.debug('        resolved type %r -> %r', name, t)
         self._type_modules[module.__name__] = module

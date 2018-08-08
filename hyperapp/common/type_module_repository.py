@@ -92,7 +92,7 @@ class TypeModuleRepository(object):
         for typedef in module.typedefs:
             if isinstance(typedef.type, tInterfaceMeta):
                 provided_ifaces.append(typedef.name)
-                log.info('    provides interface %r', typedef.name)
+                log.debug('    provides interface %r', typedef.name)
         self._class_id2type_module.update({
             encode_path([pc.hierarchy_id, pc.class_id]): module
             for pc in module.provided_classes})
