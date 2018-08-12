@@ -20,9 +20,18 @@ class RemoteRouteResolver(AsyncRouteSource):
     def __init__(self, route_registry, proxy):
         self._route_registry = route_registry
         self._proxy = proxy
+        self._recursion_flag = False
 
     async def resolve(self, endpoint_ref):
-        result = await self._proxy.resolve_route(endpoint_ref)
+        if self._recursion_flag:
+            # we are resolving routes for our own proxy
+            return set()
+        self._recursion_flag = True
+        try:
+            result = await self._proxy.resolve_route(endpoint_ref)
+        finally:
+            self._recursion_flag = False
+        # cache received routes
         for transport_ref in result.transport_ref_list:
             self._route_registry.register(endpoint_ref, transport_ref)
         return set(result.transport_ref_list)
