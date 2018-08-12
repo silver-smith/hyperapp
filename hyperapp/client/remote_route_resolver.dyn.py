@@ -24,7 +24,7 @@ class RemoteRouteResolver(AsyncRouteSource):
 
     async def resolve(self, endpoint_ref):
         if self._recursion_flag:
-            # we are resolving routes for our own proxy
+            # remoting is resolving routes for our own proxy
             return set()
         self._recursion_flag = True
         try:
