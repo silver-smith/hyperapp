@@ -99,12 +99,6 @@ class Server(ServerProcess):
         types = self.services.types
         phony_transport_address = types.phony_transport.address()
         phony_transport_ref = self.services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
-        identity = Identity.generate(fast=True)
-        encrypted_transport_address = types.encrypted_transport.address(
-            public_key_der=identity.public_key.to_der(),
-            base_transport_ref=phony_transport_ref)
-        encrypted_transport_ref = self.services.ref_registry.register_object(types.encrypted_transport.address, encrypted_transport_address)
-        #return encrypted_transport_ref
         return phony_transport_ref
 
     def make_echo_service_bundle(self):
@@ -147,11 +141,7 @@ def queues():
     mp_manager = multiprocessing.Manager()
     return Queues(mp_manager.Queue(), mp_manager.Queue())
 
-@pytest.fixture
-def server_process():
-    with ServerProcess() as sp:
-        yield sp
-    
+
 @pytest.fixture
 def client_services(queues, event_loop):
     event_loop.set_debug(True)

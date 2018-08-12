@@ -25,8 +25,8 @@ def sync_future_to_async_future(event_loop, thread_pool, mp_future, timeout_sec=
 
 def mp_call_async(event_loop, thread_pool, mp_pool, method, args, timeout_sec=3):
     log.debug('mp_call_async: %r(%r)', method, args)
-    async_result = mp_pool.apply_async(method, args)
-    return sync_fn_to_async_future(event_loop, thread_pool, async_result.get, timeout_sec)
+    mp_async_result = mp_pool.apply_async(method, args)
+    return sync_fn_to_async_future(event_loop, thread_pool, mp_async_result.get, timeout_sec)
 
 
 class ServerProcess(object):
