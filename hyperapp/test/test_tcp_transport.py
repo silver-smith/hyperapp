@@ -9,7 +9,7 @@ import pytest
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
-from hyperapp.test.server_process import mp2async_future, ServerProcess
+from hyperapp.test.server_process import sync_future_to_async_future, ServerProcess
 
 log = logging.getLogger()
 
@@ -131,20 +131,20 @@ async def client_send_packet(services, encoded_echo_service_bundle):
 
 
 def wait_for_server_stopped(thread_pool, stopped_queue):
-    mp_future = concurrent.futures.Future()
+    sync_future = concurrent.futures.Future()
     def wait_for_queue():
         log.debug('wait_for_server_stopped.wait_for_queue: started')
         try:
             is_failed = stopped_queue.get()
             log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
             assert not is_failed
-            mp_future.set_result(None)
+            sync_future.set_result(None)
             log.debug('wait_for_server_stopped.wait_for_queue: succeeded')
         except Exception as x:
             log.exception('wait_for_server_stopped.wait_for_queue:')
-            mp_future.set_exception(x)
+            sync_future.set_exception(x)
     thread_pool.submit(wait_for_queue)
-    return mp_future
+    return sync_future
 
 
 @pytest.mark.asyncio
@@ -154,7 +154,7 @@ async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, cl
     mp_pool.apply(Server.construct, (stopped_queue,))
     encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
     await asyncio.wait([
-        mp2async_future(event_loop, thread_pool, wait_for_server_stopped(thread_pool, stopped_queue)),
+        sync_future_to_async_future(event_loop, thread_pool, wait_for_server_stopped(thread_pool, stopped_queue)),
         client_send_packet(client_services, encoded_echo_service_bundle),
         ], return_when=asyncio.FIRST_COMPLETED)
     log.debug('Test is finished, stopping the server now...')
