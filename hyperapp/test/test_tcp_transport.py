@@ -136,23 +136,6 @@ async def client_send_packet(services, encoded_echo_service_bundle):
     assert result.response == 'hello'
 
 
-def __wait_for_server_stopped(thread_pool, stopped_queue):
-    sync_future = concurrent.futures.Future()
-    def wait_for_queue():
-        log.debug('wait_for_server_stopped.wait_for_queue: started')
-        try:
-            is_failed = stopped_queue.get()
-            log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
-            assert not is_failed
-            sync_future.set_result(None)
-            log.debug('wait_for_server_stopped.wait_for_queue: succeeded')
-        except Exception as x:
-            log.exception('wait_for_server_stopped.wait_for_queue:')
-            sync_future.set_exception(x)
-    thread_pool.submit(wait_for_queue)
-    return sync_future
-
-
 def wait_for_server_stopped(stopped_queue):
     log.debug('wait_for_server_stopped.wait_for_queue: started')
     is_failed = stopped_queue.get()
