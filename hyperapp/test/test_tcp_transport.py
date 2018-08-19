@@ -1,6 +1,7 @@
 import logging
 import time
 import multiprocessing
+from multiprocessing.managers import BaseManager
 import concurrent.futures
 import asyncio
 import traceback
@@ -9,7 +10,6 @@ import pytest
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
-from hyperapp.test.server_process import sync_future_to_async_future, ServerProcess
 
 log = logging.getLogger()
 
@@ -80,23 +80,11 @@ class ServerServices(TestServerServices):
 
 
 @pytest.fixture
-def mp_pool():
-    #multiprocessing.log_to_stderr()
-    # only 1 worker is expected by ServerProcess
-    with multiprocessing.Pool(1) as pool:
-        yield pool
-
-@pytest.fixture
-def thread_pool():
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        yield executor
-
-@pytest.fixture
 def client_services(event_loop):
     return TestClientServices(type_module_list, client_code_module_list, event_loop)
 
 
-class Server(ServerProcess):
+class Server(object):
 
     def __init__(self, stopped_queue):
         self.services = ServerServices(stopped_queue)
@@ -114,6 +102,24 @@ class Server(ServerProcess):
         echo_service_bundle = ref_collector.make_bundle([service_ref])
         return encode_bundle(self.services, echo_service_bundle)
 
+
+class TestManager(BaseManager):
+    __test__ = False
+
+TestManager.register('Server', Server)
+
+
+@pytest.fixture
+def test_manager():
+    with TestManager() as manager:
+        yield manager
+
+
+@pytest.fixture
+def stopped_queue():
+    with multiprocessing.Manager() as manager:
+        yield manager.Queue()
+
         
 async def client_send_packet(services, encoded_echo_service_bundle):
     types = services.types
@@ -130,7 +136,7 @@ async def client_send_packet(services, encoded_echo_service_bundle):
     assert result.response == 'hello'
 
 
-def wait_for_server_stopped(thread_pool, stopped_queue):
+def __wait_for_server_stopped(thread_pool, stopped_queue):
     sync_future = concurrent.futures.Future()
     def wait_for_queue():
         log.debug('wait_for_server_stopped.wait_for_queue: started')
@@ -147,18 +153,24 @@ def wait_for_server_stopped(thread_pool, stopped_queue):
     return sync_future
 
 
+def wait_for_server_stopped(stopped_queue):
+    log.debug('wait_for_server_stopped.wait_for_queue: started')
+    is_failed = stopped_queue.get()
+    log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
+    assert not is_failed
+
+
 @pytest.mark.asyncio
-async def test_echo_must_respond_with_hello(event_loop, thread_pool, mp_pool, client_services):
-    mp_manager = multiprocessing.Manager()
-    stopped_queue = mp_manager.Queue()
-    mp_pool.apply(Server.construct, (stopped_queue,))
-    encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
+async def test_echo_must_respond_with_hello(event_loop, test_manager, stopped_queue, client_services):
+    server = test_manager.Server(stopped_queue)
+    encoded_echo_service_bundle = server.make_echo_service_bundle()
+    server_stopped_future = event_loop.run_in_executor(None, wait_for_server_stopped, stopped_queue)
     await asyncio.wait([
-        sync_future_to_async_future(event_loop, thread_pool, wait_for_server_stopped(thread_pool, stopped_queue)),
+        server_stopped_future,
         client_send_packet(client_services, encoded_echo_service_bundle),
         ], return_when=asyncio.FIRST_COMPLETED)
     log.debug('Test is finished, stopping the server now...')
-    Server.call(mp_pool, Server.stop)
+    server.stop()
 
 
 @pytest.mark.parametrize('encoding', ['json', 'cdr'])

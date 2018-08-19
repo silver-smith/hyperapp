@@ -1,6 +1,7 @@
 import logging
 from collections import namedtuple
 import multiprocessing
+from multiprocessing.managers import BaseManager
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import pytest
@@ -10,7 +11,6 @@ from hyperapp.common.identity import Identity
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
-from hyperapp.test.server_process import ServerProcess
 
 log = logging.getLogger()
 
@@ -78,19 +78,7 @@ class ClientServices(TestClientServices):
         super().__init__(type_module_list, code_module_list, event_loop)
 
 
-@pytest.fixture
-def mp_pool():
-    #multiprocessing.log_to_stderr()
-    with multiprocessing.Pool(1) as pool:
-        yield pool
-
-@pytest.fixture
-def thread_pool():
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        yield executor
-
-
-class Server(ServerProcess):
+class Server(object):
 
     def __init__(self, queues):
         self.services = ServerServices(type_module_list, server_code_module_list, queues)
@@ -136,10 +124,22 @@ class Server(ServerProcess):
         log.info('Server: finished.')
 
 
+class TestManager(BaseManager):
+    __test__ = False
+
+TestManager.register('Server', Server)
+
+
+@pytest.fixture
+def test_manager():
+    with TestManager() as manager:
+        yield manager
+
+
 @pytest.fixture
 def queues():
-    mp_manager = multiprocessing.Manager()
-    return Queues(mp_manager.Queue(), mp_manager.Queue())
+    with multiprocessing.Manager() as manager:
+        yield Queues(manager.Queue(), manager.Queue())
 
 
 @pytest.fixture
@@ -166,11 +166,11 @@ async def client_call_echo_say_service(services, transport_ref, encoded_echo_ser
     assert result.response == 'hello'
 
 @pytest.mark.asyncio
-async def test_echo_say_should_respond_with_hello(event_loop, thread_pool, mp_pool, queues, client_services):
-    mp_pool.apply(Server.construct, (queues,))
-    transport_ref = Server.call(mp_pool, Server.make_transport_ref)
-    encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
-    async_future = Server.async_call(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
+async def test_echo_say_should_respond_with_hello(event_loop, test_manager, queues, client_services):
+    server = test_manager.Server(queues)
+    transport_ref = server.make_transport_ref()
+    encoded_echo_service_bundle = server.make_echo_service_bundle()
+    async_future = event_loop.run_in_executor(None, server.process_request_bundle)
     encoded_request_bundle = await asyncio.gather(
         client_call_echo_say_service(client_services, transport_ref, encoded_echo_service_bundle),
         async_future,
@@ -187,11 +187,11 @@ async def client_call_echo_eat_service(services, transport_ref, encoded_echo_ser
 
 # servant is allowed to return None if response record has no fields
 @pytest.mark.asyncio
-async def test_echo_eat_should_respond_with_nothing(event_loop, thread_pool, mp_pool, queues, client_services):
-    mp_pool.apply(Server.construct, (queues,))
-    transport_ref = Server.call(mp_pool, Server.make_transport_ref)
-    encoded_echo_service_bundle = Server.call(mp_pool, Server.make_echo_service_bundle)
-    async_future = Server.async_call(event_loop, thread_pool, mp_pool, Server.process_request_bundle)
+async def test_echo_eat_should_respond_with_nothing(event_loop, test_manager, queues, client_services):
+    server = test_manager.Server(queues)
+    transport_ref = server.make_transport_ref()
+    encoded_echo_service_bundle = server.make_echo_service_bundle()
+    async_future = event_loop.run_in_executor(None, server.process_request_bundle)
     encoded_request_bundle = await asyncio.gather(
         client_call_echo_eat_service(client_services, transport_ref, encoded_echo_service_bundle),
         async_future,
