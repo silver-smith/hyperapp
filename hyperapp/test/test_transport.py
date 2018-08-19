@@ -90,11 +90,8 @@ class Server(object):
         return phony_transport_ref
 
     def make_echo_service_bundle(self):
-        href_types = self.services.types.hyper_ref
-        service = href_types.service(self.services.ECHO_SERVICE_ID, ['test', 'echo'])
-        service_ref = self.services.ref_registry.register_object(href_types.service, service)
         ref_collector = self.services.ref_collector_factory()
-        echo_service_bundle = ref_collector.make_bundle([service_ref])
+        echo_service_bundle = ref_collector.make_bundle([self.services.echo_service_ref])
         return encode_bundle(self.services, echo_service_bundle)
 
     def process_request_bundle(self):
