@@ -157,7 +157,7 @@ async def client_make_phony_transport_ref(services):
     return services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
 
 async def client_call_echo_say_service(services, transport_ref, encoded_echo_service_bundle):
-    phony_transport_ref = await client_make_phony_transport_ref(services)
+    unused_phony_transport_ref = await client_make_phony_transport_ref(services)
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.unbundler.register_bundle(echo_service_bundle)
     services.route_registry.register(echo_service_bundle.roots[0], transport_ref)
@@ -177,7 +177,7 @@ async def test_echo_say_should_respond_with_hello(event_loop, thread_pool, mp_po
         )
 
 async def client_call_echo_eat_service(services, transport_ref, encoded_echo_service_bundle):
-    phony_transport_ref = await client_make_phony_transport_ref(services)
+    unused_phony_transport_ref = await client_make_phony_transport_ref(services)
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.unbundler.register_bundle(echo_service_bundle)
     services.route_registry.register(echo_service_bundle.roots[0], transport_ref)
