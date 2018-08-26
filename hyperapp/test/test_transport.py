@@ -143,46 +143,35 @@ def wait_for_server_stopped(stopped_queue):
     assert not is_failed
 
 
-async def client_call_echo_say_service(services, encoded_echo_service_bundle):
-    echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
-    services.unbundler.register_bundle(echo_service_bundle)
-    echo_service_ref = echo_service_bundle.roots[0]
-
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
+async def call_echo_say(echo_proxy):
     result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 
-@pytest.mark.asyncio
-async def test_echo_say_should_respond_with_hello(event_loop, test_manager, stopped_queue, queues, client_services):
-    server = test_manager.Server(stopped_queue, queues)
-    encoded_echo_service_bundle = server.make_echo_service_bundle()
-    server_stopped_future = event_loop.run_in_executor(None, wait_for_server_stopped, stopped_queue)
-    encoded_request_bundle = await asyncio.wait([
-        server_stopped_future,
-        client_call_echo_say_service(client_services, encoded_echo_service_bundle),
-        ], return_when=asyncio.FIRST_COMPLETED)
-    log.debug('Test is finished, stopping the server now...')
-    server.stop()
-
-
-async def client_call_echo_eat_service(services, encoded_echo_service_bundle):
-    echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
-    services.unbundler.register_bundle(echo_service_bundle)
-    echo_service_ref = echo_service_bundle.roots[0]
-
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
+async def call_echo_eat(echo_proxy):
     result = await echo_proxy.eat('hello')
     assert result
 
-# servant is allowed to return None if response record has no fields
+@pytest.fixture(params=[call_echo_say, call_echo_eat])
+def call_echo_fn(request):
+    return request.param
+
+
+async def client_call_echo_say_service(services, call_echo_fn, encoded_echo_service_bundle):
+    echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
+    services.unbundler.register_bundle(echo_service_bundle)
+    echo_service_ref = echo_service_bundle.roots[0]
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
+    await call_echo_fn(echo_proxy)
+
+
 @pytest.mark.asyncio
-async def test_echo_eat_should_respond_with_nothing(event_loop, test_manager, stopped_queue, queues, client_services):
+async def test_call_echo(event_loop, test_manager, stopped_queue, queues, client_services, call_echo_fn):
     server = test_manager.Server(stopped_queue, queues)
     encoded_echo_service_bundle = server.make_echo_service_bundle()
     server_stopped_future = event_loop.run_in_executor(None, wait_for_server_stopped, stopped_queue)
     encoded_request_bundle = await asyncio.wait([
         server_stopped_future,
-        client_call_echo_eat_service(client_services, encoded_echo_service_bundle),
+        client_call_echo_say_service(client_services, call_echo_fn, encoded_echo_service_bundle),
         ], return_when=asyncio.FIRST_COMPLETED)
     log.debug('Test is finished, stopping the server now...')
     server.stop()
