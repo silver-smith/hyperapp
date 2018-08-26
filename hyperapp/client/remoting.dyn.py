@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 MODULE_NAME = 'remoting'
 
+REQUEST_TIMEOUT_SEC = 5
 
 PendingRequest = namedtuple('PendingRequest', 'iface command future')
 
@@ -55,7 +56,7 @@ class Remoting(object):
         self._pending_requests[request_id] = PendingRequest(iface, command, future)
         try:
             log.info('Remoting: awaiting for response future...')
-            result = (await future)
+            result = (await asyncio.wait_for(future, timeout=REQUEST_TIMEOUT_SEC))
             log.info('Remoting: got result future: %r', result)
             return result
         finally:
