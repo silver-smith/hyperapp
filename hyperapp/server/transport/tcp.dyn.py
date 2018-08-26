@@ -17,7 +17,7 @@ from ..module import Module
 log = logging.getLogger(__name__)
 
 
-DEFAULT_BIND_ADDRESS = ('localhost', 9999)
+DEFAULT_BIND_ADDRESS = ('localhost', 0)
 STOP_DELAY_TIME_SEC = 0.3
 NOTIFICATION_DELAY_TIME_SEC = 1
 RECV_SIZE = 4096
@@ -176,7 +176,19 @@ class TcpClient(object):
 
 class TcpServer(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, ref_collector_factory, unbundler, remoting, bind_address, on_failure):
+    def __init__(
+            self,
+            types,
+            ref_registry,
+            ref_resolver,
+            route_resolver,
+            ref_collector_factory,
+            unbundler,
+            remoting,
+            local_transport_ref_set,
+            bind_address,
+            on_failure,
+            ):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
@@ -194,10 +206,14 @@ class TcpServer(object):
         self._client_lock = threading.Lock()
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        log.info('Tcp transport: listening on %s:%d' % self._bind_address)
+        self._socket.bind(self._bind_address)
+        self._sock_address = self._socket.getsockname()
+        address = tcp_transport_types.address(self._sock_address[0], self._sock_address[1])
+        tcp_transport_ref = self._ref_registry.register_object(tcp_transport_types.address, address)
+        local_transport_ref_set.add(tcp_transport_ref)
 
     def start(self):
-        self._socket.bind(self._bind_address)
+        log.info('Tcp transport: listening on %s:%d' % self._sock_address)
         self._socket.listen(5)
         self._listen_thread.start()
 
@@ -299,12 +315,10 @@ class ThisModule(Module):
             services.ref_collector_factory,
             services.unbundler,
             services.remoting,
+            services.local_transport_ref_set,
             bind_address=bind_address,
             on_failure=services.failed,
             )
-        address = tcp_transport_types.address(bind_address[0], bind_address[1])
         services.transport_registry.register(tcp_transport_types.incoming_connection_address, IncomingConnectionTransport, server)
-        services.tcp_transport_ref = tcp_transport_ref = services.ref_registry.register_object(tcp_transport_types.address, address)
-        services.local_transport_ref_set.add(tcp_transport_ref)
         services.on_start.append(self.server.start)
         services.on_stop.append(self.server.stop)

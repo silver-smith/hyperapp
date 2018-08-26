@@ -14,13 +14,6 @@ from hyperapp.test.test_services import TestServerServices, TestClientServices
 log = logging.getLogger()
 
 
-TCP_ADDRESS = ('localhost', 7777)
-
-
-config = {
-    'transport.tcp': dict(bind_address=TCP_ADDRESS),
-    }
-
 type_module_list = [
     'error',
     'resource',
@@ -71,7 +64,7 @@ client_code_module_list = [
 class ServerServices(TestServerServices):
 
     def __init__(self, stopped_queue):
-        super().__init__(type_module_list, server_code_module_list, config)
+        super().__init__(type_module_list, server_code_module_list)
         self.stopped_queue = stopped_queue
 
     def on_stopped(self):
