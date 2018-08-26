@@ -8,6 +8,7 @@ import pytest
 import traceback
 
 from hyperapp.common.identity import Identity
+from hyperapp.common.visual_rep import pprint
 from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
@@ -38,6 +39,7 @@ server_code_module_list = [
     'server.transport.registry',
     'server.request',
     'server.remoting',
+    'server.transport.phony',
     'server.echo_service',
     ]
 
@@ -64,10 +66,15 @@ Queues = namedtuple('Queues', 'request response')
 
 class ServerServices(TestServerServices):
 
-    def __init__(self, type_module_list, code_module_list, queues):
+    def __init__(self, type_module_list, code_module_list, stopped_queue, queues):
         self.request_queue = queues.request
         self.response_queue = queues.response
         super().__init__(type_module_list, code_module_list)
+        self.stopped_queue = stopped_queue
+
+    def on_stopped(self):
+        log.info('ServerServices.on_stopped')
+        self.stopped_queue.put(self.is_failed)
 
 
 class ClientServices(TestClientServices):
@@ -78,47 +85,28 @@ class ClientServices(TestClientServices):
         super().__init__(type_module_list, code_module_list, event_loop)
 
 
+@pytest.fixture
+def stopped_queue():
+    with multiprocessing.Manager() as manager:
+        yield manager.Queue()
+
+
 class Server(object):
 
-    def __init__(self, queues):
-        self.services = ServerServices(type_module_list, server_code_module_list, queues)
+    def __init__(self, stopped_queue, queues):
+        self.services = ServerServices(type_module_list, server_code_module_list, stopped_queue, queues)
+        self.services.start()
 
-    def make_transport_ref(self):
-        types = self.services.types
-        phony_transport_address = types.phony_transport.address()
-        phony_transport_ref = self.services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
-        return phony_transport_ref
+    def stop(self):
+        self.services.stop()
+        assert not self.services.is_failed
 
     def make_echo_service_bundle(self):
         ref_collector = self.services.ref_collector_factory()
         echo_service_bundle = ref_collector.make_bundle([self.services.echo_service_ref])
+        log.info('Echo service bundle:')
+        pprint(self.services.types.hyper_ref.bundle, echo_service_bundle)
         return encode_bundle(self.services, echo_service_bundle)
-
-    def process_request_bundle(self):
-        from hyperapp.common.ref import decode_capsule
-        types = self.services.types
-
-        log.info('Server: picking request bundle:')
-        encoded_request_bundle = self.services.request_queue.get(timeout=1)  # seconds
-        log.info('Server: got request bundle')
-
-        # decode bundle
-        request_bundle = decode_bundle(self.services, encoded_request_bundle)
-        self.services.unbundler.register_bundle(request_bundle)
-        rpc_request_capsule = self.services.ref_resolver.resolve_ref(request_bundle.roots[0])
-        rpc_request = decode_capsule(self.services.types, rpc_request_capsule)
-
-        # handle request
-        rpc_response = self.services.remoting._process_request(rpc_request)
-
-        # encode response
-        rpc_response_ref = self.services.ref_registry.register_object(self.services.types.hyper_ref.rpc_message, rpc_response)
-        ref_collector = self.services.ref_collector_factory()
-        rpc_response_bundle = ref_collector.make_bundle([rpc_response_ref])
-        encoded_response_bundle = encode_bundle(self.services, rpc_response_bundle)
-        log.info('Server: putting response bundle...')
-        self.services.response_queue.put(encoded_response_bundle)
-        log.info('Server: finished.')
 
 
 class TestManager(BaseManager):
@@ -148,48 +136,53 @@ def client_services(queues, event_loop):
     services.stop()
 
 
-async def client_make_phony_transport_ref(services):
-    types = services.types
-    phony_transport_address = types.phony_transport.address()
-    return services.ref_registry.register_object(types.phony_transport.address, phony_transport_address)
+def wait_for_server_stopped(stopped_queue):
+    log.debug('wait_for_server_stopped.wait_for_queue: started')
+    is_failed = stopped_queue.get()
+    log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
+    assert not is_failed
 
-async def client_call_echo_say_service(services, transport_ref, encoded_echo_service_bundle):
-    unused_phony_transport_ref = await client_make_phony_transport_ref(services)
+
+async def client_call_echo_say_service(services, encoded_echo_service_bundle):
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.unbundler.register_bundle(echo_service_bundle)
-    services.route_registry.register(echo_service_bundle.roots[0], transport_ref)
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.roots[0])
+    echo_service_ref = echo_service_bundle.roots[0]
+
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
     result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 
 @pytest.mark.asyncio
-async def test_echo_say_should_respond_with_hello(event_loop, test_manager, queues, client_services):
-    server = test_manager.Server(queues)
-    transport_ref = server.make_transport_ref()
+async def test_echo_say_should_respond_with_hello(event_loop, test_manager, stopped_queue, queues, client_services):
+    server = test_manager.Server(stopped_queue, queues)
     encoded_echo_service_bundle = server.make_echo_service_bundle()
-    async_future = event_loop.run_in_executor(None, server.process_request_bundle)
-    encoded_request_bundle = await asyncio.gather(
-        client_call_echo_say_service(client_services, transport_ref, encoded_echo_service_bundle),
-        async_future,
-        )
+    server_stopped_future = event_loop.run_in_executor(None, wait_for_server_stopped, stopped_queue)
+    encoded_request_bundle = await asyncio.wait([
+        server_stopped_future,
+        client_call_echo_say_service(client_services, encoded_echo_service_bundle),
+        ], return_when=asyncio.FIRST_COMPLETED)
+    log.debug('Test is finished, stopping the server now...')
+    server.stop()
 
-async def client_call_echo_eat_service(services, transport_ref, encoded_echo_service_bundle):
-    unused_phony_transport_ref = await client_make_phony_transport_ref(services)
+
+async def client_call_echo_eat_service(services, encoded_echo_service_bundle):
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.unbundler.register_bundle(echo_service_bundle)
-    services.route_registry.register(echo_service_bundle.roots[0], transport_ref)
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.roots[0])
+    echo_service_ref = echo_service_bundle.roots[0]
+
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
     result = await echo_proxy.eat('hello')
     assert result
 
 # servant is allowed to return None if response record has no fields
 @pytest.mark.asyncio
-async def test_echo_eat_should_respond_with_nothing(event_loop, test_manager, queues, client_services):
-    server = test_manager.Server(queues)
-    transport_ref = server.make_transport_ref()
+async def test_echo_eat_should_respond_with_nothing(event_loop, test_manager, stopped_queue, queues, client_services):
+    server = test_manager.Server(stopped_queue, queues)
     encoded_echo_service_bundle = server.make_echo_service_bundle()
-    async_future = event_loop.run_in_executor(None, server.process_request_bundle)
-    encoded_request_bundle = await asyncio.gather(
-        client_call_echo_eat_service(client_services, transport_ref, encoded_echo_service_bundle),
-        async_future,
-        )
+    server_stopped_future = event_loop.run_in_executor(None, wait_for_server_stopped, stopped_queue)
+    encoded_request_bundle = await asyncio.wait([
+        server_stopped_future,
+        client_call_echo_eat_service(client_services, encoded_echo_service_bundle),
+        ], return_when=asyncio.FIRST_COMPLETED)
+    log.debug('Test is finished, stopping the server now...')
+    server.stop()

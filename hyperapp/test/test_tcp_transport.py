@@ -123,12 +123,9 @@ async def client_send_packet(services, encoded_echo_service_bundle):
 
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.unbundler.register_bundle(echo_service_bundle)
+    echo_service_ref = echo_service_bundle.roots[0]
 
-    address = types.tcp_transport.address(TCP_ADDRESS[0], TCP_ADDRESS[1])
-    tcp_transport_ref = services.ref_registry.register_object(types.tcp_transport.address, address)
-    services.route_registry.register(echo_service_bundle.roots[0], tcp_transport_ref)
-
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_bundle.roots[0])
+    echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
     result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 

@@ -39,7 +39,7 @@ class ThisModule(ClientModule):
         self._queue_thread = threading.Thread(
             target=self._queue_thread_main)
         services.transport_registry.register(
-            phony_transport_types.address,
+            phony_transport_types.server_address,
             self._resolve_address,
             services.ref_collector_factory,
             services.request_queue,
