@@ -5,11 +5,8 @@ from multiprocessing.managers import BaseManager
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import pytest
-import traceback
 
-from hyperapp.common.identity import Identity
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
 
