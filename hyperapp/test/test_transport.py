@@ -2,7 +2,6 @@ import logging
 from collections import namedtuple
 import multiprocessing
 from multiprocessing.managers import BaseManager
-from concurrent.futures import ThreadPoolExecutor
 import asyncio
 import pytest
 
@@ -71,25 +70,20 @@ def queues():
 
 class ServerServices(TestServerServices):
 
-    def __init__(self, type_module_list, code_module_list, stopped_queue, queues):
+    def __init__(self, type_module_list, code_module_list, queues):
         # queues are used by phony transport module
         self.request_queue = queues.request
         self.response_queue = queues.response
         super().__init__(type_module_list, code_module_list)
-        self.stopped_queue = stopped_queue
-
-    def on_stopped(self):
-        log.info('ServerServices.on_stopped')
-        self.stopped_queue.put(self.is_failed)
 
 
 class Server(object):
 
-    def __init__(self, transport, stopped_queue, queues):
+    def __init__(self, transport, queues):
         code_module_list = server_code_module_list + [
             'server.transport.%s' % transport,
             ]
-        self.services = ServerServices(type_module_list, code_module_list, stopped_queue, queues)
+        self.services = ServerServices(type_module_list, code_module_list, queues)
         self.services.start()
 
     def stop(self):
@@ -115,18 +109,13 @@ def test_manager():
         yield manager
 
 
-@pytest.fixture
-def stopped_queue():
-    with multiprocessing.Manager() as manager:
-        yield manager.Queue()
-
 @pytest.fixture(params=['phony', 'tcp'])
 def transport(request):
     return request.param
 
 @pytest.fixture
-def server(test_manager, stopped_queue, queues, transport):
-    server = test_manager.Server(transport, stopped_queue, queues)
+def server(test_manager, queues, transport):
+    server = test_manager.Server(transport, queues)
     yield server
     log.debug('Test is finished, stopping the server now...')
     server.stop()
@@ -150,38 +139,34 @@ def client_services(queues, event_loop):
     services.stop()
 
 
-async def call_echo_say(echo_proxy):
+async def echo_say(types, echo_proxy):
     result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 
-async def call_echo_eat(echo_proxy):
+async def echo_eat(types, echo_proxy):
     result = await echo_proxy.eat('hello')
     assert result
 
-@pytest.fixture(params=[call_echo_say, call_echo_eat])
+async def echo_exception(types, echo_proxy):
+    # pytest.raises want argument conforming to inspect.isclass, but TExceptionClass is not
+    with pytest.raises(Exception) as excinfo:
+        await echo_proxy.fail('hello')
+    assert isinstance(excinfo.value, types.test.test_error)
+    assert excinfo.value.error_message == 'hello'
+
+@pytest.fixture(params=[echo_say, echo_eat, echo_exception])
 def call_echo_fn(request):
     return request.param
 
-
-def wait_for_server_stopped(stopped_queue):
-    log.debug('wait_for_server_stopped.wait_for_queue: started')
-    is_failed = stopped_queue.get()
-    log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
-    assert not is_failed
 
 async def client_call_echo_say_service(services, call_echo_fn, encoded_echo_service_bundle):
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.unbundler.register_bundle(echo_service_bundle)
     echo_service_ref = echo_service_bundle.roots[0]
     echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
-    await call_echo_fn(echo_proxy)
-
+    await call_echo_fn(services.types, echo_proxy)
 
 @pytest.mark.asyncio
-async def test_call_echo(event_loop, queues, stopped_queue, server, client_services, call_echo_fn):
+async def test_call_echo(event_loop, queues, server, client_services, call_echo_fn):
     encoded_echo_service_bundle = server.make_echo_service_bundle()
-    server_stopped_future = event_loop.run_in_executor(None, wait_for_server_stopped, stopped_queue)
-    encoded_request_bundle = await asyncio.wait([
-        server_stopped_future,
-        client_call_echo_say_service(client_services, call_echo_fn, encoded_echo_service_bundle),
-        ], return_when=asyncio.FIRST_COMPLETED)
+    await client_call_echo_say_service(client_services, call_echo_fn, encoded_echo_service_bundle)

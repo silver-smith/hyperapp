@@ -3,6 +3,7 @@ import uuid
 import asyncio
 from collections import namedtuple
 
+from ..common.interface import error as error_types
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import EncodableEmbedded
 from ..common.visual_rep import pprint
@@ -65,16 +66,21 @@ class Remoting(object):
     def process_rpc_response(self, rpc_response_ref, rpc_response):
         log.info('Remoting: processing RPC Response: %r', rpc_response)
         pprint(href_types.rpc_response, rpc_response)
-        assert rpc_response.is_succeeded  # todo
         request = self._pending_requests.get(rpc_response.request_id)
         if not request:
             log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
             return
-        result_t = request.iface[request.command.command_id].response
-        result = rpc_response.result_or_error.decode(result_t)
-        log.info('Result:')
-        pprint(result_t, result)
-        request.future.set_result(result)
+        if rpc_response.is_succeeded:
+            result_t = request.iface[request.command.command_id].response
+            result = rpc_response.result_or_error.decode(result_t)
+            log.info('Result:')
+            pprint(result_t, result)
+            request.future.set_result(result)
+        else:
+            error = rpc_response.result_or_error.decode(error_types.error)
+            log.info('Error:')
+            pprint(error_types.error, error)
+            request.future.set_exception(error)
         log.info('Remoting: processing response: done')
         return True  # todo: do not use registry to process packets
 

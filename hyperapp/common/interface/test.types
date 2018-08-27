@@ -1,3 +1,8 @@
+from error import error, client_error
+
+
+test_error = error class test(client_error):
+    error_message: string
 
 packet = record:
     message: string
@@ -6,3 +11,4 @@ echo = interface echo:
     commands:
         request say (message: string) -> (response: string)
         request eat (message: string) -> ()
+        request fail (message: string) -> ()
