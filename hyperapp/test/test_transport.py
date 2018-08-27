@@ -13,7 +13,7 @@ from hyperapp.common import dict_coders, cdr_coders  # self-registering
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 type_module_list = [
@@ -36,10 +36,10 @@ server_code_module_list = [
     'common.ref_collector',
     'common.ref_registry',
     'common.unbundler',
+    'common.tcp_packet',
     'server.transport.registry',
     'server.request',
     'server.remoting',
-    'server.transport.phony',
     'server.echo_service',
     ]
 
@@ -50,6 +50,7 @@ client_code_module_list = [
     'common.ref_collector',
     'common.ref_registry',
     'common.unbundler',
+    'common.tcp_packet',
     'client.async_ref_resolver',
     'client.capsule_registry',
     'client.async_route_resolver',
@@ -58,15 +59,23 @@ client_code_module_list = [
     'client.remoting',
     'client.remoting_proxy',
     'client.transport.phony',
+    'client.transport.tcp',
     ]
 
 
 Queues = namedtuple('Queues', 'request response')
 
 
+@pytest.fixture
+def queues():
+    with multiprocessing.Manager() as manager:
+        yield Queues(manager.Queue(), manager.Queue())
+
+
 class ServerServices(TestServerServices):
 
     def __init__(self, type_module_list, code_module_list, stopped_queue, queues):
+        # queues are used by phony transport module
         self.request_queue = queues.request
         self.response_queue = queues.response
         super().__init__(type_module_list, code_module_list)
@@ -77,24 +86,13 @@ class ServerServices(TestServerServices):
         self.stopped_queue.put(self.is_failed)
 
 
-class ClientServices(TestClientServices):
-
-    def __init__(self, type_module_list, code_module_list, event_loop, queues):
-        self.request_queue = queues.request
-        self.response_queue = queues.response
-        super().__init__(type_module_list, code_module_list, event_loop)
-
-
-@pytest.fixture
-def stopped_queue():
-    with multiprocessing.Manager() as manager:
-        yield manager.Queue()
-
-
 class Server(object):
 
-    def __init__(self, stopped_queue, queues):
-        self.services = ServerServices(type_module_list, server_code_module_list, stopped_queue, queues)
+    def __init__(self, transport, stopped_queue, queues):
+        code_module_list = server_code_module_list + [
+            'server.transport.%s' % transport,
+            ]
+        self.services = ServerServices(type_module_list, code_module_list, stopped_queue, queues)
         self.services.start()
 
     def stop(self):
@@ -114,7 +112,6 @@ class TestManager(BaseManager):
 
 TestManager.register('Server', Server)
 
-
 @pytest.fixture
 def test_manager():
     with TestManager() as manager:
@@ -122,9 +119,29 @@ def test_manager():
 
 
 @pytest.fixture
-def queues():
+def stopped_queue():
     with multiprocessing.Manager() as manager:
-        yield Queues(manager.Queue(), manager.Queue())
+        yield manager.Queue()
+
+@pytest.fixture(params=['phony', 'tcp'])
+def transport(request):
+    return request.param
+
+@pytest.fixture
+def server(test_manager, stopped_queue, queues, transport):
+    server = test_manager.Server(transport, stopped_queue, queues)
+    yield server
+    log.debug('Test is finished, stopping the server now...')
+    server.stop()
+
+
+class ClientServices(TestClientServices):
+
+    def __init__(self, type_module_list, code_module_list, event_loop, queues):
+        # queues are used by phony transport module
+        self.request_queue = queues.request
+        self.response_queue = queues.response
+        super().__init__(type_module_list, code_module_list, event_loop)
 
 
 @pytest.fixture
@@ -134,13 +151,6 @@ def client_services(queues, event_loop):
     services.start()
     yield services
     services.stop()
-
-
-def wait_for_server_stopped(stopped_queue):
-    log.debug('wait_for_server_stopped.wait_for_queue: started')
-    is_failed = stopped_queue.get()
-    log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
-    assert not is_failed
 
 
 async def call_echo_say(echo_proxy):
@@ -156,6 +166,12 @@ def call_echo_fn(request):
     return request.param
 
 
+def wait_for_server_stopped(stopped_queue):
+    log.debug('wait_for_server_stopped.wait_for_queue: started')
+    is_failed = stopped_queue.get()
+    log.debug('wait_for_server_stopped.wait_for_queue: is_failed=%r', is_failed)
+    assert not is_failed
+
 async def client_call_echo_say_service(services, call_echo_fn, encoded_echo_service_bundle):
     echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
     services.unbundler.register_bundle(echo_service_bundle)
@@ -165,13 +181,10 @@ async def client_call_echo_say_service(services, call_echo_fn, encoded_echo_serv
 
 
 @pytest.mark.asyncio
-async def test_call_echo(event_loop, test_manager, stopped_queue, queues, client_services, call_echo_fn):
-    server = test_manager.Server(stopped_queue, queues)
+async def test_call_echo(event_loop, queues, stopped_queue, server, client_services, call_echo_fn):
     encoded_echo_service_bundle = server.make_echo_service_bundle()
     server_stopped_future = event_loop.run_in_executor(None, wait_for_server_stopped, stopped_queue)
     encoded_request_bundle = await asyncio.wait([
         server_stopped_future,
         client_call_echo_say_service(client_services, call_echo_fn, encoded_echo_service_bundle),
         ], return_when=asyncio.FIRST_COMPLETED)
-    log.debug('Test is finished, stopping the server now...')
-    server.stop()
