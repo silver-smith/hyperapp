@@ -24,7 +24,6 @@ class ServiceRegistry(Registry):
         return rec.factory(*rec.args, **rec.kw)
 
 
-
 class LocalRouteSource(RouteSource):
 
     def __init__(self, service_registry, local_transport_ref_set):

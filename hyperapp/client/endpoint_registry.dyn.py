@@ -13,8 +13,11 @@ class EndpointRegistry(object):
 
     def register_endpoint(self, endpoint):
         endpoint_ref = self._ref_registry.register_object(endpoint)
-        self._endpoint_set.add(endpoint_ref)
+        self.register_endpoint_ref(endpoint_ref)
         return endpoint_ref
+
+    def register_endpoint_ref(self, endpoint_ref):
+        self._endpoint_set.add(endpoint_ref)
 
     def get_endpoint_ref_list(self):
         return list(self._endpoint_set)

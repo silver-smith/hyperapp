@@ -3,6 +3,8 @@ from collections import namedtuple
 import multiprocessing
 from multiprocessing.managers import BaseManager
 import asyncio
+import uuid
+
 import pytest
 
 from hyperapp.common.visual_rep import pprint
@@ -51,6 +53,7 @@ client_code_module_list = [
     'client.capsule_registry',
     'client.async_route_resolver',
     'client.endpoint_registry',
+    'client.service_registry',
     'client.transport.registry',
     'client.remoting',
     'client.remoting_proxy',
@@ -139,26 +142,40 @@ def client_services(queues, event_loop):
     services.stop()
 
 
-async def echo_say(types, echo_proxy):
+async def echo_say(services, echo_proxy):
     result = await echo_proxy.say('hello')
     assert result.response == 'hello'
 
-async def echo_eat(types, echo_proxy):
+async def echo_eat(services, echo_proxy):
     result = await echo_proxy.eat('hello')
     assert result
 
-async def echo_notify(types, echo_proxy):
+async def echo_notify(services, echo_proxy):
     result = await echo_proxy.notify('hello')
     assert result is None
 
-async def echo_exception(types, echo_proxy):
+async def echo_exception(services, echo_proxy):
     # pytest.raises want argument conforming to inspect.isclass, but TExceptionClass is not
     with pytest.raises(Exception) as excinfo:
         await echo_proxy.fail('hello')
-    assert isinstance(excinfo.value, types.test.test_error)
+    assert isinstance(excinfo.value, services.types.test.test_error)
     assert excinfo.value.error_message == 'hello'
 
-@pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_exception])
+
+class NotificationService(object):
+
+    def __init__(self):
+        log.info('NotificationService is constructed')
+
+
+async def echo_subscribe(services, echo_proxy):
+    service_id = str(uuid.uuid4())
+    service = services.types.hyper_ref.service(service_id, ['echo', 'echo_notification_iface'])
+    service_ref = services.ref_registry.register_object(service)
+    services.service_registry.register(service_ref, NotificationService)
+
+
+@pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_exception, echo_subscribe])
 def call_echo_fn(request):
     return request.param
 
@@ -168,7 +185,7 @@ async def client_call_echo_say_service(services, call_echo_fn, encoded_echo_serv
     services.unbundler.register_bundle(echo_service_bundle)
     echo_service_ref = echo_service_bundle.roots[0]
     echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
-    await call_echo_fn(services.types, echo_proxy)
+    await call_echo_fn(services, echo_proxy)
 
 @pytest.mark.asyncio
 async def test_call_echo(event_loop, queues, server, client_services, call_echo_fn):

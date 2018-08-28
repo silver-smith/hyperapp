@@ -1,11 +1,14 @@
 from error import error, client_error
+from hyper_ref import ref
 
 
 test_error = error class test(client_error):
     error_message: string
 
+
 packet = record:
     message: string
+
 
 echo = interface echo:
     commands:
@@ -13,7 +16,10 @@ echo = interface echo:
         eat (message: string) -> ()
         notify (message: string)
         fail (message: string) -> ()
+        subscribe (service_ref: ref) -> ()
+        broadcast (message: string)
 
-echo_notifications = interface echo_notifications:
+
+echo_notification_iface = interface echo_notification:
     commands:
-        changed (message: string)
+        notify (message: string)
