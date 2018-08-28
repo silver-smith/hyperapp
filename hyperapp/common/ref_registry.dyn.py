@@ -30,7 +30,7 @@ class RefRegistry(object):
 
     def register_object(self, object, t=None):
         t = t or deduce_value_type(object)
-        capsule = make_capsule(t, object)
+        capsule = make_capsule(object, t)
         return self.register_capsule(capsule)
         log.debug('Registered ref for %s: %s', '.'.join(t.full_name), ref_repr(ref))
         return ref

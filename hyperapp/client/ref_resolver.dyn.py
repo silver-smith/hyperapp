@@ -54,7 +54,7 @@ class RefRegistry(object):
         self._registry[ref] = capsule
 
     def register_new_object(self, t, object):
-        capsule = make_capsule(t, object)
+        capsule = make_capsule(object, t)
         ref = make_ref(capsule)
         self.register(ref, capsule)
         return ref

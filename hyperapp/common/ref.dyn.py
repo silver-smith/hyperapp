@@ -4,7 +4,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
 from ..common.interface import hyper_ref as href_types
-from ..common.htypes import Type
+from ..common.htypes import Type, deduce_value_type
 from ..common.packet_coders import packet_coders
 
 
@@ -17,7 +17,8 @@ BUNDLE_ENCODING = 'json'
 def ref_repr(ref):
     return codecs.encode(ref[:4], 'hex').decode()
 
-def make_capsule(t, object):
+def make_capsule(object, t=None):
+    t = t or deduce_value_type(object)
     assert isinstance(t, Type), repr(t)
     assert isinstance(object, t), repr((t, object))
     encoding = DEFAULT_ENCODING
@@ -38,7 +39,7 @@ def make_ref(capsule):
     return digest.finalize()
 
 def make_object_ref(t, object):
-    capsule = make_capsule(t, object)
+    capsule = make_capsule(object, t)
     return make_ref(capsule)
 
 def decode_object(t, capsule):

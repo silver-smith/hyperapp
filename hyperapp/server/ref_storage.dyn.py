@@ -46,7 +46,7 @@ class RefStorage(object):
                 )
 
     def add_object(self, t, object):
-        capsule = make_capsule(t, object)
+        capsule = make_capsule(object, t)
         ref = make_ref(capsule)
         self.store_ref(ref, capsule)
         return ref

@@ -44,7 +44,7 @@ def test_tcp_packet(client_services, encoding):
     bundle_t = client_services.types.hyper_ref.bundle
 
     test_packet = test_packet_t(message='hello')
-    capsule = make_capsule(test_packet_t, test_packet)
+    capsule = make_capsule(test_packet)
     ref = make_ref(capsule)
     bundle = bundle_t([ref], [capsule], [])
 
