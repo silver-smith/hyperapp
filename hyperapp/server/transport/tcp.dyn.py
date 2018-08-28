@@ -9,7 +9,7 @@ from queue import Queue
 
 from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
-from hyperapp.common.ref import make_object_ref, decode_capsule
+from hyperapp.common.ref import decode_capsule
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 from hyperapp.common.route_resolver import RouteRegistry
 from ..module import Module

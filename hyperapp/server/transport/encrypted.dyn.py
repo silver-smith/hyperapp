@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 
 from hyperapp.common.interface import encrypted_transport as encrypted_transport_types
-from hyperapp.common.ref import make_object_ref
 from hyperapp.common.identity import Identity
 from ..module import Module
 

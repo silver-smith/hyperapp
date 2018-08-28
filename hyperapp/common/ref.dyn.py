@@ -38,7 +38,7 @@ def make_ref(capsule):
     digest.update(encoded_capsule)
     return digest.finalize()
 
-def make_object_ref(t, object):
+def make_object_ref(object, t):
     capsule = make_capsule(object, t)
     return make_ref(capsule)
 
