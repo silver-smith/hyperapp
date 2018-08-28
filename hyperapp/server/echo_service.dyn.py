@@ -13,7 +13,8 @@ MODULE_NAME = 'echo_service'
 
 class EchoService(object):
 
-    def __init__(self):
+    def __init__(self, proxy_factory):
+        self._proxy_factory = proxy_factory
         self._subscribed_service_ref_set = set()
 
     def rpc_say(self, request, message):
@@ -34,7 +35,8 @@ class EchoService(object):
 
     def rpc_broadcast(self, request, message):
         for service_ref in self._subscribed_service_ref_set:
-            pass
+            proxy = self._proxy_factory.from_ref(service_ref)
+            proxy.notify(message)
 
 
 class ThisModule(ServerModule):
@@ -44,5 +46,5 @@ class ThisModule(ServerModule):
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
         service = href_types.service(ECHO_SERVICE_ID, ['test', 'echo'])
         services.echo_service_ref = service_ref = services.ref_registry.register_object(service)
-        self._echo_service = EchoService()
+        self._echo_service = EchoService(services.proxy_factory)
         services.service_registry.register(service_ref, lambda: self._echo_service)

@@ -38,6 +38,7 @@ server_code_module_list = [
     'server.transport.registry',
     'server.request',
     'server.remoting',
+    'server.remoting_proxy',
     'server.echo_service',
     ]
 
