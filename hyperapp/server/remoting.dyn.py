@@ -91,6 +91,7 @@ class Remoting(object):
         try:
             response = method(request, **params._asdict())
         except Exception as x:
+            assert command.is_request  # todo: error handling for notifications
             if isinstance(x, error_types.error):
                 error = x
             else:
