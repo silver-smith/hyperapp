@@ -173,6 +173,8 @@ async def echo_subscribe(services, echo_proxy):
     service = services.types.hyper_ref.service(service_id, ['echo', 'echo_notification_iface'])
     service_ref = services.ref_registry.register_object(service)
     services.service_registry.register(service_ref, NotificationService)
+    await echo_proxy.subscribe(service_ref)
+    await echo_proxy.broadcast('hello')
 
 
 @pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_fail, echo_subscribe])

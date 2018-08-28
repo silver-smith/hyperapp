@@ -73,9 +73,10 @@ class Remoting(object):
         pprint(params)
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
         request = Request(rpc_request.source_endpoint_ref, command)
-        method = getattr(servant, 'rpc_' + rpc_request.command_id, None)
+        method_name = 'rpc_' + rpc_request.command_id
+        method = getattr(servant, method_name, None)
         log.info('Calling %s %r', command.request_type, method)
-        assert method, '%r does not implement method remote_%s' % (servant, rpc_request.command_id)
+        assert method, '%r does not implement method %s' % (servant, method_name)
         response = self._call_servant(command, method, request, params)
         if response is None:
             return None

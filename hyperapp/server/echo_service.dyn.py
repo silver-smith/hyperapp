@@ -13,6 +13,9 @@ MODULE_NAME = 'echo_service'
 
 class EchoService(object):
 
+    def __init__(self):
+        self._subscribed_service_ref_set = set()
+
     def rpc_say(self, request, message):
         log.info('Echo.say(%r): message=%r', request, message)
         return request.make_response_result(message)
@@ -26,6 +29,13 @@ class EchoService(object):
     def rpc_fail(self, request, message):
         raise test_types.test_error(message)
 
+    def rpc_subscribe(self, request, service_ref):
+        self._subscribed_service_ref_set.add(service_ref)
+
+    def rpc_broadcast(self, request, message):
+        for service_ref in self._subscribed_service_ref_set:
+            pass
+
 
 class ThisModule(ServerModule):
 
@@ -34,4 +44,5 @@ class ThisModule(ServerModule):
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
         service = href_types.service(ECHO_SERVICE_ID, ['test', 'echo'])
         services.echo_service_ref = service_ref = services.ref_registry.register_object(service)
-        services.service_registry.register(service_ref, EchoService)
+        self._echo_service = EchoService()
+        services.service_registry.register(service_ref, lambda: self._echo_service)
