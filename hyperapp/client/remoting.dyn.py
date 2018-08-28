@@ -45,7 +45,7 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        log.info('RPC request:')
+        log.info('RPC %s:', command.request_type)
         pprint(rpc_request)
         log.info('params:')
         pprint(params)
