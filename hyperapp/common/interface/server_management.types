@@ -8,4 +8,4 @@ server_management = list_interface server_management:
         text: string
         desc:string
     commands:
-        request open (element_key: string) -> (handle: handle opt)
+        open (element_key: string) -> (handle: handle opt)

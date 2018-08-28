@@ -11,5 +11,5 @@ test_object = list_interface test_object:
         @id: string
         title: string
     commands:
-        request open (element_key: string) -> (handle: handle opt)
-        request run (element_key: string) -> ()
+        open (element_key: string) -> (handle: handle opt)
+        run (element_key: string) -> ()

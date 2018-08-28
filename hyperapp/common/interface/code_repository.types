@@ -4,8 +4,8 @@ from module import requirement, module
 
 code_repository = interface code_repository:
     commands:
-        request get_modules_by_ids (module_ids: string list) -> (type_modules: type_module list, code_modules: module list, resources: resource_rec_list)
-        request get_modules_by_requirements (requirements: requirement list) -> (type_modules: type_module list, code_modules: module list, resources: resource_rec_list)
+        get_modules_by_ids (module_ids: string list) -> (type_modules: type_module list, code_modules: module list, resources: resource_rec_list)
+        get_modules_by_requirements (requirements: requirement list) -> (type_modules: type_module list, code_modules: module list, resources: resource_rec_list)
         
 code_repository_browser = list_interface code_repository_browser:
     columns:

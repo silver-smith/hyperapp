@@ -3,7 +3,7 @@ from core import handle
 
 params_form = interface params_form:
   commands:
-    request submit (key: int, size: int) -> (handle: handle opt)
+    submit (key: int, size: int) -> (handle: handle opt)
 
 test_list = list_interface test_list:
   columns:
@@ -12,4 +12,4 @@ test_list = list_interface test_list:
     field_2: string
     field_3: string
   commands:
-    request params () -> (handle: handle opt)
+    params () -> (handle: handle opt)

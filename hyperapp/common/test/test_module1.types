@@ -29,8 +29,8 @@ params_form_iface = interface test_list_params_2:
     contents_1: string
     contents_2: int
   commands:
-    request submit (key: int, size: int) -> (handle: handle opt)
+    submit (key: int, size: int) -> (handle: handle opt)
 
 test_iface = interface test:
   commands:
-    request params () -> (handle: handle opt)
+    params () -> (handle: handle opt)

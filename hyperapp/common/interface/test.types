@@ -9,11 +9,11 @@ packet = record:
 
 echo = interface echo:
     commands:
-        request say (message: string) -> (response: string)
-        request eat (message: string) -> ()
-        notification notify (message: string) -> ()
-        request fail (message: string) -> ()
+        say (message: string) -> (response: string)
+        eat (message: string) -> ()
+        notify (message: string)
+        fail (message: string) -> ()
 
 echo_notifications = interface echo_notifications:
     commands:
-        notification changed (message: string) -> ()
+        changed (message: string)

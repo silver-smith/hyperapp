@@ -51,8 +51,8 @@ unknown_ref_error = error class unknown_ref(client_error):
 
 ref_resolver = interface ref_resolver:
     commands:
-        request resolve_ref (ref: ref) -> (capsule: capsule)
+        resolve_ref (ref: ref) -> (capsule: capsule)
 
 route_resolver = interface route_resolver:
     commands:
-        request resolve_route (endpoint_ref: ref) -> (transport_ref_list: ref list)
+        resolve_route (endpoint_ref: ref) -> (transport_ref_list: ref list)

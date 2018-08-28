@@ -6,14 +6,14 @@ module_list = list_interface module_list:
         name: string
         @id: string
     commands:
-        request add () -> (handle: handle opt)
-        request delete (element_key: string) -> ()
-        request open (element_key: string) -> (handle: handle opt)
-        request deps (element_key: string) -> (handle: handle opt)
+        add () -> (handle: handle opt)
+        delete (element_key: string) -> ()
+        open (element_key: string) -> (handle: handle opt)
+        deps (element_key: string) -> (handle: handle opt)
 
 module_form = interface module_form:
     commands:
-        request submit (name: string) -> ()
+        submit (name: string) -> ()
 
 module_dep_list = list_interface module_dep_list:
     columns:
@@ -21,11 +21,11 @@ module_dep_list = list_interface module_dep_list:
         visible_as: string
         id: string
     commands:
-        request remove (element_key: int) -> ()
+        remove (element_key: int) -> ()
 
 available_dep_list = list_interface available_dep_list:
     columns:
         name: string
         @id: string
     commands:
-        request add (element_key: string) -> ()
+        add (element_key: string) -> ()

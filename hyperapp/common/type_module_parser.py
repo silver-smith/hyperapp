@@ -293,9 +293,13 @@ def p_interface_command_list_3(p):
     'interface_command_list : interface_command'
     p[0] = [p[1]]
 
-def p_interface_command(p):
-    'interface_command : NAME NAME LPAR command_field_list RPAR ARROW LPAR command_field_list RPAR'
-    p[0] = t_command_meta(p[1], p[2], p[4], p[8])
+def p_interface_command_request(p):
+    'interface_command : NAME LPAR command_field_list RPAR ARROW LPAR command_field_list RPAR'
+    p[0] = t_command_meta('request', p[1], p[3], p[7])
+
+def p_interface_command_notification(p):
+    'interface_command : NAME LPAR command_field_list RPAR'
+    p[0] = t_command_meta('notification', p[1], p[3])
 
 def p_command_field_list_1(p):
     'command_field_list : command_field_list COMMA command_field'
