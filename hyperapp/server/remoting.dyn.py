@@ -56,7 +56,8 @@ class Remoting(object):
         log.info('RPC request:')
         pprint(rpc_request)
         rpc_response = self._process_request(rpc_request)
-        self._send_rpc_response(rpc_response)
+        if rpc_response is not None:
+            self._send_rpc_response(rpc_response)
 
     def _send_rpc_response(self, rpc_response):
         rpc_response_ref = self._ref_registry.register_object(rpc_response)
@@ -74,9 +75,11 @@ class Remoting(object):
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
         request = Request(rpc_request.source_endpoint_ref, command)
         method = getattr(servant, 'rpc_' + rpc_request.command_id, None)
-        log.info('Calling %r', method)
+        log.info('Calling %s %r', command.request_type, method)
         assert method, '%r does not implement method remote_%s' % (servant, rpc_request.command_id)
         response = self._call_servant(command, method, request, params)
+        if response is None:
+            return None
         assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
         log.info('RPC Response:')
@@ -96,7 +99,7 @@ class Remoting(object):
             return request.make_response(error=error)
         if not command.is_request:
             assert not response, 'No results are expected from notifications'
-            return
+            return None
         if command.response.fields:
             assert response, 'Use request.make_response method to return results from requests'
         else:

@@ -20,6 +20,9 @@ class EchoService(object):
     def rpc_eat(self, request, message):
         log.info('Echo.eat(%r): message=%r', request, message)
 
+    def rpc_notify(self, request, message):
+        log.info('Echo.notify(%r): message=%r', request, message)
+
     def rpc_fail(self, request, message):
         raise test_types.test_error(message)
 

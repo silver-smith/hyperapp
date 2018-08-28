@@ -147,6 +147,10 @@ async def echo_eat(types, echo_proxy):
     result = await echo_proxy.eat('hello')
     assert result
 
+async def echo_notify(types, echo_proxy):
+    result = await echo_proxy.notify('hello')
+    assert result is None
+
 async def echo_exception(types, echo_proxy):
     # pytest.raises want argument conforming to inspect.isclass, but TExceptionClass is not
     with pytest.raises(Exception) as excinfo:
@@ -154,7 +158,7 @@ async def echo_exception(types, echo_proxy):
     assert isinstance(excinfo.value, types.test.test_error)
     assert excinfo.value.error_message == 'hello'
 
-@pytest.fixture(params=[echo_say, echo_eat, echo_exception])
+@pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_exception])
 def call_echo_fn(request):
     return request.param
 
