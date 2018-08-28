@@ -2,7 +2,7 @@
 
 import abc
 from .htypes import Type
-from ..packet_coders import packet_coders
+from .packet_coders import packet_coders
 
 
 class EncodableEmbedded(object):

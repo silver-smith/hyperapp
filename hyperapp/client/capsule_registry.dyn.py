@@ -2,7 +2,7 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import Type
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from .registry import Registry
 
 log = logging.getLogger(__name__)

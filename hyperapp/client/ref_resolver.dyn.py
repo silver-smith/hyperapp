@@ -7,7 +7,7 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.url import UrlWithRoutes
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from ..common.ref import make_capsule, make_ref
 from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_bundle_from_file
 from .capsule_registry import CapsuleRegistry, CapsuleResolver

@@ -3,7 +3,7 @@ import glob
 from ..common.util import is_list_list_inst
 from ..common.htypes import tServerRoutes
 from ..common.identity import PublicKey
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from ..common.route_storage import RouteRepository
 
 
@@ -32,7 +32,7 @@ class FileRouteRepository(RouteRepository):
         if not os.path.isdir(self.dir):
             os.makedirs(self.dir)
         srv_routes = tServerRoutes(public_key.to_der(), routes)
-        data = packet_coders.encode(self.encoding, srv_routes, tServerRoutes)
+        data = packet_coders.encode(self.encoding, srv_routes)
         fpath = os.path.join(self.dir, public_key.get_id_hex() + self.fext)
         with open(fpath, 'wb') as f:
             f.write(data)

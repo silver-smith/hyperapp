@@ -18,7 +18,7 @@ from .htypes import (
     THierarchy,
     TClass,
     )
-from .packet_coders import DecodeError
+from .htypes.packet_coders import DecodeError
 
 
 MAX_SANE_LIST_SIZE = 1 << 60

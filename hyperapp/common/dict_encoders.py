@@ -23,7 +23,7 @@ from .htypes import (
 
 class DictEncoder(object, metaclass=abc.ABCMeta):
 
-    def encode(self, t, value):
+    def encode(self, value, t):
         return self._dict_to_str(self.dispatch(t, value)).encode()
 
     @abc.abstractmethod

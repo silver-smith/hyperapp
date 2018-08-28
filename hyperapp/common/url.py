@@ -3,8 +3,8 @@ import binascii
 import base64
 from .util import is_list_inst, is_list_list_inst
 from .identity import PublicKey
-from ..common.htypes import tUrl, tUrlWithRoutes, Interface
-from ..common.packet_coders import packet_coders
+from .htypes import tUrl, tUrlWithRoutes, Interface
+from .htypes.packet_coders import packet_coders
 
 
 class StringIsNotAnUrl(Exception):
@@ -54,7 +54,7 @@ class Url(object):
         return self.type(self.iface.iface_id, self.public_key.to_der(), self.path)
 
     def to_str(self):
-        data = packet_coders.encode(self.str_encoding, self.to_data(), self.type)
+        data = packet_coders.encode(self.str_encoding, self.to_data())
         return str(base64.b64encode(data), 'ascii')
 
     def clone(self, iface=None):

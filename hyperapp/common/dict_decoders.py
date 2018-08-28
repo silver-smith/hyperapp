@@ -20,7 +20,7 @@ from .htypes import (
     THierarchy,
     TClass,
     )
-from .packet_coders import DecodeError
+from .htypes.packet_coders import DecodeError
 
 
 def join_path(*args):

@@ -11,7 +11,7 @@ from ..common.htypes import (
 #    IfaceRegistry,
     )
 from ..common.url import Url
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 
 
 class NamedUrl(object):
@@ -79,7 +79,7 @@ class FileNamedUrlRepository(NamedUrlRepository):
     def _save_item(self, item):
         if not os.path.isdir(self.dir):
             os.makedirs(self.dir)
-        data = packet_coders.encode(self.encoding, item.to_data(), NamedUrl.type)
+        data = packet_coders.encode(self.encoding, item.to_data())
         fpath = os.path.join(self.dir, item.id + self.fext)
         with open(fpath, 'wb') as f:
             f.write(data)

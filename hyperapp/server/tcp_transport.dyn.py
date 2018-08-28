@@ -5,7 +5,7 @@ from ..common.interface import error as error_types
 from ..common.interface import packet as packet_types
 from ..common.request import Update
 from ..common.transport_packet import tTransportPacket
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from ..common.visual_rep import pprint
 from .module import Module
 from .request import PeerChannel, Peer, ServerNotification
@@ -56,7 +56,7 @@ class TcpSession(TransportSession):
             notification.add_update(update)
         log.info('-- sending notification to %r channel %s', self.transport.get_transport_id(), self.get_id())
         notification_packet = self.transport.make_notification_packet(self.transport.encoding, notification)
-        packet_data = packet_coders.encode(self.transport.encoding, notification_packet, packet_types.packet)
+        packet_data = packet_coders.encode(self.transport.encoding, notification_packet)
         return [tTransportPacket(self.transport.get_transport_id(), packet_data)]
 
 
@@ -81,7 +81,7 @@ class TcpTransport(Transport):
         response_packet = self.process_request_packet(iface_registry, server, Peer(session.channel), self.encoding, request_packet)
         if response_packet is None:
             return []
-        packet_data = packet_coders.encode(self.encoding, response_packet, packet_types.packet)
+        packet_data = packet_coders.encode(self.encoding, response_packet)
         return [packet_data]
 
 

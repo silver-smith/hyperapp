@@ -10,7 +10,7 @@ from ..common.encrypted_packet import (
     )
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
 from ..common.visual_rep import pprint
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from .request import ResponseBase
 #from .remoting import TransportError, Transport
 from .tcp_protocol import TcpProtocol
@@ -59,12 +59,12 @@ class EncryptedTransport(Transport):
     
     def _make_payload_packet(self, session, server_public_key, request_or_notification):
         packet = self.make_request_packet(ENCODING, request_or_notification)
-        packet_data = packet_coders.encode(ENCODING, packet, self._packet_types.packet)
+        packet_data = packet_coders.encode(ENCODING, packet)
         encrypted_packet = encrypt_initial_packet(session.session_key, server_public_key, packet_data)
         return self._make_transport_packet(encrypted_packet)
 
     def _make_transport_packet(self, encrypted_packet):
-        encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
+        encrypted_packet_data = packet_coders.encode(ENCODING, encrypted_packet)
         return tTransportPacket(TRANSPORT_ID, encrypted_packet_data)
 
     async def process_packet(self, protocol, session_list, server_public_key, data):

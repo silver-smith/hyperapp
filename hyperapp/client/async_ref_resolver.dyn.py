@@ -2,7 +2,7 @@ import logging
 import abc
 
 from ..common.util import full_type_name_to_str
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from .module import ClientModule
 
 log = logging.getLogger(__name__)

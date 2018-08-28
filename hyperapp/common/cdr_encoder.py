@@ -20,7 +20,7 @@ from .htypes import (
 
 class CdrEncoder(object):
 
-    def encode(self, t, value):
+    def encode(self, value, t):
         self.data = b''
         self.dispatch(t, value)
         return self.data
@@ -87,7 +87,7 @@ class CdrEncoder(object):
     @dispatch.register(TEmbedded)
     def encode_embedded(self, t, value):
         assert isinstance(value, EncodableEmbedded), repr(value)
-        data = CdrEncoder().encode(value.type, value.value)
+        data = CdrEncoder().encode(value.value, value.type)
         self.dispatch(tBinary, data)
 
     @dispatch.register(THierarchy)

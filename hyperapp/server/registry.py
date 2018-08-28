@@ -3,7 +3,7 @@ import logging
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import Type
 from ..common.ref import decode_capsule
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 
 log = logging.getLogger(__name__)
 

@@ -23,8 +23,8 @@ from .htypes import (
     tServerRoutes,
     tUrl,
     tTypeModule,
-    deduce_value_type,
     )
+from .htypes.deduce_value_type import deduce_value_type
 from .identity import PublicKey
 
 log = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class VisualRepEncoder(object):
         self._iface_registry = iface_registry
         self._module_types = module_types
 
-    def encode(self, t, value):
+    def encode(self, value, t):
         assert isinstance(value, t), repr(value)
         return self.dispatch(t, value)
 
@@ -195,5 +195,5 @@ class VisualRepEncoder(object):
 
 def pprint(value, resource_types=None, error_types=None, packet_types=None, iface_registry=None, module_types=None, t=None):
     t = t or deduce_value_type(value)
-    rep = VisualRepEncoder(resource_types, error_types, packet_types, iface_registry, module_types).encode(t, value)
+    rep = VisualRepEncoder(resource_types, error_types, packet_types, iface_registry, module_types).encode(value, t)
     rep.pprint()

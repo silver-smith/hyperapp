@@ -8,7 +8,7 @@ from hyperapp.common.htypes import (
     EncodableEmbedded,
     DecodableEmbedded,
     )
-from hyperapp.common.packet_coders import packet_coders
+from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import dict_coders, cdr_coders
 
 

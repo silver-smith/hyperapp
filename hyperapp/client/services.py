@@ -1,7 +1,7 @@
 import os.path
 from pathlib import Path
 
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry

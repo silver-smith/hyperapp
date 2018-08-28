@@ -6,7 +6,7 @@ from ..common.util import encode_path, decode_path, flatten
 from ..common.htypes import TList, TRecord, Field, tString, tEmbedded, EncodableEmbedded
 from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
-from ..common.packet_coders import DecodeError, packet_coders
+from ..common.htypes.packet_coders import DecodeError, packet_coders
 #from .remoting import RequestError
 from . import window
 
@@ -73,7 +73,7 @@ class ApplicationStateStorage(object):
         state_with_requirements = self._state_with_requirements_type(
             module_ids, code_modules, resources, EncodableEmbedded(self._state_type, state))
         with open(STATE_FILE_PATH, 'wb') as f:
-            f.write(packet_coders.encode(STATE_FILE_ENCODING, state_with_requirements, self._state_with_requirements_type))
+            f.write(packet_coders.encode(STATE_FILE_ENCODING, state_with_requirements))
 
     def _load_required_resources(self, requirements):
         return flatten([self._resources_manager.resolve_starting_with(decode_path(id))

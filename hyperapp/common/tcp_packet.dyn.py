@@ -1,7 +1,7 @@
 import struct
 
-from ..common.interface import hyper_ref as href_types
-from .packet_coders import packet_coders
+from .interface import hyper_ref as href_types
+from .htypes.packet_coders import packet_coders
 
 
 # utf-8 encoded encoding size, packet data size
@@ -26,7 +26,7 @@ def decode_tcp_packet(data):
 
 def encode_tcp_packet(bundle, encoding):
     assert isinstance(bundle, href_types.bundle), repr(bundle)
-    packet_data = packet_coders.encode(encoding, bundle, href_types.bundle)
+    packet_data = packet_coders.encode(encoding, bundle)
     encoded_encoding = encoding.encode()
     header = struct.pack(struct_format, len(encoded_encoding), len(packet_data))
     return header + encoded_encoding + packet_data

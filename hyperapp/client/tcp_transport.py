@@ -1,6 +1,6 @@
 from ..common.transport_packet import tTransportPacket
 from ..common.visual_rep import pprint
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 from .request import ResponseBase
 #from .remoting import Transport
 from .tcp_protocol import TcpProtocol
@@ -36,7 +36,7 @@ class TcpTransport(Transport):
 
     def _make_transport_packet(self, request_or_notification):
         packet = self.make_request_packet(self.encoding, request_or_notification)
-        packet_data = packet_coders.encode(self.encoding, packet, tPacket)
+        packet_data = packet_coders.encode(self.encoding, packet)
         return tTransportPacket(self.transport_id, packet_data)
 
     async def process_packet(self, protocol, session_list, server_public_key, data):

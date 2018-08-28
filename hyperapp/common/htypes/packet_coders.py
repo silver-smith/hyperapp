@@ -1,4 +1,6 @@
 
+from .deduce_value_type import deduce_value_type
+
 
 class DecodeError(Exception):
     pass
@@ -28,10 +30,11 @@ class PacketCoders(object):
         coders = self.resolve(encoding)
         return coders.decoder.decode(t, data)
 
-    def encode(self, encoding, object, t):
+    def encode(self, encoding, object, t=None):
+        t = t or deduce_value_type(object)
         assert isinstance(object, t), repr(object)
         coders = self.resolve(encoding)
-        return coders.encoder.encode(t, object)
+        return coders.encoder.encode(object, t)
 
 
 packet_coders = PacketCoders()

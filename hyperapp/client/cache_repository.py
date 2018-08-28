@@ -6,7 +6,7 @@ import string
 import logging
 import re
 from ..common.util import is_list_inst
-from ..common.packet_coders import packet_coders
+from ..common.htypes.packet_coders import packet_coders
 
 
 log = logging.getLogger(__name__)
