@@ -3,6 +3,7 @@
 import logging
 
 from .interface import hyper_ref as href_types
+from .htypes import deduce_value_type
 from .ref import ref_repr, make_capsule, make_ref
 from .module import Module
 
@@ -27,7 +28,8 @@ class RefRegistry(object):
         self._registry[ref] = capsule
         return ref
 
-    def register_object(self, t, object):
+    def register_object(self, object, t=None):
+        t = t or deduce_value_type(object)
         capsule = make_capsule(t, object)
         return self.register_capsule(capsule)
         log.debug('Registered ref for %s: %s', '.'.join(t.full_name), ref_repr(ref))

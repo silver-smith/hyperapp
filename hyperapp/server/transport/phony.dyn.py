@@ -85,9 +85,9 @@ class ThisModule(Module):
         Module.__init__(self, MODULE_NAME)
         # queues are expected to be created by test
         phony_client_address_ref = services.ref_registry.register_object(
-            phony_transport_types.client_address, phony_transport_types.client_address())
+            phony_transport_types.client_address())
         phony_server_address_ref = services.ref_registry.register_object(
-            phony_transport_types.server_address, phony_transport_types.server_address())
+            phony_transport_types.server_address())
         self._server = PhonyServer(
             services.failed,
             services.types,

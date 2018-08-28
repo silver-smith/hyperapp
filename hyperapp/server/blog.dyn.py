@@ -124,7 +124,7 @@ class ThisModule(PonyOrmModule):
 
     def init_phase3(self, services):
         service = href_types.service(BLOG_SERVICE_ID, ['blog', 'blog_service_iface'])
-        service_ref = services.ref_registry.register_object(href_types.service, service)
+        service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, BlogService)
 
         blog = blog_types.blog_ref(
@@ -132,7 +132,7 @@ class ThisModule(PonyOrmModule):
             blog_id='test-blog',
             current_article_id=None,
             )
-        blog_ref = services.ref_registry.register_object(blog_types.blog_ref, blog)
+        blog_ref = services.ref_registry.register_object(blog)
         services.management_ref_list.add_ref('blog', blog_ref)
 
 #    def get_commands(self):

@@ -27,7 +27,7 @@ class ThisModule(ServerModule):
 
     def _init_fs_service(self, services):
         service = href_types.service(FS_SERVICE_ID, ['fs', 'fs_service_iface'])
-        service_ref = services.ref_registry.register_object(href_types.service, service)
+        service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, FsService)
 
         fs = fs_types.fs_ref(
@@ -36,5 +36,5 @@ class ThisModule(ServerModule):
             path=['usr', 'share'],
             current_file_name='dpkg',
             )
-        fs_ref = services.ref_registry.register_object(fs_types.fs_ref, fs)
+        fs_ref = services.ref_registry.register_object(fs)
         services.management_ref_list.add_ref('fs', fs_ref)

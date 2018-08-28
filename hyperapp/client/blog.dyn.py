@@ -81,7 +81,7 @@ class BlogObject(ListObject):
     async def _open_article(self, article_id):
         blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
-        ref = self._ref_registry.register_object(blog_types.blog_article_ref, object)
+        ref = self._ref_registry.register_object(object)
         return (await self._handle_resolver.resolve(ref))
 
 
@@ -141,7 +141,7 @@ class BlogArticleForm(FormObject):
     async def command_refs(self):
         blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
-        ref = self._ref_registry.register_object(blog_types.blog_article_ref_list_ref, object)
+        ref = self._ref_registry.register_object(object)
         return (await self._handle_resolver.resolve(ref))
 
     @mode_command('save', mode=FormView.Mode.EDIT)
@@ -236,7 +236,7 @@ class ArticleRefListObject(ListObject):
     async def command_add(self):
         blog_service_ref = self._blog_service.to_ref()
         article_ref_list_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
-        target_ref = self._ref_registry.register_object(blog_types.blog_article_ref_list_ref, article_ref_list_object)
+        target_ref = self._ref_registry.register_object(article_ref_list_object)
         target_handle = await self._handle_resolver.resolve(target_ref)
         callback = blog_types.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id)
         object = object_selector_types.object_selector_object('object_selector', callback)
@@ -277,7 +277,7 @@ class SelectorCallback(object):
             ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, title, ref)
         blog_service_ref = self._blog_service.to_ref()
         object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
-        ref = self._ref_registry.register_object(blog_types.blog_article_ref_list_ref, object)
+        ref = self._ref_registry.register_object(object)
         return (await self._handle_resolver.resolve(ref))
 
     def to_data(self):

@@ -49,7 +49,7 @@ class Remoting(object):
         pprint(rpc_request)
         log.info('params:')
         pprint(params)
-        request_ref = self._ref_registry.register_object(href_types.rpc_message, rpc_request)
+        request_ref = self._ref_registry.register_object(rpc_request)
         transport.send(request_ref)
         if not command.is_request:
             return

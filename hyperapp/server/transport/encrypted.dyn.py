@@ -21,7 +21,7 @@ class ThisModule(Module):
         address = encrypted_transport_types.address(
             public_key_der=self._identity.public_key.to_der(),
             base_transport_ref=services.tcp_transport_ref)
-        services.encrypted_transport_ref = services.ref_registry.register_object(encrypted_transport_types.address, address)
+        services.encrypted_transport_ref = services.ref_registry.register_object(address)
 
     @staticmethod
     def _produce_identity():

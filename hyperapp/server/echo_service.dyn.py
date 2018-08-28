@@ -30,5 +30,5 @@ class ThisModule(ServerModule):
         super().__init__(MODULE_NAME)
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
         service = href_types.service(ECHO_SERVICE_ID, ['test', 'echo'])
-        services.echo_service_ref = service_ref = services.ref_registry.register_object(href_types.service, service)
+        services.echo_service_ref = service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, EchoService)

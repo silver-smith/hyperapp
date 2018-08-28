@@ -26,7 +26,7 @@ class ThisModule(ServerModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         service = href_types.service(ROUTE_RESOLVER_SERVICE_ID, ['hyper_ref', 'route_resolver'])
-        service_ref = services.ref_registry.register_object(href_types.service, service)
+        service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, RouteResolverService, services.route_resolver)
         ref_collector = services.ref_collector_factory()
         bundle = ref_collector.make_bundle([service_ref])

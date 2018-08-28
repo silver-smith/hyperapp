@@ -35,7 +35,7 @@ class ThisModule(ServerModule):
     # depends on mapping being generated for ref_storage
     def init_phase3(self, services):
         service = href_types.service(REF_RESOLVER_SERVICE_ID, ['hyper_ref', 'ref_resolver'])
-        service_ref = self._ref_registry.register_object(href_types.service, service)
+        service_ref = self._ref_registry.register_object(service)
         self._service_registry.register(service_ref, RefResolverService, self._ref_resolver)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([service_ref])

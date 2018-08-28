@@ -12,7 +12,7 @@ class EndpointRegistry(object):
         self._endpoint_set = set()
 
     def register_endpoint(self, endpoint):
-        endpoint_ref = self._ref_registry.register_object(href_types.endpoint, endpoint)
+        endpoint_ref = self._ref_registry.register_object(endpoint)
         self._endpoint_set.add(endpoint_ref)
         return endpoint_ref
 

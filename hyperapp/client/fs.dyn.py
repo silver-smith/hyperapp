@@ -85,7 +85,7 @@ class FsDirObject(ListObject):
     def _get_path_ref(self, path):
         fs_service_ref = self._fs_service.to_ref()
         object = fs_types.fs_ref(fs_service_ref, self._host, path)
-        return self._ref_registry.register_object(fs_types.fs_ref, object)
+        return self._ref_registry.register_object(object)
 
     async def _open_path(self, path):
         ref = self._get_path_ref(path)

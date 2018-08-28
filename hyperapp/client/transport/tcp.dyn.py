@@ -68,7 +68,7 @@ class TcpProtocol(asyncio.Protocol):
     def _make_peer_endpoints_ref(self):
         endpoint_ref_list = self._endpoint_registry.get_endpoint_ref_list()
         peer_endpoints = tcp_transport_types.peer_endpoints(endpoint_ref_list=endpoint_ref_list)
-        return self._ref_registry.register_object(tcp_transport_types.peer_endpoints, peer_endpoints)
+        return self._ref_registry.register_object(peer_endpoints)
 
     def _log(self, message):
         log.info('tcp to %s:%d: %s', self._address.host, self._address.port, message)
