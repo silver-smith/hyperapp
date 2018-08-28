@@ -116,7 +116,7 @@ class ApplicationStateStorage(object):
         if not state:
             return None
         log.info('-->8 -- loaded state with requirements  ------')
-        pprint(self._state_with_requirements_type, state)
+        pprint(state)
         log.info('--- 8<------------------------')
         log.info('-- code_modules loaded from state: ids=%r, code_modules=%r',
                  state.module_ids, [module.fpath for module in state.code_modules])

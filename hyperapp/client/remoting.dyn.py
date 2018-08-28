@@ -46,9 +46,9 @@ class Remoting(object):
             params=EncodableEmbedded(command.request, params),
             )
         log.info('RPC request:')
-        pprint(href_types.rpc_request, rpc_request)
+        pprint(rpc_request)
         log.info('params:')
-        pprint(command.request, params)
+        pprint(params)
         request_ref = self._ref_registry.register_object(href_types.rpc_message, rpc_request)
         transport.send(request_ref)
         if not command.is_request:
@@ -65,7 +65,7 @@ class Remoting(object):
 
     def process_rpc_response(self, rpc_response_ref, rpc_response):
         log.info('Remoting: processing RPC Response: %r', rpc_response)
-        pprint(href_types.rpc_response, rpc_response)
+        pprint(rpc_response)
         request = self._pending_requests.get(rpc_response.request_id)
         if not request:
             log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
@@ -74,12 +74,12 @@ class Remoting(object):
             result_t = request.iface[request.command.command_id].response
             result = rpc_response.result_or_error.decode(result_t)
             log.info('Result:')
-            pprint(result_t, result)
+            pprint(result)
             request.future.set_result(result)
         else:
             error = rpc_response.result_or_error.decode(error_types.error)
             log.info('Error:')
-            pprint(error_types.error, error)
+            pprint(error)
             request.future.set_exception(error)
         log.info('Remoting: processing response: done')
         return True  # todo: do not use registry to process packets

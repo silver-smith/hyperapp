@@ -42,7 +42,7 @@ def test_yacc(fpaths):
         log.info('%d typedefs:', len(module.typedefs))
         for typedef in module.typedefs:
             log.info('\t%s: %s', typedef.name, typedef.type)
-        pprint(tTypeModule, module)
+        pprint(module)
 
 
 def main():

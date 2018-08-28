@@ -167,7 +167,7 @@ class RealRequestTest(unittest.TestCase):
             request_id='test-001',
             params=url.iface.get_command('get').params_type(),
             )
-        pprint(self.packet_types.payload, request.to_data())
+        pprint(request.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = await (asyncio.wait_for(server.execute_request(request), timeout=0.5))
         self.assertIsInstance(response, Response)
@@ -183,7 +183,7 @@ class RealRequestTest(unittest.TestCase):
             command_id='unsubscribe',
             params=url.iface.get_command('unsubscribe').params_type(),
             )
-        pprint(self.packet_types.payload, notification.to_data())
+        pprint(notification.to_data())
         server = Server.from_public_key(self.services.remoting, url.public_key)
         response = await (asyncio.wait_for(server.send_notification(notification), timeout=0.5))
         self.assertEqual(None, response)

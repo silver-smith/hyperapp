@@ -51,7 +51,7 @@ class Response(object):
     def log_result_or_error(self, command):
         if self._error:
             log.info('Error:')
-            pprint(error_types.error, self._error)
+            pprint(self._error)
         else:
             log.info('Result:')
-            pprint(command.response, self._result)
+            pprint(self._result)

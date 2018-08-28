@@ -31,4 +31,4 @@ class Update(object):
 
     def pprint(self):
         log.info('Update: iface=%s, path=%s, diff:', self.iface.iface_id, self.path)
-        pprint(self.iface.diff_type, self.diff.to_data(self.iface))
+        pprint(self.diff.to_data(self.iface))

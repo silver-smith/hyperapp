@@ -23,6 +23,7 @@ from .htypes import (
     tServerRoutes,
     tUrl,
     tTypeModule,
+    deduce_value_type,
     )
 from .identity import PublicKey
 
@@ -192,6 +193,7 @@ class VisualRepEncoder(object):
         diff = update.diff.decode(iface.diff_type)
         return self.dispatch(iface.diff_type, diff)
 
-def pprint(t, value, resource_types=None, error_types=None, packet_types=None, iface_registry=None, module_types=None):
+def pprint(value, resource_types=None, error_types=None, packet_types=None, iface_registry=None, module_types=None, t=None):
+    t = t or deduce_value_type(value)
     rep = VisualRepEncoder(resource_types, error_types, packet_types, iface_registry, module_types).encode(t, value)
     rep.pprint()

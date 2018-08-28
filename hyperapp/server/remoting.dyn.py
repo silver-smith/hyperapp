@@ -54,7 +54,7 @@ class Remoting(object):
         rpc_request = decode_capsule(self._types, capsule)
         assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
         log.info('RPC request:')
-        pprint(href_types.rpc_request, rpc_request)
+        pprint(rpc_request)
         rpc_response = self._process_request(rpc_request)
         self._send_rpc_response(rpc_response)
 
@@ -70,7 +70,7 @@ class Remoting(object):
         command = iface[rpc_request.command_id]
         params = rpc_request.params.decode(command.request)
         log.info('params:')
-        pprint(command.request, params)
+        pprint(params)
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
         request = Request(rpc_request.source_endpoint_ref, command)
         method = getattr(servant, 'rpc_' + rpc_request.command_id, None)
@@ -80,7 +80,7 @@ class Remoting(object):
         assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
         log.info('RPC Response:')
-        pprint(href_types.rpc_response, rpc_response)
+        pprint(rpc_response)
         response.log_result_or_error(command)
         return rpc_response
 

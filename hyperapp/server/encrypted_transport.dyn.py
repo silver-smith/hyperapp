@@ -100,7 +100,7 @@ class EncryptedTcpTransport(Transport):
            session = EncryptedTcpSession(self)
            session_list.set_transport_session(self.get_transport_id(), session)
         encrypted_packet = packet_coders.decode(ENCODING, data, tEncryptedPacket)
-        pprint(tEncryptedPacket, encrypted_packet)
+        pprint(encrypted_packet)
         if isinstance(encrypted_packet, tSubsequentEncryptedPacket):
             responses = self.process_encrypted_payload_packet(iface_registry, server, session, encrypted_packet)
         if isinstance(encrypted_packet, tProofOfPossessionPacket):
@@ -112,7 +112,7 @@ class EncryptedTcpTransport(Transport):
             responses.append(self.make_pop_challenge_packet(session))
             session.pop_challenge_sent = True
         for response in responses:
-            pprint(tEncryptedPacket, response)
+            pprint(response)
         return [packet_coders.encode(ENCODING, encrypted_packet, tEncryptedPacket)
                 for encrypted_packet in responses]
 

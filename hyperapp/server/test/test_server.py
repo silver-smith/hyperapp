@@ -243,13 +243,13 @@ class ServerRequestHandlingTest(ServerTest):
             params=self.make_params(test_iface, 'echo', test_param='hello'),
             request_id='001',
             )
-        pprint(self.packet_types.payload, request_data)
+        pprint(request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
                                         self.error_types, self.packet_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
 
-        pprint(self.packet_types.payload, response.to_data())
+        pprint(response.to_data())
         self.assertEqual('hello to you too', response.result.test_result)
 
     def execute_check_ok_request(self, test_param):
@@ -260,12 +260,12 @@ class ServerRequestHandlingTest(ServerTest):
             params=self.make_params(test_iface, 'check_ok', test_param=test_param),
             request_id='002',
             )
-        pprint(self.packet_types.payload, request_data)
+        pprint(request_data)
         request = RequestBase.from_data(None, Peer(PhonyChannel()),
                                         self.error_types, self.packet_types, self.types.core, self.iface_registry, request_data)
 
         response = self.server.process_request(request)
-        pprint(self.packet_types.payload, response.to_data())
+        pprint(response.to_data())
         return response
 
     def test_check_ok_result(self):
@@ -337,7 +337,7 @@ class TransportRequestHandlingTest(ServerTest):
             request_id='001',
             )
         log.info('Sending request:')
-        pprint(self.packet_types.payload, request)
+        pprint(request)
         request_packet = self.types.packet.packet(
             aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[], ref_list=[]),
             payload=request)
@@ -355,7 +355,7 @@ class TransportRequestHandlingTest(ServerTest):
             params=self.make_params(test_iface, command_id, **kw),
             )
         log.info('Sending client notification:')
-        pprint(self.packet_types.payload, request)
+        pprint(request)
         request_packet = self.types.packet.packet(
             aux_info=self.types.packet.aux_info(requirements=[], type_modules=[], modules=[], routes=[], resources=[], ref_list=[]),
             payload=request)
@@ -371,7 +371,7 @@ class TransportRequestHandlingTest(ServerTest):
             return None  # no response
         response_packet = self.decode_packet(transport_id, packet_data, self.types.packet.packet)
         log.info('Received response:')
-        pprint(self.types.packet.packet, response_packet)
+        pprint(response_packet)
         return response_packet.payload
 
     def execute_tcp_request(self, transport_id, obj_id, command_id, session_list=None, **kw):
