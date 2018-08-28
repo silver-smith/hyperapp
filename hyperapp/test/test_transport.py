@@ -154,7 +154,7 @@ async def echo_notify(services, echo_proxy):
     result = await echo_proxy.notify('hello')
     assert result is None
 
-async def echo_exception(services, echo_proxy):
+async def echo_fail(services, echo_proxy):
     # pytest.raises want argument conforming to inspect.isclass, but TExceptionClass is not
     with pytest.raises(Exception) as excinfo:
         await echo_proxy.fail('hello')
@@ -175,7 +175,7 @@ async def echo_subscribe(services, echo_proxy):
     services.service_registry.register(service_ref, NotificationService)
 
 
-@pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_exception, echo_subscribe])
+@pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_fail, echo_subscribe])
 def call_echo_fn(request):
     return request.param
 
