@@ -19,7 +19,10 @@ class TypeNamespace(object):
 
     def resolve(self, full_name):
         assert full_name
-        value = self[full_name[0]]
+        try:
+            value = self[full_name[0]]
+        except KeyError as x:
+            raise RuntimeError('Unknown type name: %r' % full_name[0])
         if len(full_name) == 1:
             return value
         assert isinstance(value, TypeNamespace)
