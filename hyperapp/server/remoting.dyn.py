@@ -80,7 +80,6 @@ class Remoting(object):
         assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
         rpc_request = decode_capsule(self._types, capsule)
         assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
-        pprint(rpc_request, title='RPC request:')
         rpc_response = self._process_request(rpc_request)
         if rpc_response is not None:
             self._send_rpc_response(rpc_response)
@@ -95,6 +94,7 @@ class Remoting(object):
     def _process_request(self, rpc_request):
         iface = self._types.resolve(rpc_request.iface_full_type_name)
         command = iface[rpc_request.command_id]
+        pprint(rpc_request, title='RPC %s:' % command.request_type)
         params = rpc_request.params.decode(command.request)
         pprint(params, title='params:')
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
