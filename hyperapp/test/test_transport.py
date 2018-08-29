@@ -7,6 +7,7 @@ import uuid
 
 import pytest
 
+from hyperapp.common.init_logging import init_logging
 from hyperapp.common.visual_rep import pprint
 from hyperapp.test.utils import encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
@@ -84,6 +85,7 @@ class ServerServices(TestServerServices):
 class Server(object):
 
     def __init__(self, transport, queues):
+        init_logging('test.yaml')
         code_module_list = server_code_module_list + [
             'server.transport.%s' % transport,
             ]
@@ -137,6 +139,7 @@ class ClientServices(TestClientServices):
 @pytest.fixture
 def client_services(queues, event_loop):
     event_loop.set_debug(True)
+    init_logging('test.yaml')
     services = ClientServices(type_module_list, client_code_module_list, event_loop, queues)
     services.start()
     yield services

@@ -12,6 +12,9 @@ handlers:
     formatter: simple
     stream: ext://sys.stdout
 
+loggers:
+  hyperapp.common.ref_resolver: {level: INFO}
+
 root:
   level: DEBUG
   handlers: [console]

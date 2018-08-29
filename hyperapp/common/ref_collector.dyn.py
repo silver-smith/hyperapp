@@ -60,14 +60,17 @@ class RefCollector(Visitor):
     def _collect_refs_from_capsule(self, ref, capsule):
         t = self._types.resolve(capsule.full_type_name)
         object = decode_object(t, capsule)
-        log.info('Collecting refs from %r:', object)
+        log.debug('Collecting refs from %r:', object)
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)
         # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
         if full_type_name_to_str(t.full_name) in ['hyper_ref.endpoint', 'hyper_ref.service']:
             self._handle_endpoint_ref(ref)
-        log.debug('Collected %d refs from %s %s: %s',
-                      len(self._collected_ref_set), full_type_name_to_str(t.full_name), object, ', '.join(map(ref_repr, self._collected_ref_set)))
+        log.info('Collected %d refs from %s %s: %s',
+                      len(self._collected_ref_set),
+                     full_type_name_to_str(t.full_name),
+                     ref_repr(ref),
+                     ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
 
     def _collect_refs_from_object(self, t, object):

@@ -2,7 +2,7 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import Type
-from ..common.ref import decode_capsule
+from ..common.ref import ref_repr, decode_capsule
 from ..common.htypes.packet_coders import packet_coders
 
 log = logging.getLogger(__name__)
@@ -75,5 +75,5 @@ class CapsuleResolver(object):
         capsule = self._ref_resolver.resolve_ref(ref)
         produce = self._capsule_registry.resolve(ref, capsule)
         assert produce, repr(produce)
-        log.debug('capsule resolved to %s %r', self._capsule_registry.produce_name, produce)
+        log.debug('Capsule %s is resolved to %s %r', ref_repr(ref), self._capsule_registry.produce_name, produce)
         return produce

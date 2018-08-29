@@ -25,7 +25,7 @@ class RefResolver(object):
         for source in self._sources:
             capsule = source.resolve_ref(ref)
             if capsule:
-                log.debug(' -> %r', capsule)
+                log.info('Ref %s is resolved to capsule %s', ref_repr(ref), full_type_name_to_str(capsule.full_type_name))
                 return capsule
         return None
 
