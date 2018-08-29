@@ -5,7 +5,7 @@ import logging
 from ..common.util import encode_path, decode_path, flatten
 from ..common.htypes import TList, TRecord, Field, tString, tEmbedded, EncodableEmbedded
 from ..common.requirements_collector import RequirementsCollector
-from ..common.visual_rep import pprint
+#from ..common.visual_rep import pprint
 from ..common.htypes.packet_coders import DecodeError, packet_coders
 #from .remoting import RequestError
 from . import window

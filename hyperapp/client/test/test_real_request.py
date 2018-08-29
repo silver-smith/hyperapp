@@ -9,7 +9,7 @@ import unittest
 #    )
 from hyperapp.common.url import UrlWithRoutes
 from hyperapp.common import dict_coders, cdr_coders
-from hyperapp.common.visual_rep import pprint
+#from hyperapp.common.visual_rep import pprint
 from hyperapp.common.route_storage import RouteRepository, RouteStorage
 from hyperapp.common.services import ServicesBase
 from hyperapp.common.test.util import PhonyRouteRepository

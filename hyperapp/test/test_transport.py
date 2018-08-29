@@ -29,6 +29,7 @@ type_module_list = [
 
 server_code_module_list = [
     'common.ref',
+    'common.visual_rep',
     'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',
@@ -44,6 +45,7 @@ server_code_module_list = [
 
 client_code_module_list = [
     'common.ref',
+    'common.visual_rep',
     'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',
@@ -96,6 +98,8 @@ class Server(object, metaclass=log_exceptions):
         assert not self.services.is_failed
 
     def make_echo_service_bundle(self):
+        from hyperapp.common.visual_rep import pprint
+
         ref_collector = self.services.ref_collector_factory()
         echo_service_bundle = ref_collector.make_bundle([self.services.echo_service_ref])
         log.info('Echo service bundle:')

@@ -1,5 +1,5 @@
 from ..common.transport_packet import tTransportPacket
-from ..common.visual_rep import pprint
+#from ..common.visual_rep import pprint
 from ..common.htypes.packet_coders import packet_coders
 from .request import ResponseBase
 #from .remoting import Transport

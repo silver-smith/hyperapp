@@ -4,6 +4,7 @@ import queue
 
 from hyperapp.common.interface import phony_transport as phony_transport_types
 from hyperapp.common.ref import encode_bundle, decode_bundle, decode_capsule
+from hyperapp.common.visual_rep import pprint
 from ..module import Module
 
 log = logging.getLogger(__name__)
@@ -54,8 +55,9 @@ class PhonyServer(object):
         except queue.Empty:
             log.info('Phony server: picking request bundle: none')
             return  # timed out, will try again
-        log.info('Phony server: picking request bundle: got one')
+        log.info('Phony server: picking request bundle: got one:')
         bundle = decode_bundle(encoded_bundle)
+        pprint(bundle)
         self._unbundler.register_bundle(bundle)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)

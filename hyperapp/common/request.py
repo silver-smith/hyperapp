@@ -3,7 +3,7 @@ from .util import is_list_inst
 from .htypes import Interface
 from .diff import Diff, SimpleDiff
 from .list_object import ListDiff
-from .visual_rep import pprint
+#from .visual_rep import pprint
 
 log = logging.getLogger(__name__)
 

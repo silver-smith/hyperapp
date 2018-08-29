@@ -28,7 +28,7 @@ from hyperapp.common.encrypted_packet import (
     decrypt_packet,
     )
 from hyperapp.common.htypes.packet_coders import packet_coders
-from hyperapp.common.visual_rep import pprint
+#from hyperapp.common.visual_rep import pprint
 from hyperapp.common.module_manager import ModuleManager
 from hyperapp.common.route_storage import RouteStorage
 from hyperapp.common.services import ServicesBase

@@ -9,7 +9,7 @@ from ..common.encrypted_packet import (
     decrypt_subsequent_packet,
     )
 from ..common.transport_packet import tTransportPacket, encode_transport_packet, decode_transport_packet
-from ..common.visual_rep import pprint
+#from ..common.visual_rep import pprint
 from ..common.htypes.packet_coders import packet_coders
 from .request import ResponseBase
 #from .remoting import TransportError, Transport
