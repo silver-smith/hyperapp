@@ -171,7 +171,7 @@ class NotificationService(object):
 
 async def echo_subscribe(services, echo_proxy):
     service_id = str(uuid.uuid4())
-    service = services.types.hyper_ref.service(service_id, ['echo', 'echo_notification_iface'])
+    service = services.types.hyper_ref.service(service_id, ['test', 'echo_notification_iface'])
     service_ref = services.ref_registry.register_object(service)
     services.service_registry.register(service_ref, NotificationService)
     await echo_proxy.subscribe(service_ref)
