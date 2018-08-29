@@ -1,9 +1,11 @@
 import logging
 import traceback
+import uuid
 
 from ..common.interface import error as error_types
 from ..common.interface import hyper_ref as href_types
-from ..common.ref import decode_capsule
+from ..common.htypes import EncodableEmbedded
+from ..common.ref import ref_repr, decode_capsule
 from ..common.route_resolver import RouteSource
 from ..common.visual_rep import pprint
 from .registry import UnknownRegistryIdError, Registry
@@ -46,6 +48,34 @@ class Remoting(object):
         self._route_resolver = route_resolver
         self._transport_resolver = transport_resolver
         self._service_registry = service_registry
+        my_endpoint = href_types.endpoint(service_id=str(uuid.uuid4()))
+        self._my_endpoint_ref = self._ref_registry.register_object(my_endpoint)
+        # todo: may be create server endpoint registry and register my endpoint there
+
+    def send_request(self, service_ref, iface, command, params):
+        transport_ref_set = self._route_resolver.resolve(service_ref)
+        assert transport_ref_set, 'No routes for service %s' % ref_repr(service_ref)
+        assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple route support
+        transport = self._transport_resolver.resolve(transport_ref_set.pop())
+        if command.is_request:
+            request_id = str(uuid.uuid4())
+        else:
+            request_id = None
+        rpc_request = href_types.rpc_request(
+            iface_full_type_name=iface.full_name,
+            source_endpoint_ref=self._my_endpoint_ref,
+            target_service_ref=service_ref,
+            command_id=command.command_id,
+            request_id=request_id,
+            params=EncodableEmbedded(command.request, params),
+            )
+        log.info('RPC %s:', command.request_type)
+        pprint(rpc_request)
+        log.info('params:')
+        pprint(params)
+        request_ref = self._ref_registry.register_object(rpc_request)
+        transport.send(request_ref)
+        assert not command.is_request, 'Only sending notifications is now supported for server'
 
     def process_rpc_request(self, rpc_request_ref, rpc_request):
         capsule = self._ref_resolver.resolve_ref(rpc_request_ref)
