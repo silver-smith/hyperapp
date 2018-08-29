@@ -3,6 +3,7 @@
 
 import logging
 
+from ..common.ref import LOCAL_TRANSPORT_REF
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -21,6 +22,8 @@ class Unbundler(object):
         for capsule in bundle.capsule_list:
             self._ref_registry.register_capsule(capsule)
         for route in bundle.route_list:
+            if route.transport_ref == LOCAL_TRANSPORT_REF:
+                continue  # must be handled by transport
             self._route_registry.register_route(route)
 
 

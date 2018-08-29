@@ -9,7 +9,8 @@ from queue import Queue
 
 from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
-from hyperapp.common.ref import decode_capsule
+from hyperapp.common.visual_rep import pprint
+from hyperapp.common.ref import LOCAL_TRANSPORT_REF, decode_capsule
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 from hyperapp.common.route_resolver import RouteRegistry
 from ..module import Module
@@ -141,20 +142,20 @@ class TcpClient(object):
             self._process_incoming_bundle(bundle)
 
     def _process_incoming_bundle(self, bundle):
+        pprint(bundle, title='TCP: incoming bundle')
         self._unbundler.register_bundle(bundle)
+        self._register_incoming_routes(bundle.route_list)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
-            if capsule.full_type_name == ['tcp_transport', 'peer_endpoints']:
-                self._process_peer_endpoints(capsule)
-            elif capsule.full_type_name == ['hyper_ref', 'rpc_message']:
+            if capsule.full_type_name == ['hyper_ref', 'rpc_message']:
                 self._process_rpc_request(root_ref, capsule)
             else:
                 assert False, 'Unexpected capsule type: %r' % '.'.join(capsule.full_type_name)
 
-    def _process_peer_endpoints(self, capsule):
-        peer_endpoints = decode_capsule(self._types, capsule)
-        for endpoint_ref in peer_endpoints.endpoint_ref_list:
-            self._my_route_registry.register(endpoint_ref, self._my_address_ref)
+    def _register_incoming_routes(self, route_list):
+        for route in route_list:
+            if route.transport_ref == LOCAL_TRANSPORT_REF:
+                self._my_route_registry.register(route.endpoint_ref, self._my_address_ref)
 
     def _process_rpc_request(self, rpc_request_ref, rpc_request_capsule):
         rpc_request = decode_capsule(self._types, rpc_request_capsule)

@@ -59,16 +59,10 @@ class TcpProtocol(asyncio.Protocol):
     def send(self, message_ref):
         assert isinstance(message_ref, href_types.ref), repr(message_ref)
         ref_collector = self._ref_collector_factory()
-        peer_endpoints_ref = self._make_peer_endpoints_ref()
-        bundle = ref_collector.make_bundle([peer_endpoints_ref, message_ref])
+        bundle = ref_collector.make_bundle([message_ref])
         data = encode_tcp_packet(bundle, TCP_PACKET_ENCODING)
         self._log('sending data, size=%d' % len(data))
         self._asyncio_transport.write(data)
-
-    def _make_peer_endpoints_ref(self):
-        endpoint_ref_list = self._endpoint_registry.get_endpoint_ref_list()
-        peer_endpoints = tcp_transport_types.peer_endpoints(endpoint_ref_list=endpoint_ref_list)
-        return self._ref_registry.register_object(peer_endpoints)
 
     def _log(self, message):
         log.info('tcp to %s:%d: %s', self._address.host, self._address.port, message)

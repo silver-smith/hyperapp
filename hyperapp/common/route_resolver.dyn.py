@@ -1,7 +1,7 @@
 import logging
 import abc
 
-from .ref import ref_repr
+from .ref import ref_repr, ref_list_repr
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class RouteRegistry(RouteSource):
         return self._registry.get(endpoint_ref, set())
 
     def register(self, endpoint_ref, transport_ref):
-        log.info('route registry: adding route %s -> %s', ref_repr(endpoint_ref), ref_repr(transport_ref))
+        log.info('Route registry: adding route %s -> %s', ref_repr(endpoint_ref), ref_repr(transport_ref))
         self._registry.setdefault(endpoint_ref, set()).add(transport_ref)
 
     def register_route(self, route):
@@ -49,6 +49,7 @@ class RouteResolver(object):
         transport_ref_set = set()
         for source in self._source_list:
             transport_ref_set |= source.resolve(service_ref)
+        log.info('Route resolver: %s resolved to %s', ref_repr(service_ref), ref_list_repr(transport_ref_set))
         return transport_ref_set
 
 

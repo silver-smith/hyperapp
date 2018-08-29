@@ -14,9 +14,21 @@ DEFAULT_HASH_ALGORITHM = 'sha512'
 MAX_REF_REPR_LEN = 60
 BUNDLE_ENCODING = 'json'
 
+# special case indicating packets must be sent to the peer from which this route is received
+LOCAL_TRANSPORT_REF = b'LOCAL_TRANSPORT'
+
 
 def ref_repr(ref):
-    return codecs.encode(ref[:4], 'hex').decode()
+    if ref == LOCAL_TRANSPORT_REF:
+        return ref.decode()
+    else:
+        return codecs.encode(ref[:4], 'hex').decode()
+
+def ref_list_repr(ref_list):
+    ref_list = list(ref_list)  # add iterable support
+    if not ref_list:
+        return 'none'
+    return ', '.join(map(ref_repr, ref_list))
 
 def make_capsule(object, t=None):
     t = t or deduce_value_type(object)

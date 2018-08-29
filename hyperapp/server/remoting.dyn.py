@@ -87,6 +87,7 @@ class Remoting(object):
     def _send_rpc_response(self, rpc_response):
         rpc_response_ref = self._ref_registry.register_object(rpc_response)
         transport_ref_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
+        assert transport_ref_set, 'No routes for service %s' % ref_repr(rpc_response.target_endpoint_ref)
         assert len(transport_ref_set) == 1  # todo: multiple route support
         transport = self._transport_resolver.resolve(transport_ref_set.pop())
         transport.send(rpc_response_ref)

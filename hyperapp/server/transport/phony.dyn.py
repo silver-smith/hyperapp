@@ -3,7 +3,7 @@ import threading
 import queue
 
 from hyperapp.common.interface import phony_transport as phony_transport_types
-from hyperapp.common.ref import encode_bundle, decode_bundle, decode_capsule
+from hyperapp.common.ref import LOCAL_TRANSPORT_REF, encode_bundle, decode_bundle, decode_capsule
 from hyperapp.common.visual_rep import pprint
 from ..module import Module
 
@@ -59,12 +59,18 @@ class PhonyServer(object):
         bundle = decode_bundle(encoded_bundle)
         pprint(bundle, indent=1)
         self._unbundler.register_bundle(bundle)
+        self._register_incoming_routes(bundle.route_list)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
             assert capsule.full_type_name == ['hyper_ref', 'rpc_message']
             rpc_request = decode_capsule(self._types, capsule)
             self._route_registry.register(rpc_request.source_endpoint_ref, self._phony_client_address_ref)
             self._remoting.process_rpc_request(root_ref, rpc_request)
+
+    def _register_incoming_routes(self, route_list):
+        for route in route_list:
+            if route.transport_ref == LOCAL_TRANSPORT_REF:
+                self._route_registry.register(route.endpoint_ref, self._phony_client_address_ref)
 
 
 class PhonyTransport(object):

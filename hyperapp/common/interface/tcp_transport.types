@@ -10,10 +10,6 @@ incoming_connection_address = record:
     connection_id: string
 
 
-peer_endpoints = record:
-    endpoint_ref_list: ref list
-
-
 packet = record:
     message: ref
     to: ref
