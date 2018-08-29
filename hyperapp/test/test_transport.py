@@ -172,16 +172,22 @@ class NotificationService(object):
 
     def __init__(self):
         log.info('NotificationService is constructed')
+        self.notify_future = asyncio.Future()
+
+    def rpc_notify(self, request, message):
+        self.notify_future.set_result(message)
 
 
 async def echo_subscribe(services, echo_proxy):
     service_id = str(uuid.uuid4())
     service = services.types.hyper_ref.service(service_id, ['test', 'echo_notification_iface'])
     service_ref = services.ref_registry.register_object(service)
-    services.service_registry.register(service_ref, NotificationService)
+    notification_service = NotificationService()
+    services.service_registry.register(service_ref, notification_service)
     await echo_proxy.subscribe(service_ref)
     await echo_proxy.broadcast('hello')
-
+    message = (await asyncio.wait_for(notification_service.notify_future, timeout=3))
+    assert message == 'hello'
 
 @pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_fail, echo_subscribe])
 def call_echo_fn(request):

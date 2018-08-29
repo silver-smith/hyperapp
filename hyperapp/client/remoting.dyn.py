@@ -64,7 +64,7 @@ class Remoting(object):
             del self._pending_requests[request_id]
 
     def process_rpc_response(self, rpc_response_ref, rpc_response):
-        log.info('Remoting: processing RPC Response: %r', rpc_response)
+        log.info('Remoting: processing RPC message: %r', rpc_response)
         pprint(rpc_response, indent=1)
         request = self._pending_requests.get(rpc_response.request_id)
         if not request:
