@@ -47,7 +47,7 @@ class RefCollector(Visitor):
                     missing_ref_count += 1
                     continue
                 capsule_set.add(capsule)
-                new_ref_set |= self._collect_refs(ref, capsule)
+                new_ref_set |= self._collect_refs_from_capsule(ref, capsule)
             if not new_ref_set:
                 break
             ref_set = new_ref_set
@@ -57,18 +57,23 @@ class RefCollector(Visitor):
             log.warning('Failed to resolve %d refs', missing_ref_count)
         return list(capsule_set)
 
-    def _collect_refs(self, ref, capsule):
+    def _collect_refs_from_capsule(self, ref, capsule):
         t = self._types.resolve(capsule.full_type_name)
         object = decode_object(t, capsule)
         log.info('Collecting refs from %r:', object)
         self._collected_ref_set = set()
-        self.visit(t, object)
+        self._collect_refs_from_object(t, object)
+        # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
         if full_type_name_to_str(t.full_name) in ['hyper_ref.endpoint', 'hyper_ref.service']:
-            transport_ref_set = self._handle_endpoint_ref(ref)
-            self._collected_ref_set |= transport_ref_set
+            self._handle_endpoint_ref(ref)
         log.debug('Collected %d refs from %s %s: %s',
                       len(self._collected_ref_set), full_type_name_to_str(t.full_name), object, ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
+
+    def _collect_refs_from_object(self, t, object):
+        self.visit(t, object)
+        if full_type_name_to_str(t.full_name) == 'hyper_ref.rpc_message':
+            self._handle_rpc_message(object)
 
     def visit_primitive(self, t, value):
         if t == href_types.ref:
@@ -81,7 +86,17 @@ class RefCollector(Visitor):
                 endpoint_ref=endpoint_ref,
                 transport_ref=transport_ref,
                 ))
-        return transport_ref_set
+            self._collected_ref_set.add(transport_ref)
+
+    def _handle_rpc_message(self, rpc_message):
+        if isinstance(rpc_message, href_types.rpc_request):
+            self._handle_rpc_request(rpc_message)
+
+    def _handle_rpc_request(self, rpc_request):
+        iface = self._types.resolve(rpc_request.iface_full_type_name)
+        command = iface[rpc_request.command_id]
+        params = rpc_request.params.decode(command.request)
+        self._collect_refs_from_object(command.request, params)
 
 
 class ThisModule(Module):
