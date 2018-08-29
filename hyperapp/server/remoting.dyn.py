@@ -69,7 +69,7 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        pprint(rpc_request, title='RPC %s:' % command.request_type)
+        pprint(rpc_request, title='Outgoing RPC %s:' % command.request_type)
         pprint(params, title='params:')
         request_ref = self._ref_registry.register_object(rpc_request)
         transport.send(request_ref)
@@ -94,7 +94,7 @@ class Remoting(object):
     def _process_request(self, rpc_request):
         iface = self._types.resolve(rpc_request.iface_full_type_name)
         command = iface[rpc_request.command_id]
-        pprint(rpc_request, title='RPC %s:' % command.request_type)
+        pprint(rpc_request, title='Incoming RPC %s:' % command.request_type)
         params = rpc_request.params.decode(command.request)
         pprint(params, title='params:')
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
@@ -108,7 +108,7 @@ class Remoting(object):
             return None
         assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
-        pprint(rpc_response, title='RPC Response:')
+        pprint(rpc_response, title='Outgoing RPC Response:')
         response.log_result_or_error(command)
         return rpc_response
 
