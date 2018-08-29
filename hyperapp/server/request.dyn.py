@@ -50,8 +50,6 @@ class Response(object):
 
     def log_result_or_error(self, command):
         if self._error:
-            log.info('Error:')
-            pprint(self._error)
+            pprint(self._error, title='Error:')
         else:
-            log.info('Result:')
-            pprint(self._result)
+            pprint(self._result, title='Result:')
