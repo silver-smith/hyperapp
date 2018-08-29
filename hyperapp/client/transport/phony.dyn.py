@@ -59,23 +59,23 @@ class ThisModule(ClientModule):
 
     def _queue_thread_main(self):
         while True:
-            log.debug('phony transport: waiting for response bundle...')
-            encoded_response_bundle = self._response_queue.get()
-            if not encoded_response_bundle:
-                log.debug('phony transport: response queue thread is finished.')
+            log.debug('phony transport: waiting for message bundle...')
+            encoded_message_bundle = self._response_queue.get()
+            if not encoded_message_bundle:
+                log.debug('phony transport: message queue thread is finished.')
                 break
-            log.debug('phony transport: scheduling response bundle')
-            asyncio.run_coroutine_threadsafe(self._process_response_bundle(encoded_response_bundle), self._event_loop)
+            log.debug('phony transport: scheduling message bundle')
+            asyncio.run_coroutine_threadsafe(self._process_message_bundle(encoded_message_bundle), self._event_loop)
 
-    async def _process_response_bundle(self, encoded_response_bundle):
+    async def _process_message_bundle(self, encoded_message_bundle):
         try:
-            log.debug('phony transport: processing response bundle...')
-            rpc_response_bundle = decode_bundle(encoded_response_bundle)
-            self._unbundler.register_bundle(rpc_response_bundle)
-            assert len(rpc_response_bundle.roots) == 1
-            rpc_response_capsule = self._ref_resolver.resolve_ref(rpc_response_bundle.roots[0])
-            rpc_response = decode_capsule(self._types, rpc_response_capsule)
-            self._remoting.process_rpc_response(rpc_response_bundle.roots[0], rpc_response)
-            log.debug('phony transport: processing response bundle: done')
+            log.debug('phony transport: processing message bundle...')
+            rpc_message_bundle = decode_bundle(encoded_message_bundle)
+            self._unbundler.register_bundle(rpc_message_bundle)
+            assert len(rpc_message_bundle.roots) == 1
+            rpc_message_capsule = self._ref_resolver.resolve_ref(rpc_message_bundle.roots[0])
+            rpc_message = decode_capsule(self._types, rpc_message_capsule)
+            self._remoting.process_rpc_message(rpc_message_bundle.roots[0], rpc_message)
+            log.debug('phony transport: processing message bundle: done')
         except:
             traceback.print_exc()  # traceback is not shown when scheduled by run_coroutine_threadsafe

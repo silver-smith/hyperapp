@@ -63,20 +63,20 @@ class Remoting(object):
         finally:
             del self._pending_requests[request_id]
 
-    def process_rpc_response(self, rpc_response_ref, rpc_response):
-        log.info('Remoting: processing RPC message: %r', rpc_response)
-        pprint(rpc_response, indent=1)
-        request = self._pending_requests.get(rpc_response.request_id)
+    def process_rpc_message(self, rpc_message_ref, rpc_message):
+        log.info('Remoting: processing RPC message: %r', rpc_message)
+        pprint(rpc_message, indent=1)
+        request = self._pending_requests.get(rpc_message.request_id)
         if not request:
-            log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
+            log.warning('No one is waiting for response %r; ignoring', rpc_message.request_id)
             return
-        if rpc_response.is_succeeded:
+        if rpc_message.is_succeeded:
             result_t = request.iface[request.command.command_id].response
-            result = rpc_response.result_or_error.decode(result_t)
+            result = rpc_message.result_or_error.decode(result_t)
             pprint(result, title='Result:')
             request.future.set_result(result)
         else:
-            error = rpc_response.result_or_error.decode(error_types.error)
+            error = rpc_message.result_or_error.decode(error_types.error)
             pprint(error, title='Error:')
             request.future.set_exception(error)
         log.info('Remoting: processing response: done')

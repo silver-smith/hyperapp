@@ -47,14 +47,14 @@ class TcpProtocol(asyncio.Protocol):
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
             if capsule.full_type_name == ['hyper_ref', 'rpc_message']:
-                self._process_rpc_response(root_ref, capsule)
+                self._process_rpc_message(root_ref, capsule)
             else:
                 assert False, 'Unexpected capsule type: %r' % '.'.join(capsule.full_type_name)
 
-    def _process_rpc_response(self, rpc_response_ref, rpc_response_capsule):
-        rpc_response = decode_capsule(self._types, rpc_response_capsule)
-        assert isinstance(rpc_response, href_types.rpc_response), repr(rpc_response)
-        self._remoting.process_rpc_response(rpc_response_ref, rpc_response)
+    def _process_rpc_message(self, rpc_message_ref, rpc_message_capsule):
+        rpc_message = decode_capsule(self._types, rpc_message_capsule)
+        assert isinstance(rpc_message, href_types.rpc_message), repr(rpc_message)
+        self._remoting.process_rpc_message(rpc_message_ref, rpc_message)
 
     def send(self, message_ref):
         assert isinstance(message_ref, href_types.ref), repr(message_ref)
