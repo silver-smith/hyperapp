@@ -170,7 +170,10 @@ class VisualRepEncoder(object):
         return RepNode(encode_path(obj))
 
 
-def pprint(value, t=None):
+def pprint(value, t=None, indent=0, title=None):
     t = t or deduce_value_type(value)
     rep = VisualRepEncoder().encode(value, t)
-    rep.pprint()
+    if title:
+        log.info(title)
+        indent += 1
+    rep.pprint(indent)

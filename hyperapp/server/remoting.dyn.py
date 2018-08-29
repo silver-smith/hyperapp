@@ -69,10 +69,8 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        log.info('RPC %s:', command.request_type)
-        pprint(rpc_request)
-        log.info('params:')
-        pprint(params)
+        pprint(rpc_request, title='RPC %s:' % command.request_type)
+        pprint(params, title='params:')
         request_ref = self._ref_registry.register_object(rpc_request)
         transport.send(request_ref)
         assert not command.is_request, 'Only sending notifications is now supported for server'
@@ -82,8 +80,7 @@ class Remoting(object):
         assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
         rpc_request = decode_capsule(self._types, capsule)
         assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
-        log.info('RPC request:')
-        pprint(rpc_request)
+        pprint(rpc_request, title='RPC request:')
         rpc_response = self._process_request(rpc_request)
         if rpc_response is not None:
             self._send_rpc_response(rpc_response)
@@ -99,8 +96,7 @@ class Remoting(object):
         iface = self._types.resolve(rpc_request.iface_full_type_name)
         command = iface[rpc_request.command_id]
         params = rpc_request.params.decode(command.request)
-        log.info('params:')
-        pprint(params)
+        pprint(params, title='params:')
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
         request = Request(rpc_request.source_endpoint_ref, command)
         method_name = 'rpc_' + rpc_request.command_id
@@ -112,8 +108,7 @@ class Remoting(object):
             return None
         assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
-        log.info('RPC Response:')
-        pprint(rpc_response)
+        pprint(rpc_response, title='RPC Response:')
         response.log_result_or_error(command)
         return rpc_response
 

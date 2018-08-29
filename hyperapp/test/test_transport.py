@@ -102,8 +102,7 @@ class Server(object, metaclass=log_exceptions):
 
         ref_collector = self.services.ref_collector_factory()
         echo_service_bundle = ref_collector.make_bundle([self.services.echo_service_ref])
-        log.info('Echo service bundle:')
-        pprint(echo_service_bundle)
+        pprint(echo_service_bundle, title='Echo service bundle:')
         return encode_bundle(self.services, echo_service_bundle)
 
 

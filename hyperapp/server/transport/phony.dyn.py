@@ -57,7 +57,7 @@ class PhonyServer(object):
             return  # timed out, will try again
         log.info('Phony server: picking request bundle: got one:')
         bundle = decode_bundle(encoded_bundle)
-        pprint(bundle)
+        pprint(bundle, indent=1)
         self._unbundler.register_bundle(bundle)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
