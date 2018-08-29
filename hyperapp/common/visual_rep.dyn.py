@@ -2,10 +2,11 @@ import logging
 import json
 import codecs
 
+from .interface import hyper_ref as href_types
 from .interface import module as module_types
 from .interface import resource as resource_types
 from .method_dispatch import method_dispatch
-from .util import encode_path, encode_route
+from .util import encode_path, encode_route, full_type_name_to_str
 from .htypes import (
     TString,
     TBinary,
@@ -26,6 +27,7 @@ from .htypes import (
     tTypeModule,
     )
 from .htypes.deduce_value_type import deduce_value_type
+from .ref import ref_repr, make_ref
 from .identity import PublicKey
 
 log = logging.getLogger(__name__)
@@ -64,6 +66,8 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TBinary)
     def encode_binary(self, t, value):
+        if t is href_types.ref:
+            return RepNode('%s' % ref_repr(value))
         return RepNode('binary, len=%d: %s' % (len(value), codecs.encode(value[:40], 'hex')))
 
     @dispatch.register(TDateTime)
@@ -85,6 +89,8 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TList)
     def encode_list(self, t, value):
+        if t is href_types.full_type_name:
+            return RepNode('%r' % full_type_name_to_str(value))
         if t is tPath:
             return self.encode_path(value)
         if t is module_types.requirement:
@@ -97,6 +103,11 @@ class VisualRepEncoder(object):
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.fields]
+        if t is href_types.capsule:
+            ref = make_ref(value)
+            return RepNode('capsule %s: %s (%s)' % (ref_repr(ref), full_type_name_to_str(value.full_type_name), value.encoding))
+        if t is href_types.route:
+            return RepNode('route: %s -> %s' % (ref_repr(value.endpoint_ref), ref_repr(value.transport_ref)))
         if t is module_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
         if t is tCommand:
