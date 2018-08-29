@@ -21,8 +21,8 @@ class EncodableEmbedded(object):
     def encode(self, encoding):
         return packet_coders.encode(encoding, self.value, self.type)
 
-    def decode(self, t):
-        assert t == self.type
+    def decode(self, t=None):
+        assert t is None or t == self.type
         return self.value
 
 
