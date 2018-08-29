@@ -8,8 +8,7 @@ import uuid
 import pytest
 
 from hyperapp.common.init_logging import init_logging
-from hyperapp.common.visual_rep import pprint
-from hyperapp.test.utils import encode_bundle, decode_bundle
+from hyperapp.test.utils import log_exceptions, encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
 
 log = logging.getLogger(__name__)
@@ -82,7 +81,7 @@ class ServerServices(TestServerServices):
         super().__init__(type_module_list, code_module_list)
 
 
-class Server(object):
+class Server(object, metaclass=log_exceptions):
 
     def __init__(self, transport, queues):
         init_logging('test.yaml')
