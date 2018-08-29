@@ -19,9 +19,9 @@ class Transport(object):
         self._ref_collector_factory = ref_collector_factory
         self._request_queue = request_queue
 
-    def send(self, ref):
+    def send(self, message_ref):
         ref_collector = self._ref_collector_factory()
-        bundle = ref_collector.make_bundle([ref])
+        bundle = ref_collector.make_bundle([message_ref])
         log.debug('phony transport: enqueueing request bundle')
         self._request_queue.put(encode_bundle(bundle))
 
