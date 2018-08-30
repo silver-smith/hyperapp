@@ -2,7 +2,7 @@ from PySide import QtCore, QtGui
 from ..common.url import UrlWithRoutes
 from .command import command
 from .module import ClientModule
-from .proxy_object import execute_get_request
+#from .proxy_object import execute_get_request
 
 
 MODULE_NAME = 'url_clipboard'

@@ -3,9 +3,7 @@ import logging
 from PySide import QtCore, QtGui
 from ..common.url import UrlWithRoutes
 from ..common import dict_coders, cdr_coders
-from .server import Server
 from .command import command
-from .proxy_object import execute_get_request
 from . import view
 from . import window
 from .services import Services

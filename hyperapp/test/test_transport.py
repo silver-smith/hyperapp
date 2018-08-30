@@ -58,6 +58,7 @@ client_code_module_list = [
     'client.endpoint_registry',
     'client.service_registry',
     'client.transport.registry',
+    'client.request',
     'client.remoting',
     'client.remoting_proxy',
     'client.transport.phony',
@@ -183,10 +184,12 @@ async def echo_subscribe(services, echo_proxy):
     service = services.types.hyper_ref.service(service_id, ['test', 'echo_notification_iface'])
     service_ref = services.ref_registry.register_object(service)
     notification_service = NotificationService()
-    services.service_registry.register(service_ref, notification_service)
+    services.service_registry.register(service_ref, lambda: notification_service)
     await echo_proxy.subscribe(service_ref)
     await echo_proxy.broadcast('hello')
+    log.info('Waiting for notification:')
     message = (await asyncio.wait_for(notification_service.notify_future, timeout=3))
+    log.info('Waiting for notification: got it: %r', message)
     assert message == 'hello'
 
 @pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_fail, echo_subscribe])

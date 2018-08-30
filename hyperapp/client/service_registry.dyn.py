@@ -1,6 +1,10 @@
+import logging
+
 from ..common.interface import hyper_ref as href_types
 from .registry import Registry
 from .module import ClientModule
+
+log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'service_registry'

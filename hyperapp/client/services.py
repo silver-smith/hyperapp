@@ -26,8 +26,6 @@ from . import navigator
 from . import splitter
 from . import list_view
 
-from . import proxy_object
-
 
 HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
@@ -72,7 +70,9 @@ code_module_list = [
     'client.capsule_registry',
     'client.async_route_resolver',
     'client.endpoint_registry',
+    'client.service_registry',
     'client.transport.registry',
+    'client.request',
     'client.remoting',
     'client.remoting_proxy',
     'client.transport.tcp',
