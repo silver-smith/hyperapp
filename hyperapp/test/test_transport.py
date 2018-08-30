@@ -193,6 +193,7 @@ async def echo_subscribe(services, echo_proxy):
     log.info('Waiting for notification: got it: %r', message)
     assert message == 'hello'
 
+
 @pytest.fixture(params=[echo_say, echo_eat, echo_notify, echo_fail, echo_subscribe])
 def call_echo_fn(request):
     return request.param

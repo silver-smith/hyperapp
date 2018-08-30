@@ -48,6 +48,12 @@ class BlogObject(ListObject):
     def pick_current_refs(self):
         return []
 
+    def observers_arrived(self):
+        self._blog_service.add_observer(self._blog_id, self)
+
+    def observers_gone(self):
+        self._blog_service.remove_observer(self._blog_id, self)
+
     def get_columns(self):
         return [
             Column('id', type=tInt, is_key=True),
@@ -294,9 +300,18 @@ class BlogService(object):
     def __init__(self, proxy):
         self._proxy = proxy
         self._blog_id_article_id_to_row = {}  # (blog_id, article_id) -> blog_row, already fetched rows
+        self._blog_id_to_observer_set = {}
 
     def to_ref(self):
         return self._proxy.service_ref
+
+    def add_observer(self, blog_id, observer):
+        observer_set = self._blog_id_to_observer_set.setdefault(blog_id, set())
+        observer_set.add(observer)
+
+    def remove_observer(self, blog_id, observer):
+        observer_set = self._blog_id_to_observer_set[blog_id]
+        observer_set.remove(observer)
 
     async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
