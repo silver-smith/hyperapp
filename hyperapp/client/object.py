@@ -50,7 +50,9 @@ class Object(Commander):
         self._observers[observer] = self.ObserverArgs(args, kw)
 
     def unsubscribe(self, observer):
+        log.debug('-- Object.unsubscribe; self=%s/%r, observer=%s/%s', id(self), self, id(observer), observer)
         del self._observers[observer]
+        self._on_subscriber_removed()
 
     def observers_gone(self):
         pass
@@ -59,11 +61,11 @@ class Object(Commander):
         def on_remove(self_ref=weakref.ref(self)):
             self = self_ref()
             if self:
+                log.debug('-- Object: observer is gone; self=%s/%r', id(self), self)
                 self._on_subscriber_removed()
         self._observers = WeakKeyDictionaryWithCallback(on_remove=on_remove)
 
     def _on_subscriber_removed(self):
-        log.debug('-- Object._on_subscriber_removed self=%s/%r', id(self), self)
         try:
             if not self._observers:  # this was last reference to me
                 log.debug('-- Object.observers_gone self=%s/%r', id(self), self)
