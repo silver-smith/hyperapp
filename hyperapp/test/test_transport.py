@@ -176,6 +176,7 @@ class NotificationService(object):
         self.notify_future = asyncio.Future()
 
     def rpc_notify(self, request, message):
+        log.info('NotificationService.notify: %r', message)
         self.notify_future.set_result(message)
 
 

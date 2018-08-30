@@ -1,6 +1,7 @@
 import logging
 
 from ..common.interface import hyper_ref as href_types
+from ..common.ref import ref_repr
 from .registry import Registry
 from .module import ClientModule
 
@@ -22,7 +23,7 @@ class ServiceRegistry(Registry):
 
     def resolve(self, service_ref):
         rec = self._resolve(service_ref)
-        log.info('producing service for %r using %s(%s, %s)', service_ref, rec.factory, rec.args, rec.kw)
+        log.info('Service registry: producing service for %r using %s(%s, %s)', ref_repr(service_ref), rec.factory, rec.args, rec.kw)
         return rec.factory(*rec.args, **rec.kw)
 
 
