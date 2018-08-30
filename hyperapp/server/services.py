@@ -43,6 +43,7 @@ type_module_list = [
 
 code_module_list = [
     'common.ref',
+    'common.visual_rep',
     'common.ref_resolver',
     'common.ref_registry',
     'common.route_resolver',
