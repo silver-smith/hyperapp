@@ -4,6 +4,7 @@ import asyncio
 from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.ref import ref_repr, decode_capsule
+from hyperapp.common.visual_rep import pprint
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 from ..module import ClientModule
 
@@ -43,6 +44,7 @@ class TcpProtocol(asyncio.Protocol):
 
     def _process_incoming_bundle(self, bundle):
         self._log('received bundle: refs: %r, %d capsules' % (list(map(ref_repr, bundle.roots)), len(bundle.capsule_list)))
+        pprint(bundle, indent=1)
         self._unbundler.register_bundle(bundle)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
@@ -60,6 +62,8 @@ class TcpProtocol(asyncio.Protocol):
         assert isinstance(message_ref, href_types.ref), repr(message_ref)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([message_ref])
+        self._log('Sending bundle:')
+        pprint(bundle, indent=1)
         data = encode_tcp_packet(bundle, TCP_PACKET_ENCODING)
         self._log('sending data, size=%d' % len(data))
         self._asyncio_transport.write(data)
