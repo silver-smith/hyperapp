@@ -98,13 +98,14 @@ class Server(object, metaclass=log_exceptions):
         self.services.stop()
         assert not self.services.is_failed
 
-    def make_echo_service_bundle(self):
+    def extract_bundle(self, services_attr):
         from hyperapp.common.visual_rep import pprint
 
         ref_collector = self.services.ref_collector_factory()
-        echo_service_bundle = ref_collector.make_bundle([self.services.echo_service_ref])
-        pprint(echo_service_bundle, title='Echo service bundle:')
-        return encode_bundle(self.services, echo_service_bundle)
+        ref = getattr(self.services, services_attr)
+        bundle = ref_collector.make_bundle([ref])
+        pprint(bundle, title='Extracted %r bundle:' % services_attr)
+        return encode_bundle(self.services, bundle)
 
 
 class TestManager(BaseManager):
@@ -137,6 +138,11 @@ class ClientServices(TestClientServices):
         self.request_queue = queues.request
         self.response_queue = queues.response
         super().__init__(type_module_list, code_module_list, event_loop)
+
+    def implant_bundle(self, encoded_bundle):
+        bundle = decode_bundle(self, encoded_bundle)
+        self.unbundler.register_bundle(bundle)
+        return bundle.roots[0]
 
 
 @pytest.fixture
@@ -200,13 +206,11 @@ def call_echo_fn(request):
 
 
 async def client_call_echo_say_service(services, call_echo_fn, encoded_echo_service_bundle):
-    echo_service_bundle = decode_bundle(services, encoded_echo_service_bundle)
-    services.unbundler.register_bundle(echo_service_bundle)
-    echo_service_ref = echo_service_bundle.roots[0]
+    echo_service_ref = services.implant_bundle(encoded_echo_service_bundle)
     echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
     await call_echo_fn(services, echo_proxy)
 
 @pytest.mark.asyncio
 async def test_call_echo(event_loop, queues, server, client_services, call_echo_fn):
-    encoded_echo_service_bundle = server.make_echo_service_bundle()
+    encoded_echo_service_bundle = server.extract_bundle('echo_service_ref')
     await client_call_echo_say_service(client_services, call_echo_fn, encoded_echo_service_bundle)
