@@ -78,8 +78,8 @@ class View(view.View):
         self._child = await self._view_registry.resolve(self._locale, handle, self)
         self._parent().view_changed(self)
         object = self._child.get_object()
-        if object:
-            object.subscribe(self)
+#        if object:
+#            object.subscribe(self)
 
     @command('go_back')
     def go_back(self):

@@ -109,6 +109,7 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def _notify_fetch_result(self, chunk):
         assert isinstance(chunk, Chunk), repr(chunk)
         for observer in self._observers:
+            log.debug('  Calling process_fetch_result on %s/%s', id(observer), observer)
             observer.process_fetch_result(chunk)
 
     def _notify_diff_applied(self, diff):
