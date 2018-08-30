@@ -134,16 +134,3 @@ class ThisModule(PonyOrmModule):
             )
         blog_ref = services.ref_registry.register_object(blog)
         services.management_ref_list.add_ref('blog', blog_ref)
-
-#    def get_commands(self):
-#        return [
-#            ModuleCommand('create', 'Create entry', 'Create new blog entry', None, self.name),
-#            ModuleCommand('open_blog', 'Blog', 'Open blog', 'Alt+B', self.name),
-#            ]
-
-#    def run_command(self, request, command_id):
-#        if command_id == 'create':
-#            return request.make_response_object(BlogEntry())
-#        if command_id == 'open_blog':
-#            return request.make_response_object(Blog())
-#        return PonyOrmModule.run_command(self, request, command_id)
