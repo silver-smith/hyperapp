@@ -5,7 +5,8 @@ import logging
 from pony.orm import db_session, Required, PrimaryKey
 
 from ..common.interface import hyper_ref as href_types
-from ..common.ref import make_capsule, make_ref
+from ..common.util import full_type_name_to_str
+from ..common.ref import ref_repr
 from .ponyorm_module import PonyOrmModule
 
 log = logging.getLogger(__name__)
@@ -16,8 +17,14 @@ MODULE_NAME = 'ref_storage'
 
 class RefStorage(object):
 
+    def __init__(self, ref_resolver):
+        self._ref_resolver = ref_resolver
+        self._recursion_flag = False
+
     @db_session
     def resolve_ref(self, ref):
+        if self._recursion_flag:
+            return None  # Called from our store_ref
         rec = this_module.Ref.get(ref=ref)
         if not rec:
             return None
@@ -29,7 +36,13 @@ class RefStorage(object):
             )
 
     @db_session
-    def store_ref(self, ref, capsule):
+    def store_ref(self, ref):
+        self._recursion_flag = True
+        try:
+            capsule = self._ref_resolver.resolve_ref(ref)
+        finally:
+            self._recursion_flag = False
+        assert capsule, 'Can not store unknown ref: %s' % ref_repr(ref)
         rec = this_module.Ref.get(ref=ref)
         if rec:
             rec.full_type_name = '.'.join(capsule.full_type_name)
@@ -39,24 +52,20 @@ class RefStorage(object):
         else:
             rec = this_module.Ref(
                 ref=ref,
-                full_type_name='.'.join(capsule.full_type_name),
+                full_type_name=full_type_name_to_str(capsule.full_type_name),
                 hash_algorithm=capsule.hash_algorithm,
                 encoding=capsule.encoding,
                 encoded_object=capsule.encoded_object,
                 )
-
-    def add_object(self, t, object):
-        capsule = make_capsule(object, t)
-        ref = make_ref(capsule)
-        self.store_ref(ref, capsule)
-        return ref
+        log.info('Ref storage: ref %s is stored, type: %s, encoding: %s',
+                     ref_repr(ref), full_type_name_to_str(capsule.full_type_name), capsule.encoding)
 
 
 class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.ref_storage = ref_storage = RefStorage()
+        services.ref_storage = ref_storage = RefStorage(services.ref_resolver)
         services.ref_resolver.add_source(ref_storage)
 
     def init_phase2(self, services):

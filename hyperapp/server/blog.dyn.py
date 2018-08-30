@@ -7,6 +7,7 @@ from pony.orm import db_session, flush, desc, Required, Optional, Set
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
+from ..common.ref import ref_repr
 from ..common.list_object import rows2fetched_chunk
 from .util import utcnow, path_part_to_str
 from .ponyorm_module import PonyOrmModule
@@ -19,6 +20,12 @@ BLOG_SERVICE_ID = 'blog'
 
 
 class BlogService(object):
+
+    def __init__(self, ref_storage):
+        self._ref_storage = ref_storage
+
+    def get_self(self):
+        return self
 
     def rpc_fetch_blog_contents(self, request, blog_id, fetch_request):
         all_rows = self.fetch_blog_contents(blog_id)
@@ -82,8 +89,9 @@ class BlogService(object):
             title=title,
             ref=ref,
             )
+        self._ref_storage.store_ref(ref)
         flush()  # make rec.id
-        log.info('Article ref#%d %r is is added: %s', rec.id, title, codecs.encode(rec.ref, 'hex'))
+        log.info('Blog %r article#%d ref#%d %s is added with title %r', blog_id, article.id, rec.id, ref_repr(ref), title)
         return request.make_response_result(ref_id=rec.id)
 
     @db_session
@@ -91,7 +99,8 @@ class BlogService(object):
         rec = this_module.ArticleRef[ref_id]
         rec.title = title
         rec.ref = ref
-        log.info('Article ref#%d is updated to %r: %s', rec.id, title, codecs.encode(rec.ref, 'hex'))
+        self._ref_storage.store_ref(ref)
+        log.info('Blog %r article#%d ref#%d is updated to %s, title %r', blog_id, article_id, rec.id, ref_repr(ref), title)
 
     @db_session
     def rpc_delete_ref(self, request, ref_id):
@@ -103,6 +112,7 @@ class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
+        self._blog_service = BlogService(services.ref_storage)
 
     def init_phase2(self, services):
         self.Article = self.make_entity(
@@ -125,7 +135,7 @@ class ThisModule(PonyOrmModule):
     def init_phase3(self, services):
         service = href_types.service(BLOG_SERVICE_ID, ['blog', 'blog_service_iface'])
         service_ref = services.ref_registry.register_object(service)
-        services.service_registry.register(service_ref, BlogService)
+        services.service_registry.register(service_ref, self._blog_service.get_self)
 
         blog = blog_types.blog_ref(
             blog_service_ref=service_ref,
