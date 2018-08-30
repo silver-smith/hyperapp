@@ -47,12 +47,16 @@ class Object(Commander):
     def subscribe(self, observer, *args, **kw):
         assert isinstance(observer, ObjectObserver), repr(observer)
         log.debug('-- Object.subscribe self=%s/%s, observer=%s/%s', id(self), self, id(observer), observer)
+        self._on_subscriber_added()
         self._observers[observer] = self.ObserverArgs(args, kw)
 
     def unsubscribe(self, observer):
         log.debug('-- Object.unsubscribe; self=%s/%r, observer=%s/%s', id(self), self, id(observer), observer)
         del self._observers[observer]
         self._on_subscriber_removed()
+
+    def observers_arrived(self):
+        pass
 
     def observers_gone(self):
         pass
@@ -65,11 +69,21 @@ class Object(Commander):
                 self._on_subscriber_removed()
         self._observers = WeakKeyDictionaryWithCallback(on_remove=on_remove)
 
-    def _on_subscriber_removed(self):
+    def _on_subscriber_added(self):
+        if self._observers:  # will it be first subscriber?
+            return
         try:
-            if not self._observers:  # this was last reference to me
-                log.debug('-- Object.observers_gone self=%s/%r', id(self), self)
-                self.observers_gone()
+            log.debug('-- Object.observers_arrived self=%s/%r', id(self), self)
+            self.observers_arrived()
+        except:
+            traceback.print_exc()
+
+    def _on_subscriber_removed(self):
+        if self._observers:  # was it last subscriber?
+            return
+        try:
+            log.debug('-- Object.observers_gone self=%s/%r', id(self), self)
+            self.observers_gone()
         except:
             traceback.print_exc()
 
