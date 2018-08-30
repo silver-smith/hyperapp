@@ -21,34 +21,6 @@ DYNAMIC_REF_LIST_SERVICE_ID = 'dynamic_ref_list'
 SERVER_MANAGEMENT_REF_LIST_ID = 'server_management'
 
 
-## class CommandList(SmallListObject):
-
-##     iface = server_management_types.server_management
-##     impl_id = 'proxy_list'
-
-##     @classmethod
-##     def get_path(cls):
-##         return this_module.make_path()
-
-##     def __init__(self, module_registry):
-##         SmallListObject.__init__(self, core_types)
-##         self._module_registry = module_registry
-
-##     def fetch_all_elements(self, request):
-##         return list(map(self.cmd2element, self._module_registry.get_all_modules_commands()))
-
-##     def cmd2element(self, cmd):
-##         commands = [self.command_open]
-##         id = '%s.%s' % (cmd.module_name, cmd.id)
-##         return self.Element(self.Row(id, cmd.module_name, cmd.text, cmd.desc), commands)
-
-##     @command('open', kind='element')
-##     def command_open(self, request):
-##         module_name, command_id = request.params.element_key.split('.')
-##         module = self._module_registry.get_module_by_name(module_name)
-##         return module.run_command(request, command_id)
-
-
 class DynamicRefListService(object):
 
     def __init__(self):
