@@ -79,7 +79,7 @@ class View(view.View):
         self._parent().view_changed(self)
         object = self._child.get_object()
         if object:
-            await object.server_subscribe()
+            object.subscribe(self)
 
     @command('go_back')
     def go_back(self):

@@ -46,14 +46,11 @@ class Object(Commander):
 
     def subscribe(self, observer, *args, **kw):
         assert isinstance(observer, ObjectObserver), repr(observer)
-        log.debug('-- Object.subscribe self=%s/%s, observer=%s', id(self), self, id(observer))
+        log.debug('-- Object.subscribe self=%s/%s, observer=%s/%s', id(self), self, id(observer), observer)
         self._observers[observer] = self.ObserverArgs(args, kw)
 
     def unsubscribe(self, observer):
         del self._observers[observer]
-
-    async def server_subscribe(self):
-        pass
 
     def observers_gone(self):
         pass
