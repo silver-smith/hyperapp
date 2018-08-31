@@ -7,7 +7,7 @@ from ..common.interface import error as error_types
 from ..common.interface import hyper_ref as href_types
 from ..common.util import full_type_name_to_str
 from ..common.htypes import EncodableEmbedded
-from ..common.ref import ref_repr
+from ..common.ref import ref_repr, ref_list_repr
 from ..common.visual_rep import pprint
 from .request import Request
 from .module import ClientModule
@@ -37,7 +37,7 @@ class Remoting(object):
     async def send_request(self, service_ref, iface, command, params):
         transport_ref_set = await self._async_route_resolver.resolve(service_ref)
         assert transport_ref_set, 'No routes for service %s' % ref_repr(service_ref)
-        assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple route support
+        assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
         transport = await self._transport_resolver.resolve(transport_ref_set.pop())
         if command.is_request:
             request_id = str(uuid.uuid4())
