@@ -1,7 +1,4 @@
 import logging
-from collections import namedtuple
-import multiprocessing
-from multiprocessing.managers import BaseManager
 import asyncio
 import uuid
 
@@ -29,9 +26,6 @@ server_code_module_list = [
     'server.echo_service',
     ]
 
-client_code_module_list = [
-    ]
-
 
 @pytest.fixture
 def server(test_manager, queues, transport):
@@ -51,7 +45,7 @@ def client_services(event_loop, queues, transport):
             event_loop,
             queues,
             transport_type_module_list(transport) + type_module_list,
-            transport_client_code_module_list(transport) + client_code_module_list,
+            transport_client_code_module_list(transport),
             ) as client_services:
         yield client_services
 
