@@ -124,6 +124,7 @@ class Remoting(object):
         if not request:
             log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
             return
+        log.info('Response is for %s %s', full_type_name_to_str(request.iface.full_name), request.command.command_id)
         if rpc_response.is_succeeded:
             result_t = request.iface[request.command.command_id].response
             result = rpc_response.result_or_error.decode(result_t)

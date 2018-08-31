@@ -73,13 +73,32 @@ def client_services(event_loop, queues, transport):
         yield client_services
 
 
+async def pick_test_article(blog_service):
+    chunk = await blog_service.fetch_blog_contents('blog_1', sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
+    for article in chunk.rows:
+        if article.title == 'title 1':
+            return article
+    pytest.skip('No test articles in blog_1')
+
 async def blog_create_article(services, blog_service):
     article_id = await blog_service.create_article('blog_1', 'title 1', 'text\ntext\n1')
     assert article_id
     assert isinstance(article_id, int)
 
+async def blog_fetch_blog_contents(services, blog_service):
+    chunk = await blog_service.fetch_blog_contents('blog_1', sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
 
-@pytest.fixture(params=[blog_create_article])
+async def blog_get_blog_row(services, blog_service):
+    article1 = await pick_test_article(blog_service)
+    log.info('Requesting blog row for article#%d', article1.id)
+    article2 = await blog_service.get_blog_row('blog_1', article1.id)
+    assert article1.id == article2.id
+
+async def blog_get_article_ref_list(services, blog_service):
+    ref_list = await blog_service.get_article_ref_list('blog_1', article_id)
+
+
+@pytest.fixture(params=[blog_create_article, blog_fetch_blog_contents, blog_get_blog_row])
 def test_fn(request):
     return request.param
 
