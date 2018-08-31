@@ -358,6 +358,7 @@ class ThisModule(ClientModule):
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver
         self._proxy_factory = services.proxy_factory
+        services.blog_service_factory = self._blog_service_factory
         services.handle_registry.register(blog_types.blog_ref, self._resolve_blog_object)
         services.handle_registry.register(blog_types.blog_article_ref, self._resolve_blog_article_object, services.proxy_factory)
         services.handle_registry.register(blog_types.blog_article_ref_list_ref, self._resolve_blog_article_ref_list_object)
@@ -371,6 +372,9 @@ class ThisModule(ClientModule):
             ArticleRefListObject.impl_id, ArticleRefListObject.from_state, services.ref_registry, services.proxy_factory, services.handle_resolver)
         object_selector.this_module.register_callback(
             blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.proxy_factory, services.handle_resolver)
+
+    async def _blog_service_factory(self, blog_service_ref):
+        return (await BlogService.from_data(blog_service_ref, self._proxy_factory))
 
     async def _resolve_blog_object(self, blog_object_ref, blog_object):
         list_object = blog_types.blog_object(BlogObject.impl_id, blog_object.blog_service_ref, blog_object.blog_id)
