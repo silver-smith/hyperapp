@@ -1,13 +1,25 @@
 from hyperapp.common.module_registry import ModuleRegistry
 from hyperapp.common.module_manager import ModuleManager
 from hyperapp.server.services import ServerServicesBase
+from hyperapp.server.module import ServerModule
 from hyperapp.client.services import ClientServicesBase
 
 
 class PhonyModuleRegistry(ModuleRegistry):
 
+    def __init__(self):
+        self._module_list = []
+
     def register(self, module):
-        pass
+        self._module_list.append(module)  # preserves import order
+
+    def init_phases(self, services):
+        for module in self._module_list:
+            if isinstance(module, ServerModule):
+                module.init_phase2(services)
+        for module in self._module_list:
+            if isinstance(module, ServerModule):
+                module.init_phase3(services)
 
 
 class TestServicesMixin(object):
@@ -35,6 +47,7 @@ class TestServerServices(ServerServicesBase, TestServicesMixin):
         self.init_services(config)
         self.init_module_manager()
         self.load_modules(type_module_list, code_module_list)
+        self.module_registry.init_phases(self)
 
 
 class TestClientServices(ClientServicesBase, TestServicesMixin):
