@@ -85,6 +85,11 @@ async def blog_create_article(services, blog_service):
     assert article_id
     assert isinstance(article_id, int)
 
+async def blog_save_article(services, blog_service):
+    article = await pick_test_article(blog_service)
+    log.info('Saving article#%d', article.id)
+    await blog_service.save_article('blog_1', article.id, article.title, 'new text')
+
 async def blog_fetch_blog_contents(services, blog_service):
     chunk = await blog_service.fetch_blog_contents('blog_1', sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
 
@@ -98,7 +103,7 @@ async def blog_get_article_ref_list(services, blog_service):
     ref_list = await blog_service.get_article_ref_list('blog_1', article_id)
 
 
-@pytest.fixture(params=[blog_create_article, blog_fetch_blog_contents, blog_get_blog_row])
+@pytest.fixture(params=[blog_create_article, blog_save_article, blog_fetch_blog_contents, blog_get_blog_row])
 def test_fn(request):
     return request.param
 
