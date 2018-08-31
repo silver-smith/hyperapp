@@ -31,7 +31,7 @@ client_code_module_list = [
 
 @pytest.fixture
 def client_services(event_loop):
-    return TestClientServices(type_module_list, client_code_module_list, event_loop)
+    return TestClientServices(event_loop, type_module_list, client_code_module_list)
 
 
 @pytest.mark.parametrize('encoding', ['json', 'cdr'])

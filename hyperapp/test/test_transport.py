@@ -7,152 +7,53 @@ import uuid
 
 import pytest
 
-from hyperapp.common.init_logging import init_logging
-from hyperapp.test.utils import log_exceptions, encode_bundle, decode_bundle
-from hyperapp.test.test_services import TestServerServices, TestClientServices
+from hyperapp.test.client_server_fixtures import (
+    test_manager,
+    queues,
+    server_running,
+    client_services_running,
+    transport,
+    transport_type_module_list,
+    transport_server_code_module_list,
+    transport_client_code_module_list,
+    )
 
 log = logging.getLogger(__name__)
 
 
 type_module_list = [
-    'error',
-    'resource',
-    'core',
-    'hyper_ref',
-    'module',
-    'packet',
-    'phony_transport',
-    'tcp_transport',
-    'encrypted_transport',
     'test',
     ]
 
 server_code_module_list = [
-    'common.ref',
-    'common.visual_rep',
-    'common.ref_resolver',
-    'common.route_resolver',
-    'common.ref_collector',
-    'common.ref_registry',
-    'common.unbundler',
-    'common.tcp_packet',
-    'server.transport.registry',
-    'server.request',
-    'server.remoting',
-    'server.remoting_proxy',
     'server.echo_service',
     ]
 
 client_code_module_list = [
-    'common.ref',
-    'common.visual_rep',
-    'common.ref_resolver',
-    'common.route_resolver',
-    'common.ref_collector',
-    'common.ref_registry',
-    'common.unbundler',
-    'common.tcp_packet',
-    'client.async_ref_resolver',
-    'client.capsule_registry',
-    'client.async_route_resolver',
-    'client.endpoint_registry',
-    'client.service_registry',
-    'client.transport.registry',
-    'client.request',
-    'client.remoting',
-    'client.remoting_proxy',
-    'client.transport.phony',
-    'client.transport.tcp',
     ]
 
 
-Queues = namedtuple('Queues', 'request response')
-
-
-@pytest.fixture
-def queues():
-    with multiprocessing.Manager() as manager:
-        yield Queues(manager.Queue(), manager.Queue())
-
-
-class ServerServices(TestServerServices):
-
-    def __init__(self, type_module_list, code_module_list, queues):
-        # queues are used by phony transport module
-        self.request_queue = queues.request
-        self.response_queue = queues.response
-        super().__init__(type_module_list, code_module_list)
-
-
-class Server(object, metaclass=log_exceptions):
-
-    def __init__(self, transport, queues):
-        init_logging('test.yaml')
-        code_module_list = server_code_module_list + [
-            'server.transport.%s' % transport,
-            ]
-        self.services = ServerServices(type_module_list, code_module_list, queues)
-        self.services.start()
-
-    def stop(self):
-        self.services.stop()
-        assert not self.services.is_failed
-
-    def extract_bundle(self, services_attr):
-        from hyperapp.common.visual_rep import pprint
-
-        ref_collector = self.services.ref_collector_factory()
-        ref = getattr(self.services, services_attr)
-        bundle = ref_collector.make_bundle([ref])
-        pprint(bundle, title='Extracted %r bundle:' % services_attr)
-        return encode_bundle(self.services, bundle)
-
-
-class TestManager(BaseManager):
-    __test__ = False
-
-TestManager.register('Server', Server)
-
-@pytest.fixture
-def test_manager():
-    with TestManager() as manager:
-        yield manager
-
-
-@pytest.fixture(params=['phony', 'tcp'])
-def transport(request):
-    return request.param
-
 @pytest.fixture
 def server(test_manager, queues, transport):
-    server = test_manager.Server(transport, queues)
-    yield server
-    log.debug('Test is finished, stopping the server now...')
-    server.stop()
-
-
-class ClientServices(TestClientServices):
-
-    def __init__(self, type_module_list, code_module_list, event_loop, queues):
-        # queues are used by phony transport module
-        self.request_queue = queues.request
-        self.response_queue = queues.response
-        super().__init__(type_module_list, code_module_list, event_loop)
-
-    def implant_bundle(self, encoded_bundle):
-        bundle = decode_bundle(self, encoded_bundle)
-        self.unbundler.register_bundle(bundle)
-        return bundle.roots[0]
+    with server_running(
+            test_manager,
+            queues,
+            transport,
+            transport_type_module_list(transport) + type_module_list,
+            transport_server_code_module_list(transport) + server_code_module_list,
+            ) as server:
+        yield server
 
 
 @pytest.fixture
-def client_services(queues, event_loop):
-    event_loop.set_debug(True)
-    init_logging('test.yaml')
-    services = ClientServices(type_module_list, client_code_module_list, event_loop, queues)
-    services.start()
-    yield services
-    services.stop()
+def client_services(event_loop, queues, transport):
+    with client_services_running(
+            event_loop,
+            queues,
+            transport_type_module_list(transport) + type_module_list,
+            transport_client_code_module_list(transport) + client_code_module_list,
+            ) as client_services:
+        yield client_services
 
 
 async def echo_say(services, echo_proxy):
@@ -205,12 +106,9 @@ def call_echo_fn(request):
     return request.param
 
 
-async def client_call_echo_say_service(services, call_echo_fn, encoded_echo_service_bundle):
-    echo_service_ref = services.implant_bundle(encoded_echo_service_bundle)
-    echo_proxy = await services.proxy_factory.from_ref(echo_service_ref)
-    await call_echo_fn(services, echo_proxy)
-
 @pytest.mark.asyncio
 async def test_call_echo(event_loop, queues, server, client_services, call_echo_fn):
     encoded_echo_service_bundle = server.extract_bundle('echo_service_ref')
-    await client_call_echo_say_service(client_services, call_echo_fn, encoded_echo_service_bundle)
+    echo_service_ref = client_services.implant_bundle(encoded_echo_service_bundle)
+    echo_proxy = await client_services.proxy_factory.from_ref(echo_service_ref)
+    await call_echo_fn(client_services, echo_proxy)

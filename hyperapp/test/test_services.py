@@ -39,7 +39,7 @@ class TestServerServices(ServerServicesBase, TestServicesMixin):
 
 class TestClientServices(ClientServicesBase, TestServicesMixin):
 
-    def __init__(self, type_module_list, code_module_list, event_loop):
+    def __init__(self, event_loop, type_module_list, code_module_list):
         super().__init__()
         self.event_loop = event_loop
         self.init_services()
