@@ -113,6 +113,10 @@ class ThisModule(PonyOrmModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         self._blog_service = BlogService(services.ref_storage)
+        service = href_types.service(BLOG_SERVICE_ID, ['blog', 'blog_service_iface'])
+        self._blog_service_ref = service_ref = services.ref_registry.register_object(service)
+        services.blog_service_ref = service_ref
+        services.service_registry.register(service_ref, self._blog_service.get_self)
 
     def init_phase2(self, services):
         self.Article = self.make_entity(
@@ -133,12 +137,8 @@ class ThisModule(PonyOrmModule):
             )
 
     def init_phase3(self, services):
-        service = href_types.service(BLOG_SERVICE_ID, ['blog', 'blog_service_iface'])
-        service_ref = services.ref_registry.register_object(service)
-        services.service_registry.register(service_ref, self._blog_service.get_self)
-
         blog = blog_types.blog_ref(
-            blog_service_ref=service_ref,
+            blog_service_ref=self._blog_service_ref,
             blog_id='test-blog',
             current_article_id=None,
             )
