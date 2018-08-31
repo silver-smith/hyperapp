@@ -15,10 +15,6 @@ horizontal = 'horizontal'
 vertical = 'vertical'
 
 
-def register_views(registry, services):
-    registry.register(View.view_id, View.from_state, services.view_registry)
-
-
 def orient2qt(orient):
     if orient == horizontal:
         return QtCore.Qt.Horizontal
@@ -202,6 +198,7 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         self.splitter_types = importlib.import_module('hyperapp.common.interface.splitter')
+        services.view_registry.register(View.view_id, View.from_state, services.view_registry)
 
     def splitter_handle(self, x, y, orientation, focused=0, sizes=None):
         return self.splitter_types.splitter_handle(View.view_id, x, y, orientation=orientation, focused=0, sizes=sizes or [])

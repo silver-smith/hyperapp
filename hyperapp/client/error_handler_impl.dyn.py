@@ -12,10 +12,6 @@ ERROR_HANDLER_VIEW_ID = 'error_handler'
 ERROR_HANDLER_CLASS_ID = 'error_handler'
 
 
-def register_views(registry, services):
-    registry.register(ERROR_HANDLER_VIEW_ID, this_module.resolve_error_handler)
-
-
 class ThisModule(ClientModule):
 
     def __init__(self, services):
@@ -25,6 +21,7 @@ class ThisModule(ClientModule):
             ERROR_HANDLER_CLASS_ID, base=services.types.core.view_handle, fields=[
                 Field('error', error_types.error),
                 ])
+        services.view_registry.register(ERROR_HANDLER_VIEW_ID, self.resolve_error_handler)
         set_error_handler(self.error_handler)
 
     async def resolve_error_handler(self, locale, state, parent):

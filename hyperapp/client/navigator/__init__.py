@@ -1,6 +1,5 @@
 from .module import get_this_module, ThisModule
-from .navigator import register_views, View
-from .history_list import register_object_implementations
+from .navigator import View
 
 
 def get_item_type():

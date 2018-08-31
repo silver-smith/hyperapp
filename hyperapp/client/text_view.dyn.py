@@ -14,10 +14,6 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'text_view'
 
 
-def register_views(registry, services):
-    registry.register('text_view', View.from_state, services.objimpl_registry)
-
-
 class View(view.View, QtGui.QTextBrowser):
 
     @classmethod
@@ -75,3 +71,4 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         self.state_type = core_types.obj_handle
+        services.view_registry.register('text_view', View.from_state, services.objimpl_registry)

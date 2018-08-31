@@ -10,16 +10,15 @@ from .command import Command, ViewCommand
 from .list_object import ListObserver, ListObject
 from . import view
 from .slice import Slice
+from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
 
+MODULE_NAME = 'list_view'
+
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling 
-
-
-def register_views(registry, services):
-    registry.register('list', View.from_state, services.types.core, services.objimpl_registry, services.resources_manager)
 
 
 class Model(QtCore.QAbstractTableModel):
@@ -438,3 +437,10 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def __del__(self):
         log.debug('~list_view.View self=%r', id(self))
+
+
+class ThisModule(ClientModule):
+
+    def __init__(self, services):
+        super().__init__(MODULE_NAME, services)
+        services.view_registry.register('list', View.from_state, services.types.core, services.objimpl_registry, services.resources_manager)

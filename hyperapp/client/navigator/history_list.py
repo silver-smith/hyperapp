@@ -3,14 +3,8 @@ from hyperapp.common.util import is_list_inst
 #from hyperapp.common.htypes import tInt, Column
 from ..command import command
 from ..list_object import Element, Chunk, ListObject
-from .module import get_this_module
 
 log = logging.getLogger(__name__)
-
-
-def register_object_implementations(registry, services):
-    this_module = get_this_module()
-    registry.register(HistoryList.impl_id, HistoryList.from_state, this_module)
 
 
 class HistoryList(ListObject):

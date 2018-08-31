@@ -6,6 +6,8 @@ from hyperapp.common.htypes import (
     TRecord,
     )
 from ..module import ClientModule
+from .navigator import View
+from .history_list import HistoryList
 
 
 MODULE_NAME = 'navigator'
@@ -36,3 +38,5 @@ class ThisModule(ClientModule):
             ])
         #self.history_list_handle_type = list_handle_type(core_types, tInt)
         this_module = self
+        services.view_registry.register('navigator', View.from_state, services.view_registry, self)
+        services.objimpl_registry.register(HistoryList.impl_id, HistoryList.from_state, self)

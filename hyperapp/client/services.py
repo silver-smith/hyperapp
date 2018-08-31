@@ -5,7 +5,6 @@ from ..common.htypes.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from .objimpl_registry import ObjImplRegistry
-from .view_registry import ViewRegistry
 from .param_editor_registry import ParamEditorRegistry
 #from .remoting import Remoting
 from .resources_manager import ResourcesRegistry, ResourcesManager
@@ -78,6 +77,7 @@ code_module_list = [
     'client.transport.tcp',
     'client.remote_ref_resolver',
     'client.remote_route_resolver',
+    'client.view_registry',
     'client.form',
 #    'code_repository',
 #    'identity',
@@ -127,11 +127,9 @@ class Services(ClientServicesBase):
         self._load_type_modules(type_module_list)
         self.objimpl_registry = ObjImplRegistry('object')
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
-        self.view_registry = ViewRegistry(self.module_registry)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager.init_types(self)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
-        self.view_registry.set_core_types(self.types.core)
         self.resources_registry = ResourcesRegistry(self.types.resource)
         self.resources_manager = ResourcesManager(
             self.types.resource, self.types.param_editor, self.resources_registry, self.cache_repository, self._hyperapp_client_dir)
@@ -139,7 +137,6 @@ class Services(ClientServicesBase):
         self._register_static_modules()
         #self._register_transports()
         self._register_object_implementations()
-        self._register_views()
 
     async def async_init(self):
         await self.module_registry.async_init(self)
@@ -150,6 +147,7 @@ class Services(ClientServicesBase):
                 tab_view,
                 window,
                 splitter,
+                list_view,
                 url_clipboard,
             ]:
             this_module = module.ThisModule(self)
@@ -167,14 +165,5 @@ class Services(ClientServicesBase):
     def _register_object_implementations(self):
         for module in [
                 #proxy_object,
-                navigator,
                 ]:
             module.register_object_implementations(self.objimpl_registry, self)
-
-    def _register_views(self):
-        for module in [
-                navigator,
-                splitter,
-                list_view,
-                ]:
-            module.register_views(self.view_registry, self)

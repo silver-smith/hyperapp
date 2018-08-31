@@ -8,7 +8,6 @@ from ..util import key_match, key_match_any
 from ..command import command
 from ..import view
 from ..import list_view
-from .module import get_this_module
 from .history_list import HistoryList
 
 log = logging.getLogger(__name__)
@@ -16,11 +15,6 @@ log = logging.getLogger(__name__)
 
 HISTORY_LIST_RESOURCE_ID = ['client_module', 'navigator', 'HistoryList']
 MAX_HISTORY_SIZE = 100
-
-
-def register_views(registry, services):
-    this_module = get_this_module()
-    registry.register('navigator', View.from_state, services.view_registry, this_module)
 
 
 class View(view.View):
