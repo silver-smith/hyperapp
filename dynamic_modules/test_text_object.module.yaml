@@ -1,5 +1,0 @@
-id: test_text_object
-package: hyperapp.client
-source_path: test_text_object.py
-satisfies:
- - object/test_text

@@ -4,7 +4,6 @@ from pathlib import Path
 from ..common.htypes.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
-from .objimpl_registry import ObjImplRegistry
 from .param_editor_registry import ParamEditorRegistry
 #from .remoting import Remoting
 from .resources_manager import ResourcesRegistry, ResourcesManager
@@ -77,6 +76,7 @@ code_module_list = [
     'client.transport.tcp',
     'client.remote_ref_resolver',
     'client.remote_route_resolver',
+    'client.objimpl_registry',
     'client.view_registry',
     'client.form',
 #    'code_repository',
@@ -125,7 +125,6 @@ class Services(ClientServicesBase):
         self.modules = self.module_manager.modules
         self.module_manager.register_meta_hook()
         self._load_type_modules(type_module_list)
-        self.objimpl_registry = ObjImplRegistry('object')
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.param_editor_registry = ParamEditorRegistry()
         self.module_manager.init_types(self)
@@ -136,7 +135,6 @@ class Services(ClientServicesBase):
         self._load_code_modules()
         self._register_static_modules()
         #self._register_transports()
-        self._register_object_implementations()
 
     async def async_init(self):
         await self.module_registry.async_init(self)
@@ -161,9 +159,3 @@ class Services(ClientServicesBase):
     def _load_code_modules(self):
         for module_name in code_module_list:
             self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
-
-    def _register_object_implementations(self):
-        for module in [
-                #proxy_object,
-                ]:
-            module.register_object_implementations(self.objimpl_registry, self)

@@ -21,11 +21,6 @@ from .list_object import Element, Chunk, ListObject
 log = logging.getLogger(__name__)
 
 
-def register_object_implementations(registry, services):
-    registry.register(IdentityFormObject.impl_id, IdentityFormObject.from_state, services.identity_controller)
-    registry.register(IdentityList.impl_id, IdentityList.from_state, services.identity_controller)
-
-
 class IdentityItem(object):
 
     def __init__(self, name, identity):
@@ -175,6 +170,8 @@ class ThisModule(ClientModule):
         repository = (getattr(services, 'identity_repository', None)  # overriden by test
                       or FileIdentityRepository(Path('~/.local/share/hyperapp/client/identities').expanduser()))
         services.identity_controller = IdentityController(repository)
+        services.objimpl_registry.register(IdentityFormObject.impl_id, IdentityFormObject.from_state, services.identity_controller)
+        services.objimpl_registry.register(IdentityList.impl_id, IdentityList.from_state, services.identity_controller)
 
     @command('identity_list')
     def command_identity_list(self):

@@ -14,10 +14,6 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'text_object'
 
 
-def register_object_implementations(registry, serevices):
-    registry.register(TextObject.impl_id, TextObject.from_state)
-
-
 class TextObject(Object):
 
     impl_id = 'text'
@@ -83,3 +79,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
+        services.objimpl_registry.register(TextObject.impl_id, TextObject.from_state)

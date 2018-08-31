@@ -1,5 +1,0 @@
-id: text_proxy
-package: hyperapp.client
-source_path: text_proxy.py
-satisfies:
- - object/proxy.text

@@ -19,11 +19,6 @@ from .proxy_object import execute_get_request
 from .named_url_file_repository import NamedUrl, NamedUrlRepository
 
 
-def register_object_implementations(registry, services):
-    registry.register(BookmarkList.impl_id, BookmarkList.from_state,
-                      services.iface_registry, services.remoting, services.bookmarks)
-
-
 class Bookmarks(object):
 
     def __init__(self, repository):
@@ -119,6 +114,8 @@ class ThisModule(ClientModule):
         self.bookmarks = Bookmarks(FileNamedUrlRepository(
             services.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/bookmarks')))
         services.bookmarks = self.bookmarks
+        services.objimpl_registry.register(
+            BookmarkList.impl_id, BookmarkList.from_state, services.iface_registry, services.remoting, services.bookmarks)
 
     def get_object_command_list(self, object, kinds=None):
         if object.get_url() is not None:

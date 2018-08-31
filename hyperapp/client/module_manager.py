@@ -12,7 +12,6 @@ class ModuleManager(common_module_manager.ModuleManager):
         self._id2module = {}
 
     def init_types(self, services):
-        self._objimpl_registry = services.objimpl_registry
         self._param_editor_registry = services.param_editor_registry
 
     def load_code_module(self, module, fullname=None):
@@ -36,5 +35,4 @@ class ModuleManager(common_module_manager.ModuleManager):
                 log.debug('ModuleManager: module %s: registering %s...', module.id, fn_name)
                 fn(DynamicModuleRegistryProxy(registry, module.id), self._services)
 
-        register('register_object_implementations', self._objimpl_registry)
         register('register_param_editors', self._param_editor_registry)

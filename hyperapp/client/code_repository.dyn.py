@@ -27,11 +27,6 @@ from .named_url_file_repository import NamedUrl, NamedUrlRepository, FileNamedUr
 log = logging.getLogger(__name__)
 
 
-def register_object_implementations(registry, services):
-    registry.register('code_repository_form', CodeRepositoryFormObject.from_state, services.iface_registry, services.code_repository)
-    registry.register('code_repository_list', CodeRepositoryList.from_state, services.code_repository)
-
-
 class CodeRepository(object):
 
     def __init__(self, iface_registry, remoting, cache_repository, url_repository):
@@ -190,6 +185,8 @@ class ThisModule(ClientModule):
         services.code_repository = CodeRepository(
             services.iface_registry, services.remoting, services.cache_repository,
             FileNamedUrlRepository(services.iface_registry, os.path.expanduser('~/.local/share/hyperapp/client/code_repositories')))
+        services.objimpl_registry.register('code_repository_form', CodeRepositoryFormObject.from_state, services.iface_registry, services.code_repository)
+        services.objimpl_registry.register('code_repository_list', CodeRepositoryList.from_state, services.code_repository)
 
     @command('repository_list')
     def command_repository_list(self):
