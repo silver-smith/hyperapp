@@ -10,7 +10,7 @@ from queue import Queue
 from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.ref import LOCAL_TRANSPORT_REF, decode_capsule
+from hyperapp.common.ref import LOCAL_TRANSPORT_REF, ref_repr, decode_capsule
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 from hyperapp.common.route_resolver import RouteRegistry
 from ..module import Module
@@ -108,9 +108,9 @@ class TcpClient(object):
         return self._connection_id
 
     def start(self):
-        self._my_address_ref = self._ref_registry.register_object(
-            tcp_transport_types.incoming_connection_address(connection_id=self._connection_id),
-            )
+        address = tcp_transport_types.incoming_connection_address(connection_id=self._connection_id)
+        self._my_address_ref = self._ref_registry.register_object(address)
+        self._log('Incoming connection address %s: %s', ref_repr(self._my_address_ref), address)
         self._route_resolver.add_source(self._my_route_registry)
         self._thread.start()
 
