@@ -23,6 +23,7 @@ class BlogService(object):
 
     def __init__(self, ref_storage):
         self._ref_storage = ref_storage
+        self._subscriptions = {}  # blog id -> service ref set
 
     def get_self(self):
         return self
@@ -107,6 +108,11 @@ class BlogService(object):
     def rpc_delete_ref(self, request, ref_id):
         this_module.ArticleRef[ref_id].delete()
         log.info('Article ref#%d is deleted', ref_id)
+
+    def rpc_subscribe(self, request, blog_id_list, service_ref):
+        for blog_id in blog_id_list:
+            blog_service_ref_set = self._subscriptions.setdefault(blog_id, set())
+            blog_service_ref_set.add(service_ref)
 
 
 class ThisModule(PonyOrmModule):

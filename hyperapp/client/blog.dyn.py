@@ -1,4 +1,6 @@
 import logging
+import asyncio
+import uuid
 import abc
 
 from ..common.htypes import tInt, tDateTime
@@ -40,8 +42,8 @@ class BlogObject(ListObject, BlogObserver):
     impl_id = 'blog'
 
     @classmethod
-    async def from_state(cls, state, ref_registry, proxy_factory, handle_resolver):
-        blog_service = await BlogService.from_data(state.blog_service_ref, proxy_factory)
+    async def from_state(cls, state, ref_registry, blog_service_factory, handle_resolver):
+        blog_service = await blog_service_factory(state.blog_service_ref)
         return cls(ref_registry, handle_resolver, blog_service, state.blog_id)
 
     def __init__(self, ref_registry, handle_resolver, blog_service, blog_id):
@@ -114,8 +116,8 @@ class BlogArticleForm(FormObject):
     impl_id = 'blog_article_form'
 
     @classmethod
-    async def from_state(cls, state, field_object_map, ref_registry, proxy_factory, handle_resolver):
-        blog_service = await BlogService.from_data(state.blog_service_ref, proxy_factory)
+    async def from_state(cls, state, field_object_map, ref_registry, blog_service_factory, handle_resolver):
+        blog_service = await blog_service_factory(state.blog_service_ref)
         return cls(field_object_map, ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id)
 
     @classmethod
@@ -209,8 +211,8 @@ class ArticleRefListObject(ListObject):
     impl_id = 'article-ref-list'
 
     @classmethod
-    async def from_state(cls, state, ref_registry, proxy_factory, handle_resolver):
-        blog_service = await BlogService.from_data(state.blog_service_ref, proxy_factory)
+    async def from_state(cls, state, ref_registry, blog_service_factory, handle_resolver):
+        blog_service = await blog_service_factory(state.blog_service_ref)
         return cls(ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id)
 
     def __init__(self, ref_registry, handle_resolver, blog_service, blog_id, article_id):
@@ -281,8 +283,8 @@ class ArticleRefListObject(ListObject):
 class SelectorCallback(object):
 
     @classmethod
-    async def from_data(cls, state, ref_registry, proxy_factory, handle_resolver):
-        blog_service = await BlogService.from_data(state.blog_service_ref, proxy_factory)
+    async def from_data(cls, state, ref_registry, blog_service_factory, handle_resolver):
+        blog_service = await blog_service_factory(state.blog_service_ref)
         return cls(ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id, state.ref_id)
 
     def __init__(self, ref_registry, handle_resolver, blog_service, blog_id, article_id, ref_id):
@@ -308,17 +310,33 @@ class SelectorCallback(object):
         return blog_types.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id, self._ref_id)
     
 
+class BlogNotification(object):
+
+    def __init__(self, blog_service):
+        self._blog_service = blog_service
+
+    def rpc_article_added(self, blog_id, article):
+        self._blog_service.article_added(blog_id, article)
+
+    def get_self(self):
+        return self
+
+
 class BlogService(object):
 
     @classmethod
-    async def from_data(cls, service_ref, proxy_factory):
+    async def from_data(cls, ref_registry, service_registry, proxy_factory, service_ref):
         proxy = await proxy_factory.from_ref(service_ref)
-        return cls(proxy)
+        return cls(ref_registry, service_registry, proxy)
 
-    def __init__(self, proxy):
+    def __init__(self, ref_registry, service_registry, proxy):
+        self._ref_registry = ref_registry
+        self._service_registry = service_registry
         self._proxy = proxy
         self._blog_id_article_id_to_row = {}  # (blog_id, article_id) -> blog_row, already fetched rows
         self._blog_id_to_observer_set = {}
+        self._subscribed_to_blog_id_set = set()
+        self._notification = BlogNotification(self)
 
     def to_ref(self):
         return self._proxy.service_ref
@@ -327,11 +345,21 @@ class BlogService(object):
         log.info('Blog service: add observer for %r: %r', blog_id, observer)
         observer_set = self._blog_id_to_observer_set.setdefault(blog_id, set())
         observer_set.add(observer)
+        asyncio.async(self._ensure_subscribed(blog_id))
 
     def remove_observer(self, blog_id, observer):
         log.info('Blog service: remove observer for %r: %r', blog_id, observer)
         observer_set = self._blog_id_to_observer_set[blog_id]
         observer_set.remove(observer)
+
+    async def _ensure_subscribed(self, blog_id):
+        if blog_id in self._subscribed_to_blog_id_set:
+            return
+        service_id = str(uuid.uuid4())
+        service = href_types.service(service_id, ['blog', 'blog_notification_iface'])
+        service_ref = self._ref_registry.register_object(service)
+        self._service_registry.register(service_ref, self._notification.get_self)
+        await self._proxy.subscribe([blog_id], service_ref)
 
     async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
@@ -377,24 +405,25 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver
+        self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
         services.handle_registry.register(blog_types.blog_ref, self._resolve_blog_object)
-        services.handle_registry.register(blog_types.blog_article_ref, self._resolve_blog_article_object, services.proxy_factory)
+        services.handle_registry.register(blog_types.blog_article_ref, self._resolve_blog_article_object)
         services.handle_registry.register(blog_types.blog_article_ref_list_ref, self._resolve_blog_article_ref_list_object)
         services.objimpl_registry.register(
-            BlogObject.impl_id, BlogObject.from_state, services.ref_registry, services.proxy_factory, services.handle_resolver)
+            BlogObject.impl_id, BlogObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         services.form_impl_registry.register(
-            BlogArticleForm.impl_id, BlogArticleForm.from_state, services.ref_registry, services.proxy_factory, services.handle_resolver)
+            BlogArticleForm.impl_id, BlogArticleForm.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         services.objimpl_registry.register(
             BlogArticleContents.impl_id, BlogArticleContents.from_state, services.handle_resolver)
         services.objimpl_registry.register(
-            ArticleRefListObject.impl_id, ArticleRefListObject.from_state, services.ref_registry, services.proxy_factory, services.handle_resolver)
+            ArticleRefListObject.impl_id, ArticleRefListObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         object_selector.this_module.register_callback(
-            blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, services.proxy_factory, services.handle_resolver)
+            blog_types.selector_callback, SelectorCallback.from_data, services.ref_registry, self._blog_service_factory, services.handle_resolver)
 
     async def _blog_service_factory(self, blog_service_ref):
-        return (await BlogService.from_data(blog_service_ref, self._proxy_factory))
+        return (await BlogService.from_data(self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
 
     async def _resolve_blog_object(self, blog_object_ref, blog_object):
         list_object = blog_types.blog_object(BlogObject.impl_id, blog_object.blog_service_ref, blog_object.blog_id)
@@ -403,8 +432,8 @@ class ThisModule(ClientModule):
         resource_id = ['client_module', 'blog', 'BlogObject']
         return handle_t('list', list_object, resource_id, sort_column_id, key=None)
 
-    async def _resolve_blog_article_object(self, blog_article_object_ref, blog_article_object, proxy_factory):
-        blog_service = await BlogService.from_data(blog_article_object.blog_service_ref, proxy_factory)
+    async def _resolve_blog_article_object(self, blog_article_object_ref, blog_article_object):
+        blog_service = await self._blog_service_factory(blog_article_object.blog_service_ref)
         row = await blog_service.get_blog_row(blog_article_object.blog_id, blog_article_object.article_id)
         form_object = blog_types.blog_article_form(
             BlogArticleForm.impl_id, blog_article_object.blog_service_ref, blog_article_object.blog_id, blog_article_object.article_id)
