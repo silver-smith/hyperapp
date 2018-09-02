@@ -162,13 +162,16 @@ class Record(object):
         assert isinstance(type, TRecord), repr(type)
         self._type = type
 
+    def __str__(self):
+        return ', '.join('%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields)
+
     def __repr__(self):
         if self._type.full_name:
             name = '.'.join(self._type.full_name)
         else:
             name = 'Record'
-        return '%s<%d: %s>' % (name, id(self._type), ', '.join(
-            '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields))
+#        return '%s<%d: %s>' % (name, id(self._type), self)
+        return '<%s: %s>' % (name, self)
 
     def __eq__(self, other):
         assert isinstance(other, Record), repr(other)
