@@ -1,6 +1,7 @@
 import logging
 
 from ..common.interface import hyper_ref as href_types
+from ..common.util import full_type_name_to_str
 from ..common.htypes import Type
 from ..common.htypes.packet_coders import packet_coders
 from ..common.ref import ref_repr
@@ -20,6 +21,9 @@ class CapsuleRegistry(Registry):
     def produce_name(self):
         return self._produce_name
 
+    def id_to_str(self, id):
+        return full_type_name_to_str(id)
+
     def register(self, t, factory, *args, **kw):
         assert isinstance(t, Type), repr(t)
         assert t.full_name, repr(t)  # type must have a name
@@ -31,7 +35,7 @@ class CapsuleRegistry(Registry):
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         rec = self._resolve(tuple(capsule.full_type_name))
         log.info('producing %s for %s using %s(%s, %s) for object %r',
-                     self._produce_name, '.'.join(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)
+                     self._produce_name, full_type_name_to_str(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)
         return (await self._run_awaitable_factory(rec.factory, ref, object, *rec.args, **rec.kw))
 
 

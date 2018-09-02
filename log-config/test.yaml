@@ -8,3 +8,4 @@ loggers:
   hyperapp.common.module_manager: {level: INFO}
   hyperapp.common.resources_loader: {level: WARNING}
   hyperapp.server.resources_loader: {level: WARNING}
+  hyperapp.client.registry: {level: INFO}

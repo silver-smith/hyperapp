@@ -21,11 +21,13 @@ class Registry(object):
         return repr(id)
 
     def register(self, id, factory, *args, **kw):
-        log.debug('%s: registering %s -> %s(*%r, **%r)', self.__class__.__name__, self.id_to_str(id), factory, args, kw)
+        log.info('%s: registering %s -> %s(*%r, **%r)',
+                     self.__class__.__name__, self.id_to_str(id), factory, args, kw)
         self.register_provided_by_dynamic_module(None, id, factory, *args, **kw)
 
     def register_provided_by_dynamic_module(self, dynamic_module_id, id, factory, *args, **kw):
-        log.info('registering %r from module %r to %r(%r, %r)', id, dynamic_module_id, factory, args, kw)
+        log.debug('%s: registering %s from module %r to %r(%r, %r)',
+                      self.__class__.__name__, self.id_to_str(id), dynamic_module_id, factory, args, kw)
         assert id not in self._registry, repr(id)  # Duplicate id
         self._registry[id] = self._Rec(dynamic_module_id, factory, args, kw)
 
