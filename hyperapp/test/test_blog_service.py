@@ -95,7 +95,7 @@ class BlogObserver(object):
 
 async def blog_create_article(services, blog_service):
     observer = BlogObserver()
-    blog_service.add_observer(TEST_BLOG, observer)
+    await blog_service.add_observer(TEST_BLOG, observer)
     article_id = await blog_service.create_article(TEST_BLOG, 'title 1', 'text1 text1')
     assert article_id
     assert isinstance(article_id, int)

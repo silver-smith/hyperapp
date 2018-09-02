@@ -68,8 +68,8 @@ blog_service_iface = interface blog_service:
 
 blog_notification_iface = interface blog_notification:
     commands:
-        article_added(blog_id: int, article: blog_row)
-        article_changed(blog_id: int, article: blog_row)
+        article_added(blog_id: string, article: blog_row)
+        article_changed(blog_id: string, article: blog_row)
 
 
 blog_object = object class blog_object(object_base):

@@ -7,7 +7,7 @@ from pony.orm import db_session, flush, desc, Required, Optional, Set
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
-from ..common.ref import ref_repr
+from ..common.ref import ref_repr, ref_list_repr
 from ..common.list_object import rows2fetched_chunk
 from .util import utcnow, path_part_to_str
 from .ponyorm_module import PonyOrmModule
@@ -21,8 +21,9 @@ BLOG_SERVICE_ID = 'blog'
 
 class BlogService(object):
 
-    def __init__(self, ref_storage):
+    def __init__(self, ref_storage, proxy_factory):
         self._ref_storage = ref_storage
+        self._proxy_factory = proxy_factory
         self._subscriptions = {}  # blog id -> service ref set
 
     def get_self(self):
@@ -66,7 +67,13 @@ class BlogService(object):
             text=text,
             )
         flush()
-        log.info('Article#%d is created', article.id)
+        log.info('Article#%d is created for blog %r', article.id, blog_id)
+        subscribed_service_ref_list = self._subscriptions.get(blog_id, [])
+        log.debug("Subscriptions for %r: %s", blog_id, ref_list_repr(subscribed_service_ref_list))
+        for service_ref in subscribed_service_ref_list:
+            log.info("Sending 'article_added' notification to %s", ref_repr(service_ref))
+            proxy = self._proxy_factory.from_ref(service_ref)
+            proxy.article_added(blog_id, self.rec2row(article))
         return request.make_response_result(blog_row=self.rec2row(article))
 
     def _get_article(self, blog_id, article_id):
@@ -113,13 +120,14 @@ class BlogService(object):
         for blog_id in blog_id_list:
             blog_service_ref_set = self._subscriptions.setdefault(blog_id, set())
             blog_service_ref_set.add(service_ref)
+            log.debug('Add subscription to %r for %s', blog_id, ref_repr(service_ref))
 
 
 class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        self._blog_service = BlogService(services.ref_storage)
+        self._blog_service = BlogService(services.ref_storage, services.proxy_factory)
         service = href_types.service(BLOG_SERVICE_ID, ['blog', 'blog_service_iface'])
         self._blog_service_ref = service_ref = services.ref_registry.register_object(service)
         services.blog_service_ref = service_ref

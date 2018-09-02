@@ -63,7 +63,7 @@ class BlogObject(ListObject, BlogObserver):
         return []
 
     def observers_arrived(self):
-        self._blog_service.add_observer(self._blog_id, self)
+        asyncio.async(self._blog_service.add_observer(self._blog_id, self))
 
     def observers_gone(self):
         self._blog_service.remove_observer(self._blog_id, self)
@@ -315,7 +315,7 @@ class BlogNotification(object):
     def __init__(self, blog_service):
         self._blog_service = blog_service
 
-    def rpc_article_added(self, blog_id, article):
+    def rpc_article_added(self, request, blog_id, article):
         self._blog_service.article_added(blog_id, article)
 
     def get_self(self):
@@ -341,11 +341,11 @@ class BlogService(object):
     def to_ref(self):
         return self._proxy.service_ref
 
-    def add_observer(self, blog_id, observer):
+    async def add_observer(self, blog_id, observer):
         log.info('Blog service: add observer for %r: %r', blog_id, observer)
         observer_set = self._blog_id_to_observer_set.setdefault(blog_id, set())
         observer_set.add(observer)
-        asyncio.async(self._ensure_subscribed(blog_id))
+        await self._ensure_subscribed(blog_id)
 
     def remove_observer(self, blog_id, observer):
         log.info('Blog service: remove observer for %r: %r', blog_id, observer)
@@ -360,6 +360,11 @@ class BlogService(object):
         service_ref = self._ref_registry.register_object(service)
         self._service_registry.register(service_ref, self._notification.get_self)
         await self._proxy.subscribe([blog_id], service_ref)
+
+    def article_added(self, blog_id, article):
+        for observer in  self._blog_id_to_observer_set.get(blog_id, []):
+            log.info("Blog: notifying observer for 'article_added': %r", observer)
+            observer.article_added(blog_id, article)
 
     async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)

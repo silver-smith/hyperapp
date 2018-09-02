@@ -61,6 +61,7 @@ code_module_list = [
     'server.transport.registry',
     'server.request',
     'server.remoting',
+    'server.remoting_proxy',
     'server.transport.tcp',
 #    'server.transport.encrypted',
     'server.ref_resolver_service',
