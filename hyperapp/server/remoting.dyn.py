@@ -5,7 +5,7 @@ import uuid
 from ..common.interface import error as error_types
 from ..common.interface import hyper_ref as href_types
 from ..common.htypes import EncodableEmbedded
-from ..common.ref import ref_repr, decode_capsule
+from ..common.ref import ref_repr, ref_list_repr, decode_capsule
 from ..common.route_resolver import RouteSource
 from ..common.visual_rep import pprint
 from .registry import UnknownRegistryIdError, Registry
@@ -91,7 +91,7 @@ class Remoting(object):
         rpc_response_ref = self._ref_registry.register_object(rpc_response)
         transport_ref_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
         assert transport_ref_set, 'No routes for service %s' % ref_repr(rpc_response.target_endpoint_ref)
-        assert len(transport_ref_set) == 1  # todo: multiple route support
+        assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
         transport = self._transport_resolver.resolve(transport_ref_set.pop())
         transport.send(rpc_response_ref)
 
