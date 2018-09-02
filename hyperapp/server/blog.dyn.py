@@ -35,7 +35,7 @@ class BlogService(object):
     @db_session
     def fetch_blog_contents(self, blog_id):
         # blog_id is ignored now
-        return list(map(self.rec2row, this_module.BlogEntry.select()))
+        return list(map(self.rec2row, this_module.BlogEntry.select().filter(blog_id=blog_id)))
 
     @classmethod
     def rec2row(cls, rec):
@@ -59,6 +59,7 @@ class BlogService(object):
     @db_session
     def rpc_create_article(self, request, blog_id, title, text):
         article = this_module.BlogEntry(
+            blog_id=blog_id,
             created_at=utcnow(),
             title=title,
             text=text,
@@ -69,10 +70,10 @@ class BlogService(object):
 
     def _get_article(self, blog_id, article_id):
         article = this_module.BlogEntry.get(id=article_id)
-        if article:
+        if article and article.blog_id == blog_id:
             return article
         else:
-            raise blog_types.unknown_article_error(article_id)
+            raise blog_types.unknown_article_error(blog_id, article_id)
 
     @db_session
     def rpc_save_article(self, request, blog_id, article_id, title, text):
@@ -133,6 +134,7 @@ class ThisModule(PonyOrmModule):
             )
         self.BlogEntry = self.make_inherited_entity(
             'BlogEntry', self.Article,
+            blog_id=Required(str),
             created_at=Required(datetime),
             )
 

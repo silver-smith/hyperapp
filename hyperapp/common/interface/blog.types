@@ -53,6 +53,7 @@ blog_chunk = record:
     eof: bool
 
 unknown_article_error = error class unknown_article(client_error):
+    blog_id: string
     article_id: int
 
 blog_service_iface = interface blog_service:
