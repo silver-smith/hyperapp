@@ -83,15 +83,25 @@ async def pick_test_article(blog_service):
         pytest.skip('No test articles in blog_1')
     return chunk.rows[0]
 
+
+class BlogObserver(object):
+
+    def __init__(self):
+        self.article_added_future = asyncio.Future()
+
+    def article_added(self, blog_id, article):
+        self.article_added_future.set_result((blog_id, article))
+
+
 async def blog_create_article(services, blog_service):
-    observer = Mock()
-    observer.article_added = MagicMock()
+    observer = BlogObserver()
     blog_service.add_observer(TEST_BLOG, observer)
     article_id = await blog_service.create_article(TEST_BLOG, 'title 1', 'text1 text1')
     assert article_id
     assert isinstance(article_id, int)
-    article = await blog_service.get_blog_row(TEST_BLOG, article_id)
-    observer.article_added.assert_called_once_with(TEST_BLOG, article)
+    blog_id, article = (await asyncio.wait_for(observer.article_added_future, timeout=3))
+    assert blog_id == TEST_BLOG
+    assert article == (await blog_service.get_blog_row(TEST_BLOG, article_id))
 
 async def blog_save_article(services, blog_service):
     article = await pick_test_article(blog_service)
