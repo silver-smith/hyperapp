@@ -333,7 +333,7 @@ class BlogService(object):
         self._ref_registry = ref_registry
         self._service_registry = service_registry
         self._proxy = proxy
-        self._blog_id_article_id_to_row = {}  # (blog_id, article_id) -> blog_row, already fetched rows
+        self._rows_cache = {}  # (blog_id, article_id) -> blog_row, already fetched rows
         self._blog_id_to_observer_set = {}
         self._subscribed_to_blog_id_set = set()
         self._notification = BlogNotification(self)
@@ -369,21 +369,21 @@ class BlogService(object):
     async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
         result = await self._proxy.fetch_blog_contents(blog_id, fetch_request)
-        self._blog_id_article_id_to_row.update({(blog_id, row.id): row for row in result.chunk.rows})
+        self._rows_cache.update({(blog_id, row.id): row for row in result.chunk.rows})
         return result.chunk
 
     async def get_blog_row(self, blog_id, article_id):
-        row = self._blog_id_article_id_to_row.get((blog_id, article_id))
+        row = self._rows_cache.get((blog_id, article_id))
         if not row:
             await self.fetch_blog_contents(blog_id, sort_column_id='id', from_key=article_id, desc_count=1, asc_count=0)
-            row = self._blog_id_article_id_to_row.get((blog_id, article_id))
+            row = self._rows_cache.get((blog_id, article_id))
             assert row, repr((blog_id, article_id))  # expecting it to be fetched now
         return row
 
     async def create_article(self, blog_id, title, text):
         result = await self._proxy.create_article(blog_id, title, text)
         row = result.blog_row
-        self._blog_id_article_id_to_row[(blog_id, row.id)] = row
+        self._rows_cache[(blog_id, row.id)] = row
         return row.id
 
     async def save_article(self, blog_id, article_id, title, text):
