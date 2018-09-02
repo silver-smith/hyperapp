@@ -28,6 +28,9 @@ class TcpProtocol(asyncio.Protocol):
         self._address = address
         self._recv_buf = b''
 
+    def __str__(self):
+        return 'to %s:%d' % (self._address.host, self._address.port)
+
     def connection_made(self, asyncio_transport):
         log.info('tcp connection made')
         self._asyncio_transport = asyncio_transport
@@ -69,7 +72,7 @@ class TcpProtocol(asyncio.Protocol):
         self._asyncio_transport.write(data)
 
     def _log(self, message):
-        log.info('tcp to %s:%d: %s', self._address.host, self._address.port, message)
+        log.info('tcp %s: %s', self, message)
         
 
 class TcpTransport(object):
@@ -84,6 +87,7 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._event_loop = services.event_loop
         self._address_to_protocol = {}  # tcp_transport_types.address -> TcpProtocol
+        self._connect_lock = asyncio.Lock()
         services.transport_registry.register(
             tcp_transport_types.address,
             self._resolve_address,
@@ -97,20 +101,26 @@ class ThisModule(ClientModule):
             )
 
     async def _resolve_address(self, address_ref, address, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, unbundler, remoting):
-        protocol = self._address_to_protocol.get(address)
-        if protocol:
+        log.debug('Tcp transport: resolving address %s: %s', ref_repr(address_ref), address)
+        # use lock to avoid multiple connections to same address established in parallel
+        with (await self._connect_lock):
+            protocol = self._address_to_protocol.get(address)
+            if protocol:
+                log.info('Tcp transport: reusing connection %s for %s', protocol, ref_repr(address_ref))
+                return protocol
+            log.info('Tcp transport: establishing connection for %s', ref_repr(address_ref))
+            constructor = lambda: TcpProtocol(
+                self._event_loop,
+                types,
+                ref_registry,
+                ref_resolver,
+                endpoint_registry,
+                ref_collector_factory,
+                unbundler,
+                remoting,
+                address,
+                )
+            asyncio_transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
+            self._address_to_protocol[address] = protocol
+            log.debug('Tcp transport: connection for %s is established', ref_repr(address_ref))
             return protocol
-        constructor = lambda: TcpProtocol(
-            self._event_loop,
-            types,
-            ref_registry,
-            ref_resolver,
-            endpoint_registry,
-            ref_collector_factory,
-            unbundler,
-            remoting,
-            address,
-            )
-        asyncio_transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
-        self._address_to_protocol[address] = protocol
-        return protocol
