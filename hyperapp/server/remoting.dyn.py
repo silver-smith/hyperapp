@@ -20,9 +20,12 @@ MODULE_NAME = 'remoting'
 
 class ServiceRegistry(Registry):
 
+    def id_to_str(self, id):
+        return ref_repr(id)
+
     def resolve(self, service_ref):
         rec = self._resolve(service_ref)
-        log.info('Service registry: producing service for %s using %s(%s, %s)', ref_repr(service_ref), rec.factory, rec.args, rec.kw)
+        log.info('ServiceRegistry: producing service for %s using %s(%s, %s)', ref_repr(service_ref), rec.factory, rec.args, rec.kw)
         return rec.factory(*rec.args, **rec.kw)
 
 

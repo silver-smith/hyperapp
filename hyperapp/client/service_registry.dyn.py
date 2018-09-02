@@ -17,13 +17,16 @@ class ServiceRegistry(Registry):
         super().__init__()
         self._endpoint_registry = endpoint_registry
 
+    def id_to_str(self, id):
+        return ref_repr(id)
+
     def register(self, service_ref, factory, *args, **kw):
         super().register(service_ref, factory, *args, **kw)
         self._endpoint_registry.register_endpoint_ref(service_ref)
 
     def resolve(self, service_ref):
         rec = self._resolve(service_ref)
-        log.info('Service registry: producing service for %r using %s(%s, %s)', ref_repr(service_ref), rec.factory, rec.args, rec.kw)
+        log.info('ServiceRegistry: producing service for %r using %s(%s, %s)', ref_repr(service_ref), rec.factory, rec.args, rec.kw)
         return rec.factory(*rec.args, **rec.kw)
 
 
