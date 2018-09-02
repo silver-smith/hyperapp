@@ -1,4 +1,5 @@
 import logging
+import abc
 
 from ..common.htypes import tInt, tDateTime
 from ..common.interface import core as core_types
@@ -23,7 +24,18 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'blog'
 
 
-class BlogObject(ListObject):
+class BlogObserver(object, metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def article_added(self, blog_id, article):
+        pass
+
+    @abc.abstractmethod
+    def article_changed(self, blog_id, article):
+        pass
+
+
+class BlogObject(ListObject, BlogObserver):
 
     impl_id = 'blog'
 
@@ -70,6 +82,12 @@ class BlogObject(ListObject):
         elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
                     for row in chunk.rows]
         return Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
+
+    def article_added(self, blog_id, article):
+        pass
+
+    def article_changed(self, blog_id, article):
+        pass
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -306,10 +324,12 @@ class BlogService(object):
         return self._proxy.service_ref
 
     def add_observer(self, blog_id, observer):
+        log.info('Blog service: add observer for %r: %r', blog_id, observer)
         observer_set = self._blog_id_to_observer_set.setdefault(blog_id, set())
         observer_set.add(observer)
 
     def remove_observer(self, blog_id, observer):
+        log.info('Blog service: remove observer for %r: %r', blog_id, observer)
         observer_set = self._blog_id_to_observer_set[blog_id]
         observer_set.remove(observer)
 

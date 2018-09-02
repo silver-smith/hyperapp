@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from unittest.mock import Mock, MagicMock
 
 import pytest
 
@@ -83,9 +84,14 @@ async def pick_test_article(blog_service):
     return chunk.rows[0]
 
 async def blog_create_article(services, blog_service):
+    observer = Mock()
+    observer.article_added = MagicMock()
+    blog_service.add_observer(TEST_BLOG, observer)
     article_id = await blog_service.create_article(TEST_BLOG, 'title 1', 'text1 text1')
     assert article_id
     assert isinstance(article_id, int)
+    article = await blog_service.get_blog_row(TEST_BLOG, article_id)
+    observer.article_added.assert_called_once_with(TEST_BLOG, article)
 
 async def blog_save_article(services, blog_service):
     article = await pick_test_article(blog_service)
