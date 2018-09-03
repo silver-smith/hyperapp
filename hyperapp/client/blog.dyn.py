@@ -11,7 +11,7 @@ from ..common.interface import line_object as line_object_types
 from ..common.interface import text_object as text_object_types
 from ..common.interface import form as form_types
 from ..common.interface import object_selector as object_selector_types
-from ..common.list_object import Element, Chunk
+from ..common.list_object import Element, Chunk, ListDiff
 from .module import ClientModule
 from .command import command
 from .mode_command import mode_command
@@ -81,12 +81,20 @@ class BlogObject(ListObject, BlogObserver):
     async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
         chunk = await self._blog_service.fetch_blog_contents(
             self._blog_id, sort_column_id, from_key, desc_count, asc_count)
-        elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
-                    for row in chunk.rows]
+        elements = [self._row_to_element(row, sort_column_id) for row in chunk.rows]
         return Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
 
+    def _row_to_element(self, row, sort_column_id=None):
+        if sort_column_id:
+            order_key = getattr(row, sort_column_id)
+        else:
+            # order_key is not used for diffs - every view has it's own
+            order_key = None
+        return Element(row.id, row, commands=None, order_key=order_key)
+
     def article_added(self, blog_id, article):
-        pass
+        diff = ListDiff.add_one(self._row_to_element(article))
+        self._notify_diff_applied(diff)
 
     def article_changed(self, blog_id, article):
         pass
