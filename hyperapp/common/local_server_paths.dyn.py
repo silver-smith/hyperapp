@@ -3,6 +3,7 @@ from pathlib import Path
 
 from .interface import hyper_ref as href_types
 from .htypes.packet_coders import packet_coders
+from .visual_rep import pprint
 
 
 LOCAL_REF_RESOLVER_REF_PATH = Path('~/.local/share/hyperapp/common/local_ref_resolver.ref.json').expanduser()
@@ -21,4 +22,6 @@ def save_bundle_to_file(bundle, path):
     save_bytes_to_file(data, path)
 
 def load_bundle_from_file(path):
-    return packet_coders.decode(ENCODING, path.read_bytes(), href_types.bundle)
+    bundle = packet_coders.decode(ENCODING, path.read_bytes(), href_types.bundle)
+    pprint(bundle, title='Bundle loaded from %s:' % path)
+    return bundle
