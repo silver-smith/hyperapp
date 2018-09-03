@@ -1,4 +1,5 @@
 import logging
+import asyncio
 
 from ..common.local_server_paths import LOCAL_ROUTE_RESOLVER_REF_PATH, load_bundle_from_file
 from .async_route_resolver import AsyncRouteSource
@@ -20,21 +21,15 @@ class RemoteRouteResolver(AsyncRouteSource):
     def __init__(self, route_registry, proxy):
         self._route_registry = route_registry
         self._proxy = proxy
-        self._recursion_flag = False
+        self._recursion_lock = asyncio.Lock()
 
     async def resolve(self, endpoint_ref):
-        if self._recursion_flag:
-            # remoting is resolving routes for our own proxy
-            return set()
-        self._recursion_flag = True
-        try:
+        with (await self._recursion_lock):
             result = await self._proxy.resolve_route(endpoint_ref)
-        finally:
-            self._recursion_flag = False
-        # cache received routes
-        for transport_ref in result.transport_ref_list:
-            self._route_registry.register(endpoint_ref, transport_ref)
-        return set(result.transport_ref_list)
+            # cache received routes
+            for transport_ref in result.transport_ref_list:
+                self._route_registry.register(endpoint_ref, transport_ref)
+                return set(result.transport_ref_list)
 
 
 class ThisModule(ClientModule):
