@@ -57,7 +57,6 @@ code_module_list = [
 #    'server.remoting',
 #    'server.tcp_transport',
 #    'server.encrypted_transport',
-#    'server.tcp_server',
     'server.transport.registry',
     'server.request',
     'server.remoting',
@@ -122,7 +121,6 @@ class Services(ServerServicesBase):
     @property
     def is_running(self):
         return True
-        #return self.tcp_server.is_running
 
     def _load_server_modules(self):
         for module_name in code_module_list:

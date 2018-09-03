@@ -28,9 +28,6 @@ def main():
     identity = Identity.load_from_file(args.identity_fpath)
     start_args = SimpleNamespace(identity=identity, addr=args.addr, test_delay=args.test_delay)
     services = Services(start_args)
-    #management_url = services.modules.server_management.get_management_url(services.server.get_public_key())
-    #url_with_routes = management_url.clone_with_routes(services.tcp_server.get_routes())
-    #log.info('Management url: %s', url_with_routes.to_str())
     services.start()
     try:
         while services.is_running:
