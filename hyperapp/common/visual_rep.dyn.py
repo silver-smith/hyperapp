@@ -39,10 +39,10 @@ class RepNode(object):
         self.text = text
         self.children = children or []
 
-    def pprint(self, indent=0):
-        log.info('%s%s' % ('  ' * indent, self.text))
+    def pprint(self, logger, indent=0):
+        logger('%s%s' % ('  ' * indent, self.text))
         for node in self.children:
-            node.pprint(indent + 1)
+            node.pprint(logger, indent + 1)
 
 
 class VisualRepEncoder(object):
@@ -170,10 +170,10 @@ class VisualRepEncoder(object):
         return RepNode(encode_path(obj))
 
 
-def pprint(value, t=None, indent=0, title=None):
+def pprint(value, t=None, indent=0, title=None, logger=logging.info):
     t = t or deduce_value_type(value)
     rep = VisualRepEncoder().encode(value, t)
     if title:
-        log.info(title)
+        logger(title)
         indent += 1
-    rep.pprint(indent)
+    rep.pprint(logger, indent)

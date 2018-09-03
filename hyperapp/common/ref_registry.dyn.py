@@ -29,7 +29,7 @@ class RefRegistry(object):
         if existing_capsule:
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
         self._registry[ref] = capsule
-        pprint(decode_capsule(self._types, capsule), indent=1)
+        pprint(decode_capsule(self._types, capsule), indent=1, logger=log.debug)
         return ref
 
     def register_object(self, object, t=None):
