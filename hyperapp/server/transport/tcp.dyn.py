@@ -102,6 +102,12 @@ class TcpClient(object):
         self._my_route_registry = RouteRegistry()
         self._my_address_ref = None
 
+    def __str__(self):
+        s = 'tcp: client %s:%d' % (self._peer_address[0], self._peer_address[1])
+        if self._my_address_ref:
+            s += ' ' + ref_repr(self._my_address_ref)
+        return s
+
     @property
     def id(self):
         return self._connection_id
@@ -141,7 +147,7 @@ class TcpClient(object):
             self._process_incoming_bundle(bundle)
 
     def _process_incoming_bundle(self, bundle):
-        pprint(bundle, title='TCP: incoming bundle')
+        pprint(bundle, title='%s: incoming bundle' % self)
         self._unbundler.register_bundle(bundle)
         self._register_incoming_routes(bundle.route_list)
         for root_ref in bundle.roots:
@@ -170,7 +176,7 @@ class TcpClient(object):
         self._channel.send(bundle)
 
     def _log(self, message, *args):
-        log.info('tcp: client %s:%d: %s' % (self._peer_address[0], self._peer_address[1], message), *args)
+        log.info('%s: %s' % (self, message), *args)
 
 
 class TcpServer(object):
