@@ -37,6 +37,7 @@ client_type_module_list = [
     ]
 
 server_code_module_list = [
+    'common.local_server_paths',
     'server.ponyorm_module',
     'server.ref_storage',
     'server.server_management',
