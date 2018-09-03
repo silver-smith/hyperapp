@@ -4,6 +4,8 @@ disable_existing_loggers: False
 formatters:
   simple:
     format: '%(asctime)-15s  %(message)s'
+  full:
+    format: '%(asctime)-15s %(filename)-30s %(lineno)4d %(levelname)-8s %(message)s'
 
 handlers:
   console:
@@ -11,6 +13,12 @@ handlers:
     level: DEBUG
     formatter: simple
     stream: ext://sys.stdout
+  file:
+    class : logging.handlers.RotatingFileHandler
+    formatter: full
+    filename: /tmp/client.log
+    maxBytes: 1048576  # 1M
+    backupCount: 5
 
 loggers:
   hyperapp.common.ref_resolver: {level: INFO}
@@ -18,4 +26,4 @@ loggers:
 
 root:
   level: DEBUG
-  handlers: [console]
+  handlers: [console, file]

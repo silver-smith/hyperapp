@@ -27,6 +27,7 @@ class RefResolver(object):
             if capsule:
                 log.info('Ref %s is resolved to capsule %s', ref_repr(ref), full_type_name_to_str(capsule.full_type_name))
                 return capsule
+        log.warning('Ref %s is failed to be resolved', ref_repr(ref))
         return None
 
     def resolve_ref_to_object(self, ref, expected_type=None):
