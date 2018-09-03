@@ -46,7 +46,7 @@ class TcpProtocol(asyncio.Protocol):
             self._log('consumed %d bytes, remained %d' % (packet_size, len(self._recv_buf)))
 
     def _process_incoming_bundle(self, bundle):
-        self._log('received bundle: refs: %r, %d capsules' % (list(map(ref_repr, bundle.roots)), len(bundle.capsule_list)))
+        self._log('Received bundle: refs: %r, %d capsules' % (list(map(ref_repr, bundle.roots)), len(bundle.capsule_list)))
         pprint(bundle, indent=1)
         self._unbundler.register_bundle(bundle)
         for root_ref in bundle.roots:
