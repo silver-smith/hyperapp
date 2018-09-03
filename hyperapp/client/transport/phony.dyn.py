@@ -1,5 +1,4 @@
 import logging
-import traceback
 import threading
 import asyncio
 
@@ -22,7 +21,7 @@ class Transport(object):
     def send(self, message_ref):
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([message_ref])
-        log.debug('phony transport: enqueueing request bundle')
+        log.debug('Phony transport: enqueueing request bundle')
         self._request_queue.put(encode_bundle(bundle))
 
 
@@ -59,23 +58,24 @@ class ThisModule(ClientModule):
 
     def _queue_thread_main(self):
         while True:
-            log.debug('phony transport: waiting for message bundle...')
+            log.debug('Phony transport: waiting for message bundle...')
             encoded_message_bundle = self._response_queue.get()
             if not encoded_message_bundle:
-                log.debug('phony transport: message queue thread is finished.')
+                log.debug('Phony transport: message queue thread is finished.')
                 break
-            log.debug('phony transport: scheduling message bundle')
+            log.debug('Phony transport: scheduling message bundle')
             asyncio.run_coroutine_threadsafe(self._process_message_bundle(encoded_message_bundle), self._event_loop)
 
     async def _process_message_bundle(self, encoded_message_bundle):
         try:
-            log.debug('phony transport: processing message bundle...')
+            log.debug('Phony transport: processing message bundle...')
             rpc_message_bundle = decode_bundle(encoded_message_bundle)
             self._unbundler.register_bundle(rpc_message_bundle)
             assert len(rpc_message_bundle.roots) == 1
             rpc_message_capsule = self._ref_resolver.resolve_ref(rpc_message_bundle.roots[0])
             rpc_message = decode_capsule(self._types, rpc_message_capsule)
             self._remoting.process_rpc_message(rpc_message_bundle.roots[0], rpc_message)
-            log.debug('phony transport: processing message bundle: done')
+            log.debug('Phony transport: processing message bundle: done')
         except:
-            traceback.print_exc()  # traceback is not shown when scheduled by run_coroutine_threadsafe
+            # traceback is not shown when scheduled by run_coroutine_threadsafe
+            log.exception('Phony transport: error processing message bundle:')

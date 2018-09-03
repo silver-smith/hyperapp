@@ -1,6 +1,5 @@
 import logging
 import weakref
-import traceback
 from collections import namedtuple
 
 from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
@@ -76,7 +75,7 @@ class Object(Commander):
             log.debug('-- Object.observers_arrived self=%s/%r', id(self), self)
             self.observers_arrived()
         except:
-            traceback.print_exc()
+            log.exception('Error calling observers_arrived:')
 
     def _on_subscriber_removed(self):
         if self._observers:  # was it last subscriber?
@@ -85,7 +84,7 @@ class Object(Commander):
             log.debug('-- Object.observers_gone self=%s/%r', id(self), self)
             self.observers_gone()
         except:
-            traceback.print_exc()
+            log.exception('Error calling observers_gone:')
 
     def _notify_object_changed(self, skip_observer=None):
         log.debug('-- Object._notify_object_changed, self=%s/%s observers count=%s', id(self), self, len(self._observers))

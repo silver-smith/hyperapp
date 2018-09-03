@@ -3,7 +3,6 @@ import threading
 import socket
 import select
 import time
-import traceback
 import uuid
 from queue import Queue
 
@@ -248,7 +247,7 @@ class TcpServer(object):
         try:
             self._accept_loop()
         except:
-            traceback.print_exc()
+            log.exception('Tcp server thread is failed:')
             self._stop_flag = True
         log.debug('tcp: listening thread is stopped.')
 

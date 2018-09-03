@@ -1,5 +1,4 @@
 import logging
-import traceback
 from .registry import Registry
 from .view import View
 from .error_handler_hook import get_handle_for_error
@@ -29,7 +28,7 @@ class ViewRegistry(Registry):
                 view_or_handle = await rec.factory(locale, handle, parent, *rec.args, **rec.kw)
                 assert isinstance(view_or_handle, (self._types.core.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
             except Exception as x:
-                traceback.print_exc()
+                log.exception('Error producing view %r:', handle.view_id)
                 view_or_handle = get_handle_for_error(x)
             if isinstance(view_or_handle, View):
                 view_or_handle.init(self._module_registry)

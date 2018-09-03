@@ -105,7 +105,7 @@ class Remoting(object):
             if isinstance(x, error_types.error):
                 error = x
             else:
-                traceback.print_exc()
+                log.exception('Error processing %s %r:', command.request_type, method)
                 error = error_types.server_error()
             return request.make_response(error=error)
         if not command.is_request:
