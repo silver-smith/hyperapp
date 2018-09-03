@@ -384,8 +384,14 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return (first_visible_row, visible_row_count)
 
     def fetch_elements_if_required(self):
-        first_visible_row, visible_row_count = self._get_visible_rows()
-        asyncio.async(self.model().fetch_elements_if_required(first_visible_row, visible_row_count, force=self._wanted_current_key is not None))
+        asyncio.async(self._async_fetch_elements_if_required())
+
+    async def _async_fetch_elements_if_required(self):
+        try:
+            first_visible_row, visible_row_count = self._get_visible_rows()
+            await self.model().fetch_elements_if_required(first_visible_row, visible_row_count, force=self._wanted_current_key is not None)
+        except:
+            log.exception('Error fetching elements:')
 
     ## def check_if_elements_must_be_fetched(self):
     ##     last_visible_row = self.get_last_visible_row()
