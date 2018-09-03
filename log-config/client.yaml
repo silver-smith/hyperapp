@@ -21,7 +21,8 @@ handlers:
     backupCount: 5
 
 loggers:
-  hyperapp.common.ref_resolver: {level: INFO}
+  hyperapp.common.ref_resolver: {level: WARNING}
+  hyperapp.common.ref_collector: {level: INFO}
   hyperapp.client.registry: {level: INFO}
 
 root:

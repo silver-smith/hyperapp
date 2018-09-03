@@ -5,6 +5,7 @@ from ..common.util import full_type_name_to_str
 from ..common.htypes import Type
 from ..common.htypes.packet_coders import packet_coders
 from ..common.ref import ref_repr
+from ..common.visual_rep import pprint
 from .registry import Registry
 
 log = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ class CapsuleRegistry(Registry):
         assert isinstance(capsule, href_types.capsule), repr(capsule)
         t = self._types.resolve(capsule.full_type_name)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        pprint(object, t=t, title='Producing %s for capsule %s %s' % (self._produce_name, ref_repr(ref), full_type_name_to_str(capsule.full_type_name)))
         rec = self._resolve(tuple(capsule.full_type_name))
         log.info('producing %s for %s using %s(%s, %s) for object %r',
                      self._produce_name, full_type_name_to_str(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)

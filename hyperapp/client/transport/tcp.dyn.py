@@ -17,7 +17,19 @@ TCP_PACKET_ENCODING = 'cdr'
 
 class TcpProtocol(asyncio.Protocol):
 
-    def __init__(self, event_loop, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, unbundler, remoting, address):
+    def __init__(
+            self,
+            event_loop,
+            types,
+            ref_registry,
+            ref_resolver,
+            endpoint_registry,
+            ref_collector_factory,
+            unbundler,
+            remoting,
+            address_ref,
+            address,
+            ):
         self._types = types
         self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
@@ -25,11 +37,12 @@ class TcpProtocol(asyncio.Protocol):
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
         self._remoting = remoting
+        self._address_ref = address_ref
         self._address = address
         self._recv_buf = b''
 
     def __str__(self):
-        return 'to %s:%d' % (self._address.host, self._address.port)
+        return 'to %s %s:%d' % (ref_repr(self._address_ref), self._address.host, self._address.port)
 
     def connection_made(self, asyncio_transport):
         log.info('tcp connection made')
@@ -118,6 +131,7 @@ class ThisModule(ClientModule):
                 ref_collector_factory,
                 unbundler,
                 remoting,
+                address_ref,
                 address,
                 )
             asyncio_transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)

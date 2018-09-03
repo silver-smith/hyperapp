@@ -35,7 +35,7 @@ class Remoting(object):
             service_id=str(uuid.uuid4())))
 
     async def send_request(self, service_ref, iface, command, params):
-        log.info('Remoting: request %s %s to %s', full_type_name_to_str(iface.full_name), command.command_id, ref_repr(service_ref))
+        log.info('Remoting: sending request %s %s to %s', full_type_name_to_str(iface.full_name), command.command_id, ref_repr(service_ref))
         transport_ref_set = await self._async_route_resolver.resolve(service_ref)
         assert transport_ref_set, 'No routes for service %s' % ref_repr(service_ref)
         assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
@@ -52,9 +52,9 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        pprint(rpc_request, title='RPC %s:' %command.request_type)
-        pprint(params, title='params:')
         request_ref = self._ref_registry.register_object(rpc_request)
+        pprint(rpc_request, title='Outcoming RPC %s %s:' % (command.request_type, ref_repr(request_ref)))
+        pprint(params, title='params:')
         transport.send(request_ref)
         if not command.is_request:
             return
@@ -69,13 +69,13 @@ class Remoting(object):
             del self._pending_requests[request_id]
 
     def process_rpc_message(self, rpc_message_ref, rpc_message):
-        log.info('Remoting: processing incoming RPC message:')
+        log.info('Remoting: processing incoming RPC message %s:', ref_repr(rpc_message_ref))
         pprint(rpc_message, indent=1)
         if isinstance(rpc_message, href_types.rpc_request):
             self._process_rpc_request(rpc_message)
         if isinstance(rpc_message, href_types.rpc_response):
             self._process_rpc_response(rpc_message)
-        log.info('Remoting: processing incoming RPC message: done')
+        log.info('Remoting: processing incoming RPC message %s: done', ref_repr(rpc_message_ref))
 
     def _process_rpc_request(self, rpc_request):
         iface = self._types.resolve(rpc_request.iface_full_type_name)

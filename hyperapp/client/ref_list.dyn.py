@@ -7,7 +7,7 @@ from ..common.htypes import tInt, tString
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import core as core_types
 from ..common.interface import ref_list as ref_list_types
-from ..common.url import Url
+from ..common.ref import ref_repr
 from ..common.list_object import Element, Chunk
 from .list_object import Column
 from .command import command
@@ -69,7 +69,7 @@ class RefListObject(ListObject):
     async def command_open(self, element_key):
         assert self._id2ref is not None  # fetch_element was not called yet
         ref = self._id2ref[element_key]
-        log.info('Opening ref %r: %r', element_key, ref)
+        log.info('Opening ref %r: %s', element_key, ref_repr(ref))
         return (await self._handle_resolver.resolve(ref))
 
     def process_diff(self, diff):

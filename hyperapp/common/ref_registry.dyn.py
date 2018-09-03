@@ -5,7 +5,8 @@ import logging
 from .interface import hyper_ref as href_types
 from .util import full_type_name_to_str
 from .htypes.deduce_value_type import deduce_value_type
-from .ref import ref_repr, make_capsule, make_ref
+from .ref import ref_repr, make_capsule, decode_capsule, make_ref
+from .visual_rep import pprint
 from .module import Module
 
 log = logging.getLogger(__name__)
@@ -16,7 +17,8 @@ MODULE_NAME = 'ref_registry'
 
 class RefRegistry(object):
 
-    def __init__(self):
+    def __init__(self, types):
+        self._types = types
         self._registry = {}  # ref -> capsule
 
     def register_capsule(self, capsule):
@@ -27,6 +29,7 @@ class RefRegistry(object):
         if existing_capsule:
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
         self._registry[ref] = capsule
+        pprint(decode_capsule(self._types, capsule), indent=1)
         return ref
 
     def register_object(self, object, t=None):
@@ -44,5 +47,5 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.ref_registry = ref_registry = RefRegistry()
+        services.ref_registry = ref_registry = RefRegistry(services.types)
         services.ref_resolver.add_source(ref_registry)
