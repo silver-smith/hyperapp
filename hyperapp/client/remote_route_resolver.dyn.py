@@ -21,10 +21,10 @@ class RemoteRouteResolver(AsyncRouteSource):
     def __init__(self, route_registry, proxy):
         self._route_registry = route_registry
         self._proxy = proxy
-        self._recursion_lock = asyncio.Lock()
+        self._entry_lock = asyncio.Lock()
 
     async def resolve(self, endpoint_ref):
-        with (await self._recursion_lock):
+        with (await self._entry_lock):
             result = await self._proxy.resolve_route(endpoint_ref)
             # cache received routes
             for transport_ref in result.transport_ref_list:
