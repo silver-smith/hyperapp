@@ -71,9 +71,9 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        pprint(rpc_request, title='Outgoing RPC %s:' % command.request_type)
-        pprint(params, title='params:')
         request_ref = self._ref_registry.register_object(rpc_request)
+        pprint(rpc_request, title='Outgoing RPC %s %s:' % (command.request_type, ref_repr(request_ref)))
+        pprint(params, title='params:')
         transport.send(request_ref)
         assert not command.is_request, 'Only sending notifications is now supported for server'
 
@@ -82,22 +82,21 @@ class Remoting(object):
         assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
         rpc_request = decode_capsule(self._types, capsule)
         assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
-        rpc_response = self._process_request(rpc_request)
+        rpc_response_ref, rpc_response = self._process_request(rpc_request_ref, rpc_request)
         if rpc_response is not None:
-            self._send_rpc_response(rpc_response)
+            self._send_rpc_response(rpc_response_ref, rpc_response)
 
-    def _send_rpc_response(self, rpc_response):
-        rpc_response_ref = self._ref_registry.register_object(rpc_response)
+    def _send_rpc_response(self, rpc_response_ref, rpc_response):
         transport_ref_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
         assert transport_ref_set, 'No routes for service %s' % ref_repr(rpc_response.target_endpoint_ref)
         assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
         transport = self._transport_resolver.resolve(transport_ref_set.pop())
         transport.send(rpc_response_ref)
 
-    def _process_request(self, rpc_request):
+    def _process_request(self, rpc_request_ref, rpc_request):
         iface = self._types.resolve(rpc_request.iface_full_type_name)
         command = iface[rpc_request.command_id]
-        pprint(rpc_request, title='Incoming RPC %s:' % command.request_type)
+        pprint(rpc_request, title='Incoming RPC %s %s:' % (command.request_type, ref_repr(rpc_request_ref)))
         params = rpc_request.params.decode(command.request)
         pprint(params, title='params:')
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
@@ -108,12 +107,13 @@ class Remoting(object):
         assert method, '%r does not implement method %s' % (servant, method_name)
         response = self._call_servant(command, method, request, params)
         if response is None:
-            return None
+            return (None, None)
         assert isinstance(response, Response), repr(response)
         rpc_response = response.make_rpc_response(command, rpc_request.request_id)
-        pprint(rpc_response, title='Outgoing RPC Response:')
+        rpc_response_ref = self._ref_registry.register_object(rpc_response)
+        pprint(rpc_response, title='Outgoing RPC Response %s:' % ref_repr(rpc_response_ref))
         response.log_result_or_error(command)
-        return rpc_response
+        return (rpc_response_ref, rpc_response)
 
     def _call_servant(self, command, method, request, params):
         try:

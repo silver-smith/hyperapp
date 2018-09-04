@@ -5,11 +5,12 @@ import select
 import time
 import uuid
 from queue import Queue
+from functools import partial
 
 from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.ref import LOCAL_TRANSPORT_REF, ref_repr, decode_capsule
+from hyperapp.common.ref import LOCAL_TRANSPORT_REF, ref_repr, ref_list_repr, decode_capsule
 from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 from hyperapp.common.route_resolver import RouteRegistry
 from ..module import Module
@@ -147,7 +148,8 @@ class TcpClient(object):
             self._process_incoming_bundle(bundle)
 
     def _process_incoming_bundle(self, bundle):
-        pprint(bundle, title='%s: incoming bundle' % self)
+        self._log('Received bundle with roots %s', ref_list_repr(bundle.roots))
+        pprint(bundle, title='incoming bundle', logger=partial(self._log, level=logging.DEBUG))
         self._unbundler.register_bundle(bundle)
         self._register_incoming_routes(bundle.route_list)
         for root_ref in bundle.roots:
@@ -173,10 +175,12 @@ class TcpClient(object):
     def _send_message(self, message_ref):
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([message_ref])
+        self._log('Sending bundle with roots %s', ref_list_repr(bundle.roots))
+        pprint(bundle, title='outgoing bundle', logger=partial(self._log, level=logging.DEBUG))
         self._channel.send(bundle)
 
-    def _log(self, message, *args):
-        log.info('%s: %s' % (self, message), *args)
+    def _log(self, message, *args, level=logging.INFO):
+        log.log(level, '%s: %s' % (self, message), *args)
 
 
 class TcpServer(object):

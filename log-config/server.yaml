@@ -23,11 +23,12 @@ handlers:
 loggers:
   hyperapp.common.ref_registry: {level: INFO}
   hyperapp.common.ref_resolver: {level: WARNING}
-  hyperapp.common.ref_collector: {level: INFO}
+  hyperapp.common.ref_collector: {level: WARNING}
   hyperapp.common.type_module_repository: {level: WARNING}
   hyperapp.common.module_manager: {level: INFO}
   hyperapp.common.resources_loader: {level: WARNING}
   hyperapp.server.resources_loader: {level: WARNING}
+  hyperapp.server.transport.tcp: {level: INFO}
 
 root:
   level: DEBUG
