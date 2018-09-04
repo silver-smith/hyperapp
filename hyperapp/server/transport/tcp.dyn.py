@@ -116,7 +116,7 @@ class TcpClient(object):
     def start(self):
         address = tcp_transport_types.incoming_connection_address(connection_id=self._connection_id)
         self._my_address_ref = self._ref_registry.register_object(address)
-        self._log('Incoming connection address %s: %s', ref_repr(self._my_address_ref), address)
+        self._log('Incoming connection address: %s', address)
         self._route_resolver.add_source(self._my_route_registry)
         self._thread.start()
 

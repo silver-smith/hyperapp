@@ -66,8 +66,8 @@ class CapsuleRegistry(Registry):
         assert isinstance(capsule, href_types.capsule), repr(capsule)
         object = decode_capsule(self._types, capsule)
         rec = self._resolve(tuple(capsule.full_type_name))
-        log.info('producing %s for %s using %s(%s, %s) for object %r',
-                     self._produce_name, full_type_name_to_str(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)
+        log.info('producing %s %s for %s using %s(%s, %s) for object %r',
+                     self._produce_name, ref_repr(ref), full_type_name_to_str(capsule.full_type_name), rec.factory, rec.args, rec.kw, object)
         return rec.factory(ref, object, *rec.args, **rec.kw)
 
 

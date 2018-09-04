@@ -1,0 +1,35 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: '%(asctime)-15s  %(message)s'
+  full:
+    format: '%(asctime)-15s %(filename)-30s %(lineno)4d %(levelname)-8s %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class : logging.handlers.RotatingFileHandler
+    formatter: full
+    filename: /tmp/server-with-tcp.log
+    maxBytes: 1048576  # 1M
+    backupCount: 5
+
+loggers:
+  hyperapp.common.ref_registry: {level: INFO}
+  hyperapp.common.ref_resolver: {level: WARNING}
+  hyperapp.common.ref_collector: {level: WARNING}
+  hyperapp.common.type_module_repository: {level: WARNING}
+  hyperapp.common.module_manager: {level: INFO}
+  hyperapp.common.resources_loader: {level: WARNING}
+  hyperapp.server.resources_loader: {level: WARNING}
+  hyperapp.server.transport.tcp: {level: DEBUG}
+
+root:
+  level: DEBUG
+  handlers: [console, file]

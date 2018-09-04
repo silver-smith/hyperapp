@@ -3,7 +3,7 @@ disable_existing_loggers: False
 
 formatters:
   simple:
-    format: '%(asctime)-15s|%(name)s|%(levelname)s| %(message)s'
+    format: '%(asctime)-15s %(name)-35s %(levelname)s  %(message)s'
 
 handlers:
   console:
@@ -11,7 +11,13 @@ handlers:
     level: DEBUG
     formatter: simple
     stream: ext://sys.stdout
+  file:
+    class : logging.handlers.RotatingFileHandler
+    formatter: simple
+    filename: /tmp/full.log
+    maxBytes: 1048576  # 1M
+    backupCount: 5
 
 root:
   level: DEBUG
-  handlers: [console]
+  handlers: [console, file]
