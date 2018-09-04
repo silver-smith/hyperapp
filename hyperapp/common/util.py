@@ -81,6 +81,14 @@ def encode_route(route):
 def decode_route(route_str):
     return route_str.split('|')
 
+def dt_naive_to_utc(dt):
+    if dt is None:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=tzutc())  # naive -> utc
+    else:
+        return dt
+
 def dt2local_str(dt):
     if dt is None: return ''
     if dt.tzinfo is None:

@@ -1,9 +1,12 @@
 from operator import attrgetter
 from functools import total_ordering
+import logging
 
 from .util import is_list_inst
 from .diff import Diff
 from .command import Command
+
+log = logging.getLogger(__name__)
 
 
 MIN_ROWS_RETURNED = 100

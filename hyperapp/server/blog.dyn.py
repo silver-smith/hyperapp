@@ -7,6 +7,7 @@ from pony.orm import db_session, flush, desc, Required, Optional, Set
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
+from ..common.util import dt_naive_to_utc
 from ..common.ref import ref_repr, ref_list_repr
 from ..common.list_object import rows2fetched_chunk
 from .util import utcnow, path_part_to_str
@@ -44,7 +45,7 @@ class BlogService(object):
         ref_list = map(cls.rec2ref, rec.refs.select().order_by(this_module.ArticleRef.id))
         return blog_types.blog_row(
             id=rec.id,
-            created_at=rec.created_at,
+            created_at=dt_naive_to_utc(rec.created_at),
             title=rec.title,
             text=rec.text,
             ref_list=list(ref_list),
