@@ -31,7 +31,10 @@ def main():
     services.start()
     try:
         while services.is_running:
-            time.sleep(0.3)
+            try:
+                time.sleep(0.3)
+            except KeyboardInterrupt:
+                break
     finally:
         services.stop()
 
