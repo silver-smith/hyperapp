@@ -108,8 +108,11 @@ async def create_article(services, blog_service):
     article_id = await blog_service.create_article(TEST_BLOG_ID, 'title 1', 'text1 text1')
     assert article_id
     assert isinstance(article_id, int)
+    # check notification is received
     blog_id, article = (await asyncio.wait_for(observer.article_added_future, timeout=3))
     assert blog_id == TEST_BLOG_ID
+    # check article is actually created
+    blog_service.invalidate_cache()
     assert article == (await blog_service.get_blog_row(TEST_BLOG_ID, article_id))
 
 
