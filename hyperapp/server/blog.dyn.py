@@ -90,6 +90,12 @@ class BlogService(object):
         article.title = title
         article.text = text
         log.info('Article#%d is saved: %r/%r', article_id, title, text)
+        subscribed_service_ref_list = self._subscriptions.get(blog_id, [])
+        log.debug("Subscriptions for %r: %s", blog_id, ref_list_repr(subscribed_service_ref_list))
+        for service_ref in subscribed_service_ref_list:
+            log.info("Sending 'article_changed' notification to %s", ref_repr(service_ref))
+            proxy = self._proxy_factory.from_ref(service_ref)
+            proxy.article_changed(blog_id, self.rec2row(article))
 
     @db_session
     def rpc_add_ref(self, request, blog_id, article_id, title, ref):

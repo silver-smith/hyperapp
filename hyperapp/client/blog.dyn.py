@@ -326,6 +326,9 @@ class BlogNotification(object):
     def rpc_article_added(self, request, blog_id, article):
         self._blog_service.article_added(blog_id, article)
 
+    def rpc_article_changed(self, request, blog_id, article):
+        self._blog_service.article_changed(blog_id, article)
+
     def get_self(self):
         return self
 
@@ -373,6 +376,11 @@ class BlogService(object):
         for observer in  self._blog_id_to_observer_set.get(blog_id, []):
             log.info("Blog: notifying observer for 'article_added': %r", observer)
             observer.article_added(blog_id, article)
+
+    def article_changed(self, blog_id, article):
+        for observer in  self._blog_id_to_observer_set.get(blog_id, []):
+            log.info("Blog: notifying observer for 'article_changed': %r", observer)
+            observer.article_changed(blog_id, article)
 
     async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)

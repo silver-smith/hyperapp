@@ -89,12 +89,16 @@ class BlogObserver(object):
 
     def __init__(self):
         self.article_added_future = asyncio.Future()
+        self.article_changed_future = asyncio.Future()
 
     def article_added(self, blog_id, article):
         self.article_added_future.set_result((blog_id, article))
 
+    def article_changed(self, blog_id, article):
+        self.article_changed_future.set_result((blog_id, article))
 
-async def blog_create_article(services, blog_service):
+
+async def create_article(services, blog_service):
     observer = BlogObserver()
     await blog_service.add_observer(TEST_BLOG_ID, observer)
     article_id = await blog_service.create_article(TEST_BLOG_ID, 'title 1', 'text1 text1')
@@ -104,31 +108,41 @@ async def blog_create_article(services, blog_service):
     assert blog_id == TEST_BLOG_ID
     assert article == (await blog_service.get_blog_row(TEST_BLOG_ID, article_id))
 
-async def blog_save_article(services, blog_service):
-    article = await pick_test_article(blog_service)
-    log.info('Saving article#%d', article.id)
-    await blog_service.save_article(TEST_BLOG_ID, article.id, article.title, 'text2 text2')
 
-async def blog_fetch_blog_contents(services, blog_service):
+async def save_article(services, blog_service):
+    article = await pick_test_article(blog_service)
+    observer = BlogObserver()
+    await blog_service.add_observer(TEST_BLOG_ID, observer)
+    log.info('Saving article#%d', article.id)
+    new_text = 'new text'
+    await blog_service.save_article(TEST_BLOG_ID, article.id, article.title, new_text)
+    blog_id, changed_article = (await asyncio.wait_for(observer.article_changed_future, timeout=3))
+    assert blog_id == TEST_BLOG_ID
+    assert changed_article.text == new_text
+
+
+async def fetch_blog_contents(services, blog_service):
     chunk = await blog_service.fetch_blog_contents(TEST_BLOG_ID, sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
 
-async def blog_get_blog_row(services, blog_service):
+
+async def get_blog_row(services, blog_service):
     article1 = await pick_test_article(blog_service)
     log.info('Requesting blog row for article#%d', article1.id)
     article2 = await blog_service.get_blog_row(TEST_BLOG_ID, article1.id)
     assert article1.id == article2.id
 
-async def blog_get_article_ref_list(services, blog_service):
+
+async def get_article_ref_list(services, blog_service):
     ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article_id)
 
 
-@pytest.fixture(params=[blog_create_article, blog_save_article, blog_fetch_blog_contents, blog_get_blog_row])
+@pytest.fixture(params=[create_article, save_article, fetch_blog_contents, get_blog_row])
 def test_fn(request):
     return request.param
 
 
 @pytest.mark.asyncio
-async def test_call_echo(event_loop, queues, server, client_services, test_fn):
+async def test_call_blog(event_loop, queues, server, client_services, test_fn):
     encoded_blog_service_bundle = server.extract_bundle('blog_service_ref')
     blog_service_ref = client_services.implant_bundle(encoded_blog_service_bundle)
     blog_service = await client_services.blog_service_factory(blog_service_ref)
