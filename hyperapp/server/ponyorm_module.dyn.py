@@ -17,11 +17,17 @@ class PonyOrmModule(ServerModule):
         super().__init__(name)
         self.db = this_module.db
 
-    def make_entity(self, entity_name, **fields):
-        return self.make_inherited_entity(entity_name, self.db.Entity, **fields)
+    def make_entity(self, entity_name, primary_key=None, **fields):
+        return self.make_inherited_entity(entity_name, self.db.Entity, primary_key, **fields)
 
-    def make_inherited_entity(self, entity_name, base, **fields):
-        return type(entity_name, (base,), fields)
+    def make_inherited_entity(self, entity_name, base, primary_key=None, **fields):
+        if primary_key:
+            args = tuple(fields[key] for key in primary_key)
+            PrimaryKey(*args)
+            # PrimaryKey adds _indexes_ attribute to our frame, expects it in entity attributes
+            fields['_indexes_'] = locals()['_indexes_']
+        entity = type(entity_name, (base,), fields)
+        return entity
 
 
 class ThisModule(ServerModule):
