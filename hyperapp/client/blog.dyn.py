@@ -36,6 +36,10 @@ class BlogObserver(object, metaclass=abc.ABCMeta):
     def article_changed(self, blog_id, article):
         pass
 
+    @abc.abstractmethod
+    def article_deleted(self, blog_id, article_id):
+        pass
+
 
 class BlogObject(ListObject, BlogObserver):
 
@@ -105,6 +109,10 @@ class BlogObject(ListObject, BlogObserver):
 
     def article_changed(self, blog_id, article):
         diff = ListDiff.replace(article.id, self._row_to_element(article))
+        self._notify_diff_applied(diff)
+
+    def article_deleted(self, blog_id, article_id):
+        diff = ListDiff.delete(article.id)
         self._notify_diff_applied(diff)
 
     def process_diff(self, diff):
@@ -337,6 +345,9 @@ class BlogNotification(object):
     def rpc_article_changed(self, request, blog_id, article):
         self._blog_service.article_changed(blog_id, article)
 
+    def rpc_article_deleted(self, request, blog_id, article_id):
+        self._blog_service.article_deleted(blog_id, article_id)
+
     def get_self(self):
         return self
 
@@ -390,6 +401,11 @@ class BlogService(object):
             log.info("Blog: notifying observer for 'article_changed': %r", observer)
             observer.article_changed(blog_id, article)
 
+    def article_deleted(self, blog_id, article_id):
+        for observer in  self._blog_id_to_observer_set.get(blog_id, []):
+            log.info("Blog: notifying observer for 'article_deleted': %r", observer)
+            observer.article_deleted(blog_id, article_id)
+
     async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
         fetch_request = blog_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
         result = await self._proxy.fetch_blog_contents(blog_id, fetch_request)
@@ -412,6 +428,9 @@ class BlogService(object):
 
     async def save_article(self, blog_id, article_id, title, text):
         await self._proxy.save_article(blog_id, article_id, title, text)
+
+    async def delete_article(self, blog_id, article_id):
+        await self._proxy.delete_article(blog_id, article_id)
 
     async def get_article_ref_list(self, blog_id, article_id):
         row = await self.get_blog_row(blog_id, article_id)
