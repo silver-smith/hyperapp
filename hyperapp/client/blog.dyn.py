@@ -52,6 +52,13 @@ class BlogObject(ListObject, BlogObserver):
         self._handle_resolver = handle_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
+        log.debug('Created %r', self)
+
+    def __repr__(self):
+        return '<BlogObject#%d>' % id(self)
+
+    def __del__(self):
+        log.debug('Deleted %r', self)
 
     def get_state(self):
         return blog_types.blog_object(self.impl_id, self._blog_service.to_ref(), self._blog_id)
@@ -97,7 +104,8 @@ class BlogObject(ListObject, BlogObserver):
         self._notify_diff_applied(diff)
 
     def article_changed(self, blog_id, article):
-        pass
+        diff = ListDiff.replace(article.id, self._row_to_element(article))
+        self._notify_diff_applied(diff)
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
