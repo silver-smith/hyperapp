@@ -112,7 +112,7 @@ class BlogObject(ListObject, BlogObserver):
         self._notify_diff_applied(diff)
 
     def article_deleted(self, blog_id, article_id):
-        diff = ListDiff.delete(article.id)
+        diff = ListDiff.delete(article_id)
         self._notify_diff_applied(diff)
 
     def process_diff(self, diff):
@@ -122,6 +122,10 @@ class BlogObject(ListObject, BlogObserver):
     @command('open', kind='element')
     async def command_open(self, element_key):
         return (await self._open_article(article_id=element_key))
+
+    @command('delete', kind='element')
+    async def command_delete(self, element_key):
+        await self._blog_service.delete_article(self._blog_id, article_id=element_key)
 
     @command('add')
     async def command_add(self):

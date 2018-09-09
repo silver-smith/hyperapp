@@ -11,6 +11,11 @@ BlogObject:
       text: Open
       description: Open selected article
       is_default: yes
+    delete:
+      text: Delete
+      description: Delete selected article
+      shortcuts:
+        - Del
     add:
       text: Add
       description: Create new article
