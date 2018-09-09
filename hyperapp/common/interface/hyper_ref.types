@@ -2,13 +2,16 @@ from error import error, client_error
 
 
 hash = binary
-ref = hash
+
+ref = record:
+    hash_algorithm: string
+    hash: hash
+
 full_type_name = string list
 
 
 capsule = record:
     full_type_name: full_type_name
-    hash_algorithm: string
     encoding: string
     encoded_object: binary
 

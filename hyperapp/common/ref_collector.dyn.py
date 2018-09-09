@@ -78,7 +78,7 @@ class RefCollector(Visitor):
         if full_type_name_to_str(t.full_name) == 'hyper_ref.rpc_message':
             self._handle_rpc_message(object)
 
-    def visit_primitive(self, t, value):
+    def visit_record(self, t, value):
         if t == href_types.ref:
             self._collected_ref_set.add(value)
 

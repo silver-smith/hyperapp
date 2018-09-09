@@ -66,8 +66,6 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TBinary)
     def encode_binary(self, t, value):
-        if t is href_types.ref:
-            return RepNode('%s' % ref_repr(value))
         return RepNode('binary, len=%d: %s' % (len(value), codecs.encode(value[:40], 'hex')))
 
     @dispatch.register(TDateTime)
@@ -103,6 +101,8 @@ class VisualRepEncoder(object):
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.fields]
+        if t is href_types.ref:
+            return RepNode('%s' % ref_repr(value))
         if t is href_types.capsule:
             ref = make_ref(value)
             return RepNode('capsule %s: %s (%s)' % (ref_repr(ref), full_type_name_to_str(value.full_type_name), value.encoding))

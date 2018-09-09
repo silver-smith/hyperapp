@@ -450,6 +450,9 @@ class BlogService(object):
     async def delete_ref(self, blog_id, article_id, ref_id):
         await self._proxy.delete_ref(blog_id, article_id, ref_id)
 
+    def invalidate_cache(self):
+        self._rows_cache.clear()
+
 
 class ThisModule(ClientModule):
 

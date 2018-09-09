@@ -48,7 +48,7 @@ class CapsuleResolver(object):
         self._capsule_registry = capsule_registry
 
     async def resolve(self, ref):
-        assert isinstance(ref, bytes), repr(ref)
+        assert isinstance(ref, href_types.ref), repr(ref)
         capsule = await self._async_ref_resolver.resolve_ref(ref)
         produce = await self._capsule_registry.resolve(ref, capsule)
         assert produce, repr(produce)

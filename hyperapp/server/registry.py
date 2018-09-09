@@ -78,7 +78,7 @@ class CapsuleResolver(object):
         self._capsule_registry = capsule_registry
 
     def resolve(self, ref):
-        assert isinstance(ref, bytes), repr(ref)
+        assert isinstance(ref, href_types.ref), repr(ref)
         capsule = self._ref_resolver.resolve_ref(ref)
         produce = self._capsule_registry.resolve(ref, capsule)
         assert produce, repr(produce)
