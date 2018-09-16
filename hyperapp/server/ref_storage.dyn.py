@@ -43,17 +43,16 @@ class RefStorage(object):
         finally:
             self._recursion_flag = False
         assert capsule, 'Can not store unknown ref: %s' % ref_repr(ref)
-        rec = this_module.Ref.get(ref=ref)
+        rec = this_module.Ref.get(ref_hash_algorithm=ref.hash_algorithm, ref_hash=ref.hash)
         if rec:
             rec.full_type_name = '.'.join(capsule.full_type_name)
-            rec.hash_algorithm = capsule.hash_algorithm
             rec.encoding = capsule.encoding
             rec.encoded_object = capsule.encoded_object
         else:
             rec = this_module.Ref(
-                ref=ref,
+                ref_hash_algorithm=ref.hash_algorithm,
+                ref_hash=ref.hash,
                 full_type_name=full_type_name_to_str(capsule.full_type_name),
-                hash_algorithm=capsule.hash_algorithm,
                 encoding=capsule.encoding,
                 encoded_object=capsule.encoded_object,
                 )
@@ -71,9 +70,10 @@ class ThisModule(PonyOrmModule):
     def init_phase2(self, services):
         self.Ref = self.make_entity(
             'Ref',
-            ref=PrimaryKey(bytes),
+            ref_hash_algorithm=Required(str),
+            ref_hash=Required(bytes),
             full_type_name=Required(str),
-            hash_algorithm=Required(str),
             encoding=Required(str),
             encoded_object=Required(bytes),
+            primary_key=('ref_hash_algorithm', 'ref_hash'),
             )

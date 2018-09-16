@@ -149,11 +149,28 @@ async def get_blog_row(services, blog_service):
     assert article1.id == article2.id
 
 
+async def add_article_ref(services, blog_service):
+    article = await pick_test_article(blog_service)
+    log.info('Adding ref to article#%d', article.id)
+    ref_id = await blog_service.add_ref(TEST_BLOG_ID, article.id, 'Test ref', blog_service.to_ref())
+    # check ref is actually created
+    blog_service.invalidate_cache()
+    ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
+    assert any(ref for ref in ref_list if ref.id == ref_id)
+
+
 async def get_article_ref_list(services, blog_service):
     ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article_id)
 
 
-@pytest.fixture(params=[create_article, save_article, delete_article, fetch_blog_contents, get_blog_row])
+@pytest.fixture(params=[
+    create_article,
+    save_article,
+    delete_article,
+    fetch_blog_contents,
+    get_blog_row,
+    add_article_ref,
+    ])
 def test_fn(request):
     return request.param
 

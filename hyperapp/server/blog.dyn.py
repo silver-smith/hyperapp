@@ -56,7 +56,7 @@ class BlogService(object):
         return blog_types.article_ref(
             id=rec.id,
             title=rec.title,
-            ref=rec.ref,
+            ref=href_types.ref(rec.ref_hash_algorithm, rec.ref_hash),
             )
 
     @db_session
@@ -115,7 +115,8 @@ class BlogService(object):
         rec = this_module.ArticleRef(
             article=article,
             title=title,
-            ref=ref,
+            ref_hash_algorithm=ref.hash_algorithm,
+            ref_hash=ref.hash,
             )
         self._ref_storage.store_ref(ref)
         flush()  # make rec.id
@@ -163,7 +164,8 @@ class ThisModule(PonyOrmModule):
             'ArticleRef',
             article=Required(self.Article),
             title=Required(str),
-            ref=Required(bytes),
+            ref_hash_algorithm=Required(str),
+            ref_hash=Required(bytes),
             )
         self.BlogEntry = self.make_inherited_entity(
             'BlogEntry', self.Article,
