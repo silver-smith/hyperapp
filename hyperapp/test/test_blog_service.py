@@ -78,13 +78,6 @@ def client_services(event_loop, queues, transport):
         yield client_services
 
 
-async def pick_test_article(blog_service):
-    chunk = await blog_service.fetch_blog_contents(TEST_BLOG_ID, sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
-    if not chunk.rows:
-        pytest.skip('No test articles in blog_1')
-    return chunk.rows[0]
-
-
 class BlogObserver(object):
 
     def __init__(self):
@@ -100,6 +93,13 @@ class BlogObserver(object):
 
     def article_deleted(self, blog_id, article_id):
         self.article_deleted_future.set_result((blog_id, article_id))
+
+
+async def pick_test_article(blog_service):
+    chunk = await blog_service.fetch_blog_contents(TEST_BLOG_ID, sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
+    if not chunk.rows:
+        pytest.skip('No test articles in blog_1')
+    return chunk.rows[0]
 
 
 async def create_article(services, blog_service):
