@@ -121,7 +121,7 @@ class BlogObject(ListObject, BlogObserver):
 
     @command('open', kind='element')
     async def command_open(self, element_key):
-        return (await self._open_article(article_id=element_key))
+        return (await self._open_article(article_id=element_key, mode='view'))
 
     @command('delete', kind='element')
     async def command_delete(self, element_key):
@@ -130,13 +130,10 @@ class BlogObject(ListObject, BlogObserver):
     @command('add')
     async def command_add(self):
         article_id = await self._blog_service.create_article(self._blog_id, 'Untitled', '')
-        return (await self._open_article(article_id))
+        return (await self._open_article(article_id, mode='edit'))
 
-    async def _open_article(self, article_id):
-        blog_service_ref = self._blog_service.to_ref()
-        object = blog_types.blog_article(blog_service_ref, self._blog_id, article_id)
-        ref = self._ref_registry.register_object(object)
-        return (await self._handle_resolver.resolve(ref))
+    async def _open_article(self, article_id, mode):
+        return (await this_module.open_article(self._blog_service, self._blog_id, article_id, mode))
 
 
 class BlogArticleForm(FormObject):
@@ -489,12 +486,15 @@ class ThisModule(ClientModule):
 
     async def _resolve_blog_article(self, blog_article_object_ref, blog_article_object):
         blog_service = await self._blog_service_factory(blog_article_object.blog_service_ref)
-        row = await blog_service.get_blog_row(blog_article_object.blog_id, blog_article_object.article_id)
+        return (await self.open_article(blog_service, blog_article_object.blog_id, blog_article_object.article_id, mode='view'))
+
+    async def open_article(self, blog_service, blog_id, article_id, mode):
+        row = await blog_service.get_blog_row(blog_id, article_id)
         form_object = blog_types.blog_article_form(
-            BlogArticleForm.impl_id, blog_article_object.blog_service_ref, blog_article_object.blog_id, blog_article_object.article_id)
+            BlogArticleForm.impl_id, blog_service.to_ref(), blog_id, article_id)
         title_object = line_object_types.line_object('line', row.title)
         contents_object = blog_types.blog_article_text(BlogArticleContents.impl_id, row.text, row.ref_list)
-        return BlogArticleForm.construct(form_object, title_object, contents_object, mode='view')
+        return BlogArticleForm.construct(form_object, title_object, contents_object, mode=mode)
 
     async def _resolve_blog_article_ref_list(self, ref_list_object_ref, ref_list_object):
         list_object = blog_types.article_ref_list_object(
