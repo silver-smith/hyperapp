@@ -463,9 +463,9 @@ class ThisModule(ClientModule):
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
-        services.handle_registry.register(blog_types.blog, self._resolve_blog_object)
-        services.handle_registry.register(blog_types.blog_article, self._resolve_blog_article_object)
-        services.handle_registry.register(blog_types.blog_article_ref_list, self._resolve_blog_article_ref_list_object)
+        services.handle_registry.register(blog_types.blog, self._resolve_blog)
+        services.handle_registry.register(blog_types.blog_article, self._resolve_blog_article)
+        services.handle_registry.register(blog_types.blog_article_ref_list, self._resolve_blog_article_ref_list)
         services.objimpl_registry.register(
             BlogObject.impl_id, BlogObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         services.form_impl_registry.register(
@@ -480,14 +480,14 @@ class ThisModule(ClientModule):
     async def _blog_service_factory(self, blog_service_ref):
         return (await BlogService.from_data(self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
 
-    async def _resolve_blog_object(self, blog_object_ref, blog_object):
+    async def _resolve_blog(self, blog_object_ref, blog_object):
         list_object = blog_types.blog_object(BlogObject.impl_id, blog_object.blog_service_ref, blog_object.blog_id)
         handle_t = core_types.int_list_handle
         sort_column_id = 'created_at'
         resource_id = ['client_module', 'blog', 'BlogObject']
         return handle_t('list', list_object, resource_id, sort_column_id, key=None)
 
-    async def _resolve_blog_article_object(self, blog_article_object_ref, blog_article_object):
+    async def _resolve_blog_article(self, blog_article_object_ref, blog_article_object):
         blog_service = await self._blog_service_factory(blog_article_object.blog_service_ref)
         row = await blog_service.get_blog_row(blog_article_object.blog_id, blog_article_object.article_id)
         form_object = blog_types.blog_article_form(
@@ -496,7 +496,7 @@ class ThisModule(ClientModule):
         contents_object = blog_types.blog_article_text(BlogArticleContents.impl_id, row.text, row.ref_list)
         return BlogArticleForm.construct(form_object, title_object, contents_object, mode='view')
 
-    async def _resolve_blog_article_ref_list_object(self, ref_list_object_ref, ref_list_object):
+    async def _resolve_blog_article_ref_list(self, ref_list_object_ref, ref_list_object):
         list_object = blog_types.article_ref_list_object(
             ArticleRefListObject.impl_id, ref_list_object.blog_service_ref, ref_list_object.blog_id, ref_list_object.article_id)
         handle_t = core_types.int_list_handle
