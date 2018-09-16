@@ -25,12 +25,11 @@ class RefStorage(object):
     def resolve_ref(self, ref):
         if self._recursion_flag:
             return None  # Called from our store_ref
-        rec = this_module.Ref.get(ref=ref)
+        rec = this_module.Ref.get(ref_hash_algorithm=ref.hash_algorithm, ref_hash=ref.hash)
         if not rec:
             return None
         return href_types.capsule(
             full_type_name=rec.full_type_name.split('.'),
-            hash_algorithm=rec.hash_algorithm,
             encoding=rec.encoding,
             encoded_object=rec.encoded_object,
             )
