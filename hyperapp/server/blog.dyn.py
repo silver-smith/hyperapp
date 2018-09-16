@@ -132,7 +132,7 @@ class BlogService(object):
         log.info('Blog %r article#%d ref#%d is updated to %s, title %r', blog_id, article_id, rec.id, ref_repr(ref), title)
 
     @db_session
-    def rpc_delete_ref(self, request, ref_id):
+    def rpc_delete_ref(self, request, blog_id, article_id, ref_id):
         this_module.ArticleRef[ref_id].delete()
         log.info('Article ref#%d is deleted', ref_id)
 

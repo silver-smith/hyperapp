@@ -169,7 +169,7 @@ async def update_article_ref(services, blog_service):
     log.info('Updating ref to article#%d', article.id)
     ref_id = ref_list[0].id
     await blog_service.update_ref(TEST_BLOG_ID, article.id, ref_id, 'Changed ref title', blog_service.to_ref())
-    # check ref is actually created
+    # check ref is actually changed
     blog_service.invalidate_cache()
     ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
     ref = next(ref for ref in ref_list if ref.id == ref_id)
@@ -183,6 +183,20 @@ async def get_article_ref_list(services, blog_service):
         pytest.skip('No test refs in blog_1 article#%d' % article.id)
 
 
+async def delete_article_ref(services, blog_service):
+    article = await pick_test_article(blog_service)
+    ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
+    if not ref_list:
+        pytest.skip('No test refs in blog_1 article#%d' % article.id)
+    log.info('Updating ref to article#%d', article.id)
+    ref_id = ref_list[0].id
+    await blog_service.delete_ref(TEST_BLOG_ID, article.id, ref_id)
+    # check ref is actually deleted
+    blog_service.invalidate_cache()
+    ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
+    assert not any(ref for ref in ref_list if ref.id == ref_id)
+
+
 @pytest.fixture(params=[
     create_article,
     save_article,
@@ -192,6 +206,7 @@ async def get_article_ref_list(services, blog_service):
     add_article_ref,
     update_article_ref,
     get_article_ref_list,
+    delete_article_ref,
     ])
 def test_fn(request):
     return request.param
