@@ -160,7 +160,10 @@ async def add_article_ref(services, blog_service):
 
 
 async def get_article_ref_list(services, blog_service):
-    ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article_id)
+    article = await pick_test_article(blog_service)
+    ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
+    if not ref_list:
+        pytest.skip('No test refs in blog_1 article')
 
 
 @pytest.fixture(params=[
@@ -170,6 +173,7 @@ async def get_article_ref_list(services, blog_service):
     fetch_blog_contents,
     get_blog_row,
     add_article_ref,
+    get_article_ref_list,
     ])
 def test_fn(request):
     return request.param
