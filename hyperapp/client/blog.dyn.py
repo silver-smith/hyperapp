@@ -194,7 +194,7 @@ class BlogArticleForm(FormObject):
     @command('refs')
     async def command_refs(self):
         blog_service_ref = self._blog_service.to_ref()
-        object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
+        object = blog_types.blog_article_ref_list(blog_service_ref, self._blog_id, self._article_id)
         ref = self._ref_registry.register_object(object)
         return (await self._handle_resolver.resolve(ref))
 
@@ -289,7 +289,7 @@ class ArticleRefListObject(ListObject):
     @command('add')
     async def command_add(self):
         blog_service_ref = self._blog_service.to_ref()
-        article_ref_list_object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id)
+        article_ref_list_object = blog_types.blog_article_ref_list(blog_service_ref, self._blog_id, self._article_id)
         target_ref = self._ref_registry.register_object(article_ref_list_object)
         target_handle = await self._handle_resolver.resolve(target_ref)
         callback = blog_types.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id)
@@ -330,7 +330,7 @@ class SelectorCallback(object):
         else:
             ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, title, ref)
         blog_service_ref = self._blog_service.to_ref()
-        object = blog_types.blog_article_ref_list_ref(blog_service_ref, self._blog_id, self._article_id, ref_id)
+        object = blog_types.blog_article_ref_list(blog_service_ref, self._blog_id, self._article_id, ref_id)
         ref = self._ref_registry.register_object(object)
         return (await self._handle_resolver.resolve(ref))
 
@@ -465,7 +465,7 @@ class ThisModule(ClientModule):
         services.blog_service_factory = self._blog_service_factory
         services.handle_registry.register(blog_types.blog, self._resolve_blog_object)
         services.handle_registry.register(blog_types.blog_article, self._resolve_blog_article_object)
-        services.handle_registry.register(blog_types.blog_article_ref_list_ref, self._resolve_blog_article_ref_list_object)
+        services.handle_registry.register(blog_types.blog_article_ref_list, self._resolve_blog_article_ref_list_object)
         services.objimpl_registry.register(
             BlogObject.impl_id, BlogObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         services.form_impl_registry.register(

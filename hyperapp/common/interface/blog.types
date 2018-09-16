@@ -20,7 +20,7 @@ blog_article = record:
     blog_id: string
     article_id: int
 
-blog_article_ref_list_ref = record:
+blog_article_ref_list = record:
     blog_service_ref: ref
     blog_id: string
     article_id: int
