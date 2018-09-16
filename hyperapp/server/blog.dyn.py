@@ -174,7 +174,7 @@ class ThisModule(PonyOrmModule):
             )
 
     def init_phase3(self, services):
-        blog = blog_types.blog_ref(
+        blog = blog_types.blog(
             blog_service_ref=self._blog_service_ref,
             blog_id='test-blog',
             current_article_id=None,

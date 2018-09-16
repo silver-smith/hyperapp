@@ -10,7 +10,7 @@ blog_service = record:
     service_url: url
 
 
-blog_ref = record:
+blog = record:
     blog_service_ref: ref
     blog_id: string
     current_article_id: int opt

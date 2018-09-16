@@ -463,7 +463,7 @@ class ThisModule(ClientModule):
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
-        services.handle_registry.register(blog_types.blog_ref, self._resolve_blog_object)
+        services.handle_registry.register(blog_types.blog, self._resolve_blog_object)
         services.handle_registry.register(blog_types.blog_article_ref, self._resolve_blog_article_object)
         services.handle_registry.register(blog_types.blog_article_ref_list_ref, self._resolve_blog_article_ref_list_object)
         services.objimpl_registry.register(
