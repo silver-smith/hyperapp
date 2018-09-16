@@ -134,7 +134,7 @@ class BlogObject(ListObject, BlogObserver):
 
     async def _open_article(self, article_id):
         blog_service_ref = self._blog_service.to_ref()
-        object = blog_types.blog_article_ref(blog_service_ref, self._blog_id, article_id)
+        object = blog_types.blog_article(blog_service_ref, self._blog_id, article_id)
         ref = self._ref_registry.register_object(object)
         return (await self._handle_resolver.resolve(ref))
 
@@ -464,7 +464,7 @@ class ThisModule(ClientModule):
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
         services.handle_registry.register(blog_types.blog, self._resolve_blog_object)
-        services.handle_registry.register(blog_types.blog_article_ref, self._resolve_blog_article_object)
+        services.handle_registry.register(blog_types.blog_article, self._resolve_blog_article_object)
         services.handle_registry.register(blog_types.blog_article_ref_list_ref, self._resolve_blog_article_ref_list_object)
         services.objimpl_registry.register(
             BlogObject.impl_id, BlogObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)

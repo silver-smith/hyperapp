@@ -15,7 +15,7 @@ blog = record:
     blog_id: string
     current_article_id: int opt
 
-blog_article_ref = record:
+blog_article = record:
     blog_service_ref: ref
     blog_id: string
     article_id: int
