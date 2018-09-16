@@ -152,18 +152,35 @@ async def get_blog_row(services, blog_service):
 async def add_article_ref(services, blog_service):
     article = await pick_test_article(blog_service)
     log.info('Adding ref to article#%d', article.id)
-    ref_id = await blog_service.add_ref(TEST_BLOG_ID, article.id, 'Test ref', blog_service.to_ref())
+    ref_id = await blog_service.add_ref(TEST_BLOG_ID, article.id, 'Test ref title', blog_service.to_ref())
     # check ref is actually created
     blog_service.invalidate_cache()
     ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
-    assert any(ref for ref in ref_list if ref.id == ref_id)
+    ref = next(ref for ref in ref_list if ref.id == ref_id)
+    assert ref.title == 'Test ref title'
+    assert ref.ref == blog_service.to_ref()
+
+
+async def update_article_ref(services, blog_service):
+    article = await pick_test_article(blog_service)
+    ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
+    if not ref_list:
+        pytest.skip('No test refs in blog_1 article#%d' % article.id)
+    log.info('Updating ref to article#%d', article.id)
+    ref_id = ref_list[0].id
+    await blog_service.update_ref(TEST_BLOG_ID, article.id, ref_id, 'Changed ref title', blog_service.to_ref())
+    # check ref is actually created
+    blog_service.invalidate_cache()
+    ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
+    ref = next(ref for ref in ref_list if ref.id == ref_id)
+    assert ref.title == 'Changed ref title'
 
 
 async def get_article_ref_list(services, blog_service):
     article = await pick_test_article(blog_service)
     ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
     if not ref_list:
-        pytest.skip('No test refs in blog_1 article')
+        pytest.skip('No test refs in blog_1 article#%d' % article.id)
 
 
 @pytest.fixture(params=[
@@ -173,6 +190,7 @@ async def get_article_ref_list(services, blog_service):
     fetch_blog_contents,
     get_blog_row,
     add_article_ref,
+    update_article_ref,
     get_article_ref_list,
     ])
 def test_fn(request):
