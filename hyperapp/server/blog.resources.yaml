@@ -1,8 +1,0 @@
-article_ref_list:
-  param_editors:
-    add:
-      _class_id: impl
-      impl_id: object_selector_add
-    update:
-      _class_id: impl
-      impl_id: object_selector_update
