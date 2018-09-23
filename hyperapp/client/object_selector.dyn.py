@@ -80,10 +80,12 @@ class ObjectSelectorView(View, QtGui.QWidget):
         ref_list = self.target_view.pick_current_refs()
         assert len(ref_list) <= 1, repr(ref_list)  # multiple refs are not supported yet
         title = self.target_view.get_title()
-        if ref_list:
-            handle = await self.object.set_ref(title, ref_list[0])
-            if handle:
-                View.open(self, handle)
+        if not ref_list:
+            log.info('No refs are returned from %s', self.target_view)
+            return
+        handle = await self.object.set_ref(title, ref_list[0])
+        if handle:
+            View.open(self, handle)
 
 
 class CallbackRegistry(Registry):
