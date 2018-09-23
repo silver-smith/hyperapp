@@ -50,6 +50,11 @@ BlogArticleForm:
         - Ctrl+R
 ArticleRefListObject:
   commands:
+    parent:
+      text: Parent
+      description: Return to blog
+      shortcuts:
+      - Ctrl+Backspace
     add:
       text: Add
       description: Add new reference

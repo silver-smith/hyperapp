@@ -284,6 +284,10 @@ class ArticleRefListObject(ListObject):
         ref = self._id2ref[id]
         return (await self._handle_resolver.resolve(ref))
 
+    @command('parent')
+    async def command_parent(self):
+        return (await this_module.open_article(self._blog_service, self._blog_id, self._article_id))
+
     @command('open', kind='element')
     async def command_open(self, element_key):
         return (await self.get_ref_handle(element_key))
@@ -494,9 +498,9 @@ class ThisModule(ClientModule):
 
     async def _resolve_blog_article(self, blog_article_ref, blog_article):
         blog_service = await self._blog_service_factory(blog_article.blog_service_ref)
-        return (await self.open_article(blog_service, blog_article.blog_id, blog_article.article_id, mode='view'))
+        return (await self.open_article(blog_service, blog_article.blog_id, blog_article.article_id))
 
-    async def open_article(self, blog_service, blog_id, article_id, mode):
+    async def open_article(self, blog_service, blog_id, article_id, mode='view'):
         row = await blog_service.get_blog_row(blog_id, article_id)
         form_object = blog_types.blog_article_form(
             BlogArticleForm.impl_id, blog_service.to_ref(), blog_id, article_id)
