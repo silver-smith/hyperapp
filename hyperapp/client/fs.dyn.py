@@ -82,13 +82,13 @@ class FsDirObject(ListObject):
         else:
             return [command for command in all_command_list if command.id != 'open']
 
-    def _get_path_ref(self, path):
+    def _get_path_ref(self, path, current_file_name=None):
         fs_service_ref = self._fs_service.to_ref()
-        object = fs_types.fs(fs_service_ref, self._host, path)
+        object = fs_types.fs(fs_service_ref, self._host, path, current_file_name)
         return self._ref_registry.register_object(object)
 
-    async def _open_path(self, path):
-        ref = self._get_path_ref(path)
+    async def _open_path(self, path, current_file_name=None):
+        ref = self._get_path_ref(path, current_file_name)
         return (await self._handle_resolver.resolve(ref))
 
     @command('open', kind='element')
@@ -100,7 +100,7 @@ class FsDirObject(ListObject):
     async def command_open_parent(self):
         if len(self._path) > 0:
             path = self._path[:-1]
-            return (await self._open_path(path))
+            return (await self._open_path(path, current_file_name=self._path[-1]))
 
 
 class ThisModule(ClientModule):
@@ -118,7 +118,7 @@ class ThisModule(ClientModule):
         handle_t = core_types.string_list_handle
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']
-        list_handle = handle_t('list', dir_object, resource_id, sort_column_id, key=None)
+        list_handle = handle_t('list', dir_object, resource_id, sort_column_id, key=fs.current_file_name)
         filter_object = line_object_types.line_object('line', '')
         filter_view = line_object_types.line_edit_view('line_edit', filter_object, mode='edit')
         narrower_object = narrower_types.narrower_object('narrower', filtered_field='key')
