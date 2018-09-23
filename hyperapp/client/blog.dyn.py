@@ -71,7 +71,9 @@ class BlogObject(ListObject, BlogObserver):
         return self._blog_id
 
     def pick_current_refs(self):
-        return []
+        blog = blog_types.blog(self._blog_service.to_ref(), self._blog_id)
+        blog_ref = self._ref_registry.register_object(blog)
+        return [blog_ref]
 
     def observers_arrived(self):
         asyncio.async(self._blog_service.add_observer(self._blog_id, self))
@@ -171,6 +173,11 @@ class BlogArticleForm(FormObject):
 
     def get_state(self):
         return blog_types.blog_article_form(self.impl_id, self._blog_service.to_ref(), self._blog_id, self._article_id)
+
+    def pick_current_refs(self):
+        article = blog_types.blog_article(self._blog_service.to_ref(), self._blog_id, self._article_id)
+        article_ref = self._ref_registry.register_object(article)
+        return [article_ref]
 
     @mode_command('edit', mode=FormView.Mode.VIEW)
     def command_edit(self):
