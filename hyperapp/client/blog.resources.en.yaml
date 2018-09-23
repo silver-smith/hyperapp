@@ -23,6 +23,11 @@ BlogObject:
         - Ins
 BlogArticleForm:
   commands:
+    parent:
+      text: Parent
+      description: Return to blog
+      shortcuts:
+      - Ctrl+Backspace
     edit:
       text: Edit
       description: Switch to edit mode

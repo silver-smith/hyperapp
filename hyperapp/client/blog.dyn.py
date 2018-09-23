@@ -188,6 +188,11 @@ class BlogArticleForm(FormObject):
             mode=mode,
             )
 
+    @command('parent')
+    async def command_parent(self):
+        blog_service_ref = self._blog_service.to_ref()
+        return (await this_module.open_blog(blog_service_ref, self._blog_id, current_article_id=self._article_id))
+
     @command('refs')
     async def command_refs(self):
         blog_service_ref = self._blog_service.to_ref()
@@ -478,11 +483,14 @@ class ThisModule(ClientModule):
         return (await BlogService.from_data(self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
 
     async def _resolve_blog(self, blog_ref, blog):
-        list_object = blog_types.blog_object(BlogObject.impl_id, blog.blog_service_ref, blog.blog_id)
+        return (await self.open_blog(blog.blog_service_ref, blog.blog_id, blog.current_article_id))
+
+    async def open_blog(self, blog_service_ref, blog_id, current_article_id=None):
+        list_object = blog_types.blog_object(BlogObject.impl_id, blog_service_ref, blog_id)
         handle_t = core_types.int_list_handle
         sort_column_id = 'created_at'
         resource_id = ['client_module', 'blog', 'BlogObject']
-        return handle_t('list', list_object, resource_id, sort_column_id, key=None)
+        return handle_t('list', list_object, resource_id, sort_column_id, key=current_article_id)
 
     async def _resolve_blog_article(self, blog_article_ref, blog_article):
         blog_service = await self._blog_service_factory(blog_article.blog_service_ref)
