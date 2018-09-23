@@ -44,7 +44,7 @@ class ThisModule(ClientModule):
         fs_service = fs_types.local_fs_service()
         fs_service_ref = ref_registry.register_object(fs_service)
         home_path = os.path.expanduser('~').split('/')[1:]
-        object = fs_types.fs_ref(fs_service_ref, LOCAL_HOST_NAME, home_path)
+        object = fs_types.fs(fs_service_ref, LOCAL_HOST_NAME, home_path)
         self._home_fs_ref = ref_registry.register_object(object)
 
     @command('open_local_fs')

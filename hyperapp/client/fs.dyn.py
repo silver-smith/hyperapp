@@ -84,7 +84,7 @@ class FsDirObject(ListObject):
 
     def _get_path_ref(self, path):
         fs_service_ref = self._fs_service.to_ref()
-        object = fs_types.fs_ref(fs_service_ref, self._host, path)
+        object = fs_types.fs(fs_service_ref, self._host, path)
         return self._ref_registry.register_object(object)
 
     async def _open_path(self, path):
@@ -109,12 +109,12 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         services.fs_service_registry = fs_service_registry = CapsuleRegistry('fs_service', services.types)
         services.fs_service_resolver = fs_service_resolver = CapsuleResolver(services.async_ref_resolver, fs_service_registry)
-        services.handle_registry.register(fs_types.fs_ref, self._resolve_fs_object)
+        services.handle_registry.register(fs_types.fs, self._resolve_fs)
         services.objimpl_registry.register(
             FsDirObject.impl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
-    async def _resolve_fs_object(self, fs_object_ref, fs_object):
-        dir_object = fs_types.fs_dir_object(FsDirObject.impl_id, fs_object.fs_service_ref, fs_object.host, fs_object.path)
+    async def _resolve_fs(self, fs_ref, fs):
+        dir_object = fs_types.fs_dir_object(FsDirObject.impl_id, fs.fs_service_ref, fs.host, fs.path)
         handle_t = core_types.string_list_handle
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']

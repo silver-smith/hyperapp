@@ -30,7 +30,7 @@ class ThisModule(ServerModule):
         service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, FsService)
 
-        fs = fs_types.fs_ref(
+        fs = fs_types.fs(
             fs_service_ref=service_ref,
             host='localhost',
             path=['usr', 'share'],

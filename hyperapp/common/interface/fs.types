@@ -4,7 +4,7 @@ from hyper_ref import ref
 
 host_id = string
 
-fs_ref = record:
+fs = record:
     fs_service_ref: ref
     host: host_id
     path: string list
