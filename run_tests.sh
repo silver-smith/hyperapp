@@ -1,11 +1,11 @@
 #!/bin/bash -e
 
 DIR=$(dirname $0)
-if [ "$1" == "fast" ]; then
+if [ "$1" == "full" ]; then
 	shift
-	ARGS=( "-m" "not slow" "$@" )
-else
 	ARGS=( "$@" )
+else
+	ARGS=( "-m" "not slow" "$@" )
 fi
 
 cd $DIR

@@ -11,11 +11,11 @@ import pytest
 from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
 
-#from hyperapp.common.htypes import tString, tInt, list_handle_type, Column
+from hyperapp.common.htypes import tInt
 from hyperapp.common.list_object import Element, Chunk, ListDiff
-from hyperapp.common.services import ServicesBase
+from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
-from hyperapp.client.list_object import ListObject
+from hyperapp.client.list_object import Column, ListObject
 from hyperapp.client.list_view import View
 
 log = logging.getLogger(__name__)
@@ -37,11 +37,11 @@ class ResourcesManager(object):
         return self._resources.get('.'.join(resource_id))
 
 
-class Services(ServicesBase):
+class Services(ClientServicesBase):
 
     def __init__(self):
         super().__init__()
-        ServicesBase.init_services(self)
+        self.init_services()
         self._load_type_modules([
                 'resource',
                 'core',
@@ -63,6 +63,7 @@ def element(key):
 
 def element_for_row(row):
     return Element(row.key, row)
+
 
 class StubObject(ListObject):
 
@@ -119,7 +120,7 @@ def object():
 @pytest.fixture
 def list_view_factory(application, services, object):
     default_object = object
-    data_type = list_handle_type(services.types.core, tInt)
+    data_type = services.types.core.int_list_handle
 
     def make_list_view(object=None, sort_column_id=None, current_key=None, resources=None):
         resource_manager = ResourcesManager(resources)
@@ -194,7 +195,7 @@ def check_rows(list_view, sort_column_id, expected_row_count):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
-async def _test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, current_key):
+async def test_rows_fetched_and_current_key_set(list_view_factory, row_count, rows_per_fetch, current_key):
     object = StubObject(rows_per_fetch, row_count)
     list_view = list_view_factory(object, current_key=current_key)
     #list_view.show()
@@ -215,7 +216,7 @@ async def _test_rows_fetched_and_current_key_set(list_view_factory, row_count, r
     assert model.headerData(1, QtCore.Qt.Orientation.Horizontal, QtCore.Qt.DisplayRole) == 'title'
 
 @pytest.mark.asyncio
-async def _test_overlapped_fetch_result_should_be_merged_properly(list_view_factory):
+async def test_overlapped_fetch_result_should_be_merged_properly(list_view_factory):
     row_count = 10
     object = StubObject(rows_per_fetch=10, row_count=row_count)
     list_view = list_view_factory(object)
@@ -234,7 +235,7 @@ async def _test_overlapped_fetch_result_should_be_merged_properly(list_view_fact
     check_rows(list_view, 'key', actual_row_count)
 
 @pytest.mark.asyncio
-async def _test_resources_used_for_header_and_visibility(services, list_view_factory):
+async def test_resources_used_for_header_and_visibility(services, list_view_factory):
     resources = {
         'test.list.column.key.en': services.types.resource.column_resource(visible=False, text='the key', description=''),
         'test.list.column.title.en': services.types.resource.column_resource(visible=True, text='the title', description=''),
@@ -253,7 +254,7 @@ async def _test_resources_used_for_header_and_visibility(services, list_view_fac
     (ListDiff.delete(2), [0, 1, 3, 5, 6, 7]),
     ])
 @pytest.mark.asyncio
-async def _test_diff(list_view_factory, diff, expected_keys):
+async def test_diff(list_view_factory, diff, expected_keys):
     keys = [0, 1, 2, 3, 5, 6, 7]
     object = StubObject(keys=keys)
     current_key = keys[-1]  # last key to force loading all rows
@@ -271,7 +272,7 @@ async def _test_diff(list_view_factory, diff, expected_keys):
 @pytest.mark.parametrize('sort_column_id', ['column_1', 'column_2'])
 @pytest.mark.parametrize('row_count,rows_per_fetch,current_key', row_count_and_rows_per_fetch_and_key())
 @pytest.mark.asyncio
-async def _test_sort_by_non_key_column(list_view_factory, sort_column_id, row_count, rows_per_fetch, current_key):
+async def test_sort_by_non_key_column(list_view_factory, sort_column_id, row_count, rows_per_fetch, current_key):
     sort_column_idx = Row._fields.index(sort_column_id)
     object = StubObject(rows_per_fetch, row_count)
     list_view = list_view_factory(object, sort_column_id=sort_column_id, current_key=current_key)
