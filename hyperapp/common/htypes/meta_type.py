@@ -17,6 +17,7 @@ from .htypes import (
     )
 from .namespace import TypeNamespace
 from .hierarchy import TClass, THierarchy, TExceptionHierarchy
+from .hyper_ref import ref_t
 from .interface import IfaceCommand, Interface
 
 
@@ -59,6 +60,17 @@ def t_named(name):
 
 def named_from_data(meta_type_registry, name_resolver, rec, full_name):
     return name_resolver.resolve(rec.name)
+
+
+ref_type_t = tMetaType.register('ref', base=tRootMetaType, fields=[
+    Field('ref', ref_t),
+    ], full_name=['meta_type', 'ref'])
+
+def t_ref(ref):
+    return ref_type_t(ref_type_t.id, ref)
+
+def ref_from_data(meta_type_registry, ref_resolver, rec, full_name):
+    assert 0  # todo: register in meta_type_registry, move from name_resolver to ref_resolver and implement
 
 
 tOptionalMeta = tMetaType.register(

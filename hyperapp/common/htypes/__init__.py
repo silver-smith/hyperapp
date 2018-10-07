@@ -2,9 +2,9 @@ from .htypes import *
 from .namespace import *
 from .hierarchy import *
 from .embedded import *
+from .hyper_ref import *
 from .meta_type import*
 from .interface import *
-from .hyper_ref import *
 
 
 def make_meta_type_registry():
