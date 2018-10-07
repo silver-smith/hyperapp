@@ -21,7 +21,10 @@ from .interface import IfaceCommand, Interface
 
 
 tMetaType = THierarchy('type', full_name=['meta_type', 'type'])
-tRootMetaType = tMetaType.register('root', fields=[Field('type_id', tString)], full_name=['meta_type', 'root'])
+
+tRootMetaType = tMetaType.register('root', fields=[
+    Field('type_id', tString),
+    ], full_name=['meta_type', 'root'])
 
 
 tImport = TRecord([
@@ -47,7 +50,9 @@ tTypeModule = TRecord([
     ], full_name=['meta_type', 'type_module'])
 
 
-tNamed = tMetaType.register('named', base=tRootMetaType, fields=[Field('name', tString)], full_name=['meta_type', 'named'])
+tNamed = tMetaType.register('named', base=tRootMetaType, fields=[
+    Field('name', tString),
+    ], full_name=['meta_type', 'named'])
 
 def t_named(name):
     return tNamed(tNamed.id, name)
@@ -57,7 +62,9 @@ def named_from_data(meta_type_registry, name_resolver, rec, full_name):
 
 
 tOptionalMeta = tMetaType.register(
-    'optional', base=tRootMetaType, fields=[Field('base', tMetaType)], full_name=['meta_type', 'optional'])
+    'optional', base=tRootMetaType, fields=[
+        Field('base', tMetaType),
+        ], full_name=['meta_type', 'optional'])
 
 def t_optional_meta(base_t):
     return tOptionalMeta(tOptionalMeta.id, base_t)
@@ -68,7 +75,9 @@ def optional_from_data(meta_type_registry, name_resolver, rec, full_name):
 
 
 tListMeta = tMetaType.register(
-    'list', base=tRootMetaType, fields=[Field('element', tMetaType)], full_name=['meta_type', 'list'])
+    'list', base=tRootMetaType, fields=[
+        Field('element', tMetaType),
+        ], full_name=['meta_type', 'list'])
 
 def t_list_meta(element_t):
     return tListMeta(tListMeta.id, element_t)
@@ -114,7 +123,9 @@ def record_from_data(meta_type_registry, name_resolver, rec, full_name):
 
 
 tHierarchyMeta = tMetaType.register(
-    'hierarchy', base=tRootMetaType, fields=[Field('hierarchy_id', tString)], full_name=['meta_type', 'hierarchy'])
+    'hierarchy', base=tRootMetaType, fields=[
+        Field('hierarchy_id', tString),
+        ], full_name=['meta_type', 'hierarchy'])
 
 tExceptionHierarchyMeta = tMetaType.register('exception_hierarchy', base=tHierarchyMeta, full_name=['meta_type', 'exception_hierarchy'])
 
