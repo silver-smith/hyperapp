@@ -1,5 +1,4 @@
 from core import object, object_base, handle, view_handle
-from hyper_ref import ref
 
 
 ref_item = record:

@@ -2,7 +2,7 @@ import logging
 
 from ..common.interface import hyper_ref as href_types
 from ..common.util import full_type_name_to_str
-from ..common.htypes import Type
+from ..common.htypes import Type, ref_t
 from ..common.htypes.packet_coders import packet_coders
 from ..common.ref import ref_repr
 from ..common.visual_rep import pprint
@@ -48,7 +48,7 @@ class CapsuleResolver(object):
         self._capsule_registry = capsule_registry
 
     async def resolve(self, ref):
-        assert isinstance(ref, href_types.ref), repr(ref)
+        assert isinstance(ref, ref_t), repr(ref)
         capsule = await self._async_ref_resolver.resolve_ref(ref)
         produce = await self._capsule_registry.resolve(ref, capsule)
         assert produce, repr(produce)

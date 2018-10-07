@@ -1,5 +1,5 @@
 from resource import resource_rec_list
-from hyper_ref import ref, capsule
+from hyper_ref import capsule
 from module import requirement, module
 
 

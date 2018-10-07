@@ -3,7 +3,7 @@ import codecs
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from .htypes import Type
+from .htypes import Type, ref_t
 from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
 from .interface import hyper_ref as href_types
@@ -15,7 +15,7 @@ MAX_REF_REPR_LEN = 60
 BUNDLE_ENCODING = 'json'
 
 # special case indicating packets must be sent to the peer from which this route is received
-LOCAL_TRANSPORT_REF = href_types.ref('', b'LOCAL_TRANSPORT')
+LOCAL_TRANSPORT_REF = ref_t('', b'LOCAL_TRANSPORT')
 
 
 def ref_repr(ref):
@@ -50,7 +50,7 @@ def make_ref(capsule):
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
     digest.update(encoded_capsule)
     hash = digest.finalize()
-    return href_types.ref(DEFAULT_HASH_ALGORITHM, hash)
+    return ref_t(DEFAULT_HASH_ALGORITHM, hash)
 
 def make_object_ref(object, t):
     capsule = make_capsule(object, t)

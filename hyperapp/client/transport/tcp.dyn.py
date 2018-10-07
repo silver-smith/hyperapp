@@ -1,6 +1,7 @@
 import logging
 import asyncio
 
+from hyperapp.common.htypes import ref_t
 from hyperapp.common.interface import hyper_ref as href_types
 from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.ref import ref_repr, decode_capsule
@@ -75,7 +76,7 @@ class TcpProtocol(asyncio.Protocol):
         self._remoting.process_rpc_message(rpc_message_ref, rpc_message)
 
     def send(self, message_ref):
-        assert isinstance(message_ref, href_types.ref), repr(message_ref)
+        assert isinstance(message_ref, ref_t), repr(message_ref)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([message_ref])
         self._log('Sending bundle:')

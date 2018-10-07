@@ -25,6 +25,7 @@ from .htypes import (
     tCommand,
     tServerRoutes,
     tTypeModule,
+    ref_t,
     )
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_ref
@@ -101,7 +102,7 @@ class VisualRepEncoder(object):
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.fields]
-        if t is href_types.ref:
+        if t is ref_t:
             return RepNode('%s' % ref_repr(value))
         if t is href_types.capsule:
             ref = make_ref(value)

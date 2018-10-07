@@ -1,5 +1,4 @@
 from error import error, client_error
-from hyper_ref import ref
 
 
 test_error = error class test(client_error):

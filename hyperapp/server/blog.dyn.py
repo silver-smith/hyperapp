@@ -4,6 +4,7 @@ import codecs
 
 from pony.orm import db_session, flush, desc, Required, Optional, Set
 
+from ..common.htypes import ref_t
 from ..common.interface import core as core_types
 from ..common.interface import hyper_ref as href_types
 from ..common.interface import blog as blog_types
@@ -56,7 +57,7 @@ class BlogService(object):
         return blog_types.article_ref(
             id=rec.id,
             title=rec.title,
-            ref=href_types.ref(rec.ref_hash_algorithm, rec.ref_hash),
+            ref=ref_t(rec.ref_hash_algorithm, rec.ref_hash),
             )
 
     @db_session

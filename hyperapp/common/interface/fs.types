@@ -1,5 +1,4 @@
 from core import object, object_base
-from hyper_ref import ref
 
 
 host_id = string

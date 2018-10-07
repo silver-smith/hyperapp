@@ -1,5 +1,6 @@
 import logging
 
+from .htypes import ref_t
 from .util import is_list_inst, full_type_name_to_str
 from .interface import error as error_types
 from .interface import packet as packet_types
@@ -27,7 +28,7 @@ class RefCollector(Visitor):
         self._collected_route_set = set()
 
     def make_bundle(self, ref_list):
-        assert is_list_inst(ref_list, href_types.ref), repr(ref_list)
+        assert is_list_inst(ref_list, ref_t), repr(ref_list)
         capsule_list = self._collect_capsule_list(ref_list)
         return href_types.bundle(
             roots=ref_list,
@@ -79,7 +80,7 @@ class RefCollector(Visitor):
             self._handle_rpc_message(object)
 
     def visit_record(self, t, value):
-        if t == href_types.ref:
+        if t == ref_t:
             self._collected_ref_set.add(value)
 
     def _handle_endpoint_ref(self, endpoint_ref):

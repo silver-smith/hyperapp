@@ -1,12 +1,6 @@
 from error import error, client_error
 
 
-hash = binary
-
-ref = record:
-    hash_algorithm: string
-    hash: hash
-
 full_type_name = string list
 
 

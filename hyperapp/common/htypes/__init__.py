@@ -4,6 +4,7 @@ from .hierarchy import *
 from .embedded import *
 from .meta_type import*
 from .interface import *
+from .hyper_ref import *
 
 
 def make_meta_type_registry():
@@ -33,6 +34,7 @@ def make_builtins_type_namespace():
         tUrl,
         tTypeModule,
         tServerRoutes,
+        ref_t,
         ]:
         namespace[t.name] = t
     return namespace
