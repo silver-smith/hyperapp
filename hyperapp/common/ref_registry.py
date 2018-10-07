@@ -1,4 +1,4 @@
-# registry for transient references
+# reference registry: map refs to capsules
 
 import logging
 
@@ -7,7 +7,6 @@ from .util import full_type_name_to_str
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_capsule, decode_capsule, make_ref
 from .visual_rep import pprint
-from .module import Module
 
 log = logging.getLogger(__name__)
 
@@ -41,11 +40,3 @@ class RefRegistry(object):
 
     def resolve_ref(self, ref):
         return self._registry.get(ref)
-
-
-class ThisModule(Module):
-
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
-        services.ref_registry = ref_registry = RefRegistry(services.types)
-        services.ref_resolver.add_source(ref_registry)

@@ -24,7 +24,7 @@ client_code_module_list = [
     'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',
-    'common.ref_registry',
+    'common.ref_registry_module',
     'common.unbundler',
     'common.tcp_packet',
     ]

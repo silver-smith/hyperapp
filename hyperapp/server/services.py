@@ -45,7 +45,7 @@ code_module_list = [
     'common.visual_rep',
     'common.local_server_paths',
     'common.ref_resolver',
-    'common.ref_registry',
+    'common.ref_registry_module',
     'common.route_resolver',
     'common.tcp_packet',
     'common.ref_collector',
