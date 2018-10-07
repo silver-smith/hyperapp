@@ -17,6 +17,7 @@ from hyperapp.common.htypes import (
     )
 from hyperapp.common.type_module_parser import load_type_module
 from hyperapp.common.type_module import map_type_module_to_refs, resolve_type_module
+from hyperapp.common.ref_registry import RefRegistry
 
 
 TEST_TYPE_MODULES_DIR = Path(__file__).parent.resolve()
@@ -57,9 +58,8 @@ def test_load_and_resolve():
     assert TOptional(TList(tBool)) == ns2.some_bool_list_opt
 
 
-def test_map_to_refs():
-    return
-    ref_registry = None
+def _test_map_to_refs():
     types = make_root_type_namespace()
+    ref_registry = RefRegistry(types)
     source_module = load_type_module(types.builtins, 'test_module1', make_fpath('test_module1.types'))
-    refs_module = map_type_module_to_refs()
+    refs_module = map_type_module_to_refs(ref_registry, source_module)

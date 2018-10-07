@@ -15,7 +15,7 @@ class TypeModuleToRefsMapper(Mapper):
 
     def map_hierarchy_obj(self, tclass, value):
         if tclass is tNamed:
-            assert 0
+            assert 0, repr(value)
         return value
 
 

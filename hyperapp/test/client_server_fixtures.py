@@ -7,6 +7,7 @@ import asyncio
 
 import pytest
 
+from hyperapp.common.visual_rep import pprint
 from hyperapp.common.init_logging import init_logging
 from hyperapp.test.utils import log_exceptions, encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
@@ -24,7 +25,7 @@ common_type_module_list = [
     ]
 
 common_server_code_module_list = [
-    'common.visual_rep',
+    'common.visual_rep_encoders',
     'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',
@@ -38,7 +39,7 @@ common_server_code_module_list = [
     ]
 
 common_client_code_module_list = [
-    'common.visual_rep',
+    'common.visual_rep_encoders',
     'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',
@@ -87,8 +88,6 @@ class Server(object, metaclass=log_exceptions):
         assert not self.services.is_failed
 
     def extract_bundle(self, services_attr):
-        from hyperapp.common.visual_rep import pprint
-
         ref_collector = self.services.ref_collector_factory()
         ref = getattr(self.services, services_attr)
         bundle = ref_collector.make_bundle([ref])

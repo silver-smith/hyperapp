@@ -11,7 +11,7 @@ from .htypes.deduce_value_type import deduce_value_type
 
 class Mapper(object):
 
-    def map(self, value, t):
+    def map(self, value, t=None):
         t = t or deduce_value_type(value)
         return self.dispatch(t, value)
 

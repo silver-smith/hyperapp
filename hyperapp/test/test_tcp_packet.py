@@ -20,7 +20,7 @@ type_module_list = [
     ]
 
 client_code_module_list = [
-    'common.visual_rep',
+    'common.visual_rep_encoders',
     'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',

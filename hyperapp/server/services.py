@@ -42,7 +42,7 @@ type_module_list = [
     ]
 
 code_module_list = [
-    'common.visual_rep',
+    'common.visual_rep_encoders',
     'common.local_server_paths',
     'common.ref_resolver',
     'common.ref_registry_module',

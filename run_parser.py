@@ -11,7 +11,7 @@ from hyperapp.common.htypes import (
     tTypeModule,
     make_builtins_type_namespace,
     )    
-#from hyperapp.common.visual_rep import pprint
+from hyperapp.common.visual_rep import pprint
 from hyperapp.common.type_module_parser import Lexer, load_type_module
 
 log = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ def test_yacc(fpaths):
         log.info('%d typedefs:', len(module.typedefs))
         for typedef in module.typedefs:
             log.info('\t%s: %s', typedef.name, typedef.type)
-        #pprint(module)
+        pprint(module)
 
 
 def main():

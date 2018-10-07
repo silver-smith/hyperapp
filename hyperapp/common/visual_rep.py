@@ -25,8 +25,6 @@ from .htypes import (
     route_t,
     capsule_t,
     )
-from .interface import module as module_types
-from .interface import resource as resource_types
 from .method_dispatch import method_dispatch
 from .util import encode_path, encode_route, full_type_name_to_str
 from .htypes.deduce_value_type import deduce_value_type
@@ -46,6 +44,21 @@ class RepNode(object):
         logger('%s%s' % ('  ' * indent, self.text))
         for node in self.children:
             node.pprint(logger, indent + 1)
+
+
+class SpecialEncoderRegistry(object):
+
+    def __init__(self):
+        self._type_to_encoder = {}
+
+    def register(self, t, encoder):
+        self._type_to_encoder[t] = encoder
+
+    def resolve(self, t):
+        return self._type_to_encoder.get(t)
+
+
+special_encoder_registry = SpecialEncoderRegistry()
 
 
 class VisualRepEncoder(object):
@@ -94,10 +107,6 @@ class VisualRepEncoder(object):
             return RepNode('%r' % full_type_name_to_str(value))
         if t is tPath:
             return self.encode_path(value)
-        if t is module_types.requirement:
-            return RepNode('requirement: %s' % ':'.join(value))
-        if t is resource_types.resource_id:
-            return RepNode(encode_path(value))
         children = [self.dispatch(t.element_t, elt) for elt in value]
         return RepNode('%s (%d elements)' % (self._make_name(t, 'list'), len(value)), children)
 
@@ -111,8 +120,6 @@ class VisualRepEncoder(object):
             return RepNode('capsule %s: %s (%s)' % (ref_repr(ref), full_type_name_to_str(value.full_type_name), value.encoding))
         if t is route_t:
             return RepNode('route: %s -> %s' % (ref_repr(value.endpoint_ref), ref_repr(value.transport_ref)))
-        if t is module_types.module:
-            return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))
         if t is tCommand:
             return RepNode('command: command_id=%r, kind=%r, resource_id=%s'
                            % (value.command_id, value.kind, encode_path(value.resource_id)))
