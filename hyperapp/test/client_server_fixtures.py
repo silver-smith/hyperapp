@@ -24,7 +24,6 @@ common_type_module_list = [
     ]
 
 common_server_code_module_list = [
-    'common.ref',
     'common.visual_rep',
     'common.ref_resolver',
     'common.route_resolver',
@@ -39,7 +38,6 @@ common_server_code_module_list = [
     ]
 
 common_client_code_module_list = [
-    'common.ref',
     'common.visual_rep',
     'common.ref_resolver',
     'common.route_resolver',
