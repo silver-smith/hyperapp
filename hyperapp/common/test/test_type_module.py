@@ -16,7 +16,7 @@ from hyperapp.common.htypes import (
     make_root_type_namespace,
     )
 from hyperapp.common.type_module_parser import load_type_module
-from hyperapp.common.type_module import resolve_type_module
+from hyperapp.common.type_module import map_type_module_to_refs, resolve_type_module
 
 
 TEST_TYPE_MODULES_DIR = Path(__file__).parent.resolve()
@@ -25,7 +25,8 @@ TEST_TYPE_MODULES_DIR = Path(__file__).parent.resolve()
 def make_fpath(module_name):
     return TEST_TYPE_MODULES_DIR / module_name
 
-def test_types_module():
+
+def test_load_and_resolve():
     types = make_root_type_namespace()
     module = load_type_module(types.builtins, 'test_module1', make_fpath('test_module1.types'))
     ns = resolve_type_module(types, module)
@@ -54,3 +55,11 @@ def test_types_module():
     ns2 = resolve_type_module(types, module2)
 
     assert TOptional(TList(tBool)) == ns2.some_bool_list_opt
+
+
+def test_map_to_refs():
+    return
+    ref_registry = None
+    types = make_root_type_namespace()
+    source_module = load_type_module(types.builtins, 'test_module1', make_fpath('test_module1.types'))
+    refs_module = map_type_module_to_refs()

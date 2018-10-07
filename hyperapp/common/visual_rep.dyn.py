@@ -2,11 +2,6 @@ import logging
 import json
 import codecs
 
-from .interface import hyper_ref as href_types
-from .interface import module as module_types
-from .interface import resource as resource_types
-from .method_dispatch import method_dispatch
-from .util import encode_path, encode_route, full_type_name_to_str
 from .htypes import (
     TString,
     TBinary,
@@ -26,7 +21,14 @@ from .htypes import (
     tServerRoutes,
     tTypeModule,
     ref_t,
+    full_type_name_t,
+    route_t,
+    capsule_t,
     )
+from .interface import module as module_types
+from .interface import resource as resource_types
+from .method_dispatch import method_dispatch
+from .util import encode_path, encode_route, full_type_name_to_str
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_ref
 from .identity import PublicKey
@@ -88,7 +90,7 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TList)
     def encode_list(self, t, value):
-        if t is href_types.full_type_name:
+        if t is full_type_name_t:
             return RepNode('%r' % full_type_name_to_str(value))
         if t is tPath:
             return self.encode_path(value)
@@ -104,10 +106,10 @@ class VisualRepEncoder(object):
         ## print '*** encoding record', value, t, [field.name for field in t.fields]
         if t is ref_t:
             return RepNode('%s' % ref_repr(value))
-        if t is href_types.capsule:
+        if t is capsule_t:
             ref = make_ref(value)
             return RepNode('capsule %s: %s (%s)' % (ref_repr(ref), full_type_name_to_str(value.full_type_name), value.encoding))
-        if t is href_types.route:
+        if t is route_t:
             return RepNode('route: %s -> %s' % (ref_repr(value.endpoint_ref), ref_repr(value.transport_ref)))
         if t is module_types.module:
             return RepNode('module: id=%s, package=%s, satisfies=%r' % (value.id, value.package, value.satisfies))

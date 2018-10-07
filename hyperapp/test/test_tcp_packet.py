@@ -1,6 +1,7 @@
 import logging
 import pytest
 
+from hyperapp.common.htypes import bundle_t
 from hyperapp.test.test_services import TestClientServices
 
 log = logging.getLogger(__name__)
@@ -42,7 +43,6 @@ def test_tcp_packet(client_services, encoding):
     from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 
     test_packet_t = client_services.types.test.packet
-    bundle_t = client_services.types.hyper_ref.bundle
 
     test_packet = test_packet_t(message='hello')
     capsule = make_capsule(test_packet)

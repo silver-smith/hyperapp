@@ -6,11 +6,13 @@ from .htypes import (
     THierarchy,
     TList,
     )
+from .htypes.deduce_value_type import deduce_value_type
 
 
 class Mapper(object):
 
-    def map(self, t, value):
+    def map(self, value, t):
+        t = t or deduce_value_type(value)
         return self.dispatch(t, value)
 
     def map_hierarchy_obj(self, tclass, value):

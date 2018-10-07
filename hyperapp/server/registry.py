@@ -1,8 +1,7 @@
 import logging
 
-from ..common.interface import hyper_ref as href_types
 from ..common.util import full_type_name_to_str
-from ..common.htypes import Type, ref_t
+from ..common.htypes import Type, ref_t, capsule_t
 from ..common.ref import ref_repr, decode_capsule
 from ..common.htypes.packet_coders import packet_coders
 
@@ -63,7 +62,7 @@ class CapsuleRegistry(Registry):
         super().register(tuple(t.full_name), factory, *args, **kw)
 
     def resolve(self, ref, capsule):
-        assert isinstance(capsule, href_types.capsule), repr(capsule)
+        assert isinstance(capsule, capsule_t), repr(capsule)
         object = decode_capsule(self._types, capsule)
         rec = self._resolve(tuple(capsule.full_type_name))
         log.info('producing %s %s for %s using %s(%s, %s) for object %r',

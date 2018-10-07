@@ -1,6 +1,6 @@
 import struct
 
-from .interface import hyper_ref as href_types
+from .htypes import bundle_t
 from .htypes.packet_coders import packet_coders
 
 
@@ -21,11 +21,11 @@ def decode_tcp_packet(data):
     encoding_size, size = struct.unpack(struct_format, data[:header_size])
     encoding = data[header_size:header_size + encoding_size].decode()
     packet_data = data[header_size + encoding_size:header_size + encoding_size + size]
-    bundle = packet_coders.decode(encoding, packet_data, href_types.bundle)
+    bundle = packet_coders.decode(encoding, packet_data, bundle_t)
     return (bundle, header_size + encoding_size + size)
 
 def encode_tcp_packet(bundle, encoding):
-    assert isinstance(bundle, href_types.bundle), repr(bundle)
+    assert isinstance(bundle, bundle_t), repr(bundle)
     packet_data = packet_coders.encode(encoding, bundle)
     encoded_encoding = encoding.encode()
     header = struct.pack(struct_format, len(encoded_encoding), len(packet_data))

@@ -1,6 +1,6 @@
 import logging
 
-from .htypes import ref_t
+from .htypes import ref_t, route_t, bundle_t
 from .util import is_list_inst, full_type_name_to_str
 from .interface import error as error_types
 from .interface import packet as packet_types
@@ -30,7 +30,7 @@ class RefCollector(Visitor):
     def make_bundle(self, ref_list):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
         capsule_list = self._collect_capsule_list(ref_list)
-        return href_types.bundle(
+        return bundle_t(
             roots=ref_list,
             capsule_list=capsule_list,
             route_list=list(self._collected_route_set),
@@ -86,7 +86,7 @@ class RefCollector(Visitor):
     def _handle_endpoint_ref(self, endpoint_ref):
         transport_ref_set = self._route_resolver.resolve(endpoint_ref)
         for transport_ref in transport_ref_set:
-            self._collected_route_set.add(href_types.route(
+            self._collected_route_set.add(route_t(
                 endpoint_ref=endpoint_ref,
                 transport_ref=transport_ref,
                 ))

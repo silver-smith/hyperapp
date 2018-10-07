@@ -4,7 +4,7 @@ import logging
 
 from pony.orm import db_session, Required, PrimaryKey
 
-from ..common.interface import hyper_ref as href_types
+from ..common.htypes import capsule_t
 from ..common.util import full_type_name_to_str
 from ..common.ref import ref_repr
 from .ponyorm_module import PonyOrmModule
@@ -28,7 +28,7 @@ class RefStorage(object):
         rec = this_module.Ref.get(ref_hash_algorithm=ref.hash_algorithm, ref_hash=ref.hash)
         if not rec:
             return None
-        return href_types.capsule(
+        return capsule_t(
             full_type_name=rec.full_type_name.split('.'),
             encoding=rec.encoding,
             encoded_object=rec.encoded_object,

@@ -1,5 +1,6 @@
 import logging
 
+from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 
 log = logging.getLogger(__name__)
@@ -27,8 +28,8 @@ def log_exceptions(name, bases, attrs):
     return type(name, bases, new_attrs)
 
 
-def encode_bundle(services, bundle):
+def encode_bundle(bundle):
     return packet_coders.encode(BUNDLE_ENCODING, bundle)
 
-def decode_bundle(services, encoded_bundle):
-    return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, services.types.hyper_ref.bundle)
+def decode_bundle(encoded_bundle):
+    return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, bundle_t)

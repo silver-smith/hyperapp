@@ -95,7 +95,7 @@ class Server(object, metaclass=log_exceptions):
         ref = getattr(self.services, services_attr)
         bundle = ref_collector.make_bundle([ref])
         pprint(bundle, title='Extracted %r bundle:' % services_attr)
-        return encode_bundle(self.services, bundle)
+        return encode_bundle(bundle)
 
 
 class TestManager(BaseManager):
@@ -130,7 +130,7 @@ class ClientServices(TestClientServices):
         super().__init__(event_loop, type_module_list, code_module_list)
 
     def implant_bundle(self, encoded_bundle):
-        bundle = decode_bundle(self, encoded_bundle)
+        bundle = decode_bundle(encoded_bundle)
         self.unbundler.register_bundle(bundle)
         return bundle.roots[0]
 

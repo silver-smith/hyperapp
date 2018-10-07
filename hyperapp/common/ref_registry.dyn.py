@@ -2,7 +2,7 @@
 
 import logging
 
-from .interface import hyper_ref as href_types
+from .htypes import capsule_t
 from .util import full_type_name_to_str
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_capsule, decode_capsule, make_ref
@@ -22,7 +22,7 @@ class RefRegistry(object):
         self._registry = {}  # ref -> capsule
 
     def register_capsule(self, capsule):
-        assert isinstance(capsule, href_types.capsule), repr(capsule)
+        assert isinstance(capsule, capsule_t), repr(capsule)
         ref = make_ref(capsule)
         log.info('Registering ref %s for capsule %s', ref_repr(ref), full_type_name_to_str(capsule.full_type_name))
         existing_capsule = self._registry.get(ref)

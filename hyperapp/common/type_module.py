@@ -2,8 +2,26 @@ from .htypes import (
     TypeNamespace,
     TypeNameResolver,
     make_meta_type_registry,
+    tNamed,
+    t_ref,
     )
-from .type_module_parser import load_type_module
+from .mapper import Mapper
+
+
+class TypeModuleToRefsMapper(Mapper):
+
+    def __init__(self, ref_registry):
+        self._ref_registry = ref_registry
+
+    def map_hierarchy_obj(self, tclass, value):
+        if tclass is tNamed:
+            assert 0
+        return value
+
+
+def map_type_module_to_refs(ref_registry, module):
+    mapper = TypeModuleToRefsMapper(ref_registry)
+    return mapper.map(module)
 
 
 def resolve_type_module(types, module):

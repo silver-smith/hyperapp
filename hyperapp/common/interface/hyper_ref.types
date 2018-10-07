@@ -1,24 +1,6 @@
 from error import error, client_error
 
 
-full_type_name = string list
-
-
-capsule = record:
-    full_type_name: full_type_name
-    encoding: string
-    encoded_object: binary
-
-route = record:
-    endpoint_ref: ref
-    transport_ref: ref
-
-bundle = record:
-    roots: ref list
-    capsule_list: capsule list
-    route_list: route list
-
-
 endpoint = record:
     service_id: string
 

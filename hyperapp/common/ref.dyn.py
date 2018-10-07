@@ -3,10 +3,9 @@ import codecs
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from .htypes import Type, ref_t
+from .htypes import Type, ref_t, capsule_t, bundle_t
 from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
-from .interface import hyper_ref as href_types
 
 
 DEFAULT_ENCODING = 'cdr'
@@ -37,14 +36,14 @@ def make_capsule(object, t=None):
     assert isinstance(object, t), repr((t, object))
     encoding = DEFAULT_ENCODING
     encoded_object = packet_coders.encode(encoding, object, t)
-    return href_types.capsule(t.full_name, encoding, encoded_object)
+    return capsule_t(t.full_name, encoding, encoded_object)
 
 def decode_capsule(types, capsule):
     t = types.resolve(capsule.full_type_name)
     return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
 def make_ref(capsule):
-    assert isinstance(capsule, href_types.capsule)
+    assert isinstance(capsule, capsule_t)
     # use same encoding for capsule as for object
     encoded_capsule = packet_coders.encode(capsule.encoding, capsule)
     digest = hashes.Hash(hashes.SHA512(), backend=default_backend())
@@ -64,4 +63,4 @@ def encode_bundle(bundle):
     return packet_coders.encode(BUNDLE_ENCODING, bundle)
 
 def decode_bundle(encoded_bundle):
-    return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, href_types.bundle)
+    return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, bundle_t)

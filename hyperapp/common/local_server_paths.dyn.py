@@ -1,7 +1,7 @@
 import os.path
 from pathlib import Path
 
-from .interface import hyper_ref as href_types
+from .htypes import bundle_t
 from .htypes.packet_coders import packet_coders
 from .visual_rep import pprint
 
@@ -22,6 +22,6 @@ def save_bundle_to_file(bundle, path):
     save_bytes_to_file(data, path)
 
 def load_bundle_from_file(path):
-    bundle = packet_coders.decode(ENCODING, path.read_bytes(), href_types.bundle)
+    bundle = packet_coders.decode(ENCODING, path.read_bytes(), bundle_t)
     pprint(bundle, title='Bundle loaded from %s:' % path)
     return bundle

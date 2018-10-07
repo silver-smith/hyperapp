@@ -35,6 +35,10 @@ def make_builtins_type_namespace():
         tTypeModule,
         tServerRoutes,
         ref_t,
+        full_type_name_t,
+        route_t,
+        capsule_t,
+        bundle_t,
         ]:
         namespace[t.name] = t
     return namespace
