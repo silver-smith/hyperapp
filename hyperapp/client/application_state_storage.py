@@ -29,7 +29,6 @@ class ApplicationStateStorage(object):
             param_editor_types,
             objimpl_registry,
             view_registry,
-            param_editor_registry,
             type_module_repository,
             resources_manager,
             module_manager,
@@ -42,7 +41,6 @@ class ApplicationStateStorage(object):
         self._param_editor_types = param_editor_types
         self._objimpl_registry = objimpl_registry
         self._view_registry = view_registry
-        self._param_editor_registry = param_editor_registry
         self._type_module_repository = type_module_repository
         self._module_manager = module_manager
         self._resources_manager = resources_manager

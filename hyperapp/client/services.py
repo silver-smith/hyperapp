@@ -4,7 +4,6 @@ from pathlib import Path
 from ..common.htypes.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
-from .param_editor_registry import ParamEditorRegistry
 #from .remoting import Remoting
 from .resources_manager import ResourcesRegistry, ResourcesManager
 from .module_manager import ModuleManager
@@ -127,8 +126,6 @@ class Services(ClientServicesBase):
         self.module_manager.register_meta_hook()
         self._load_type_modules(type_module_list)
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
-        self.param_editor_registry = ParamEditorRegistry()
-        self.module_manager.init_types(self)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.resources_registry = ResourcesRegistry(self.types.resource)
         self.resources_manager = ResourcesManager(
