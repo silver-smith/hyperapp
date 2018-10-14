@@ -43,5 +43,19 @@ def make_builtins_type_namespace():
         namespace[t.name] = t
     return namespace
 
+def make_meta_type_namespace():
+    namespace = TypeNamespace()
+    for t in [
+            tMetaType,
+            ]:
+        full_name = t.full_name
+        module, name = full_name
+        assert module == 'meta_type'
+        namespace[name] = t
+    return namespace
+
 def make_root_type_namespace():
-    return TypeNamespace(builtins=make_builtins_type_namespace())
+    return TypeNamespace(
+        builtins=make_builtins_type_namespace(),
+        meta_type=make_meta_type_namespace(),
+        )

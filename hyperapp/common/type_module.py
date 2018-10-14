@@ -30,8 +30,9 @@ def map_type_module_to_refs(types, ref_registry, module):
     mapper = TypeModuleToRefsMapper(ref_registry, name_registry)
     for typedef in module.typedefs:
         t = mapper.map(typedef.type)
-        name_registry[typedef.name] = t
-        yield (typedef.name, t)
+        ref = ref_registry.register_object(t)
+        name_registry[typedef.name] = t_ref(ref)
+        yield (typedef.name, t_ref(ref))
 
 def resolve_type_module(types, module):
     assert isinstance(types, TypeNamespace), repr(types)
