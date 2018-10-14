@@ -3,6 +3,7 @@ from .htypes import (
     TypeNameResolver,
     make_meta_type_registry,
     tNamed,
+    t_named,
     t_ref,
     )
 from .mapper import Mapper
@@ -10,19 +11,27 @@ from .mapper import Mapper
 
 class TypeModuleToRefsMapper(Mapper):
 
-    def __init__(self, ref_registry):
+    def __init__(self, ref_registry, name_registry):
+        self._name_registry = name_registry
         self._ref_registry = ref_registry
 
     def map_hierarchy_obj(self, tclass, value):
         if tclass is tNamed:
-            assert 0, repr(value)
+            return self._map_named_t(value)
         return value
 
+    def _map_named_t(self, rec):
+        return self._name_registry[rec.name]
 
-def map_type_module_to_refs(ref_registry, module):
-    mapper = TypeModuleToRefsMapper(ref_registry)
-    return mapper.map(module)
 
+def map_type_module_to_refs(types, ref_registry, module):
+    # leave builtin names as is - they are available on all systems
+    name_registry = {name: t_named(name) for name in types.builtins.keys()}
+    mapper = TypeModuleToRefsMapper(ref_registry, name_registry)
+    for typedef in module.typedefs:
+        t = mapper.map(typedef.type)
+        name_registry[typedef.name] = t
+        yield (typedef.name, t)
 
 def resolve_type_module(types, module):
     assert isinstance(types, TypeNamespace), repr(types)
