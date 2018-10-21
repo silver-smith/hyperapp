@@ -1,3 +1,5 @@
+import uuid
+
 from .htypes import (
     TypeNamespace,
     TypeNameResolver,
@@ -5,15 +7,18 @@ from .htypes import (
     tNamed,
     t_named,
     t_ref,
+    builtin_ref_t,
+    meta_ref_t,
     )
 from .mapper import Mapper
 
 
 class TypeModuleToRefsMapper(Mapper):
 
-    def __init__(self, ref_registry, name_registry):
-        self._name_registry = name_registry
+    def __init__(self, buildin_types_registry, ref_registry, local_name_dict):
+        self._buildin_types_registry = buildin_types_registry
         self._ref_registry = ref_registry
+        self._local_name_dict = local_name_dict
 
     def map_hierarchy_obj(self, tclass, value):
         if tclass is tNamed:
@@ -21,18 +26,32 @@ class TypeModuleToRefsMapper(Mapper):
         return value
 
     def _map_named_t(self, rec):
-        return self._name_registry[rec.name]
+        ref = self._local_name_dict.get(rec.name)
+        if ref:
+            return t_ref(ref)
+        t = self._buildin_types_registry.resolve(['basic', rec.name])
+        assert t, repr(rec.name)  # Unknown name, must be caught by type loader
+        return t_ref(self._make_builtin_type_ref(t))
+
+    def _make_builtin_type_ref(self, t):
+        rec = builtin_ref_t(t.full_name)
+        return self._ref_registry.register_object(rec)  # expected fail for duplicates; todo: move ref to Type
 
 
-def map_type_module_to_refs(types, ref_registry, module):
+def map_type_module_to_refs(buildin_types_registry, ref_registry, module):
     # leave builtin names as is - they are available on all systems
-    name_registry = {name: t_named(name) for name in types.builtins.keys()}
-    mapper = TypeModuleToRefsMapper(ref_registry, name_registry)
+    local_name_dict = {}  # name -> ref
+    mapper = TypeModuleToRefsMapper(buildin_types_registry, ref_registry, local_name_dict)
     for typedef in module.typedefs:
         t = mapper.map(typedef.type)
-        ref = ref_registry.register_object(t)
-        name_registry[typedef.name] = t_ref(ref)
-        yield (typedef.name, t_ref(ref))
+        rec = meta_ref_t(
+            name=typedef.name,
+            random_salt=uuid.uuid4().bytes,
+            type=t,
+            )
+        ref = ref_registry.register_object(rec)
+        local_name_dict[typedef.name] = ref
+        yield (typedef.name, ref)
 
 def resolve_type_module(types, module):
     assert isinstance(types, TypeNamespace), repr(types)

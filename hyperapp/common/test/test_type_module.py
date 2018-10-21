@@ -17,6 +17,7 @@ from hyperapp.common.htypes import (
     )
 from hyperapp.common.type_module_parser import load_type_module
 from hyperapp.common.type_module import map_type_module_to_refs, resolve_type_module
+from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
 
 
@@ -60,8 +61,9 @@ def test_load_and_resolve():
 
 def test_map_to_refs():
     types = make_root_type_namespace()
+    builtin_types_registry = make_builtin_types_registry()
     ref_registry = RefRegistry(types)
     source_module_1 = load_type_module(types.builtins, 'test_module1', make_fpath('test_module1.types'))
-    name_registry_1 = dict(map_type_module_to_refs(types, ref_registry, source_module_1))
+    name_registry_1 = dict(map_type_module_to_refs(builtin_types_registry, ref_registry, source_module_1))
     source_module_2 = load_type_module(types.builtins, 'test_module2', make_fpath('test_module2.types'))
 #    name_registry_2 = dict(map_type_module_to_refs(types, ref_registry, source_module_1))

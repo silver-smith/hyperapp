@@ -51,6 +51,17 @@ tTypeModule = TRecord([
     ], full_name=['meta_type', 'type_module'])
 
 
+builtin_ref_t = TRecord([
+    Field('full_name', TList(tString)),
+    ], full_name=['meta_type', 'builtin_ref'])
+
+meta_ref_t = TRecord([
+    Field('name', tString),
+    Field('random_salt', tBinary),
+    Field('type', tMetaType),
+    ], full_name=['meta_type', 'meta_ref'])
+
+
 tNamed = tMetaType.register('named', base=tRootMetaType, fields=[
     Field('name', tString),
     ], full_name=['meta_type', 'named'])

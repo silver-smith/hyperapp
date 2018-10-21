@@ -47,7 +47,7 @@ class Type(object):
 class TPrimitive(Type):
 
     def __init__(self, full_name=None):
-        super().__init__(full_name or ['builtins', self.type_name])
+        super().__init__(full_name or ['basic', self.type_name])
 
     def __repr__(self):
         return 'TPrimitive<%s>' % self.get_type().__name__

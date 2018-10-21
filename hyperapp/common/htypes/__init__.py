@@ -22,30 +22,32 @@ def make_meta_type_registry():
 def make_builtins_type_namespace():
     namespace = TypeNamespace()
     for t in [
-        tNone,
-        tString,
-        tBinary,
-        tInt,
-        tBool,
-        tDateTime,
-        tEmbedded,
-        tIfaceId,
-        tPath,
-        tUrl,
-        tTypeModule,
-        tServerRoutes,
-        ref_t,
-        full_type_name_t,
-        route_t,
-        capsule_t,
-        bundle_t,
-        ]:
+            tNone,
+            tString,
+            tBinary,
+            tInt,
+            tBool,
+            tDateTime,
+            tEmbedded,
+            tIfaceId,
+            tPath,
+            tUrl,
+            tTypeModule,
+            tServerRoutes,
+            ref_t,
+            full_type_name_t,
+            route_t,
+            capsule_t,
+            bundle_t,
+            ]:
         namespace[t.name] = t
     return namespace
 
 def make_meta_type_namespace():
     namespace = TypeNamespace()
     for t in [
+            builtin_ref_t,
+            meta_ref_t,
             tMetaType,
             ]:
         full_name = t.full_name
