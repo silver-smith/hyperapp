@@ -1,6 +1,7 @@
 import uuid
 
 from .htypes import (
+    ref_t,
     TypeNamespace,
     TypeNameResolver,
     make_meta_type_registry,
@@ -11,6 +12,32 @@ from .htypes import (
     meta_ref_t,
     )
 from .mapper import Mapper
+
+
+class LocalTypeModule(object):
+
+    def __init__(self):
+        self._name2ref = {}  # name -> meta_ref_t
+
+    def register(self, name, ref):
+        assert isinstance(ref, ref_t), repr(ref)
+        self._name2ref[name] = ref
+
+    def resolve(self, name):
+        return self._name2ref.get(name)
+
+
+class LocalTypeModuleRegistry(object):
+
+    def __init__(self):
+        self._registry = {}
+
+    def register(self, name, local_type_module):
+        assert isinstance(local_type_module, LocalTypeModule), repr(local_type_module)
+        self._registry[name] = local_type_module
+
+    def resolve(self, name):
+        return self._registry.get(name)
 
 
 class TypeModuleToRefsMapper(Mapper):
@@ -38,9 +65,12 @@ class TypeModuleToRefsMapper(Mapper):
         return self._ref_registry.register_object(rec)  # expected fail for duplicates; todo: move ref to Type
 
 
-def map_type_module_to_refs(buildin_types_registry, ref_registry, module):
-    # leave builtin names as is - they are available on all systems
+def map_type_module_to_refs(buildin_types_registry, ref_registry, local_type_module_registry, module):
     local_name_dict = {}  # name -> ref
+    for import_ in module.import_list:
+        imported_module = local_type_module_registry.resolve(import_.module_name)
+        local_name_dict[import_.name] = imported_module.resolve(import_.name)
+    local_type_module = LocalTypeModule()
     mapper = TypeModuleToRefsMapper(buildin_types_registry, ref_registry, local_name_dict)
     for typedef in module.typedefs:
         t = mapper.map(typedef.type)
@@ -50,8 +80,9 @@ def map_type_module_to_refs(buildin_types_registry, ref_registry, module):
             type=t,
             )
         ref = ref_registry.register_object(rec)
+        local_type_module.register(typedef.name, ref)
         local_name_dict[typedef.name] = ref
-        yield (typedef.name, ref)
+    return local_type_module
 
 def resolve_type_module(types, module):
     assert isinstance(types, TypeNamespace), repr(types)
