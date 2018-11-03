@@ -14,8 +14,6 @@ log = logging.getLogger(__name__)
 DYN_MODULE_EXT = '.dyn.py'
 
 
-
-
 class ModuleManager(object):
 
     def __init__(self, services, types, module_registry):
