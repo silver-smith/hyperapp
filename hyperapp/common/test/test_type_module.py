@@ -16,21 +16,18 @@ from hyperapp.common.htypes import (
     make_root_type_namespace,
     )
 from hyperapp.common.type_module_parser import load_type_module
-from hyperapp.common.type_module import LocalTypeModuleRegistry, map_type_module_to_refs, resolve_type_module
+from hyperapp.common.type_module import LocalTypeModuleRegistry, resolve_type_module
 from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.type_module_loader import TypeModuleLoader
 
 
-TEST_TYPE_MODULES_DIR = Path(__file__).parent.resolve()
-
-
-def make_fpath(module_name):
-    return TEST_TYPE_MODULES_DIR / module_name
+TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
 def test_load_and_resolve():
     types = make_root_type_namespace()
-    module_1 = load_type_module(types.builtins, 'test_module_1', make_fpath('test_module_1.types'))
+    module_1 = load_type_module(types.builtins, 'test_module_1', TEST_MODULES_DIR / 'test_module_1.types')
     ns = resolve_type_module(types, module_1)
 
     assert tInt == ns.get('some_int')
@@ -51,7 +48,7 @@ def test_load_and_resolve():
     assert [] == module_1.import_list
 
     types[module_1.module_name] = ns
-    module_2 = load_type_module(types.builtins, 'test_module_2', make_fpath('test_module_2.types'))
+    module_2 = load_type_module(types.builtins, 'test_module_2', TEST_MODULES_DIR / 'test_module_2.types')
     assert tProvidedClass('object', 'text_object_2') in module_2.provided_classes
 
     ns2 = resolve_type_module(types, module_2)
@@ -64,8 +61,6 @@ def test_map_to_refs():
     builtin_types_registry = make_builtin_types_registry()
     local_type_module_registry = LocalTypeModuleRegistry()
     ref_registry = RefRegistry(types)
-    source_module_1 = load_type_module(types.builtins, 'test_module_1', make_fpath('test_module_1.types'))
-    local_type_module_1 = map_type_module_to_refs(builtin_types_registry, ref_registry, local_type_module_registry, source_module_1)
-    local_type_module_registry.register('test_module_1', local_type_module_1)
-    source_module_2 = load_type_module(types.builtins, 'test_module_2', make_fpath('test_module_2.types'))
-    local_type_module_2 = map_type_module_to_refs(builtin_types_registry, ref_registry, local_type_module_registry, source_module_2)
+    loader = TypeModuleLoader(types.builtins, builtin_types_registry, ref_registry, local_type_module_registry)
+    loader.load_type_module('test_module_1', TEST_MODULES_DIR / 'test_module_1.types')
+    loader.load_type_module('test_module_2', TEST_MODULES_DIR / 'test_module_2.types')
