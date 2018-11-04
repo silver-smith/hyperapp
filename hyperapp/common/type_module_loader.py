@@ -13,8 +13,8 @@ from .mapper import Mapper
 
 class _TypeModuleToRefsMapper(Mapper):
 
-    def __init__(self, buildin_types_registry, ref_registry, local_name_dict):
-        self._buildin_types_registry = buildin_types_registry
+    def __init__(self, builtin_types_registry, ref_registry, local_name_dict):
+        self._builtin_types_registry = builtin_types_registry
         self._ref_registry = ref_registry
         self._local_name_dict = local_name_dict
 
@@ -27,7 +27,7 @@ class _TypeModuleToRefsMapper(Mapper):
         ref = self._local_name_dict.get(rec.name)
         if ref:
             return t_ref(ref)
-        t = self._buildin_types_registry.resolve(['basic', rec.name])
+        t = self._builtin_types_registry.resolve(['basic', rec.name])
         assert t, repr(rec.name)  # Unknown name, must be caught by type loader
         return t_ref(self._make_builtin_type_ref(t))
 
