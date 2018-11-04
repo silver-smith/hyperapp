@@ -34,7 +34,8 @@ class RefResolver(object):
         capsule = self.resolve_ref(ref)
         assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
         if expected_type:
-            assert full_type_name_to_str(capsule.full_type_name) == expected_type
+            assert full_type_name_to_str(capsule.full_type_name) == expected_type, (
+                repr(full_type_name_to_str(capsule.full_type_name)), repr(expected_type))
         t = self._types.resolve(capsule.full_type_name)
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
