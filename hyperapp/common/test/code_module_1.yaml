@@ -1,0 +1,6 @@
+import:
+  types:
+    test_module_1:
+      - record_1
+      - record_2
+      - simple_class

@@ -51,6 +51,20 @@ tTypeModule = TRecord([
     ], full_name=['meta_type', 'type_module'])
 
 
+type_import_t = TRecord([
+    Field('type_module_name', tString),
+    Field('type_name', tString),
+    Field('type_ref', ref_t),
+    ])
+
+code_module_t = TRecord([
+    Field('module_name', tString),
+    Field('type_import_list', TList(type_import_t)),
+    Field('source', tString),
+    Field('file_path', tString),
+    ])
+
+
 builtin_ref_t = TRecord([
     Field('full_name', TList(tString)),
     ], full_name=['meta_type', 'builtin_ref'])
