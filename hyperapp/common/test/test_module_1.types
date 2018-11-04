@@ -3,10 +3,10 @@ some_string_opt = string opt
 some_bool_list = bool list
 some_bool_list_opt = some_bool_list opt
 
-record1 = record:
+record_1 = record:
   int_field: int
 
-record2 = record(record1):
+record_2 = record(record_1):
   string_field: string
 
 

@@ -30,13 +30,13 @@ def make_fpath(module_name):
 
 def test_load_and_resolve():
     types = make_root_type_namespace()
-    module = load_type_module(types.builtins, 'test_module1', make_fpath('test_module1.types'))
-    ns = resolve_type_module(types, module)
+    module_1 = load_type_module(types.builtins, 'test_module_1', make_fpath('test_module_1.types'))
+    ns = resolve_type_module(types, module_1)
 
     assert tInt == ns.get('some_int')
 
-    assert ns.record1 == TRecord([Field('int_field', tInt)])
-    assert ns.record2 == TRecord([Field('int_field', tInt), Field('string_field', tString)])
+    assert ns.record_1 == TRecord([Field('int_field', tInt)])
+    assert ns.record_2 == TRecord([Field('int_field', tInt), Field('string_field', tString)])
 
     assert 'object' in ns
     object_t = ns.object
@@ -48,13 +48,13 @@ def test_load_and_resolve():
     assert 'text_object' in ns
     assert TClass(object_t, 'text_2', base=simple_class, trec=TRecord([Field('text', tString)])) == ns.text_object
 
-    assert [] == module.import_list
+    assert [] == module_1.import_list
 
-    types[module.module_name] = ns
-    module2 = load_type_module(types.builtins, 'test_module2', make_fpath('test_module2.types'))
-    assert tProvidedClass('object', 'text_object_2') in module2.provided_classes
+    types[module_1.module_name] = ns
+    module_2 = load_type_module(types.builtins, 'test_module_2', make_fpath('test_module_2.types'))
+    assert tProvidedClass('object', 'text_object_2') in module_2.provided_classes
 
-    ns2 = resolve_type_module(types, module2)
+    ns2 = resolve_type_module(types, module_2)
 
     assert TOptional(TList(tBool)) == ns2.some_bool_list_opt
 
@@ -64,8 +64,8 @@ def test_map_to_refs():
     builtin_types_registry = make_builtin_types_registry()
     local_type_module_registry = LocalTypeModuleRegistry()
     ref_registry = RefRegistry(types)
-    source_module_1 = load_type_module(types.builtins, 'test_module1', make_fpath('test_module1.types'))
+    source_module_1 = load_type_module(types.builtins, 'test_module_1', make_fpath('test_module_1.types'))
     local_type_module_1 = map_type_module_to_refs(builtin_types_registry, ref_registry, local_type_module_registry, source_module_1)
-    local_type_module_registry.register('test_module1', local_type_module_1)
-    source_module_2 = load_type_module(types.builtins, 'test_module2', make_fpath('test_module2.types'))
+    local_type_module_registry.register('test_module_1', local_type_module_1)
+    source_module_2 = load_type_module(types.builtins, 'test_module_2', make_fpath('test_module_2.types'))
     local_type_module_2 = map_type_module_to_refs(builtin_types_registry, ref_registry, local_type_module_registry, source_module_2)
