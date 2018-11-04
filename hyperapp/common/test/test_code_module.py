@@ -6,6 +6,8 @@ from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.code_module_loader import CodeModuleLoader
+from hyperapp.common import cdr_coders  # register codec
+from hyperapp.common.visual_rep import pprint
 
 
 TEST_MODULES_DIR = Path(__file__).parent.resolve()
@@ -23,3 +25,4 @@ def test_code_module_load():
     loader = CodeModuleLoader(local_type_module_registry)
     code_module = loader.load_code_module('code_module_1', TEST_MODULES_DIR / 'code_module_1')
     assert isinstance(code_module, code_module_t)
+    pprint(code_module, title='Loaded code module')
