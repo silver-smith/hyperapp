@@ -31,8 +31,11 @@ class BuiltinTypesRegistry(object):
         assert isinstance(t, Type), repr(t)
         self._registry[tuple(full_name)] = t
 
-    def resolve(self, full_name):
+    def get(self, full_name):
         return self._registry.get(tuple(full_name))
+
+    def __getitem__(self, full_name):
+        return self._registry[tuple(full_name)]
 
 
 def make_builtin_types_registry():

@@ -27,8 +27,7 @@ class _TypeModuleToRefsMapper(Mapper):
         ref = self._local_name_dict.get(rec.name)
         if ref:
             return t_ref(ref)
-        t = self._builtin_types_registry.resolve(['basic', rec.name])
-        assert t, repr(rec.name)  # Unknown name, must be caught by type loader
+        t = self._builtin_types_registry[['basic', rec.name]]
         return t_ref(self._make_builtin_type_ref(t))
 
     def _make_builtin_type_ref(self, t):

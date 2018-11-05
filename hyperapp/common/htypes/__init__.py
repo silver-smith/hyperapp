@@ -16,6 +16,7 @@ def make_meta_type_registry():
     registry.register('hierarchy', hierarchy_from_data)
     registry.register('exception_hierarchy', exception_hierarchy_from_data)
     registry.register('hierarchy_class', hierarchy_class_from_data)
+    registry.register('ref', ref_from_data)
     registry.register('interface', interface_from_data)
     return registry
 

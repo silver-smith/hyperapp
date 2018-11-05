@@ -1,0 +1,55 @@
+import logging
+
+from .util import full_type_name_to_str
+from .htypes import Type, ref_t, capsule_t
+from .htypes.packet_coders import packet_coders
+from .ref import ref_repr
+from .visual_rep import pprint
+from .registry import Registry
+
+log = logging.getLogger(__name__)
+
+
+class CapsuleRegistry(Registry):
+
+    def __init__(self, produce_name, types):
+        super().__init__()
+        self._produce_name = produce_name
+        self._types = types
+
+    @property
+    def produce_name(self):
+        return self._produce_name
+
+    def id_to_str(self, id):
+        return full_type_name_to_str(id)
+
+    def register(self, t, factory, *args, **kw):
+        assert isinstance(t, Type), repr(t)
+        assert t.full_name, repr(t)  # type must have a name
+        super().register(tuple(t.full_name), factory, *args, **kw)
+        
+    def resolve(self, ref, capsule, *args, **kw):
+        assert isinstance(capsule, capsule_t), repr(capsule)
+        t = self._types.resolve(capsule.full_type_name)
+        object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        pprint(object, t=t, title='Producing %s for capsule %s %s' % (self._produce_name, ref_repr(ref), full_type_name_to_str(capsule.full_type_name)))
+        rec = self._resolve(tuple(capsule.full_type_name))
+        log.info('producing %s for %s using %s(%s/%s, %s/%s) for object %r',
+                 self._produce_name, full_type_name_to_str(capsule.full_type_name), rec.factory, rec.args, args, rec.kw, kw, object)
+        return rec.factory(ref, object, *(rec.args + args), **dict(rec.kw, **kw))
+
+
+class CapsuleResolver(object):
+
+    def __init__(self, ref_resolver, capsule_registry):
+        self._ref_resolver = ref_resolver
+        self._capsule_registry = capsule_registry
+
+    def resolve(self, ref, *args, **kw):
+        assert isinstance(ref, ref_t), repr(ref)
+        capsule = self._ref_resolver.resolve_ref(ref)
+        produce = self._capsule_registry.resolve(ref, capsule, *args, **kw)
+        assert produce, repr(produce)
+        log.debug('Capsule %s is resolved to %s %r', ref_repr(ref), self._capsule_registry.produce_name, produce)
+        return produce
