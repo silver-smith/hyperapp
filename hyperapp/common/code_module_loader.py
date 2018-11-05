@@ -17,7 +17,7 @@ class CodeModuleLoader(object):
             local_type_module = self._local_type_module_registry.resolve(type_module_name)
             assert local_type_module, "%s: Unknown type module: %s" % (info_path, type_module_name)
             for type_name in import_name_list:
-                type_ref = local_type_module.resolve(type_name)
+                type_ref = local_type_module.get(type_name)
                 assert type_ref, "%s: Unknown type: %s.%s" % (info_path, type_module_name, type_name)
                 type_import_list.append(type_import_t(type_module_name, type_name, type_ref))
         return code_module_t(module_name, type_import_list, source, str(source_path))

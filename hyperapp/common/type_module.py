@@ -15,8 +15,11 @@ class LocalTypeModule(object):
         assert isinstance(ref, ref_t), repr(ref)
         self._name2ref[name] = ref
 
-    def resolve(self, name):
+    def get(self, name):
         return self._name2ref.get(name)
+
+    def __getitem__(self, name):
+        return self._name2ref[name]
 
 
 class LocalTypeModuleRegistry(object):
@@ -30,6 +33,9 @@ class LocalTypeModuleRegistry(object):
 
     def resolve(self, name):
         return self._registry.get(name)
+
+    def __getitem__(self, name):
+        return self._registry[name]
 
 
 def resolve_type_module(types, module):

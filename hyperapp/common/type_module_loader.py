@@ -52,8 +52,8 @@ class TypeModuleLoader(object):
     def _map_type_module_to_refs(self, module):
         local_name_dict = {}  # name -> ref
         for import_ in module.import_list:
-            imported_module = self._local_type_module_registry.resolve(import_.module_name)
-            local_name_dict[import_.name] = imported_module.resolve(import_.name)
+            imported_module = self._local_type_module_registry[import_.module_name]
+            local_name_dict[import_.name] = imported_module[import_.name]
         local_type_module = LocalTypeModule()
         mapper = _TypeModuleToRefsMapper(self._builtin_types_registry, self._ref_registry, local_name_dict)
         for typedef in module.typedefs:

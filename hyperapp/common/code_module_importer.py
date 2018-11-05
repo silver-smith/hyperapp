@@ -89,4 +89,4 @@ class CodeModuleImporter(object):
             return importlib.machinery.ModuleSpec(fullname, _HTypeRootLoader(code_module), is_package=True)
         type_import = self._type_module_name_to_type_import_list.get(fullname)
         if type_import:
-            return importlib.machinery.ModuleSpec(fullname, _TypeModuleLoader(type_import), is_package=True)
+            return importlib.machinery.ModuleSpec(fullname, _TypeModuleLoader(type_import))
