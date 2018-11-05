@@ -61,4 +61,5 @@ def test_code_module_import(types, ref_registry, type_module_loader, code_module
     ref_resolver.add_source(ref_registry)
 
     code_module_importer = CodeModuleImporter(ref_resolver)
-    code_module = code_module_importer.add_code_module(code_module_ref)
+    code_module_importer.register_meta_hook()
+    code_module = code_module_importer.import_code_module(code_module_ref)
