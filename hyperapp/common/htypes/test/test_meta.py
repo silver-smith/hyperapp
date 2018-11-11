@@ -81,7 +81,29 @@ def test_optional(type_resolver, builtin_ref):
     assert t.base_t is tString
 
 
+def test_list(type_resolver, builtin_ref):
+    data = t_list_meta(t_optional_meta(builtin_ref('datetime')))
+    t = type_resolver.resolve_meta_type(data, 'some_list')
+    assert t == TList(TOptional(tDateTime))
+
+
+def test_record(type_resolver, builtin_ref):
+    data = t_record_meta([
+        t_field_meta('int_field', builtin_ref('int')),
+        t_field_meta('string_list_field', t_list_meta(builtin_ref('string'))),
+        t_field_meta('bool_optional_field', t_optional_meta(builtin_ref('bool'))),
+        ])
+    t = type_resolver.resolve_meta_type(data, 'some_record')
+    assert t == TRecord([
+        Field('int_field', tInt),
+        Field('string_list_field', TList(tString)),
+        Field('bool_optional_field', TOptional(tBool)),
+        ])
+
+
 class MetaTypeTest(unittest.TestCase):
+
+    __test__ = False
 
     primitive_types = [
         tNone,
@@ -107,29 +129,10 @@ class MetaTypeTest(unittest.TestCase):
         self.assertEqual(t, tInt)
         self.assertIs(t, tInt)  # must resolve to same instance
 
-
-    def test_list(self):
-        data = t_list_meta(t_optional_meta(t_named('datetime')))
-        t = self.resolve(data)
-        self.assertEqual(TList(TOptional(tDateTime)), t)
-
     ## def test_indexed_list(self):
     ##     for element_t in self.primitive_types:
     ##         t = TIndexedList(element_t)
     ##         self.check_type(t)
-
-    def test_record(self):
-        data = t_record_meta([
-            t_field_meta('int_field', t_named('int')),
-            t_field_meta('string_list_field', t_list_meta(t_named('string'))),
-            t_field_meta('bool_optional_field', t_optional_meta(t_named('bool'))),
-            ])
-        t = self.resolve(data)
-        self.assertEqual(TRecord([
-            Field('int_field', tInt),
-            Field('string_list_field', TList(tString)),
-            Field('bool_optional_field', TOptional(tBool)),
-            ]), t)
 
     def test_based_record(self):
         base_record_data = t_record_meta([
