@@ -17,7 +17,7 @@ class _TypeRefResolver(TypeRefResolver):
     def __init__(self, type_resolver):
         self._type_resolver = type_resolver
 
-    def resolve(self, type_ref, name):
+    def resolve(self, type_ref, name=None):
         return self._type_resolver.resolve(type_ref.ref)
 
 

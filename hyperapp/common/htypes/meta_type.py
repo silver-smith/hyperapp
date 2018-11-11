@@ -209,7 +209,7 @@ tIfaceCommandMeta = TRecord([
     ], full_name=['meta_type', 'iface_command'])
 
 tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
-    Field('base_iface_name', TOptional(tString)),
+    Field('base', TOptional(tMetaType)),
     Field('commands', TList(tIfaceCommandMeta)),
     ], full_name=['meta_type', 'interface'])
 
@@ -218,8 +218,8 @@ def t_command_meta(request_type, command_id, params_fields, result_fields=None):
     assert request_type in [IfaceCommand.rt_request, IfaceCommand.rt_notification], repr(request_type)
     return tIfaceCommandMeta(request_type, command_id, params_fields, result_fields or [])
 
-def t_interface_meta(commands, base_iface_name=None):
-    return tInterfaceMeta(tInterfaceMeta.id, base_iface_name, commands)
+def t_interface_meta(commands, base=None):
+    return tInterfaceMeta(tInterfaceMeta.id, base, commands)
 
 def command_from_data(meta_type_registry, type_ref_resolver, rec, full_name):
     params_fields = field_list_from_data(meta_type_registry, type_ref_resolver, rec.params_fields)
@@ -227,7 +227,7 @@ def command_from_data(meta_type_registry, type_ref_resolver, rec, full_name):
     return IfaceCommand(full_name + [rec.command_id], rec.request_type, rec.command_id, params_fields, result_fields)
 
 def interface_from_data(meta_type_registry, type_ref_resolver, rec, full_name):
-    base_iface = type_ref_resolver.resolve(rec.base_iface_name) if rec.base_iface_name else None
+    base_iface = type_ref_resolver.resolve(rec.base) if rec.base else None
     commands = [command_from_data(meta_type_registry, type_ref_resolver, command, full_name) for command in rec.commands]
     return Interface(full_name, base_iface, commands)
 
@@ -235,7 +235,7 @@ def interface_from_data(meta_type_registry, type_ref_resolver, rec, full_name):
 class TypeRefResolver(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def resolve(self, type_ref, name):
+    def resolve(self, type_ref, name=None):
         pass
 
 

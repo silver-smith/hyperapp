@@ -249,7 +249,7 @@ def p_interface_def_3(p):
 
 def p_interface_parent_def_1(p):
     'interface_parent_def : LPAR NAME RPAR'
-    p[0] = p[2]
+    p[0] = t_named(p[2])
 
 def p_interface_parent_def_2(p):
     'interface_parent_def : empty'

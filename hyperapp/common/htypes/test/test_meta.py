@@ -183,3 +183,26 @@ def test_interface(builtin_ref, resolve):
             RequestCmd(['test_iface', 'request_open'], 'request_open', [],
                        [Field('result', TOptional(tInt))]),
         ])
+
+
+def test_based_interface(builtin_ref, type_ref, resolve):
+    iface_a_data = t_interface_meta([
+        t_command_meta('request', 'request_one',
+                       [t_field_meta('req_param1', builtin_ref('string'))],
+                       [t_field_meta('req_result1', t_list_meta(builtin_ref('int')))]),
+        ])
+    iface_a_ref = t_ref(type_ref('iface_a', iface_a_data))
+
+    iface_b_data = t_interface_meta(base=iface_a_ref, commands=[
+        t_command_meta('notification', 'notification_one',
+                       [t_field_meta('noti_param1', t_optional_meta(builtin_ref('bool'))),
+                        t_field_meta('noti_param2', builtin_ref('datetime'))]),
+        ])
+
+    iface_a = resolve('iface_a', iface_a_data)
+    iface_b = resolve('iface_b', iface_b_data)
+    assert iface_b == Interface(['iface_b'], base=iface_a, commands=[
+        NotificationCmd(['iface_b', 'notification_one'], 'notification_one',
+                        [Field('noti_param1', TOptional(tBool)),
+                         Field('noti_param2', tDateTime)]),
+        ])
