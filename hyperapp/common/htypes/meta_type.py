@@ -257,24 +257,3 @@ class MetaTypeRegistry(object):
         factory = self._registry.get(rec.type_id)
         assert factory, 'Unknown type_id: %r' % rec.type_id
         return factory(self, type_ref_resolver, rec, full_name)
-
-
-class UnknownTypeError(KeyError):
-
-    def __init__(self, name):
-        KeyError.__init__(self, 'Unknown type: %r' % name)
-        self.name = name
-
-
-class TypeNameResolver(object):
-
-    def __init__(self, type_namespace_list):
-        assert type_namespace_list is None or is_list_inst(type_namespace_list, TypeNamespace), repr(type_namespace_list)
-        self._type_namespace_list = type_namespace_list or []
-
-    def resolve(self, name):
-        for namespace in self._type_namespace_list:
-            value = namespace.get(name)
-            if value is not None:
-                return value
-        raise UnknownTypeError(name)
