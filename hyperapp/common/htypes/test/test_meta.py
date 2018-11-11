@@ -2,7 +2,6 @@
 
 import logging
 import pytest
-import unittest
 
 from hyperapp.common.htypes import (
     TPrimitive,
@@ -161,31 +160,26 @@ def test_hierarchy(builtin_ref, type_ref, resolve):
     assert class_b == TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
                                                             Field('field_b_1', TList(tInt))]))
 
-
-class MetaTypeTest(unittest.TestCase):
-
-    __test__ = False
-
-    def test_interface(self):
-        data = t_interface_meta(None, [
-            t_command_meta('request', 'request_one',
-                           [t_field_meta('req_param1', builtin_ref('string'))],
-                           [t_field_meta('req_result1', t_list_meta(builtin_ref('int')))]),
-            t_command_meta('notification', 'notification_one',
-                           [t_field_meta('noti_param1', t_optional_meta(builtin_ref('bool'))),
-                            t_field_meta('noti_param2', builtin_ref('datetime'))]),
-            t_command_meta('request', 'request_open', [],
-                           [t_field_meta('result', t_optional_meta(builtin_ref('int')))]),
-            ])
-        t = self.resolve(data, full_name=['test_meta', 'test_iface'])
-        self.assertEqual(Interface(['test_meta', 'test_iface'],
-            commands=[
-                RequestCmd(['test_meta', 'test_iface', 'request_one'], 'request_one',
-                           [Field('req_param1', tString)],
-                           [Field('req_result1', TList(tInt))]),
-                NotificationCmd(['test_meta', 'test_iface', 'notification_one'], 'notification_one',
-                                [Field('noti_param1', TOptional(tBool)),
-                                 Field('noti_param2', tDateTime)]),
-                RequestCmd(['test_meta', 'test_iface', 'request_open'], 'request_open', [],
-                           [Field('result', TOptional(tInt))]),
-            ]), t)
+def test_interface(builtin_ref, resolve):
+    iface_data = t_interface_meta([
+        t_command_meta('request', 'request_one',
+                       [t_field_meta('req_param1', builtin_ref('string'))],
+                       [t_field_meta('req_result1', t_list_meta(builtin_ref('int')))]),
+        t_command_meta('notification', 'notification_one',
+                       [t_field_meta('noti_param1', t_optional_meta(builtin_ref('bool'))),
+                        t_field_meta('noti_param2', builtin_ref('datetime'))]),
+        t_command_meta('request', 'request_open', [],
+                       [t_field_meta('result', t_optional_meta(builtin_ref('int')))]),
+        ])
+    t = resolve('test_iface', iface_data)
+    assert t == Interface(['test_iface'],
+        commands=[
+            RequestCmd(['test_iface', 'request_one'], 'request_one',
+                       [Field('req_param1', tString)],
+                       [Field('req_result1', TList(tInt))]),
+            NotificationCmd(['test_iface', 'notification_one'], 'notification_one',
+                            [Field('noti_param1', TOptional(tBool)),
+                             Field('noti_param2', tDateTime)]),
+            RequestCmd(['test_iface', 'request_open'], 'request_open', [],
+                       [Field('result', TOptional(tInt))]),
+        ])

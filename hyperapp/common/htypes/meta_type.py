@@ -218,7 +218,7 @@ def t_command_meta(request_type, command_id, params_fields, result_fields=None):
     assert request_type in [IfaceCommand.rt_request, IfaceCommand.rt_notification], repr(request_type)
     return tIfaceCommandMeta(request_type, command_id, params_fields, result_fields or [])
 
-def t_interface_meta(base_iface_name, commands):
+def t_interface_meta(commands, base_iface_name=None):
     return tInterfaceMeta(tInterfaceMeta.id, base_iface_name, commands)
 
 def command_from_data(meta_type_registry, type_ref_resolver, rec, full_name):
