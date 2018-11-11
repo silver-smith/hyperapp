@@ -181,10 +181,8 @@ def t_hierarchy_meta(hierarchy_id):
 def t_exception_hierarchy_meta(hierarchy_id):
     return tExceptionHierarchyMeta(tExceptionHierarchyMeta.id, hierarchy_id)
 
-def t_hierarchy_class_meta(hierarchy_name, class_id, base_name, fields):
-    return tHierarchyClassMeta(tHierarchyClassMeta.id,
-                               t_named(hierarchy_name), class_id,
-                               t_named(base_name) if base_name else None, fields)
+def t_hierarchy_class_meta(hierarchy, class_id, fields, base=None):
+    return tHierarchyClassMeta(tHierarchyClassMeta.id, hierarchy, class_id, base, fields)
 
 def hierarchy_from_data(meta_type_registry, type_ref_resolver, rec, full_name):
     return THierarchy(rec.hierarchy_id, full_name)

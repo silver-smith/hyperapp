@@ -84,32 +84,41 @@ def type_ref(ref_registry):
             random_salt=name.encode() + b'-salt',
             type=meta_type,
             )
-        ref = ref_registry.register_object(rec)
-        return t_ref(ref)
+        return ref_registry.register_object(rec)
 
     return make
 
 
-def test_optional(type_resolver, builtin_ref):
+@pytest.fixture
+def resolve(type_resolver, type_ref):
+
+    def act(name, meta_data):
+        ref = type_ref(name, meta_data)
+        return type_resolver.resolve(ref)
+
+    return act
+
+
+def test_optional(builtin_ref, resolve):
     data = t_optional_meta(builtin_ref('string'))
-    t = type_resolver.resolve_meta_type(data, 'some_optional')
+    t = resolve('some_optional', data)
     assert t == TOptional(tString)
     assert t.base_t is tString
 
 
-def test_list(type_resolver, builtin_ref):
+def test_list(builtin_ref, resolve):
     data = t_list_meta(t_optional_meta(builtin_ref('datetime')))
-    t = type_resolver.resolve_meta_type(data, 'some_list')
+    t = resolve('some_list', data)
     assert t == TList(TOptional(tDateTime))
 
 
-def test_record(type_resolver, builtin_ref):
+def test_record(builtin_ref, resolve):
     data = t_record_meta([
         t_field_meta('int_field', builtin_ref('int')),
         t_field_meta('string_list_field', t_list_meta(builtin_ref('string'))),
         t_field_meta('bool_optional_field', t_optional_meta(builtin_ref('bool'))),
         ])
-    t = type_resolver.resolve_meta_type(data, 'some_record')
+    t = resolve('some_record', data)
     assert t == TRecord([
         Field('int_field', tInt),
         Field('string_list_field', TList(tString)),
@@ -117,73 +126,45 @@ def test_record(type_resolver, builtin_ref):
         ])
 
 
-def test_based_record(type_resolver, builtin_ref, type_ref):
+def test_based_record(builtin_ref, type_ref, resolve):
     base_record_data = t_record_meta([
         t_field_meta('int_field', builtin_ref('int')),
         ])
-    base_record_ref = type_ref('some_base_record', base_record_data)
+    base_record_ref = t_ref(type_ref('some_base_record', base_record_data))
 
     record_data = t_record_meta([
         t_field_meta('string_field', builtin_ref('string')),
         ], base=base_record_ref)
-    t = type_resolver.resolve_meta_type(record_data, 'some_record')
+    t = resolve('some_record', record_data)
     assert t == TRecord([
         Field('int_field', tInt),
         Field('string_field', tString),
         ])
 
 
+def test_hierarchy(builtin_ref, type_ref, resolve):
+    hierarchy_data = t_hierarchy_meta('test_hierarchy')
+    hierarchy_ref = t_ref(type_ref('some_hierarchy', hierarchy_data))
+
+    class_a_data = t_hierarchy_class_meta(hierarchy_ref, 'class_a', fields=[
+        t_field_meta('field_a_1', builtin_ref('string')),
+        ])
+    class_a_ref = t_ref(type_ref('some_class_a', class_a_data))
+    class_b_data = t_hierarchy_class_meta(hierarchy_ref, 'class_b', base=class_a_ref, fields=[
+        t_field_meta('field_b_1', t_list_meta(builtin_ref('int'))),
+        ])
+    hierarchy = resolve('some_hierarchy', hierarchy_data)
+    assert THierarchy('test_hierarchy').matches(hierarchy)
+    class_a = resolve('some_class_a', class_a_data)
+    class_b = resolve('some_class_b', class_b_data)
+    assert class_a == TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)]))
+    assert class_b == TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
+                                                            Field('field_b_1', TList(tInt))]))
+
+
 class MetaTypeTest(unittest.TestCase):
 
     __test__ = False
-
-    primitive_types = [
-        tNone,
-        tString,
-        tBinary,
-        tInt,
-        tBool,
-        tDateTime,
-        ]
-
-    def setUp(self):
-        self.meta_type_registry = make_meta_type_registry()
-        self.types = make_root_type_namespace()
-        self.module = TypeNamespace()
-        self.resolver = TypeNameResolver([self.types.builtins, self.module])
-
-    def resolve(self, data, full_name=None):
-        return self.meta_type_registry.resolve(self.resolver, data, full_name=full_name)
-
-    def test_named(self):
-        data = t_named('int')
-        t = self.resolve(data)
-        self.assertEqual(t, tInt)
-        self.assertIs(t, tInt)  # must resolve to same instance
-
-    ## def test_indexed_list(self):
-    ##     for element_t in self.primitive_types:
-    ##         t = TIndexedList(element_t)
-    ##         self.check_type(t)
-
-    def test_hierarchy(self):
-        hdata = t_hierarchy_meta('test_hierarchy')
-        hierarchy = self.resolve(hdata)
-        self.module['my_test_hierarchy'] = hierarchy
-
-        cdata_a = t_hierarchy_class_meta('my_test_hierarchy', 'class_a', base_name=None, fields=[
-            t_field_meta('field_a_1', builtin_ref('string')),
-            ])
-        cdata_b = t_hierarchy_class_meta('my_test_hierarchy', 'class_b', base_name='my_class_a', fields=[
-            t_field_meta('field_b_1', t_list_meta(builtin_ref('int'))),
-            ])
-        self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
-        class_a = self.resolve(cdata_a)
-        self.module['my_class_a'] = class_a
-        class_b = self.resolve(cdata_b)
-        self.assertEqual(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])), class_a)
-        self.assertEqual(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
-                                                               Field('field_b_1', TList(tInt))])), class_b)
 
     def test_interface(self):
         data = t_interface_meta(None, [

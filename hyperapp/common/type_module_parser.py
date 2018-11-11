@@ -207,7 +207,13 @@ def p_hierarchy_def_2(p):
 
 def p_class_def(p):
     'class_def : NAME CLASS NAME class_base_def class_fields_def'
-    p[0] = t_hierarchy_class_meta(p[1], p[3], p[4], p[5])
+    hierarchy = t_named(p[1])
+    base_name = p[4]
+    if base_name:
+        base = t_named(base_name)
+    else:
+        base = None
+    p[0] = t_hierarchy_class_meta(hierarchy, p[3], p[5], base)
     p.parser.provided_class_list.append(tProvidedClass(p[1], p[3]))
 
 def p_class_base_def_1(p):
