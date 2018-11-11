@@ -36,6 +36,7 @@ from hyperapp.common.htypes import (
     TypeNamespace,
     t_ref,
     builtin_ref_t,
+    meta_ref_t,
     )
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.builtin_types_registry import make_builtin_types_registry
@@ -74,6 +75,21 @@ def builtin_ref(ref_registry):
     return make
 
 
+@pytest.fixture
+def type_ref(ref_registry):
+
+    def make(name, meta_type):
+        rec = meta_ref_t(
+            name=name,
+            random_salt=name.encode() + b'-salt',
+            type=meta_type,
+            )
+        ref = ref_registry.register_object(rec)
+        return t_ref(ref)
+
+    return make
+
+
 def test_optional(type_resolver, builtin_ref):
     data = t_optional_meta(builtin_ref('string'))
     t = type_resolver.resolve_meta_type(data, 'some_optional')
@@ -98,6 +114,22 @@ def test_record(type_resolver, builtin_ref):
         Field('int_field', tInt),
         Field('string_list_field', TList(tString)),
         Field('bool_optional_field', TOptional(tBool)),
+        ])
+
+
+def test_based_record(type_resolver, builtin_ref, type_ref):
+    base_record_data = t_record_meta([
+        t_field_meta('int_field', builtin_ref('int')),
+        ])
+    base_record_ref = type_ref('some_base_record', base_record_data)
+
+    record_data = t_record_meta([
+        t_field_meta('string_field', builtin_ref('string')),
+        ], base=base_record_ref)
+    t = type_resolver.resolve_meta_type(record_data, 'some_record')
+    assert t == TRecord([
+        Field('int_field', tInt),
+        Field('string_field', tString),
         ])
 
 
@@ -134,29 +166,16 @@ class MetaTypeTest(unittest.TestCase):
     ##         t = TIndexedList(element_t)
     ##         self.check_type(t)
 
-    def test_based_record(self):
-        base_record_data = t_record_meta([
-            t_field_meta('int_field', t_named('int')),
-            ])
-        record_data = t_record_meta([
-            t_field_meta('string_field', t_named('string')),
-            ], base=base_record_data)
-        t = self.resolve(record_data)
-        self.assertEqual(TRecord([
-            Field('int_field', tInt),
-            Field('string_field', tString),
-            ]), t)
-
     def test_hierarchy(self):
         hdata = t_hierarchy_meta('test_hierarchy')
         hierarchy = self.resolve(hdata)
         self.module['my_test_hierarchy'] = hierarchy
 
         cdata_a = t_hierarchy_class_meta('my_test_hierarchy', 'class_a', base_name=None, fields=[
-            t_field_meta('field_a_1', t_named('string')),
+            t_field_meta('field_a_1', builtin_ref('string')),
             ])
         cdata_b = t_hierarchy_class_meta('my_test_hierarchy', 'class_b', base_name='my_class_a', fields=[
-            t_field_meta('field_b_1', t_list_meta(t_named('int'))),
+            t_field_meta('field_b_1', t_list_meta(builtin_ref('int'))),
             ])
         self.assertTrue(THierarchy('test_hierarchy').matches(hierarchy))
         class_a = self.resolve(cdata_a)
@@ -169,13 +188,13 @@ class MetaTypeTest(unittest.TestCase):
     def test_interface(self):
         data = t_interface_meta(None, [
             t_command_meta('request', 'request_one',
-                           [t_field_meta('req_param1', t_named('string'))],
-                           [t_field_meta('req_result1', t_list_meta(t_named('int')))]),
+                           [t_field_meta('req_param1', builtin_ref('string'))],
+                           [t_field_meta('req_result1', t_list_meta(builtin_ref('int')))]),
             t_command_meta('notification', 'notification_one',
-                           [t_field_meta('noti_param1', t_optional_meta(t_named('bool'))),
-                            t_field_meta('noti_param2', t_named('datetime'))]),
+                           [t_field_meta('noti_param1', t_optional_meta(builtin_ref('bool'))),
+                            t_field_meta('noti_param2', builtin_ref('datetime'))]),
             t_command_meta('request', 'request_open', [],
-                           [t_field_meta('result', t_optional_meta(t_named('int')))]),
+                           [t_field_meta('result', t_optional_meta(builtin_ref('int')))]),
             ])
         t = self.resolve(data, full_name=['test_meta', 'test_iface'])
         self.assertEqual(Interface(['test_meta', 'test_iface'],
