@@ -45,11 +45,8 @@ class TypeResolver(object):
         log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
         return t
 
-    def resolve_meta_type(self, meta_type, name):
-        return self._meta_type_registry.resolve(self._type_ref_resolver, meta_type, [name])
-
     def _resolve_meta_ref(self, ref, meta_ref, name=None):
-        return self.resolve_meta_type(meta_ref.type, meta_ref.name)
+        return self._meta_type_registry.resolve(self._type_ref_resolver, meta_ref.type, [meta_ref.name])
 
     def _resolve_builtin_ref(self, ref, builtin_ref, name=None):
         return self._builtin_types_registry[builtin_ref.full_name]
