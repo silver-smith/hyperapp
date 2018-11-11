@@ -7,6 +7,7 @@ from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader
+from hyperapp.common.type_resolver import TypeResolver
 from hyperapp.common.code_module_loader import CodeModuleLoader
 from hyperapp.common.code_module_importer import CodeModuleImporter
 from hyperapp.common import cdr_coders  # register codec
@@ -60,6 +61,9 @@ def test_code_module_import(types, ref_registry, type_module_loader, code_module
     ref_resolver = RefResolver(types)
     ref_resolver.add_source(ref_registry)
 
-    code_module_importer = CodeModuleImporter(ref_resolver)
+    builtin_types_registry = make_builtin_types_registry()
+    type_resolver = TypeResolver(types, builtin_types_registry, ref_resolver)
+
+    code_module_importer = CodeModuleImporter(ref_resolver, type_resolver)
     code_module_importer.register_meta_hook()
     code_module = code_module_importer.import_code_module(code_module_ref)

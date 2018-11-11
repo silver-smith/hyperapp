@@ -42,20 +42,23 @@ class _HTypeRootLoader(object):
 
 class _TypeModuleLoader(object):
 
-    def __init__(self, type_import_list):
+    def __init__(self, type_resolver, type_import_list):
+        self._type_resolver = type_resolver
         self._type_import_list = type_import_list
 
     def exec_module(self, module):
         for import_ in self._type_import_list:
-            module.__dict__[import_.type_name] = 'todo: value'
+            t = self._type_resolver.resolve(import_.type_ref)
+            module.__dict__[import_.type_name] = t
 
 
 class CodeModuleImporter(object):
 
     IMPORT_PACKAGE = 'hyperapp.dynamic'
 
-    def __init__(self, ref_resolver):
+    def __init__(self, ref_resolver, type_resolver):
         self._ref_resolver = ref_resolver
+        self._type_resolver = type_resolver
         self._import_name_to_code_module = {}
         self._htypes_name_to_code_module = {}
         self._type_module_name_to_type_import_list = {}
@@ -87,6 +90,6 @@ class CodeModuleImporter(object):
         code_module = self._htypes_name_to_code_module.get(fullname)
         if  code_module:
             return importlib.machinery.ModuleSpec(fullname, _HTypeRootLoader(code_module), is_package=True)
-        type_import = self._type_module_name_to_type_import_list.get(fullname)
-        if type_import:
-            return importlib.machinery.ModuleSpec(fullname, _TypeModuleLoader(type_import))
+        type_import_list = self._type_module_name_to_type_import_list.get(fullname)
+        if type_import_list:
+            return importlib.machinery.ModuleSpec(fullname, _TypeModuleLoader(self._type_resolver, type_import_list))
