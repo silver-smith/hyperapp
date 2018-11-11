@@ -11,6 +11,8 @@ from hyperapp.common.htypes import (
     TList,
     TClass,
     tProvidedClass,
+    NotificationCmd,
+    Interface,
     tTypeDef,
     t_named,
     make_root_type_namespace,
@@ -51,24 +53,34 @@ def test_type_resolver():
 
     type_resolver = TypeResolver(types, builtin_types_registry, ref_resolver)
 
-    def resolve(name):
+    def resolve_1(name):
         return type_resolver.resolve(local_type_module_registry['test_module_1'][name])
 
-    assert resolve('some_int') == tInt
-    assert (resolve('record_1') == TRecord([Field('int_field', tInt)]))
+    def resolve_2(name):
+        return type_resolver.resolve(local_type_module_registry['test_module_2'][name])
 
-    assert resolve('some_int') == tInt
+    assert resolve_1('some_int') == tInt
+    assert (resolve_1('record_1') == TRecord([Field('int_field', tInt)]))
 
-    assert resolve('record_1') == TRecord([Field('int_field', tInt)])
-    assert resolve('record_2') == TRecord([Field('int_field', tInt), Field('string_field', tString)])
+    assert resolve_1('some_int') == tInt
 
-    object_t = resolve('object')
-    simple_class = resolve('simple_class')
+    assert resolve_1('record_1') == TRecord([Field('int_field', tInt)])
+    assert resolve_1('record_2') == TRecord([Field('int_field', tInt), Field('string_field', tString)])
+
+    object_t = resolve_1('object')
+    simple_class = resolve_1('simple_class')
 
     assert simple_class.hierarchy is object_t
     assert simple_class == TClass(object_t, 'simple_2', TRecord([]))
 
-    assert resolve('text_object') == TClass(object_t, 'text_2', base=simple_class, trec=TRecord([Field('text', tString)]))
+    assert resolve_1('text_object') == TClass(object_t, 'text_2', base=simple_class, trec=TRecord([Field('text', tString)]))
 
-    some_bool_list_opt = type_resolver.resolve(local_type_module_registry['test_module_1']['some_bool_list_opt'])
+    some_bool_list_opt = resolve_2('some_bool_list_opt')
     assert some_bool_list_opt == TOptional(TList(tBool))
+
+    iface_a = resolve_1('test_iface_a')
+    iface_b = resolve_2('test_iface_b')
+    assert iface_b.base is iface_a
+    assert iface_b == Interface(['iface_b'], base=iface_a, commands=[
+        NotificationCmd(['test_iface_b', 'keep_alive'], 'keep_alive', []),
+        ])

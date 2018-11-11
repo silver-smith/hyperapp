@@ -31,6 +31,6 @@ params_form_iface = interface test_list_params_2:
   commands:
     submit (key: int, size: int) -> (handle: handle opt)
 
-test_iface = interface test:
+test_iface_a = interface iface_a:
   commands:
     params () -> (handle: handle opt)

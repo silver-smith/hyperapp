@@ -102,3 +102,7 @@ class Interface(TypeNamespace):
     @property
     def full_name(self):
         return self._full_name
+
+    @property
+    def base(self):
+        return self._base
