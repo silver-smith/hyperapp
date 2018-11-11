@@ -1,7 +1,9 @@
 # test types serialization
 
 import logging
+import pytest
 import unittest
+
 from hyperapp.common.htypes import (
     TPrimitive,
     tNone,
@@ -14,7 +16,6 @@ from hyperapp.common.htypes import (
     Field,
     TRecord,
     TList,
-    TIndexedList,
     TClass,
     THierarchy,
     RequestCmd,
@@ -33,10 +34,51 @@ from hyperapp.common.htypes import (
     make_meta_type_registry,
     make_root_type_namespace,
     TypeNamespace,
-    TypeNameResolver,
+    t_ref,
+    builtin_ref_t,
     )
+from hyperapp.common import cdr_coders  # register codec
+from hyperapp.common.builtin_types_registry import make_builtin_types_registry
+from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.ref_resolver import RefResolver
+from hyperapp.common.type_resolver import TypeResolver
 
 log = logging.getLogger(__name__)
+
+
+@pytest.fixture
+def types():
+    return make_root_type_namespace()
+
+
+@pytest.fixture
+def ref_registry(types):
+    return RefRegistry(types)
+
+
+@pytest.fixture
+def type_resolver(types, ref_registry):
+    builtin_types_registry = make_builtin_types_registry()
+    ref_resolver = RefResolver(types)
+    ref_resolver.add_source(ref_registry)
+    return TypeResolver(types, builtin_types_registry, ref_resolver)
+
+
+@pytest.fixture
+def builtin_ref(ref_registry):
+
+    def make(name):
+        ref = ref_registry.register_object(builtin_ref_t(['basic', name]))
+        return t_ref(ref)
+
+    return make
+
+
+def test_optional(type_resolver, builtin_ref):
+    data = t_optional_meta(builtin_ref('string'))
+    t = type_resolver.resolve_meta_type(data, 'some_optional')
+    assert t == TOptional(tString)
+    assert t.base_t is tString
 
 
 class MetaTypeTest(unittest.TestCase):
@@ -65,11 +107,6 @@ class MetaTypeTest(unittest.TestCase):
         self.assertEqual(t, tInt)
         self.assertIs(t, tInt)  # must resolve to same instance
 
-    def test_optional(self):
-        data = t_optional_meta(t_named('string'))
-        t = self.resolve(data)
-        self.assertEqual(t, TOptional(tString))
-        self.assertIs(t.base_t, tString)
 
     def test_list(self):
         data = t_list_meta(t_optional_meta(t_named('datetime')))
