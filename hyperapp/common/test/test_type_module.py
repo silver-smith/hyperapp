@@ -33,8 +33,8 @@ def test_type_module_loader():
     local_type_module_registry = LocalTypeModuleRegistry()
     ref_registry = RefRegistry(types)
     loader = TypeModuleLoader(types.builtins, builtin_types_registry, ref_registry, local_type_module_registry)
-    loader.load_type_module('test_module_1', TEST_MODULES_DIR / 'test_module_1.types')
-    loader.load_type_module('test_module_2', TEST_MODULES_DIR / 'test_module_2.types')
+    loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
+    loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
 
 
 def test_type_resolver():
@@ -43,8 +43,8 @@ def test_type_resolver():
     local_type_module_registry = LocalTypeModuleRegistry()
     ref_registry = RefRegistry(types)
     loader = TypeModuleLoader(types.builtins, builtin_types_registry, ref_registry, local_type_module_registry)
-    loader.load_type_module('test_module_1', TEST_MODULES_DIR / 'test_module_1.types')
-    loader.load_type_module('test_module_2', TEST_MODULES_DIR / 'test_module_2.types')
+    loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
+    loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
 
     ref_resolver = RefResolver(types)
     ref_resolver.add_source(ref_registry)
@@ -52,10 +52,10 @@ def test_type_resolver():
     type_resolver = TypeResolver(types, builtin_types_registry, ref_resolver)
 
     def resolve_1(name):
-        return type_resolver.resolve(local_type_module_registry['test_module_1'][name])
+        return type_resolver.resolve(local_type_module_registry['type_module_1'][name])
 
     def resolve_2(name):
-        return type_resolver.resolve(local_type_module_registry['test_module_2'][name])
+        return type_resolver.resolve(local_type_module_registry['type_module_2'][name])
 
     assert resolve_1('some_int') == tInt
     assert (resolve_1('record_1') == TRecord([Field('int_field', tInt)]))

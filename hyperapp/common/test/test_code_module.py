@@ -47,8 +47,8 @@ def code_module_loader(local_type_module_registry):
 
 
 def test_code_module_load(type_module_loader, code_module_loader):
-    type_module_loader.load_type_module('test_module_1', TEST_MODULES_DIR / 'test_module_1.types')
-    type_module_loader.load_type_module('test_module_2', TEST_MODULES_DIR / 'test_module_2.types')
+    type_module_loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
+    type_module_loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
 
     code_module = code_module_loader.load_code_module('code_module_1', TEST_MODULES_DIR / 'code_module_1')
     assert isinstance(code_module, code_module_t)
@@ -56,8 +56,8 @@ def test_code_module_load(type_module_loader, code_module_loader):
 
 
 def test_code_module_import(types, ref_registry, type_module_loader, code_module_loader):
-    type_module_loader.load_type_module('test_module_1', TEST_MODULES_DIR / 'test_module_1.types')
-    type_module_loader.load_type_module('test_module_2', TEST_MODULES_DIR / 'test_module_2.types')
+    type_module_loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
+    type_module_loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
     code_module = code_module_loader.load_code_module('code_module_1', TEST_MODULES_DIR / 'code_module_1')
     code_module_ref = ref_registry.register_object(code_module)
 
