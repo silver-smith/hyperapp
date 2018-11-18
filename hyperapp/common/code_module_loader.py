@@ -1,5 +1,5 @@
 import yaml
-from .htypes import type_import_t, code_module_t
+from .code_module import type_import_t, code_module_t
 
 
 class CodeModuleLoader(object):

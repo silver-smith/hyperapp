@@ -49,8 +49,6 @@ def make_meta_type_namespace():
             builtin_ref_t,
             meta_ref_t,
             tMetaType,
-            type_import_t,
-            code_module_t,
             ]:
         full_name = t.full_name
         module, name = full_name

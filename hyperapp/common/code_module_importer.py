@@ -70,7 +70,7 @@ class CodeModuleImporter(object):
         sys.meta_path.remove(self)
 
     def import_code_module(self, code_module_ref):
-        code_module = self._ref_resolver.resolve_ref_to_object(code_module_ref, 'meta_type.code_module')
+        code_module = self._ref_resolver.resolve_ref_to_object(code_module_ref, 'code_module.code_module')
         import_name = '{}.{}'.format(self.IMPORT_PACKAGE, _ref_to_name(code_module_ref))
         self._import_name_to_code_module[import_name] = code_module
         self._htypes_name_to_code_module['{}.htypes'.format(import_name)] = code_module

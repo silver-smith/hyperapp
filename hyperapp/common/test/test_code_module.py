@@ -1,8 +1,9 @@
 from pathlib import Path
 import pytest
 
-from hyperapp.common.htypes import make_root_type_namespace, code_module_t
+from hyperapp.common.htypes import make_root_type_namespace
 from hyperapp.common.type_module import LocalTypeModuleRegistry
+from hyperapp.common.code_module import code_module_t, make_code_module_namespace
 from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
@@ -19,7 +20,9 @@ TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 @pytest.fixture
 def types():
-    return make_root_type_namespace()
+    ns = make_root_type_namespace()
+    ns['code_module'] = make_code_module_namespace()
+    return ns
 
 
 @pytest.fixture
