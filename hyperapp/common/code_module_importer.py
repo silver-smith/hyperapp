@@ -54,7 +54,7 @@ class _TypeModuleLoader(object):
 
 class CodeModuleImporter(object):
 
-    IMPORT_PACKAGE = 'hyperapp.dynamic'
+    ROOT_PACKAGE = 'hyperapp.dynamic'
 
     def __init__(self, ref_resolver, type_resolver):
         self._ref_resolver = ref_resolver
@@ -71,7 +71,7 @@ class CodeModuleImporter(object):
 
     def import_code_module(self, code_module_ref):
         code_module = self._ref_resolver.resolve_ref_to_object(code_module_ref, 'code_module.code_module')
-        import_name = '{}.{}'.format(self.IMPORT_PACKAGE, _ref_to_name(code_module_ref))
+        import_name = '{}.{}'.format(self.ROOT_PACKAGE, _ref_to_name(code_module_ref))
         self._import_name_to_code_module[import_name] = code_module
         self._htypes_name_to_code_module['{}.htypes'.format(import_name)] = code_module
         for import_ in code_module.type_import_list:
@@ -82,7 +82,7 @@ class CodeModuleImporter(object):
     # MetaPathFinder implementation
     def find_spec(self, fullname, path, target=None):
         log.debug('find_spec fullname=%r path=%r target=%r', fullname, path, target)
-        if fullname == self.IMPORT_PACKAGE:
+        if fullname == self.ROOT_PACKAGE:
             return importlib.machinery.ModuleSpec(fullname, _EmptyLoader(), is_package=True)
         code_module = self._import_name_to_code_module.get(fullname)
         if code_module:
