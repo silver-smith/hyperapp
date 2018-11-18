@@ -12,13 +12,25 @@ def _ref_to_name(ref):
     return '%s_%s' % (ref.hash_algorithm, hash_hex)
 
 
-class _EmptyLoader(object):
+class _Finder(object):
+
+    _is_package = False
+
+    def get_spec(self, fullname):
+        return importlib.machinery.ModuleSpec(fullname, self, is_package=self._is_package)
+
+    
+class _EmptyLoader(_Finder):
+
+    _is_package = True
 
     def exec_module(self, module):
         pass
 
 
-class _CodeModuleLoader(object):
+class _CodeModuleLoader(_Finder):
+
+    _is_package = True
 
     def __init__(self, code_module):
         self._code_module = code_module
@@ -30,7 +42,9 @@ class _CodeModuleLoader(object):
         exec(ast, module.__dict__)
 
 
-class _HTypeRootLoader(object):
+class _HTypeRootLoader(_Finder):
+
+    _is_package = True
 
     def __init__(self, code_module):
         self._code_module = code_module
@@ -40,19 +54,19 @@ class _HTypeRootLoader(object):
             importlib.import_module('{}.{}'.format(module.__name__, import_.type_module_name))
 
 
-class _TypeModuleLoader(object):
+class _TypeModuleLoader(_Finder):
 
     def __init__(self, type_resolver, type_import_list):
         self._type_resolver = type_resolver
         self._type_import_list = type_import_list
 
     def exec_module(self, module):
-        for import_ in self._type_import_list:
-            t = self._type_resolver.resolve(import_.type_ref)
-            module.__dict__[import_.type_name] = t
+        for type_import in self._type_import_list:
+            t = self._type_resolver.resolve(type_import.type_ref)
+            module.__dict__[type_import.type_name] = t
 
 
-class _CopyDictLoader(object):
+class _CopyDictLoader(_Finder):
 
     def __init__(self, target_module_name):
         self._target_module_name = target_module_name
@@ -68,10 +82,7 @@ class CodeModuleImporter(object):
     def __init__(self, ref_resolver, type_resolver):
         self._ref_resolver = ref_resolver
         self._type_resolver = type_resolver
-        self._import_name_to_code_module = {}
-        self._htypes_name_to_code_module = {}
-        self._type_module_name_to_type_import_list = {}
-        self._imported_module_name_to_target_module_name = {}
+        self._fullname_to_loader = {self.ROOT_PACKAGE: _EmptyLoader()}
 
     def register_meta_hook(self):
         sys.meta_path.append(self)
@@ -80,37 +91,34 @@ class CodeModuleImporter(object):
         sys.meta_path.remove(self)
 
     @classmethod
-    def _code_module_ref_to_import_name(cls, code_module_ref):
+    def _code_module_ref_to_fullname(cls, code_module_ref):
         return '{}.{}'.format(cls.ROOT_PACKAGE, _ref_to_name(code_module_ref))
 
     def import_code_module(self, code_module_ref):
         code_module = self._ref_resolver.resolve_ref_to_object(code_module_ref, 'code_module.code_module')
-        import_name = self._code_module_ref_to_import_name(code_module_ref)
-        self._import_name_to_code_module[import_name] = code_module
-        self._htypes_name_to_code_module['{}.htypes'.format(import_name)] = code_module
+        module_name = self._code_module_ref_to_fullname(code_module_ref)
+        # module itself
+        self._fullname_to_loader[module_name] = _CodeModuleLoader(code_module)
+        # .htypes package
+        self._fullname_to_loader['{}.htypes'.format(module_name)] = _HTypeRootLoader(code_module)
+        # .htypes.* modules
+        import_module_to_type_import_list = {}
         for type_import in code_module.type_import_list:
-            name = '{}.htypes.{}'.format(import_name, type_import.type_module_name)
-            self._type_module_name_to_type_import_list.setdefault(name, []).append(type_import)
+            import_module_to_type_import_list.setdefault(type_import.type_module_name, []).append(type_import)
+        for import_module_name, type_import_list in import_module_to_type_import_list.items():
+            name = '{}.htypes.{}'.format(module_name, import_module_name)
+            self._fullname_to_loader[name] = _TypeModuleLoader(self._type_resolver, type_import_list)
+        # .* code module imports
         for code_import in code_module.code_import_list:
-            target_module_name = self._code_module_ref_to_import_name(code_import.code_module_ref)
-            name = '{}.{}'.format(import_name, code_import.import_name)
-            self._imported_module_name_to_target_module_name[name] = target_module_name
-        importlib.import_module(import_name)
+            target_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
+            name = '{}.{}'.format(module_name, code_import.import_name)
+            self._fullname_to_loader[name] = _CopyDictLoader(target_module_name)
+        # perform actual load
+        importlib.import_module(module_name)
 
     # MetaPathFinder implementation
     def find_spec(self, fullname, path, target=None):
         log.debug('find_spec fullname=%r path=%r target=%r', fullname, path, target)
-        if fullname == self.ROOT_PACKAGE:
-            return importlib.machinery.ModuleSpec(fullname, _EmptyLoader(), is_package=True)
-        code_module = self._import_name_to_code_module.get(fullname)
-        if code_module:
-            return importlib.machinery.ModuleSpec(fullname, _CodeModuleLoader(code_module), is_package=True)
-        code_module = self._htypes_name_to_code_module.get(fullname)
-        if  code_module:
-            return importlib.machinery.ModuleSpec(fullname, _HTypeRootLoader(code_module), is_package=True)
-        type_import_list = self._type_module_name_to_type_import_list.get(fullname)
-        if type_import_list:
-            return importlib.machinery.ModuleSpec(fullname, _TypeModuleLoader(self._type_resolver, type_import_list))
-        target_module_name = self._imported_module_name_to_target_module_name.get(fullname)
-        if target_module_name:
-            return importlib.machinery.ModuleSpec(fullname, _CopyDictLoader(target_module_name))
+        loader = self._fullname_to_loader.get(fullname)
+        if loader:
+            return loader.get_spec(fullname)
