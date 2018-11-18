@@ -1,0 +1,8 @@
+import:
+  types:
+    type_module_2:
+      - some_bool_list_opt
+      - text_object_2
+      - test_iface_b
+  code:
+    - code_module_1
