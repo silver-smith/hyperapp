@@ -4,10 +4,6 @@ from io import BytesIO
 import ply.lex as lex
 import ply.yacc as yacc
 from .htypes import (
-    tImport,
-    tTypeDef,
-    tProvidedClass,
-    tTypeModule,
     t_named,
     t_field_meta,
     t_optional_meta,
@@ -18,6 +14,11 @@ from .htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
+    )
+from .type_module import (
+    type_import_t,
+    type_def_t,
+    type_module_t,
     )
 
 
@@ -92,19 +93,19 @@ def p_module(p):
 
 def p_module_contents_1(p):
     'module_contents : import_list STMT_SEP typedef_list'
-    p[0] = tTypeModule(
+    p[0] = type_module_t(
         module_name=p.parser.module_name,
         import_list=p[1],
-        provided_classes=p.parser.provided_class_list,
+        #provided_classes=p.parser.provided_class_list,
         typedefs=p[3],
         )
 
 def p_module_contents_2(p):
     'module_contents : typedef_list_opt'
-    p[0] = tTypeModule(
+    p[0] = type_module_t(
         module_name=p.parser.module_name,
         import_list=[],
-        provided_classes=p.parser.provided_class_list,
+        #provided_classes=p.parser.provided_class_list,
         typedefs=p[1],
         )
 
@@ -120,7 +121,7 @@ def p_import_list_2(p):
 
 def p_import_def(p):
     'import_def : FROM NAME IMPORT name_list'
-    p[0] = [tImport(p[2], name) for name in p[4]]
+    p[0] = [type_import_t(p[2], name) for name in p[4]]
     p.parser.known_name_set |= set(p[4])
 
 def p_name_list_1(p):
@@ -150,7 +151,7 @@ def p_typedef_list_2(p):
 
 def p_typedef(p):
     'typedef : NAME EQUAL typedef_rhs'
-    p[0] = tTypeDef(name=p[1], type=p[3])
+    p[0] = type_def_t(name=p[1], type=p[3])
     p.parser.known_name_set.add(p[1])
 
 def p_typedef_rhs_1(p):
@@ -214,7 +215,7 @@ def p_class_def(p):
     else:
         base = None
     p[0] = t_hierarchy_class_meta(hierarchy, p[3], p[5], base)
-    p.parser.provided_class_list.append(tProvidedClass(p[1], p[3]))
+    #p.parser.provided_class_list.append(tProvidedClass(p[1], p[3]))
 
 def p_class_base_def_1(p):
     'class_base_def : LPAR NAME RPAR'
@@ -450,7 +451,7 @@ def parse_type_module(builtins, module_name, fname, contents, debug=False):
     parser.fname = fname
     parser.lines = contents.splitlines()
     parser.known_name_set = set(builtins.keys())
-    parser.provided_class_list = []
+    #parser.provided_class_list = []
     module = parser.parse(contents, lexer=Lexer())
     assert module, 'Failed to parse %r' % fname
     return module

@@ -10,10 +10,8 @@ from hyperapp.common.htypes import (
     TRecord,
     TList,
     TClass,
-    tProvidedClass,
     NotificationCmd,
     Interface,
-    tTypeDef,
     t_named,
     make_root_type_namespace,
     )

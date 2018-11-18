@@ -19,7 +19,6 @@ from .htypes import (
     tPath,
     tCommand,
     tServerRoutes,
-    tTypeModule,
     ref_t,
     full_type_name_t,
     route_t,

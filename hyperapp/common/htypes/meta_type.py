@@ -30,29 +30,6 @@ tRootMetaType = tMetaType.register('root', fields=[
     ], full_name=['meta_type', 'root'])
 
 
-tImport = TRecord([
-    Field('module_name', tString),
-    Field('name', tString),
-    ])
-
-tTypeDef = TRecord([
-    Field('name', tString),
-    Field('type', tMetaType),
-    ], full_name=['meta_type', 'typedef'])
-
-tProvidedClass = TRecord([
-    Field('hierarchy_id', tString),
-    Field('class_id', tString),
-    ], full_name=['meta_type', 'provided_class'])
-
-tTypeModule = TRecord([
-    Field('module_name', tString),
-    Field('import_list', TList(tImport)),
-    Field('provided_classes', TList(tProvidedClass)),
-    Field('typedefs', TList(tTypeDef)),
-    ], full_name=['meta_type', 'type_module'])
-
-
 type_import_t = TRecord([
     Field('type_module_name', tString),
     Field('type_name', tString),

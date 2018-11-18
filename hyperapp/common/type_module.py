@@ -1,4 +1,28 @@
-from .htypes import ref_t
+from .htypes import (
+    tString,
+    Field,
+    TRecord,
+    TList,
+    tMetaType,
+    ref_t,
+    )
+
+
+type_import_t = TRecord([
+    Field('module_name', tString),
+    Field('name', tString),
+    ])
+
+type_def_t = TRecord([
+    Field('name', tString),
+    Field('type', tMetaType),
+    ], full_name=['meta_type', 'typedef'])
+
+type_module_t = TRecord([
+    Field('module_name', tString),
+    Field('import_list', TList(type_import_t)),
+    Field('typedefs', TList(type_def_t)),
+    ], full_name=['meta_type', 'type_module'])
 
 
 class LocalTypeModule(object):

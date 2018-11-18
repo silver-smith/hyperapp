@@ -33,7 +33,6 @@ def make_builtins_type_namespace():
             tIfaceId,
             tPath,
             tUrl,
-            tTypeModule,
             tServerRoutes,
             ref_t,
             full_type_name_t,

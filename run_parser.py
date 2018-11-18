@@ -8,7 +8,6 @@ from pathlib import Path
 from hyperapp.common.htypes import (
     TList,
     tTypeDef,
-    tTypeModule,
     make_builtins_type_namespace,
     )    
 from hyperapp.common.visual_rep import pprint
