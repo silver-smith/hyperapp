@@ -44,9 +44,6 @@ class TEmbedded(Type):
     def __repr__(self):
         return '<TEmbedded>'
 
-    def __eq__(self, other):
-        return isinstance(other, TEmbedded)
-
     def __instancecheck__(self, value):
         return isinstance(value, (EncodableEmbedded, DecodableEmbedded))
 

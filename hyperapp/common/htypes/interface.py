@@ -41,17 +41,6 @@ class IfaceCommand(TypeNamespace):
         if self.is_request:
             self['response'] = TRecord(self.result_fields, full_name=self._full_name + ['response'])
 
-    def __eq__(self, other):
-        assert isinstance(other, IfaceCommand), repr(other)
-        return (self._full_name == other._full_name and
-                self.request_type == other.request_type and
-                self.command_id == other.command_id and
-                self.params_fields == other.params_fields and
-                self.result_fields == other.result_fields)
-
-    def __hash__(self):
-        return hash((tuple(self._full_name), self.request_type, self.command_id, tuple(self.params_fields), tuple(self.result_fields)))
-
     @property
     def full_name(self):
         return self._full_name
@@ -87,17 +76,6 @@ class Interface(TypeNamespace):
             all_commands += base._command_list
         for command in all_commands:
             self[command.command_id] = command
-
-    def __eq__(self, other):
-        return (isinstance(other, Interface) and
-                other._base == self._base and
-                other._command_list == self._command_list)
-
-    def __hash__(self):
-        return hash((
-            self._base,
-            tuple(self._command_list),
-            ))
 
     @property
     def full_name(self):

@@ -40,10 +40,6 @@ class TClass(Type):
     def __repr__(self):
         return '%s(%s.%s: %s)' % (self.__class__.__name__, self.hierarchy.hierarchy_id, self.id, ', '.join(map(repr, self.get_fields())))
 
-    def __eq__(self, other):
-        assert isinstance(other, TClass), repr(other)
-        return other.hierarchy is self.hierarchy and other.id == self.id and other.trec == self.trec
-
     @property
     def full_name(self):
         return self.trec.full_name
@@ -91,9 +87,6 @@ class THierarchy(Type):
 
     def __repr__(self):
         return 'THierarchy(%s)' % self.hierarchy_id
-
-    def __eq__(self, other):
-        return other is self  # there must be only one (with same hierarchy_id)
 
     def matches(self, other):
         return (isinstance(other, THierarchy) and
