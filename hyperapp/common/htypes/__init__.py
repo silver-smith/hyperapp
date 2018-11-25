@@ -35,7 +35,6 @@ def make_builtins_type_namespace():
             tUrl,
             tServerRoutes,
             ref_t,
-            full_type_name_t,
             route_t,
             capsule_t,
             bundle_t,

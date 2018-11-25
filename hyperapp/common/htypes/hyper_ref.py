@@ -8,10 +8,8 @@ ref_t = TRecord([
     Field('hash', hash_t),
     ], full_name=['builtins', 'ref'])
 
-full_type_name_t = TList(tString, full_name=['builtins', 'full_type_name'])
-
 capsule_t = TRecord([
-    Field('full_type_name', full_type_name_t),
+    Field('type_ref', ref_t),
     Field('encoding', tString),
     Field('encoded_object', tBinary),
     ], full_name=['builtins', 'capsule'])

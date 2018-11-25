@@ -20,7 +20,6 @@ from .htypes import (
     tCommand,
     tServerRoutes,
     ref_t,
-    full_type_name_t,
     route_t,
     capsule_t,
     )
@@ -102,8 +101,6 @@ class VisualRepEncoder(object):
 
     @dispatch.register(TList)
     def encode_list(self, t, value):
-        if t is full_type_name_t:
-            return RepNode('%r' % full_type_name_to_str(value))
         if t is tPath:
             return self.encode_path(value)
         children = [self.dispatch(t.element_t, elt) for elt in value]
