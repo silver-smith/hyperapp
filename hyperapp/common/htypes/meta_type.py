@@ -31,7 +31,7 @@ tRootMetaType = tMetaType.register('root', fields=[
 
 
 builtin_ref_t = TRecord([
-    Field('full_name', TList(tString)),
+    Field('name', tString),
     ], full_name=['meta_type', 'builtin_ref'])
 
 meta_ref_t = TRecord([

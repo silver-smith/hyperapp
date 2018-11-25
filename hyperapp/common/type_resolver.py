@@ -1,15 +1,23 @@
 import logging
 
 from .htypes import (
+    Type,
+    ref_t,
     builtin_ref_t,
     meta_ref_t,
+    capsule_t,
     make_meta_type_registry,
     TypeRefResolver,
     )
+from .htypes.deduce_value_type import deduce_value_type
+from .htypes.packet_coders import packet_coders
 from .ref import ref_repr
 from .capsule_registry import CapsuleRegistry, CapsuleResolver
 
 log = logging.getLogger(__name__)
+
+
+DEFAULT_CAPSULE_ENCODING = 'cdr'
 
 
 class _TypeRefResolver(TypeRefResolver):
@@ -23,17 +31,25 @@ class _TypeRefResolver(TypeRefResolver):
 
 class TypeResolver(object):
 
-    def __init__(self, types, builtin_types_registry, ref_resolver):
-        self._types = types
-        self._builtin_types_registry = builtin_types_registry
+    def __init__(self, ref_resolver):
         self._ref_resolver = ref_resolver
-        self._type_capsule_registry = capsule_registry = CapsuleRegistry('type', types)
+        self._type_capsule_registry = capsule_registry = CapsuleRegistry('type', self)
         self._type_capsule_resolver = type_capsule_resolver = CapsuleResolver(ref_resolver, capsule_registry)
         self._type_ref_resolver = _TypeRefResolver(self)
         self._meta_type_registry = make_meta_type_registry()
         self._ref2type_cache = {}  # we should resolve same ref to same instance, not a duplicate
+        self._type2ref = {}  # reverse registry
+        self._add_phony_refs()
         capsule_registry.register(meta_ref_t, self._resolve_meta_ref)
         capsule_registry.register(builtin_ref_t, self._resolve_builtin_ref)
+
+    def _add_phony_refs(self):
+        for t, ref_hash in [
+                (builtin_ref_t, b'BUILTIN_REF'),
+                ]:
+            ref = ref_t('phony', ref_hash)
+            self._type2ref[t] = ref
+            self._ref2type_cache[ref] = t
 
     def resolve(self, type_ref):
         t = self._ref2type_cache.get(type_ref)
@@ -45,8 +61,42 @@ class TypeResolver(object):
         log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
         return t
 
+    def reverse_resolve(self, t):
+        return self._type2ref[t]
+
     def _resolve_meta_ref(self, ref, meta_ref, name=None):
         return self._meta_type_registry.resolve(self._type_ref_resolver, meta_ref.type, [meta_ref.name])
 
     def _resolve_builtin_ref(self, ref, builtin_ref, name=None):
-        return self._builtin_types_registry[builtin_ref.full_name]
+        return self._ref2type_cache[ref]  # must be registered using register_internal_type
+
+    def make_capsule(self, object, t=None):
+        t = t or deduce_value_type(object)
+        assert isinstance(t, Type), repr(t)
+        assert isinstance(object, t), repr((t, object))
+        encoding = DEFAULT_CAPSULE_ENCODING
+        encoded_object = packet_coders.encode(encoding, object, t)
+        type_ref = self.reverse_resolve(t)
+        return capsule_t(type_ref, encoding, encoded_object)
+
+    def decode_capsule(self, capsule, expected_type=None):
+        t = self.resolve(capsule.type_ref)
+        if expected_type:
+            assert t == expected_type
+        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+
+    def decode_object(self, t, capsule):
+        type_ref = self.reverse_resolve(t)
+        assert type_ref == capsule.type_ref
+        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+
+    def register_internal_type(self, ref_registry, t):
+        type_rec = builtin_ref_t(t.name)
+        type_ref = ref_registry.register_object(type_rec)
+        self._type2ref[t] = type_ref
+        self._ref2type_cache[type_ref] = t
+
+    def resolve_ref_to_object(self, ref, expected_type=None):
+        capsule = self._ref_resolver.resolve_ref(ref)
+        assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
+        return self.decode_capsule(capsule, expected_type)

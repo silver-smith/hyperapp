@@ -20,9 +20,9 @@ def make_meta_type_registry():
     registry.register('interface', interface_from_data)
     return registry
 
-def make_builtins_type_namespace():
-    namespace = TypeNamespace()
+def register_builtin_types(ref_registry, type_resolver):
     for t in [
+            # core
             tNone,
             tString,
             tBinary,
@@ -38,25 +38,9 @@ def make_builtins_type_namespace():
             route_t,
             capsule_t,
             bundle_t,
-            ]:
-        namespace[t.name] = t
-    return namespace
-
-def make_meta_type_namespace():
-    namespace = TypeNamespace()
-    for t in [
+            # meta
             builtin_ref_t,
             meta_ref_t,
             tMetaType,
             ]:
-        full_name = t.full_name
-        module, name = full_name
-        assert module == 'meta_type'
-        namespace[name] = t
-    return namespace
-
-def make_root_type_namespace():
-    return TypeNamespace(
-        builtins=make_builtins_type_namespace(),
-        meta_type=make_meta_type_namespace(),
-        )
+        type_resolver.register_internal_type(ref_registry, t)

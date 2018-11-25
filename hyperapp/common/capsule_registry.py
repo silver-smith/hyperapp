@@ -12,10 +12,10 @@ log = logging.getLogger(__name__)
 
 class CapsuleRegistry(Registry):
 
-    def __init__(self, produce_name, types):
+    def __init__(self, produce_name, type_registry):
         super().__init__()
         self._produce_name = produce_name
-        self._types = types
+        self._type_registry = type_registry
 
     @property
     def produce_name(self):
@@ -31,7 +31,7 @@ class CapsuleRegistry(Registry):
         
     def resolve(self, ref, capsule, *args, **kw):
         assert isinstance(capsule, capsule_t), repr(capsule)
-        t = self._types.resolve(capsule.full_type_name)
+        t = self._type_registry.resolve(capsule.type_ref)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         pprint(object, t=t, title='Producing %s for capsule %s %s' % (self._produce_name, ref_repr(ref), full_type_name_to_str(capsule.full_type_name)))
         rec = self._resolve(tuple(capsule.full_type_name))

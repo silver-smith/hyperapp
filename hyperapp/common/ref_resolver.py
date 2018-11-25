@@ -1,7 +1,6 @@
 import logging
 
 from .util import full_type_name_to_str
-from .htypes.packet_coders import packet_coders
 from .ref import ref_repr
 from .module import Module
 
@@ -13,8 +12,7 @@ MODULE_NAME = 'ref_resolver'
 
 class RefResolver(object):
 
-    def __init__(self, types):
-        self._types = types
+    def __init__(self):
         self._sources = []
 
     def add_source(self, source):
@@ -25,19 +23,10 @@ class RefResolver(object):
         for source in self._sources:
             capsule = source.resolve_ref(ref)
             if capsule:
-                log.info('Ref %s is resolved to capsule %s', ref_repr(ref), full_type_name_to_str(capsule.full_type_name))
+                log.info('Ref %s is resolved to capsule, type %s', ref_repr(ref), ref_repr(capsule.type_ref))
                 return capsule
         log.warning('Ref %s is failed to be resolved', ref_repr(ref))
         return None
-
-    def resolve_ref_to_object(self, ref, expected_type=None):
-        capsule = self.resolve_ref(ref)
-        assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
-        if expected_type:
-            assert full_type_name_to_str(capsule.full_type_name) == expected_type, (
-                repr(full_type_name_to_str(capsule.full_type_name)), repr(expected_type))
-        t = self._types.resolve(capsule.full_type_name)
-        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
 
 class ThisModule(Module):

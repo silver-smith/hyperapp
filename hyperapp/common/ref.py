@@ -3,12 +3,10 @@ import codecs
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
-from .htypes import Type, ref_t, capsule_t, bundle_t
-from .htypes.deduce_value_type import deduce_value_type
+from .htypes import ref_t, capsule_t, bundle_t
 from .htypes.packet_coders import packet_coders
 
 
-DEFAULT_ENCODING = 'cdr'
 DEFAULT_HASH_ALGORITHM = 'sha512'
 MAX_REF_REPR_LEN = 60
 BUNDLE_ENCODING = 'json'
@@ -30,18 +28,6 @@ def ref_list_repr(ref_list):
         return 'none'
     return ', '.join(map(ref_repr, ref_list))
 
-def make_capsule(object, t=None):
-    t = t or deduce_value_type(object)
-    assert isinstance(t, Type), repr(t)
-    assert isinstance(object, t), repr((t, object))
-    encoding = DEFAULT_ENCODING
-    encoded_object = packet_coders.encode(encoding, object, t)
-    return capsule_t(t.full_name, encoding, encoded_object)
-
-def decode_capsule(types, capsule):
-    t = types.resolve(capsule.full_type_name)
-    return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-
 def make_ref(capsule):
     assert isinstance(capsule, capsule_t)
     # use same encoding for capsule as for object
@@ -54,10 +40,6 @@ def make_ref(capsule):
 def make_object_ref(object, t):
     capsule = make_capsule(object, t)
     return make_ref(capsule)
-
-def decode_object(t, capsule):
-    assert t.full_name == capsule.full_type_name
-    return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
 def encode_bundle(bundle):
     return packet_coders.encode(BUNDLE_ENCODING, bundle)

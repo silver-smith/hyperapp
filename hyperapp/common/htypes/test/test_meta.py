@@ -31,14 +31,12 @@ from hyperapp.common.htypes import (
     t_command_meta,
     t_interface_meta,
     make_meta_type_registry,
-    make_root_type_namespace,
-    TypeNamespace,
     t_ref,
     builtin_ref_t,
     meta_ref_t,
+    register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_resolver import TypeResolver
@@ -47,21 +45,20 @@ log = logging.getLogger(__name__)
 
 
 @pytest.fixture
-def types():
-    return make_root_type_namespace()
-
-
-@pytest.fixture
-def ref_registry(types):
-    return RefRegistry(types)
-
-
-@pytest.fixture
-def type_resolver(types, ref_registry):
-    builtin_types_registry = make_builtin_types_registry()
-    ref_resolver = RefResolver(types)
+def ref_resolver():
+    return RefResolver()
     ref_resolver.add_source(ref_registry)
-    return TypeResolver(types, builtin_types_registry, ref_resolver)
+
+@pytest.fixture
+def type_resolver(ref_resolver):
+    return TypeResolver(ref_resolver)
+
+@pytest.fixture
+def ref_registry(type_resolver):
+    registry = RefRegistry(type_resolver)
+    register_builtin_types(registry, type_resolver)
+    return registry
+
 
 
 @pytest.fixture
