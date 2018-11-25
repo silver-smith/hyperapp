@@ -65,7 +65,7 @@ def ref_registry(type_resolver):
 def builtin_ref(ref_registry):
 
     def make(name):
-        ref = ref_registry.register_object(builtin_ref_t(['basic', name]))
+        ref = ref_registry.register_object(builtin_ref_t(name))
         return t_ref(ref)
 
     return make

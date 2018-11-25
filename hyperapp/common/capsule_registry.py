@@ -33,10 +33,10 @@ class CapsuleRegistry(Registry):
         assert isinstance(capsule, capsule_t), repr(capsule)
         t = self._type_registry.resolve(capsule.type_ref)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-        pprint(object, t=t, title='Producing %s for capsule %s %s' % (self._produce_name, ref_repr(ref), full_type_name_to_str(capsule.full_type_name)))
+        pprint(object, t=t, title='Producing %s for capsule %s type %s' % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
         rec = self._resolve(tuple(capsule.full_type_name))
         log.info('producing %s for %s using %s(%s/%s, %s/%s) for object %r',
-                 self._produce_name, full_type_name_to_str(capsule.full_type_name), rec.factory, rec.args, args, rec.kw, kw, object)
+                 self._produce_name, ref_repf(capsule.type_ref), rec.factory, rec.args, args, rec.kw, kw, object)
         return rec.factory(ref, object, *(rec.args + args), **dict(rec.kw, **kw))
 
 
@@ -49,6 +49,7 @@ class CapsuleResolver(object):
     def resolve(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = self._ref_resolver.resolve_ref(ref)
+        assert capsule, 'Unknown ref: %s' % ref_repr(ref)
         produce = self._capsule_registry.resolve(ref, capsule, *args, **kw)
         assert produce, repr(produce)
         log.debug('Capsule %s is resolved to %s %r', ref_repr(ref), self._capsule_registry.produce_name, produce)
