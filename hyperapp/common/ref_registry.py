@@ -23,7 +23,7 @@ class RefRegistry(object):
     def register_capsule(self, capsule):
         assert isinstance(capsule, capsule_t), repr(capsule)
         ref = make_ref(capsule)
-        log.info('Registering ref %s for capsule type %s', ref_repr(ref), ref_repr(capsule.type_ref))
+        log.info('Registering ref %s for capsule of type %s', ref_repr(ref), ref_repr(capsule.type_ref))
         existing_capsule = self._registry.get(ref)
         if existing_capsule:
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one

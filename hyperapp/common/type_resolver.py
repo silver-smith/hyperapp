@@ -12,6 +12,7 @@ from .htypes import (
 from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
 from .ref import ref_repr
+from .visual_rep import pprint
 from .capsule_registry import CapsuleRegistry, CapsuleResolver
 
 log = logging.getLogger(__name__)
@@ -78,6 +79,7 @@ class TypeResolver(object):
         encoding = DEFAULT_CAPSULE_ENCODING
         encoded_object = packet_coders.encode(encoding, object, t)
         type_ref = self.reverse_resolve(t)
+        pprint(object, t=t, title='Making capsule of type %s/%s' % (ref_repr(type_ref), t))
         return capsule_t(type_ref, encoding, encoded_object)
 
     def decode_capsule(self, capsule, expected_type=None):

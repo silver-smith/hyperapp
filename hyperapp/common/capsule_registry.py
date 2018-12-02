@@ -32,10 +32,10 @@ class CapsuleRegistry(Registry):
         assert isinstance(capsule, capsule_t), repr(capsule)
         t = self._type_registry.resolve(capsule.type_ref)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-        pprint(object, t=t, title='Producing %s for capsule %s type %s'
+        pprint(object, t=t, title='Producing %s for capsule %s of type %s'
                % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
         rec = self._resolve(capsule.type_ref)
-        log.info('producing %s for %s of %s using %s(%s/%s, %s/%s) for object %r',
+        log.info('Producing %s for capsule %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, ref_repr(ref), ref_repf(capsule.type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
         return rec.factory(ref, object, *(rec.args + args), **dict(rec.kw, **kw))
