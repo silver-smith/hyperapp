@@ -34,7 +34,7 @@ class CapsuleRegistry(Registry):
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         pprint(object, t=t, title='Producing %s for capsule %s type %s'
                % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
-        rec = self._resolve(ref)
+        rec = self._resolve(capsule.type_ref)
         log.info('producing %s for %s of %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, ref_repr(ref), ref_repf(capsule.type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
