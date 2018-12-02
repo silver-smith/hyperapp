@@ -25,5 +25,7 @@ class Registry(object):
         return id in self._registry
 
     def _resolve(self, id):
-        assert id in self._registry, repr(id)  # Unknown id
-        return self._registry[id]
+        try:
+            return self._registry[id]
+        except KeyError:
+            raise RuntimeError('Unknown id: %s' % self.id_to_str(id))

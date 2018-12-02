@@ -40,12 +40,13 @@ class TypeResolver(object):
         self._ref2type_cache = {}  # we should resolve same ref to same instance, not a duplicate
         self._type2ref = {}  # reverse registry
         self._add_phony_refs()
-        capsule_registry.register(meta_ref_t, self._resolve_meta_ref)
-        capsule_registry.register(builtin_ref_t, self._resolve_builtin_ref)
+        capsule_registry.register_type_ref(self.reverse_resolve(builtin_ref_t), self._resolve_builtin_ref)
+        capsule_registry.register_type_ref(self.reverse_resolve(meta_ref_t), self._resolve_meta_ref)
 
     def _add_phony_refs(self):
         for t, ref_hash in [
                 (builtin_ref_t, b'BUILTIN_REF'),
+                (meta_ref_t, b'META_REF'),
                 ]:
             ref = ref_t('phony', ref_hash)
             self._type2ref[t] = ref

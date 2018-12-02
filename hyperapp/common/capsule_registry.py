@@ -22,21 +22,22 @@ class CapsuleRegistry(Registry):
         return self._produce_name
 
     def id_to_str(self, id):
-        return full_type_name_to_str(id)
+        return ref_repr(id)
 
-    def register(self, t, factory, *args, **kw):
-        assert isinstance(t, Type), repr(t)
-        assert t.full_name, repr(t)  # type must have a name
-        super().register(tuple(t.full_name), factory, *args, **kw)
+    def register_type_ref(self, ref, factory, *args, **kw):
+        assert isinstance(ref, ref_t), repr(ref)
+        super().register(ref, factory, *args, **kw)
         
     def resolve(self, ref, capsule, *args, **kw):
         assert isinstance(capsule, capsule_t), repr(capsule)
         t = self._type_registry.resolve(capsule.type_ref)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-        pprint(object, t=t, title='Producing %s for capsule %s type %s' % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
-        rec = self._resolve(tuple(capsule.full_type_name))
-        log.info('producing %s for %s using %s(%s/%s, %s/%s) for object %r',
-                 self._produce_name, ref_repf(capsule.type_ref), rec.factory, rec.args, args, rec.kw, kw, object)
+        pprint(object, t=t, title='Producing %s for capsule %s type %s'
+               % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
+        rec = self._resolve(ref)
+        log.info('producing %s for %s of %s using %s(%s/%s, %s/%s) for object %r',
+                 self._produce_name, ref_repr(ref), ref_repf(capsule.type_ref),
+                 rec.factory, rec.args, args, rec.kw, kw, object)
         return rec.factory(ref, object, *(rec.args + args), **dict(rec.kw, **kw))
 
 

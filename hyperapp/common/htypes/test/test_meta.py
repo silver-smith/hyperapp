@@ -47,18 +47,19 @@ log = logging.getLogger(__name__)
 @pytest.fixture
 def ref_resolver():
     return RefResolver()
-    ref_resolver.add_source(ref_registry)
+
 
 @pytest.fixture
 def type_resolver(ref_resolver):
     return TypeResolver(ref_resolver)
 
+
 @pytest.fixture
-def ref_registry(type_resolver):
+def ref_registry(ref_resolver, type_resolver):
     registry = RefRegistry(type_resolver)
     register_builtin_types(registry, type_resolver)
+    ref_resolver.add_source(registry)
     return registry
-
 
 
 @pytest.fixture
@@ -88,11 +89,11 @@ def type_ref(ref_registry):
 @pytest.fixture
 def resolve(type_resolver, type_ref):
 
-    def act(name, meta_data):
+    def resolve(name, meta_data):
         ref = type_ref(name, meta_data)
         return type_resolver.resolve(ref)
 
-    return act
+    return resolve
 
 
 def test_optional(builtin_ref, resolve):
