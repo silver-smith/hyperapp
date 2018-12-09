@@ -2,6 +2,7 @@ import logging
 from ..util import is_list_inst, cached_property
 from .htypes import (
     join_path,
+    all_match,
     Type,
     tNone,
     tBinary,
@@ -41,6 +42,14 @@ class IfaceCommand(TypeNamespace):
         if self.is_request:
             self['response'] = TRecord(self.result_fields, full_name=self._full_name + ['response'])
 
+    def match(self, other):
+        assert isinstance(other, IfaceCommand), repr(other)
+        return (self._full_name == other._full_name and
+                self.request_type == other.request_type and
+                self.command_id == other.command_id and
+                all_match(self.params_fields, other.params_fields) and
+                all_match(self.result_fields, other.result_fields))
+
     @property
     def full_name(self):
         return self._full_name
@@ -76,6 +85,11 @@ class Interface(TypeNamespace):
             all_commands += base._command_list
         for command in all_commands:
             self[command.command_id] = command
+
+    def match(self, other):
+        return (isinstance(other, Interface)
+                and (self._base is other._base is None or other._base.match(self._base))
+                and all_match(other._command_list, self._command_list))
 
     @property
     def full_name(self):

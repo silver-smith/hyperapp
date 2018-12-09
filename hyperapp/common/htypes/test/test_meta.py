@@ -99,14 +99,14 @@ def resolve(type_resolver, type_ref):
 def test_optional(builtin_ref, resolve):
     data = t_optional_meta(builtin_ref('string'))
     t = resolve('some_optional', data)
-    assert t == TOptional(tString)
+    assert t.match(TOptional(tString))
     assert t.base_t is tString
 
 
 def test_list(builtin_ref, resolve):
     data = t_list_meta(t_optional_meta(builtin_ref('datetime')))
     t = resolve('some_list', data)
-    assert t == TList(TOptional(tDateTime))
+    assert t.match(TList(TOptional(tDateTime)))
 
 
 def test_record(builtin_ref, resolve):
@@ -116,11 +116,11 @@ def test_record(builtin_ref, resolve):
         t_field_meta('bool_optional_field', t_optional_meta(builtin_ref('bool'))),
         ])
     t = resolve('some_record', data)
-    assert t == TRecord([
+    assert t.match(TRecord([
         Field('int_field', tInt),
         Field('string_list_field', TList(tString)),
         Field('bool_optional_field', TOptional(tBool)),
-        ])
+        ]))
 
 
 def test_based_record(builtin_ref, type_ref, resolve):
@@ -133,10 +133,10 @@ def test_based_record(builtin_ref, type_ref, resolve):
         t_field_meta('string_field', builtin_ref('string')),
         ], base=base_record_ref)
     t = resolve('some_record', record_data)
-    assert t == TRecord([
+    assert t.match(TRecord([
         Field('int_field', tInt),
         Field('string_field', tString),
-        ])
+        ]))
 
 
 def test_hierarchy(builtin_ref, type_ref, resolve):
@@ -154,9 +154,9 @@ def test_hierarchy(builtin_ref, type_ref, resolve):
     assert THierarchy('test_hierarchy').matches(hierarchy)
     class_a = resolve('some_class_a', class_a_data)
     class_b = resolve('some_class_b', class_b_data)
-    assert class_a == TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)]))
-    assert class_b == TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
-                                                            Field('field_b_1', TList(tInt))]))
+    assert class_a.match(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])))
+    assert class_b.match(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
+                                                               Field('field_b_1', TList(tInt))])))
 
 def test_interface(builtin_ref, resolve):
     iface_data = t_interface_meta([
@@ -170,7 +170,7 @@ def test_interface(builtin_ref, resolve):
                        [t_field_meta('result', t_optional_meta(builtin_ref('int')))]),
         ])
     t = resolve('test_iface', iface_data)
-    assert t == Interface(['test_iface'],
+    assert t.match(Interface(['test_iface'],
         commands=[
             RequestCmd(['test_iface', 'request_one'], 'request_one',
                        [Field('req_param1', tString)],
@@ -180,7 +180,7 @@ def test_interface(builtin_ref, resolve):
                              Field('noti_param2', tDateTime)]),
             RequestCmd(['test_iface', 'request_open'], 'request_open', [],
                        [Field('result', TOptional(tInt))]),
-        ])
+        ]))
 
 
 def test_based_interface(builtin_ref, type_ref, resolve):
@@ -199,8 +199,8 @@ def test_based_interface(builtin_ref, type_ref, resolve):
 
     iface_a = resolve('iface_a', iface_a_data)
     iface_b = resolve('iface_b', iface_b_data)
-    assert iface_b == Interface(['iface_b'], base=iface_a, commands=[
+    assert iface_b.match(Interface(['iface_b'], base=iface_a, commands=[
         NotificationCmd(['iface_b', 'notification_one'], 'notification_one',
                         [Field('noti_param1', TOptional(tBool)),
                          Field('noti_param2', tDateTime)]),
-        ])
+        ]))

@@ -8,6 +8,9 @@ class TypeError(Exception): pass
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
 
+def all_match(x_list, y_list):
+    return all(x.match(y) for x, y in zip(x_list, y_list))
+
 
 class Type(object):
 
@@ -51,6 +54,9 @@ class TPrimitive(Type):
 
     def __repr__(self):
         return 'TPrimitive<%s>' % self.get_type().__name__
+
+    def match(self, other):
+        return isinstance(other, TPrimitive) and other.type_name == self.type_name
 
     def __instancecheck__(self, value):
         return isinstance(value, self.get_type())
@@ -105,6 +111,9 @@ class TOptional(Type):
     def __repr__(self):
         return 'TOptional<%r>' % self.base_t
 
+    def match(self, other):
+        return isinstance(other, TOptional) and other.base_t.match(self.base_t)
+
     def __instancecheck__(self, value):
         return value is None or isinstance(value, self.base_t)
 
@@ -135,12 +144,9 @@ class Field(object):
     def __repr__(self):
         return '%r: %r' % (self.name, self.type)
 
-    def __eq__(self, other):
+    def match(self, other):
         assert isinstance(other, Field), repr(other)
-        return other.name == self.name and other.type == self.type
-
-    def __hash__(self):
-        return hash((self.name, self.type))
+        return other.name == self.name and other.type.match(self.type)
 
 
 # class for instantiated records
@@ -190,6 +196,10 @@ class TRecord(Type):
             return '.'.join(self.full_name)
         else:
             return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.fields)))
+
+    def match(self, other):
+        return (isinstance(other, TRecord)
+                and all_match(other.fields, self.fields))
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)
@@ -267,6 +277,9 @@ class TList(Type):
 
     def __repr__(self):
         return 'TList<%r>' % self.element_t
+
+    def match(self, other):
+        return isinstance(other, TList) and other.element_t.match(self.element_t)
 
     def __instancecheck__(self, value):
         return is_list_inst(value, self.element_t)
