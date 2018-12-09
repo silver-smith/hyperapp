@@ -36,7 +36,7 @@ class CapsuleRegistry(Registry):
                % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
         rec = self._resolve(capsule.type_ref)
         log.info('Producing %s for capsule %s of type %s using %s(%s/%s, %s/%s) for object %r',
-                 self._produce_name, ref_repr(ref), ref_repf(capsule.type_ref),
+                 self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
         return rec.factory(ref, object, *(rec.args + args), **dict(rec.kw, **kw))
 
