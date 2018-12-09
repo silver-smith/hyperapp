@@ -39,8 +39,6 @@ def register_builtin_types(ref_registry, type_resolver):
             capsule_t,
             bundle_t,
             # meta
-            builtin_ref_t,
-            meta_ref_t,
             tMetaType,
             ]:
         type_resolver.register_internal_type(ref_registry, t)

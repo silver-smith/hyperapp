@@ -94,6 +94,7 @@ class TypeResolver(object):
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
     def register_internal_type(self, ref_registry, t):
+        assert t not in self._type2ref, repr(t)
         type_rec = builtin_ref_t(t.name)
         type_ref = ref_registry.register_object(type_rec)
         self._type2ref[t] = type_ref
