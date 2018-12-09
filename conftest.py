@@ -17,6 +17,8 @@ def pytest_configure(config):
         # when capturing stdout dump log to stdout too
         format = '%(asctime)s %(processName)-17s %(filename)-25s %(lineno)4d %(levelname)-8s %(message)s'
         logging.basicConfig(level=logging.DEBUG, format=format)
+    else:
+        logging.getLogger().setLevel(logging.DEBUG)
 
 
 @pytest.mark.hookwrapper
