@@ -27,15 +27,17 @@ class RefRegistry(object):
         existing_capsule = self._registry.get(ref)
         if existing_capsule:
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
+        log.debug('  (already exists)')
         self._registry[ref] = capsule
         pprint(self._type_resolver.decode_capsule(capsule), indent=1, logger=log.debug)
         return ref
 
     def register_object(self, object, t=None):
         t = t or deduce_value_type(object)
+        log.debug('Registering ref for object %s', t.name)
         capsule = self._type_resolver.make_capsule(object, t)
-        return self.register_capsule(capsule)
-        log.debug('Registered ref %s for object %s', ref_repr(ref), t.name)
+        ref = self.register_capsule(capsule)
+        log.debug('  -> registered ref %s for object %s', ref_repr(ref), t.name)
         return ref
 
     def resolve_ref(self, ref):
