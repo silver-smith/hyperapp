@@ -44,13 +44,11 @@ class LocalCodeModuleRegistry(object):
         return self._registry[name]
 
 
-def make_code_module_namespace():
-    namespace = TypeNamespace()
-    for t in [
-            code_module_t,
-            ]:
-        full_name = t.full_name
-        module, name = full_name
-        assert module == 'code_module'
-        namespace[name] = t
-    return namespace
+_code_module_type_list = [
+    code_module_t,
+    ]
+
+
+def register_code_module_types(ref_registry, type_resolver):
+    for t in _code_module_type_list:
+        type_resolver.register_builtin_type(ref_registry, t)

@@ -6,7 +6,7 @@ print('code module 1(%s):' % __name__)
 print('type_module_1.record_1 =', htypes.type_module_1.record_1)
 
 assert isinstance(htypes.type_module_1.record_1, TRecord)
-assert Field('int_field', tInt) in htypes.type_module_1.record_1.fields
+assert htypes.type_module_1.record_1.fields[0].match(Field('int_field', tInt))
 
 module_1_var = 'module 1 var value'
 

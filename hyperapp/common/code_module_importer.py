@@ -4,6 +4,9 @@ import importlib.machinery
 import logging
 import sys
 
+from .code_module import code_module_t
+
+
 log = logging.getLogger(__name__)
 
 
@@ -79,8 +82,7 @@ class CodeModuleImporter(object):
 
     ROOT_PACKAGE = 'hyperapp.dynamic'
 
-    def __init__(self, ref_resolver, type_resolver):
-        self._ref_resolver = ref_resolver
+    def __init__(self, type_resolver):
         self._type_resolver = type_resolver
         self._fullname_to_loader = {self.ROOT_PACKAGE: _EmptyLoader()}
 
@@ -95,7 +97,7 @@ class CodeModuleImporter(object):
         return '{}.{}'.format(cls.ROOT_PACKAGE, _ref_to_name(code_module_ref))
 
     def import_code_module(self, code_module_ref):
-        code_module = self._ref_resolver.resolve_ref_to_object(code_module_ref, 'code_module.code_module')
+        code_module = self._type_resolver.resolve_ref_to_object(code_module_ref, code_module_t)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         # module itself
         self._fullname_to_loader[module_name] = _CodeModuleLoader(code_module)
