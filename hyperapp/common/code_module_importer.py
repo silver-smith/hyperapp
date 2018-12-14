@@ -71,11 +71,11 @@ class _TypeModuleLoader(_Finder):
 
 class _CopyDictLoader(_Finder):
 
-    def __init__(self, target_module_name):
-        self._target_module_name = target_module_name
+    def __init__(self, source_module_name):
+        self._source_module_name = source_module_name
 
     def exec_module(self, module):
-        module.__dict__.update(sys.modules[self._target_module_name].__dict__)
+        module.__dict__.update(sys.modules[self._source_module_name].__dict__)
 
 
 class CodeModuleImporter(object):
@@ -112,9 +112,9 @@ class CodeModuleImporter(object):
             self._fullname_to_loader[name] = _TypeModuleLoader(self._type_resolver, type_import_list)
         # .* code module imports
         for code_import in code_module.code_import_list:
-            target_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
+            source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
             name = '{}.{}'.format(module_name, code_import.import_name)
-            self._fullname_to_loader[name] = _CopyDictLoader(target_module_name)
+            self._fullname_to_loader[name] = _CopyDictLoader(source_module_name)
         # perform actual load
         importlib.import_module(module_name)
 
