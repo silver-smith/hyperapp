@@ -13,8 +13,8 @@ from .mapper import Mapper
 
 class _TypeModuleToRefsMapper(Mapper):
 
-    def __init__(self, builtin_types_registry, ref_registry, local_name_dict):
-        self._builtin_types_registry = builtin_types_registry
+    def __init__(self, type_resolver, ref_registry, local_name_dict):
+        self._type_resolver = type_resolver
         self._ref_registry = ref_registry
         self._local_name_dict = local_name_dict
 
@@ -27,24 +27,23 @@ class _TypeModuleToRefsMapper(Mapper):
         ref = self._local_name_dict.get(rec.name)
         if ref:
             return t_ref(ref)
-        t = self._builtin_types_registry[['basic', rec.name]]
+        t = self._type_resolver.builtin_type_by_name[rec.name]
         return t_ref(self._make_builtin_type_ref(t))
 
     def _make_builtin_type_ref(self, t):
-        rec = builtin_ref_t(t.full_name)
+        rec = builtin_ref_t(t.name)
         return self._ref_registry.register_object(rec)  # expected fail for duplicates; todo: move ref to Type
 
 
 class TypeModuleLoader(object):
 
-    def __init__(self, builtin_types, builtin_types_registry, ref_registry, local_type_module_registry):
-        self._builtin_types = builtin_types
-        self._builtin_types_registry = builtin_types_registry
+    def __init__(self, type_resolver, ref_registry, local_type_module_registry):
+        self._type_resolver = type_resolver
         self._ref_registry = ref_registry
         self._local_type_module_registry = local_type_module_registry
 
     def load_type_module(self, name, path):
-        source_module = load_type_module(self._builtin_types, name, path)
+        source_module = load_type_module(name, path)
         local_type_module = self._map_type_module_to_refs(source_module)
         self._local_type_module_registry.register(name, local_type_module)
 
@@ -54,7 +53,7 @@ class TypeModuleLoader(object):
             imported_module = self._local_type_module_registry[import_.module_name]
             local_name_dict[import_.name] = imported_module[import_.name]
         local_type_module = LocalTypeModule()
-        mapper = _TypeModuleToRefsMapper(self._builtin_types_registry, self._ref_registry, local_name_dict)
+        mapper = _TypeModuleToRefsMapper(self._type_resolver, self._ref_registry, local_name_dict)
         for typedef in module.typedefs:
             t = mapper.map(typedef.type)
             rec = meta_ref_t(

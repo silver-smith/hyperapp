@@ -1,5 +1,6 @@
 import os.path
 from pathlib import Path
+import pytest
 
 from hyperapp.common.htypes import (
     tInt,
@@ -13,11 +14,10 @@ from hyperapp.common.htypes import (
     NotificationCmd,
     Interface,
     t_named,
-    make_root_type_namespace,
+    register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.type_module import LocalTypeModuleRegistry
-from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader
@@ -27,17 +27,33 @@ from hyperapp.common.type_resolver import TypeResolver
 TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
-def test_type_module_loader():
-    types = make_root_type_namespace()
-    builtin_types_registry = make_builtin_types_registry()
+
+@pytest.fixture
+def ref_resolver():
+    return RefResolver()
+
+
+@pytest.fixture
+def type_resolver(ref_resolver):
+    return TypeResolver(ref_resolver)
+
+
+@pytest.fixture
+def ref_registry(ref_resolver, type_resolver):
+    registry = RefRegistry(type_resolver)
+    register_builtin_types(registry, type_resolver)
+    ref_resolver.add_source(registry)
+    return registry
+
+
+def test_type_module_loader(type_resolver, ref_registry):
     local_type_module_registry = LocalTypeModuleRegistry()
-    ref_registry = RefRegistry(types)
-    loader = TypeModuleLoader(types.builtins, builtin_types_registry, ref_registry, local_type_module_registry)
+    loader = TypeModuleLoader(type_resolver, ref_registry, local_type_module_registry)
     loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
 
 
-def test_type_resolver():
+def __test_type_resolver():
     types = make_root_type_namespace()
     builtin_types_registry = make_builtin_types_registry()
     local_type_module_registry = LocalTypeModuleRegistry()

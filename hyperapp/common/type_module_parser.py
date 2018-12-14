@@ -14,6 +14,7 @@ from .htypes import (
     t_hierarchy_class_meta,
     t_command_meta,
     t_interface_meta,
+    builtin_type_names,
     )
 from .type_module import (
     type_import_t,
@@ -445,20 +446,20 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module(builtins, module_name, fname, contents, debug=False):
+def parse_type_module(module_name, fname, contents, debug=False):
     parser = yacc.yacc(debug=debug)
     parser.module_name = module_name
     parser.fname = fname
     parser.lines = contents.splitlines()
-    parser.known_name_set = set(builtins.keys())
+    parser.known_name_set = builtin_type_names
     #parser.provided_class_list = []
     module = parser.parse(contents, lexer=Lexer())
     assert module, 'Failed to parse %r' % fname
     return module
  
-def load_type_module(builtins, module_name, fpath, debug=False):
+def load_type_module(module_name, fpath, debug=False):
     contents = fpath.read_text()
-    return parse_type_module(builtins, module_name, fpath, contents, debug)
+    return parse_type_module(module_name, fpath, contents, debug)
 
 
 if __name__ == '__main__':

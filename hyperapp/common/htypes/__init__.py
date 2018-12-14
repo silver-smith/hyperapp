@@ -20,25 +20,31 @@ def make_meta_type_registry():
     registry.register('interface', interface_from_data)
     return registry
 
+
+_builtin_type_list = [
+    # core
+    tNone,
+    tString,
+    tBinary,
+    tInt,
+    tBool,
+    tDateTime,
+    tEmbedded,
+    tIfaceId,
+    tPath,
+    tUrl,
+    tServerRoutes,
+    ref_t,
+    route_t,
+    capsule_t,
+    bundle_t,
+    # meta
+    tMetaType,
+    ]
+
+builtin_type_names = set(t.name for t in _builtin_type_list)
+
+
 def register_builtin_types(ref_registry, type_resolver):
-    for t in [
-            # core
-            tNone,
-            tString,
-            tBinary,
-            tInt,
-            tBool,
-            tDateTime,
-            tEmbedded,
-            tIfaceId,
-            tPath,
-            tUrl,
-            tServerRoutes,
-            ref_t,
-            route_t,
-            capsule_t,
-            bundle_t,
-            # meta
-            tMetaType,
-            ]:
-        type_resolver.register_internal_type(ref_registry, t)
+    for t in _builtin_type_list:
+        type_resolver.register_builtin_type(ref_registry, t)
