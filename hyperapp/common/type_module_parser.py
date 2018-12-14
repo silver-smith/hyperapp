@@ -16,7 +16,7 @@ from .htypes import (
     t_interface_meta,
     builtin_type_names,
     )
-from .type_module import (
+from .local_type_module import (
     type_import_t,
     type_def_t,
     type_module_t,

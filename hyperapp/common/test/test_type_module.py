@@ -17,7 +17,7 @@ from hyperapp.common.htypes import (
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.type_module import LocalTypeModuleRegistry
+from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader

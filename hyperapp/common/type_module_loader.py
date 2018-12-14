@@ -7,7 +7,7 @@ from .htypes import (
     meta_ref_t,
     )
 from .type_module_parser import load_type_module
-from .type_module import LocalTypeModule
+from .local_type_module import LocalTypeModule
 from .mapper import Mapper
 
 

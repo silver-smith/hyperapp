@@ -15,7 +15,7 @@ from .htypes import (
     TypeNamespace,
     )
 from .type_module_parser import load_type_module
-from .type_module import resolve_type_module
+from .local_type_module import resolve_type_module
 
 log = logging.getLogger(__name__)
 
