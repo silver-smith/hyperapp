@@ -10,7 +10,7 @@ ref_t = TRecord([
 
 capsule_t = TRecord([
     Field('type_ref', ref_t),
-    Field('encoding', tString),
+    Field('encoding', tString),  # used for both encoded_object and making ref to this capsule
     Field('encoded_object', tBinary),
     ], full_name=['builtins', 'capsule'])
 
