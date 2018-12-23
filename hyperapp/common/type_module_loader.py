@@ -11,7 +11,7 @@ from .local_type_module import LocalTypeModule
 from .mapper import Mapper
 
 
-class _TypeModuleToRefsMapper(Mapper):
+class _NameToRefMapper(Mapper):
 
     def __init__(self, type_resolver, ref_registry, local_name_dict):
         self._type_resolver = type_resolver
@@ -45,17 +45,17 @@ class TypeModuleLoader(object):
     def load_type_module(self, path, name=None):
         name = name or path.stem
         source = load_type_module_source(path, name)
-        local_type_module = self._map_type_module_to_refs(source)
+        local_type_module = self._map_names_to_refs(source)
         self._local_type_module_registry.register(name, local_type_module)
 
-    def _map_type_module_to_refs(self, module):
+    def _map_names_to_refs(self, module_source):
         local_name_dict = {}  # name -> ref
-        for import_ in module.import_list:
+        for import_ in module_source.import_list:
             imported_module = self._local_type_module_registry[import_.module_name]
             local_name_dict[import_.name] = imported_module[import_.name]
         local_type_module = LocalTypeModule()
-        mapper = _TypeModuleToRefsMapper(self._type_resolver, self._ref_registry, local_name_dict)
-        for typedef in module.typedefs:
+        mapper = _NameToRefMapper(self._type_resolver, self._ref_registry, local_name_dict)
+        for typedef in module_source.typedefs:
             t = mapper.map(typedef.type)
             rec = meta_ref_t(
                 name=typedef.name,
