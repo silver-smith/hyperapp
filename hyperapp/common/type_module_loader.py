@@ -6,7 +6,7 @@ from .htypes import (
     builtin_ref_t,
     meta_ref_t,
     )
-from .type_module_parser import load_type_module
+from .type_module_parser import load_type_module_source
 from .local_type_module import LocalTypeModule
 from .mapper import Mapper
 
@@ -44,7 +44,7 @@ class TypeModuleLoader(object):
 
     def load_type_module(self, path, name=None):
         name = name or path.stem
-        source_module = load_type_module(name, path)
+        source_module = load_type_module_source(path, name)
         local_type_module = self._map_type_module_to_refs(source_module)
         self._local_type_module_registry.register(name, local_type_module)
 

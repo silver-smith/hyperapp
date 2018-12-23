@@ -446,7 +446,7 @@ class Lexer(object):
         return tok
 
 
-def parse_type_module(module_name, fname, contents, debug=False):
+def parse_type_module_source(fname, module_name, contents, debug=False):
     parser = yacc.yacc(debug=debug)
     parser.module_name = module_name
     parser.fname = fname
@@ -457,9 +457,9 @@ def parse_type_module(module_name, fname, contents, debug=False):
     assert module, 'Failed to parse %r' % fname
     return module
  
-def load_type_module(module_name, fpath, debug=False):
+def load_type_module_source(fpath, module_name, debug=False):
     contents = fpath.read_text()
-    return parse_type_module(module_name, fpath, contents, debug)
+    return parse_type_module_source(fpath, module_name, contents, debug)
 
 
 if __name__ == '__main__':
