@@ -44,8 +44,8 @@ class TypeModuleLoader(object):
 
     def load_type_module(self, path, name=None):
         name = name or path.stem
-        source_module = load_type_module_source(path, name)
-        local_type_module = self._map_type_module_to_refs(source_module)
+        source = load_type_module_source(path, name)
+        local_type_module = self._map_type_module_to_refs(source)
         self._local_type_module_registry.register(name, local_type_module)
 
     def _map_type_module_to_refs(self, module):
