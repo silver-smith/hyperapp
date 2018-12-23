@@ -49,15 +49,15 @@ def ref_registry(ref_resolver, type_resolver):
 def test_type_module_loader(type_resolver, ref_registry):
     local_type_module_registry = LocalTypeModuleRegistry()
     loader = TypeModuleLoader(type_resolver, ref_registry, local_type_module_registry)
-    loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
-    loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
+    loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
+    loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
 
 def test_type_resolver(ref_resolver, type_resolver, ref_registry):
     local_type_module_registry = LocalTypeModuleRegistry()
     loader = TypeModuleLoader(type_resolver, ref_registry, local_type_module_registry)
-    loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
-    loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
+    loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
+    loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
     def resolve_1(name):
         return type_resolver.resolve(local_type_module_registry['type_module_1'][name])

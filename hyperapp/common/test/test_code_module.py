@@ -60,8 +60,8 @@ def code_module_loader(ref_registry, local_type_module_registry, local_code_modu
 
 
 def test_code_module_load(type_module_loader, code_module_loader):
-    type_module_loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
-    type_module_loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
+    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
+    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
     code_module = code_module_loader.load_code_module('code_module_1', TEST_MODULES_DIR / 'code_module_1')
     assert isinstance(code_module, code_module_t)
@@ -76,16 +76,16 @@ def code_module_importer(ref_resolver, type_resolver):
 
 
 def test_code_module_import(ref_registry, type_module_loader, code_module_loader, code_module_importer):
-    type_module_loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
-    type_module_loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
+    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
+    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
     code_module = code_module_loader.load_code_module('code_module_1', TEST_MODULES_DIR / 'code_module_1')
     code_module_ref = ref_registry.register_object(code_module)
     code_module = code_module_importer.import_code_module(code_module_ref)
 
 
 def test_code_module_import_from_code_module(ref_registry, type_module_loader, code_module_loader, code_module_importer):
-    type_module_loader.load_type_module('type_module_1', TEST_MODULES_DIR / 'type_module_1.types')
-    type_module_loader.load_type_module('type_module_2', TEST_MODULES_DIR / 'type_module_2.types')
+    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
+    type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
     code_module_1 = code_module_loader.load_code_module('code_module_1', TEST_MODULES_DIR / 'code_module_1')
     code_module_2 = code_module_loader.load_code_module('code_module_2', TEST_MODULES_DIR / 'code_module_2')
     code_module_1_ref = ref_registry.register_object(code_module_1)
