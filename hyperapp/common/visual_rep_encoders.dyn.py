@@ -1,7 +1,6 @@
-from .interface import module as module_types
-from .interface import resource as resource_types
 from .visual_rep import RepNode, special_encoder_registry
 from .module import Module
+from . import htypes
 
 
 MODULE_NAME = 'visual_rep_encoders'
@@ -11,9 +10,9 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        special_encoder_registry.register(module_types.requirement, self._encode_module_requirement)
-        special_encoder_registry.register(module_types.module, self._encode_module_module)
-        special_encoder_registry.register(resource_types.resource_id, self._encode_resouce_id)
+        special_encoder_registry.register(htypes.module.requirement, self._encode_module_requirement)
+        special_encoder_registry.register(htypes.module.module, self._encode_module_module)
+        special_encoder_registry.register(htypes.resource.resource_id, self._encode_resouce_id)
 
     def _encode_module_requirement(self, requirement):
         return RepNode('requirement: %s' % ':'.join(value))
