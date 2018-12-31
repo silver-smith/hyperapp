@@ -16,10 +16,10 @@ class CodeModuleLoader(object):
         module_name = module_name or file_path.stem
         info_path = file_path.with_suffix('.yaml')
         source_path = file_path.with_suffix(DYN_MODULE_SUFFIX)
-        info = yaml.load(info_path.read_text())
+        info = yaml.load(info_path.read_text()) or {}
         source = source_path.read_text()
         type_import_list = []
-        for type_module_name, import_name_list in info['import']['types'].items():
+        for type_module_name, import_name_list in info.get('import', {}).get('types', {}).items():
             local_type_module = self._local_type_module_registry.resolve(type_module_name)
             assert local_type_module, "%s: Unknown type module: %s" % (info_path, type_module_name)
             for type_name in import_name_list:
@@ -27,7 +27,7 @@ class CodeModuleLoader(object):
                 assert type_ref, "%s: Unknown type: %s.%s" % (info_path, type_module_name, type_name)
                 type_import_list.append(type_import_t(type_module_name, type_name, type_ref))
         code_import_list = []
-        for import_module_name in info['import'].get('code', []):
+        for import_module_name in info.get('import', {}).get('code', []):
             assert isinstance(import_module_name, str), (
                 '%s: string list is expected at import/code, but got: %r', file_path, import_module_name)
             import_module_ref = self._local_code_module_registry[import_module_name]
