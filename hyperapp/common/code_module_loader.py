@@ -9,7 +9,8 @@ class CodeModuleLoader(object):
         self._local_type_module_registry = local_type_module_registry
         self._local_code_module_registry = local_code_module_registry
 
-    def load_code_module(self, module_name, file_path):
+    def load_code_module(self, file_path, module_name=None):
+        module_name = module_name or file_path.stem
         info_path = file_path.with_suffix('.yaml')
         source_path = file_path.with_suffix('.py')
         info = yaml.load(info_path.read_text())
