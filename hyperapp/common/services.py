@@ -90,5 +90,5 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
     def _load_code_module_list(self, module_name_list):
         for module_name in module_name_list:
             parts = module_name.split('.')
-            file_path = self.interface_dir.joinpath(*parts)
+            file_path = self.hyperapp_dir.joinpath(*parts)
             self.code_module_loader.load_code_module(file_path, module_name)
