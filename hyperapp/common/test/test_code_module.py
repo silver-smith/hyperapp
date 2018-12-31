@@ -4,7 +4,6 @@ import pytest
 from hyperapp.common.htypes import register_builtin_types
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.code_module import code_module_t
-from hyperapp.common.builtin_types_registry import make_builtin_types_registry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader

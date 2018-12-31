@@ -2,6 +2,9 @@ import yaml
 from .code_module import type_import_t, code_import_t, code_module_t
 
 
+DYN_MODULE_SUFFIX = '.dyn.py'
+
+
 class CodeModuleLoader(object):
 
     def __init__(self, ref_registry, local_type_module_registry, local_code_module_registry):
@@ -12,7 +15,7 @@ class CodeModuleLoader(object):
     def load_code_module(self, file_path, module_name=None):
         module_name = module_name or file_path.stem
         info_path = file_path.with_suffix('.yaml')
-        source_path = file_path.with_suffix('.py')
+        source_path = file_path.with_suffix(DYN_MODULE_SUFFIX)
         info = yaml.load(info_path.read_text())
         source = source_path.read_text()
         type_import_list = []
