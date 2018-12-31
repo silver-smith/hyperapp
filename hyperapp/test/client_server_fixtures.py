@@ -26,7 +26,6 @@ common_type_module_list = [
 
 common_server_code_module_list = [
     'common.visual_rep_encoders',
-    'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',
     'common.ref_registry_module',
@@ -40,7 +39,6 @@ common_server_code_module_list = [
 
 common_client_code_module_list = [
     'common.visual_rep_encoders',
-    'common.ref_resolver',
     'common.route_resolver',
     'common.ref_collector',
     'common.ref_registry_module',
