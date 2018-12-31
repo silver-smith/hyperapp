@@ -3,17 +3,9 @@ from pathlib import Path
 import concurrent.futures
 
 from ..common import cdr_coders, dict_coders  # self-registering
-from ..common.route_storage import RouteStorage
-from ..common.module_manager import ModuleManager
 from ..common.services import ServicesBase
-from .module import ModuleRegistry
-from .resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)
-
-
-DYN_MODULE_EXT = '.dyn.py'
-HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 
 
 type_module_list = [
@@ -99,20 +91,11 @@ class Services(ServerServicesBase):
     def __init__(self, start_args):
         super().__init__()
         self.start_args = start_args
-        self.server_dir = HYPERAPP_DIR / 'hyperapp' / 'server'
-        self.dynamic_module_dir = HYPERAPP_DIR / 'dynamic_modules'
+        self.server_dir = self.hyperapp_dir / 'server'
         ServicesBase.init_services(self)
-        self.module_registry = ModuleRegistry()
-        self.module_manager = ModuleManager(self, self.types, self.module_registry)
-        self.modules = self.module_manager.modules
-        self.module_manager.register_meta_hook()
-        self._load_type_modules(type_module_list)
-        self.resources_loader = ResourcesLoader(self.types.resource,
-                                                self.types.param_editor,
-                                                iface_resources_dir=self.server_dir,
-                                                client_modules_resources_dir=self.dynamic_module_dir)
+        self._load_type_module_list(type_module_list)
         try:
-            self._load_server_modules()
+            self._load_code_module_list(code_module_list)
             self.module_registry.init_phases(self)
         except:
             self.stop()
@@ -121,7 +104,3 @@ class Services(ServerServicesBase):
     @property
     def is_running(self):
         return True
-
-    def _load_server_modules(self):
-        for module_name in code_module_list:
-            self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)

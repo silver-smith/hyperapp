@@ -2,59 +2,7 @@ import weakref
 from functools import partial
 from datetime import datetime
 from dateutil.tz import tzutc
-from ..common.util import is_list_inst
 
-
-class XPathNotFound(RuntimeError):
-    pass
-
-
-class Path(object):
-
-    def __init__(self, path):
-        assert is_list_inst(path, str), repr(path)
-        self.path = path
-
-    def raise_not_found(self):
-        raise XPathNotFound(self.path)
-
-    def check_empty(self):
-        if self.path:
-            self.raise_not_found()
-
-    def pop_str(self):
-        if not self.path:
-            self.raise_not_found()
-        return self.pop_str_opt()
-
-    def pop_str_opt(self):
-        if not self.path:
-            return None
-        part = self.path[0]
-        self.path = self.path[1:]
-        return part
-
-    def pop_int_opt(self, none_str=''):
-        s = self.pop_str()
-        if s == none_str:
-            return None
-        try:
-            return int(s)
-        except ValueError:
-            self.raise_not_found()
-
-    def pop_int(self):
-        v = self.pop_int_opt()
-        if v is None:
-            self.raise_not_found()
-        return v
-
-
-def path_part_to_str(val, none_str=''):
-    if val is None:
-        return none_str
-    else:
-        return str(val)
 
 def utcnow():
     return datetime.now(tzutc())

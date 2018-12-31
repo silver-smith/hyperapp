@@ -4,17 +4,10 @@ from pathlib import Path
 from ..common.htypes.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
-#from .remoting import Remoting
-from .resources_manager import ResourcesRegistry, ResourcesManager
-from .module_manager import ModuleManager
-from .module import ClientModuleRegistry
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
 from . import url_clipboard
-
-#from . import tcp_transport
-#from . import encrypted_transport
 
 from . import command
 from . import tab_view
@@ -24,12 +17,10 @@ from . import splitter
 from . import list_view
 
 
-HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
 CACHE_CONTENTS_ENCODING = 'json'
 CACHE_FILE_EXT = '.json'
 TYPE_MODULE_EXT = '.types'
-DYN_MODULE_EXT = '.dyn.py'
 
 
 type_module_list = [
@@ -113,8 +104,7 @@ class Services(ClientServicesBase):
     def __init__(self, event_loop):
         super().__init__()
         self.event_loop = event_loop
-        self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'
-        self._hyperapp_client_dir = HYPERAPP_DIR / 'hyperapp' / 'client'
+        self._hyperapp_client_dir = self.hyperapp_dir / 'client'
         ServicesBase.init_services(self)
         self.client_module_dir = self._hyperapp_client_dir
         self.module_registry = ClientModuleRegistry()

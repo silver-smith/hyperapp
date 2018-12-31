@@ -5,6 +5,7 @@ from .htypes import (
     TList,
     ref_t,
     TypeNamespace,
+    builtin_type_names,
     )
 
 
@@ -52,3 +53,4 @@ _code_module_type_list = [
 def register_code_module_types(ref_registry, type_resolver):
     for t in _code_module_type_list:
         type_resolver.register_builtin_type(ref_registry, t)
+    builtin_type_names.update(t.name for t in _code_module_type_list)

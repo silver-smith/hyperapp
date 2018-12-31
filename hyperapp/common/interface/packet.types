@@ -8,8 +8,7 @@ ref_and_capsule = record:
 
 aux_info = record:
     requirements: requirement list
-    type_modules: type_module list
-    modules: module list
+    modules: code_module list
     routes: server_routes list
     resources: resource_rec_list
     ref_list: ref_and_capsule list

@@ -87,18 +87,20 @@ class Server(object, metaclass=log_exceptions):
         self.services.stop()
         assert not self.services.is_failed
 
-    def extract_bundle(self, services_attr):
+    def extract_bundle(self, object_attr):
         ref_collector = self.services.ref_collector_factory()
-        ref = getattr(self.services, services_attr)
+        ref = getattr(self.services, object_attr)
         bundle = ref_collector.make_bundle([ref])
-        pprint(bundle, title='Extracted %r bundle:' % services_attr)
+        pprint(bundle, title='Extracted %r bundle:' % object_attr)
         return encode_bundle(bundle)
 
 
 class TestManager(BaseManager):
     __test__ = False
 
+
 TestManager.register('Server', Server)
+
 
 @pytest.fixture
 def test_manager():

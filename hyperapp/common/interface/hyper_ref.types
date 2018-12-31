@@ -5,13 +5,13 @@ endpoint = record:
     service_id: string
 
 service = record(endpoint):
-    iface_full_type_name: full_type_name
+    iface_type_ref: ref
 
 
 rpc_message = hierarchy rpc_message
 
 rpc_request = rpc_message class request:
-    iface_full_type_name: full_type_name
+    iface_type_ref: ref
     source_endpoint_ref: ref
     target_service_ref: ref
     command_id: string

@@ -1,4 +1,7 @@
 
+MAX_INIT_PHASE_COUNT = 3
+
+
 # base class for modules
 class Module(object):
 
@@ -7,3 +10,20 @@ class Module(object):
 
     def __repr__(self):
         return '<Module %r>' % self.name
+
+
+class ModuleRegistry(object):
+
+    def __init__(self):
+        self._module_list = []  # import order should be preserved
+
+    def register(self, module):
+        assert isinstance(module, Module), repr(module)
+        self._module_list.append(module)
+
+    def init_phases(self, services):
+        for phase_num in range(1, MAX_INIT_PHASE_COUNT + 1):
+            for module in self._module_list:
+                method = getattr(module, 'init_phase_{}'.format(phase_num))
+                if method:
+                    method(services)
