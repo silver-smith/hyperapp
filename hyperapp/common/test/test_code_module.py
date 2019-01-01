@@ -79,7 +79,7 @@ def test_code_module_import(ref_registry, type_module_loader, code_module_loader
     type_module_loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
     code_module = code_module_loader.load_code_module(TEST_MODULES_DIR / 'code_module_1')
     code_module_ref = ref_registry.register_object(code_module)
-    code_module = code_module_importer.import_code_module(code_module_ref)
+    code_module_importer.import_code_module(code_module_ref)
 
 
 def test_code_module_import_from_code_module(ref_registry, type_module_loader, code_module_loader, code_module_importer):
@@ -90,5 +90,5 @@ def test_code_module_import_from_code_module(ref_registry, type_module_loader, c
     code_module_1_ref = ref_registry.register_object(code_module_1)
     code_module_2_ref = ref_registry.register_object(code_module_2)
 
-    code_module_1 = code_module_importer.import_code_module(code_module_1_ref)
-    code_module_2 = code_module_importer.import_code_module(code_module_2_ref)
+    code_module_importer.import_code_module(code_module_1_ref)
+    code_module_importer.import_code_module(code_module_2_ref)

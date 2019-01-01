@@ -113,10 +113,11 @@ class CodeModuleImporter(object):
         # .* code module imports
         for code_import in code_module.code_import_list:
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
-            name = '{}.{}'.format(module_name, code_import.import_name)
+            import_name = code_import.import_name.split('.')[-1]
+            name = '{}.{}'.format(module_name, import_name)
             self._fullname_to_loader[name] = _CopyDictLoader(source_module_name)
         # perform actual load
-        importlib.import_module(module_name)
+        return importlib.import_module(module_name)
 
     # MetaPathFinder implementation
     def find_spec(self, fullname, path, target=None):

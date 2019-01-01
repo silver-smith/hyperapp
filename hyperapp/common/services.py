@@ -34,6 +34,7 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         self.config = {}
         self.failure_reason_list = []
         self._is_stopped = False
+        self.name2module = {}  # module name (x.y.z) -> imported module
 
     def init_services(self, config=None):
         self.config.update(config or {})
@@ -91,4 +92,7 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         for module_name in module_name_list:
             parts = module_name.split('.')
             file_path = self.hyperapp_dir.joinpath(*parts)
-            self.code_module_loader.load_code_module(file_path, module_name)
+            code_module = self.code_module_loader.load_code_module(file_path, module_name)
+            code_module_ref = self.ref_registry.register_object(code_module)
+            module = self.code_module_importer.import_code_module(code_module_ref)
+            self.name2module[module_name] = module
