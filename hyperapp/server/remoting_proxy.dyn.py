@@ -1,4 +1,4 @@
-from .module import ServerModule
+from hyperapp.common.module import Module
 
 
 MODULE_NAME = 'remoting_proxy'
@@ -48,7 +48,7 @@ class ProxyFactory(object):
         return RemotingProxy(self._remoting, ref, iface)
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)

@@ -1,7 +1,7 @@
 import logging
 
-from ..registry import CapsuleRegistry, CapsuleResolver
-from ..module import ServerModule
+from hyperapp.common.module import Module
+from hyperapp.common.capsule_registry import CapsuleRegistry, CapsuleResolver
 
 log = logging.getLogger(__name__)
 
@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'transport.registry'
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)

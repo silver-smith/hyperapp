@@ -1,8 +1,7 @@
 import logging
 
-from ..common.interface import hyper_ref as href_types
-from ..common.interface import test as test_types
-from .module import ServerModule
+from hyperapp.common.module import Module
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ class EchoService(object):
         log.info('Echo.notify(%r): message=%r', request, message)
 
     def rpc_fail(self, request, message):
-        raise test_types.test_error(message)
+        raise htypes.test.test_error(message)
 
     def rpc_subscribe(self, request, service_ref):
         self._subscribed_service_ref_set.add(service_ref)
@@ -39,12 +38,12 @@ class EchoService(object):
             proxy.notify(message)
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
-        service = href_types.service(ECHO_SERVICE_ID, ['test', 'echo'])
+        service = htypes.hyper_ref.service(ECHO_SERVICE_ID, ['test', 'echo'])
         services.echo_service_ref = service_ref = services.ref_registry.register_object(service)
         self._echo_service = EchoService(services.proxy_factory)
         services.service_registry.register(service_ref, lambda: self._echo_service)

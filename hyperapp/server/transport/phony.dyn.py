@@ -2,10 +2,10 @@ import logging
 import threading
 import queue
 
-from hyperapp.common.interface import phony_transport as phony_transport_types
-from hyperapp.common.ref import LOCAL_TRANSPORT_REF, encode_bundle, decode_bundle, decode_capsule
+from hyperapp.common.ref import LOCAL_TRANSPORT_REF, encode_bundle, decode_bundle
 from hyperapp.common.visual_rep import pprint
-from ..module import Module
+from hyperapp.common.module import Module
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -93,9 +93,9 @@ class ThisModule(Module):
         Module.__init__(self, MODULE_NAME)
         # queues are expected to be created by test
         phony_client_address_ref = services.ref_registry.register_object(
-            phony_transport_types.client_address())
+            htypes.phony_transport.client_address())
         phony_server_address_ref = services.ref_registry.register_object(
-            phony_transport_types.server_address())
+            htypes.phony_transport.server_address())
         self._server = PhonyServer(
             services.failed,
             services.types,
@@ -107,7 +107,7 @@ class ThisModule(Module):
             phony_client_address_ref,
             )
         services.transport_registry.register(
-            phony_transport_types.client_address,
+            htypes.phony_transport.client_address,
             PhonyTransport,
             services.ref_collector_factory,
             services.response_queue,

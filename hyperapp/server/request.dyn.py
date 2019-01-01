@@ -1,9 +1,8 @@
 import logging
 
-from ..common.interface import error as error_types
-from ..common.interface import hyper_ref as href_types
-from ..common.htypes import EncodableEmbedded
-from ..common.visual_rep import pprint
+from hyperapp.common.htypes import EncodableEmbedded
+from hyperapp.common.visual_rep import pprint
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -36,12 +35,12 @@ class Response(object):
 
     def make_rpc_response(self, command, request_id):
         if self._error:
-            result_or_error = EncodableEmbedded(error_types.error, self._error)
+            result_or_error = EncodableEmbedded(htypes.error.error, self._error)
             is_succeeded = False
         else:
             result_or_error = EncodableEmbedded(command.response, self._result)
             is_succeeded = True
-        return href_types.rpc_response(
+        return htypes.hyper_ref.rpc_response(
             target_endpoint_ref=self._target_endpoint_ref,
             request_id=request_id,
             is_succeeded=is_succeeded,

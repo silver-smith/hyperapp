@@ -1,0 +1,6 @@
+import:
+  type:
+    hyper_ref:
+      - service
+    test:
+      - test_error

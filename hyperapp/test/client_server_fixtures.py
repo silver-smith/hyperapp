@@ -26,9 +26,9 @@ common_type_module_list = [
 
 common_server_code_module_list = [
     'common.visual_rep_encoders',
+    'common.visitor',
     'common.route_resolver',
     'common.ref_collector',
-    'common.ref_registry_module',
     'common.unbundler',
     'common.tcp_packet',
     'server.transport.registry',
@@ -39,9 +39,9 @@ common_server_code_module_list = [
 
 common_client_code_module_list = [
     'common.visual_rep_encoders',
+    'common.visitor',
     'common.route_resolver',
     'common.ref_collector',
-    'common.ref_registry_module',
     'common.unbundler',
     'common.tcp_packet',
     'client.async_ref_resolver',

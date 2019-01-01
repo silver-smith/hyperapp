@@ -1,15 +1,14 @@
 import logging
 import uuid
 
-from ..common.interface import error as error_types
-from ..common.interface import hyper_ref as href_types
-from ..common.htypes import EncodableEmbedded
-from ..common.ref import ref_repr, ref_list_repr, decode_capsule
-from ..common.route_resolver import RouteSource
-from ..common.visual_rep import pprint
-from .registry import UnknownRegistryIdError, Registry
+from hyperapp.common.htypes import EncodableEmbedded
+from hyperapp.common.ref import ref_repr, ref_list_repr
+from hyperapp.common.visual_rep import pprint
+from hyperapp.common.registry import UnknownRegistryIdError, Registry
+from hyperapp.common.module import Module
 from .request import Request, Response
-from .module import ServerModule
+from .route_resolver import RouteSource
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +49,7 @@ class Remoting(object):
         self._route_resolver = route_resolver
         self._transport_resolver = transport_resolver
         self._service_registry = service_registry
-        my_endpoint = href_types.endpoint(service_id=str(uuid.uuid4()))
+        my_endpoint = htypes.hyper_ref.endpoint(service_id=str(uuid.uuid4()))
         self._my_endpoint_ref = self._ref_registry.register_object(my_endpoint)
         # todo: may be create server endpoint registry and register my endpoint there
 
@@ -63,7 +62,7 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
-        rpc_request = href_types.rpc_request(
+        rpc_request = htypes.hyper_ref.rpc_request(
             iface_full_type_name=iface.full_name,
             source_endpoint_ref=self._my_endpoint_ref,
             target_service_ref=service_ref,
@@ -81,7 +80,7 @@ class Remoting(object):
         capsule = self._ref_resolver.resolve_ref(rpc_request_ref)
         assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
         rpc_request = decode_capsule(self._types, capsule)
-        assert isinstance(rpc_request, href_types.rpc_request), repr(rpc_request)
+        assert isinstance(rpc_request, htypes.hyper_ref.rpc_request), repr(rpc_request)
         rpc_response_ref, rpc_response = self._process_request(rpc_request_ref, rpc_request)
         if rpc_response is not None:
             self._send_rpc_response(rpc_response_ref, rpc_response)
@@ -120,11 +119,11 @@ class Remoting(object):
             response = method(request, **params._asdict())
         except Exception as x:
             assert command.is_request  # todo: error handling for notifications
-            if isinstance(x, error_types.error):
+            if isinstance(x, htypes.error.error):
                 error = x
             else:
                 log.exception('Error processing %s %r:', command.request_type, method)
-                error = error_types.server_error()
+                error = htypes.error.server_error()
             return request.make_response(error=error)
         if not command.is_request:
             assert not response, 'No results are expected from notifications'
@@ -138,7 +137,7 @@ class Remoting(object):
         return response
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
