@@ -1,5 +1,5 @@
-from .visual_rep import RepNode, special_encoder_registry
-from .module import Module
+from hyperapp.common.visual_rep import RepNode, special_encoder_registry
+from hyperapp.common.module import Module
 from . import htypes
 
 

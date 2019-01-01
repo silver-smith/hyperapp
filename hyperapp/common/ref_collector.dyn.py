@@ -1,10 +1,10 @@
 import logging
 
-from .htypes import ref_t, route_t, bundle_t
-from .util import is_list_inst, full_type_name_to_str
-from .ref import ref_repr, decode_object
+from hyperapp.common.htypes import ref_t, route_t, bundle_t
+from hyperapp.common.util import is_list_inst, full_type_name_to_str
+from hyperapp.common.ref import ref_repr
+from hyperapp.common.module import Module
 from .visitor import Visitor
-from .module import Module
 from . import htypes
 
 log = logging.getLogger(__name__)
@@ -16,9 +16,9 @@ RECURSION_LIMIT = 100
 
 class RefCollector(Visitor):
 
-    def __init__(self, types, ref_resolver, route_resolver):
-        self._types = types
+    def __init__(self, ref_resolver, type_resolver, route_resolver):
         self._ref_resolver = ref_resolver
+        self._type_resolver = type_resolver
         self._route_resolver = route_resolver
         self._collected_ref_set = None
         self._collected_route_set = set()
@@ -56,7 +56,7 @@ class RefCollector(Visitor):
 
     def _collect_refs_from_capsule(self, ref, capsule):
         t = self._types.resolve(capsule.full_type_name)
-        object = decode_object(t, capsule)
+        object = self._type_resolver.decode_object(t, capsule)
         log.debug('Collecting refs from %r:', object)
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)

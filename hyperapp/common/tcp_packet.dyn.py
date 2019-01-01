@@ -1,7 +1,7 @@
 import struct
 
-from .htypes import bundle_t
-from .htypes.packet_coders import packet_coders
+from hyperapp.common.htypes import bundle_t
+from hyperapp.common.htypes.packet_coders import packet_coders
 
 
 # utf-8 encoded encoding size, packet data size

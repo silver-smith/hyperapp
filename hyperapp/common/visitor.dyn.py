@@ -1,5 +1,5 @@
-from .method_dispatch import method_dispatch
-from .htypes import (
+from hyperapp.common.method_dispatch import method_dispatch
+from hyperapp.common.htypes import (
     TPrimitive,
     TOptional,
     TRecord,

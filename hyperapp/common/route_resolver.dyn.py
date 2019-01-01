@@ -1,8 +1,8 @@
 import logging
 import abc
 
-from .ref import ref_repr, ref_list_repr
-from .module import Module
+from hyperapp.common.ref import ref_repr, ref_list_repr
+from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
 
