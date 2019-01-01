@@ -1,0 +1,4 @@
+import:
+  types:
+    hyper_ref:
+      - rpc_request

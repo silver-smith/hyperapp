@@ -2,13 +2,10 @@ import logging
 
 from .htypes import ref_t, route_t, bundle_t
 from .util import is_list_inst, full_type_name_to_str
-from .interface import error as error_types
-from .interface import packet as packet_types
-from .interface import core as core_types
-from .interface import hyper_ref as href_types
 from .ref import ref_repr, decode_object
 from .visitor import Visitor
 from .module import Module
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +17,6 @@ RECURSION_LIMIT = 100
 class RefCollector(Visitor):
 
     def __init__(self, types, ref_resolver, route_resolver):
-        super().__init__(error_types, packet_types, core_types)
         self._types = types
         self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
@@ -93,7 +89,7 @@ class RefCollector(Visitor):
             self._collected_ref_set.add(transport_ref)
 
     def _handle_rpc_message(self, rpc_message):
-        if isinstance(rpc_message, href_types.rpc_request):
+        if isinstance(rpc_message, htypes.hyper_ref.rpc_request):
             self._handle_rpc_request(rpc_message)
 
     def _handle_rpc_request(self, rpc_request):

@@ -1,0 +1,8 @@
+import:
+  types:
+    packet:
+      - client_packet
+      - server_result_response
+      - server_error_response
+    error:
+      - error
