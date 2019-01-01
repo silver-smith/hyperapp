@@ -5,6 +5,10 @@ import inspect
 log = logging.getLogger(__name__)
 
 
+class UnknownRegistryIdError(KeyError):
+    pass
+
+
 class Registry(object):
 
     _Rec = namedtuple('_Rec', 'factory args kw')
@@ -28,4 +32,4 @@ class Registry(object):
         try:
             return self._registry[id]
         except KeyError:
-            raise RuntimeError('Unknown id: %s' % self.id_to_str(id))
+            raise UnknownRegistryIdError('Unknown id: %s' % self.id_to_str(id))
