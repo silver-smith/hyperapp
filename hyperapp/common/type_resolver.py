@@ -61,6 +61,7 @@ class TypeResolver(object):
             return t
         t = self._type_capsule_resolver.resolve(type_ref)
         self._ref2type_cache[type_ref] = t
+        self._type2ref[t] = type_ref
         log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
         return t
 
