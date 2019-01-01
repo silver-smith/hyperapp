@@ -4,6 +4,7 @@ import importlib.machinery
 import logging
 import sys
 
+from .ref import ref_repr
 from .code_module import code_module_t
 
 
@@ -98,6 +99,7 @@ class CodeModuleImporter(object):
 
     def import_code_module(self, code_module_ref):
         code_module = self._type_resolver.resolve_ref_to_object(code_module_ref, code_module_t)
+        log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         # module itself
         self._fullname_to_loader[module_name] = _CodeModuleLoader(code_module)
