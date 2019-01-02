@@ -1,5 +1,5 @@
 import:
-  type:
+  types:
     phony_transport:
       - client_address
       - server_address

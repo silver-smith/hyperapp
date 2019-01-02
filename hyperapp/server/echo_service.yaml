@@ -1,5 +1,5 @@
 import:
-  type:
+  types:
     hyper_ref:
       - service
     test:

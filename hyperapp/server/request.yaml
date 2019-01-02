@@ -1,5 +1,5 @@
 import:
-  type:
+  types:
     error:
       - error
     hyper_ref:
