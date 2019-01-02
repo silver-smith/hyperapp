@@ -96,3 +96,11 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
             code_module_ref = self.ref_registry.register_object(code_module)
             module = self.code_module_importer.import_code_module(code_module_ref)
             self.name2module[module_name] = module
+            self._init_module(module)
+
+    def _init_module(self, module):
+        this_module_class = module.__dict__.get('ThisModule')
+        if this_module_class:
+            this_module = this_module_class(self)
+            module.__dict__['this_module'] = this_module
+            self.module_registry.register(this_module)
