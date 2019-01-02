@@ -5,7 +5,7 @@ from hyperapp.common.htypes import Type, ref_t, capsule_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.visual_rep import CapsuleRegistry
+from hyperapp.common.capsule_registry import CapsuleRegistry
 from hyperapp.client.async_registry import run_awaitable_factory
 
 log = logging.getLogger(__name__)
@@ -14,7 +14,12 @@ log = logging.getLogger(__name__)
 class AsyncCapsuleRegistry(CapsuleRegistry):
 
     async def resolve_async(self, ref, capsule, *args, **kw):
-        rec = self._resolve_rec(ref, capsule)
+        assert isinstance(capsule, capsule_t), repr(capsule)
+        t = self._type_registry.resolve(capsule.type_ref)
+        object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        pprint(object, t=t, title='Producing %s for capsule %s of type %s'
+               % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
+        rec = self._resolve(capsule.type_ref)
         log.info('Producing %s for capsule %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
