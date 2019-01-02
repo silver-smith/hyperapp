@@ -23,8 +23,8 @@ PendingRequest = namedtuple('PendingRequest', 'iface command future')
 
 class Remoting(object):
 
-    def __init__(self, types, ref_registry, async_route_resolver, endpoint_registry, service_registry, transport_resolver):
-        self._types = types
+    def __init__(self, type_resolver, ref_registry, async_route_resolver, endpoint_registry, service_registry, transport_resolver):
+        self._type_resolver = type_resolver
         self._ref_registry = ref_registry
         self._async_route_resolver = async_route_resolver
         self._service_registry = service_registry
@@ -141,7 +141,7 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         services.remoting = remoting = Remoting(
-            services.types,
+            services.type_resolver,
             services.ref_registry,
             services.async_route_resolver,
             services.endpoint_registry,

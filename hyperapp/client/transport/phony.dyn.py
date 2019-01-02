@@ -31,14 +31,15 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._event_loop = services.event_loop
         self._response_queue = services.response_queue
-        self._types = services.types
-        self._unbundler = services.unbundler
         self._ref_resolver = services.ref_resolver
+        self._type_resolver = services.type_resolver
+        self._unbundler = services.unbundler
         self._remoting = services.remoting
         self._queue_thread = threading.Thread(
             target=self._queue_thread_main)
-        services.transport_registry.register(
-            htypes.phony_transport.server_address,
+        server_address_type_ref = services.type_resolver.reverse_resolve(htypes.phony_transport.server_address)
+        services.transport_registry.register_type_ref(
+            server_address_type_ref,
             self._resolve_address,
             services.ref_collector_factory,
             services.request_queue,

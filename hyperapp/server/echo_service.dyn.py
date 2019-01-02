@@ -43,7 +43,8 @@ class ThisModule(Module):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
-        service = htypes.hyper_ref.service(ECHO_SERVICE_ID, ['test', 'echo'])
+        echo_iface_ref = services.type_resolver.reverse_resolve(htypes.test.echo)
+        service = htypes.hyper_ref.service(ECHO_SERVICE_ID, echo_iface_ref)
         services.echo_service_ref = service_ref = services.ref_registry.register_object(service)
         self._echo_service = EchoService(services.proxy_factory)
         services.service_registry.register(service_ref, lambda: self._echo_service)

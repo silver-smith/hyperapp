@@ -37,8 +37,8 @@ class RemotingProxy(object):
 
 class ProxyFactory(object):
 
-    def __init__(self, types, remoting, async_ref_resolver):
-        self._types = types
+    def __init__(self, type_resolver, remoting, async_ref_resolver):
+        self._type_resolver = type_resolver
         self._remoting = remoting
         self._async_ref_resolver = async_ref_resolver
 
@@ -52,4 +52,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.proxy_factory = ProxyFactory(services.types, services.remoting, services.async_ref_resolver)
+        services.proxy_factory = ProxyFactory(services.type_resolver, services.remoting, services.async_ref_resolver)

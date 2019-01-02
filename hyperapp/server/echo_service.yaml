@@ -4,3 +4,4 @@ import:
       - service
     test:
       - test_error
+      - echo

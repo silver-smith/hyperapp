@@ -19,9 +19,9 @@ class AsyncRefSource(object, metaclass=abc.ABCMeta):
 
 class AsyncRefResolver(object):
 
-    def __init__(self, types, ref_resolver):
-        self._types = types
+    def __init__(self, ref_resolver, type_resolver):
         self._ref_resolver = ref_resolver
+        self._type_resolver = type_resolver
         self._async_sources = []
 
     def add_async_source(self, source):
@@ -52,4 +52,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.async_ref_resolver = AsyncRefResolver(services.types, services.ref_resolver)
+        services.async_ref_resolver = AsyncRefResolver(services.ref_resolver, services.type_resolver)

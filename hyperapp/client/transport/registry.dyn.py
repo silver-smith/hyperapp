@@ -13,5 +13,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.transport_registry = transport_registry = AsyncCapsuleRegistry('transport', services.types)
+        services.transport_registry = transport_registry = AsyncCapsuleRegistry('transport', services.type_resolver)
         services.transport_resolver = AsyncCapsuleResolver(services.async_ref_resolver, transport_registry)
