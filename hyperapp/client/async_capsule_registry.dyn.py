@@ -1,6 +1,5 @@
 import logging
 
-from hyperapp.common.util import full_type_name_to_str
 from hyperapp.common.htypes import Type, ref_t, capsule_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.ref import ref_repr

@@ -3,7 +3,6 @@ import uuid
 import asyncio
 from collections import namedtuple
 
-from hyperapp.common.util import full_type_name_to_str
 from hyperapp.common.htypes import EncodableEmbedded
 from hyperapp.common.ref import ref_repr, ref_list_repr
 from hyperapp.common.visual_rep import pprint

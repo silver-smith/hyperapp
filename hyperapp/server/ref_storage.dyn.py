@@ -5,7 +5,6 @@ import logging
 from pony.orm import db_session, Required, PrimaryKey
 
 from ..common.htypes import capsule_t
-from ..common.util import full_type_name_to_str
 from ..common.ref import ref_repr
 from .ponyorm_module import PonyOrmModule
 

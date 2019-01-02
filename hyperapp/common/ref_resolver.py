@@ -1,6 +1,5 @@
 import logging
 
-from .util import full_type_name_to_str
 from .ref import ref_repr
 from .module import Module
 

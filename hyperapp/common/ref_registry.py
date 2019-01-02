@@ -3,7 +3,6 @@
 import logging
 
 from .htypes import capsule_t
-from .util import full_type_name_to_str
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_ref
 from .visual_rep import pprint

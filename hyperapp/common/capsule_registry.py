@@ -1,6 +1,5 @@
 import logging
 
-from .util import full_type_name_to_str
 from .htypes import Type, ref_t, capsule_t
 from .htypes.packet_coders import packet_coders
 from .ref import ref_repr

@@ -1,7 +1,7 @@
 import logging
 
 from hyperapp.common.htypes import ref_t, route_t, bundle_t
-from hyperapp.common.util import is_list_inst, full_type_name_to_str
+from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.module import Module
 from .visitor import Visitor

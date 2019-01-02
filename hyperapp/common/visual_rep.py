@@ -24,7 +24,7 @@ from .htypes import (
     capsule_t,
     )
 from .method_dispatch import method_dispatch
-from .util import encode_path, encode_route, full_type_name_to_str
+from .util import encode_path, encode_route
 from .htypes.deduce_value_type import deduce_value_type
 from .ref import ref_repr, make_ref
 from .identity import PublicKey
