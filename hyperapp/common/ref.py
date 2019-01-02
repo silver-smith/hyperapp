@@ -16,7 +16,7 @@ LOCAL_TRANSPORT_REF = ref_t('', b'LOCAL_TRANSPORT')
 
 
 def ref_repr(ref):
-    if ref == LOCAL_TRANSPORT_REF:
+    if ref is LOCAL_TRANSPORT_REF:
         return ref.hash.decode()
     elif ref.hash_algorithm == 'phony':
         return '%s:%s' % (ref.hash_algorithm, ref.hash.decode())
