@@ -1,7 +1,6 @@
-from ..common.interface import hyper_ref as href_types
-from ..common.ref import LOCAL_TRANSPORT_REF
-from ..common.route_resolver import RouteSource
-from .module import ClientModule
+from hyperapp.common.ref import LOCAL_TRANSPORT_REF
+from hyperapp.client.module import ClientModule
+from .route_resolver import RouteSource
 
 
 MODULE_NAME = 'endpoint_registry'

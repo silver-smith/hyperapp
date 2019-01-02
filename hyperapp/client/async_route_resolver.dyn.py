@@ -1,7 +1,7 @@
 import logging
 import abc
 
-from .module import ClientModule
+from hyperapp.client.module import ClientModule
 
 log = logging.getLogger(__name__)
 
