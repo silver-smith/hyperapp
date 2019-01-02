@@ -1,6 +1,7 @@
 import:
   types:
     hyper_ref:
+      - endpoint
       - rpc_message
       - rpc_request
   code:

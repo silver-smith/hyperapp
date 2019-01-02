@@ -61,13 +61,10 @@ class RefCollector(Visitor):
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)
         # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
-        if full_type_name_to_str(t.full_name) in ['hyper_ref.endpoint', 'hyper_ref.service']:
+        if issubclass(t, htypes.hyper_ref.endpoint):
             self._handle_endpoint_ref(ref)
-        log.info('Collected %d refs from %s %s: %s',
-                      len(self._collected_ref_set),
-                     full_type_name_to_str(t.full_name),
-                     ref_repr(ref),
-                     ', '.join(map(ref_repr, self._collected_ref_set)))
+        log.info('Collected %d refs from %s %s: %s', len(self._collected_ref_set), t, ref_repr(ref),
+                 ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
 
     def _collect_refs_from_object(self, t, object):
