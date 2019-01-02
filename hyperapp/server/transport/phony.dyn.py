@@ -15,10 +15,10 @@ MODULE_NAME = 'transport.phony'
 
 class PhonyServer(object):
 
-    def __init__(self, on_failure, types, ref_resolver, route_registry, unbundler, remoting, request_queue, phony_client_address_ref):
+    def __init__(self, on_failure, ref_resolver, type_resolver, route_registry, unbundler, remoting, request_queue, phony_client_address_ref):
         self._on_failure = on_failure
-        self._types = types
         self._ref_resolver = ref_resolver
+        self._type_resolver = type_resolver
         self._route_registry = route_registry
         self._unbundler = unbundler
         self._remoting = remoting
@@ -98,16 +98,17 @@ class ThisModule(Module):
             htypes.phony_transport.server_address())
         self._server = PhonyServer(
             services.failed,
-            services.types,
             services.ref_resolver,
+            services.type_resolver,
             services.route_registry,
             services.unbundler,
             services.remoting,
             services.request_queue,
             phony_client_address_ref,
             )
-        services.transport_registry.register(
-            htypes.phony_transport.client_address,
+        client_address_type_ref = services.type_resolver.reverse_resolve(htypes.phony_transport.client_address)
+        services.transport_registry.register_type_ref(
+            client_address_type_ref,
             PhonyTransport,
             services.ref_collector_factory,
             services.response_queue,

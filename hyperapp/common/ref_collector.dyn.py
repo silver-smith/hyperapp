@@ -103,10 +103,10 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        self._types = services.types
         self._ref_resolver = services.ref_resolver
+        self._type_resolver = services.type_resolver
         self._route_resolver = services.route_resolver
         services.ref_collector_factory = self._ref_collector_factory
 
     def _ref_collector_factory(self):
-        return RefCollector(self._types, self._ref_resolver, self._route_resolver)
+        return RefCollector(self._ref_resolver, self._type_resolver, self._route_resolver)

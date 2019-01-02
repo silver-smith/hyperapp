@@ -13,6 +13,6 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.transport_registry = transport_registry = CapsuleRegistry('transport', services.types)
+        services.transport_registry = transport_registry = CapsuleRegistry('transport', services.type_resolver)
         services.transport_resolver = CapsuleResolver(services.ref_resolver, transport_registry)
         services.local_transport_ref_set = set()

@@ -42,10 +42,10 @@ class LocalRouteSource(RouteSource):
 
 class Remoting(object):
 
-    def __init__(self, types, ref_registry, ref_resolver, route_resolver, transport_resolver, service_registry):
-        self._types = types
-        self._ref_registry = ref_registry
+    def __init__(self, ref_resolver, type_resolver, ref_registry, route_resolver, transport_resolver, service_registry):
         self._ref_resolver = ref_resolver
+        self._type_resolver = type_resolver
+        self._ref_registry = ref_registry
         self._route_resolver = route_resolver
         self._transport_resolver = transport_resolver
         self._service_registry = service_registry
@@ -144,9 +144,9 @@ class ThisModule(Module):
         self._ref_registry = services.ref_registry
         services.service_registry = service_registry = ServiceRegistry()
         services.remoting = Remoting(
-            services.types,
-            services.ref_registry,
             services.ref_resolver,
+            services.type_resolver,
+            services.ref_registry,
             services.route_resolver,
             services.transport_resolver,
             services.service_registry,
