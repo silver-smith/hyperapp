@@ -29,19 +29,16 @@ class CapsuleRegistry(Registry):
         super().register(ref, factory, *args, **kw)
         
     def resolve(self, ref, capsule, *args, **kw):
-        rec = self._resolve_rec(ref, capsule)
-        log.info('Producing %s for capsule %s of type %s using %s(%s/%s, %s/%s) for object %r',
-                 self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref),
-                 rec.factory, rec.args, args, rec.kw, kw, object)
-        return rec.factory(ref, object, *(rec.args + args), **dict(rec.kw, **kw))
-
-    def _resolve_rec(self, ref, capsule):
         assert isinstance(capsule, capsule_t), repr(capsule)
         t = self._type_registry.resolve(capsule.type_ref)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         pprint(object, t=t, title='Producing %s for capsule %s of type %s'
                % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
-        return self._resolve(capsule.type_ref)
+        rec = self._resolve(capsule.type_ref)
+        log.info('Producing %s for capsule %s of type %s using %s(%s/%s, %s/%s) for object %r',
+                 self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref),
+                 rec.factory, rec.args, args, rec.kw, kw, object)
+        return rec.factory(ref, object, *(rec.args + args), **dict(rec.kw, **kw))
 
 
 class CapsuleResolver(object):
