@@ -1,6 +1,7 @@
 import:
   types:
     hyper_ref:
+      - rpc_message
       - rpc_request
   code:
     - common.visitor

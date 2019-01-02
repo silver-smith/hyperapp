@@ -113,7 +113,7 @@ class VisualRepEncoder(object):
             return RepNode('%s' % ref_repr(value))
         if t is capsule_t:
             ref = make_ref(value)
-            return RepNode('capsule %s: %s (%s)' % (ref_repr(ref), full_type_name_to_str(value.full_type_name), value.encoding))
+            return RepNode('capsule %s: type=%s (%s)' % (ref_repr(ref), ref_repr(value.type_ref), value.encoding))
         if t is route_t:
             return RepNode('route: %s -> %s' % (ref_repr(value.endpoint_ref), ref_repr(value.transport_ref)))
         if t is tCommand:

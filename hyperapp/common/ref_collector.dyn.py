@@ -55,7 +55,7 @@ class RefCollector(Visitor):
         return list(capsule_set)
 
     def _collect_refs_from_capsule(self, ref, capsule):
-        t = self._types.resolve(capsule.full_type_name)
+        t = self._type_resolver.resolve(capsule.type_ref)
         object = self._type_resolver.decode_object(t, capsule)
         log.debug('Collecting refs from %r:', object)
         self._collected_ref_set = set()
@@ -72,7 +72,7 @@ class RefCollector(Visitor):
 
     def _collect_refs_from_object(self, t, object):
         self.visit(t, object)
-        if full_type_name_to_str(t.full_name) == 'hyper_ref.rpc_message':
+        if htypes.hyper_ref.rpc_message.is_my_class(t):
             self._handle_rpc_message(object)
 
     def visit_record(self, t, value):
