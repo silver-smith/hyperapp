@@ -154,7 +154,7 @@ class ThisModule(PonyOrmModule):
         services.blog_service_ref = service_ref
         services.service_registry.register(service_ref, self._blog_service.get_self)
 
-    def init_phase2(self, services):
+    def init_phase_2(self, services):
         self.Article = self.make_entity(
             'Article',
             title=Required(str),
@@ -174,7 +174,7 @@ class ThisModule(PonyOrmModule):
             created_at=Required(datetime),
             )
 
-    def init_phase3(self, services):
+    def init_phase_3(self, services):
         blog = blog_types.blog(
             blog_service_ref=self._blog_service_ref,
             blog_id='test-blog',

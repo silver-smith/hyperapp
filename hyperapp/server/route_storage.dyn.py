@@ -49,7 +49,7 @@ class ThisModule(PonyOrmModule):
         PonyOrmModule.__init__(self, MODULE_NAME)
         services.route_storage = RouteStorage(DbRouteRepository())
 
-    def init_phase2(self, services):
+    def init_phase_2(self, services):
         self.ServerRoute = self.make_entity(
             'ServerRoute',
             public_key_pem=Required(str),

@@ -217,7 +217,7 @@ class ThisModule(PonyOrmModule):
     def __init__(self, services):
         PonyOrmModule.__init__(self, MODULE_NAME)
 
-    def init_phase2(self, services):
+    def init_phase_2(self, services):
         self.Module = self.make_entity('Module',
                                        id=PrimaryKey(str),
                                        name=Required(str),

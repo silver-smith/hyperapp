@@ -38,5 +38,5 @@ class ThisModule(ServerModule):
         SQLITE_DB_PATH.parent.mkdir(exist_ok=True)
         self.db = Database('sqlite', str(SQLITE_DB_PATH), create_db=True)
 
-    def init_phase3(self, services):
+    def init_phase_3(self, services):
         self.db.generate_mapping(create_tables=True)
