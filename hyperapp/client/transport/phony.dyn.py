@@ -2,9 +2,9 @@ import logging
 import threading
 import asyncio
 
-from hyperapp.common.ref import encode_bundle, decode_bundle, decode_capsule
-from hyperapp.common.interface import phony_transport as phony_transport_types
-from ..module import ClientModule
+from hyperapp.common.ref import encode_bundle, decode_bundle
+from hyperapp.client.module import ClientModule
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class ThisModule(ClientModule):
         self._queue_thread = threading.Thread(
             target=self._queue_thread_main)
         services.transport_registry.register(
-            phony_transport_types.server_address,
+            htypes.phony_transport.server_address,
             self._resolve_address,
             services.ref_collector_factory,
             services.request_queue,

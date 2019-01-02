@@ -1,0 +1,4 @@
+import:
+  type:
+    phony_transport:
+      - server_address

@@ -3,14 +3,13 @@ import uuid
 import asyncio
 from collections import namedtuple
 
-from ..common.interface import error as error_types
-from ..common.interface import hyper_ref as href_types
-from ..common.util import full_type_name_to_str
-from ..common.htypes import EncodableEmbedded
-from ..common.ref import ref_repr, ref_list_repr
-from ..common.visual_rep import pprint
+from hyperapp.common.util import full_type_name_to_str
+from hyperapp.common.htypes import EncodableEmbedded
+from hyperapp.common.ref import ref_repr, ref_list_repr
+from hyperapp.common.visual_rep import pprint
+from hyperapp.client.module import ClientModule
+from . import htypes
 from .request import Request
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ class Remoting(object):
         self._service_registry = service_registry
         self._transport_resolver = transport_resolver
         self._pending_requests = {}  # request id -> PendingRequest
-        self._my_endpoint_ref = endpoint_registry.register_endpoint(href_types.endpoint(
+        self._my_endpoint_ref = endpoint_registry.register_endpoint(htypes.hyper_ref.endpoint(
             service_id=str(uuid.uuid4())))
 
     async def send_request(self, service_ref, iface, command, params):
@@ -44,7 +43,7 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
-        rpc_request = href_types.rpc_request(
+        rpc_request = htypes.hyper_ref.rpc_request(
             iface_full_type_name=iface.full_name,
             source_endpoint_ref=self._my_endpoint_ref,
             target_service_ref=service_ref,
@@ -71,9 +70,9 @@ class Remoting(object):
     def process_rpc_message(self, rpc_message_ref, rpc_message):
         log.info('Remoting: processing incoming RPC message %s:', ref_repr(rpc_message_ref))
         pprint(rpc_message, indent=1)
-        if isinstance(rpc_message, href_types.rpc_request):
+        if isinstance(rpc_message, htypes.hyper_ref.rpc_request):
             self._process_rpc_request(rpc_message)
-        if isinstance(rpc_message, href_types.rpc_response):
+        if isinstance(rpc_message, htypes.hyper_ref.rpc_response):
             self._process_rpc_response(rpc_message)
         log.info('Remoting: processing incoming RPC message %s: done', ref_repr(rpc_message_ref))
 
@@ -103,11 +102,11 @@ class Remoting(object):
             response = method(request, **params._asdict())
         except Exception as x:
             assert command.is_request  # todo: error handling for notifications
-            if isinstance(x, error_types.error):
+            if isinstance(x, htypes.error.error):
                 error = x
             else:
                 log.exception('Error processing %s %r:', command.request_type, method)
-                error = error_types.server_error()
+                error = htypes.error.server_error()
             return request.make_response(error=error)
         if not command.is_request:
             assert not response, 'No results are expected from notifications'
@@ -132,7 +131,7 @@ class Remoting(object):
             pprint(result, title='Result:')
             request.future.set_result(result)
         else:
-            error = rpc_response.result_or_error.decode(error_types.error)
+            error = rpc_response.result_or_error.decode(htypes.error.error)
             pprint(error, title='Error:')
             request.future.set_exception(error)
 

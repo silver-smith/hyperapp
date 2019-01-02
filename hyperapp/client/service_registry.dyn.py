@@ -1,9 +1,8 @@
 import logging
 
-from ..common.interface import hyper_ref as href_types
-from ..common.ref import ref_repr
-from .registry import Registry
-from .module import ClientModule
+from hyperapp.common.ref import ref_repr
+from hyperapp.common.registry import Registry
+from hyperapp.client.module import ClientModule
 
 log = logging.getLogger(__name__)
 
@@ -11,7 +10,7 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'service_registry'
 
 
-class ServiceRegistry(Registry):
+class ClientServiceRegistry(Registry):
 
     def __init__(self, endpoint_registry):
         super().__init__()
@@ -34,4 +33,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.service_registry = ServiceRegistry(services.endpoint_registry)
+        services.service_registry = ClientServiceRegistry(services.endpoint_registry)

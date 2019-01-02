@@ -1,4 +1,4 @@
-from .module import ClientModule
+from hyperapp.client.module import ClientModule
 
 
 MODULE_NAME = 'remoting_proxy'
