@@ -63,17 +63,10 @@ def init_subprocess_logger(context='subprocess'):
 
 @pytest.fixture(scope='session', autouse=True)
 def logger_listening():
-    def thread_main():
-        while True:
-            record = _logger_queue.get()
-            if record is None:
-                break
-            logger = logging.getLogger(record.name)
-            logger.handle(record)
-    thread = threading.Thread(target=thread_main)
-    thread.start()
+    listener = logging.handlers.QueueListener(_logger_queue)
+    listener.start()
     try:
         yield
     finally:
-        _logger_queue.put(None)
-        thread.join()
+        listener.enqueue_sentinel()
+        listener.stop()
