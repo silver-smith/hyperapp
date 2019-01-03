@@ -63,7 +63,8 @@ def init_subprocess_logger(context='subprocess'):
 
 @pytest.fixture(scope='session', autouse=True)
 def logger_listening():
-    listener = logging.handlers.QueueListener(_logger_queue)
+    root_logger = logging.getLogger()
+    listener = logging.handlers.QueueListener(_logger_queue, root_logger)
     listener.start()
     try:
         yield
