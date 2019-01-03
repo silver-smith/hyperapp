@@ -1,0 +1,23 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: '%(asctime)-15s [%(context)s] %(name)-35s %(levelname)s  %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+  file:
+    class : logging.handlers.RotatingFileHandler
+    formatter: simple
+    filename: /tmp/full.log
+    maxBytes: 1048576  # 1M
+    backupCount: 5
+
+root:
+  level: DEBUG
+  handlers: [console, file]
