@@ -77,7 +77,7 @@ class ServerServices(TestServerServices):
 class Server(object, metaclass=log_exceptions):
 
     def __init__(self, queues, type_module_list, code_module_list):
-        init_logging('test.yaml')
+        init_logging('test.yaml', context='server')
         self.services = ServerServices(queues, type_module_list, code_module_list)
         self.services.start()
 
@@ -135,7 +135,7 @@ class ClientServices(TestClientServices):
 @contextmanager
 def client_services_running(event_loop, queues, type_module_list, code_module_list):
     event_loop.set_debug(True)
-    init_logging('test.yaml')
+    init_logging('test.yaml', context='client')
     services = ClientServices(
         event_loop,
         queues,

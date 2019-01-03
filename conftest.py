@@ -1,6 +1,8 @@
 import logging
 import pytest
 
+from hyperapp.common.init_logging import get_logging_context
+
 
 class AsyncExceptionHandler(object):
 
@@ -12,6 +14,16 @@ class AsyncExceptionHandler(object):
         loop.default_exception_handler(context)
 
 
+def setup_filter():
+
+    def filter(record):
+        record.context = get_logging_context()
+        return True
+
+    for handler in logging.getLogger().handlers:
+        handler.addFilter(filter)
+
+
 def pytest_configure(config):
     if config.getvalue('capture') == 'no':
         # when capturing stdout dump log to stdout too
@@ -19,6 +31,23 @@ def pytest_configure(config):
         logging.basicConfig(level=logging.DEBUG, format=format)
     else:
         logging.getLogger().setLevel(logging.DEBUG)
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_setup(item):
+    setup_filter()
+    yield
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_call(item):
+    setup_filter()
+    yield
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_teardown(item):
+    setup_filter()
+    yield
+
 
 
 @pytest.mark.hookwrapper
