@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from hyperapp.common.init_logging import get_logging_context
+from hyperapp.common.init_logging import setup_filter
 
 
 class AsyncExceptionHandler(object):
@@ -12,16 +12,6 @@ class AsyncExceptionHandler(object):
     def __call__(self, loop, context):
         self.had_exceptions = True
         loop.default_exception_handler(context)
-
-
-def setup_filter():
-
-    def filter(record):
-        record.context = get_logging_context()
-        return True
-
-    for handler in logging.getLogger().handlers:
-        handler.addFilter(filter)
 
 
 def pytest_configure(config):

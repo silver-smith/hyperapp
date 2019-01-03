@@ -15,15 +15,20 @@ CONFIG_DIR = HYPERAPP_DIR / 'log-config'
 
 _logging_context = ''
 
-def get_logging_context():
-    return _logging_context
 
-def set_logging_context(context):
-    global _logging_context
-    _logging_context = context
+def setup_filter():
+
+    def filter(record):
+        record.context = _logging_context
+        return True
+
+    for handler in logging.getLogger().handlers:
+        handler.addFilter(filter)
 
 
 def init_logging(default_config_name, context=''):
+    global _logging_context
+
     config_path = os.environ.get(LOGGING_CONFIG_ENV_KEY)
     if config_path:
         config_path = Path(config_path).expanduser()
@@ -33,4 +38,6 @@ def init_logging(default_config_name, context=''):
         config_path = CONFIG_DIR / default_config_name
     config = yaml.load(config_path.read_text())
     logging.config.dictConfig(config)
-    set_logging_context(context)
+
+    _logging_context = context
+    setup_filter()
