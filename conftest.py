@@ -4,6 +4,9 @@ import pytest
 from hyperapp.common.init_logging import setup_filter
 
 
+pytest_plugins = ['hyperapp.common.init_logging']
+
+
 class AsyncExceptionHandler(object):
 
     def __init__(self):

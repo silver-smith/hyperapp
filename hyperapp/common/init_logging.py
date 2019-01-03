@@ -1,8 +1,12 @@
 import logging
 import logging.config
+import logging.handlers
 import os
 from pathlib import Path
+import multiprocessing
+import threading
 
+import pytest
 import yaml
 
 log = logging.getLogger(__name__)
@@ -13,21 +17,24 @@ HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 CONFIG_DIR = HYPERAPP_DIR / 'log-config'
 
 
-_logging_context = ''
+_logger_context = ''
+_logger_queue = multiprocessing.Queue()
 
 
 def setup_filter():
 
     def filter(record):
-        record.context = _logging_context
+        if not hasattr(record, 'context'):
+            record.context = _logger_context
         return True
 
-    for handler in logging.getLogger().handlers:
+    root_logger = logging.getLogger()
+    for handler in root_logger.handlers:
         handler.addFilter(filter)
 
 
 def init_logging(default_config_name, context=''):
-    global _logging_context
+    global _logger_context
 
     config_path = os.environ.get(LOGGING_CONFIG_ENV_KEY)
     if config_path:
@@ -39,5 +46,34 @@ def init_logging(default_config_name, context=''):
     config = yaml.load(config_path.read_text())
     logging.config.dictConfig(config)
 
-    _logging_context = context
+    _logger_context = context
     setup_filter()
+
+
+def init_subprocess_logger(context='subprocess'):
+    global _logger_context
+
+    handler = logging.handlers.QueueHandler(_logger_queue)
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG)
+    root_logger.addHandler(handler)
+    _logger_context = context
+    setup_filter()
+
+
+@pytest.fixture(scope='session', autouse=True)
+def logger_listening():
+    def thread_main():
+        while True:
+            record = _logger_queue.get()
+            if record is None:
+                break
+            logger = logging.getLogger(record.name)
+            logger.handle(record)
+    thread = threading.Thread(target=thread_main)
+    thread.start()
+    try:
+        yield
+    finally:
+        _logger_queue.put(None)
+        thread.join()

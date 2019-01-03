@@ -8,7 +8,7 @@ import asyncio
 import pytest
 
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.init_logging import init_logging
+from hyperapp.common.init_logging import init_logging, init_subprocess_logger
 from hyperapp.test.utils import log_exceptions, encode_bundle, decode_bundle
 from hyperapp.test.test_services import TestServerServices, TestClientServices
 
@@ -77,7 +77,7 @@ class ServerServices(TestServerServices):
 class Server(object, metaclass=log_exceptions):
 
     def __init__(self, queues, type_module_list, code_module_list):
-        init_logging('test.yaml', context='server')
+        init_subprocess_logger(context='server')
         self.services = ServerServices(queues, type_module_list, code_module_list)
         self.services.start()
 
