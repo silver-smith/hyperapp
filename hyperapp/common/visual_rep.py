@@ -176,7 +176,7 @@ class VisualRepEncoder(object):
         return RepNode(encode_path(obj))
 
 
-def pprint(value, t=None, indent=0, title=None, logger=logging.info):
+def pprint(value, t=None, indent=0, title=None, logger=log.info):
     t = t or deduce_value_type(value)
     rep = VisualRepEncoder().encode(value, t)
     if title:
