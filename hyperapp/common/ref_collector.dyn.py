@@ -21,10 +21,12 @@ class RefCollector(Visitor):
         self._type_resolver = type_resolver
         self._route_resolver = route_resolver
         self._collected_ref_set = None
+        self._collected_type_ref_set = None
         self._collected_route_set = set()
 
     def make_bundle(self, ref_list):
         assert is_list_inst(ref_list, ref_t), repr(ref_list)
+        log.info('Making bundle from refs: %s', [ref_repr(ref) for ref in ref_list])
         capsule_list = self._collect_capsule_list(ref_list)
         return bundle_t(
             roots=ref_list,
@@ -33,7 +35,9 @@ class RefCollector(Visitor):
             )
 
     def _collect_capsule_list(self, ref_list):
+        self._collected_type_ref_set = set()
         capsule_set = set()
+        type_capsule_set = set()
         missing_ref_count = 0
         ref_set = set(ref_list)
         for i in range(RECURSION_LIMIT):
@@ -43,7 +47,10 @@ class RefCollector(Visitor):
                 if not capsule:
                     missing_ref_count += 1
                     continue
-                capsule_set.add(capsule)
+                if ref in self._collected_type_ref_set:
+                    type_capsule_set.add(capsule)
+                else:
+                    capsule_set.add(capsule)
                 new_ref_set |= self._collect_refs_from_capsule(ref, capsule)
             if not new_ref_set:
                 break
@@ -52,7 +59,8 @@ class RefCollector(Visitor):
             assert False, 'Reached recursion limit %d while resolving refs' % RECURSION_LIMIT
         if missing_ref_count:
             log.warning('Failed to resolve %d refs', missing_ref_count)
-        return list(capsule_set)
+        # types should come first, or receiver won't be able to decode
+        return list(type_capsule_set) + list(capsule_set)
 
     def _collect_refs_from_capsule(self, ref, capsule):
         t = self._type_resolver.resolve(capsule.type_ref)
@@ -63,6 +71,8 @@ class RefCollector(Visitor):
         # can't move following to _collect_refs_from_object because not all objects has refs to them, but for endpoint it's required
         if issubclass(t, htypes.hyper_ref.endpoint):
             self._handle_endpoint_ref(ref)
+        self._collected_ref_set.add(capsule.type_ref)
+        self._collected_type_ref_set.add(capsule.type_ref)
         log.info('Collected %d refs from %s %s: %s', len(self._collected_ref_set), t, ref_repr(ref),
                  ', '.join(map(ref_repr, self._collected_ref_set)))
         return self._collected_ref_set
