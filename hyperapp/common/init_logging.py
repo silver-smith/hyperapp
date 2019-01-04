@@ -53,10 +53,14 @@ def init_logging(default_config_name, context=''):
 def init_subprocess_logger(context='subprocess'):
     global _logger_context
 
+    config = yaml.load(CONFIG_DIR.joinpath('subprocess.yaml').read_text())
+    logging.config.dictConfig(config)
+
     handler = logging.handlers.QueueHandler(_logger_queue)
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(handler)
+
     _logger_context = context
     setup_filter()
 

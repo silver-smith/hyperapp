@@ -1,0 +1,18 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: '%(asctime)s.%(msecs)03d [%(context)s] %(name)-46s %(lineno)4d %(levelname)-8s %(message)s'
+    datefmt: '%M:%S'
+
+handlers:
+  file:
+    class : logging.FileHandler
+    formatter: simple
+    filename: /tmp/subprocess.log
+    mode: w
+
+root:
+  level: DEBUG
+  handlers: [file]
