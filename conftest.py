@@ -28,8 +28,7 @@ def pytest_configure(config):
 
 
 def _log_separator(section_name):
-    line = '-' * 70
-    log.info('%s %s %s', line, section_name, line)
+    log.info('{:-<9} {:-<150}'.format('', section_name + ' '))
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -50,6 +49,13 @@ def pytest_runtest_teardown(item):
     _log_separator('teardown')
     yield
 
+@pytest.hookimpl(hookwrapper=True)
+def pytest_fixture_setup(fixturedef, request):
+    _log_separator('%s setup' % fixturedef.argname)
+    yield
+
+def pytest_fixture_post_finalizer(fixturedef):
+    _log_separator('%s teardown' % fixturedef.argname)
 
 
 @pytest.mark.hookwrapper
