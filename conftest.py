@@ -3,6 +3,7 @@ import pytest
 
 from hyperapp.common.init_logging import setup_filter
 
+log = logging.getLogger(__name__)
 
 pytest_plugins = ['hyperapp.common.init_logging']
 
@@ -26,19 +27,27 @@ def pytest_configure(config):
         logging.getLogger().setLevel(logging.DEBUG)
 
 
+def _log_separator(section_name):
+    line = '-' * 70
+    log.info('%s %s %s', line, section_name, line)
+
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_setup(item):
     setup_filter()
+    _log_separator('setup')
     yield
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item):
     setup_filter()
+    _log_separator('test')
     yield
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_teardown(item):
     setup_filter()
+    _log_separator('teardown')
     yield
 
 
