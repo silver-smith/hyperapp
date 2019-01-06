@@ -87,7 +87,7 @@ class TypeResolver(object):
     def decode_capsule(self, capsule, expected_type=None):
         t = self.resolve(capsule.type_ref)
         if expected_type:
-            assert t == expected_type
+            assert t is expected_type, (t, expected_type)
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
     def decode_object(self, t, capsule):

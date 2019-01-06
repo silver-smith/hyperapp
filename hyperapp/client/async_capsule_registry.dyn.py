@@ -14,7 +14,7 @@ class AsyncCapsuleRegistry(CapsuleRegistry):
 
     async def resolve_async(self, ref, capsule, *args, **kw):
         assert isinstance(capsule, capsule_t), repr(capsule)
-        t = self._type_registry.resolve(capsule.type_ref)
+        t = self._type_resolver.resolve(capsule.type_ref)
         object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
         pprint(object, t=t, title='Producing %s for capsule %s of type %s'
                % (self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref)))
@@ -34,7 +34,7 @@ class AsyncCapsuleResolver(object):
     async def resolve(self, ref):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = await self._async_ref_resolver.resolve_ref(ref)
-        produce = await self._async_capsule_registry.resolve(ref, capsule)
+        produce = await self._async_capsule_registry.resolve_async(ref, capsule)
         assert produce, repr(produce)
         log.debug('Capsule %s is resolved to %s %r', ref_repr(ref), self._async_capsule_registry.produce_name, produce)
         return produce

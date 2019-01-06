@@ -1,4 +1,6 @@
 import:
   types:
+    hyper_ref:
+      - rpc_message
     phony_transport:
       - server_address

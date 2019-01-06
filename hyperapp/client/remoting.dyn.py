@@ -42,8 +42,9 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
+        iface_type_ref = self._type_resolver.reverse_resolve(iface)
         rpc_request = htypes.hyper_ref.rpc_request(
-            iface_full_type_name=iface.full_name,
+            iface_type_ref=iface_type_ref,
             source_endpoint_ref=self._my_endpoint_ref,
             target_service_ref=service_ref,
             command_id=command.command_id,
@@ -123,7 +124,7 @@ class Remoting(object):
         if not request:
             log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
             return
-        log.info('Response is for %s %s', full_type_name_to_str(request.iface.full_name), request.command.command_id)
+        log.info('Response is for %s %s', request.iface.name, request.command.command_id)
         if rpc_response.is_succeeded:
             result_t = request.iface[request.command.command_id].response
             result = rpc_response.result_or_error.decode(result_t)

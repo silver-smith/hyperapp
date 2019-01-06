@@ -78,8 +78,7 @@ class Remoting(object):
 
     def process_rpc_request(self, rpc_request_ref, rpc_request):
         capsule = self._ref_resolver.resolve_ref(rpc_request_ref)
-        assert capsule.full_type_name == ['hyper_ref', 'rpc_message'], capsule.full_type_name
-        rpc_request = decode_capsule(self._types, capsule)
+        rpc_request = self._type_resolver.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message)
         assert isinstance(rpc_request, htypes.hyper_ref.rpc_request), repr(rpc_request)
         rpc_response_ref, rpc_response = self._process_request(rpc_request_ref, rpc_request)
         if rpc_response is not None:
@@ -93,7 +92,7 @@ class Remoting(object):
         transport.send(rpc_response_ref)
 
     def _process_request(self, rpc_request_ref, rpc_request):
-        iface = self._types.resolve(rpc_request.iface_full_type_name)
+        iface = self._type_resolver.resolve(rpc_request.iface_type_ref)
         command = iface[rpc_request.command_id]
         pprint(rpc_request, title='Incoming RPC %s %s:' % (command.request_type, ref_repr(rpc_request_ref)))
         params = rpc_request.params.decode(command.request)

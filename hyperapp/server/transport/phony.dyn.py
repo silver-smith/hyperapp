@@ -62,8 +62,8 @@ class PhonyServer(object):
         self._register_incoming_routes(bundle.route_list)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
-            assert capsule.full_type_name == ['hyper_ref', 'rpc_message']
-            rpc_request = decode_capsule(self._types, capsule)
+            rpc_request = self._type_resolver.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message)
+            assert isinstance(rpc_request, htypes.hyper_ref.rpc_request)
             self._route_registry.register(rpc_request.source_endpoint_ref, self._phony_client_address_ref)
             self._remoting.process_rpc_request(root_ref, rpc_request)
 
