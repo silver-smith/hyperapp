@@ -33,3 +33,8 @@ def encode_bundle(bundle):
 
 def decode_bundle(encoded_bundle):
     return packet_coders.decode(BUNDLE_ENCODING, encoded_bundle, bundle_t)
+
+
+def resolve_type(services, module, name):
+    type_ref = services.local_type_module_registry[module][name]
+    return services.type_resolver.resolve(type_ref)

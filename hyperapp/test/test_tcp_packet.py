@@ -3,6 +3,7 @@ import pytest
 
 from hyperapp.common.htypes import tString, Field, TRecord, bundle_t
 from hyperapp.common.ref import make_ref
+from hyperapp.test.utils import resolve_type
 from hyperapp.test.test_services import TestClientServices
 
 log = logging.getLogger(__name__)
@@ -39,8 +40,7 @@ def client_services(event_loop):
 def test_tcp_packet(client_services, encoding):
 
     tcp_packet_module = client_services.name2module['common.tcp_packet']
-    test_packet_ref = client_services.local_type_module_registry['test']['packet']
-    test_packet_t = client_services.type_resolver.resolve(test_packet_ref)
+    test_packet_t = resolve_type(client_services, 'test', 'packet')
 
     test_packet = test_packet_t(message='hello')
     capsule = client_services.type_resolver.make_capsule(test_packet)
