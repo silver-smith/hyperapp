@@ -4,6 +4,7 @@ import uuid
 
 import pytest
 
+from hyperapp.test.utils import resolve_type
 from hyperapp.test.client_server_fixtures import (
     test_manager,
     queues,
@@ -63,10 +64,11 @@ async def echo_notify(services, echo_proxy):
     assert result is None
 
 async def echo_fail(services, echo_proxy):
+    test_error_t = resolve_type(services, 'test', 'test_error')
     # pytest.raises want argument conforming to inspect.isclass, but TExceptionClass is not
     with pytest.raises(Exception) as excinfo:
         await echo_proxy.fail('hello')
-    assert isinstance(excinfo.value, services.types.test.test_error)
+    assert isinstance(excinfo.value, test_error_t)
     assert excinfo.value.error_message == 'hello'
 
 
@@ -82,8 +84,10 @@ class NotificationService(object):
 
 
 async def echo_subscribe(services, echo_proxy):
+    service_t = resolve_type(services, 'hyper_ref', 'service')
+    echo_notificatoin_iface_ref = services.local_type_module_registry['test']['echo_notification_iface']
     service_id = str(uuid.uuid4())
-    service = services.types.hyper_ref.service(service_id, ['test', 'echo_notification_iface'])
+    service = service_t(service_id, echo_notificatoin_iface_ref)
     service_ref = services.ref_registry.register_object(service)
     notification_service = NotificationService()
     services.service_registry.register(service_ref, lambda: notification_service)
