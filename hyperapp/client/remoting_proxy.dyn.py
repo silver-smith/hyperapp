@@ -1,4 +1,5 @@
 from hyperapp.client.module import ClientModule
+from .htypes import hyper_ref
 
 
 MODULE_NAME = 'remoting_proxy'
@@ -43,7 +44,7 @@ class ProxyFactory(object):
         self._async_ref_resolver = async_ref_resolver
 
     async def from_ref(self, ref):
-        service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type='hyper_ref.service')
+        service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type=htypes.hyper_ref.service)
         iface = self._types.resolve(service.iface_full_type_name)
         return RemotingProxy(self._remoting, ref, iface)
 
