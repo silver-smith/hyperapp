@@ -42,9 +42,9 @@ class AsyncRefResolver(object):
 
     async def resolve_ref_to_object(self, ref, expected_type=None):
         capsule = await self.resolve_ref(ref)
+        t = self._type_resolver.resolve(capsule.type_ref)
         if expected_type:
-            assert full_type_name_to_str(capsule.full_type_name) == expected_type
-        t = self._types.resolve(capsule.full_type_name)
+            assert t is expected_type, (t, expected_type)
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
 
