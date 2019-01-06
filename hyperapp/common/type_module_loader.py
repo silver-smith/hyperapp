@@ -1,4 +1,3 @@
-import uuid
 from .htypes import (
     ref_t,
     tNamed,
@@ -59,7 +58,6 @@ class TypeModuleLoader(object):
             t = mapper.map(typedef.type)
             rec = meta_ref_t(
                 name=typedef.name,
-                random_salt=uuid.uuid4().bytes,
                 type=t,
                 )
             ref = self._ref_registry.register_object(rec)

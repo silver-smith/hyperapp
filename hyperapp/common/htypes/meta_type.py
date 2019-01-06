@@ -36,7 +36,6 @@ builtin_ref_t = TRecord([
 
 meta_ref_t = TRecord([
     Field('name', tString),
-    Field('random_salt', tBinary),
     Field('type', tMetaType),
     ], full_name=['meta_type', 'meta_ref'])
 

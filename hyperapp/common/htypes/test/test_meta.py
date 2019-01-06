@@ -78,7 +78,6 @@ def type_ref(ref_registry):
     def make(name, meta_type):
         rec = meta_ref_t(
             name=name,
-            random_salt=name.encode() + b'-salt',
             type=meta_type,
             )
         return ref_registry.register_object(rec)
