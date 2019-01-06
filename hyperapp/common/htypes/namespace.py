@@ -8,6 +8,13 @@ class TypeNamespace(object):
         for key, value in kw.items():
             self[key] = value
 
+    @property
+    def name(self):
+        if self.full_name:
+            return self.full_name[-1]
+        else:
+            return None
+
     def get(self, name):
         return self._items.get(name)
 
