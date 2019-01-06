@@ -101,23 +101,30 @@ class CodeModuleImporter(object):
         code_module = self._type_resolver.resolve_ref_to_object(code_module_ref, code_module_t)
         log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
+        fullname_to_loader = {}
         # module itself
-        self._fullname_to_loader[module_name] = _CodeModuleLoader(code_module)
+        fullname_to_loader[module_name] = _CodeModuleLoader(code_module)
         # .htypes package
-        self._fullname_to_loader['{}.htypes'.format(module_name)] = _HTypeRootLoader(code_module)
+        fullname_to_loader['{}.htypes'.format(module_name)] = _HTypeRootLoader(code_module)
         # .htypes.* modules
         import_module_to_type_import_list = {}
         for type_import in code_module.type_import_list:
             import_module_to_type_import_list.setdefault(type_import.type_module_name, []).append(type_import)
         for import_module_name, type_import_list in import_module_to_type_import_list.items():
             name = '{}.htypes.{}'.format(module_name, import_module_name)
-            self._fullname_to_loader[name] = _TypeModuleLoader(self._type_resolver, type_import_list)
+            fullname_to_loader[name] = _TypeModuleLoader(self._type_resolver, type_import_list)
         # .* code module imports
         for code_import in code_module.code_import_list:
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)
             import_name = code_import.import_name.split('.')[-1]
             name = '{}.{}'.format(module_name, import_name)
-            self._fullname_to_loader[name] = _CopyDictLoader(source_module_name)
+            fullname_to_loader[name] = _CopyDictLoader(source_module_name)
+        for fullname in fullname_to_loader:
+            try:
+                del sys.modules[fullname]  # should reload if already loaded
+            except KeyError:
+                pass
+        self._fullname_to_loader.update(fullname_to_loader)
         # perform actual load
         return importlib.import_module(module_name)
 
