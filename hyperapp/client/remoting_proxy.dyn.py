@@ -45,7 +45,7 @@ class ProxyFactory(object):
 
     async def from_ref(self, ref):
         service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type=htypes.hyper_ref.service)
-        iface = self._types.resolve(service.iface_full_type_name)
+        iface = self._type_resolver.resolve(service.iface_type_ref)
         return RemotingProxy(self._remoting, ref, iface)
 
 

@@ -33,7 +33,7 @@ class Remoting(object):
             service_id=str(uuid.uuid4())))
 
     async def send_request(self, service_ref, iface, command, params):
-        log.info('Remoting: sending request %s %s to %s', full_type_name_to_str(iface.full_name), command.command_id, ref_repr(service_ref))
+        log.info('Remoting: sending request %s %s to %s', iface.name, command.command_id, ref_repr(service_ref))
         transport_ref_set = await self._async_route_resolver.resolve(service_ref)
         assert transport_ref_set, 'No routes for service %s' % ref_repr(service_ref)
         assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
