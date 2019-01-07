@@ -366,11 +366,12 @@ class BlogNotification(object):
 class BlogService(object):
 
     @classmethod
-    async def from_data(cls, ref_registry, service_registry, proxy_factory, service_ref):
+    async def from_data(cls, type_resolver, ref_registry, service_registry, proxy_factory, service_ref):
         proxy = await proxy_factory.from_ref(service_ref)
-        return cls(ref_registry, service_registry, proxy)
+        return cls(type_resolver, ref_registry, service_registry, proxy)
 
-    def __init__(self, ref_registry, service_registry, proxy):
+    def __init__(self, type_resolver, ref_registry, service_registry, proxy):
+        self._type_resolver = type_resolver
         self._ref_registry = ref_registry
         self._service_registry = service_registry
         self._proxy = proxy
@@ -397,7 +398,8 @@ class BlogService(object):
         if blog_id in self._subscribed_to_blog_id_set:
             return
         service_id = str(uuid.uuid4())
-        service = htypes.hyper_ref.service(service_id, ['blog', 'blog_notification_iface'])
+        iface_type_ref = self._type_resolver.reverse_resolve(htypes.blog.blog_notification_iface)
+        service = htypes.hyper_ref.service(service_id, iface_type_ref)
         service_ref = self._ref_registry.register_object(service)
         self._service_registry.register(service_ref, self._notification.get_self)
         await self._proxy.subscribe([blog_id], service_ref)
@@ -465,14 +467,15 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
+        self._type_resolver = services.type_resolver
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
-        services.handle_registry.register(htypes.blog.blog, self._resolve_blog)
-        services.handle_registry.register(htypes.blog.blog_article, self._resolve_blog_article)
-        services.handle_registry.register(htypes.blog.blog_article_ref_list, self._resolve_blog_article_ref_list)
+        services.handle_registry.register_type(htypes.blog.blog, self._resolve_blog)
+        services.handle_registry.register_type(htypes.blog.blog_article, self._resolve_blog_article)
+        services.handle_registry.register_type(htypes.blog.blog_article_ref_list, self._resolve_blog_article_ref_list)
         services.objimpl_registry.register(
             BlogObject.impl_id, BlogObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         services.form_impl_registry.register(
@@ -485,7 +488,7 @@ class ThisModule(ClientModule):
             htypes.blog.selector_callback, SelectorCallback.from_data, services.ref_registry, self._blog_service_factory, services.handle_resolver)
 
     async def _blog_service_factory(self, blog_service_ref):
-        return (await BlogService.from_data(self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
+        return (await BlogService.from_data(self._type_resolver, self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
 
     async def _resolve_blog(self, blog_ref, blog):
         return (await self.open_blog(blog.blog_service_ref, blog.blog_id, blog.current_article_id))

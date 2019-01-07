@@ -19,6 +19,7 @@ import:
       - blog_article
       - blog_article_ref_list
       - row_fetch_request
+      - blog_notification_iface
       - blog_object
       - blog_article_form
       - blog_article_text
