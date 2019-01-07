@@ -5,7 +5,7 @@ import logging
 from pony.orm import db_session, Required, PrimaryKey
 
 from hyperapp.common.htypes import capsule_t
-from hyperapp.common.ref import ref_repr
+from hyperapp.common.ref import ref2str, str2ref, ref_repr
 from .ponyorm_module import PonyOrmModule
 
 log = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ class RefStorage(object):
         if not rec:
             return None
         return capsule_t(
-            full_type_name=rec.full_type_name.split('.'),
+            type_ref=str2ref(rec.type_ref),
             encoding=rec.encoding,
             encoded_object=rec.encoded_object,
             )
@@ -50,12 +50,12 @@ class RefStorage(object):
             rec = this_module.Ref(
                 ref_hash_algorithm=ref.hash_algorithm,
                 ref_hash=ref.hash,
-                full_type_name=full_type_name_to_str(capsule.full_type_name),
+                type_ref=ref2str(capsule.type_ref),
                 encoding=capsule.encoding,
                 encoded_object=capsule.encoded_object,
                 )
         log.info('Ref storage: ref %s is stored, type: %s, encoding: %s',
-                     ref_repr(ref), full_type_name_to_str(capsule.full_type_name), capsule.encoding)
+                 ref_repr(ref), ref_repr(capsule.type_ref), capsule.encoding)
 
 
 class ThisModule(PonyOrmModule):
@@ -69,7 +69,7 @@ class ThisModule(PonyOrmModule):
             'Ref',
             ref_hash_algorithm=Required(str),
             ref_hash=Required(bytes),
-            full_type_name=Required(str),
+            type_ref=Required(str),
             encoding=Required(str),
             encoded_object=Required(bytes),
             primary_key=('ref_hash_algorithm', 'ref_hash'),
