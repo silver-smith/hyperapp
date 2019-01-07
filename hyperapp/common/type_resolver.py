@@ -21,6 +21,12 @@ log = logging.getLogger(__name__)
 DEFAULT_CAPSULE_ENCODING = 'cdr'
 
 
+class UnexpectedTypeError(RuntimeError):
+
+    def __init__(self, expected_type, actual_type):
+        super().__init__("Capsule has unexpected type: expected is %r, actual is %r", expected_type, actual_type)
+
+
 class _TypeRefResolver(TypeRefResolver):
 
     def __init__(self, type_resolver):
@@ -86,8 +92,8 @@ class TypeResolver(object):
 
     def decode_capsule(self, capsule, expected_type=None):
         t = self.resolve(capsule.type_ref)
-        if expected_type:
-            assert t is expected_type, (t, expected_type)
+        if expected_type and t is not expected_type:
+            raise UnexpectedTypeError(expected_type, t)
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
     def decode_object(self, t, capsule):
