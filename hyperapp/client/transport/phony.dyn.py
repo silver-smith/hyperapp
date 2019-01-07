@@ -37,9 +37,8 @@ class ThisModule(ClientModule):
         self._remoting = services.remoting
         self._queue_thread = threading.Thread(
             target=self._queue_thread_main)
-        server_address_type_ref = services.type_resolver.reverse_resolve(htypes.phony_transport.server_address)
-        services.transport_registry.register_type_ref(
-            server_address_type_ref,
+        services.transport_registry.register_type(
+            htypes.phony_transport.server_address,
             self._resolve_address,
             services.ref_collector_factory,
             services.request_queue,

@@ -23,6 +23,10 @@ class CapsuleRegistry(RegistryBase):
     def id_to_str(self, id):
         return ref_repr(id)
 
+    def register_type(self, t, factory, *args, **kw):
+        type_ref = self._type_resolver.reverse_resolve(t)
+        self.register_type_ref(type_ref, factory, *args, **kw)
+
     def register_type_ref(self, ref, factory, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         self._register(ref, factory, *args, **kw)

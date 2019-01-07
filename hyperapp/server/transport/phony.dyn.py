@@ -106,9 +106,8 @@ class ThisModule(Module):
             services.request_queue,
             phony_client_address_ref,
             )
-        client_address_type_ref = services.type_resolver.reverse_resolve(htypes.phony_transport.client_address)
-        services.transport_registry.register_type_ref(
-            client_address_type_ref,
+        services.transport_registry.register_type(
+            htypes.phony_transport.client_address,
             PhonyTransport,
             services.ref_collector_factory,
             services.response_queue,

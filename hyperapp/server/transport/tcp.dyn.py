@@ -315,7 +315,7 @@ class ThisModule(Module):
             bind_address=bind_address,
             on_failure=services.failed,
             )
-        address_type_ref = services.type_resolver.reverse_resolve(htypes.tcp_transport.incoming_connection_address)
-        services.transport_registry.register_type_ref(address_type_ref, IncomingConnectionTransport, server)
+        services.transport_registry.register_type(
+            htypes.tcp_transport.incoming_connection_address, IncomingConnectionTransport, server)
         services.on_start.append(self.server.start)
         services.on_stop.append(self.server.stop)

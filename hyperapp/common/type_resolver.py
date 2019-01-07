@@ -48,8 +48,8 @@ class TypeResolver(object):
         self._type2ref = {}  # reverse registry
         self._builtin_name_to_type = {}
         self._add_phony_refs()
-        capsule_registry.register_type_ref(self.reverse_resolve(builtin_ref_t), self._resolve_builtin_ref)
-        capsule_registry.register_type_ref(self.reverse_resolve(meta_ref_t), self._resolve_meta_ref)
+        capsule_registry.register_type(builtin_ref_t, self._resolve_builtin_ref)
+        capsule_registry.register_type(meta_ref_t, self._resolve_meta_ref)
 
     def _add_phony_refs(self):
         for t, ref_hash in [
