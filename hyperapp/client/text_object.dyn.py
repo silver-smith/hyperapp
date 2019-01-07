@@ -1,12 +1,11 @@
 import logging
 from enum import Enum
 
-from ..common.htypes import tString, Field
-from ..common.interface import core as core_types
-from ..common.interface import text_object as text_object_types
-from .module import ClientModule
-from .command import command
-from .object import Object
+from hyperapp.common.htypes import tString, Field
+from hyperapp.client.module import ClientModule
+from hyperapp.client.command import command
+from hyperapp.client.object import Object
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ class TextObject(Object):
 
     @staticmethod
     def get_state_type():
-        return text_object_types.text_object
+        return htypes.text_object.text_object
 
     def __init__(self, text):
         self._text = text
@@ -38,7 +37,7 @@ class TextObject(Object):
         return 'Local text object'
 
     def get_state(self):
-        return text_object_types.text_object(self.impl_id, self._text)
+        return htypes.text_object.text_object(self.impl_id, self._text)
 
     def get_command_list(self, mode, kinds):
         assert mode in self.Mode, repr(mode)

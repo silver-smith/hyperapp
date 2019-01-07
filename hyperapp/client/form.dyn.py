@@ -3,13 +3,13 @@ from enum import Enum
 from collections import OrderedDict
 from PySide import QtCore, QtGui
 
-from ..common.interface import form as form_types
-from .util import call_after
-from .module import ClientModule
+from hyperapp.client.util import call_after
+from hyperapp.client.object import Object
+from hyperapp.client.composite import Composite
+from hyperapp.client.mode_command import BoundModeCommand
+from hyperapp.client.module import ClientModule
+from . import htypes
 from .objimpl_registry import ObjImplRegistry
-from .object import Object
-from .composite import Composite
-from .mode_command import BoundModeCommand
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ class FormObject(Object):
         return 'form'
 
     def get_state(self):
-        return form_types.form_object(self.impl_id)
+        return htypes.form.form_object(self.impl_id)
 
 
 class FormView(Composite, QtGui.QWidget):
@@ -71,10 +71,10 @@ class FormView(Composite, QtGui.QWidget):
         current_field_id = list(self._field_view_map.keys())[0]
         field_list = []
         for id, field_view in self._field_view_map.items():
-            field_list.append(form_types.form_view_field(id, field_view.get_state()))
+            field_list.append(htypes.form.form_view_field(id, field_view.get_state()))
             if field_view.has_focus():
                 current_field_id = id
-        return form_types.form_handle(self.impl_id, self._object.get_state(), field_list, self._mode.value, current_field_id)
+        return htypes.form.form_handle(self.impl_id, self._object.get_state(), field_list, self._mode.value, current_field_id)
 
     def get_object(self):
         return self._object

@@ -1,0 +1,7 @@
+import:
+  types:
+    form:
+      - form_view_field
+      - form_handle
+  code:
+    - client.objimpl_registry
