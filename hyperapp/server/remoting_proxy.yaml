@@ -1,1 +1,4 @@
-# empty
+import:
+  types:
+    hyper_ref:
+      - service

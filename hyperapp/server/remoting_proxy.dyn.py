@@ -1,4 +1,5 @@
 from hyperapp.common.module import Module
+from . import htypes
 
 
 MODULE_NAME = 'remoting_proxy'
@@ -37,13 +38,12 @@ class RemotingProxy(object):
 
 class ProxyFactory(object):
 
-    def __init__(self, ref_resolver, type_resolver, remoting):
-        self._ref_resolver = ref_resolver
+    def __init__(self, type_resolver, remoting):
         self._type_resolver = type_resolver
         self._remoting = remoting
 
     def from_ref(self, ref):
-        service = self._ref_resolver.resolve_ref_to_object(ref, expected_type='hyper_ref.service')
+        service = self._type_resolver.resolve_ref_to_data(ref, expected_type=htypes.hyper_ref.service)
         iface = self._types.resolve(service.iface_full_type_name)
         return RemotingProxy(self._remoting, ref, iface)
 
@@ -52,4 +52,4 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.proxy_factory = ProxyFactory(services.ref_resolver, services.type_resolver, services.remoting)
+        services.proxy_factory = ProxyFactory(services.type_resolver, services.remoting)
