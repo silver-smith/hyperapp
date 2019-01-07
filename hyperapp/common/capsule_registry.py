@@ -4,12 +4,12 @@ from .htypes import Type, ref_t, capsule_t
 from .htypes.packet_coders import packet_coders
 from .ref import ref_repr
 from .visual_rep import pprint
-from .registry import Registry
+from .registry import RegistryBase
 
 log = logging.getLogger(__name__)
 
 
-class CapsuleRegistry(Registry):
+class CapsuleRegistry(RegistryBase):
 
     def __init__(self, produce_name, type_resolver):
         super().__init__()
@@ -23,11 +23,9 @@ class CapsuleRegistry(Registry):
     def id_to_str(self, id):
         return ref_repr(id)
 
-    register = None  # disable
-
     def register_type_ref(self, ref, factory, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
-        super().register(ref, factory, *args, **kw)
+        self._register(ref, factory, *args, **kw)
         
     def resolve(self, ref, capsule, *args, **kw):
         assert isinstance(capsule, capsule_t), repr(capsule)
