@@ -77,7 +77,7 @@ class Remoting(object):
         log.info('Remoting: processing incoming RPC message %s: done', ref_repr(rpc_message_ref))
 
     def _process_rpc_request(self, rpc_request):
-        iface = self._types.resolve(rpc_request.iface_full_type_name)
+        iface = self._type_resolver.resolve(rpc_request.iface_type_ref)
         command = iface.get(rpc_request.command_id)
         if not command:
             log.warning('Got request for unknown command %r for interface %s',

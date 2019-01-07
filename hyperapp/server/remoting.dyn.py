@@ -62,8 +62,9 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
+        iface_type_ref = self._type_resolver.reverse_resolve(iface)
         rpc_request = htypes.hyper_ref.rpc_request(
-            iface_full_type_name=iface.full_name,
+            iface_type_ref=iface_type_ref,
             source_endpoint_ref=self._my_endpoint_ref,
             target_service_ref=service_ref,
             command_id=command.command_id,

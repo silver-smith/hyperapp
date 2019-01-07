@@ -44,7 +44,7 @@ class ProxyFactory(object):
 
     def from_ref(self, ref):
         service = self._type_resolver.resolve_ref_to_data(ref, expected_type=htypes.hyper_ref.service)
-        iface = self._types.resolve(service.iface_full_type_name)
+        iface = self._type_resolver.resolve(service.iface_type_ref)
         return RemotingProxy(self._remoting, ref, iface)
 
 
