@@ -43,7 +43,7 @@ class RefStorage(object):
         assert capsule, 'Can not store unknown ref: %s' % ref_repr(ref)
         rec = this_module.Ref.get(ref_hash_algorithm=ref.hash_algorithm, ref_hash=ref.hash)
         if rec:
-            rec.full_type_name = '.'.join(capsule.full_type_name)
+            rec.type_ref = ref2str(capsule.type_ref)
             rec.encoding = capsule.encoding
             rec.encoded_object = capsule.encoded_object
         else:
