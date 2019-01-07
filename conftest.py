@@ -5,7 +5,7 @@ from hyperapp.common.init_logging import setup_filter
 
 log = logging.getLogger(__name__)
 
-pytest_plugins = ['hyperapp.common.init_logging']
+pytest_plugins = ['hyperapp.common.logger_fixtures']
 
 
 class AsyncExceptionHandler(object):

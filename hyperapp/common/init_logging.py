@@ -6,7 +6,6 @@ from pathlib import Path
 import multiprocessing
 import threading
 
-import pytest
 import yaml
 
 log = logging.getLogger(__name__)
@@ -18,7 +17,7 @@ CONFIG_DIR = HYPERAPP_DIR / 'log-config'
 
 
 _logger_context = ''
-_logger_queue = multiprocessing.Queue()
+_subprocess_logger_queue = multiprocessing.Queue()
 
 
 def setup_filter():
@@ -56,7 +55,7 @@ def init_subprocess_logger(context='subprocess'):
     config = yaml.load(CONFIG_DIR.joinpath('subprocess.yaml').read_text())
     logging.config.dictConfig(config)
 
-    handler = logging.handlers.QueueHandler(_logger_queue)
+    handler = logging.handlers.QueueHandler(_subprocess_logger_queue)
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(handler)
@@ -65,13 +64,5 @@ def init_subprocess_logger(context='subprocess'):
     setup_filter()
 
 
-@pytest.fixture(scope='session', autouse=True)
-def logger_listening():
-    root_logger = logging.getLogger()
-    listener = logging.handlers.QueueListener(_logger_queue, root_logger)
-    listener.start()
-    try:
-        yield
-    finally:
-        listener.enqueue_sentinel()
-        listener.stop()
+def subprocess_logger_queue():
+    return _subprocess_logger_queue
