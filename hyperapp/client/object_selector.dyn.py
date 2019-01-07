@@ -1,12 +1,13 @@
 import logging
 from PySide import QtCore, QtGui
 
-from .command import command
-from .object import Object
-from .view import View
-from .registry import Registry
-from .module import ClientModule
-from ..common.interface import object_selector as object_selector_types
+from hyperapp.common.registry import Registry
+from hyperapp.common.module import Module
+from hyperapp.client.command import command
+from hyperapp.client.object import Object
+from hyperapp.client.view import View
+from hyperapp.client.async_registry import run_awaitable_factory
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class ObjectSelectorObject(Object):
         self._callback = callback
 
     def get_state(self):
-        return object_selector_types.object_selector_object(self.impl_id, self._callback.to_data())
+        return htypes.object_selector.object_selector_object(self.impl_id, self._callback.to_data())
 
     async def set_ref(self, title, ref):
         return (await self._callback.set_ref(title, ref))
@@ -58,14 +59,14 @@ class ObjectSelectorView(View, QtGui.QWidget):
     def get_state(self):
         target_handle = self.target_view.get_state()
         object = self.object.get_state()
-        return object_selector_types.object_selector_view(self.impl_id, object, target_handle)
+        return htypes.object_selector.object_selector_view(self.impl_id, object, target_handle)
 
     def get_current_child(self):
         return self.target_view
 
     def open(self, handle):
         object = self.object.get_state()
-        selector_handle = object_selector_types.object_selector_view(self.impl_id, object, handle)
+        selector_handle = htypes.object_selector.object_selector_view(self.impl_id, object, handle)
         View.open(self, selector_handle)
 
     def get_command_list(self, kinds=None):
@@ -91,20 +92,20 @@ class ObjectSelectorView(View, QtGui.QWidget):
 class CallbackRegistry(Registry):
 
     def register(self, tclass, factory, *args, **kw):
-        assert object_selector_types.object_selector_callback.is_my_class(tclass)
+        assert htypes.object_selector.object_selector_callback.is_my_class(tclass)
         super().register(tclass.id, factory, *args, **kw)
 
-    async def resolve(self, callback):
-        tclass = object_selector_types.object_selector_callback.get_object_class(callback)
+    async def resolve_async(self, callback):
+        tclass = htypes.object_selector.object_selector_callback.get_object_class(callback)
         rec = self._resolve(tclass.id)
         log.info('producing object selector callback %r using %s(%s, %s)', tclass.id, rec.factory, rec.args, rec.kw)
-        return (await self._run_awaitable_factory(rec.factory, callback, *rec.args, **rec.kw))
+        return (await run_awaitable_factory(rec.factory, callback, *rec.args, **rec.kw))
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+        super().__init__(MODULE_NAME)
         services.objimpl_registry.register(ObjectSelectorObject.impl_id, ObjectSelectorObject.from_state)
         services.view_registry.register(ObjectSelectorView.impl_id, ObjectSelectorView.from_state, services.objimpl_registry, services.view_registry)
         self.callback_registry = CallbackRegistry()

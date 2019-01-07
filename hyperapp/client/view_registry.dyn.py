@@ -1,8 +1,9 @@
 import logging
-from .registry import Registry
-from .view import View
-from .error_handler_hook import get_handle_for_error
-from .module import ClientModule
+from hyperapp.common.registry import Registry
+from hyperapp.common.module import Module
+from hyperapp.client.view import View
+from hyperapp.client.error_handler_hook import get_handle_for_error
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -13,20 +14,19 @@ MAX_REDIRECT_COUNT = 10
 
 class ViewRegistry(Registry):
 
-    def __init__(self, module_registry, types):
-        Registry.__init__(self)
+    def __init__(self, module_registry):
+        super().__init__()
         self._module_registry = module_registry
-        self._types = types
 
-    async def resolve(self, locale, handle, parent=None):
+    async def resolve_async(self, locale, handle, parent=None):
         assert isinstance(locale, str), repr(locale)
-        assert isinstance(handle, self._types.core.handle), repr(handle)
+        assert isinstance(handle, htypes.core.handle), repr(handle)
         for i in range(MAX_REDIRECT_COUNT):
             rec = self._resolve(handle.view_id)
             log.info('producing view %r using %s(%s, %s)', handle.view_id, rec.factory, rec.args, rec.kw)
             try:
                 view_or_handle = await rec.factory(locale, handle, parent, *rec.args, **rec.kw)
-                assert isinstance(view_or_handle, (self._types.core.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
+                assert isinstance(view_or_handle, (htypes.core.handle, View)), repr((handle.view_id, view_or_handle))  # must resolve to View or another handle
             except Exception as x:
                 log.exception('Error producing view %r:', handle.view_id)
                 view_or_handle = get_handle_for_error(x)
@@ -37,8 +37,8 @@ class ViewRegistry(Registry):
         assert False, 'Too much redirections: %d' % i
 
 
-class ThisModule(ClientModule):
+class ThisModule(Module):
 
     def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
-        services.view_registry = ViewRegistry(services.module_registry, services.types)
+        super().__init__(MODULE_NAME)
+        services.view_registry = ViewRegistry(services.module_registry)
