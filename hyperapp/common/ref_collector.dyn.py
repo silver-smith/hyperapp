@@ -79,7 +79,7 @@ class RefCollector(Visitor):
 
     def _collect_refs_from_object(self, t, object):
         self.visit(t, object)
-        if htypes.hyper_ref.rpc_message.is_my_class(t):
+        if t is htypes.hyper_ref.rpc_message:
             self._handle_rpc_message(object)
 
     def visit_record(self, t, value):
@@ -100,7 +100,7 @@ class RefCollector(Visitor):
             self._handle_rpc_request(rpc_message)
 
     def _handle_rpc_request(self, rpc_request):
-        iface = self._types.resolve(rpc_request.iface_full_type_name)
+        iface = self._type_resolver.resolve(rpc_request.iface_type_ref)
         command = iface[rpc_request.command_id]
         params = rpc_request.params.decode(command.request)
         self._collect_refs_from_object(command.request, params)
