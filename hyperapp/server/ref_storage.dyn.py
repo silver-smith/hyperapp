@@ -4,8 +4,8 @@ import logging
 
 from pony.orm import db_session, Required, PrimaryKey
 
-from ..common.htypes import capsule_t
-from ..common.ref import ref_repr
+from hyperapp.common.htypes import capsule_t
+from hyperapp.common.ref import ref_repr
 from .ponyorm_module import PonyOrmModule
 
 log = logging.getLogger(__name__)
@@ -62,8 +62,6 @@ class ThisModule(PonyOrmModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.ref_storage = ref_storage = RefStorage(services.ref_resolver)
-        services.ref_resolver.add_source(ref_storage)
 
     def init_phase_2(self, services):
         self.Ref = self.make_entity(
@@ -75,3 +73,5 @@ class ThisModule(PonyOrmModule):
             encoded_object=Required(bytes),
             primary_key=('ref_hash_algorithm', 'ref_hash'),
             )
+        services.ref_storage = ref_storage = RefStorage(services.ref_resolver)
+        services.ref_resolver.add_source(ref_storage)

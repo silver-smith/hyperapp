@@ -1,0 +1,3 @@
+import:
+  code:
+    - server.ponyorm_module

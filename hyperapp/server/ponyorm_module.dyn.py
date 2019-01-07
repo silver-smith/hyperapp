@@ -3,7 +3,7 @@ import os
 
 from pony.orm import *
 
-from .module import ServerModule
+from hyperapp.common.module import Module
 
 
 SQLITE_DB_PATH = Path('~/.local/share/hyperapp/server/db.sqlite').expanduser()
@@ -11,7 +11,7 @@ MODULE_NAME = 'ponyorm'
 
 
 # base class for modules using ponyorm
-class PonyOrmModule(ServerModule):
+class PonyOrmModule(Module):
 
     def __init__(self, name):
         super().__init__(name)
@@ -30,7 +30,7 @@ class PonyOrmModule(ServerModule):
         return entity
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)

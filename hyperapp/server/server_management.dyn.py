@@ -1,17 +1,14 @@
 # server management module: used to expose commands from all modules in one list
 
 import logging
-#from ..common.interface import server_management as server_management_types
-from ..common.interface import hyper_ref as href_types
-from ..common.interface import ref_list as ref_list_types
-from ..common.ref import ref_repr
-from ..common.local_server_paths import (
+from hyperapp.common.ref import ref_repr
+from hyperapp.common.module import Module
+from hyperapp.server.command import command
+from . import htypes
+from .local_server_paths import (
     LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH,
     save_bundle_to_file,
     )
-from .object import Object, SmallListObject
-from .module import ServerModule
-from .command import command
 
 log = logging.getLogger(__name__)
 
@@ -32,7 +29,7 @@ class DynamicRefListService(object):
     def rpc_get_ref_list(self, request, ref_list_id):
         dynamic_ref_list = self._id2ref_list[ref_list_id]
         ref_list = dynamic_ref_list.get_ref_list()
-        return request.make_response_result(ref_list=ref_list_types.ref_list(ref_list=ref_list))
+        return request.make_response_result(ref_list=htypes.ref_list.ref_list(ref_list=ref_list))
 
 
 class ManagementRefList(object):
@@ -42,13 +39,13 @@ class ManagementRefList(object):
 
     def add_ref(self, id, ref):
         log.info('Adding management ref for %r: %s', id, ref_repr(ref))
-        self._ref_list.append(ref_list_types.ref_item(id, ref))
+        self._ref_list.append(htypes.ref_list.ref_item(id, ref))
 
     def get_ref_list(self):
         return self._ref_list
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
@@ -59,11 +56,12 @@ class ThisModule(ServerModule):
         self._init_dynamic_ref_list_service(services)
 
     def _init_dynamic_ref_list_service(self, services):
-        service = href_types.service(DYNAMIC_REF_LIST_SERVICE_ID, ['ref_list', 'ref_list_service'])
+        iface_type_ref = services.type_resolver.reverse_resolve(htypes.ref_list.ref_list_service)
+        service = htypes.hyper_ref.service(DYNAMIC_REF_LIST_SERVICE_ID, iface_type_ref)
         service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, self._resolve_dynamic_ref_list_service)
 
-        dynamic_ref_list = ref_list_types.dynamic_ref_list(
+        dynamic_ref_list = htypes.ref_list.dynamic_ref_list(
             ref_list_service=service_ref,
             ref_list_id=SERVER_MANAGEMENT_REF_LIST_ID,
             )
