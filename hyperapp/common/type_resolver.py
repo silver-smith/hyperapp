@@ -11,7 +11,7 @@ from .htypes import (
     )
 from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
-from .ref import ref_repr
+from .ref import phony_ref, ref_repr
 from .visual_rep import pprint
 from .capsule_registry import CapsuleRegistry, CapsuleResolver
 
@@ -52,11 +52,11 @@ class TypeResolver(object):
         capsule_registry.register_type(meta_ref_t, self._resolve_meta_ref)
 
     def _add_phony_refs(self):
-        for t, ref_hash in [
-                (builtin_ref_t, b'BUILTIN_REF'),
-                (meta_ref_t, b'META_REF'),
+        for t, ref_id in [
+                (builtin_ref_t, 'BUILTIN_REF'),
+                (meta_ref_t, 'META_REF'),
                 ]:
-            ref = ref_t('phony', ref_hash)
+            ref = phony_ref(ref_id)
             self._type2ref[t] = ref
             self._ref2type_cache[ref] = t
 

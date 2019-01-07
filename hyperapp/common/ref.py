@@ -11,14 +11,17 @@ DEFAULT_HASH_ALGORITHM = 'sha512'
 MAX_REF_REPR_LEN = 60
 BUNDLE_ENCODING = 'json'
 
+
+def phony_ref(ref_id):
+    return ref_t('phony', ref_id.encode())
+
+
 # special case indicating packets must be sent to the peer from which this route is received
-LOCAL_TRANSPORT_REF = ref_t('', b'LOCAL_TRANSPORT')
+LOCAL_TRANSPORT_REF = phony_ref('LOCAL_TRANSPORT')
 
 
 def ref_repr(ref):
-    if ref is LOCAL_TRANSPORT_REF:
-        return ref.hash.decode()
-    elif ref.hash_algorithm == 'phony':
+    if ref.hash_algorithm == 'phony':
         return '%s:%s' % (ref.hash_algorithm, ref.hash.decode())
     else:
         hash_hex = codecs.encode(ref.hash[:4], 'hex').decode()
