@@ -107,7 +107,7 @@ class TypeResolver(object):
     def builtin_type_by_name(self):
         return self._builtin_name_to_type
 
-    def resolve_ref_to_object(self, ref, expected_type=None):
+    def resolve_ref_to_data(self, ref, expected_type=None):
         capsule = self._ref_resolver.resolve_ref(ref)
         assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
         return self.decode_capsule(capsule, expected_type)

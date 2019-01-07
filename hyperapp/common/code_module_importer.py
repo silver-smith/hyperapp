@@ -98,7 +98,7 @@ class CodeModuleImporter(object):
         return '{}.{}'.format(cls.ROOT_PACKAGE, _ref_to_name(code_module_ref))
 
     def import_code_module(self, code_module_ref):
-        code_module = self._type_resolver.resolve_ref_to_object(code_module_ref, code_module_t)
+        code_module = self._type_resolver.resolve_ref_to_data(code_module_ref, code_module_t)
         log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}
