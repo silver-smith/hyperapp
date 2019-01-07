@@ -8,12 +8,12 @@ from queue import Queue
 from functools import partial
 
 from hyperapp.common.htypes import ref_t
-from hyperapp.common.interface import tcp_transport as tcp_transport_types
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.ref import LOCAL_TRANSPORT_REF, ref_repr, ref_list_repr, decode_capsule
-from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
-from hyperapp.common.route_resolver import RouteRegistry
-from ..module import Module
+from hyperapp.common.ref import LOCAL_TRANSPORT_REF, ref_repr, ref_list_repr
+from hyperapp.common.module import Module
+from . import htypes
+from .tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
+from .route_resolver import RouteRegistry
 
 log = logging.getLogger(__name__)
 
@@ -72,9 +72,8 @@ class TcpClient(object):
 
     def __init__(
             self,
-            types,
+            type_resolver,
             ref_registry,
-            ref_resolver,
             route_resolver,
             ref_collector_factory,
             unbundler,
@@ -85,9 +84,8 @@ class TcpClient(object):
             socket,
             on_failure,
             ):
-        self._types = types
+        self._type_resolver = type_resolver
         self._ref_registry = ref_registry
-        self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
@@ -114,7 +112,7 @@ class TcpClient(object):
         return self._connection_id
 
     def start(self):
-        address = tcp_transport_types.incoming_connection_address(connection_id=self._connection_id)
+        address = htypes.tcp_transport.incoming_connection_address(connection_id=self._connection_id)
         self._my_address_ref = self._ref_registry.register_object(address)
         self._log('Incoming connection address: %s', address)
         self._route_resolver.add_source(self._my_route_registry)
@@ -152,21 +150,14 @@ class TcpClient(object):
         pprint(bundle, title='incoming bundle', logger=partial(self._log, level=logging.DEBUG))
         self._unbundler.register_bundle(bundle)
         self._register_incoming_routes(bundle.route_list)
-        for root_ref in bundle.roots:
-            capsule = self._ref_resolver.resolve_ref(root_ref)
-            if capsule.full_type_name == ['hyper_ref', 'rpc_message']:
-                self._process_rpc_request(root_ref, capsule)
-            else:
-                assert False, 'Unexpected capsule type: %r' % '.'.join(capsule.full_type_name)
+        for rpc_request_ref in bundle.roots:
+            rpc_request = self._type_resolver.resolve_ref_to_data(rpc_request_ref, expected_type=htypes.hyper_ref.rpc_message)
+            self._remoting.process_rpc_request(rpc_request_ref, rpc_request)
 
     def _register_incoming_routes(self, route_list):
         for route in route_list:
             if route.transport_ref == LOCAL_TRANSPORT_REF:
                 self._my_route_registry.register(route.endpoint_ref, self._my_address_ref)
-
-    def _process_rpc_request(self, rpc_request_ref, rpc_request_capsule):
-        rpc_request = decode_capsule(self._types, rpc_request_capsule)
-        self._remoting.process_rpc_request(rpc_request_ref, rpc_request)
 
     def _send_outcoming_messages(self):
         while not self._outcoming_queue.empty():
@@ -187,9 +178,8 @@ class TcpServer(object):
 
     def __init__(
             self,
-            types,
+            type_resolver,
             ref_registry,
-            ref_resolver,
             route_resolver,
             ref_collector_factory,
             unbundler,
@@ -198,9 +188,8 @@ class TcpServer(object):
             bind_address,
             on_failure,
             ):
-        self._types = types
+        self._type_resolver = type_resolver
         self._ref_registry = ref_registry
-        self._ref_resolver = ref_resolver
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
@@ -217,7 +206,7 @@ class TcpServer(object):
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._socket.bind(self._bind_address)
         self._sock_address = self._socket.getsockname()
-        address = tcp_transport_types.address(self._sock_address[0], self._sock_address[1])
+        address = htypes.tcp_transport.address(self._sock_address[0], self._sock_address[1])
         tcp_transport_ref = self._ref_registry.register_object(address)
         local_transport_ref_set.add(tcp_transport_ref)
 
@@ -269,9 +258,8 @@ class TcpServer(object):
                 log.info('tcp: accepted connection from %s:%d' % peer_address)
                 outcoming_queue = Queue()
                 client = TcpClient(
-                    self._types,
+                    self._type_resolver,
                     self._ref_registry,
-                    self._ref_resolver,
                     self._route_resolver,
                     self._ref_collector_factory,
                     self._unbundler,
@@ -317,9 +305,8 @@ class ThisModule(Module):
         if not bind_address:
             bind_address = DEFAULT_BIND_ADDRESS
         self.server = server = TcpServer(
-            services.types,
+            services.type_resolver,
             services.ref_registry,
-            services.ref_resolver,
             services.route_resolver,
             services.ref_collector_factory,
             services.unbundler,
@@ -328,6 +315,7 @@ class ThisModule(Module):
             bind_address=bind_address,
             on_failure=services.failed,
             )
-        services.transport_registry.register(tcp_transport_types.incoming_connection_address, IncomingConnectionTransport, server)
+        address_type_ref = services.type_resolver.reverse_resolve(htypes.tcp_transport.incoming_connection_address)
+        services.transport_registry.register_type_ref(address_type_ref, IncomingConnectionTransport, server)
         services.on_start.append(self.server.start)
         services.on_stop.append(self.server.stop)

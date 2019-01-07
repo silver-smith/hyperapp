@@ -2,12 +2,11 @@ import logging
 import asyncio
 
 from hyperapp.common.htypes import ref_t
-from hyperapp.common.interface import hyper_ref as href_types
-from hyperapp.common.interface import tcp_transport as tcp_transport_types
-from hyperapp.common.ref import ref_repr, decode_capsule
+from hyperapp.common.ref import ref_repr
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
-from ..module import ClientModule
+from hyperapp.client.module import ClientModule
+from .  import htypes
+from .tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packet
 
 log = logging.getLogger(__name__)
 
@@ -21,9 +20,9 @@ class TcpProtocol(asyncio.Protocol):
     def __init__(
             self,
             event_loop,
-            types,
-            ref_registry,
             ref_resolver,
+            type_resolver,
+            ref_registry,
             endpoint_registry,
             ref_collector_factory,
             unbundler,
@@ -31,9 +30,9 @@ class TcpProtocol(asyncio.Protocol):
             address_ref,
             address,
             ):
-        self._types = types
-        self._ref_registry = ref_registry
         self._ref_resolver = ref_resolver
+        self._type_resolver = type_resolver
+        self._ref_registry = ref_registry
         self._endpoint_registry = endpoint_registry
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
@@ -63,17 +62,9 @@ class TcpProtocol(asyncio.Protocol):
         self._log('Received bundle: refs: %r, %d capsules' % (list(map(ref_repr, bundle.roots)), len(bundle.capsule_list)))
         pprint(bundle, indent=1)
         self._unbundler.register_bundle(bundle)
-        for root_ref in bundle.roots:
-            capsule = self._ref_resolver.resolve_ref(root_ref)
-            if capsule.full_type_name == ['hyper_ref', 'rpc_message']:
-                self._process_rpc_message(root_ref, capsule)
-            else:
-                assert False, 'Unexpected capsule type: %r' % '.'.join(capsule.full_type_name)
-
-    def _process_rpc_message(self, rpc_message_ref, rpc_message_capsule):
-        rpc_message = decode_capsule(self._types, rpc_message_capsule)
-        assert isinstance(rpc_message, href_types.rpc_message), repr(rpc_message)
-        self._remoting.process_rpc_message(rpc_message_ref, rpc_message)
+        for rpc_message_ref in bundle.roots:
+            rpc_message = self._type_resolver.resolve_ref_to_data(rpc_message_ref, expected_type=htypes.hyper_ref.rpc_message)
+            self._remoting.process_rpc_message(rpc_message_ref, rpc_message)
 
     def send(self, message_ref):
         assert isinstance(message_ref, ref_t), repr(message_ref)
@@ -100,21 +91,33 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         self._event_loop = services.event_loop
-        self._address_to_protocol = {}  # tcp_transport_types.address -> TcpProtocol
+        self._address_to_protocol = {}  # htypes.tcp_transport.address -> TcpProtocol
         self._connect_lock = asyncio.Lock()
-        services.transport_registry.register(
-            tcp_transport_types.address,
+        address_type_ref = services.type_resolver.reverse_resolve(htypes.tcp_transport.address)
+        services.transport_registry.register_type_ref(
+            address_type_ref,
             self._resolve_address,
-            services.types,
-            services.ref_registry,
             services.ref_resolver,
+            services.type_resolver,
+            services.ref_registry,
             services.endpoint_registry,
             services.ref_collector_factory,
             services.unbundler,
             services.remoting,
             )
 
-    async def _resolve_address(self, address_ref, address, types, ref_registry, ref_resolver, endpoint_registry, ref_collector_factory, unbundler, remoting):
+    async def _resolve_address(
+            self,
+            address_ref,
+            address,
+            ref_resolver,
+            type_resolver,
+            ref_registry,
+            endpoint_registry,
+            ref_collector_factory,
+            unbundler,
+            remoting,
+            ):
         log.debug('Tcp transport: resolving address %s: %s', ref_repr(address_ref), address)
         # use lock to avoid multiple connections to same address established in parallel
         with (await self._connect_lock):
@@ -125,9 +128,9 @@ class ThisModule(ClientModule):
             log.info('Tcp transport: establishing connection for %s', ref_repr(address_ref))
             constructor = lambda: TcpProtocol(
                 self._event_loop,
-                types,
-                ref_registry,
                 ref_resolver,
+                type_resolver,
+                ref_registry,
                 endpoint_registry,
                 ref_collector_factory,
                 unbundler,
