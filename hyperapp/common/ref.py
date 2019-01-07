@@ -33,6 +33,24 @@ def ref_list_repr(ref_list):
         return 'none'
     return ', '.join(map(ref_repr, ref_list))
 
+
+def ref2str(ref):
+    if ref.hash_algorithm == 'phony':
+        return '%s:%s' % (ref.hash_algorithm, ref.hash.decode())
+    else:
+        hash_hex = codecs.encode(ref.hash, 'hex').decode()
+        return '%s:%s' % (ref.hash_algorithm, hash_hex)
+
+
+def str2ref(value):
+    algo, hash_hex = value.split(':', 1)
+    if algo == 'phony':
+        return ref_t(algo, hash_hex.encode())
+    else:
+        hash = codecs.decode(hash_hex, 'hex')
+        return ref_t(algo, hash)
+
+
 def make_ref(capsule):
     assert isinstance(capsule, capsule_t)
     # use same encoding for capsule as for object
