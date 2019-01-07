@@ -1,5 +1,6 @@
 import logging
 
+from hyperapp.common.ref import ref_repr
 from hyperapp.common.module import Module
 from . import htypes
 
@@ -30,6 +31,7 @@ class EchoService(object):
         raise htypes.test.test_error(message)
 
     def rpc_subscribe(self, request, service_ref):
+        log.info('Echo service: subscribe to service_ref %s', ref_repr(service_ref))
         self._subscribed_service_ref_set.add(service_ref)
 
     def rpc_broadcast(self, request, message):
