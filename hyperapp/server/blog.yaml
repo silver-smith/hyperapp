@@ -1,0 +1,13 @@
+import:
+  types:
+    hyper_ref:
+      - service
+    blog:
+      - blog
+      - article_ref
+      - blog_row
+      - blog_chunk
+      - unknown_article_error
+      - blog_service_iface
+  code:
+    - server.ponyorm_module

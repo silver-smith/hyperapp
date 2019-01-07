@@ -4,14 +4,12 @@ import codecs
 
 from pony.orm import db_session, flush, desc, Required, Optional, Set
 
-from ..common.htypes import ref_t
-from ..common.interface import core as core_types
-from ..common.interface import hyper_ref as href_types
-from ..common.interface import blog as blog_types
-from ..common.util import dt_naive_to_utc
-from ..common.ref import ref_repr, ref_list_repr
-from ..common.list_object import rows2fetched_chunk
-from .util import utcnow, path_part_to_str
+from hyperapp.common.htypes import ref_t
+from hyperapp.common.util import dt_naive_to_utc
+from hyperapp.common.ref import ref_repr, ref_list_repr
+from hyperapp.common.list_object import rows2fetched_chunk
+from hyperapp.server.util import utcnow
+from . import htypes
 from .ponyorm_module import PonyOrmModule
 
 log = logging.getLogger(__name__)
@@ -33,7 +31,7 @@ class BlogService(object):
 
     def rpc_fetch_blog_contents(self, request, blog_id, fetch_request):
         all_rows = self.fetch_blog_contents(blog_id)
-        chunk = rows2fetched_chunk('id', all_rows, fetch_request, blog_types.blog_chunk)
+        chunk = rows2fetched_chunk('id', all_rows, fetch_request, htypes.blog.blog_chunk)
         return request.make_response_result(chunk=chunk)
 
     @db_session
@@ -44,7 +42,7 @@ class BlogService(object):
     @classmethod
     def rec2row(cls, rec):
         ref_list = map(cls.rec2ref, rec.refs.select().order_by(this_module.ArticleRef.id))
-        return blog_types.blog_row(
+        return htypes.blog.blog_row(
             id=rec.id,
             created_at=dt_naive_to_utc(rec.created_at),
             title=rec.title,
@@ -54,7 +52,7 @@ class BlogService(object):
 
     @staticmethod
     def rec2ref(rec):
-        return blog_types.article_ref(
+        return htypes.blog.article_ref(
             id=rec.id,
             title=rec.title,
             ref=ref_t(rec.ref_hash_algorithm, rec.ref_hash),
@@ -83,7 +81,7 @@ class BlogService(object):
         if article and article.blog_id == blog_id:
             return article
         else:
-            raise blog_types.unknown_article_error(blog_id, article_id)
+            raise htypes.blog.unknown_article_error(blog_id, article_id)
 
     @db_session
     def rpc_save_article(self, request, blog_id, article_id, title, text):
@@ -149,7 +147,8 @@ class ThisModule(PonyOrmModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         self._blog_service = BlogService(services.ref_storage, services.proxy_factory)
-        service = href_types.service(BLOG_SERVICE_ID, ['blog', 'blog_service_iface'])
+        iface_type_ref = services.type_resolver.reverse_resolve(htypes.blog.blog_service_iface)
+        service = htypes.hyper_ref.service(BLOG_SERVICE_ID, iface_type_ref)
         self._blog_service_ref = service_ref = services.ref_registry.register_object(service)
         services.blog_service_ref = service_ref
         services.service_registry.register(service_ref, self._blog_service.get_self)
@@ -175,7 +174,7 @@ class ThisModule(PonyOrmModule):
             )
 
     def init_phase_3(self, services):
-        blog = blog_types.blog(
+        blog = htypes.blog.blog(
             blog_service_ref=self._blog_service_ref,
             blog_id='test-blog',
             current_article_id=None,
