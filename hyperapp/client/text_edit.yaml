@@ -1,0 +1,6 @@
+import:
+  types:
+    core:
+      - obj_handle
+  code:
+    - client.text_object

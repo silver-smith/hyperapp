@@ -1,11 +1,13 @@
 import logging
 import asyncio
 import re
+
 from PySide import QtCore, QtGui
-from ..common.htypes import tString, Field
-from ..common.interface import core as core_types
-from .module import ClientModule
-from . import view
+
+from hyperapp.common.htypes import tString, Field
+from hyperapp.client.module import ClientModule
+from hyperapp.client import view
+from . import htypes
 from .text_object import TextObject
 
 log = logging.getLogger(__name__)
@@ -70,5 +72,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self.state_type = core_types.obj_handle
+        self.state_type = htypes.core.obj_handle
         services.view_registry.register('text_view', View.from_state, services.objimpl_registry)
