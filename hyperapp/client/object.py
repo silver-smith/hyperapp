@@ -45,7 +45,7 @@ class Object(Commander):
 
     def subscribe(self, observer, *args, **kw):
         assert isinstance(observer, ObjectObserver), repr(observer)
-        log.debug('-- Object.subscribe self=%s/%s, observer=%s/%s', id(self), self, id(observer), observer)
+        log.debug('-- Object.subscribe self=%s/%s, observer=%s/%s', id(self), self, id(observer), weakref.ref(observer))
         self._on_subscriber_added()
         self._observers[observer] = self.ObserverArgs(args, kw)
 
