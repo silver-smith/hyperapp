@@ -12,11 +12,13 @@ from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
 
 from hyperapp.common.htypes import tInt
+from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
 from hyperapp.client.list_object import Column, ListObject
 from hyperapp.client.list_view import View
+from hyperapp.test.utils import resolve_type
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +44,7 @@ class Services(ClientServicesBase):
     def __init__(self):
         super().__init__()
         self.init_services()
-        self._load_type_modules([
+        self._load_type_module_list([
                 'resource',
                 'core',
                 ])
@@ -120,7 +122,7 @@ def object():
 @pytest.fixture
 def list_view_factory(application, services, object):
     default_object = object
-    data_type = services.types.core.int_list_handle
+    data_type = resolve_type(services, 'core', 'int_list_handle')
 
     def make_list_view(object=None, sort_column_id=None, current_key=None, resources=None):
         resource_manager = ResourcesManager(resources)
@@ -236,9 +238,10 @@ async def test_overlapped_fetch_result_should_be_merged_properly(list_view_facto
 
 @pytest.mark.asyncio
 async def test_resources_used_for_header_and_visibility(services, list_view_factory):
+    column_resource = resolve_type(services, 'resource', 'column_resource')
     resources = {
-        'test.list.column.key.en': services.types.resource.column_resource(visible=False, text='the key', description=''),
-        'test.list.column.title.en': services.types.resource.column_resource(visible=True, text='the title', description=''),
+        'test.list.column.key.en': column_resource(visible=False, text='the key', description=''),
+        'test.list.column.title.en': column_resource(visible=True, text='the title', description=''),
         }
     list_view = list_view_factory(resources=resources)
     list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
