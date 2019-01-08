@@ -1,0 +1,9 @@
+import:
+  types:
+    hyper_ref:
+      - service
+    fs:
+      - fs
+      - fs_service_iface
+  code:
+    - common.fs_service_impl

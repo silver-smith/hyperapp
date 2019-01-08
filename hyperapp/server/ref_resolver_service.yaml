@@ -1,0 +1,8 @@
+import:
+  types:
+    hyper_ref:
+      - service
+      - unknown_ref_error
+      - ref_resolver
+  code:
+    - common.local_server_paths

@@ -1,8 +1,8 @@
 import logging
 
-from ..common.interface import hyper_ref as href_types
-from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, save_bundle_to_file
-from .module import ServerModule
+from hyperapp.common.module import Module
+from . import htypes
+from .local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, save_bundle_to_file
 
 log = logging.getLogger(__name__)
 
@@ -19,11 +19,11 @@ class RefResolverService(object):
     def rpc_resolve_ref(self, request, ref):
         capsule = self._ref_resolver.resolve_ref(ref)
         if not capsule:
-            raise href_types.unknown_ref_error(ref)
+            raise htypes.hyper_ref.unknown_ref_error(ref)
         return request.make_response_result(capsule=capsule)
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
@@ -34,7 +34,8 @@ class ThisModule(ServerModule):
 
     # depends on mapping being generated for ref_storage
     def init_phase_3(self, services):
-        service = href_types.service(REF_RESOLVER_SERVICE_ID, ['hyper_ref', 'ref_resolver'])
+        iface_type_ref = services.type_resolver.reverse_resolve(htypes.hyper_ref.ref_resolver)
+        service = htypes.hyper_ref.service(REF_RESOLVER_SERVICE_ID, iface_type_ref)
         service_ref = self._ref_registry.register_object(service)
         self._service_registry.register(service_ref, RefResolverService, self._ref_resolver)
         ref_collector = self._ref_collector_factory()

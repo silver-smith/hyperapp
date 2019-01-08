@@ -1,7 +1,6 @@
-from ..common.interface import hyper_ref as href_types
-from ..common.interface import fs as fs_types
-from ..common.fs_service_impl import FsServiceImpl
-from .module import ServerModule
+from hyperapp.common.module import Module
+from . import htypes
+from .fs_service_impl import FsServiceImpl
 
 
 MODULE_NAME = 'fs'
@@ -11,7 +10,7 @@ FS_SERVICE_ID = 'fs'
 class FsService(object):
 
     def __init__(self):
-        self._impl = FsServiceImpl(fs_types)
+        self._impl = FsServiceImpl()
 
     def rpc_fetch_dir_contents(self, request, host, fs_path, fetch_request):
         assert host == 'localhost', repr(host)  # remote hosts not supported
@@ -19,18 +18,19 @@ class FsService(object):
         return request.make_response_result(chunk=chunk)
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
         self._init_fs_service(services)
 
     def _init_fs_service(self, services):
-        service = href_types.service(FS_SERVICE_ID, ['fs', 'fs_service_iface'])
+        iface_type_ref = services.type_resolver.reverse_resolve(htypes.fs.fs_service_iface)
+        service = htypes.hyper_ref.service(FS_SERVICE_ID, iface_type_ref)
         service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, FsService)
 
-        fs = fs_types.fs(
+        fs = htypes.fs.fs(
             fs_service_ref=service_ref,
             host='localhost',
             path=['usr', 'share'],

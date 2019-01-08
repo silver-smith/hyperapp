@@ -1,8 +1,8 @@
 import logging
 
-from ..common.interface import hyper_ref as href_types
-from ..common.local_server_paths import LOCAL_ROUTE_RESOLVER_REF_PATH, save_bundle_to_file
-from .module import ServerModule
+from hyperapp.common.module import Module
+from . import htypes
+from .local_server_paths import LOCAL_ROUTE_RESOLVER_REF_PATH, save_bundle_to_file
 
 log = logging.getLogger(__name__)
 
@@ -21,11 +21,12 @@ class RouteResolverService(object):
         return request.make_response_result(transport_ref_list=list(transport_ref_set))
 
 
-class ThisModule(ServerModule):
+class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        service = href_types.service(ROUTE_RESOLVER_SERVICE_ID, ['hyper_ref', 'route_resolver'])
+        iface_type_ref = services.type_resolver.reverse_resolve(htypes.hyper_ref.route_resolver)
+        service = htypes.hyper_ref.service(ROUTE_RESOLVER_SERVICE_ID, iface_type_ref)
         service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, RouteResolverService, services.route_resolver)
         ref_collector = services.ref_collector_factory()

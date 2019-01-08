@@ -4,13 +4,13 @@ import os.path
 import stat
 from operator import itemgetter
 
-from .list_object import rows2fetched_chunk
+from hyperapp.common.list_object import rows2fetched_chunk
+from . import htypes
 
 
 class FsServiceImpl(object):
 
-    def __init__(self, fs_types):
-        self._fs_types = fs_types
+    def __init__(self):
         if sys.platform == 'win32':
             self._fs_encoding = sys.getfilesystemencoding()
         else:
@@ -18,7 +18,7 @@ class FsServiceImpl(object):
 
     def fetch_dir_contents(self, fs_path, fetch_request):
         all_rows = self._fetch_dir_contents(fs_path)
-        return rows2fetched_chunk('key', all_rows, fetch_request, self._fs_types.fs_dir_chunk)
+        return rows2fetched_chunk('key', all_rows, fetch_request, htypes.fs.fs_dir_chunk)
 
     def _fetch_dir_contents(self, fs_path):
         dir_path = '/' + '/'.join(fs_path)
@@ -37,7 +37,7 @@ class FsServiceImpl(object):
                 dirs.append(finfo)
             else:
                 files.append(finfo)
-        return [self._fs_types.fs_dir_row(key=finfo['key'], ftype=finfo['ftype'], ftime=finfo['ftime'], fsize=finfo['fsize'])
+        return [htypes.fs.fs_dir_row(key=finfo['key'], ftype=finfo['ftype'], ftime=finfo['ftime'], fsize=finfo['fsize'])
                 for finfo in sorted(dirs, key=itemgetter('key')) +
                              sorted(files, key=itemgetter('key'))]
 
