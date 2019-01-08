@@ -4,6 +4,7 @@ from pathlib import Path
 from ..common.htypes.packet_coders import packet_coders
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
+from ..common.module import ModuleRegistry
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
@@ -107,19 +108,16 @@ class Services(ClientServicesBase):
         self._hyperapp_client_dir = self.hyperapp_dir / 'client'
         ServicesBase.init_services(self)
         self.client_module_dir = self._hyperapp_client_dir
-        self.module_registry = ClientModuleRegistry()
+        self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
-        self.module_manager = ModuleManager(self)
-        self.modules = self.module_manager.modules
-        self.module_manager.register_meta_hook()
-        self._load_type_modules(type_module_list)
+        self._load_type_module_list(type_module_list)
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self.resources_registry = ResourcesRegistry(self.types.resource)
         self.resources_manager = ResourcesManager(
             self.types.resource, self.types.param_editor, self.resources_registry, self.cache_repository, self._hyperapp_client_dir)
-        self._load_code_modules()
+        self._load_code_module_list(code_module_list)
         self._register_static_modules()
         #self._register_transports()
 
@@ -142,7 +140,3 @@ class Services(ClientServicesBase):
     def _register_transports(self):
         tcp_transport.register_transports(self.remoting.transport_registry, self)
         encrypted_transport.register_transports(self.remoting.transport_registry, self)
-
-    def _load_code_modules(self):
-        for module_name in code_module_list:
-            self.module_manager.load_code_module_by_name(self.types, self.hyperapp_dir, module_name)
