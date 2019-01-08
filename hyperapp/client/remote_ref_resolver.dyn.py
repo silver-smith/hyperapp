@@ -1,8 +1,8 @@
 import logging
 
-from ..common.local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_bundle_from_file
+from hyperapp.client.module import ClientModule
+from .local_server_paths import LOCAL_REF_RESOLVER_REF_PATH, load_bundle_from_file
 from .async_ref_resolver import AsyncRefSource
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

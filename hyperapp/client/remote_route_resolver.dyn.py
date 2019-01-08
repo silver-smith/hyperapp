@@ -1,9 +1,9 @@
 import logging
 import asyncio
 
-from ..common.local_server_paths import LOCAL_ROUTE_RESOLVER_REF_PATH, load_bundle_from_file
+from hyperapp.client.module import ClientModule
+from .local_server_paths import LOCAL_ROUTE_RESOLVER_REF_PATH, load_bundle_from_file
 from .async_route_resolver import AsyncRouteSource
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 

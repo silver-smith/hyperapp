@@ -1,6 +1,6 @@
 import:
   types:
-    resource_types:
+    resource:
       - resource
       - resource_rec
       - resource_rec_list
