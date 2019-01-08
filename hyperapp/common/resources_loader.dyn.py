@@ -2,31 +2,30 @@ import re
 import yaml
 import logging
 
-from .dict_decoders import DictDecoder
-
+from hyperapp.common.dict_decoders import DictDecoder
+from . import htypes
 
 log = logging.getLogger(__name__)
 
 
 class ResourcesLoader(object):
 
-    def __init__(self, resource_types, param_editor_types):
-        self._resource_types = resource_types
-        self._param_editor_types = param_editor_types
+    def __init__(self):
+        pass
 
     def load_unlocalized_resources_from_dir(self, dir):
         for fpath in dir.glob('*.resources.yaml'):
             module_name = re.match(r'([^.]+)\.resources\.yaml', fpath.name).group(1)
             log.info('Loading resources from %s', fpath)
             for rec in self._load_resources_from_file(fpath):
-                yield self._resource_types.resource_rec([module_name] + rec.id, rec.resource)
+                yield htypes.resource.resource_rec([module_name] + rec.id, rec.resource)
 
     def load_localized_resources_from_dir(self, dir):
         for fpath in dir.glob('*.resources.*.yaml'):
             module_name, lang = re.match(r'([^.]+)\.resources\.([^.]+)\.yaml', fpath.name).groups()
             log.info('Loading resources for language %r from %s', lang, fpath)
             for rec in self._load_resources_from_file(fpath):
-                yield self._resource_types.resource_rec([module_name] + rec.id + [lang], rec.resource)
+                yield htypes.resource.resource_rec([module_name] + rec.id + [lang], rec.resource)
 
     def _load_resources_from_file(self, fpath):
         with fpath.open() as f:
@@ -38,7 +37,7 @@ class ResourcesLoader(object):
                 else:
                     for section_type, item_elements in sections.items():
                         for rec in self._decode_resource_section(section_type, item_elements):
-                            yield self._resource_types.resource_rec([object_id] + rec.id, rec.resource)
+                            yield htypes.resource.resource_rec([object_id] + rec.id, rec.resource)
 
     def _decode_resource_section(self, section_type, item_elements):
         for item_id, items in item_elements.items():
@@ -57,23 +56,23 @@ class ResourcesLoader(object):
             else:
                 assert False, 'Unknown resource section type: %r' % section_type
             resource_id = [item_type, item_id]
-            yield self._resource_types.resource_rec(resource_id, resource)
+            yield htypes.resource.resource_rec(resource_id, resource)
 
     def _value2command_resource(self, value):
-        return self._resource_types.command_resource(is_default=value.get('is_default', False),
+        return htypes.resource.command_resource(is_default=value.get('is_default', False),
                                                      text=value.get('text'),
                                                      description=value.get('description') or value.get('text'),
                                                      shortcuts=value.get('shortcuts', []))
 
     def _value2column_resource(self, value):
-        return self._resource_types.column_resource(visible=value.get('visible', True),
+        return htypes.resource.column_resource(visible=value.get('visible', True),
                                                     text=value.get('text'),
                                                     description=value.get('description'))
 
     def _value2param_editor_resource(self, value):
         decoder = DictDecoder()
-        param_editor = decoder.decode_dict(self._param_editor_types.param_editor, value)
-        return self._param_editor_types.param_editor_resource(param_editor)
+        param_editor = decoder.decode_dict(htypes.param_editor.param_editor, value)
+        return htypes.param_editor.param_editor_resource(param_editor)
 
     def _value2error_message_resource(self, value):
-        return self._resource_types.error_message_resource(message=value)
+        return htypes.resource.error_message_resource(message=value)

@@ -1,0 +1,10 @@
+import:
+  types:
+    resource:
+      - resource_rec
+      - command_resource
+      - column_resource
+      - error_message_resource
+    param_editor:
+      - param_editor
+      - param_editor_resource

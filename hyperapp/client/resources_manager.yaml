@@ -1,0 +1,8 @@
+import:
+  types:
+    resource_types:
+      - resource
+      - resource_rec
+      - resource_rec_list
+  code:
+    - common.resources_loader

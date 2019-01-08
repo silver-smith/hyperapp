@@ -49,12 +49,12 @@ type_module_list = [
 code_module_list = [
     'common.visual_rep_encoders',
     'common.local_server_paths',
-    'common.ref_resolver',
-    'common.ref_registry_module',
     'common.route_resolver',
+    'common.visitor',
     'common.ref_collector',
     'common.unbundler',
     'common.tcp_packet',
+    'common.resources_loader',
     'client.async_ref_resolver',
     'client.capsule_registry',
     'client.async_route_resolver',
@@ -67,6 +67,7 @@ code_module_list = [
     'client.transport.tcp',
     'client.remote_ref_resolver',
     'client.remote_route_resolver',
+    'client.resources_manager',
     'client.objimpl_registry',
     'client.view_registry',
     'client.form',
@@ -106,6 +107,7 @@ class Services(ClientServicesBase):
         super().__init__()
         self.event_loop = event_loop
         self._hyperapp_client_dir = self.hyperapp_dir / 'client'
+        self.client_resources_dir = self._hyperapp_client_dir
         ServicesBase.init_services(self)
         self.client_module_dir = self._hyperapp_client_dir
         self.module_registry = ModuleRegistry()
@@ -114,9 +116,6 @@ class Services(ClientServicesBase):
         self._load_type_module_list(type_module_list)
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
-        self.resources_registry = ResourcesRegistry(self.types.resource)
-        self.resources_manager = ResourcesManager(
-            self.types.resource, self.types.param_editor, self.resources_registry, self.cache_repository, self._hyperapp_client_dir)
         self._load_code_module_list(code_module_list)
         self._register_static_modules()
         #self._register_transports()
