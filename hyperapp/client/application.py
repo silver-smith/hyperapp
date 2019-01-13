@@ -8,7 +8,6 @@ from . import view
 from .services import Services
 from .async_application import AsyncApplication
 from .application_state_storage import ApplicationStateStorage
-from .default_state import build_default_state
 
 log = logging.getLogger(__name__)
 
@@ -19,27 +18,25 @@ class Application(AsyncApplication, view.View):
         AsyncApplication.__init__(self, sys_argv)
         view.View.__init__(self)
         self.services = Services(self.event_loop)
-        self._packet_types = self.services.types.packet
         self._module_registry = self.services.module_registry
         self._remoting = self.services.remoting
         self._resources_manager = self.services.resources_manager
         self._view_registry = self.services.view_registry
-        self._modules = self.services.modules
         self._windows = []
-        self._state_storage = ApplicationStateStorage(
-            self.services.types.error,
-            self.services.types.module,
-            self.services.types.packet,
-            self.services.types.resource,
-            self.services.types.core,
-            self.services.types.param_editor,
-            self.services.objimpl_registry,
-            self.services.view_registry,
-            self.services.type_module_repository,
-            self.services.resources_manager,
-            self.services.module_manager,
-            #self.services.code_repository,
-            )
+#        self._state_storage = ApplicationStateStorage(
+#            self.services.types.error,
+#            self.services.types.module,
+#            self.services.types.packet,
+#            self.services.types.resource,
+#            self.services.types.core,
+#            self.services.types.param_editor,
+#            self.services.objimpl_registry,
+#            self.services.view_registry,
+#            self.services.type_module_repository,
+#            self.services.resources_manager,
+#            self.services.module_manager,
+#            #self.services.code_repository,
+#            )
 
     def get_state(self):
         return [view.get_state() for view in self._windows]
@@ -87,7 +84,7 @@ class Application(AsyncApplication, view.View):
         #state = self._state_storage.load_state_with_requirements(self.event_loop)
         state = None
         if not state:
-            state = build_default_state(self._modules)
+            state = self.services.build_default_state()
         self.event_loop.run_until_complete(self.services.async_init())
         self.event_loop.run_until_complete(self.open_windows(state))
         AsyncApplication.exec_(self)

@@ -99,6 +99,7 @@ code_module_list = [
     'client.fs_remote_service',
     'client.object_selector',
     'client.blog',
+    'client.default_state_builder',
     ]
 
 

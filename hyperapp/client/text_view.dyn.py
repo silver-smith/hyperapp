@@ -23,10 +23,6 @@ class View(view.View, QtGui.QTextBrowser):
         object = await objimpl_registry.resolve(state.object)
         return cls(object, parent)
 
-    @staticmethod
-    def get_state_type():
-        return this_module.state_type
-
     def __init__(self, object, parent):
         QtGui.QTextBrowser.__init__(self)
         view.View.__init__(self, parent)
@@ -37,7 +33,7 @@ class View(view.View, QtGui.QTextBrowser):
         self.object.subscribe(self)
 
     def get_state(self):
-        return this_module.state_type('text_view', self.object.get_state())
+        return htypes.text_object.text_view('text_view', self.object.get_state())
 
     def get_title(self):
         return self.object.get_title()
@@ -72,5 +68,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self.state_type = htypes.core.obj_handle
         services.view_registry.register('text_view', View.from_state, services.objimpl_registry)

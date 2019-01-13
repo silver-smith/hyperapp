@@ -12,7 +12,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self._packet_types = services.types.packet
+        #self._packet_types = services.types.packet
         #self._iface_registry = services.iface_registry
         self._remoting = services.remoting
 
