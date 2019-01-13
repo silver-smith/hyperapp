@@ -4,10 +4,10 @@ import logging
 from enum import Enum
 from PySide import QtCore, QtGui
 
-from ..common.interface import line_object as line_object_types
-from .module import ClientModule
-from .object import Object
-from . import view
+from hyperapp.client.object import Object
+from hyperapp.client.view import View
+from hyperapp.client.module import ClientModule
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class LineObject(Object):
         return 'Line'
 
     def get_state(self):
-        return line_object_types.line_object(self.impl_id, self._line)
+        return htypes.line_object.line_object(self.impl_id, self._line)
 
     @property
     def line(self):
@@ -51,7 +51,7 @@ class LineObject(Object):
         log.info('~line_object %r', self)
 
 
-class LineEditView(view.View, QtGui.QLineEdit):
+class LineEditView(View, QtGui.QLineEdit):
 
     impl_id = 'line_edit'
 
@@ -66,7 +66,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
 
     def __init__(self, object, mode, parent):
         QtGui.QLineEdit.__init__(self, object.line)
-        view.View.__init__(self, parent)
+        View.__init__(self, parent)
         self._object = object
         self._mode = mode
         self._notify_on_line_changed = True
@@ -75,7 +75,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
         self._object.subscribe(self)
 
     def get_state(self):
-        return line_object_types.line_edit_view(self.impl_id, self._object.get_state(), self._mode.value)
+        return htypes.line_object.line_edit_view(self.impl_id, self._object.get_state(), self._mode.value)
 
     def get_object(self):
         return self._object
@@ -92,7 +92,7 @@ class LineEditView(view.View, QtGui.QLineEdit):
             self.setText(self._object.line)
         finally:
             self._notify_on_line_changed = True
-        view.View.object_changed(self)
+        View.object_changed(self)
 
     def __del__(self):
         log.info('~line_edit')

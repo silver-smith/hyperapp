@@ -1,0 +1,5 @@
+import:
+  types:
+    line_object:
+      - line_object
+      - line_edit_view
