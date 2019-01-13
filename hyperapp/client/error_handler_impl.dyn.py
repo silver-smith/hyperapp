@@ -1,9 +1,7 @@
-from ..common.htypes import Field
-from ..common.interface import error as error_types
-from ..common.interface import core as core_types
-from ..common.interface import text_object as text_object_types
-from .module import ClientModule
-from .error_handler_hook import set_error_handler
+from hyperapp.common.htypes import Field
+from hyperapp.client.module import ClientModule
+from hyperapp.client.error_handler_hook import set_error_handler
+from . import htypes
 
 
 MODULE_NAME = 'ereror_handler_impl'
@@ -17,9 +15,9 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         self._resources_manager = services.resources_manager
-        self._error_handle_t = services.types.core.handle.register(
-            ERROR_HANDLER_CLASS_ID, base=services.types.core.view_handle, fields=[
-                Field('error', error_types.error),
+        self._error_handle_t = htypes.core.handle.register(
+            ERROR_HANDLER_CLASS_ID, base=htypes.core.view_handle, fields=[
+                Field('error', htypes.error.error),
                 ])
         services.view_registry.register(ERROR_HANDLER_VIEW_ID, self.resolve_error_handler)
         set_error_handler(self.error_handler)
@@ -33,11 +31,11 @@ class ThisModule(ClientModule):
             message = 'Unexpected error: %s' % state.error._class_id
         # somehow this state got stuck forever, holding all objects in it's traceback, including views subscribed to events
         state.error.__traceback__ = None
-        obj = text_object_types.text_object('text', message)
-        return core_types.obj_handle('text_view', obj)
+        obj = htypes.text_object.text_object('text', message)
+        return htypes.core.obj_handle('text_view', obj)
 
     def error_handler(self, exception):
-        if not isinstance(exception, error_types.error):
-            exception = error_types.unknown_client_error()
+        if not isinstance(exception, htypes.error.error):
+            exception = htypes.error.unknown_client_error()
         # using intermediate handle is the simplest way to get current locale
         return self._error_handle_t(ERROR_HANDLER_VIEW_ID, exception)
