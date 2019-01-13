@@ -2,16 +2,14 @@ import logging
 import asyncio
 from PySide import QtCore, QtGui
 
-from ..common.interface import core as core_types
-from ..common.interface import narrower as narrower_types
-from .util import uni2str, key_match, key_match_any
-from .module import ClientModule
-from .object import ObjectObserver, Object
-from .list_object import ListObserver, Chunk, ListObject
-from .command import command
-from . import view
+from hyperapp.client.util import uni2str, key_match, key_match_any
+from hyperapp.client.object import ObjectObserver, Object
+from hyperapp.client.list_object import ListObserver, Chunk, ListObject
+from hyperapp.client.command import command
+from hyperapp.client.module import ClientModule
 from .line_list_panel import LineListPanel
 from . import line_edit
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +49,7 @@ class NarrowerObject(Object):
         return 'Narrowed: %s' % self._list_object.get_title()
 
     def get_state(self):
-        return narrower_types.narrower_object(self.impl_id, self._filtered_field)
+        return htypes.narrower.narrower_object(self.impl_id, self._filtered_field)
 
     @command('wider', enabled=False)
     def cancel_narrowing(self):
@@ -92,7 +90,7 @@ class NarrowerView(LineListPanel):
         self._object.subscribe(self)
 
     def get_state(self):
-        return narrower_types.narrower_view(
+        return htypes.narrower.narrower_view(
             view_id=self.impl_id,
             object=self._object.get_state(),
             filter_line=self._filter_line.get_state(),
@@ -140,6 +138,6 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy, not use otherwise:
+        # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy, not used otherwise:
         services.objimpl_registry.register(NarrowerObject.impl_id, NarrowerObject.from_state)
         services.view_registry.register(NarrowerView.impl_id, NarrowerView.from_state, services.view_registry)

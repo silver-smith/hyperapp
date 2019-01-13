@@ -1,0 +1,8 @@
+import:
+  types:
+    narrower:
+      - narrower_object
+      - narrower_view
+  code:
+    - client.line_list_panel
+    - client.line_edit
