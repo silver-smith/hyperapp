@@ -3,19 +3,17 @@ import logging
 import asyncio
 import bisect
 from PySide import QtCore, QtGui
+
 from ..common.htypes import Type
 from ..common.list_object import Chunk, ListDiff
 from .util import uni2str, key_match, key_match_any, make_async_action
 from .command import Command, ViewCommand
 from .list_object import ListObserver, ListObject
-from . import view
+from .view import View
 from .slice import Slice
-from .module import ClientModule
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'list_view'
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling 
@@ -176,21 +174,15 @@ class Model(QtCore.QAbstractTableModel):
         log.info('~list_view.Model self=%s', id(self))
 
 
-class View(view.View, ListObserver, QtGui.QTableView):
-
-    @classmethod
-    async def from_state(cls, locale, state, parent, core_types, objimpl_registry, resources_manager):
-        data_type = core_types.handle.get_object_class(state)
-        object = await objimpl_registry.resolve(state.object)
-        return cls(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)
+class ListView(View, ListObserver, QtGui.QTableView):
 
     def __init__(self, locale, parent, resources_manager, resource_id, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True):
-        assert parent is None or isinstance(parent, view.View), repr(parent)
+        assert parent is None or isinstance(parent, View), repr(parent)
         assert data_type is None or isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
         log.debug('new list_view self=%s', id(self))
         QtGui.QTableView.__init__(self)
-        view.View.__init__(self, parent)
+        View.__init__(self, parent)
         self._locale = locale
         self._resources_manager = resources_manager
         self._resource_id = resource_id
@@ -226,7 +218,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
         return self._object
 
     def get_command_list(self, kinds):
-        command_list = view.View.get_command_list(self, kinds)
+        command_list = View.get_command_list(self, kinds)
         filtered_command_list = list(filter(lambda command: command.kind != 'element', command_list))
         if not kinds or 'element' in kinds:
             return filtered_command_list + self._elt_commands
@@ -238,7 +230,7 @@ class View(view.View, ListObserver, QtGui.QTableView):
 
     def object_changed(self):
         log.info('-- list_view.object_changed self=%s / %r', id(self), self)
-        view.View.object_changed(self)
+        View.object_changed(self)
         self._wanted_current_key = self.get_current_key()
         self.model()._reset()
         self.fetch_elements_if_required()
@@ -254,12 +246,12 @@ class View(view.View, ListObserver, QtGui.QTableView):
         ##     # else: just use last row
         ## if row is not None:
         ##     self.set_current_row(row)
-        ## view.View.object_changed(self)
+        ## View.object_changed(self)
         ## self.check_if_elements_must_be_fetched()
 
     def process_fetch_result(self, chunk):
         log.debug('-- list_view.process_fetch_result self=%s (pre)', id(self))
-        self.model()  # Internal C++ object (View) already deleted - this possible means this view was leaked.
+        self.model()  # Internal C++ object (ListView) already deleted - this possible means this view was leaked.
         log.info('-- list_view.process_fetch_result self=%s model=%r sort_column_id=%r bof=%r eof=%r len(elements)=%r keys=%r',
                  id(self), id(self.model()), chunk.sort_column_id, chunk.bof, chunk.eof, len(chunk.elements),
                  [element.key for element in chunk.elements])
@@ -442,11 +434,4 @@ class View(view.View, ListObserver, QtGui.QTableView):
             self._elt_commands.append(wrapped_command)
 
     def __del__(self):
-        log.debug('~list_view.View self=%r', id(self))
-
-
-class ThisModule(ClientModule):
-
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
-        services.view_registry.register('list', View.from_state, services.types.core, services.objimpl_registry, services.resources_manager)
+        log.debug('~list_view.ListView self=%r', id(self))

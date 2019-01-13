@@ -76,6 +76,7 @@ code_module_list = [
     'client.navigator.history_list',
     'client.navigator.navigator',
     'client.navigator.module',
+    'client.list_view_module',
     'client.form',
 #    'code_repository',
 #    'identity',
@@ -131,7 +132,6 @@ class Services(ClientServicesBase):
 
     def _register_static_modules(self):
         for module in [
-                list_view,
                 url_clipboard,
             ]:
             this_module = module.ThisModule(self)

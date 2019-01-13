@@ -17,7 +17,7 @@ from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
 from hyperapp.client.list_object import Column, ListObject
-from hyperapp.client.list_view import View
+from hyperapp.client.list_view import ListView
 from hyperapp.test.utils import resolve_type
 
 log = logging.getLogger(__name__)
@@ -126,7 +126,7 @@ def list_view_factory(application, services, object):
 
     def make_list_view(object=None, sort_column_id=None, current_key=None, resources=None):
         resource_manager = ResourcesManager(resources)
-        return View(
+        return ListView(
             locale='en',
             parent=None,
             resources_manager=resource_manager,
