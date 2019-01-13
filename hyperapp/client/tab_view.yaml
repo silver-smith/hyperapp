@@ -2,3 +2,5 @@ import:
   types:
     tab_view:
       - tab_view_state
+  code:
+    - client.splitter

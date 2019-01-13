@@ -7,8 +7,8 @@ from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from hyperapp.client.view import View
-from hyperapp.client import splitter
 from . import htypes
+from . import splitter
 
 log = logging.getLogger(__name__)
 

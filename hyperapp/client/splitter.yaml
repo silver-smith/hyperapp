@@ -1,0 +1,4 @@
+import:
+  types:
+    splitter:
+      - splitter_handle
