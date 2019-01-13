@@ -1,9 +1,8 @@
 import os.path
 
-from ..common.interface import hyper_ref as href_types
-from ..common.local_server_paths import LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH, load_bundle_from_file
-from .command import command
-from .module import ClientModule
+from hyperapp.client.command import command
+from hyperapp.client.module import ClientModule
+from .local_server_paths import LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH, load_bundle_from_file
 
 
 MODULE_NAME = 'local_server_ref_list'

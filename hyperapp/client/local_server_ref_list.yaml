@@ -1,0 +1,3 @@
+import:
+  code:
+    - common.local_server_paths
