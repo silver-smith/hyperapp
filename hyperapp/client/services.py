@@ -32,6 +32,7 @@ type_module_list = [
     'module',
     'packet',
     'tcp_transport',
+    'navigator',
     'param_editor',
 #    'server_management',
 #    'code_repository',
@@ -71,6 +72,9 @@ code_module_list = [
     'client.resources_manager',
     'client.objimpl_registry',
     'client.view_registry',
+    'client.navigator.history_list',
+    'client.navigator.navigator',
+    'client.navigator.module',
     'client.form',
 #    'code_repository',
 #    'identity',
@@ -126,7 +130,6 @@ class Services(ClientServicesBase):
 
     def _register_static_modules(self):
         for module in [
-                navigator,
                 tab_view,
                 window,
                 splitter,

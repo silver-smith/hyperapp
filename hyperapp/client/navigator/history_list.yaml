@@ -1,0 +1,5 @@
+import:
+  types:
+    navigator:
+      - item
+      - history_list

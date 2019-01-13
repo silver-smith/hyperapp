@@ -1,0 +1,9 @@
+import:
+  type:
+    navigator:
+      - item
+      - state
+      - history_list
+      - history_list_handle
+  code:
+    - client.navigator.history_list

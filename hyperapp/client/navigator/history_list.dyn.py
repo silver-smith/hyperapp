@@ -1,8 +1,9 @@
 import logging
 from hyperapp.common.util import is_list_inst
 #from hyperapp.common.htypes import tInt, Column
-from ..command import command
-from ..list_object import Element, Chunk, ListObject
+from hyperapp.client.command import command
+from hyperapp.client.list_object import Element, Chunk, ListObject
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -19,18 +20,17 @@ class HistoryList(ListObject):
     impl_id = 'history_list'
 
     @classmethod
-    def from_state(cls, state, this_module):
-        assert isinstance(state, this_module.history_list_type), repr(state)  # using same state as navigator
-        return cls(state.history, this_module)
+    def from_state(cls, state):
+        assert isinstance(state, htypes.navigator.history_list), repr(state)  # using same state as navigator
+        return cls(state.history)
 
-    def __init__(self, history, this_module):
-        assert is_list_inst(history, this_module.item_type), repr(history)
+    def __init__(self, history):
+        assert is_list_inst(history, htypes.navigator.item), repr(history)
         ListObject.__init__(self)
-        self._this_module = this_module
         self._history = history
 
     def get_state(self):
-        return self._this_module.history_list_type(self.impl_id, self._history)
+        return htypes.navigator.history_list(self.impl_id, self._history)
 
     def get_title(self):
         return 'Navigation history'
