@@ -9,7 +9,7 @@ from .command import command
 from . import view
 from .menu_bar import MenuBar
 from . import cmd_pane
-from . import tab_view
+#from . import tab_view
 
 log = logging.getLogger(__name__)
 

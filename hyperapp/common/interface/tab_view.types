@@ -1,0 +1,6 @@
+from core import handle
+
+
+state = record:
+    tabs: handle list
+    current_tab: int

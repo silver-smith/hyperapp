@@ -1,6 +1,6 @@
 from . import window
-from . import tab_view
-from . import navigator
+#from . import tab_view
+#from . import navigator
 
 
 def build_default_state(modules):

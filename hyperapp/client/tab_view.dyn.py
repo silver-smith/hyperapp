@@ -1,12 +1,14 @@
 import logging
 from PySide import QtCore, QtGui
-from ..common.util import is_list_inst
-from ..common.htypes import tInt, TList, Field, TRecord
-from .util import DEBUG_FOCUS, call_after, key_match
-from .module import ClientModule
-from .command import command
-from . import view
-from . import splitter
+
+from hyperapp.common.util import is_list_inst
+from hyperapp.common.htypes import tInt, TList, Field, TRecord
+from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match
+from hyperapp.client.command import command
+from hyperapp.client.module import ClientModule
+from hyperapp.client.view import View
+from hyperapp.client import splitter
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -14,11 +16,7 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'tab_view'
 
 
-def get_state_type():
-    return this_module.state_type
-
-
-class View(QtGui.QTabWidget, view.View):
+class TabView(QtGui.QTabWidget, View):
 
     @classmethod
     async def from_state(cls, locale, state, module_registry, view_registry):
@@ -33,12 +31,12 @@ class View(QtGui.QTabWidget, view.View):
     @staticmethod    
     def map_current(state, mapper):
         idx = state.current_tab
-        return this_module.state_type(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
+        return htypes.tab_view.state(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
     def __init__(self, locale, view_registry, children, current_idx):
-        assert is_list_inst(children, view.View), repr(children)
+        assert is_list_inst(children, View), repr(children)
         QtGui.QTabWidget.__init__(self)
-        view.View.__init__(self)
+        View.__init__(self)
         self._locale = locale
         self._view_registry = view_registry
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
@@ -52,7 +50,7 @@ class View(QtGui.QTabWidget, view.View):
         self.currentChanged.connect(self._on_current_changed)
 
     def get_state(self):
-        return this_module.state_type([view.get_state() for view in self._children], self.currentIndex())
+        return htypes.tab_view.state([view.get_state() for view in self._children], self.currentIndex())
 
     def get_current_child(self):
         idx = self.currentIndex()
@@ -73,14 +71,14 @@ class View(QtGui.QTabWidget, view.View):
             self.setCurrentIndex(idx)
             child.ensure_has_focus()
         self.setTabText(idx, child.get_title())
-        view.View.view_changed(self)  # notify parents
+        View.view_changed(self)  # notify parents
 
     def open(self, handle):
         idx = self.currentIndex()
         self._children[idx].open(handle)
 
     def _on_current_changed(self, idx):
-        view.View.view_changed(self)
+        View.view_changed(self)
 
     def setVisible(self, visible):
         if DEBUG_FOCUS: log.info('*** tab_view.setVisible self=%r visible=%r current-tab#=%d', self, visible, self.currentIndex())
@@ -101,7 +99,7 @@ class View(QtGui.QTabWidget, view.View):
         self._remove_tab(idx)
         if idx >= len(self._children):
             idx -= 1
-        view.View.view_changed(self)  # notify parents
+        View.view_changed(self)  # notify parents
 
     @command('split_horizontally')
     async def split_horizontally(self):
@@ -123,7 +121,7 @@ class View(QtGui.QTabWidget, view.View):
         child = await self._view_registry.resolve(self._locale, state, self)
         self._insert_tab(idx, child)
         child.ensure_has_focus()
-        view.View.view_changed(self)  # notify parents
+        View.view_changed(self)  # notify parents
 
     def _remove_tab(self, idx):
         w = self.widget(idx)
@@ -145,7 +143,3 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self.state_type = TRecord([
-            Field('tabs', TList(services.types.core.handle)),
-            Field('current_tab', tInt),
-            ])
