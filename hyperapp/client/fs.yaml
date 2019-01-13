@@ -1,0 +1,15 @@
+import:
+  types:
+    core:
+      - string_list_handle
+    line_object:
+      - line_object
+      - line_edit_view
+    narrower:
+      - narrower_object
+      - narrower_view
+    fs:
+      - fs
+      - fs_dir_object
+  code:
+    - client.async_capsule_registry

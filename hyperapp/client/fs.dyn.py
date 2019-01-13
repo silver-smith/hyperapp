@@ -1,15 +1,12 @@
 import logging
 
-from ..common.htypes import tInt, tString
-from ..common.interface import core as core_types
-from ..common.interface import line_object as line_object_types
-from ..common.interface import narrower as narrower_types
-from ..common.interface import fs as fs_types
-from ..common.list_object import Element, Chunk
-from .command import command
-from .capsule_registry import CapsuleRegistry, CapsuleResolver
-from .module import ClientModule
-from .list_object import Column, ListObject
+from hyperapp.common.htypes import tInt, tString
+from hyperapp.common.list_object import Element, Chunk
+from hyperapp.client.command import command
+from hyperapp.client.list_object import Column, ListObject
+from hyperapp.client.module import ClientModule
+from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +33,7 @@ class FsDirObject(ListObject):
         self._key2row = {}  # cache for visited rows
 
     def get_state(self):
-        return fs_types.fs_dir_object(self.impl_id, self._fs_service.to_ref(), self._host, self._path)
+        return htypes.fs.fs_dir_object(self.impl_id, self._fs_service.to_ref(), self._host, self._path)
 
     def get_title(self):
         return '%s:/%s' % (self._host, '/'.join(self._path))
@@ -84,7 +81,7 @@ class FsDirObject(ListObject):
 
     def _get_path_ref(self, path, current_file_name=None):
         fs_service_ref = self._fs_service.to_ref()
-        object = fs_types.fs(fs_service_ref, self._host, path, current_file_name)
+        object = htypes.fs.fs(fs_service_ref, self._host, path, current_file_name)
         return self._ref_registry.register_object(object)
 
     async def _open_path(self, path, current_file_name=None):
@@ -107,20 +104,20 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.fs_service_registry = fs_service_registry = CapsuleRegistry('fs_service', services.types)
-        services.fs_service_resolver = fs_service_resolver = CapsuleResolver(services.async_ref_resolver, fs_service_registry)
-        services.handle_registry.register(fs_types.fs, self._resolve_fs)
+        services.fs_service_registry = fs_service_registry = AsyncCapsuleRegistry('fs_service', services.type_resolver)
+        services.fs_service_resolver = fs_service_resolver = AsyncCapsuleResolver(services.async_ref_resolver, fs_service_registry)
+        services.handle_registry.register_type(htypes.fs.fs, self._resolve_fs)
         services.objimpl_registry.register(
             FsDirObject.impl_id, FsDirObject.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
     async def _resolve_fs(self, fs_ref, fs):
-        dir_object = fs_types.fs_dir_object(FsDirObject.impl_id, fs.fs_service_ref, fs.host, fs.path)
-        handle_t = core_types.string_list_handle
+        dir_object = htypes.fs.fs_dir_object(FsDirObject.impl_id, fs.fs_service_ref, fs.host, fs.path)
+        handle_t = htypes.core.string_list_handle
         sort_column_id = 'key'
         resource_id = ['client_module', 'fs', 'FsDirObject']
         list_handle = handle_t('list', dir_object, resource_id, sort_column_id, key=fs.current_file_name)
-        filter_object = line_object_types.line_object('line', '')
-        filter_view = line_object_types.line_edit_view('line_edit', filter_object, mode='edit')
-        narrower_object = narrower_types.narrower_object('narrower', filtered_field='key')
-        narrower_view = narrower_types.narrower_view('narrower', narrower_object, filter_view, list_handle)
+        filter_object = htypes.line_object.line_object('line', '')
+        filter_view = htypes.line_object.line_edit_view('line_edit', filter_object, mode='edit')
+        narrower_object = htypes.narrower.narrower_object('narrower', filtered_field='key')
+        narrower_view = htypes.narrower.narrower_view('narrower', narrower_object, filter_view, list_handle)
         return narrower_view
