@@ -1,4 +1,4 @@
 import:
   types:
     tab_view:
-      - state
+      - tab_view_state

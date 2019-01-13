@@ -8,7 +8,7 @@ from ..common.htypes import TList, TRecord, Field, tString, tEmbedded, Encodable
 from ..common.visual_rep import pprint
 from ..common.htypes.packet_coders import DecodeError, packet_coders
 #from .remoting import RequestError
-from . import window
+#from . import window
 
 log = logging.getLogger(__name__)
 

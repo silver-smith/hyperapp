@@ -1,0 +1,15 @@
+from tab_view import tab_view_state
+
+
+pos = record:
+    x: int
+    y: int
+
+size = record:
+    w: int
+    h: int
+
+window_state = record:
+    tab_view: tab_view_state
+    size: size
+    pos: pos

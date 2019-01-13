@@ -5,7 +5,6 @@ from ..common.url import UrlWithRoutes
 from ..common import dict_coders, cdr_coders
 from .command import command
 from . import view
-from . import window
 from .services import Services
 from .async_application import AsyncApplication
 from .application_state_storage import ApplicationStateStorage

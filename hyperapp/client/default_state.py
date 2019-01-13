@@ -1,4 +1,4 @@
-from . import window
+#from . import window
 #from . import tab_view
 #from . import navigator
 

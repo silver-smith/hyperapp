@@ -11,7 +11,6 @@ from .proxy_registry import ProxyRegistry
 from . import url_clipboard
 
 from . import command
-from . import window
 from . import splitter
 from . import list_view
 
@@ -32,6 +31,7 @@ type_module_list = [
     'tcp_transport',
     'tab_view',
     'navigator',
+    'window',
     'param_editor',
 #    'server_management',
 #    'code_repository',
@@ -72,6 +72,7 @@ code_module_list = [
     'client.objimpl_registry',
     'client.view_registry',
     'client.tab_view',
+    'client.window',
     'client.navigator.history_list',
     'client.navigator.navigator',
     'client.navigator.module',
@@ -130,7 +131,6 @@ class Services(ClientServicesBase):
 
     def _register_static_modules(self):
         for module in [
-                window,
                 splitter,
                 list_view,
                 url_clipboard,

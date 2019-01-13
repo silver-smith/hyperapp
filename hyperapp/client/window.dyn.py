@@ -1,15 +1,17 @@
 import logging
 import weakref
 from PySide import QtCore, QtGui
-from ..common.util import is_list_inst
-from ..common.htypes import tInt, Field, TRecord, Interface
-from .util import DEBUG_FOCUS, call_after
-from .module import ClientModule
-from .command import command
-from . import view
-from .menu_bar import MenuBar
-from . import cmd_pane
-#from . import tab_view
+
+from hyperapp.common.util import is_list_inst
+from hyperapp.common.htypes import tInt, Field, TRecord, Interface
+from hyperapp.client.util import DEBUG_FOCUS, call_after
+from hyperapp.client.view import View
+from hyperapp.client.menu_bar import MenuBar
+from hyperapp.client import cmd_pane
+from hyperapp.client.command import command
+from hyperapp.client.module import ClientModule
+from . import htypes
+from . import tab_view
 
 log = logging.getLogger(__name__)
 
@@ -22,11 +24,7 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-def get_state_type():
-    return this_module.state_type
-
-
-class Window(view.View, QtGui.QMainWindow):
+class Window(View, QtGui.QMainWindow):
 
     @classmethod
     async def from_state(cls, state, app, module_registry, view_registry, resources_manager):
@@ -39,7 +37,7 @@ class Window(view.View, QtGui.QMainWindow):
     def __init__(self, locale, view_registry, module_registry, resources_manager, app, child, size=None, pos=None):
         assert isinstance(child, tab_view.View), repr(child)
         QtGui.QMainWindow.__init__(self)
-        view.View.__init__(self, app)
+        View.__init__(self, app)
         self._locale = locale
         self._view_registry = view_registry
         self._resources_manager = resources_manager
@@ -70,7 +68,7 @@ class Window(view.View, QtGui.QMainWindow):
         self._parent().window_closed(self)
 
     def get_state(self):
-        return this_module.state_type(
+        return htypes.window.window_state(
             tab_view=self._view.get_state(),
             size=this_module.size_type(w=self.width(), h=self.height()),
             pos=this_module.point_type(x=self.x(), y=self.y()),
@@ -128,18 +126,3 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self.point_type = TRecord([
-            Field('x', tInt),
-            Field('y', tInt),
-            ])
-        self.size_type = TRecord([
-            Field('w', tInt),
-            Field('h', tInt),
-            ])
-        self.state_type = TRecord([
-            Field('tab_view', tab_view.get_state_type()),
-            Field('size', self.size_type),
-            Field('pos', self.point_type),
-            ])
-
-

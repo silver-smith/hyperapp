@@ -1,0 +1,6 @@
+import:
+  types:
+    window:
+      - window_state
+  code:
+    - client.tab_view
