@@ -1,9 +1,8 @@
 import logging
 
-from ..common.interface import hyper_ref as href_types
-from ..common.interface import fs as fs_types
-from ..common.url import Url
-from .module import ClientModule
+from hyperapp.common.url import Url
+from hyperapp.client.module import ClientModule
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +24,7 @@ class RemoteFsService(object):
         return self._proxy.service_ref
 
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
-        fetch_request = fs_types.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
+        fetch_request = htypes.fs.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
         result = await self._proxy.fetch_dir_contents(host, path, fetch_request)
         return result.chunk
 
@@ -34,4 +33,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.fs_service_registry.register(href_types.service, RemoteFsService.from_data, services.proxy_factory)
+        services.fs_service_registry.register_type(htypes.hyper_ref.service, RemoteFsService.from_data, services.proxy_factory)

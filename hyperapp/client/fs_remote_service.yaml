@@ -1,0 +1,6 @@
+import:
+  types:
+    hyper_ref:
+      - service
+    fs:
+      - row_fetch_request
