@@ -1,0 +1,8 @@
+import:
+  types:
+    fs:
+      - fs
+      - row_fetch_request
+      - local_fs_service
+  code:
+    - common.fs_service_impl

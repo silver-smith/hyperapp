@@ -55,6 +55,7 @@ code_module_list = [
     'common.unbundler',
     'common.tcp_packet',
     'common.resources_loader',
+    'common.fs_service_impl',
     'client.async_ref_resolver',
     'client.async_capsule_registry',
     'client.async_route_resolver',
