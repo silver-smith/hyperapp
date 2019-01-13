@@ -2,16 +2,13 @@ import logging
 from operator import attrgetter
 from collections import namedtuple
 
-from ..common.htypes import tInt, tString
-from ..common.interface import hyper_ref as href_types
-from ..common.interface import core as core_types
-from ..common.interface import ref_list as ref_list_types
-from ..common.ref import ref_repr
-from ..common.list_object import Element, Chunk
-from .list_object import Column
-from .command import command
-from .module import ClientModule
-from .list_object import ListObject
+from hyperapp.common.htypes import tInt, tString
+from hyperapp.common.ref import ref_repr
+from hyperapp.common.list_object import Element, Chunk
+from hyperapp.client.list_object import Column, ListObject
+from hyperapp.client.command import command
+from hyperapp.client.module import ClientModule
+from . import htypes
 
 log = logging.getLogger(__name__)
 
@@ -39,7 +36,7 @@ class RefListObject(ListObject):
         self._rows = None
 
     def get_state(self):
-        return ref_list_types.ref_list_object(self.impl_id, self._ref_list_service.to_ref(), self._ref_list_id)
+        return htypes.ref_list.ref_list_object(self.impl_id, self._ref_list_service.to_ref(), self._ref_list_id)
 
     def get_title(self):
         return 'Ref List %s' % self._ref_list_id
@@ -98,13 +95,13 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.handle_registry.register(ref_list_types.dynamic_ref_list, self._resolve_dynamic_ref_list_object)
+        services.handle_registry.register_type(htypes.ref_list.dynamic_ref_list, self._resolve_dynamic_ref_list_object)
         services.objimpl_registry.register(
             RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.proxy_factory)
 
     async def _resolve_dynamic_ref_list_object(self, dynamic_ref_list_ref, dynamic_ref_list):
-        object = ref_list_types.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
-        handle_t = core_types.string_list_handle
+        object = htypes.ref_list.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
+        handle_t = htypes.core.string_list_handle
         sort_column_id = 'id'
         resource_id = ['client_module', 'ref_list', 'RefListObject']
         return handle_t('list', object, resource_id, sort_column_id, None)
