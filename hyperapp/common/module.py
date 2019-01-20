@@ -33,5 +33,8 @@ class ModuleRegistry(object):
                 if method:
                     method(services)
 
-    def __iter__(self):
-        return iter(self._module_list)
+    def enum_modules_method(self, method_name):
+        for module in self._module_list:
+            method = getattr(module, method_name, None)
+            if method:
+                yield method

@@ -55,6 +55,7 @@ code_module_list = [
     'common.tcp_packet',
     'common.resources_loader',
     'common.fs_service_impl',
+    'client.module_command_registry',
     'client.async_ref_resolver',
     'client.async_capsule_registry',
     'client.async_route_resolver',
@@ -129,10 +130,8 @@ class Services(ClientServicesBase):
         #self._register_transports()
 
     async def async_init(self):
-        for module in self.module_registry:
-            method = getattr(module, 'async_init', None)
-            if method:
-                await method(self)
+        for method in self.module_registry.enum_modules_method('async_init'):
+            await method(self)
 
     def _register_static_modules(self):
         for module in [
