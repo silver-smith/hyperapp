@@ -129,7 +129,10 @@ class Services(ClientServicesBase):
         #self._register_transports()
 
     async def async_init(self):
-        await self.module_registry.async_init(self)
+        for module in self.module_registry:
+            method = getattr(module, 'async_init', None)
+            if method:
+                await method(self)
 
     def _register_static_modules(self):
         for module in [

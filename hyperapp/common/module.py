@@ -32,3 +32,6 @@ class ModuleRegistry(object):
                 log.info('Run init phase %d for %r', phase_num, module)
                 if method:
                     method(services)
+
+    def __iter__(self):
+        return iter(self._module_list)
