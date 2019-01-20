@@ -62,8 +62,8 @@ class Window(View, QtGui.QMainWindow):
     def get_state(self):
         return htypes.window.window_state(
             tab_view=self._view.get_state(),
-            size=this_module.size_type(w=self.width(), h=self.height()),
-            pos=this_module.point_type(x=self.x(), y=self.y()),
+            size=htypes.window.size(w=self.width(), h=self.height()),
+            pos=htypes.window.pos(x=self.x(), y=self.y()),
             )
 
     def get_current_child(self):
