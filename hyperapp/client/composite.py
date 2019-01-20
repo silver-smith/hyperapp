@@ -10,10 +10,10 @@ class Composite(view.View):
         view.View.__init__(self, parent)
         self._children = children or []
 
-    def init(self, module_registry):
-        view.View.init(self, module_registry)
+    def init(self, module_command_registry):
+        view.View.init(self, module_command_registry)
         for child in self._children:
-            child.init(module_registry)
+            child.init(module_command_registry)
 
     def get_command_list(self, kinds=None):
         command_list = super().get_command_list(kinds)

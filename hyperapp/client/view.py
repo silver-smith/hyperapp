@@ -21,10 +21,10 @@ class View(ObjectObserver, Commander):
         ObjectObserver.__init__(self)
         Commander.__init__(self, commands_kind='view')
         self._parent = weakref.ref(parent) if parent is not None else None
-        self._module_registry = None
+        self._module_command_registry = None
 
-    def init(self, module_registry):
-        self._module_registry = module_registry
+    def init(self, module_command_registry):
+        self._module_command_registry = module_command_registry
 
     def set_parent(self, parent):
         assert isinstance(parent, View), repr(parent)
@@ -50,7 +50,7 @@ class View(ObjectObserver, Commander):
             return self
 
     def get_command_list(self, kinds=None):
-        assert self._module_registry, repr(self)  # init method was not called, expected to be called by ViewRegistry.resolve
+        assert self._module_command_registry, repr(self)  # init method was not called, expected to be called by ViewRegistry.resolve
         commands = [ViewCommand.from_command(cmd, self) for cmd in Commander.get_command_list(self, kinds)]
         child = self.get_current_child()
         if child:
@@ -58,7 +58,7 @@ class View(ObjectObserver, Commander):
         object = self.get_object()
         if object:
             commands += [ViewCommand.from_command(cmd, self) for cmd in
-                         self.get_object_command_list(object, kinds) + self._module_registry.get_all_object_commands(object)]
+                         self.get_object_command_list(object, kinds) + self._module_command_registry.get_all_object_commands(object)]
         return commands
 
     def get_object_command_list(self, object, kinds=None):

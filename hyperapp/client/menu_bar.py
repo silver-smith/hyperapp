@@ -9,11 +9,11 @@ log = logging.getLogger(__name__)
 
 class MenuBar(object):
 
-    def __init__(self, app, window, locale, module_registry, resources_manager):
+    def __init__(self, app, window, locale, module_command_registry, resources_manager):
         self.app = app
         self.window = window  # weakref.ref
         self._locale = locale
-        self._module_registry = module_registry
+        self._module_command_registry = module_command_registry
         self._resources_manager = resources_manager
         self.current_dir = None
         self._build()
@@ -38,7 +38,7 @@ class MenuBar(object):
     def _build_global_menu(self, title):
         menu = QtGui.QMenu(title)
         window = self.window()
-        for cmd in self._module_registry.get_all_commands():
+        for cmd in self._module_command_registry.get_all_commands():
             assert isinstance(cmd, Command), repr(cmd)
             window_command = WindowCommand.from_command(cmd, window)
             menu.addAction(self._make_action(menu, window_command))

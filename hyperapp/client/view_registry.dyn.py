@@ -14,9 +14,9 @@ MAX_REDIRECT_COUNT = 10
 
 class ViewRegistry(Registry):
 
-    def __init__(self, module_registry):
+    def __init__(self, module_command_registry):
         super().__init__()
-        self._module_registry = module_registry
+        self._module_command_registry = module_command_registry
 
     async def resolve_async(self, locale, handle, parent=None):
         assert isinstance(locale, str), repr(locale)
@@ -31,7 +31,7 @@ class ViewRegistry(Registry):
                 log.exception('Error producing view %r:', handle.view_id)
                 view_or_handle = get_handle_for_error(x)
             if isinstance(view_or_handle, View):
-                view_or_handle.init(self._module_registry)
+                view_or_handle.init(self._module_command_registry)
                 return view_or_handle
             handle = view_or_handle
         assert False, 'Too much redirections: %d' % i
@@ -41,4 +41,4 @@ class ThisModule(Module):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME)
-        services.view_registry = ViewRegistry(services.module_registry)
+        services.view_registry = ViewRegistry(services.module_command_registry)

@@ -19,13 +19,13 @@ MODULE_NAME = 'tab_view'
 class TabView(QtGui.QTabWidget, View):
 
     @classmethod
-    async def from_state(cls, locale, state, module_registry, view_registry):
+    async def from_state(cls, locale, state, module_command_registry, view_registry):
         children = []
         for tab_state in state.tabs:
             child = await view_registry.resolve_async(locale, tab_state)
             children.append(child)
         view = cls(locale, view_registry, children, state.current_tab)
-        view.init(module_registry)
+        view.init(module_command_registry)
         return view
 
     @staticmethod    
