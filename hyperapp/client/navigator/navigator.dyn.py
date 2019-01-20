@@ -34,7 +34,7 @@ class NavigatorView(View):
         assert isinstance(child, View), repr(child)
         assert backward_history is None or is_list_inst(backward_history, htypes.navigator.item), repr(backward_history)
         assert forward_history is None or is_list_inst(forward_history, htypes.navigator.item), repr(forward_history)
-        super.__init__(parent)
+        super().__init__(parent)
         self._locale = locale
         self._view_registry = view_registry
         self._backward_history = backward_history or []     # item_type list
