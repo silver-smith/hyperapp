@@ -11,7 +11,7 @@ from hyperapp.client import cmd_pane
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
-from . import tab_view
+from .tab_view import TabView
 
 log = logging.getLogger(__name__)
 
@@ -26,16 +26,8 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class Window(View, QtGui.QMainWindow):
 
-    @classmethod
-    async def from_state(cls, state, app, module_registry, view_registry, resources_manager):
-        locale = LOCALE
-        child = await tab_view.View.from_state(locale, state.tab_view, module_registry, view_registry)
-        return cls(locale, view_registry, module_registry, resources_manager, app, child,
-                   size=QtCore.QSize(state.size.w, state.size.h),
-                   pos=QtCore.QPoint(state.pos.x, state.pos.y))
-
     def __init__(self, locale, view_registry, module_registry, resources_manager, app, child, size=None, pos=None):
-        assert isinstance(child, tab_view.View), repr(child)
+        assert isinstance(child, TabView), repr(child)
         QtGui.QMainWindow.__init__(self)
         View.__init__(self, app)
         self._locale = locale
@@ -126,3 +118,11 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
+        services.window_from_state = self._window_from_state
+
+    async def _window_from_state(self, state, app, module_registry, view_registry, resources_manager):
+        locale = LOCALE
+        child = await TabView.from_state(locale, state.tab_view, module_registry, view_registry)
+        return Window(locale, view_registry, module_registry, resources_manager, app, child,
+                      size=QtCore.QSize(state.size.w, state.size.h),
+                      pos=QtCore.QPoint(state.pos.x, state.pos.y))

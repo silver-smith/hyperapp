@@ -22,6 +22,7 @@ class Application(AsyncApplication, view.View):
         self._remoting = self.services.remoting
         self._resources_manager = self.services.resources_manager
         self._view_registry = self.services.view_registry
+        self._window_from_state = self.services.window_from_state
         self._windows = []
 #        self._state_storage = ApplicationStateStorage(
 #            self.services.types.error,
@@ -43,7 +44,7 @@ class Application(AsyncApplication, view.View):
 
     async def open_windows(self, state):
         for s in state or []:
-            await window.Window.from_state(s, self, self._module_registry, self._view_registry, self._resources_manager)
+            await self._window_from_state(s, self, self._module_registry, self._view_registry, self._resources_manager)
 
     def pick_arg(self, kind):
         return None
