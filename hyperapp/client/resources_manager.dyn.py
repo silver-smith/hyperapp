@@ -22,16 +22,23 @@ class ResourcesRegistry(object):
             self._registry[tuple(rec.id)] = rec.resource
 
     def resolve(self, id):
-        # log.debug('### Resource registry: resolving %s -> %s', encode_path(id), self._registry.get(tuple(id)))
-        return self._registry.get(tuple(id))
+        resource = self._registry.get(tuple(id))
+        log.debug('    Resource registry: resolved %s -> %s', encode_path(id), resource)
+        return resource
 
     # return all resources with id starting from this
     def resolve_starting_with(self, id):
         id_tuple = tuple(id)
         size = len(id_tuple)
-        for id, resource in self._registry.items():
-            if id[:size] == id_tuple:
-                yield htypes.resource.resource_rec(list(id), resource)
+
+        def resolve():
+            for id, resource in self._registry.items():
+                if id[:size] == id_tuple:
+                    yield htypes.resource.resource_rec(list(id), resource)
+
+        resource_list = list(resolve)
+        log.debug('    Resource registry: resolved starting with %s -> %s', encode_path(id), resource_list)
+        return resource_list
 
 
 class ResourcesManager(object):
