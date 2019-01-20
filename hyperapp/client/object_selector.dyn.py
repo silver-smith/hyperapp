@@ -41,8 +41,8 @@ class ObjectSelectorView(View, QtGui.QWidget):
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry, view_registry):
-        object = await objimpl_registry.resolve(state.object)
-        target_view = await view_registry.resolve(locale, state.target)
+        object = await objimpl_registry.resolve_async(state.object)
+        target_view = await view_registry.resolve_async(locale, state.target)
         return cls(parent, object, target_view)
 
     def __init__(self, parent, object, target_view):

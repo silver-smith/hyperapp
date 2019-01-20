@@ -20,7 +20,7 @@ class View(view.View, QtGui.QTextBrowser):
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry):
-        object = await objimpl_registry.resolve(state.object)
+        object = await objimpl_registry.resolve_async(state.object)
         return cls(object, parent)
 
     def __init__(self, object, parent):

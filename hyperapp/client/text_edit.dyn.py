@@ -17,7 +17,7 @@ class View(view.View, QtGui.QTextEdit):
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry):
-        object = await objimpl_registry.resolve(state.object)
+        object = await objimpl_registry.resolve_async(state.object)
         return cls(object, parent)
 
     @staticmethod

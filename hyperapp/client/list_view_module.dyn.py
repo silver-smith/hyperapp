@@ -15,5 +15,5 @@ class ThisModule(ClientModule):
     @classmethod
     async def _list_view_from_state(self, locale, state, parent, objimpl_registry, resources_manager):
         data_type = htypes.core.handle.get_object_class(state)
-        object = await objimpl_registry.resolve(state.object)
+        object = await objimpl_registry.resolve_async(state.object)
         return ListView(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)

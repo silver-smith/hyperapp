@@ -49,7 +49,7 @@ class FormView(Composite, QtGui.QWidget):
         field_view_map = OrderedDict()
         field_object_map = {}
         for field in state.field_list:
-            field_view_map[field.id] = view = await view_registry.resolve(locale, field.view)
+            field_view_map[field.id] = view = await view_registry.resolve_async(locale, field.view)
             field_object_map[field.id] = view.get_object()
         object = await form_impl_registry.resolve(state.object, field_object_map)
         return cls(parent, object, field_view_map, cls.Mode(state.mode), state.current_field_id)

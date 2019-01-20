@@ -75,8 +75,8 @@ class NarrowerView(LineListPanel):
 
     @classmethod
     async def from_state(cls, locale, state, parent, view_registry):
-        filter_line = await view_registry.resolve(locale, state.filter_line)
-        list_view = await view_registry.resolve(locale, state.list_view)
+        filter_line = await view_registry.resolve_async(locale, state.filter_line)
+        list_view = await view_registry.resolve_async(locale, state.list_view)
         narrower_object = await NarrowerObject.from_state(filter_line.get_object(), list_view.get_object(), state.object)
         return cls(parent, narrower_object, filter_line, list_view)
 

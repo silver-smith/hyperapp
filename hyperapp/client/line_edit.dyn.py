@@ -61,7 +61,7 @@ class LineEditView(View, QtGui.QLineEdit):
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry):
-        object = await objimpl_registry.resolve(state.object)
+        object = await objimpl_registry.resolve_async(state.object)
         return cls(object, cls.Mode(state.mode), parent)
 
     def __init__(self, object, mode, parent):

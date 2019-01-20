@@ -25,7 +25,7 @@ class NavigatorView(View):
 
     @classmethod
     async def from_state(cls, locale, state, parent, view_registry):
-        child = await view_registry.resolve(locale, state.history[state.current_pos].handle)
+        child = await view_registry.resolve_async(locale, state.history[state.current_pos].handle)
         return cls(locale, parent, view_registry, child,
                    state.history[:state.current_pos],
                    list(reversed(state.history[state.current_pos + 1:])))
@@ -70,7 +70,7 @@ class NavigatorView(View):
         self._go_back()
 
     async def _open(self, handle):
-        self._child = await self._view_registry.resolve(self._locale, handle, self)
+        self._child = await self._view_registry.resolve_async(self._locale, handle, self)
         self._parent().view_changed(self)
         object = self._child.get_object()
 #        if object:

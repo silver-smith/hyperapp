@@ -22,7 +22,7 @@ class TabView(QtGui.QTabWidget, View):
     async def from_state(cls, locale, state, module_registry, view_registry):
         children = []
         for tab_state in state.tabs:
-            child = await view_registry.resolve(locale, tab_state)
+            child = await view_registry.resolve_async(locale, tab_state)
             children.append(child)
         view = cls(locale, view_registry, children, state.current_tab)
         view.init(module_registry)
@@ -88,7 +88,7 @@ class TabView(QtGui.QTabWidget, View):
     async def duplicate_tab(self):
         idx = self.currentIndex()
         state = self._children[idx].get_state()
-        new_view = await self._view_registry.resolve(self._locale, state, self)
+        new_view = await self._view_registry.resolve_async(self._locale, state, self)
         self._insert_tab(idx + 1, new_view)
         self._parent().view_changed(self)
 
@@ -118,7 +118,7 @@ class TabView(QtGui.QTabWidget, View):
         state = mapper(self._children[idx].get_state())
         if not state: return
         self._remove_tab(idx)
-        child = await self._view_registry.resolve(self._locale, state, self)
+        child = await self._view_registry.resolve_async(self._locale, state, self)
         self._insert_tab(idx, child)
         child.ensure_has_focus()
         View.view_changed(self)  # notify parents
