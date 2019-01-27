@@ -36,13 +36,15 @@ class _CodeModuleLoader(_Finder):
 
     _is_package = True
 
-    def __init__(self, code_module):
+    def __init__(self, code_module_ref, code_module):
+        self._code_module_ref = code_module_ref
         self._code_module = code_module
 
     def exec_module(self, module):
-        log.debug('Executing code module %r', module)
+        log.debug('Executing code module %r %s', ref_repr(self._code_module_ref), module)
         # using compile allows associate file path with loaded module
         ast = compile(self._code_module.source, self._code_module.file_path, 'exec')
+        module.__dict__['__module_ref__'] = self._code_module_ref
         exec(ast, module.__dict__)
 
 
@@ -103,7 +105,7 @@ class CodeModuleImporter(object):
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}
         # module itself
-        fullname_to_loader[module_name] = _CodeModuleLoader(code_module)
+        fullname_to_loader[module_name] = _CodeModuleLoader(code_module_ref, code_module)
         # .htypes package
         fullname_to_loader['{}.htypes'.format(module_name)] = _HTypeRootLoader(code_module)
         # .htypes.* modules
