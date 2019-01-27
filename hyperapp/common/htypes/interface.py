@@ -14,7 +14,6 @@ from .htypes import (
     tPath,
     tUrl,
     tIfaceId,
-    tCommand,
     )
 from .meta_type import TypeNamespace
 

@@ -10,7 +10,6 @@ from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
 from . import url_clipboard
 
-from . import command
 from . import list_view
 
 

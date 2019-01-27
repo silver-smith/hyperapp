@@ -17,7 +17,7 @@ from .htypes import (
     TClass,
     Interface,
     tPath,
-    tCommand,
+    #tCommand,
     tServerRoutes,
     ref_t,
     route_t,
@@ -116,9 +116,9 @@ class VisualRepEncoder(object):
             return RepNode('capsule %s: type=%s (%s)' % (ref_repr(ref), ref_repr(value.type_ref), value.encoding))
         if t is route_t:
             return RepNode('route: %s -> %s' % (ref_repr(value.endpoint_ref), ref_repr(value.transport_ref)))
-        if t is tCommand:
-            return RepNode('command: command_id=%r, kind=%r, resource_id=%s'
-                           % (value.command_id, value.kind, encode_path(value.resource_id)))
+        # if t is tCommand:
+        #     return RepNode('command: command_id=%r, kind=%r, resource_id=%s'
+        #                    % (value.command_id, value.kind, encode_path(value.resource_id)))
 #        if t is tTypeModule:
 #            return self._make_type_module_rep(value)
         custom_encoders = None

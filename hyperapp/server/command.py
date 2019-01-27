@@ -1,7 +1,7 @@
 import logging
 import weakref
 from ..common.util import is_list_inst
-from ..common.htypes import tCommand
+#from ..common.htypes import tCommand
 from ..common import command as common_command
 
 log = logging.getLogger(__name__)

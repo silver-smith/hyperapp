@@ -1,0 +1,7 @@
+from resource import resource_key
+
+
+command = record:
+    command_id: string
+    kind: string
+    resource_key: resource_key

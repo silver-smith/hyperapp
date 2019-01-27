@@ -1,5 +1,5 @@
 from .util import encode_path
-from .htypes import tCommand
+#from .htypes import tCommand
 from .visitor import Visitor
 
 
@@ -15,8 +15,9 @@ class RequirementsCollector(Visitor):
         return list([registry, key] for registry, key in self._collected_requirements)
 
     def visit_record(self, t, value):
-        if t is tCommand:
-            self._collected_requirements.add(('resources', encode_path(value.resource_id)))
+        pass
+        # if t is tCommand:
+        #     self._collected_requirements.add(('resources', encode_path(value.resource_id)))
 
     def visit_hierarchy_obj(self, t, tclass, value):
         self._collected_requirements.add(('class', encode_path([value._class.hierarchy.hierarchy_id, value._class.id])))

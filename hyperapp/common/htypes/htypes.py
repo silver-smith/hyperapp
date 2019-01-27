@@ -312,9 +312,3 @@ tUrl = TRecord([
 tUrlWithRoutes = TRecord(base=tUrl, fields=[
     Field('routes', TList(tRoute)),
     ], full_name=['builtins', 'url_with_routes'])
-
-tCommand = TRecord([
-    Field('command_id', tString),
-    Field('kind', tString),
-    Field('resource_id', TList(tString)),
-    ], full_name=['builtins', 'command'])
