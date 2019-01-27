@@ -2,15 +2,13 @@ import logging
 import weakref
 from ..common.util import is_list_inst
 #from ..common.htypes import tCommand
-from ..common import command as common_command
 
 log = logging.getLogger(__name__)
 
 
-class BoundCommand(common_command.Command):
+class BoundCommand:
 
     def __init__(self, id, kind, resource_id, class_method, inst_wr):
-        common_command.Command.__init__(self, id)
         assert isinstance(kind, str), repr(kind)
         assert is_list_inst(resource_id, str), repr(resource_id)
         self.id = id
@@ -32,11 +30,11 @@ class BoundCommand(common_command.Command):
         return self._class_method(inst, request, **request.params._asdict())
 
 
-class UnboundCommand(common_command.Command):
+class UnboundCommand:
 
     def __init__(self, id, kind, class_method):
         assert kind is None or isinstance(kind, str), repr(kind)
-        common_command.Command.__init__(self, id)
+        self.id = id
         self.kind = kind
         self.resource_id = None  # set by CommanderMetaClass
         self._class_method = class_method

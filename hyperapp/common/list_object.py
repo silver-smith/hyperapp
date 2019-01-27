@@ -4,7 +4,7 @@ import logging
 
 from .util import is_list_inst
 from .diff import Diff
-from .command import Command
+#from .command import Command
 
 log = logging.getLogger(__name__)
 
