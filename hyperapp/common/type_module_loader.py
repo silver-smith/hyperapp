@@ -54,7 +54,7 @@ class TypeModuleLoader(object):
             try:
                 local_name_dict[import_.name] = imported_module[import_.name]
             except KeyError:
-                raise RuntimeError('Module {0!r} wants name {1!r} from module {2!r}, but module {2!r} does not has it'.format(
+                raise RuntimeError('Module {0!r} wants name {1!r} from module {2!r}, but module {2!r} does not have it'.format(
                     module_name, import_.module_name, import_.name))
         local_type_module = LocalTypeModule()
         mapper = _NameToRefMapper(self._type_resolver, self._ref_registry, local_name_dict)
