@@ -18,7 +18,6 @@ type_module_list = [
     'tcp_transport',
     'encrypted_transport',
     'ref_list',
-    'param_editor',
 #    'server_management',
 #    'code_repository',
 #    'splitter',
