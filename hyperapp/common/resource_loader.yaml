@@ -1,0 +1,6 @@
+import:
+  types:
+    resource:
+      - resource_key
+      - command_resource
+      - column_resource

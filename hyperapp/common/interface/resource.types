@@ -1,25 +1,30 @@
 
-resource = hierarchy resource
 
-resource_id = string list
+resource_path = string list
+
+resource_key = record:
+    module_ref: ref
+    path: resource_path
+
 
 resource_rec = record:
-    id: resource_id
-    resource: resource
+    key: resource_key
+	locale: string
+    resource_ref: ref
 
 resource_rec_list = resource_rec list
 
 
-command_resource = resource class command:
+command_resource = record:
     is_default: bool
     text: string opt
     description: string opt
-    shortcuts: string list
+    shortcut_list: string list
 
-column_resource = resource class column:
-    visible: bool
+column_resource = record:
+    is_visible: bool
     text: string opt
     description: string opt
 
-error_message_resource = resource class error_message:
+error_message_resource = record:
     message: string
