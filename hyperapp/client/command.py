@@ -11,10 +11,10 @@ class ViewCommand(Command):
 
     @classmethod
     def from_command(cls, cmd, view):
-        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.enabled, cmd, weakref.ref(view))
+        return cls(cmd.id, cmd.kind, cmd.resource_key, cmd.enabled, cmd, weakref.ref(view))
 
-    def __init__(self, id, kind, resource_id, enabled, base_cmd, view_wr):
-        Command.__init__(self, id, kind, resource_id, enabled)
+    def __init__(self, id, kind, resource_key, enabled, base_cmd, view_wr):
+        Command.__init__(self, id, kind, resource_key, enabled)
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
 
@@ -25,7 +25,7 @@ class ViewCommand(Command):
         return self._view_wr()
 
     def clone(self):
-        return ViewCommand(self.id, self.kind, self.resource_id, self.enabled, self._base_cmd, self._window_wr)
+        return ViewCommand(self.id, self.kind, self.resource_key, self.enabled, self._base_cmd, self._window_wr)
 
     async def run(self, *args, **kw):
         view = self._view_wr()
@@ -45,10 +45,10 @@ class WindowCommand(Command):
 
     @classmethod
     def from_command(cls, cmd, window):
-        return cls(cmd.id, cmd.kind, cmd.resource_id, cmd.enabled, cmd, weakref.ref(window))
+        return cls(cmd.id, cmd.kind, cmd.resource_key, cmd.enabled, cmd, weakref.ref(window))
 
-    def __init__(self, id, kind, resource_id, enabled, base_cmd, window_wr):
-        Command.__init__(self, id, kind, resource_id, enabled)
+    def __init__(self, id, kind, resource_key, enabled, base_cmd, window_wr):
+        Command.__init__(self, id, kind, resource_key, enabled)
         self._base_cmd = base_cmd
         self._window_wr = window_wr  # weak ref to class instance
 
@@ -59,7 +59,7 @@ class WindowCommand(Command):
         return self._window_wr()
 
     def clone(self):
-        return WindowCommand(self.id, self.kind, self.resource_id, self.enabled, self._base_cmd, self._window_wr)
+        return WindowCommand(self.id, self.kind, self.resource_key, self.enabled, self._base_cmd, self._window_wr)
 
     async def run(self, *args, **kw):
         window = self._window_wr()
@@ -85,11 +85,11 @@ class command(object):
     def __call__(self, class_method):
         module_name = class_method.__module__.split('.')[2]   # hyperapp.client.module [.submodule]
         class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
-        resource_id = ['client_module', module_name, class_name, 'command', self.id]
-        return self.instantiate(self.wrap_method(class_method), resource_id)
+        resource_key = ['client_module', module_name, class_name, 'command', self.id]
+        return self.instantiate(self.wrap_method(class_method), resource_key)
 
-    def instantiate(self, wrapped_class_method, resource_id):
-        return UnboundCommand(self.id, self.kind, resource_id, self.enabled, wrapped_class_method)
+    def instantiate(self, wrapped_class_method, resource_key):
+        return UnboundCommand(self.id, self.kind, resource_key, self.enabled, wrapped_class_method)
 
     def wrap_method(self, method):
         return method
