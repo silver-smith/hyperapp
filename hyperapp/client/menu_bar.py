@@ -9,12 +9,12 @@ log = logging.getLogger(__name__)
 
 class MenuBar(object):
 
-    def __init__(self, app, window, locale, module_command_registry, resources_manager):
+    def __init__(self, app, window, locale, module_command_registry, resource_resolver):
         self.app = app
         self.window = window  # weakref.ref
         self._locale = locale
         self._module_command_registry = module_command_registry
-        self._resources_manager = resources_manager
+        self._resource_resolver = resource_resolver
         self.current_dir = None
         self._build()
 
@@ -77,7 +77,7 @@ class MenuBar(object):
         pass
         
     def _make_action(self, menu, cmd, used_shortcuts=None):
-        resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
+        resource = self._resource_resolver.resolve(cmd.resource_id, self._locale)
         if resource:
             text = resource.text
             shortcuts = resource.shortcuts

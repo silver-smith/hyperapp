@@ -10,7 +10,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry, services.resources_manager)
+        services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry, services.resource_resolver)
 
     @classmethod
     async def _list_view_from_state(self, locale, state, parent, objimpl_registry, resources_manager):

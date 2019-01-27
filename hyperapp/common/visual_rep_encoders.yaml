@@ -4,5 +4,4 @@ import:
       - requirement
       - module
     resource:
-      - resource_id
-
+      - resource_rec

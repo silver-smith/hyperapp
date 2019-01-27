@@ -20,7 +20,7 @@ class Application(AsyncApplication, view.View):
         self.services = Services(self.event_loop)
         self._module_command_registry = self.services.module_command_registry
         self._remoting = self.services.remoting
-        self._resources_manager = self.services.resources_manager
+        self._resource_resolver = self.services.resource_resolver
         self._view_registry = self.services.view_registry
         self._window_from_state = self.services.window_from_state
         self._windows = []
@@ -34,7 +34,7 @@ class Application(AsyncApplication, view.View):
 #            self.services.objimpl_registry,
 #            self.services.view_registry,
 #            self.services.type_module_repository,
-#            self.services.resources_manager,
+#            self.services.resource_resolver,
 #            self.services.module_manager,
 #            #self.services.code_repository,
 #            )
@@ -44,7 +44,7 @@ class Application(AsyncApplication, view.View):
 
     async def open_windows(self, state):
         for s in state or []:
-            await self._window_from_state(s, self, self._module_command_registry, self._view_registry, self._resources_manager)
+            await self._window_from_state(s, self, self._module_command_registry, self._view_registry, self._resource_resolver)
 
     def pick_arg(self, kind):
         return None

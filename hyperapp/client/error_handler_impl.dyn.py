@@ -14,7 +14,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self._resources_manager = services.resources_manager
+        self._resource_resolver = services.resource_resolver
         self._error_handle_t = htypes.core.handle.register(
             ERROR_HANDLER_CLASS_ID, base=htypes.core.view_handle, fields=[
                 Field('error', htypes.error.error),
@@ -24,7 +24,7 @@ class ThisModule(ClientModule):
 
     async def resolve_error_handler(self, locale, state, parent):
         resource_id = ['error_message', state.error._class_id, locale]
-        error_message_resource = self._resources_manager.resolve(resource_id)
+        error_message_resource = self._resource_resolver.resolve(resource_id)
         if error_message_resource:
             message = error_message_resource.message.format(error=state.error)
         else:

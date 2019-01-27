@@ -9,7 +9,7 @@ resource_key = record:
 
 resource_rec = record:
     key: resource_key
-	locale: string
+    locale: string
     resource_ref: ref
 
 resource_rec_list = resource_rec list
