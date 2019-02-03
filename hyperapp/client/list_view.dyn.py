@@ -8,9 +8,9 @@ from hyperapp.common.htypes import Type
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 from hyperapp.client.command import Command, ViewCommand
 from hyperapp.client.list_object import Chunk, ListDiff, ListObserver, ListObject
-from hyperapp.client.view import View
 from hyperapp.client.slice import Slice
 from hyperapp.client.module import ClientModule
+from .view import View
 
 log = logging.getLogger(__name__)
 

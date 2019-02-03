@@ -1,9 +1,9 @@
 import logging
 from hyperapp.common.registry import Registry
 from hyperapp.common.module import Module
-from hyperapp.client.view import View
 from hyperapp.client.error_handler_hook import get_handle_for_error
 from . import htypes
+from .view import View
 
 log = logging.getLogger(__name__)
 
