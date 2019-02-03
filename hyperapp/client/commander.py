@@ -11,13 +11,12 @@ log = logging.getLogger(__name__)
 # returned from Object.get_commands
 class Command(metaclass=abc.ABCMeta):
 
-    def __init__(self, id, kind, resource_id, enabled=True):
+    def __init__(self, id, kind, resource_key, enabled=True):
         assert isinstance(kind, str), repr(kind)
-        assert is_list_inst(resource_id, str), repr(resource_id)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind
-        self.resource_id = resource_id
+        self.resource_key = resource_key
         self.enabled = enabled
 
     def __repr__(self):
@@ -55,8 +54,8 @@ class Command(metaclass=abc.ABCMeta):
 
 class BoundCommand(Command):
 
-    def __init__(self, id, kind, resource_id, enabled, class_method, inst_wr, args=None):
-        Command.__init__(self, id, kind, resource_id, enabled)
+    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None):
+        Command.__init__(self, id, kind, resource_key, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
@@ -72,7 +71,7 @@ class BoundCommand(Command):
             args = self._args
         else:
             args = self._args + args
-        return BoundCommand(self.id, self.kind, self.resource_id, self.enabled, self._class_method, self._inst_wr, args)
+        return BoundCommand(self.id, self.kind, self.resource_key, self.enabled, self._class_method, self._inst_wr, args)
 
     async def run(self, *args, **kw):
         inst = self._inst_wr()
@@ -86,14 +85,13 @@ class BoundCommand(Command):
 
 class UnboundCommand(object):
 
-    def __init__(self, id, kind, resource_id, enabled, class_method):
+    def __init__(self, id, kind, resource_key, enabled, class_method):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
-        assert is_list_inst(resource_id, str), repr(resource_id)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind
-        self._resource_id = resource_id
+        self._resource_key = resource_key
         self.enabled = enabled
         self._class_method = class_method
 
@@ -103,7 +101,7 @@ class UnboundCommand(object):
         return self._bind(weakref.ref(inst), kind)
 
     def _bind(self, inst_wr, kind):
-        return BoundCommand(self.id, kind, self._resource_id, self.enabled, self._class_method, inst_wr)
+        return BoundCommand(self.id, kind, self._resource_key, self.enabled, self._class_method, inst_wr)
 
 
 class Commander(object):
