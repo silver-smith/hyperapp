@@ -46,9 +46,11 @@ server_code_module_list = [
 
 client_code_module_list = [
     'client.objimpl_registry',
+    'client.view',
     'client.view_registry',
     'client.handle_resolver',
     'client.object_selector',
+    'client.composite',
     'client.form',
     'client.text_object',
     'client.blog',
