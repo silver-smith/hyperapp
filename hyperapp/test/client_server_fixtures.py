@@ -44,6 +44,7 @@ common_client_code_module_list = [
     'common.ref_collector',
     'common.unbundler',
     'common.tcp_packet',
+    'client.module_command_registry',
     'client.async_ref_resolver',
     'client.async_capsule_registry',
     'client.async_route_resolver',
