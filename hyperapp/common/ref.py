@@ -21,6 +21,8 @@ LOCAL_TRANSPORT_REF = phony_ref('LOCAL_TRANSPORT')
 
 
 def ref_repr(ref):
+    if ref is None:
+        return 'none'
     if ref.hash_algorithm == 'phony':
         return '%s:%s' % (ref.hash_algorithm, ref.hash.decode())
     else:
