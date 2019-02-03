@@ -7,10 +7,10 @@ from PySide import QtCore, QtGui
 from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import key_match, key_match_any
 from hyperapp.client.command import command
-from hyperapp.client.view import View
-from hyperapp.client import list_view
 from . import htypes
+from .view import View
 from .history_list import HistoryList
+from .list_view import ListView
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +96,7 @@ class NavigatorView(View):
         asyncio.async(self._open(self._pop_history(self._forward_history)))
 
     def _add2history(self, history, view):
-        if isinstance(view, list_view.View) and isinstance(view.get_object(), HistoryList):
+        if isinstance(view, ListView) and isinstance(view.get_object(), HistoryList):
             return  # do not add history list itself to history
         history.append(htypes.navigator.item(view.get_title(), view.get_state()))
 

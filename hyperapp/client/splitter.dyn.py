@@ -4,8 +4,8 @@ from PySide import QtCore, QtGui
 
 from hyperapp.client.util import DEBUG_FOCUS, call_after, focused_index, key_match
 from hyperapp.client.module import ClientModule
-from hyperapp.client.view import View
 from . import htypes
+from .view import View
 
 log = logging.getLogger(__name__)
 

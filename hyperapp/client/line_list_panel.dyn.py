@@ -4,7 +4,7 @@ import logging
 from PySide import QtCore, QtGui
 
 from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match, key_match_any
-from hyperapp.client.composite import Composite
+from .composite import Composite
 
 log = logging.getLogger(__name__)
 

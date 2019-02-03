@@ -6,8 +6,8 @@ from hyperapp.common.htypes import tInt, TList, Field, TRecord
 from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
-from hyperapp.client.view import View
 from . import htypes
+from .view import View
 from . import splitter
 
 log = logging.getLogger(__name__)

@@ -5,9 +5,9 @@ from hyperapp.common.registry import Registry
 from hyperapp.common.module import Module
 from hyperapp.client.command import command
 from hyperapp.client.object import Object
-from hyperapp.client.view import View
 from hyperapp.client.async_registry import run_awaitable_factory
 from . import htypes
+from .view import View
 
 log = logging.getLogger(__name__)
 

@@ -6,8 +6,8 @@ from PySide import QtCore, QtGui
 
 from hyperapp.common.htypes import tString, Field
 from hyperapp.client.module import ClientModule
-from hyperapp.client import view
 from . import htypes
+from .view import View
 from .text_object import TextObject
 
 log = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'text_view'
 
 
-class View(view.View, QtGui.QTextBrowser):
+class TextView(View, QtGui.QTextBrowser):
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry):
@@ -25,7 +25,7 @@ class View(view.View, QtGui.QTextBrowser):
 
     def __init__(self, object, parent):
         QtGui.QTextBrowser.__init__(self)
-        view.View.__init__(self, parent)
+        View.__init__(self, parent)
         self.setOpenLinks(False)
         self.object = object
         self.setHtml(self.text2html(object.text or ''))
@@ -58,7 +58,7 @@ class View(view.View, QtGui.QTextBrowser):
 
     def object_changed(self):
         self.setHtml(self.text2html(self.object.text))
-        view.View.object_changed(self)
+        View.object_changed(self)
 
     def __del__(self):
         log.info('~text_view %r', self)
@@ -68,4 +68,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.view_registry.register('text_view', View.from_state, services.objimpl_registry)
+        services.view_registry.register('text_view', TextView.from_state, services.objimpl_registry)

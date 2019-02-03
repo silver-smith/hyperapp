@@ -5,3 +5,4 @@ import:
       - form_handle
   code:
     - client.objimpl_registry
+    - client.composite

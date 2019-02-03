@@ -5,4 +5,5 @@ import:
       - pos
       - size
   code:
+    - client.view
     - client.tab_view

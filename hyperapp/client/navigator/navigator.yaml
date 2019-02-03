@@ -6,4 +6,6 @@ import:
       - history_list
       - history_list_handle
   code:
+    - client.view
     - client.navigator.history_list
+    - client.list_view

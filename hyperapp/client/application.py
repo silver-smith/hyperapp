@@ -3,8 +3,8 @@ import logging
 from PySide import QtCore, QtGui
 from ..common.url import UrlWithRoutes
 from ..common import dict_coders, cdr_coders
+from .commander import Commander
 from .command import command
-from . import view
 from .services import Services
 from .async_application import AsyncApplication
 from .application_state_storage import ApplicationStateStorage
@@ -12,11 +12,11 @@ from .application_state_storage import ApplicationStateStorage
 log = logging.getLogger(__name__)
 
 
-class Application(AsyncApplication, view.View):
+class Application(AsyncApplication, Commander):
 
     def __init__(self, sys_argv):
         AsyncApplication.__init__(self, sys_argv)
-        view.View.__init__(self)
+        Commander.__init__(self, commands_kind='view')
         self.services = Services(self.event_loop)
         self._module_command_registry = self.services.module_command_registry
         self._remoting = self.services.remoting

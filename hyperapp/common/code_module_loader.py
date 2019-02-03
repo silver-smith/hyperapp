@@ -34,7 +34,11 @@ class CodeModuleLoader(object):
         for import_module_name in info.get('import', {}).get('code', []):
             assert isinstance(import_module_name, str), (
                 '%s: string list is expected at import/code, but got: %r', file_path, import_module_name)
-            import_module_ref = self._local_code_module_registry[import_module_name]
+            try:
+                import_module_ref = self._local_code_module_registry[import_module_name]
+            except KeyError:
+                raise RuntimeError('Code module {!r} wants code module {!r}, but it is not loaded (yet?).'.format(
+                    module_name, import_module_name))
             code_import_list.append(code_import_t(import_module_name, import_module_ref))
         code_module = code_module_t(module_name, type_import_list, code_import_list, source, str(source_path))
         code_module_ref = self._ref_registry.register_object(code_module)

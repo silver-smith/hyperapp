@@ -1,6 +1,7 @@
 # composite component - base class
 
 import weakref
+
 from . import view
 
 

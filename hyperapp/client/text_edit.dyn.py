@@ -3,8 +3,8 @@ import logging
 from PySide import QtCore, QtGui
 
 from hyperapp.client.module import ClientModule
-from hyperapp.client import view
 from . import htypes
+from .view import View
 from .text_object import TextObject
 
 log = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'text_edit'
 
 
-class View(view.View, QtGui.QTextEdit):
+class TextEditView(View, QtGui.QTextEdit):
 
     @classmethod
     async def from_state(cls, locale, state, parent, objimpl_registry):
@@ -26,7 +26,7 @@ class View(view.View, QtGui.QTextEdit):
 
     def __init__(self, object, parent):
         QtGui.QTextEdit.__init__(self)
-        view.View.__init__(self, parent)
+        View.__init__(self, parent)
         self.object = object
         self.notify_on_text_changed = True
         self.setPlainText(object.text)
@@ -56,7 +56,7 @@ class View(view.View, QtGui.QTextEdit):
             self.setPlainText(self.object.text)
         finally:
             self.notify_on_text_changed = True
-        view.View.object_changed(self)
+        View.object_changed(self)
 
     def __del__(self):
         log.info('~text_edit %r', self)
@@ -67,4 +67,4 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         self.state_type = htypes.core.obj_handle
-        services.view_registry.register('text_edit', View.from_state, services.objimpl_registry)
+        services.view_registry.register('text_edit', TextEditView.from_state, services.objimpl_registry)

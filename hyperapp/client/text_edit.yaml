@@ -3,4 +3,5 @@ import:
     core:
       - obj_handle
   code:
+    - client.view
     - client.text_object

@@ -5,4 +5,5 @@ import:
     text_object:
       - text_view
   code:
+    - client.view
     - client.text_object

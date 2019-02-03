@@ -5,11 +5,11 @@ from PySide import QtCore, QtGui
 
 from hyperapp.client.util import call_after
 from hyperapp.client.object import Object
-from hyperapp.client.composite import Composite
 from hyperapp.client.mode_command import BoundModeCommand
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .objimpl_registry import ObjImplRegistry
+from .composite import Composite
 
 log = logging.getLogger(__name__)
 

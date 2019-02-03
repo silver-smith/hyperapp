@@ -5,9 +5,9 @@ from enum import Enum
 from PySide import QtCore, QtGui
 
 from hyperapp.client.object import Object
-from hyperapp.client.view import View
 from hyperapp.client.module import ClientModule
 from . import htypes
+from .view import View
 
 log = logging.getLogger(__name__)
 
