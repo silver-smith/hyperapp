@@ -14,7 +14,7 @@ class Command(metaclass=abc.ABCMeta):
 
     def __init__(self, id, kind, resource_key, enabled=True):
         assert isinstance(kind, str), repr(kind)
-        assert isinstance(resouce_key, resource_key_t), repr(resource_key)
+        assert isinstance(resource_key, resource_key_t), repr(resource_key)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind

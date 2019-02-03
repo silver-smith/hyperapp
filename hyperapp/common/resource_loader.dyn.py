@@ -47,7 +47,7 @@ class ResourceLoader(object):
             else:
                 assert False, 'Unknown resource section type: %r' % section_type
             resource_ref = self._ref_registry.register_object(resource)
-            resource_key = htypes.resource.resource_key(code_module_ref, [item_type, object_id, item_id])
+            resource_key = resource_key_t(code_module_ref, [item_type, object_id, item_id])
             self._resource_registry.register(resource_key, locale, resource_ref)
 
     def _value2command_resource(self, value):
