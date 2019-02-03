@@ -62,18 +62,6 @@ class Application(AsyncApplication, Commander):
             #self._state_storage.save_state(state)
             self.stop_loop()
 
-    @command('open_server')
-    async def open_server(self):
-        window = self._windows[0]  # usually first window is the current one
-        fpath, ftype = QtGui.QFileDialog.getOpenFileName(
-            window.get_widget(), 'Load url', os.getcwd(), 'Server url with routes (*.url)')
-        url = UrlWithRoutes.load_from_file(self._iface_registry, fpath)
-        self._remoting.add_routes_from_url(url)
-        server = Server.from_public_key(self._remoting, url.public_key)
-        handle = await execute_get_request(self._packet_types, self._remoting, url)
-        assert handle  # url's get command must return a handle
-        window.get_current_view().open(handle)
-
     @command('quit')
     def quit(self):
         ## module.set_shutdown_flag()
