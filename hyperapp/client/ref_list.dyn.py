@@ -4,8 +4,7 @@ from collections import namedtuple
 
 from hyperapp.common.htypes import tInt, tString
 from hyperapp.common.ref import ref_repr
-from hyperapp.common.list_object import Element, Chunk
-from hyperapp.client.list_object import Column, ListObject
+from hyperapp.client.list_object import Element, Chunk, Column, ListObject
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes

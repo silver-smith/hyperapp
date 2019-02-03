@@ -13,10 +13,9 @@ from PySide.QtTest import QTest
 
 from hyperapp.common.htypes import tInt
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
-from hyperapp.client.list_object import Column, ListObject
+from hyperapp.client.list_object import Element, Chunk, ListDiff, Column, ListObject
 from hyperapp.client.list_view import ListView
 from hyperapp.test.utils import resolve_type
 
@@ -240,8 +239,8 @@ async def test_overlapped_fetch_result_should_be_merged_properly(list_view_facto
 async def test_resources_used_for_header_and_visibility(services, list_view_factory):
     column_resource = resolve_type(services, 'resource', 'column_resource')
     resources = {
-        'test.list.column.key.en': column_resource(visible=False, text='the key', description=''),
-        'test.list.column.title.en': column_resource(visible=True, text='the title', description=''),
+        'test.list.column.key.en': column_resource(is_visible=False, text='the key', description=''),
+        'test.list.column.title.en': column_resource(is_visible=True, text='the title', description=''),
         }
     list_view = list_view_factory(resources=resources)
     list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown

@@ -4,11 +4,10 @@ import uuid
 import abc
 
 from hyperapp.common.htypes import tInt, tDateTime
-from hyperapp.common.list_object import Element, Chunk, ListDiff
 from hyperapp.client.module import ClientModule
 from hyperapp.client.command import command
 from hyperapp.client.mode_command import mode_command
-from hyperapp.client.list_object import Column, ListObject
+from hyperapp.client.list_object import Element, Chunk, ListDiff, Column, ListObject
 from . import htypes
 from .text_object import TextObject
 from .form import FormObject, FormView

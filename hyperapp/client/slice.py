@@ -1,7 +1,7 @@
 import bisect
 from ..common.util import memoize
 #from ..common.htypes import tString, tBool, Field, TRecord, TList, ListInterface
-from ..common.list_object import Chunk
+from .list_object import Chunk
 
 
 class Slice(object):

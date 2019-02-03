@@ -5,10 +5,9 @@ import bisect
 from PySide import QtCore, QtGui
 
 from ..common.htypes import Type
-from ..common.list_object import Chunk, ListDiff
 from .util import uni2str, key_match, key_match_any, make_async_action
 from .command import Command, ViewCommand
-from .list_object import ListObserver, ListObject
+from .list_object import Chunk, ListDiff, ListObserver, ListObject
 from .view import View
 from .slice import Slice
 
@@ -102,7 +101,7 @@ class Model(QtCore.QAbstractTableModel):
     def _is_column_visible(self, column_id):
         resource = self._column2resource.get(column_id)
         if resource:
-            return resource.visible
+            return resource.is_visible
         else:
             return True
 
