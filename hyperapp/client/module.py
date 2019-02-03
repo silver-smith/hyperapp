@@ -1,5 +1,5 @@
 from ..common.module import Module
-from .command_class import Commander
+from .commander import Commander
 
 
 class ClientModule(Module, Commander):

@@ -1,4 +1,4 @@
-from .command_class import BoundCommand, UnboundCommand
+from .commander import BoundCommand, UnboundCommand
 from .command import command
 
 

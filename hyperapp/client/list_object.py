@@ -7,7 +7,7 @@ from PySide import QtCore, QtGui
 from ..common.util import is_list_inst, dt2local_str
 from ..common.htypes import Type, tString
 from .diff import Diff
-from .command_class import Command
+from .commander import Command
 from .object import ObjectObserver, Object
 
 log = logging.getLogger(__name__)

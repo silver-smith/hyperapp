@@ -1,6 +1,6 @@
 import logging
 import weakref
-from .command_class import Command, UnboundCommand
+from .commander import Command, UnboundCommand
 from .error_handler_hook import get_handle_for_error
 
 log = logging.getLogger(__name__)

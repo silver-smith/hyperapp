@@ -3,7 +3,7 @@ import weakref
 from collections import namedtuple
 
 from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
-from .command_class import Commander
+from .commander import Commander
 
 log = logging.getLogger(__name__)
 
