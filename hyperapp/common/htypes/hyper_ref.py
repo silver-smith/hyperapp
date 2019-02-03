@@ -24,3 +24,11 @@ bundle_t = TRecord([
     Field('capsule_list', TList(capsule_t)),
     Field('route_list', TList(route_t)),
     ], full_name=['builtins', 'bundle'])
+
+
+resource_path_t = TList(tString, full_name=['builtins', 'resource_path'])
+
+resource_key_t = TRecord([
+    Field('module_ref', ref_t),
+    Field('path', resource_path_t),
+    ], full_name=['builtins', 'resource_key'])

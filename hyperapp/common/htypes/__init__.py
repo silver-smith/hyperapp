@@ -38,6 +38,8 @@ _builtin_type_list = [
     route_t,
     capsule_t,
     bundle_t,
+    resource_path_t,
+    resource_key_t,
     # meta
     tMetaType,
     ]

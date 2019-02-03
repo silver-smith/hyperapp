@@ -1,5 +1,3 @@
-from resource import resource_key
-
 
 command = record:
     command_id: string

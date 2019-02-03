@@ -1,5 +1,3 @@
-from resource import resource_key
-
 
 object = hierarchy object
 

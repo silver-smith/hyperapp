@@ -4,6 +4,7 @@ import weakref
 import abc
 
 from ..common.util import is_list_inst
+from ..common.htypes import resource_key_t
 
 log = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ class Command(metaclass=abc.ABCMeta):
 
     def __init__(self, id, kind, resource_key, enabled=True):
         assert isinstance(kind, str), repr(kind)
+        assert isinstance(resouce_key, resource_key_t), repr(resource_key)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind
@@ -88,6 +90,7 @@ class UnboundCommand(object):
     def __init__(self, id, kind, resource_key, enabled, class_method):
         assert isinstance(id, str), repr(id)
         assert kind is None or isinstance(kind, str), repr(kind)
+        assert isinstance(resource_key, resource_key_t), repr(resource_key)
         assert isinstance(enabled, bool), repr(enabled)
         self.id = id
         self.kind = kind

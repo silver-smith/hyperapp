@@ -1,12 +1,5 @@
 
 
-resource_path = string list
-
-resource_key = record:
-    module_ref: ref
-    path: resource_path
-
-
 resource_rec = record:
     key: resource_key
     locale: string
