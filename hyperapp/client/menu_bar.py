@@ -77,12 +77,12 @@ class MenuBar(object):
         pass
         
     def _make_action(self, menu, cmd, used_shortcuts=None):
-        resource = self._resource_resolver.resolve(cmd.resource_id, self._locale)
+        resource = self._resource_resolver.resolve(cmd.resource_key, self._locale)
         if resource:
             text = resource.text
             shortcuts = resource.shortcuts
         else:
-            text = '%s/%s' % (cmd.resource_id, cmd.id)
+            text = '.'.join(cmd.resource_key.path)
             shortcuts = None
         if not cmd.is_enabled():
             shortcuts = None
