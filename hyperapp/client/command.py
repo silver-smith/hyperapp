@@ -1,5 +1,8 @@
 import logging
+import sys
 import weakref
+
+from ..common.htypes import resource_key_t
 from .commander import Command, UnboundCommand
 from .error_handler_hook import get_handle_for_error
 
@@ -82,9 +85,11 @@ class command(object):
         self.enabled = enabled
 
     def __call__(self, class_method):
-        module_name = class_method.__module__.split('.')[2]   # hyperapp.client.module [.submodule]
+        module_name = class_method.__module__
+        module = sys.modules[module_name]
+        module_ref = module.__dict__.get('__module_ref__') or phony_ref(module_name.split('.')[-1])
         class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
-        resource_key = ['client_module', module_name, class_name, 'command', self.id]
+        resource_key = resource_key_t(module_ref, ['command', class_name, self.id])
         return self.instantiate(self.wrap_method(class_method), resource_key)
 
     def instantiate(self, wrapped_class_method, resource_key):
