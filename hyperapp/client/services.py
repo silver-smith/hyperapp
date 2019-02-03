@@ -8,7 +8,6 @@ from ..common.module import ModuleRegistry
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
-from . import url_clipboard
 
 
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
@@ -99,6 +98,7 @@ code_module_list = [
     'client.fs_remote_service',
     'client.object_selector',
     'client.blog',
+    'client.url_clipboard',
     'client.default_state_builder',
     ]
 
@@ -125,20 +125,11 @@ class Services(ClientServicesBase):
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self._load_code_module_list(code_module_list)
-        self._register_static_modules()
         #self._register_transports()
 
     async def async_init(self):
         for method in self.module_registry.enum_modules_method('async_init'):
             await method(self)
-
-    def _register_static_modules(self):
-        for module in [
-                url_clipboard,
-            ]:
-            this_module = module.ThisModule(self)
-            module.__dict__['this_module'] = this_module
-            self.module_registry.register(this_module)
 
     def _register_transports(self):
         tcp_transport.register_transports(self.remoting.transport_registry, self)

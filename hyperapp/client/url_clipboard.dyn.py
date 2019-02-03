@@ -1,8 +1,8 @@
 from PySide import QtCore, QtGui
-from ..common.url import UrlWithRoutes
-from .command import command
-from .module import ClientModule
-#from .proxy_object import execute_get_request
+
+from hyperapp.common.url import UrlWithRoutes
+from hyperapp.client.command import command
+from hyperapp.client.module import ClientModule
 
 
 MODULE_NAME = 'url_clipboard'
