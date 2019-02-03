@@ -16,7 +16,6 @@ from hyperapp.common import cdr_coders  # register codec
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
 from hyperapp.client.list_object import Element, Chunk, ListDiff, Column, ListObject
-from hyperapp.client.list_view import ListView
 from hyperapp.test.test_services import TestServicesMixin
 from hyperapp.test.utils import resolve_type
 
@@ -32,6 +31,15 @@ HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
 type_module_list = [
     'resource',
     'core',
+    ]
+
+code_module_list = [
+    'common.resource_registry',
+    'common.resource_resolver',
+    'client.module_command_registry',
+    'client.objimpl_registry',
+    'client.view_registry',
+    'client.list_view',
     ]
 
 
@@ -50,7 +58,7 @@ class Services(ClientServicesBase, TestServicesMixin):
     def __init__(self):
         super().__init__()
         self.init_services()
-        self.load_modules(type_module_list, [])
+        self.load_modules(type_module_list, code_module_list)
 
 
 Row = namedtuple('Row', 'key title column_1 column_2')
@@ -135,7 +143,7 @@ def list_view_factory(application, services, object):
 
     def make_list_view(object=None, sort_column_id=None, current_key=None, resources=None):
         resource_manager = ResourcesManager(resources)
-        return ListView(
+        return services.list_view_factory(
             locale='en',
             parent=None,
             resources_manager=resource_manager,

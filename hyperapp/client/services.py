@@ -10,8 +10,6 @@ from .cache_repository import CacheRepository
 from .proxy_registry import ProxyRegistry
 from . import url_clipboard
 
-from . import list_view
-
 
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
 CACHE_CONTENTS_ENCODING = 'json'
@@ -76,7 +74,7 @@ code_module_list = [
     'client.navigator.history_list',
     'client.navigator.navigator',
     'client.navigator.module',
-    'client.list_view_module',
+    'client.list_view',
     'client.form',
 #    'code_repository',
 #    'identity',

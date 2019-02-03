@@ -4,15 +4,18 @@ import asyncio
 import bisect
 from PySide import QtCore, QtGui
 
-from ..common.htypes import Type
-from .util import uni2str, key_match, key_match_any, make_async_action
-from .command import Command, ViewCommand
-from .list_object import Chunk, ListDiff, ListObserver, ListObject
-from .view import View
-from .slice import Slice
+from hyperapp.common.htypes import Type
+from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
+from hyperapp.client.command import Command, ViewCommand
+from hyperapp.client.list_object import Chunk, ListDiff, ListObserver, ListObject
+from hyperapp.client.view import View
+from hyperapp.client.slice import Slice
+from hyperapp.client.module import ClientModule
 
 log = logging.getLogger(__name__)
 
+
+MODULE_NAME = 'list_view'
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling 
@@ -434,3 +437,17 @@ class ListView(View, ListObserver, QtGui.QTableView):
 
     def __del__(self):
         log.debug('~list_view.ListView self=%r', id(self))
+
+
+class ThisModule(ClientModule):
+
+    def __init__(self, services):
+        super().__init__(MODULE_NAME, services)
+        services.list_view_factory = ListView
+        services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry, services.resource_resolver)
+
+    @classmethod
+    async def _list_view_from_state(self, locale, state, parent, objimpl_registry, resources_manager):
+        data_type = htypes.core.handle.get_object_class(state)
+        object = await objimpl_registry.resolve_async(state.object)
+        return ListView(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)
