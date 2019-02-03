@@ -23,7 +23,8 @@ class ResourceRegistry:
     def resolve(self, key, locale):
         resource_ref = self._registry.get((key, locale))
         log.debug('    Resource registry: resolved %s %s %s -> %s',
-                  locale, ref_repr(key.module_ref), encode_path(key.path), ref_repr(resource_ref))
+                  locale, ref_repr(key.module_ref), encode_path(key.path),
+                  ref_repr(resource_ref))
         return resource_ref
 
 
