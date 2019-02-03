@@ -17,6 +17,7 @@ from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
 from hyperapp.client.list_object import Element, Chunk, ListDiff, Column, ListObject
 from hyperapp.client.list_view import ListView
+from hyperapp.test.test_services import TestServicesMixin
 from hyperapp.test.utils import resolve_type
 
 log = logging.getLogger(__name__)
@@ -26,6 +27,12 @@ DEFAULT_ROW_COUNT = 50
 DEFAULT_ROWS_PER_FETCH = 10
 
 HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
+
+
+type_module_list = [
+    'resource',
+    'core',
+    ]
 
 
 class ResourcesManager(object):
@@ -38,15 +45,12 @@ class ResourcesManager(object):
         return self._resources.get('.'.join(resource_id))
 
 
-class Services(ClientServicesBase):
+class Services(ClientServicesBase, TestServicesMixin):
 
     def __init__(self):
         super().__init__()
         self.init_services()
-        self._load_type_module_list([
-                'resource',
-                'core',
-                ])
+        self.load_modules(type_module_list, [])
 
 
 Row = namedtuple('Row', 'key title column_1 column_2')
@@ -106,13 +110,19 @@ class StubObject(ListObject):
 def application():
     return AsyncApplication()
 
+
 @pytest.fixture
 def event_loop(application):
     return application.event_loop
-    
+
+
 @pytest.fixture
 def services():
-    return Services()
+    services = Services()
+    services.start()
+    yield services
+    services.stop()
+
 
 @pytest.fixture
 def object():
