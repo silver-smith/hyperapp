@@ -4,12 +4,13 @@ import asyncio
 import bisect
 from PySide import QtCore, QtGui
 
-from hyperapp.common.htypes import Type
+from hyperapp.common.htypes import Type, resource_key_t
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 from hyperapp.client.command import Command, ViewCommand
 from hyperapp.client.list_object import Chunk, ListDiff, ListObserver, ListObject
 from hyperapp.client.slice import Slice
 from hyperapp.client.module import ClientModule
+from . import htypes
 from .view import View
 
 log = logging.getLogger(__name__)
@@ -23,11 +24,11 @@ APPEND_PHONY_REC_COUNT = 2  # minimum 2 for infinite forward scrolling
 
 class Model(QtCore.QAbstractTableModel):
 
-    def __init__(self, locale, resources_manager, resource_id):
+    def __init__(self, locale, resource_resolver, resource_key):
         QtCore.QAbstractTableModel.__init__(self)
         self._locale = locale
-        self._resources_manager = resources_manager
-        self._resource_id = resource_id
+        self._resource_resolver = resource_resolver
+        self._resource_key = resource_key
         self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._object = None
         self._columns = []
@@ -91,10 +92,15 @@ class Model(QtCore.QAbstractTableModel):
         self._slice = Slice(self._key2element, sort_column_id)
 
     def set_object(self, object, sort_column_id):
+
+        def column_resource(column):
+            resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
+            return self._resource_resolver.resolve(resource_key, self._locale)
+
         self._object = object
         self._columns = object.get_columns()
         self._column2resource = {
-            column.id: self._resources_manager.resolve(self._resource_id + ['column', column.id, self._locale])
+            column.id: column_resource(column)
             for column in self._columns}
         self._visible_columns = [column for column in self._columns if self._is_column_visible(column.id)]
         self._key_column_id = object.get_key_column_id()
@@ -178,7 +184,7 @@ class Model(QtCore.QAbstractTableModel):
 
 class ListView(View, ListObserver, QtGui.QTableView):
 
-    def __init__(self, locale, parent, resources_manager, resource_id, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True):
+    def __init__(self, locale, parent, resource_resolver, resource_key, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True):
         assert parent is None or isinstance(parent, View), repr(parent)
         assert data_type is None or isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
@@ -186,12 +192,12 @@ class ListView(View, ListObserver, QtGui.QTableView):
         QtGui.QTableView.__init__(self)
         View.__init__(self, parent)
         self._locale = locale
-        self._resources_manager = resources_manager
-        self._resource_id = resource_id
+        self._resource_resolver = resource_resolver
+        self._resource_key = resource_key
         self.data_type = data_type
         self._select_first = select_first
         self._object = None
-        self.setModel(Model(self._locale, self._resources_manager, self._resource_id))
+        self.setModel(Model(self._locale, self._resource_resolver, self._resource_key))
         self.verticalHeader().hide()
         opts = self.viewOptions()
         self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + ROW_HEIGHT_PADDING)
@@ -208,7 +214,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
 
     def get_state(self):
         first_visible_row, visible_row_count = self._get_visible_rows()
-        return self.data_type('list', self.get_object().get_state(), self._resource_id,
+        return self.data_type('list', self.get_object().get_state(), self._resource_key,
                               self.model().get_sort_column_id(), self.get_current_key())
        #, first_visible_row, self._select_first)
 
@@ -399,7 +405,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
     def _on_activated(self, index):
         element = self.model().get_row_element(index.row())
         for command in self._object.get_element_command_list(element.key):
-            resource = self._resources_manager.resolve(command.resource_id + [self._locale])
+            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
             if resource and resource.is_default:
                 break
         else:
@@ -425,10 +431,10 @@ class ListView(View, ListObserver, QtGui.QTableView):
         for command in self._object.get_element_command_list(element.key):
             assert isinstance(command, Command), repr(command)
             assert command.kind == 'element', repr(command)
-            resource = self._resources_manager.resolve(command.resource_id + [self._locale])
+            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
             wrapped_command = self._wrap_element_command(element, command)
             action = make_async_action(
-                action_widget, '%s/%s' % (wrapped_command.resource_id, wrapped_command.id),
+                action_widget, '%s/%s' % (wrapped_command.resource_key, wrapped_command.id),
                 resource.shortcuts if resource else None, wrapped_command.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
@@ -447,7 +453,7 @@ class ThisModule(ClientModule):
         services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry, services.resource_resolver)
 
     @classmethod
-    async def _list_view_from_state(self, locale, state, parent, objimpl_registry, resources_manager):
+    async def _list_view_from_state(self, locale, state, parent, objimpl_registry, resource_resolver):
         data_type = htypes.core.handle.get_object_class(state)
         object = await objimpl_registry.resolve_async(state.object)
-        return ListView(locale, parent, resources_manager, state.resource_id, data_type, object, state.key, state.sort_column_id)
+        return ListView(locale, parent, resource_resolver, state.resource_key, data_type, object, state.key, state.sort_column_id)
