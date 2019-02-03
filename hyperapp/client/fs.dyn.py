@@ -1,6 +1,6 @@
 import logging
 
-from hyperapp.common.htypes import tInt, tString
+from hyperapp.common.htypes import tInt, tString, resource_key_t
 from hyperapp.client.command import command
 from hyperapp.client.list_object import Element, Chunk, Column, ListObject
 from hyperapp.client.module import ClientModule
@@ -113,8 +113,8 @@ class ThisModule(ClientModule):
         dir_object = htypes.fs.fs_dir_object(FsDirObject.impl_id, fs.fs_service_ref, fs.host, fs.path)
         handle_t = htypes.core.string_list_handle
         sort_column_id = 'key'
-        resource_id = ['client_module', 'fs', 'FsDirObject']
-        list_handle = handle_t('list', dir_object, resource_id, sort_column_id, key=fs.current_file_name)
+        resource_key = resource_key_t(__module_ref__, ['FsDirObject'])
+        list_handle = handle_t('list', dir_object, resource_key, sort_column_id, key=fs.current_file_name)
         filter_object = htypes.line_object.line_object('line', '')
         filter_view = htypes.line_object.line_edit_view('line_edit', filter_object, mode='edit')
         narrower_object = htypes.narrower.narrower_object('narrower', filtered_field='key')
