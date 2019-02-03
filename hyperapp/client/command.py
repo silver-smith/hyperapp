@@ -3,6 +3,7 @@ import sys
 import weakref
 
 from ..common.htypes import resource_key_t
+from ..common.ref import phony_ref
 from .commander import Command, UnboundCommand
 from .error_handler_hook import get_handle_for_error
 
