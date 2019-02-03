@@ -80,8 +80,8 @@ tokens = [tok_name[t] for t in token_types] + [
 
 def syntax_error(p, token_num, msg):
     line_num = p.lineno(token_num)
-    print(p.parser.lines[line_num - 1])
-    print('%s:%d: %s' % (p.parser.fname, line_num, msg))
+    p.parser.error_line = p.parser.lines[line_num - 1]
+    p.parser.error = '{}:{}: {}'.format(p.parser.fname, line_num, msg)
     raise SyntaxError(msg)
 
 def unknown_name_error(p, token_num, name):
@@ -452,9 +452,12 @@ def parse_type_module_source(fname, module_name, contents, debug=False):
     parser.fname = fname
     parser.lines = contents.splitlines()
     parser.known_name_set = builtin_type_names
+    parser.error_line = None
+    parser.error = None
     #parser.provided_class_list = []
     module = parser.parse(contents, lexer=Lexer())
-    assert module, 'Failed to parse %r' % fname
+    if not module:
+        raise RuntimeError('Failed to parse {}:\n{}\n{}'.format(fname, parser.error_line, parser.error))
     return module
  
 def load_type_module_source(fpath, module_name, debug=False):
