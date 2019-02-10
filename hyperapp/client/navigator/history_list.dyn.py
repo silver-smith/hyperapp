@@ -1,8 +1,8 @@
 import logging
 from hyperapp.common.util import is_list_inst
-#from hyperapp.common.htypes import tInt, Column
+from hyperapp.common.htypes import tInt
 from hyperapp.client.command import command
-from hyperapp.client.list_object import Element, Chunk, ListObject
+from hyperapp.client.list_object import Element, Chunk, Column, ListObject
 from . import htypes
 
 log = logging.getLogger(__name__)

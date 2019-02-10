@@ -4,6 +4,7 @@ import logging
 import asyncio
 from PySide import QtCore, QtGui
 
+from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import key_match, key_match_any
 from hyperapp.client.command import command
@@ -15,7 +16,7 @@ from .list_view import ListView
 log = logging.getLogger(__name__)
 
 
-HISTORY_LIST_RESOURCE_ID = ['client_module', 'navigator', 'HistoryList']
+HISTORY_LIST_RESOURCE_PATH = ['HistoryList']
 MAX_HISTORY_SIZE = 100
 
 
@@ -108,7 +109,8 @@ class NavigatorView(View):
     def open_history(self):
         state = self.get_state()
         object = htypes.navigator.history_list(HistoryList.impl_id, state.history)
-        self.open(htypes.navigator.history_list_handle('list', object, resource_id=HISTORY_LIST_RESOURCE_ID, sort_column_id='idx', key=state.current_pos))
+        resource_key = resource_key_t(__module_ref__, HISTORY_LIST_RESOURCE_PATH)
+        self.open(htypes.navigator.history_list_handle('list', object, resource_key, sort_column_id='idx', key=state.current_pos))
 
     def __del__(self):
         log.info('~navigator')
