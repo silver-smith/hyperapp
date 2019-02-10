@@ -21,10 +21,10 @@ class ResourceLoader(object):
 
     def load_resources_from_dir(self, dir):
         for fpath in dir.glob('*.resources.*.yaml'):
-            module_name, locale = re.match(r'([^.]+)\.resources\.([^.]+)\.yaml', fpath.name).groups()
-            module_path = '.'.join(['client', module_name])
+            module_name, locale = re.match(r'(.+)\.resources\.([^.]+)\.yaml', fpath.name).groups()
+            full_module_name = 'client.' + module_name
             try:
-                code_module_ref = self._local_code_module_registry[module_path]
+                code_module_ref = self._local_code_module_registry[full_module_name]
             except KeyError:
                 log.warning('Skipping %r resource because code module %r is missing (file path: "%s")', module_name, module_name, fpath)
                 continue
