@@ -2,6 +2,7 @@ import re
 import yaml
 import logging
 
+from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.module import Module
 from . import htypes
@@ -21,11 +22,12 @@ class ResourceLoader(object):
     def load_resources_from_dir(self, dir):
         for fpath in dir.glob('*.resources.*.yaml'):
             module_name, locale = re.match(r'([^.]+)\.resources\.([^.]+)\.yaml', fpath.name).groups()
+            module_path = '.'.join(['client', module_name])
             try:
-                code_module_ref = self._local_code_module_registry[module_name]
+                code_module_ref = self._local_code_module_registry[module_path]
             except KeyError:
-                raise RuntimeError('Resource file {!r} wants code module {!r}, which is missing'.format(
-                    fpath, module_name))
+                log.warning('Resource file %r wants code module %r, which is missing', fpath, module_path)
+                return
             log.info('Loading %r %r resources from %s "%s"', module_name, locale, ref_repr(code_module_ref), fpath)
             self._load_resources_from_file(locale, code_module_ref, fpath)
 
@@ -73,5 +75,5 @@ class ThisModule(Module):
         self._resource_loader = ResourceLoader(services.ref_registry, services.local_code_module_registry, services.resource_registry)
         self._client_resources_dir = services.client_resources_dir
 
-    def init_phase_2(self):
+    def init_phase_2(self, services):
         self._resource_loader.load_resources_from_dir(self._client_resources_dir)
