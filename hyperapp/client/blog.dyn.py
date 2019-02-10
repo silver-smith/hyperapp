@@ -3,7 +3,7 @@ import asyncio
 import uuid
 import abc
 
-from hyperapp.common.htypes import tInt, tDateTime
+from hyperapp.common.htypes import tInt, tDateTime, resource_key_t
 from hyperapp.client.module import ClientModule
 from hyperapp.client.command import command
 from hyperapp.client.mode_command import mode_command
@@ -496,8 +496,8 @@ class ThisModule(ClientModule):
         list_object = htypes.blog.blog_object(BlogObject.impl_id, blog_service_ref, blog_id)
         handle_t = htypes.core.int_list_handle
         sort_column_id = 'created_at'
-        resource_id = ['client_module', 'blog', 'BlogObject']
-        return handle_t('list', list_object, resource_id, sort_column_id, key=current_article_id)
+        resource_key = resource_key_t(__module_ref__, ['BlogObject'])
+        return handle_t('list', list_object, resource_key, sort_column_id, key=current_article_id)
 
     async def _resolve_blog_article(self, blog_article_ref, blog_article):
         blog_service = await self._blog_service_factory(blog_article.blog_service_ref)
@@ -516,5 +516,5 @@ class ThisModule(ClientModule):
             ArticleRefListObject.impl_id, ref_list_object.blog_service_ref, ref_list_object.blog_id, ref_list_object.article_id)
         handle_t = htypes.core.int_list_handle
         sort_column_id = 'id'
-        resource_id = ['client_module', 'blog', 'BlogArticleRefListObject']
-        return handle_t('list', list_object, resource_id, sort_column_id, key=None)
+        resource_key = resource_key_t(__module_ref__, ['BlogArticleRefListObject'])
+        return handle_t('list', list_object, resource_key, sort_column_id, key=None)

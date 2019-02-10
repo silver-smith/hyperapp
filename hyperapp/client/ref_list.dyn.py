@@ -2,7 +2,7 @@ import logging
 from operator import attrgetter
 from collections import namedtuple
 
-from hyperapp.common.htypes import tInt, tString
+from hyperapp.common.htypes import tInt, tString, resource_key_t
 from hyperapp.common.ref import ref_repr
 from hyperapp.client.list_object import Element, Chunk, Column, ListObject
 from hyperapp.client.command import command
@@ -102,5 +102,5 @@ class ThisModule(ClientModule):
         object = htypes.ref_list.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
         handle_t = htypes.core.string_list_handle
         sort_column_id = 'id'
-        resource_id = ['client_module', 'ref_list', 'RefListObject']
-        return handle_t('list', object, resource_id, sort_column_id, None)
+        resource_key = resource_key_t(__module_ref__, ['RefListObject'])
+        return handle_t('list', object, resource_key, sort_column_id, None)
