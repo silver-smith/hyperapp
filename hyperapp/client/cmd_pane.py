@@ -75,7 +75,7 @@ class View(QtGui.QDockWidget):
             description = resource.description
         else:
             text = cmd.id
-            description = encode_path(cmd.resource_id)
+            description = encode_path(cmd.resource_key.path)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(description)
         button.setEnabled(cmd.is_enabled())
