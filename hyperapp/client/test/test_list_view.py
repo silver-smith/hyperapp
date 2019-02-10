@@ -11,7 +11,8 @@ import pytest
 from PySide import QtCore, QtGui
 from PySide.QtTest import QTest
 
-from hyperapp.common.htypes import tInt
+from hyperapp.common.htypes import tInt, resource_key_t
+from hyperapp.common.ref import phony_ref
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
@@ -42,16 +43,6 @@ code_module_list = [
     'client.view_registry',
     'client.list_view',
     ]
-
-
-class ResourcesManager(object):
-
-    def __init__(self, resources=None):
-        self._resources = resources or {}
-
-    def resolve(self, resource_id):
-        log.debug('resolving resource: %s', resource_id)
-        return self._resources.get('.'.join(resource_id))
 
 
 class Services(ClientServicesBase, TestServicesMixin):
@@ -137,18 +128,39 @@ def services():
 def object():
     return StubObject()
 
+
+
 @pytest.fixture
-def list_view_factory(application, services, object):
+def locale():
+    return 'en'
+
+
+@pytest.fixture
+def list_view_resource_key():
+    return resource_key_t(phony_ref('test_list_view'), ['test-list'])
+
+
+@pytest.fixture
+def resource_registar(services, locale, list_view_resource_key):
+
+    def register_resource(path, resource):
+        resource_ref = services.ref_registry.register_object(resource)
+        resource_key = resource_key_t(list_view_resource_key.module_ref, list_view_resource_key.path + path.split('.'))
+        services.resource_registry.register(resource_key, locale, resource_ref)
+
+    return register_resource
+
+
+@pytest.fixture
+def list_view_factory(application, services, object, locale, list_view_resource_key):
     default_object = object
     data_type = resolve_type(services, 'core', 'int_list_handle')
-
-    def make_list_view(object=None, sort_column_id=None, current_key=None, resources=None):
-        resource_manager = ResourcesManager(resources)
+        
+    def make_list_view(object=None, sort_column_id=None, current_key=None):
         return services.list_view_factory(
-            locale='en',
+            locale=locale,
             parent=None,
-            resources_manager=resource_manager,
-            resource_id=['test', 'list'],
+            resource_key=list_view_resource_key,
             data_type=data_type,
             object=object or default_object,
             key=current_key,
@@ -255,13 +267,11 @@ async def test_overlapped_fetch_result_should_be_merged_properly(list_view_facto
     check_rows(list_view, 'key', actual_row_count)
 
 @pytest.mark.asyncio
-async def test_resources_used_for_header_and_visibility(services, list_view_factory):
+async def test_resources_used_for_header_and_visibility(services, resource_registar, list_view_factory):
     column_resource = resolve_type(services, 'resource', 'column_resource')
-    resources = {
-        'test.list.column.key.en': column_resource(is_visible=False, text='the key', description=''),
-        'test.list.column.title.en': column_resource(is_visible=True, text='the title', description=''),
-        }
-    list_view = list_view_factory(resources=resources)
+    resource_registar('column.key', column_resource(is_visible=False, text='the key', description=''))
+    resource_registar('column.title', column_resource(is_visible=True, text='the title', description=''))
+    list_view = list_view_factory()
     list_view.fetch_elements_if_required()  # called from resizeEvent when view is shown
     first_visible_row, visible_row_count = list_view._get_visible_rows()
     model = list_view.model()

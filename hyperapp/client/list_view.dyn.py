@@ -184,7 +184,7 @@ class Model(QtCore.QAbstractTableModel):
 
 class ListView(View, ListObserver, QtGui.QTableView):
 
-    def __init__(self, locale, parent, resource_resolver, resource_key, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True):
+    def __init__(self, resource_resolver, locale, parent, resource_key, data_type, object, key, sort_column_id, first_visible_row=None, select_first=True):
         assert parent is None or isinstance(parent, View), repr(parent)
         assert data_type is None or isinstance(data_type, Type), repr(data_type)
         assert sort_column_id, repr(sort_column_id)
@@ -449,11 +449,15 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.list_view_factory = ListView
-        services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry, services.resource_resolver)
+        self._resource_resolver = services.resource_resolver
+        services.list_view_factory = self._list_view_factory
+        services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry)
 
     @classmethod
-    async def _list_view_from_state(self, locale, state, parent, objimpl_registry, resource_resolver):
+    async def _list_view_from_state(self, locale, state, parent, objimpl_registry):
         data_type = htypes.core.handle.get_object_class(state)
         object = await objimpl_registry.resolve_async(state.object)
-        return ListView(locale, parent, resource_resolver, state.resource_key, data_type, object, state.key, state.sort_column_id)
+        return self._list_view_factory(locale, parent, state.resource_key, data_type, object, state.key, state.sort_column_id)
+
+    def _list_view_factory(self, locale, parent, resource_key, data_type, object, key, sort_column_id):
+        return ListView(self._resource_resolver, locale, parent, resource_key, data_type, object, key, sort_column_id)
