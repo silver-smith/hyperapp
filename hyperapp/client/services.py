@@ -2,6 +2,7 @@ import os.path
 from pathlib import Path
 
 from ..common.htypes.packet_coders import packet_coders
+from ..common.ref import phony_ref
 from ..common.route_storage import RouteStorage
 from ..common.services import ServicesBase
 from ..common.module import ModuleRegistry
@@ -125,6 +126,8 @@ class Services(ClientServicesBase):
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self._load_code_module_list(code_module_list)
+        # enable application resources to work; todo: move application commands to dynamic module
+        self.local_code_module_registry.register('client.application', phony_ref('application'))
         self.module_registry.init_phases(self)
         #self._register_transports()
 
