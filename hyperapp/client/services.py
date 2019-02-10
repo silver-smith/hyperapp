@@ -125,6 +125,7 @@ class Services(ClientServicesBase):
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
         self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self._load_code_module_list(code_module_list)
+        self.module_registry.init_phases(self)
         #self._register_transports()
 
     async def async_init(self):
