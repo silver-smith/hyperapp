@@ -26,8 +26,8 @@ class ResourceLoader(object):
             try:
                 code_module_ref = self._local_code_module_registry[module_path]
             except KeyError:
-                log.warning('Resource file %r wants code module %r, which is missing', fpath, module_path)
-                return
+                log.warning('Skipping %r resource because code module %r is missing (file path: "%s")', module_name, module_name, fpath)
+                continue
             log.info('Loading %r %r resources from %s "%s"', module_name, locale, ref_repr(code_module_ref), fpath)
             self._load_resources_from_file(locale, code_module_ref, fpath)
 
