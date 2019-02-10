@@ -10,6 +10,7 @@ from hyperapp.client.util import key_match, key_match_any
 from hyperapp.client.command import command
 from . import htypes
 from .view import View
+from . import history_list as history_list_module
 from .history_list import HistoryList
 from .list_view import ListView
 
@@ -109,7 +110,7 @@ class NavigatorView(View):
     def open_history(self):
         state = self.get_state()
         object = htypes.navigator.history_list(HistoryList.impl_id, state.history)
-        resource_key = resource_key_t(__module_ref__, HISTORY_LIST_RESOURCE_PATH)
+        resource_key = resource_key_t(history_list_module.__module_ref__, HISTORY_LIST_RESOURCE_PATH)
         self.open(htypes.navigator.history_list_handle('list', object, resource_key, sort_column_id='idx', key=state.current_pos))
 
     def __del__(self):
