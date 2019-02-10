@@ -12,12 +12,12 @@ log = logging.getLogger(__name__)
 
 class View(QtGui.QDockWidget):
 
-    def __init__(self, window, locale, resources_manager):
+    def __init__(self, window, locale, resource_resolver):
         QtGui.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
         self.window = weakref.ref(window)
         self._locale = locale
-        self._resources_manager = resources_manager
+        self._resource_resolver = resource_resolver
         self.current_dir = None
         self.layout = QtGui.QVBoxLayout(spacing=1)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
@@ -66,10 +66,10 @@ class View(QtGui.QDockWidget):
             self.elts_buttons.append(button)
 
     def _make_button(self, cmd):
-        resource = self._resources_manager.resolve(cmd.resource_id + [self._locale])
+        resource = self._resource_resolver.resolve(cmd.resource_key, self._locale)
         if resource:
-            if resource.shortcuts:
-                text = '%s (%s)' % (resource.text, resource.shortcuts[0])
+            if resource.shortcut_list:
+                text = '%s (%s)' % (resource.text, resource.shortcut_list[0])
             else:
                 text = resource.text
             description = resource.description

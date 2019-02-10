@@ -26,13 +26,21 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class Window(View, QtGui.QMainWindow):
 
-    def __init__(self, locale, view_registry, module_command_registry, resources_manager, app, child, size=None, pos=None):
+    @classmethod
+    async def from_state(cls, state, app, module_command_registry, view_registry, resource_resolver):
+        locale = LOCALE
+        child = await TabView.from_state(locale, state.tab_view, module_command_registry, view_registry)
+        return cls(locale, view_registry, module_command_registry, resource_resolver, app, child,
+                   size=QtCore.QSize(state.size.w, state.size.h),
+                   pos=QtCore.QPoint(state.pos.x, state.pos.y))
+
+    def __init__(self, locale, view_registry, module_command_registry, resource_resolver, app, child, size=None, pos=None):
         assert isinstance(child, TabView), repr(child)
         QtGui.QMainWindow.__init__(self)
         View.__init__(self, app)
         self._locale = locale
         self._view_registry = view_registry
-        self._resources_manager = resources_manager
+        self._resource_resolver = resource_resolver
         self._app = app  # alias for _parent()
         self._view = None
         self._child_widget = None
@@ -44,8 +52,8 @@ class Window(View, QtGui.QMainWindow):
             self.move(pos)
         else:
             self.move(800, 100)
-        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, module_command_registry, resources_manager)
-        self._cmd_pane = cmd_pane.View(self, LOCALE, resources_manager)
+        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, module_command_registry, resource_resolver)
+        self._cmd_pane = cmd_pane.View(self, LOCALE, resource_resolver)
         #self._filter_pane = filter_pane.View(self)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
@@ -108,7 +116,7 @@ class Window(View, QtGui.QMainWindow):
         state = self.get_state()
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
-        await self.from_state(state, self._app, self._view_registry, self._resources_manager)
+        await self.from_state(state, self._app, self._module_command_registry, self._view_registry, self._resource_resolver)
 
     def __del__(self):
         log.info('~window')
@@ -118,11 +126,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.window_from_state = self._window_from_state
-
-    async def _window_from_state(self, state, app, module_command_registry, view_registry, resources_manager):
-        locale = LOCALE
-        child = await TabView.from_state(locale, state.tab_view, module_command_registry, view_registry)
-        return Window(locale, view_registry, module_command_registry, resources_manager, app, child,
-                      size=QtCore.QSize(state.size.w, state.size.h),
-                      pos=QtCore.QPoint(state.pos.x, state.pos.y))
+        services.window_from_state = Window.from_state

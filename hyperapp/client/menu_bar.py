@@ -32,8 +32,8 @@ class MenuBar(object):
         menu_bar.addMenu(self.window_menu)
         menu_bar.addMenu(self.help_menu)
 
-    def add_action_to_menu(self, menu, text, shortcuts, fn, self_wr):
-        menu.addAction(make_action(menu, text, shortcuts, fn, self_wr))
+    def add_action_to_menu(self, menu, text, shortcut_list, fn, self_wr):
+        menu.addAction(make_action(menu, text, shortcut_list, fn, self_wr))
 
     def _build_global_menu(self, title):
         menu = QtGui.QMenu(title)
@@ -69,42 +69,42 @@ class MenuBar(object):
         log.debug('-- menu_bar view_changed object=%r', window.get_object())
         self.current_dir = dir = window.get_object()
         self.help_menu.setEnabled(dir is not None)
-        used_shortcuts = set()
-        self._update_dir_menu(window, used_shortcuts)
-        self._update_window_menu(window, used_shortcuts)
+        used_shortcut_set = set()
+        self._update_dir_menu(window, used_shortcut_set)
+        self._update_window_menu(window, used_shortcut_set)
 
     def view_commands_changed(self, window, command_kinds):
         pass
         
-    def _make_action(self, menu, cmd, used_shortcuts=None):
+    def _make_action(self, menu, cmd, used_shortcut_set=None):
         resource = self._resource_resolver.resolve(cmd.resource_key, self._locale)
         if resource:
             text = resource.text
-            shortcuts = resource.shortcuts
+            shortcut_list = resource.shortcut_list
         else:
             text = '.'.join(cmd.resource_key.path)
-            shortcuts = None
+            shortcut_list = None
         if not cmd.is_enabled():
-            shortcuts = None
-        if used_shortcuts is not None:
+            shortcut_list = None
+        if used_shortcut_set is not None:
             # remove duplicates
-            shortcuts = [sc for sc in shortcuts or [] if sc not in used_shortcuts]
-            used_shortcuts |= set(shortcuts)
-        action = make_async_action(menu, text, shortcuts, cmd.run)
+            shortcut_list = [sc for sc in shortcut_list or [] if sc not in used_shortcut_set]
+            used_shortcut_set |= set(shortcut_list)
+        action = make_async_action(menu, text, shortcut_list, cmd.run)
         action.setEnabled(cmd.is_enabled())
         return action
 
-    def _update_dir_menu(self, window, used_shortcuts):
+    def _update_dir_menu(self, window, used_shortcut_set):
         self.dir_menu.clear()
         command_list = window.get_command_list()
         for command in command_list:
             assert isinstance(command, Command), repr(command)
             if command.kind != 'object': continue
             #if command.is_system(): continue
-            self.dir_menu.addAction(self._make_action(self.dir_menu, command, used_shortcuts))
+            self.dir_menu.addAction(self._make_action(self.dir_menu, command, used_shortcut_set))
         self.dir_menu.setEnabled(command_list != [])
 
-    def _update_window_menu(self, window, used_shortcuts):
+    def _update_window_menu(self, window, used_shortcut_set):
         self.window_menu.clear()
         # later commands are from deeper views
         # we must iterate in reverse order so deeper view's shortcuts override shallow ones
@@ -114,7 +114,7 @@ class MenuBar(object):
             assert isinstance(command, Command), repr(command)
             if command.kind != 'view': continue
             #if command.is_system(): continue
-            action = self._make_action(self.window_menu, command, used_shortcuts)
+            action = self._make_action(self.window_menu, command, used_shortcut_set)
             if last_action:
                 self.window_menu.insertAction(last_action, action)
             else:

@@ -435,7 +435,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
             wrapped_command = self._wrap_element_command(element, command)
             action = make_async_action(
                 action_widget, '%s/%s' % (wrapped_command.resource_key, wrapped_command.id),
-                resource.shortcuts if resource else None, wrapped_command.run)
+                resource.shortcut_list if resource else None, wrapped_command.run)
             action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
             action_widget.addAction(action)
             self._elt_actions.append(action)
@@ -453,7 +453,6 @@ class ThisModule(ClientModule):
         services.list_view_factory = self._list_view_factory
         services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry)
 
-    @classmethod
     async def _list_view_from_state(self, locale, state, parent, objimpl_registry):
         data_type = htypes.core.handle.get_object_class(state)
         object = await objimpl_registry.resolve_async(state.object)

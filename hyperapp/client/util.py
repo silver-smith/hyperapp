@@ -112,25 +112,25 @@ def key_match_any(evt, keys):
             return True
     return False
 
-def make_async_action(widget, text, shortcuts, fn, *args, **kw):
+def make_async_action(widget, text, shortcut_list, fn, *args, **kw):
     assert isinstance(text, str), repr(text)
-    assert shortcuts is None or is_list_inst(shortcuts, str), repr(shortcuts)
+    assert shortcut_list is None or is_list_inst(shortcut_list, str), repr(shortcut_list)
     assert callable(fn), repr(fn)
     def run():
         log.info('async action run %r %r(%s, %s)', text, fn, args, kw)
         asyncio.async(fn(*args, **kw))
-    return make_action(widget, text, shortcuts, run)
+    return make_action(widget, text, shortcut_list, run)
 
-def make_action(widget, text, shortcuts, fn, *args, **kw):
+def make_action(widget, text, shortcut_list, fn, *args, **kw):
     assert isinstance(text, str), repr(text)
-    assert shortcuts is None or is_list_inst(shortcuts, str), repr(shortcuts)
+    assert shortcut_list is None or is_list_inst(shortcut_list, str), repr(shortcut_list)
     assert callable(fn), repr(fn)
-    ## print '--- make_action', widget, text, shortcuts, fn, args, kw
+    ## print '--- make_action', widget, text, shortcut_list, fn, args, kw
     def run():
-        log.info('--- make_action/run widget=%r text=%r shortcuts=%r fn=%r args=%r kw=%r', widget, text, shortcuts, fn, args, kw)
+        log.info('--- make_action/run widget=%r text=%r shortcut_list=%r fn=%r args=%r kw=%r', widget, text, shortcut_list, fn, args, kw)
         return fn(*args, **kw)
     action = QtGui.QAction(text, widget)
-    action.setShortcuts(shortcuts or [])
+    action.setShortcuts(shortcut_list or [])
     action.triggered.connect(run)
     return action
 
