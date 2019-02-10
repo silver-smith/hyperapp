@@ -90,7 +90,7 @@ class command(object):
         module = sys.modules[module_name]
         module_ref = module.__dict__.get('__module_ref__') or phony_ref(module_name.split('.')[-1])
         class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
-        resource_key = resource_key_t(module_ref, ['command', class_name, self.id])
+        resource_key = resource_key_t(module_ref, [class_name, 'command', self.id])
         return self.instantiate(self.wrap_method(class_method), resource_key)
 
     def instantiate(self, wrapped_class_method, resource_key):
