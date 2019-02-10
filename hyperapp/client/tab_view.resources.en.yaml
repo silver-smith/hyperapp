@@ -1,4 +1,4 @@
-View:
+TabView:
   commands:
     duplicate_tab:
       text: Duplicate  tab

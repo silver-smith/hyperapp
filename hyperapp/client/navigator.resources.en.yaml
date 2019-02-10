@@ -1,4 +1,4 @@
-View:
+NavigatorView:
   commands:
     go_back:
       text: Go back
