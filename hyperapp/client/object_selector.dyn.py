@@ -21,7 +21,7 @@ class ObjectSelectorObject(Object):
 
     @classmethod
     async def from_state(cls, state):
-        callback = await this_module.callback_registry.resolve(state.callback)
+        callback = await this_module.callback_registry.resolve_async(state.callback)
         return cls(callback)
 
     def __init__(self, callback):
