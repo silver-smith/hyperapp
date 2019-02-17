@@ -14,20 +14,13 @@ def all_match(x_list, y_list):
 
 class Type(object):
 
-    def __init__(self, full_name):
-        assert full_name is None or (is_list_inst(full_name, str) and full_name), repr(full_name)
-        self._full_name = full_name
-
-    @property
-    def full_name(self):
-        return self._full_name
+    def __init__(self, name):
+        assert name is None or type(name) is str, repr(name)
+        self._name = name
 
     @property
     def name(self):
-        if self.full_name:
-            return self.full_name[-1]
-        else:
-            return None
+        return self._name
 
     def __instancecheck__(self, value):
         raise NotImplementedError(self.__class__)
@@ -49,8 +42,8 @@ class Type(object):
 
 class TPrimitive(Type):
 
-    def __init__(self, full_name=None):
-        super().__init__(full_name or ['basic', self.type_name])
+    def __init__(self, name=None):
+        super().__init__(name or self.type_name)
 
     def __repr__(self):
         return 'TPrimitive<%s>' % self.get_type().__name__
@@ -103,9 +96,9 @@ tDateTime = TDateTime()
 
 class TOptional(Type):
 
-    def __init__(self, base_t, full_name=None):
+    def __init__(self, base_t, name=None):
         assert isinstance(base_t, Type), repr(base_t)
-        super().__init__(full_name)
+        super().__init__(name)
         self.base_t = base_t
 
     def __repr__(self):
@@ -160,12 +153,7 @@ class Record(object):
         return ', '.join('%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields)
 
     def __repr__(self):
-        if self._type.full_name:
-            name = '.'.join(self._type.full_name)
-        else:
-            name = 'Record'
-#        return '%s<%d: %s>' % (name, id(self._type), self)
-        return '<%s: %s>' % (name, self)
+        return '<%s: %s>' % (self._type.name or 'Record', self)
 
     def __eq__(self, other):
         assert isinstance(other, Record), repr(other)
@@ -182,18 +170,18 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__(self, fields=None, base=None, full_name=None):
+    def __init__(self, fields=None, base=None, name=None):
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
-        super().__init__(full_name)
+        super().__init__(name)
         self.fields = fields or []
         if base:
             self.fields = base.fields + self.fields
         self.base = base
 
     def __repr__(self):
-        if self.full_name:
-            return '.'.join(self.full_name)
+        if self.name:
+            return self.name
         else:
             return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.fields)))
 
@@ -270,9 +258,9 @@ class TRecord(Type):
 
 class TList(Type):
 
-    def __init__(self, element_t, full_name=None):
+    def __init__(self, element_t, name=None):
         assert isinstance(element_t, Type), repr(element_t)
-        super().__init__(full_name)
+        super().__init__(name)
         self.element_t = element_t
 
     def __repr__(self):
@@ -292,23 +280,23 @@ class TIndexedList(TList):
     pass
 
 
-tRoute = TList(tString, full_name=['builtins', 'route'])
+tRoute = TList(tString, name='route')
 
 tServerRoutes = TRecord([
     Field('public_key_der', tBinary),
     Field('routes', TList(tRoute)),
-    ], full_name=['builtins', 'server_routes'])
+    ], name='server_routes')
 
-tIfaceId = TString(full_name=['builtins', 'iface_id'])
+tIfaceId = TString(name='iface_id')
 
-tPath = TList(tString, full_name=['builtins', 'path'])
+tPath = TList(tString, name='path')
 
 tUrl = TRecord([
     Field('iface', tIfaceId),
     Field('public_key_der', tBinary),
     Field('path', tPath),
-    ], full_name=['builtins', 'url'])
+    ], name='url')
 
 tUrlWithRoutes = TRecord(base=tUrl, fields=[
     Field('routes', TList(tRoute)),
-    ], full_name=['builtins', 'url_with_routes'])
+    ], name='url_with_routes')

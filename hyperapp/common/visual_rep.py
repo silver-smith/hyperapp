@@ -94,8 +94,8 @@ class VisualRepEncoder(object):
 
     @staticmethod
     def _make_name(t, type_name):
-        if t.full_name:
-            return '%s (%s)' % ('.'.join(t.full_name), type_name)
+        if t.name:
+            return '%s (%s)' % (t.name, type_name)
         else:
             return type_name
 

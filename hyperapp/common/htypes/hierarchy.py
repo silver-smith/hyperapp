@@ -14,10 +14,10 @@ class TClassRecord(Record):
         self._class = tclass
 
     def __repr__(self):
-        if self._class.hierarchy.full_name:
-            name = '.'.join(self._class.hierarchy.full_name + [self._class.id])
+        if self._class.hierarchy.name:
+            name = '.'.join([self._class.hierarchy.name, self._class.id])
         else:
-            name = '.'.join('ClassRecord', self._class.hierarchy.hierarchy_id, self._class.id)
+            name = '.'.join(['ClassRecord', self._class.hierarchy.hierarchy_id, self._class.id])
         return '%s<%s>' % (name, ', '.join(
             '%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields))
 
@@ -45,8 +45,8 @@ class TClass(Type):
         return other.hierarchy is self.hierarchy and other.id == self.id and other.trec.match(self.trec)
 
     @property
-    def full_name(self):
-        return self.trec.full_name
+    def name(self):
+        return self.trec.name
 
     def __call__(self, *args, **kw):
         return self.instantiate(*args, **kw)
@@ -84,8 +84,8 @@ class TClass(Type):
 
 class THierarchy(Type):
 
-    def __init__(self, hierarchy_id, full_name=None):
-        super().__init__(full_name)
+    def __init__(self, hierarchy_id, name=None):
+        super().__init__(name)
         self.hierarchy_id = hierarchy_id
         self.registry = {}  # id -> TClass
 
@@ -101,7 +101,7 @@ class THierarchy(Type):
                 sorted(other.registry.values(), key=lambda cls: cls.id) ==
                 sorted(self.registry.values(), key=lambda cls: cls.id))
 
-    def register(self, id, trec=None, fields=None, base=None, full_name=None):
+    def register(self, id, trec=None, fields=None, base=None, name=None):
         assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         if trec is not None:
@@ -114,7 +114,7 @@ class THierarchy(Type):
                 base_rec = base.get_trecord()
             else:
                 base_rec = None
-            trec = TRecord(fields, base_rec, full_name=full_name)
+            trec = TRecord(fields, base_rec, name=name)
         tclass = self.make_tclass(id, trec, base)
         self.registry[id] = tclass
         #print('registered %s %s' % (self.hierarchy_id, id))

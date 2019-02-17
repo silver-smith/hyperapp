@@ -6,29 +6,29 @@ hash_t = tBinary
 ref_t = TRecord([
     Field('hash_algorithm', tString),
     Field('hash', hash_t),
-    ], full_name=['builtins', 'ref'])
+    ], name='ref')
 
 capsule_t = TRecord([
     Field('type_ref', ref_t),
     Field('encoding', tString),  # used for both encoded_object and making ref to this capsule
     Field('encoded_object', tBinary),
-    ], full_name=['builtins', 'capsule'])
+    ], name='capsule')
 
 route_t = TRecord([
     Field('endpoint_ref', ref_t),
     Field('transport_ref', ref_t),
-    ], full_name=['builtins', 'route'])
+    ], name='route')
 
 bundle_t = TRecord([
     Field('roots', TList(ref_t)),
     Field('capsule_list', TList(capsule_t)),
     Field('route_list', TList(route_t)),
-    ], full_name=['builtins', 'bundle'])
+    ], name='bundle')
 
 
-resource_path_t = TList(tString, full_name=['builtins', 'resource_path'])
+resource_path_t = TList(tString, name='resource_path')
 
 resource_key_t = TRecord([
     Field('module_ref', ref_t),
     Field('path', resource_path_t),
-    ], full_name=['builtins', 'resource_key'])
+    ], name='resource_key')

@@ -75,7 +75,7 @@ class TypeResolver(object):
         return self._type2ref[t]
 
     def _resolve_meta_ref(self, ref, meta_ref, name=None):
-        return self._meta_type_registry.resolve(self._type_ref_resolver, meta_ref.type, [meta_ref.name])
+        return self._meta_type_registry.resolve(self._type_ref_resolver, meta_ref.type, meta_ref.name)
 
     def _resolve_builtin_ref(self, ref, builtin_ref, name=None):
         return self._ref2type_cache[ref]  # must be registered using register_builtin_type

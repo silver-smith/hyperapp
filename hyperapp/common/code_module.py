@@ -13,12 +13,12 @@ type_import_t = TRecord([
     Field('type_module_name', tString),
     Field('type_name', tString),
     Field('type_ref', ref_t),
-    ], full_name=['code_module', 'type_import'])
+    ], name='type_import')
 
 code_import_t = TRecord([
     Field('import_name', tString),
     Field('code_module_ref', ref_t),
-    ], full_name=['code_module', 'code_import'])
+    ], name='code_import')
 
 code_module_t = TRecord([
     Field('module_name', tString),
@@ -26,7 +26,7 @@ code_module_t = TRecord([
     Field('code_import_list', TList(code_import_t)),
     Field('source', tString),
     Field('file_path', tString),
-    ], full_name=['code_module', 'code_module'])
+    ], name='code_module')
 
 
 class LocalCodeModuleRegistry(object):
