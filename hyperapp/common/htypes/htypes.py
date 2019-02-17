@@ -144,32 +144,6 @@ class Field(object):
         return other.name == self.name and other.type.match(self.type)
 
 
-# class for instantiated records
-class Record(object):
-
-    def __init__(self, type):
-        assert isinstance(type, TRecord), repr(type)
-        self._type = type
-
-    def __str__(self):
-        return ', '.join('%s=%r' % (field.name, getattr(self, field.name)) for field in self._type.fields)
-
-    def __repr__(self):
-        return '<%s: %s>' % (self._type.name or 'Record', self)
-
-    def __eq__(self, other):
-        assert isinstance(other, Record), repr(other)
-        return (self._type is other._type and
-                [getattr(self,  field.name) for field in self._type.fields] ==
-                [getattr(other, field.name) for field in self._type.fields])
-
-    def __hash__(self):
-        return self._type.instance_hash(self)
-
-    def _asdict(self):
-        return {field.name: getattr(self, field.name) for field in self._type.fields}
-        
-
 class TRecord(Type):
 
     def __init__(self, name, fields=None, base=None):
@@ -181,6 +155,7 @@ class TRecord(Type):
         if base:
             self.fields = base.fields + self.fields
         self.base = base
+        self._named_tuple = namedtuple(name, ['_type'] + [field.name for field in self.fields])
 
     def __repr__(self):
         if self.name:
@@ -211,52 +186,13 @@ class TRecord(Type):
 
     def __instancecheck__(self, rec):
         ## print '__instancecheck__', self, rec
-        if not isinstance(rec, Record):
-            return False
-        return issubclass(rec._type, self)
+        return isinstance(rec, self._named_tuple)
 
     def instance_hash(self, value):
         return hash(tuple(field.type.instance_hash(getattr(value, field.name)) for field in self.fields))
 
-    def adopt_args(self, args, kw, check_unexpected=True):
-        path = '<Record>'
-        if check_unexpected:
-            self.assert_(path, len(args) <= len(self.fields),
-                         'instantiate takes at most %d arguments (%d given)' % (len(self.fields), len(args)))
-        fields = dict(kw)
-        for field, arg in zip(self.fields, args):
-            assert field.name not in fields, 'TRecord.instantiate got multiple values for field %r' % field.name
-            fields[field.name] = arg
-        adopted_args = {}
-        unexpected = set(fields.keys())
-        ## print '*** adopt_args', fields, self, [field.name for field in self.fields]
-        for field in self.fields:
-            if field.name in fields:
-                value = fields[field.name]
-                unexpected.remove(field.name)
-            else:
-                if isinstance(field.type, TOptional):
-                    value = None
-                else:
-                    raise TypeError('Record %s field is missing: %r' % (self, field.name))
-            assert isinstance(value, field.type), 'Field %r is expected to be %r, but is %r' % (field.name, field.type, value)
-            adopted_args[field.name] = value
-        if check_unexpected:
-            self.assert_(path, not unexpected,
-                         'Unexpected fields: %s; allowed are: %s'
-                         % (', '.join(unexpected), ', '.join(field.name for field in self.fields)))
-        return adopted_args
-
-    def instantiate_impl(self, rec, *args, **kw):
-        fields = self.adopt_args(args, kw or {})
-        ## print '*** instantiate', self, sorted(fields.keys()), sorted(f.name for f in self.fields), fields
-        for name, val in fields.items():
-            setattr(rec, name, val)
-
     def instantiate(self, *args, **kw):
-        rec = Record(self)
-        self.instantiate_impl(rec, *args, **kw)
-        return rec
+        return self._named_tuple(self, *args, **kw)
 
 
 class TList(Type):
