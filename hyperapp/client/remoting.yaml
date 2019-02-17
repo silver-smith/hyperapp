@@ -7,5 +7,6 @@ import:
       - endpoint
       - rpc_request
       - rpc_response
+      - unknown_ref_error
   code:
     - client.request
