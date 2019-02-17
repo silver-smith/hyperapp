@@ -4,7 +4,6 @@ from .htypes import (
     TRecord,
     TList,
     ref_t,
-    TypeNamespace,
     builtin_type_names,
     )
 
