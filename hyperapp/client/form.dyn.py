@@ -51,7 +51,7 @@ class FormView(Composite, QtGui.QWidget):
         for field in state.field_list:
             field_view_map[field.id] = view = await view_registry.resolve_async(locale, field.view)
             field_object_map[field.id] = view.get_object()
-        object = await form_impl_registry.resolve(state.object, field_object_map)
+        object = await form_impl_registry.resolve_async(state.object, field_object_map)
         return cls(parent, object, field_view_map, cls.Mode(state.mode), state.current_field_id)
 
     def __init__(self, parent, object, field_view_map, mode, current_field_id):
