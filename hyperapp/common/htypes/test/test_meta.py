@@ -119,7 +119,7 @@ def test_record(builtin_ref, resolve):
         Field('int_field', tInt),
         Field('string_list_field', TList(tString)),
         Field('bool_optional_field', TOptional(tBool)),
-        ]))
+        ], name='some_record'))
 
 
 def test_based_record(builtin_ref, type_ref, resolve):
@@ -135,7 +135,7 @@ def test_based_record(builtin_ref, type_ref, resolve):
     assert t.match(TRecord([
         Field('int_field', tInt),
         Field('string_field', tString),
-        ]))
+        ], name='some_record'))
 
 
 def test_hierarchy(builtin_ref, type_ref, resolve):
@@ -153,9 +153,9 @@ def test_hierarchy(builtin_ref, type_ref, resolve):
     assert THierarchy('test_hierarchy').matches(hierarchy)
     class_a = resolve('some_class_a', class_a_data)
     class_b = resolve('some_class_b', class_b_data)
-    assert class_a.match(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)])))
+    assert class_a.match(TClass(hierarchy, 'class_a', TRecord([Field('field_a_1', tString)], name='class_a')))
     assert class_b.match(TClass(hierarchy, 'class_b', TRecord([Field('field_a_1', tString),
-                                                               Field('field_b_1', TList(tInt))])))
+                                                               Field('field_b_1', TList(tInt))], name='class_b')))
 
 def test_interface(builtin_ref, resolve):
     iface_data = t_interface_meta([

@@ -11,7 +11,7 @@ from .htypes import (
 type_import_t = TRecord([
     Field('module_name', tString),
     Field('name', tString),
-    ])
+    ], name='type_import')
 
 type_def_t = TRecord([
     Field('name', tString),

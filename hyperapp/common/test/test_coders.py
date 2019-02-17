@@ -21,11 +21,11 @@ def test_embedded(encoding):
     t = TRecord([
         Field('something', tString),
         Field('embedded', tEmbedded),
-        ])
+        ], name='test_record')
     embedded_t = TRecord([
         Field('x', tString),
         Field('y', tInt),
-        ])
+        ], name='embedded_rec')
     embedded = embedded_t(
         x='some embedded value',
         y=12345,

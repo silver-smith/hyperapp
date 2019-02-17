@@ -1,4 +1,6 @@
+from collections import namedtuple
 import datetime
+
 from ..util import is_list_inst
 
 
@@ -178,6 +180,7 @@ class TRecord(Type):
         if base:
             self.fields = base.fields + self.fields
         self.base = base
+        assert name
 
     def __repr__(self):
         if self.name:
