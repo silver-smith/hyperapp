@@ -30,14 +30,14 @@ tRootMetaType = tMetaType.register('root', fields=[
     ], name='root')
 
 
-builtin_ref_t = TRecord([
+builtin_ref_t = TRecord('builtin_ref', [
     Field('name', tString),
-    ], name='builtin_ref')
+    ])
 
-meta_ref_t = TRecord([
+meta_ref_t = TRecord('meta_ref', [
     Field('name', tString),
     Field('type', tMetaType),
-    ], name='meta_ref')
+    ])
 
 
 tNamed = tMetaType.register('named', base=tRootMetaType, fields=[
@@ -88,10 +88,10 @@ def list_from_data(meta_type_registry, type_ref_resolver, rec, name):
     return TList(element_t)
 
 
-tFieldMeta = TRecord([
+tFieldMeta = TRecord('field', [
     Field('name', tString),
     Field('type', tMetaType),
-    ], name='field')
+    ])
 
 tRecordMeta = tMetaType.register(
     'record', base=tRootMetaType, fields=[
@@ -120,7 +120,7 @@ def record_from_data(meta_type_registry, type_ref_resolver, rec, name):
             'Base for record %s, %s is not a record' % (name, base.name))
     else:
         base = None
-    return TRecord(field_list_from_data(meta_type_registry, type_ref_resolver, rec.fields), base=base, name=name)
+    return TRecord(name, field_list_from_data(meta_type_registry, type_ref_resolver, rec.fields), base=base)
 
 
 tHierarchyMeta = tMetaType.register(
@@ -163,12 +163,12 @@ def hierarchy_class_from_data(meta_type_registry, type_ref_resolver, rec, name):
     return hierarchy.register(rec.class_id, base=base, fields=fields, name=name)
 
 
-tIfaceCommandMeta = TRecord([
+tIfaceCommandMeta = TRecord('iface_command', [
     Field('request_type', tString),
     Field('command_id', tString),
     Field('params_fields', TList(tFieldMeta)),
     Field('result_fields', TList(tFieldMeta)),
-    ], name='iface_command')
+    ])
 
 tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
     Field('base', TOptional(tMetaType)),

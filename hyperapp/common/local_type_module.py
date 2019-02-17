@@ -8,21 +8,21 @@ from .htypes import (
     )
 
 
-type_import_t = TRecord([
+type_import_t = TRecord('type_import', [
     Field('module_name', tString),
     Field('name', tString),
-    ], name='type_import')
+    ])
 
-type_def_t = TRecord([
+type_def_t = TRecord('typedef', [
     Field('name', tString),
     Field('type', tMetaType),
-    ], name='typedef')
+    ])
 
-type_module_t = TRecord([
+type_module_t = TRecord('type_module', [
     Field('module_name', tString),
     Field('import_list', TList(type_import_t)),
     Field('typedefs', TList(type_def_t)),
-    ], name='type_module')
+    ])
 
 
 class LocalTypeModule(object):

@@ -8,24 +8,24 @@ from .htypes import (
     )
 
 
-type_import_t = TRecord([
+type_import_t = TRecord('type_import', [
     Field('type_module_name', tString),
     Field('type_name', tString),
     Field('type_ref', ref_t),
-    ], name='type_import')
+    ])
 
-code_import_t = TRecord([
+code_import_t = TRecord('code_import', [
     Field('import_name', tString),
     Field('code_module_ref', ref_t),
-    ], name='code_import')
+    ])
 
-code_module_t = TRecord([
+code_module_t = TRecord('code_module', [
     Field('module_name', tString),
     Field('type_import_list', TList(type_import_t)),
     Field('code_import_list', TList(code_import_t)),
     Field('source', tString),
     Field('file_path', tString),
-    ], name='code_module')
+    ])
 
 
 class LocalCodeModuleRegistry(object):

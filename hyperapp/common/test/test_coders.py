@@ -18,14 +18,14 @@ def encoding(request):
 
 
 def test_embedded(encoding):
-    t = TRecord([
+    t = TRecord('test_record', [
         Field('something', tString),
         Field('embedded', tEmbedded),
-        ], name='test_record')
-    embedded_t = TRecord([
+        ])
+    embedded_t = TRecord('embedded_rec', [
         Field('x', tString),
         Field('y', tInt),
-        ], name='embedded_rec')
+        ])
     embedded = embedded_t(
         x='some embedded value',
         y=12345,

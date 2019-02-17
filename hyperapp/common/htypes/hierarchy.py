@@ -114,7 +114,7 @@ class THierarchy(Type):
                 base_rec = base.get_trecord()
             else:
                 base_rec = None
-            trec = TRecord(fields, base_rec, name=name)
+            trec = TRecord(name, fields, base_rec)
         tclass = self.make_tclass(id, trec, base)
         self.registry[id] = tclass
         #print('registered %s %s' % (self.hierarchy_id, id))

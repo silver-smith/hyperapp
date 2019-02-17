@@ -172,7 +172,8 @@ class Record(object):
 
 class TRecord(Type):
 
-    def __init__(self, fields=None, base=None, name=None):
+    def __init__(self, name, fields=None, base=None):
+        assert name
         assert fields is None or is_list_inst(fields, Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
         super().__init__(name)
@@ -180,7 +181,6 @@ class TRecord(Type):
         if base:
             self.fields = base.fields + self.fields
         self.base = base
-        assert name
 
     def __repr__(self):
         if self.name:
@@ -285,21 +285,21 @@ class TIndexedList(TList):
 
 tRoute = TList(tString, name='route')
 
-tServerRoutes = TRecord([
+tServerRoutes = TRecord('server_routes', [
     Field('public_key_der', tBinary),
     Field('routes', TList(tRoute)),
-    ], name='server_routes')
+    ])
 
 tIfaceId = TString(name='iface_id')
 
 tPath = TList(tString, name='path')
 
-tUrl = TRecord([
+tUrl = TRecord('url', [
     Field('iface', tIfaceId),
     Field('public_key_der', tBinary),
     Field('path', tPath),
-    ], name='url')
+    ])
 
-tUrlWithRoutes = TRecord(base=tUrl, fields=[
+tUrlWithRoutes = TRecord('url_with_routes', base=tUrl, fields=[
     Field('routes', TList(tRoute)),
-    ], name='url_with_routes')
+    ])
