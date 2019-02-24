@@ -1,3 +1,5 @@
+import logging
+
 from .htypes import (
     ref_t,
     tNamed,
@@ -5,9 +7,13 @@ from .htypes import (
     builtin_ref_t,
     meta_ref_t,
     )
+from .ref import ref_repr
+from .visual_rep import pprint
 from .type_module_parser import load_type_module_source
 from .local_type_module import LocalTypeModule
 from .mapper import Mapper
+
+log = logging.getLogger(__name__)
 
 
 class _NameToRefMapper(Mapper):
@@ -67,5 +73,7 @@ class TypeModuleLoader(object):
             ref = self._ref_registry.register_object(rec)
             local_type_module.register(typedef.name, ref)
             local_name_dict[typedef.name] = ref
+            log.debug('Type module loader: %r is mapped to %s:', typedef.name, ref_repr(ref))
+            pprint(rec)
         return local_type_module
 
