@@ -18,7 +18,7 @@ class ThisModule(ClientModule):
         self._error_handle_t = htypes.core.handle.register(
             ERROR_HANDLER_CLASS_ID, base=htypes.core.view_handle, fields=[
                 Field('error', htypes.error.error),
-                ], name='error_handle')
+                ])
         services.view_registry.register(ERROR_HANDLER_VIEW_ID, self.resolve_error_handler)
         set_error_handler(self.error_handler)
 
