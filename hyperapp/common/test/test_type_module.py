@@ -77,10 +77,10 @@ def test_type_resolver(ref_resolver, type_resolver, ref_registry):
     simple_class = resolve_1('simple_class')
 
     assert simple_class.hierarchy is object_t
-    assert simple_class.match(TClass(object_t, 'simple_2', TRecord('simple_2')))
+    assert simple_class.match(TClass(object_t, 'simple_2'))
 
     assert resolve_1('text_object').match(
-        TClass(object_t, 'text_2', base=simple_class, trec=TRecord('text_object', [Field('text', tString)])))
+        TClass(object_t, 'text_2', base=simple_class, fields=[Field('text', tString)]))
 
     some_bool_list_opt = resolve_2('some_bool_list_opt')
     assert some_bool_list_opt.match(TOptional(TList(tBool)))
