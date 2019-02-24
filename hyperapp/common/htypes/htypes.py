@@ -171,6 +171,8 @@ class TRecord(Type):
         ## print('__subclasscheck__', self, cls)
         if cls is self:
             return True
+        if not isinstance(cls, TRecord):
+            return False
         return issubclass(cls.base, self)
 
     def __call__(self, *args, **kw):
@@ -184,7 +186,7 @@ class TRecord(Type):
 
     def __instancecheck__(self, rec):
         ## print '__instancecheck__', self, rec
-        return isinstance(rec, self._named_tuple)
+        return issubclass(getattr(rec, 't', None), self)
 
     def instance_hash(self, value):
         return hash(tuple(field.type.instance_hash(getattr(value, field.name)) for field in self.fields))
