@@ -18,14 +18,18 @@ class ResourceRegistry:
     def register(self, key, locale, resource_ref):
         log.debug('    Resource registry: registering %s %s %s -> %s',
                   locale, ref_repr(key.module_ref), encode_path(key.path), ref_repr(resource_ref))
-        self._registry[key, locale] = resource_ref
+        self._registry[self._make_resource_key(key, locale)] = resource_ref
 
     def resolve(self, key, locale):
-        resource_ref = self._registry.get((key, locale))
+        resource_ref = self._registry.get(self._make_resource_key(key, locale))
         log.debug('    Resource registry: resolved %s %s %s -> %s',
                   locale, ref_repr(key.module_ref), encode_path(key.path),
                   ref_repr(resource_ref))
         return resource_ref
+
+    @staticmethod
+    def _make_resource_key(key, locale):
+        return (key.module_ref, tuple(key.path), locale)
 
 
 class ThisModule(Module):
