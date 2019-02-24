@@ -1,7 +1,7 @@
 import logging
 
 from ..util import is_list_inst
-from .htypes import join_path, Type, tString, Field, TRecord, TList
+from .htypes import join_path, all_match, Type, tString, Field, TRecord, TList
 
 log = logging.getLogger(__name__)
 

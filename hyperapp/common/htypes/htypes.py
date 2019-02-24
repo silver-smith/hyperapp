@@ -148,7 +148,7 @@ class TRecord(Type):
 
     def __init__(self, name, fields=None, base=None):
         assert name
-        assert fields is None or is_list_inst(fields, Field), repr(fields)
+        assert is_list_inst(fields or [], Field), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
         super().__init__(name)
         self.fields = fields or []

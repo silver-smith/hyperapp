@@ -153,10 +153,10 @@ def test_hierarchy(builtin_ref, type_ref, resolve):
     assert THierarchy('test_hierarchy').match(hierarchy)
     class_a = resolve('some_class_a', class_a_data)
     class_b = resolve('some_class_b', class_b_data)
-    assert class_a.match(TClass(hierarchy, 'class_a', TRecord('class_a', [Field('field_a_1', tString)])))
-    assert class_b.match(TClass(hierarchy, 'class_b', TRecord('class_b', [
+    assert class_a.match(TClass(hierarchy, 'class_a', [Field('field_a_1', tString)]))
+    assert class_b.match(TClass(hierarchy, 'class_b', [
         Field('field_a_1', tString),
-        Field('field_b_1', TList(tInt))])))
+        Field('field_b_1', TList(tInt))]))
 
 def test_interface(builtin_ref, resolve):
     iface_data = t_interface_meta([
