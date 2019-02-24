@@ -150,7 +150,7 @@ def test_hierarchy(builtin_ref, type_ref, resolve):
         t_field_meta('field_b_1', t_list_meta(builtin_ref('int'))),
         ])
     hierarchy = resolve('some_hierarchy', hierarchy_data)
-    assert THierarchy('test_hierarchy').matches(hierarchy)
+    assert THierarchy('test_hierarchy').match(hierarchy)
     class_a = resolve('some_class_a', class_a_data)
     class_b = resolve('some_class_b', class_b_data)
     assert class_a.match(TClass(hierarchy, 'class_a', TRecord('class_a', [Field('field_a_1', tString)])))

@@ -23,7 +23,7 @@ class ThisModule(ClientModule):
         set_error_handler(self.error_handler)
 
     async def resolve_error_handler(self, locale, state, parent):
-        resource_id = ['error_message', state.error._class_id, locale]
+        resource_id = ['error_message', state.error.t.id, locale]
         error_message_resource = self._resource_resolver.resolve(resource_id)
         if error_message_resource:
             message = error_message_resource.message.format(error=state.error)

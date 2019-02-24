@@ -1,10 +1,8 @@
-from .htypes import Record
-from .hierarchy import TClassRecord, TExceptionClassRecord
+from .htypes import TRecord
 
 
 def deduce_value_type(value):
-    if isinstance(value, (TClassRecord, TExceptionClassRecord)):
-        return value._class.hierarchy
-    if isinstance(value, Record):
-        return value._type
-    assert False, 'Add type parameter for values of types others than TRecord or THierarchy'
+    t = getattr(value, 't', None)
+    if isinstance(t, TRecord):
+        return t
+    assert False, 'Add type parameter for values of types others than TRecord or THierarchy: {!r} ({!r})'.format(value, t)

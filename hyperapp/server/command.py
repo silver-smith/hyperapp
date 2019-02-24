@@ -28,7 +28,7 @@ class BoundCommand:
         if not inst: return  # inst is deleteddeleted
         log.debug('BoundCommand.run: %s, %r/%r, %r', self, self.id, self.kind, inst)
         kw = request.params._asdict()
-        kw.pop('_type')
+        kw.pop('t')
         return self._class_method(inst, request, **kw)
 
 

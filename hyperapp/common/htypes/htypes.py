@@ -155,7 +155,7 @@ class TRecord(Type):
         if base:
             self.fields = base.fields + self.fields
         self.base = base
-        self._named_tuple = namedtuple(name, ['_type'] + [field.name for field in self.fields])
+        self._named_tuple = namedtuple(name, ['t'] + [field.name for field in self.fields])
 
     def __repr__(self):
         if self.name:
@@ -169,8 +169,6 @@ class TRecord(Type):
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)
-        if not isinstance(cls, TRecord):
-            return False
         if cls is self:
             return True
         return issubclass(cls.base, self)

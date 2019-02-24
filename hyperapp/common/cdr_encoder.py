@@ -94,7 +94,7 @@ class CdrEncoder(object):
     def encode_hierarchy_obj(self, t, value):
         tclass = t.get_object_class(value)
         self.write_unicode(tclass.id)
-        self.dispatch(tclass.get_trecord(), value)
+        self.encode_record(tclass, value)
 
     @dispatch.register(TClass)
     def encode_tclass_obj(self, t, value):

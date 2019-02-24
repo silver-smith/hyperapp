@@ -153,7 +153,7 @@ class CdrDecoder(object):
     def decode_hierarchy_obj(self, t, path):
         class_id = self.read_unicode(path)
         tclass = t.resolve(class_id)
-        fields = self.decode_record_fields(tclass.get_fields(), path)
+        fields = self.decode_record_fields(tclass.fields, path)
         return tclass(**fields)
 
     @dispatch.register(TClass)

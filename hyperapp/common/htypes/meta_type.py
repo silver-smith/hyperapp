@@ -27,7 +27,7 @@ tMetaType = THierarchy('type', name='type')
 
 tRootMetaType = tMetaType.register('root', fields=[
     Field('type_id', tString),
-    ], name='root')
+    ])
 
 
 builtin_ref_t = TRecord('builtin_ref', [
@@ -42,7 +42,7 @@ meta_ref_t = TRecord('meta_ref', [
 
 tNamed = tMetaType.register('named', base=tRootMetaType, fields=[
     Field('name', tString),
-    ], name='named')
+    ])
 
 def t_named(name):
     return tNamed(tNamed.id, name)
@@ -53,7 +53,7 @@ def named_from_data(meta_type_registry, name_resolver, rec, name):
 
 ref_type_t = tMetaType.register('ref', base=tRootMetaType, fields=[
     Field('ref', ref_t),
-    ], name='ref')
+    ])
 
 def t_ref(ref):
     return ref_type_t(ref_type_t.id, ref)
@@ -65,7 +65,7 @@ def ref_from_data(meta_type_registry, ref_resolver, rec, name):
 tOptionalMeta = tMetaType.register(
     'optional', base=tRootMetaType, fields=[
         Field('base', tMetaType),
-        ], name='optional')
+        ])
 
 def t_optional_meta(base_t):
     return tOptionalMeta(tOptionalMeta.id, base_t)
@@ -78,7 +78,7 @@ def optional_from_data(meta_type_registry, type_ref_resolver, rec, name):
 tListMeta = tMetaType.register(
     'list', base=tRootMetaType, fields=[
         Field('element', tMetaType),
-        ], name='list')
+        ])
 
 def t_list_meta(element_t):
     return tListMeta(tListMeta.id, element_t)
@@ -97,7 +97,7 @@ tRecordMeta = tMetaType.register(
     'record', base=tRootMetaType, fields=[
         Field('base', TOptional(tMetaType)),
         Field('fields', TList(tFieldMeta)),
-        ], name='record')
+        ])
 
 def t_field_meta(name, type):
     return tFieldMeta(name, type)
@@ -126,16 +126,16 @@ def record_from_data(meta_type_registry, type_ref_resolver, rec, name):
 tHierarchyMeta = tMetaType.register(
     'hierarchy', base=tRootMetaType, fields=[
         Field('hierarchy_id', tString),
-        ], name='hierarchy')
+        ])
 
-tExceptionHierarchyMeta = tMetaType.register('exception_hierarchy', base=tHierarchyMeta, name='exception_hierarchy')
+tExceptionHierarchyMeta = tMetaType.register('exception_hierarchy', base=tHierarchyMeta)
 
 tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, fields=[
     Field('hierarchy', tMetaType),  # tNamed is expected
     Field('class_id', tString),
     Field('base', TOptional(tMetaType)),  # tRecordMeta is expected
     Field('fields', TList(tFieldMeta)),
-    ], name='hierarchy_class')
+    ])
 
 def t_hierarchy_meta(hierarchy_id):
     return tHierarchyMeta(tHierarchyMeta.id, hierarchy_id)
@@ -160,7 +160,7 @@ def hierarchy_class_from_data(meta_type_registry, type_ref_resolver, rec, name):
     else:
         base = None
     fields = field_list_from_data(meta_type_registry, type_ref_resolver, rec.fields)
-    return hierarchy.register(rec.class_id, base=base, fields=fields, name=name)
+    return hierarchy.register(rec.class_id, base=base, fields=fields)
 
 
 tIfaceCommandMeta = TRecord('iface_command', [
@@ -173,7 +173,7 @@ tIfaceCommandMeta = TRecord('iface_command', [
 tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
     Field('base', TOptional(tMetaType)),
     Field('commands', TList(tIfaceCommandMeta)),
-    ], name='interface')
+    ])
 
 
 def t_command_meta(request_type, command_id, params_fields, result_fields=None):

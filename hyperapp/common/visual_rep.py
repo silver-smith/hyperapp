@@ -164,7 +164,7 @@ class VisualRepEncoder(object):
     def encode_hierarchy_obj(self, t, value):
         tclass = t.get_object_class(value)
         custom_encoders = {}
-        children = self.encode_record_fields(tclass.get_fields(), value, custom_encoders)
+        children = self.encode_record_fields(tclass.fields, value, custom_encoders)
         return RepNode('%s %r %r' % (self._make_name(t, 'hierarchy'), t.hierarchy_id, tclass.id), children)
 
     @dispatch.register(TClass)
