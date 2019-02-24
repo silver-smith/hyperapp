@@ -9,7 +9,6 @@ from .interface import *
 
 def make_meta_type_registry():
     registry = MetaTypeRegistry()
-    registry.register('named', named_from_data)
     registry.register('optional', optional_from_data)
     registry.register('list', list_from_data)
     registry.register('record', record_from_data)

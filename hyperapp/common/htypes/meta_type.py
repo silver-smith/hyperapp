@@ -47,9 +47,6 @@ tNamed = tMetaType.register('named', base=tRootMetaType, fields=[
 def t_named(name):
     return tNamed(tNamed.id, name)
 
-def named_from_data(meta_type_registry, name_resolver, rec, name):
-    return name_resolver.resolve(rec.name)
-
 
 ref_type_t = tMetaType.register('ref', base=tRootMetaType, fields=[
     Field('ref', ref_t),
