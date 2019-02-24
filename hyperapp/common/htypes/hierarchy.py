@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 class TClass(TRecord):
 
-    def __init__(self, hierarchy, id, fields, base=None):
+    def __init__(self, hierarchy, id, fields=None, base=None):
         assert isinstance(hierarchy, THierarchy), repr(hierarchy)
         super().__init__(id, fields, base)
         self.hierarchy = hierarchy
