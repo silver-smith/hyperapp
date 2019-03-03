@@ -82,37 +82,3 @@ class THierarchy(Type):
         if not isinstance(tclass, TClass):
             return False
         return tclass.hierarchy is self
-
-
-class TExceptionClassRecord(RuntimeError):
-
-    def __init__(self, tclass):
-        assert isinstance(tclass, TExceptionClass), repr(tclass)
-        self.t = tclass
-
-    def __str__(self):
-        return '<%s.%s: %s>' % (self._class.hierarchy.hierarchy_id, self._class.id, ', '.join(
-            '%s=%s' % (field.name, getattr(self, field.name)) for field in self.t.fields))
-
-    def __repr__(self):
-        return 'TExceptionClassRecord%s' % self
-
-
-class TExceptionClass(TClass):
-
-    def is_tclassrecord(self, rec):
-        return isinstance(rec, TExceptionClassRecord)
-
-    def instantiate(self, *args, **kw):
-        rec = TExceptionClassRecord(self.trec, self)
-        self.trec.instantiate_impl(rec, *args, **kw)
-        return rec
-
-
-class TExceptionHierarchy(THierarchy):
-
-    def make_tclass(self, id, trec, base):
-        return TExceptionClass(self, id, trec, base)
-
-    def is_tclassrecord(self, rec):
-        return isinstance(rec, TExceptionClassRecord)

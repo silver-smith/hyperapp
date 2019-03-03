@@ -18,7 +18,8 @@ from .htypes import (
     TList,
     )
 from .namespace import TypeNamespace
-from .hierarchy import TClass, THierarchy, TExceptionHierarchy
+from .hierarchy import TClass, THierarchy
+from .exception_hierarchy import TExceptionHierarchy
 from .hyper_ref import ref_t
 from .interface import IfaceCommand, Interface
 

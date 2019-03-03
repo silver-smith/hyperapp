@@ -2,10 +2,11 @@ from hyperapp.common.htypes import (
     tString,
     Field,
     THierarchy,
+    TExceptionHierarchy,
     )
 
 
-def test_hierarchy_isinstance_empty():
+def test_isinstance_empty():
     hierarchy = THierarchy('test_hierarchy')
     tclass = hierarchy.register('test_tclass')
     rec = tclass()
@@ -13,7 +14,7 @@ def test_hierarchy_isinstance_empty():
     assert isinstance(rec, hierarchy)
 
 
-def test_hierarchy_isinstance_with_fields():
+def test_isinstance_with_fields():
     hierarchy = THierarchy('test_hierarchy')
     tclass = hierarchy.register('test_tclass', [
         Field('some_field', tString),
@@ -23,7 +24,7 @@ def test_hierarchy_isinstance_with_fields():
     assert isinstance(rec, hierarchy)
 
 
-def test_hierarchy_isinstance_inherited():
+def test_isinstance_inherited():
     hierarchy = THierarchy('test_hierarchy')
     tclass_1 = hierarchy.register('test_tclass_1', [
         Field('some_field_1', tString),
@@ -39,7 +40,7 @@ def test_hierarchy_isinstance_inherited():
     assert isinstance(rec_2, tclass_2)
 
 
-def test_hierarchy_isinstance_different_hierarchies():
+def test_isinstance_different_hierarchies():
     hierarchy_1 = THierarchy('test_hierarchy_1')
     hierarchy_2 = THierarchy('test_hierarchy_2')
     tclass_1 = hierarchy_1.register('test_tclass', [
@@ -55,7 +56,7 @@ def test_hierarchy_isinstance_different_hierarchies():
     assert not isinstance(rec, hierarchy_2)
 
 
-def test_hierarchy_isinstance_different_classes():
+def test_isinstance_different_classes():
     hierarchy = THierarchy('test_hierarchy')
     tclass_1 = hierarchy.register('test_tclass_1', [
         Field('some_field', tString),
@@ -66,3 +67,17 @@ def test_hierarchy_isinstance_different_classes():
     rec = tclass_1(some_field='some value')
     assert isinstance(rec, tclass_1)
     assert not isinstance(rec, tclass_2)
+
+
+def test_exception_class():
+    hierarchy = TExceptionHierarchy('test_hierarchy')
+    tclass = hierarchy.register('test_tclass', [
+        Field('a', tString),
+        Field('b', tString),
+        ])
+    rec = tclass(a='a value', b='b value')
+    assert isinstance(rec, tclass)
+    assert isinstance(rec, hierarchy)
+    assert list(rec) == [tclass, 'a value', 'b value']
+    assert rec.a == 'a value'
+    assert rec[2] == 'b value'
