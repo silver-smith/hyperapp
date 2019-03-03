@@ -196,7 +196,7 @@ class BlogArticleForm(FormObject):
     @command('refs')
     async def command_refs(self):
         blog_service_ref = self._blog_service.to_ref()
-        object = htypes.blog.blog_article_ref_list(blog_service_ref, self._blog_id, self._article_id)
+        object = htypes.blog.blog_article_ref_list(blog_service_ref, self._blog_id, self._article_id, selected_ref_id=None)
         ref = self._ref_registry.register_object(object)
         return (await self._handle_resolver.resolve(ref))
 
