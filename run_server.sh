@@ -1,6 +1,8 @@
 #!/bin/bash -xe
 
-. $HOME/venv/bin/activate
+venv=${VENV:-$HOME/venv}
+
+. $venv/bin/activate
 
 cd $(dirname $0)
 
