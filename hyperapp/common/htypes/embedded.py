@@ -50,8 +50,5 @@ class TEmbedded(Type):
     def __instancecheck__(self, value):
         return isinstance(value, (EncodableEmbedded, DecodableEmbedded))
 
-    def instance_hash(self, value):
-        return hash(value)
-
 
 tEmbedded = TEmbedded('embedded')
