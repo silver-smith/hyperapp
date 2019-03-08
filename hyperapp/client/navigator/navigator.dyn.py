@@ -2,7 +2,6 @@
 
 import logging
 import asyncio
-from PySide import QtCore, QtGui
 
 from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.util import is_list_inst

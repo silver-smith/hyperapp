@@ -1,6 +1,5 @@
 import logging
 import asyncio
-from PySide import QtCore, QtGui
 
 from hyperapp.client.util import uni2str, key_match, key_match_any
 from hyperapp.client.object import ObjectObserver, Object

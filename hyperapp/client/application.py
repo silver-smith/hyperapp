@@ -1,6 +1,5 @@
 import os
 import logging
-from PySide import QtCore, QtGui
 from ..common.url import UrlWithRoutes
 from ..common import dict_coders, cdr_coders
 from .commander import Commander
