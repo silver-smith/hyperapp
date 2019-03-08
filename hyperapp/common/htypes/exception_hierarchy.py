@@ -97,7 +97,6 @@ def _make_exception_class(typename, field_names):
                              for name in field_names),
         init_fields= ''.join(_init_field_template.format(name=name) for name in field_names).lstrip(),
     )
-    print(class_definition)
 
     # Execute the template string in a temporary namespace and support
     # tracing utilities by setting a value for frame.f_globals['__name__']
