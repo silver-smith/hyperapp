@@ -1,4 +1,4 @@
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.module import ClientModule
 from . import htypes
@@ -6,7 +6,7 @@ from .record_object import RecordObject
 from .layout_registry import LayoutViewProducer
 
 
-class RecordView(QtGui.QWidget):
+class RecordView(QtWidgets.QWidget):
 
     @classmethod
     async def make(cls, object_registry, view_producer, layout_resolver, object, observer, layout=None):
@@ -32,7 +32,7 @@ class RecordView(QtGui.QWidget):
             field_to_layout_ref = {field.field_id: field.layout_ref for field in layout.fields}
         else:
             field_to_layout_ref = {}
-        qt_layout = QtGui.QVBoxLayout()
+        qt_layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
         self._field_views = []
         for field_id, field_rec in self._object.get_fields().items():
@@ -42,7 +42,7 @@ class RecordView(QtGui.QWidget):
             else:
                 producer = view_producer
             field_view = await self._construct_field_view(object_registry, producer, qt_layout, field_id, field_rec, observer, layout)
-            if field_view.sizePolicy().verticalPolicy() & QtGui.QSizePolicy.ExpandFlag:
+            if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_views.append(field_view)
         if not has_expandable_field:
@@ -52,7 +52,7 @@ class RecordView(QtGui.QWidget):
     async def _construct_field_view(self, object_registry, producer, qt_layout, field_id, field_rec, observer, layout):
         field_object = await object_registry.resolve_async(field_rec)
         field_view = await producer.produce_view(field_rec, field_object, observer)
-        label = QtGui.QLabel(field_id)
+        label = QtWidgets.QLabel(field_id)
         label.setBuddy(field_view)
         qt_layout.addWidget(label)
         qt_layout.addWidget(field_view)

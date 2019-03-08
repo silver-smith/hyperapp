@@ -1,6 +1,6 @@
 import logging
 import weakref
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import DEBUG_FOCUS, call_after
@@ -18,10 +18,10 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-class Window(View, QtGui.QMainWindow):
+class Window(View, QtWidgets.QMainWindow):
 
     def __init__(self, on_closed, size=None, pos=None):
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
         self._on_closed = on_closed
         self._child_widget = None
@@ -36,7 +36,7 @@ class Window(View, QtGui.QMainWindow):
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
 
     def closeEvent(self, evt):
-        QtGui.QMainWindow.closeEvent(self, evt)
+        QtWidgets.QMainWindow.closeEvent(self, evt)
         ## self.deleteLater()  # seems not required, at least when moved to QMainWindow from QWidget
         self._on_closed()
 

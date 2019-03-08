@@ -1,4 +1,4 @@
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.url import UrlWithRoutes
 from hyperapp.client.command import command
@@ -20,7 +20,7 @@ class ThisModule(ClientModule):
 
     @command('url_from_clipboard')
     async def command_url_from_clipboard(self):
-        url_str = QtGui.QApplication.clipboard().text()
+        url_str = QtWidgets.QApplication.clipboard().text()
         url = UrlWithRoutes.from_str(self._iface_registry, url_str)
         self._remoting.add_routes(url.public_key, url.routes)
         return execute_get_request(self._packet_types, self._remoting, url)
@@ -30,4 +30,4 @@ class ThisModule(ClientModule):
         url = object.get_url()
         assert url is not None
         enriched_url = self._remoting.add_routes_to_url(url)
-        QtGui.QApplication.clipboard().setText(enriched_url.to_str())
+        QtWidgets.QApplication.clipboard().setText(enriched_url.to_str())

@@ -1,6 +1,6 @@
 import logging
 import weakref
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 from .util import make_action, make_async_action
 from .command import Command, WindowCommand
 
@@ -20,9 +20,9 @@ class MenuBar(object):
 
     def _build(self):
         self.file_menu = self._build_global_menu('&File')
-        self.dir_menu = QtGui.QMenu('&Dir')
-        self.window_menu = QtGui.QMenu('&Window')
-        self.help_menu = QtGui.QMenu('H&elp')
+        self.dir_menu = QtWidgets.QMenu('&Dir')
+        self.window_menu = QtWidgets.QMenu('&Window')
+        self.help_menu = QtWidgets.QMenu('H&elp')
         self.add_action_to_menu(self.help_menu, '&Dir commands', ['F1'], MenuBar._open_dir_commands, weakref.ref(self))
         self.add_action_to_menu(self.help_menu, '&Current element commands', ['.'], MenuBar._open_elt_commands, weakref.ref(self))
         ## self.help_menu.setEnabled(False)
@@ -36,7 +36,7 @@ class MenuBar(object):
         menu.addAction(make_action(menu, text, shortcut_list, fn, self_wr))
 
     def _build_global_menu(self, title):
-        menu = QtGui.QMenu(title)
+        menu = QtWidgets.QMenu(title)
         window = self.window()
         for cmd in self._module_command_registry.get_all_commands():
             assert isinstance(cmd, Command), repr(cmd)

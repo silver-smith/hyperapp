@@ -5,7 +5,7 @@ import pickle
 import weakref
 from datetime import datetime
 from dateutil.tz import tzutc
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 from ..common.util import is_list_inst
 
 log = logging.getLogger(__name__)
@@ -129,7 +129,7 @@ def make_action(widget, text, shortcut_list, fn, *args, **kw):
     def run():
         log.info('--- make_action/run widget=%r text=%r shortcut_list=%r fn=%r args=%r kw=%r', widget, text, shortcut_list, fn, args, kw)
         return fn(*args, **kw)
-    action = QtGui.QAction(text, widget)
+    action = QtWidgets.QAction(text, widget)
     action.setShortcuts(shortcut_list or [])
     action.triggered.connect(run)
     return action
@@ -138,7 +138,7 @@ def focused_index(parent, children, default=None):
     if parent:
         w = parent.focusWidget()
     else:
-        w = QtGui.QApplication.focusWidget()
+        w = QtWidgets.QApplication.focusWidget()
     while w:
         for idx, trg in enumerate(children):
             if w is trg: return idx

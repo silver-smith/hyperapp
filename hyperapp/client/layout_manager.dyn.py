@@ -2,7 +2,7 @@ import asyncio
 import logging
 from functools import partial
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
@@ -100,7 +100,7 @@ class LayoutManager:
         self._window = window
 
     def _build_global_menu(self, app, title):
-        menu = QtGui.QMenu(title)
+        menu = QtWidgets.QMenu(title)
         for command in self._module_command_registry.get_all_commands():
             resource = self._resource_resolver.resolve(command.resource_key, self._locale)
             if resource:
@@ -117,19 +117,19 @@ class LayoutManager:
         return menu
 
     def _build_navigation_menu(self, title):
-        menu = QtGui.QMenu(title)
+        menu = QtWidgets.QMenu(title)
         menu.addAction(make_async_action(menu, 'Go back', ['Escape', 'Alt+Left'], self._navigate_backward))
         menu.addAction(make_async_action(menu, 'Go forward', ['Alt+Right'], self._navigate_forward))
         return menu
 
     def _construct_cmd_pane(self):
-        layout = QtGui.QVBoxLayout(spacing=1)
+        layout = QtWidgets.QVBoxLayout(spacing=1)
         layout.setAlignment(QtCore.Qt.AlignTop)
         layout.setContentsMargins(2, 2, 2, 2)
         layout.addSpacing(10)
-        widget = QtGui.QWidget()
+        widget = QtWidgets.QWidget()
         widget.setLayout(layout)
-        pane = QtGui.QDockWidget()
+        pane = QtWidgets.QDockWidget()
         pane.setWidget(widget)
         pane.setFeatures(pane.NoDockWidgetFeatures)
         return pane
@@ -251,7 +251,7 @@ class LayoutManager:
             text = command_id
             shortcut_list = None
             description = '.'.join(resource_key.path)
-        button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
+        button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         if shortcut_list:
             button.setShortcut(shortcut_list[0])
         button.setToolTip(description)

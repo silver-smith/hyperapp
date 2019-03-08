@@ -1,6 +1,6 @@
 import os.path
 import uuid
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 from ..common.htypes import (
     tString,
     IfaceRegistry,
@@ -77,7 +77,7 @@ class BookmarkList(ListObject):
 
     @command('add')
     async def command_add(self):
-        url_str = QtGui.QApplication.clipboard().text()
+        url_str = QtWidgets.QApplication.clipboard().text()
         url = Url.from_str(self._iface_registry, url_str)
         name = 'Imported url'
         item = self._bookmarks.add(name, url)

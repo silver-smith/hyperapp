@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 import asyncio
 import logging
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.module import ClientModule
 from . import htypes
@@ -12,10 +12,10 @@ from .layout_registry import LayoutViewProducer
 _log = logging.getLogger(__name__)
 
 
-class MasterDetailsView(QtGui.QSplitter, Composite):
+class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
     def __init__(self, object_registry, view_producer, master, details_command, sizes=None):
-        QtGui.QSplitter.__init__(self, QtCore.Qt.Vertical)
+        QtWidgets.QSplitter.__init__(self, QtCore.Qt.Vertical)
         Composite.__init__(self, children=[master])
         self._object_registry = object_registry
         self._view_producer = view_producer
@@ -27,7 +27,7 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
         master.add_observer(self)
 
     def setVisible(self, visible):
-        QtGui.QSplitter.setVisible(self, visible)
+        QtWidgets.QSplitter.setVisible(self, visible)
         if visible:
             self.widget(0).setFocus()
 

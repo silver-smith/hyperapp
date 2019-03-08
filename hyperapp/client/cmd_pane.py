@@ -3,27 +3,27 @@
 import logging
 import asyncio
 import weakref
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 from ..common.util import encode_path
 from .command import Command
 
 log = logging.getLogger(__name__)
 
 
-class View(QtGui.QDockWidget):
+class View(QtWidgets.QDockWidget):
 
     def __init__(self, window, locale, resource_resolver):
-        QtGui.QDockWidget.__init__(self, 'Commands')
+        QtWidgets.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
         self.window = weakref.ref(window)
         self._locale = locale
         self._resource_resolver = resource_resolver
         self.current_dir = None
-        self.layout = QtGui.QVBoxLayout(spacing=1)
+        self.layout = QtWidgets.QVBoxLayout(spacing=1)
         self.layout.setAlignment(QtCore.Qt.AlignTop)
         self.layout.setContentsMargins(2, 2, 2, 2)
         self.layout.addSpacing(10)
-        self.setWidget(QtGui.QWidget())
+        self.setWidget(QtWidgets.QWidget())
         self.widget().setLayout(self.layout)
         self.dir_buttons = []
         self.elts_buttons = []
@@ -76,7 +76,7 @@ class View(QtGui.QDockWidget):
         else:
             text = cmd.id
             description = encode_path(cmd.resource_key.path)
-        button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
+        button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(description)
         button.setEnabled(cmd.is_enabled())
         return button

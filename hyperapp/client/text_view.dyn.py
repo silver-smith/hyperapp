@@ -2,7 +2,7 @@ import logging
 import asyncio
 import re
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.module import ClientModule
 from . import htypes
@@ -13,10 +13,10 @@ from .view_registry import NotApplicable
 log = logging.getLogger(__name__)
 
 
-class TextView(View, QtGui.QTextBrowser):
+class TextView(View, QtWidgets.QTextBrowser):
 
     def __init__(self, view_opener, object):
-        QtGui.QTextBrowser.__init__(self)
+        QtWidgets.QTextBrowser.__init__(self)
         View.__init__(self)
         self.setOpenLinks(False)
         self._view_opener = view_opener

@@ -4,7 +4,7 @@ import logging
 import bisect
 import weakref
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.util import single
@@ -129,10 +129,10 @@ class ListViewObserver(metaclass=abc.ABCMeta):
         pass
 
 
-class ListView(View, ListObserver, QtGui.QTableView):
+class ListView(View, ListObserver, QtWidgets.QTableView):
 
     def __init__(self, columns, object, key=None):
-        QtGui.QTableView.__init__(self)
+        QtWidgets.QTableView.__init__(self)
         self.setModel(_Model(self, columns, object))
         View.__init__(self)
         self._object = object
@@ -172,11 +172,11 @@ class ListView(View, ListObserver, QtGui.QTableView):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
             evt.ignore()  # let splitter or tab view handle it
             return
-        QtGui.QTableView.keyPressEvent(self, evt)
+        QtWidgets.QTableView.keyPressEvent(self, evt)
 
     def currentChanged(self, idx, prev_idx):
         log.current_changed(row=idx.row())
-        QtGui.QTableView.currentChanged(self, idx, prev_idx)
+        QtWidgets.QTableView.currentChanged(self, idx, prev_idx)
         current_key = self._current_item_id
         for observer in self._observers:
             observer.current_changed(current_key)

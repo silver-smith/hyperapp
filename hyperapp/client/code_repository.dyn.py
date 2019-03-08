@@ -3,7 +3,7 @@
 import os
 import logging
 import uuid
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 from ..common.htypes import (
     tString,
     Column,
@@ -153,7 +153,7 @@ class CodeRepositoryList(ListObject):
 
     @command('add')
     def command_add(self):
-        url_str = QtGui.QApplication.clipboard().text()
+        url_str = QtWidgets.QApplication.clipboard().text()
         return make_code_repository_form(url_str)
 
     def get_columns(self):

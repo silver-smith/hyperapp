@@ -1,7 +1,7 @@
 import logging
 from enum import Enum
 from collections import OrderedDict
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.util import call_after
 from hyperapp.client.object import Object
@@ -33,7 +33,7 @@ class FormObject(Object):
         return htypes.form.form_object(self.impl_id)
 
 
-class FormView(Composite, QtGui.QWidget):
+class FormView(Composite, QtWidgets.QWidget):
 
     impl_id = 'form'
 
@@ -52,15 +52,15 @@ class FormView(Composite, QtGui.QWidget):
         return cls(parent, object, field_view_map, cls.Mode(state.mode), state.current_field_id)
 
     def __init__(self, parent, object, field_view_map, mode, current_field_id):
-        QtGui.QWidget.__init__(self)
+        QtWidgets.QWidget.__init__(self)
         Composite.__init__(self, parent, list(field_view_map.values()))
         self._object = object
         self._field_view_map = field_view_map
         self._mode = mode
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         for id, field_view in field_view_map.items():
             self._construct_field(layout, id, field_view, focus_it = id==current_field_id)
-        if not any(view.sizePolicy().verticalPolicy() & QtGui.QSizePolicy.ExpandFlag for view in field_view_map.values()):
+        if not any(view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag for view in field_view_map.values()):
             layout.addStretch()
         self.setLayout(layout)
 
@@ -90,7 +90,7 @@ class FormView(Composite, QtGui.QWidget):
             return True
 
     def _construct_field(self, layout, id, field_view, focus_it):
-        label = QtGui.QLabel(id)
+        label = QtWidgets.QLabel(id)
         label.setBuddy(field_view)
         layout.addWidget(label)
         layout.addWidget(field_view)

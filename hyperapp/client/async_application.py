@@ -1,13 +1,13 @@
 # qt application with async loop support
 
 import asyncio
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 
-class AsyncApplication(QtGui.QApplication):
+class AsyncApplication(QtWidgets.QApplication):
 
     def __init__(self, sys_argv=None):
-        QtGui.QApplication.__init__(self, sys_argv or [])
+        super().__init__(sys_argv or [])
         self.event_loop = asyncio.get_event_loop()
         self.event_loop.set_debug(True)
 

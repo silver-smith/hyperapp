@@ -4,7 +4,7 @@ from contextlib import suppress
 import logging
 import weakref
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import make_async_action
@@ -178,10 +178,10 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
         pass
 
 
-class TreeView(View, QtGui.QTreeView):
+class TreeView(View, QtWidgets.QTreeView):
 
     def __init__(self, columns, object, current_path=None):
-        QtGui.QTreeView.__init__(self)
+        QtWidgets.QTreeView.__init__(self)
         self.setModel(_Model(self, columns, object))
         View.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)
@@ -212,7 +212,7 @@ class TreeView(View, QtGui.QTreeView):
         self._observers.add(observer)
 
     def currentChanged(self, idx, prev_idx):
-        QtGui.QTreeView.currentChanged(self, idx, prev_idx)
+        QtWidgets.QTreeView.currentChanged(self, idx, prev_idx)
         current_path = self.current_item_path
         for observer in self._observers:
             observer.current_changed(current_path)

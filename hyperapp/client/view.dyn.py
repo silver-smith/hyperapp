@@ -2,7 +2,7 @@
 
 import logging
 import weakref
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.qt_keys import print_key_event
 from hyperapp.client.util import DEBUG_FOCUS, focused_index

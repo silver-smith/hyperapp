@@ -1,7 +1,7 @@
 # base for panels containing line edit with list view
 
 import logging
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match, key_match_any
 from .composite import Composite
@@ -9,16 +9,16 @@ from .composite import Composite
 log = logging.getLogger(__name__)
 
 
-class LineListPanel(Composite, QtGui.QWidget):
+class LineListPanel(Composite, QtWidgets.QWidget):
 
     def __init__(self, parent, line_edit, list_view):
         log.debug('new line_list_panel self=%s', id(self))
-        QtGui.QWidget.__init__(self)
+        QtWidgets.QWidget.__init__(self)
         Composite.__init__(self, parent, [line_edit, list_view])
         self._line_edit = line_edit
         self._list_view = list_view
         self._list_view.get_widget().setFocusPolicy(QtCore.Qt.NoFocus)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self._line_edit.get_widget())
         layout.addWidget(self._list_view.get_widget())
         self.setFocusProxy(self._line_edit.get_widget())
@@ -55,16 +55,16 @@ class LineListPanel(Composite, QtGui.QWidget):
         if self.is_list_event(evt):
             self._list_view.keyPressEvent(evt)
             return True
-        return QtGui.QWidget.eventFilter(self, obj, evt)
+        return QtWidgets.QWidget.eventFilter(self, obj, evt)
 
     def focusInEvent(self, evt):
         if DEBUG_FOCUS: log.info('*** line_list_panel.focusInEvent %r', self)
-        QtGui.QWidget.focusInEvent(self, evt)
+        QtWidgets.QWidget.focusInEvent(self, evt)
         ## self._line_edit.get_widget().setFocus()  # - now using setFocusProxy
 
     def focusOutEvent(self, evt):
         if DEBUG_FOCUS: log.info('*** line_list_panel.focusOutEvent %r', self)
-        QtGui.QWidget.focusOutEvent(self, evt)
+        QtWidgets.QWidget.focusOutEvent(self, evt)
 
     def __del__(self):
         log.debug('~line_list_panel self=%s', id(self))

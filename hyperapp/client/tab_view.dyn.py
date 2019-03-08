@@ -1,5 +1,5 @@
 import logging
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match
@@ -11,7 +11,7 @@ from .view import View
 log = logging.getLogger(__name__)
 
 
-class TabView(QtGui.QTabWidget, View):
+class TabView(QtWidgets.QTabWidget, View):
 
     @staticmethod    
     def map_current(state, mapper):
@@ -19,7 +19,7 @@ class TabView(QtGui.QTabWidget, View):
         return htypes.tab_view.tab_view_state(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
     def __init__(self):
-        QtGui.QTabWidget.__init__(self)
+        QtWidgets.QTabWidget.__init__(self)
         View.__init__(self)
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
@@ -58,7 +58,7 @@ class TabView(QtGui.QTabWidget, View):
 
     def setVisible(self, visible):
         if DEBUG_FOCUS: log.info('*** tab_view.setVisible self=%r visible=%r current-tab#=%d', self, visible, self.currentIndex())
-        QtGui.QTabWidget.setVisible(self, visible)
+        QtWidgets.QTabWidget.setVisible(self, visible)
 
     @command('duplicate_tab')
     async def duplicate_tab(self):

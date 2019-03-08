@@ -1,6 +1,6 @@
 import logging
 import importlib
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.util import DEBUG_FOCUS, call_after, focused_index, key_match
 from hyperapp.client.module import ClientModule
@@ -35,7 +35,7 @@ def splitter_handle(x, y, orientation, focused=0, sizes=None):
     return htypes.splitter.splitter_handle(SplitterView.view_id, x, y, orientation=orientation, focused=0, sizes=sizes or [])
 
 
-class SplitterView(QtGui.QSplitter, View):
+class SplitterView(QtWidgets.QSplitter, View):
 
     view_id = 'splitter'
 
@@ -46,7 +46,7 @@ class SplitterView(QtGui.QSplitter, View):
         return cls(parent, x, y, state.orientation, state.focused, state.sizes)
 
     def __init__(self, parent, x, y, orient, focused, sizes):
-        QtGui.QSplitter.__init__(self, orient2qt(orient))
+        QtWidgets.QSplitter.__init__(self, orient2qt(orient))
         View.__init__(self, parent)
         self._to_focus = focused  # will be used when become set visible
         self._focused = focused  # will be used by get_widget_to_focus before actual focus is received
@@ -56,7 +56,7 @@ class SplitterView(QtGui.QSplitter, View):
         self._set_child(1, self._y)
         if sizes:
             self.setSizes(sizes)
-        QtGui.QApplication.instance().focusChanged.connect(self._on_focus_changed)
+        QtWidgets.QApplication.instance().focusChanged.connect(self._on_focus_changed)
 
     def _set_child(self, idx, view, focus=False):
         view.set_parent(self)
@@ -144,7 +144,7 @@ class SplitterView(QtGui.QSplitter, View):
             log.info('*** splitter.setVisible self=%r visible=%r self._to_focus=%r to-focus-widget=%r actual-focus=%r focused-widget=%r',
                       self, visible, self._to_focus, self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None,
                       self._focused_index(), self._get_view(self._focused_index()).get_widget())
-        QtGui.QWidget.setVisible(self, visible)
+        QtWidgets.QWidget.setVisible(self, visible)
         if visible and self._to_focus is not None:
             if DEBUG_FOCUS:
                 log.info('  will focus self=%r to_focus=%r to-focus-widget=%r', self, self._to_focus, self._get_view(self._to_focus).get_widget())
@@ -157,11 +157,11 @@ class SplitterView(QtGui.QSplitter, View):
         if DEBUG_FOCUS:
             log.info('*** splitter.focusInEvent self=%r to_focus=%r to-focus-widget=%r',
                      self, self._to_focus, self._get_view(self._to_focus).get_widget() if self._to_focus is not None else None)
-        QtGui.QSplitter.focusInEvent(self, evt)
+        QtWidgets.QSplitter.focusInEvent(self, evt)
 
     def focusOutEvent(self, evt):
         if DEBUG_FOCUS: log.info('*** splitter.focusOutEvent self=%r', self)
-        QtGui.QSplitter.focusOutEvent(self, evt)
+        QtWidgets.QSplitter.focusOutEvent(self, evt)
 
 
 ## class MonolithView(SplitterView):

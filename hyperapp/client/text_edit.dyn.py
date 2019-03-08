@@ -1,6 +1,6 @@
 import logging
 
-from PySide import QtCore, QtGui
+from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.object import ObjectObserver
 from hyperapp.client.module import ClientModule
@@ -11,7 +11,7 @@ from .layout_registry import LayoutViewProducer
 _log = logging.getLogger(__name__)
 
 
-class TextEditView(QtGui.QTextEdit, ObjectObserver):
+class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
 
     def __init__(self, object):
         super().__init__()
