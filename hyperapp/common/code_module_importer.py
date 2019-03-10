@@ -1,6 +1,7 @@
 import codecs
 import importlib
 import importlib.machinery
+import importlib.util
 import logging
 import sys
 
@@ -20,8 +21,11 @@ class _Finder(object):
 
     _is_package = False
 
+    def create_module(self, spec):
+        return None  # use default semantics
+
     def get_spec(self, fullname):
-        return importlib.machinery.ModuleSpec(fullname, self, is_package=self._is_package)
+        return importlib.util.spec_from_loader(fullname, self, is_package=self._is_package)
 
     
 class _EmptyLoader(_Finder):
