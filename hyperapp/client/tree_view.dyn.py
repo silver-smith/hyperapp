@@ -1,24 +1,29 @@
+import asyncio
+
 from PySide import QtCore, QtGui
 
 from hyperapp.client.module import ClientModule
-from .tree_object import TreeObject
+from .tree_object import TreeObserver, TreeObject
 from .view import View
 
 
 MODULE_NAME = 'tree_view'
 
 
-class _Model(QtCore.QAbstractItemModel):
+class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def __init__(self, resource_resolver, locale, resource_key, object):
-        super().__init__()
+        QtCore.QAbstractItemModel.__init__(self)
+        TreeObserver.__init__(self)
         self._resource_resolver = resource_resolver
         self._locale = locale
         self._resource_key = resource_key
         self._object = object
         self._columns = object.get_columns()
         self._path2nodes = {}
-        self._id2path = {}
+        self._id2path = {0: ()}  # root index assume id = 0
+        self._id_counter = 0
+        self._object.subscribe(self)
 
     def columnCount(self, index):
         return len(self._columns)
@@ -53,6 +58,12 @@ class _Model(QtCore.QAbstractItemModel):
         value = getattr(node.row, column.id)
         return str(value)
 
+    def populate(self):
+        asyncio.ensure_future(self._object.fetch_items([]))
+
+    def process_fetch_results(self, path, node_list):
+        self._path2nodes[tuple(path)] = node_list
+
 
 class TreeView(View, QtGui.QTreeView):
 
@@ -60,6 +71,9 @@ class TreeView(View, QtGui.QTreeView):
         QtGui.QTreeView.__init__(self)
         View.__init__(self, parent)
         self.setModel(_Model(resource_resolver, locale, resource_key, object))
+
+    def populate(self):
+        self.model().populate()
 
 
 class ThisModule(ClientModule):

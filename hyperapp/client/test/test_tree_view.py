@@ -8,6 +8,7 @@ from hyperapp.common.htypes import tInt
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.client.async_application import AsyncApplication
 from hyperapp.test.test_services import TestServicesMixin
+from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
 
 log = logging.getLogger(__name__)
 
@@ -80,16 +81,21 @@ def object(services):
                 ]
 
         async def fetch_items(self, path):
-            pass
+            self._notify_fetch_results(path, [
+                Item('item-%d' % idx, 'column 1 for #%d' % idx, 'column 2 for #%d' % idx)
+                for idx in range(10)])
 
 
     return StubObject()
 
 
-def test_instantiate(locale, services, object):
+@pytest.mark.asyncio
+async def test_instantiate(locale, services, object):
     view = services.tree_view_factory(
         locale=locale,
         parent=None,
         resource_key=None,
         object=object,
         )
+    view.populate()
+    await wait_for_all_tasks_to_complete()

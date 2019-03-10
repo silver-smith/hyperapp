@@ -41,7 +41,7 @@ class Column(object):
 
 class TreeObserver(ObjectObserver):
 
-    def process_fetch_result(self, path, node_list):
+    def process_fetch_results(self, path, node_list):
         pass
 
     def diff_applied(self, diff):
@@ -58,6 +58,11 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     async def fetch_items(self, path):
         pass
+
+    def _notify_fetch_results(self, path, item_list):
+        for observer in self._observers:
+            log.debug('  Calling process_fetch_result on %s/%s', id(observer), observer)
+            observer.process_fetch_results(path, item_list)
 
 
 class ThisModule(ClientModule):
