@@ -97,6 +97,15 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         value = getattr(item, column.id)
         return str(value)
 
+    def canFetchMore(self, parent):
+        path = self._id2path.get(parent.internalId())
+        log.debug('_Model.canFetchMore id=%d, row=%d column=%r path=%s', parent.internalId(), parent.row(), parent.column(), path)
+        return parent.isValid()
+
+    def fetchMore(self, parent):
+        path = self._id2path.get(parent.internalId())
+        log.debug('_Model.fetchMore id=%d, row=%d column=%r path=%s', parent.internalId(), parent.row(), parent.column(), path)
+
     # own methods  ------------------------------------------------------------------------------------------------------
 
     def populate(self):
