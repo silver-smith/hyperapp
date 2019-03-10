@@ -51,13 +51,13 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
     def index(self, row, column, parent):
         log.debug('_Model.index(%s, %s, %s), valid=%s, id=%s', row, column, parent, parent.isValid(), parent.internalId())
         if not parent.isValid():
-            path = ()
+            parent_path = ()
         else:
-            path = self._id2path[parent.internalId()]
-        item_list = self._path2children[path]
+            parent_path = self._id2path[parent.internalId()]
+        item_list = self._path2children[parent_path]
         id_attr = self._columns[0].id  # first column is always id
         id = getattr(item_list[row], id_attr)
-        path = path + (id,)
+        path = parent_path + (id,)
         id = self._path2id.get(path)
         if id is None:
             id = self._get_next_id()
