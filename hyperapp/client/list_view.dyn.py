@@ -384,7 +384,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         return (first_visible_row, visible_row_count)
 
     def fetch_elements_if_required(self):
-        asyncio.async(self._async_fetch_elements_if_required())
+        asyncio.ensure_future(self._async_fetch_elements_if_required())
 
     async def _async_fetch_elements_if_required(self):
         try:
@@ -410,7 +410,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
                 break
         else:
             return
-        asyncio.async(self._wrap_element_command(element, command).run())
+        asyncio.ensure_future(self._wrap_element_command(element, command).run())
 
     def _selected_elements_changed(self):
         self._update_selected_actions()
