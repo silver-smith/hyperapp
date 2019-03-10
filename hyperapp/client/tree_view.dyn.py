@@ -24,25 +24,14 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._resource_key = resource_key
         self._object = object
         self._columns = object.get_columns()
-        self._path2items = {}
+        self._item_id_attr = self._columns[0].id
+        self._path2item = {}
+        self._path2children = {}
         self._id2path = {0: ()}  # root index assume id = 0
         self._path2id = {(): 0}
         self._id_counter = 0
         self._column2resource = {}
         self._object.subscribe(self)
-
-    def index(self, row, column, parent):
-        if not parent.isValid():
-            return self.createIndex(row, column, 0)
-        path = self._id2path[parent.internalId()]
-        return self.createIndex(row, column, 0)
-
-    def parent(self, index):
-        if not index.isValid():
-            return QtCore.QModelIndex()
-        path = self._id2path[index.internalId()]
-        parent_id = self._path2id[path[:-1]]
-        return self.createIndex(0, 0, parent_id)
 
     def columnCount(self, index):
         return len(self._columns)
@@ -57,14 +46,41 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
                 return column_id
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
+    def index(self, row, column, parent):
+        log.debug('_Model.index(%s, %s, %s), valid=%s, id=%s', row, column, parent, parent.isValid(), parent.internalId())
+        if not parent.isValid():
+            path = ()
+        else:
+            path = self._id2path[parent.internalId()]
+        item_list = self._path2children[path]
+        id_attr = self._columns[0].id  # first column is always id
+        id = getattr(item_list[row], id_attr)
+        path = path + (id,)
+        id = self._path2id.get(path)
+        if id is None:
+            id = self._get_next_id()
+            self._path2id[path] = id
+            self._id2path[id] = path
+        return self.createIndex(0, column, id)
+
+    def parent(self, index):
+        if not index.isValid():
+            return QtCore.QModelIndex()
+        path = self._id2path[index.internalId()]
+        parent_id = self._path2id[path[:-1]]
+        return self.createIndex(0, 0, parent_id)
+
+    def hasChildren(self, index):
+        return True
+
     def rowCount(self, index):
-        item_list = self._path2items.get(())
+        item_list = self._path2children.get(())
         if item_list:
             return len(item_list)
         path = self._id2path.get(index.internalId())
         if not path:
             return 0
-        item_list = self._path2items[path]
+        item_list = self._path2children[path]
         return len(item_list)
 
     def data(self, index, role):
@@ -72,10 +88,10 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             return None
         column = self._columns[index.column()]
         path = self._id2path.get(index.internalId())
+        log.debug('_Model.data id=%d, row=%d column=%r path=%s', index.internalId(), index.row(), index.column(), path)
         if path is None:
             return None
-        item_list = self._path2items[path]
-        item = item_list[index.row()]
+        item = self._path2item[path]
         value = getattr(item, column.id)
         return str(value)
 
@@ -84,9 +100,15 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def process_fetch_results(self, path, item_list):
         log.debug('tree view: fetched %d items at %s', len(item_list), path)
-        self._path2items[tuple(path)] = item_list
+        self._path2children[tuple(path)] = item_list
+        for item in item_list:
+            id = getattr(item, self._item_id_attr)
+            self._path2item[tuple(path) + (id,)] = item
         self.rowsInserted.emit(QtCore.QModelIndex(), 1, len(item_list) - 1)
 
+    def _get_next_id(self):
+        self._id_counter += 1
+        return self._id_counter
 
 class TreeView(View, QtGui.QTreeView):
 
