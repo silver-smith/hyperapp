@@ -33,6 +33,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._column2resource = {}
         self._object.subscribe(self)
 
+    # qt methods  -------------------------------------------------------------------------------------------------------
+
     def columnCount(self, index):
         return len(self._columns)
 
@@ -64,9 +66,9 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         return self.createIndex(0, column, id)
 
     def parent(self, index):
-        if not index.isValid():
-            return QtCore.QModelIndex()
         path = self._id2path[index.internalId()]
+        if not path:
+            return QtCore.QModelIndex()
         parent_id = self._path2id[path[:-1]]
         return self.createIndex(0, 0, parent_id)
 
@@ -95,6 +97,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         value = getattr(item, column.id)
         return str(value)
 
+    # own methods  ------------------------------------------------------------------------------------------------------
+
     def populate(self):
         asyncio.ensure_future(self._object.fetch_items([]))
 
@@ -109,6 +113,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
     def _get_next_id(self):
         self._id_counter += 1
         return self._id_counter
+
 
 class TreeView(View, QtGui.QTreeView):
 
