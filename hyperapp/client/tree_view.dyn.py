@@ -55,8 +55,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         else:
             parent_path = self._id2path[parent.internalId()]
         item_list = self._path2children[parent_path]
-        id_attr = self._columns[0].id  # first column is always id
-        id = getattr(item_list[row], id_attr)
+        id = getattr(item_list[row], self._item_id_attr)
         path = parent_path + (id,)
         id = self._path2id.get(path)
         if id is None:
