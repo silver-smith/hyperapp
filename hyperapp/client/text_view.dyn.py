@@ -49,7 +49,7 @@ class TextView(View, QtGui.QTextBrowser):
 
     def on_anchor_clicked(self, url):
         log.info('on_anchor_clicked url.path=%r', url.path())
-        asyncio.async(self.open_url(url))
+        asyncio.ensure_future(self.open_url(url))
 
     async def open_url(self, url):
         handle = await self.object.open_ref(url.path())

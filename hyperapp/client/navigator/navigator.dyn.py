@@ -59,7 +59,7 @@ class NavigatorView(View):
         self._add2history(self._backward_history, self._child)
         if len(self._backward_history) > MAX_HISTORY_SIZE:
             self._backward_history = self._backward_history[-MAX_HISTORY_SIZE:]
-        asyncio.async(self._open(handle))
+        asyncio.ensure_future(self._open(handle))
 
     def get_current_child(self):
         return self._child
@@ -86,7 +86,7 @@ class NavigatorView(View):
         if not self._backward_history:
             return False
         self._add2history(self._forward_history, self._child)
-        asyncio.async(self._open(self._pop_history(self._backward_history)))
+        asyncio.ensure_future(self._open(self._pop_history(self._backward_history)))
 
     @command('go_forward')
     def go_forward(self):
@@ -94,7 +94,7 @@ class NavigatorView(View):
         if not self._forward_history:
             return False
         self._add2history(self._backward_history, self._child)
-        asyncio.async(self._open(self._pop_history(self._forward_history)))
+        asyncio.ensure_future(self._open(self._pop_history(self._forward_history)))
 
     def _add2history(self, history, view):
         if isinstance(view, ListView) and isinstance(view.get_object(), HistoryList):

@@ -118,7 +118,7 @@ def make_async_action(widget, text, shortcut_list, fn, *args, **kw):
     assert callable(fn), repr(fn)
     def run():
         log.info('async action run %r %r(%s, %s)', text, fn, args, kw)
-        asyncio.async(fn(*args, **kw))
+        asyncio.ensure_future(fn(*args, **kw))
     return make_action(widget, text, shortcut_list, run)
 
 def make_action(widget, text, shortcut_list, fn, *args, **kw):

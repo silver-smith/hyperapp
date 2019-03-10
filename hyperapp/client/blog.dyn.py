@@ -69,7 +69,7 @@ class BlogObject(ListObject, BlogObserver):
         return [blog_ref]
 
     def observers_arrived(self):
-        asyncio.async(self._blog_service.add_observer(self._blog_id, self))
+        asyncio.ensure_future(self._blog_service.add_observer(self._blog_id, self))
 
     def observers_gone(self):
         self._blog_service.remove_observer(self._blog_id, self)

@@ -48,7 +48,7 @@ class View(QtGui.QDockWidget):
             if cmd.kind != 'object': continue
             #if cmd.is_system(): continue
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
+            button.pressed.connect(lambda cmd=cmd: asyncio.ensure_future(cmd.run()))
             self.layout.insertWidget(idx, button)  # must be inserted before spacing
             self.dir_buttons.append(button)
             idx += 1
@@ -61,7 +61,7 @@ class View(QtGui.QDockWidget):
             assert isinstance(cmd, Command) and cmd.kind == 'element', repr(cmd)
             #if cmd.is_system(): continue
             button = self._make_button(cmd)
-            button.pressed.connect(lambda cmd=cmd: asyncio.async(cmd.run()))
+            button.pressed.connect(lambda cmd=cmd: asyncio.ensure_future(cmd.run()))
             self.layout.addWidget(button)
             self.elts_buttons.append(button)
 

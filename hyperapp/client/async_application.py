@@ -12,7 +12,7 @@ class AsyncApplication(QtGui.QApplication):
         self.event_loop.set_debug(True)
 
     def stop_loop(self):
-        asyncio.async(self._stop_loop_async())  # call it async to allow all pending tasks to complete
+        asyncio.ensure_future(self._stop_loop_async())  # call it async to allow all pending tasks to complete
 
     async def _stop_loop_async(self):
         self.event_loop.stop()
