@@ -27,8 +27,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._item_id_attr = self._columns[0].id
         self._path2item = {}
         self._path2children = {}
-        self._id2path = {0: ()}  # root index assume id = 0
-        self._path2id = {(): 0}
+        self._id2path = {}
+        self._path2id = {}
         self._id_counter = 0
         self._column2resource = {}
         self._object.subscribe(self)
@@ -66,10 +66,11 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         return self.createIndex(0, column, id)
 
     def parent(self, index):
-        path = self._id2path[index.internalId()]
+        parent_path = self._id2path[index.internalId()]
+        path = parent_path[:-1]
         if not path:
             return QtCore.QModelIndex()
-        parent_id = self._path2id[path[:-1]]
+        parent_id = self._path2id[parent_path]
         return self.createIndex(0, 0, parent_id)
 
     def hasChildren(self, index):
