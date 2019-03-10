@@ -1,0 +1,5 @@
+from core import handle, obj_handle
+
+
+tree_handle = handle class tree(obj_handle):
+    resource_key: resource_key opt

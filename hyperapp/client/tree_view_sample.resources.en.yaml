@@ -1,0 +1,7 @@
+ThisModule:
+  commands:
+    open_tree_view_sample:
+      text: Open tree view sample
+      description: Open sample tree view
+      shortcuts:
+      - Alt+Ctrl+T

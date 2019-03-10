@@ -1,7 +1,9 @@
 import:
   types:
+    core:
+      - object_base
     tree_view:
       - tree_handle
   code:
     - client.tree_object
-    - client.view
+    - client.tree_view

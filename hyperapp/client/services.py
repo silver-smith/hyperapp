@@ -39,6 +39,7 @@ type_module_list = [
     'fs',
     'object_selector',
     'blog',
+    'tree_view',
     ]
 
 code_module_list = [
@@ -101,6 +102,9 @@ code_module_list = [
     'client.blog',
     'client.url_clipboard',
     'client.default_state_builder',
+    'client.tree_object',
+    'client.tree_view',
+    'client.tree_view_sample',
     ]
 
 
