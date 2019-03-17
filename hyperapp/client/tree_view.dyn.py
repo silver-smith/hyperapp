@@ -74,7 +74,9 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             return QtCore.QModelIndex()
 
     def hasChildren(self, index):
-        return True
+        path = self._index2path(index)
+        item_list = self._path2children.get(path)
+        return item_list != []  # is empty item list already received for this path?
 
     def rowCount(self, index):
         path = self._index2path(index)

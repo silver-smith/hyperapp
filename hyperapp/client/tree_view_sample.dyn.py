@@ -37,12 +37,20 @@ class SampleObject(TreeObject):
     async def fetch_items(self, path):
         log.info('SampleObject.fetch_items(%s)', path)
         self._notify_fetch_results(path, [
-            Item(
-                name='item-{}'.format(idx),
-                column_1='column 1 for /{} #{}'.format('/'.join(path), idx),
-                column_2=idx * 10,
-                )
-            for idx in range(10)])
+            self._item(path, idx) for idx in range(5)])
+        for idx in range(3):
+            # signal no children for these paths
+            self._notify_fetch_results(list(path) + [self._key(idx * 2)], [])
+
+    def _item(self, path, idx):
+        return Item(
+            name=self._key(idx),
+            column_1='column 1 for /{} #{}'.format('/'.join(path), idx),
+            column_2=idx * 10,
+            )
+
+    def _key(self, idx):
+        return 'item-{}'.format(idx)
 
 
 class ThisModule(ClientModule):
