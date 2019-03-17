@@ -22,11 +22,10 @@ class Column(object):
     def __eq__(self, other):
         assert isinstance(other, Column), repr(other)
         return (other.id == self.id and
-                other.type == self.type and
-                other.is_key == self.is_key)
+                other.type == self.type)
 
     def __hash__(self):
-        return hash((self.id, self.type, self.is_key))
+        return hash((self.id, self.type))
 
 
 class TreeObserver(ObjectObserver):
