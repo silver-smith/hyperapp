@@ -14,7 +14,6 @@ from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.common.ref import phony_ref
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.client.services import ClientServicesBase
-from hyperapp.client.async_application import AsyncApplication
 from hyperapp.client.list_object import Element, Chunk, ListDiff, Column, ListObject
 from hyperapp.test.test_services import TestServicesMixin
 from hyperapp.test.utils import resolve_type
@@ -22,6 +21,8 @@ from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
 
 log = logging.getLogger(__name__)
 
+
+pytest_plugins = ['hyperapp.client.test.fixtures']
 
 DEFAULT_ROW_COUNT = 50
 DEFAULT_ROWS_PER_FETCH = 10
@@ -103,12 +104,6 @@ class StubObject(ListObject):
         eof = end == len(sorted_rows)
         elements = [element_for_row(row) for row in sorted_rows[start:end]]
         return Chunk(sort_column_id, key, elements, bof=bof, eof=eof)
-
-
-# required to exist when creating gui objects
-@pytest.fixture(scope='module')
-def application():
-    return AsyncApplication()
 
 
 @pytest.fixture

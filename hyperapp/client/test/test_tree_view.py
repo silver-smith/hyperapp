@@ -6,12 +6,13 @@ import pytest
 
 from hyperapp.common.htypes import tInt
 from hyperapp.client.services import ClientServicesBase
-from hyperapp.client.async_application import AsyncApplication
 from hyperapp.test.test_services import TestServicesMixin
 from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
 
 log = logging.getLogger(__name__)
 
+
+pytest_plugins = ['hyperapp.client.test.fixtures']
 
 HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
 
@@ -19,6 +20,7 @@ HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
 type_module_list = [
     'resource',
     'core',
+    'tree_view',
     ]
 
 code_module_list = [
@@ -47,12 +49,6 @@ Item = namedtuple('Item', 'name column_1 column_2')
 @pytest.fixture
 def locale():
     return 'en'
-
-
-# required to exist when creating gui objects
-@pytest.fixture(scope='module')
-def application():
-    return AsyncApplication()
 
 
 @pytest.fixture(autouse=True)
