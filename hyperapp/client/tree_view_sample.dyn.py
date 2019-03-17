@@ -24,6 +24,9 @@ class SampleObject(TreeObject):
     def from_state(cls, state):
         return cls()
 
+    def get_title(self):
+        return 'Tree test'
+
     def get_columns(self):
         return [
             Column('name'),

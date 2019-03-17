@@ -153,6 +153,9 @@ class TreeView(View, QtGui.QTreeView):
     def get_state(self):
         return htypes.tree_view.tree_handle('tree', self._object, None)
 
+    def get_object(self):
+        return self._object
+
 
 class ThisModule(ClientModule):
 
