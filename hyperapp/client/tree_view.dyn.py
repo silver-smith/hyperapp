@@ -124,11 +124,13 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         path = tuple(path)
         with suppress(KeyError):
             self._fetch_requested_for_path.remove(path)
-        self._path2children[path] = item_list
+        current_item_list = self._path2children.setdefault(path, [])
+        prev_item_count = len(current_item_list)
+        current_item_list += item_list
         for item in item_list:
             id = getattr(item, self._item_id_attr)
             self._path2item[path + (id,)] = item
-        self.rowsInserted.emit(QtCore.QModelIndex(), 1, len(item_list) - 1)
+        self.rowsInserted.emit(QtCore.QModelIndex(), prev_item_count + 1, len(current_item_list) - 1)
         for idx in range(len(self._columns)):
             self._view_wr().resizeColumnToContents(idx)
 

@@ -1,3 +1,4 @@
+import asyncio
 from collections import namedtuple
 import logging
 
@@ -38,9 +39,13 @@ class SampleObject(TreeObject):
         log.info('SampleObject.fetch_items(%s)', path)
         self._notify_fetch_results(path, [
             self._item(path, idx) for idx in range(5)])
-        for idx in range(3):
+        for idx in range(4):
             # signal no children for these paths
-            self._notify_fetch_results(list(path) + [self._key(idx * 2)], [])
+            self._notify_fetch_results(list(path) + [self._key(idx * 2 + 1)], [])
+        # check async population works
+        await asyncio.sleep(1)
+        self._notify_fetch_results(path, [
+            self._item(path, 5 + idx) for idx in range(3)])
 
     def _item(self, path, idx):
         return Item(
