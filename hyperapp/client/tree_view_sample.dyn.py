@@ -39,8 +39,8 @@ class SampleObject(TreeObject):
         log.info('SampleObject.fetch_items(%s)', path)
         self._notify_fetch_results(path, [
             self._item(path, idx) for idx in range(5)])
+        # signal there are no children for these paths
         for idx in range(4):
-            # signal no children for these paths
             self._notify_fetch_results(list(path) + [self._key(idx * 2 + 1)], [])
         # check async population works
         await asyncio.sleep(1)
