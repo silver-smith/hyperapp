@@ -21,8 +21,6 @@ class AsyncApplication(QtWidgets.QApplication):
     def _process_events_and_repeat(self):
         while self.hasPendingEvents():
             self.processEvents()
-            # although this event is documented as deprecated, it is essential for qt objects being destroyed:
-            self.processEvents(QtCore.QEventLoop.DeferredDeletion)
         self.sendPostedEvents(None, 0)
         self.event_loop.call_later(0.01, self._process_events_and_repeat)
 
