@@ -1,4 +1,5 @@
 from datetime import datetime
+from operator import attrgetter
 import logging
 import codecs
 
@@ -48,13 +49,16 @@ class BlogService(object):
 
     @classmethod
     def rec2item(cls, rec):
-        ref_list = map(cls.rec2ref, rec.refs.select().order_by(this_module.ArticleRef.id))
+        ref_list = sorted((cls.rec2ref(ref) for ref
+                           in this_module.ArticleRef.select()
+                           if ref.article is rec),
+                          key=attrgetter('id'))
         return htypes.blog.blog_item(
             id=rec.id,
             created_at=dt_naive_to_utc(rec.created_at),
             title=rec.title,
             text=rec.text,
-            ref_list=list(ref_list),
+            ref_list=ref_list,
             )
 
     @staticmethod

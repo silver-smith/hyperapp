@@ -1,4 +1,4 @@
-pony==0.7.1
+pony==0.7.4  # first version compatible with python3.7
 python-dateutil==2.1
 singledispatch
 PyYAML>=3.12  # under debian requires: libyaml-dev, libpython3-dev
