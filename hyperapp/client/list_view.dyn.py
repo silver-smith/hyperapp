@@ -132,14 +132,14 @@ class ListViewObserver(metaclass=abc.ABCMeta):
 class ListView(View, ListObserver, QtWidgets.QTableView):
 
     def __init__(self, columns, object, key=None):
+        self._observers = weakref.WeakSet()
+        self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         QtWidgets.QTableView.__init__(self)
         self.setModel(_Model(self, columns, object))
         View.__init__(self)
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded
-        self._observers = weakref.WeakSet()
         self._elt_commands = []   # Command list - commands for selected elements
-        self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._default_command = None
         self.verticalHeader().hide()
         opts = self.viewOptions()
