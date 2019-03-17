@@ -11,16 +11,6 @@ log = logging.getLogger(__name__)
 MODULE_NAME = 'tree_object'
 
 
-class Node(object):
-
-    def __init__(self, key, row):
-        self.key = key
-        self.row = row
-
-    def __repr__(self):
-        return '<Node #%r %r>' % (self.key, self.row)
-
-
 class Column(object):
 
     def __init__(self, id, type=tString):
