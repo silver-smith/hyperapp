@@ -82,7 +82,8 @@ class Model(QtCore.QAbstractTableModel):
     def reset(self):
         ## self._update_mapping()
         # self._init_slice()
-        QtCore.QAbstractTableModel.reset(self)
+        self.beginResetModel()
+        self.endResetModel()
 
     def _reset(self, sort_column_id=None):
         self._init_slice(sort_column_id or self._slice.sort_column_id)
