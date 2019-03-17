@@ -1,5 +1,7 @@
 import asyncio
+from contextlib import suppress
 import logging
+import weakref
 
 from PySide import QtCore, QtGui
 
@@ -16,9 +18,10 @@ MODULE_NAME = 'tree_view'
 
 class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
-    def __init__(self, resource_resolver, locale, resource_key, object):
+    def __init__(self, view, resource_resolver, locale, resource_key, object):
         QtCore.QAbstractItemModel.__init__(self)
         TreeObserver.__init__(self)
+        self._view_wr = weakref.ref(view)
         self._resource_resolver = resource_resolver
         self._locale = locale
         self._resource_key = resource_key
@@ -27,6 +30,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._item_id_attr = self._columns[0].id
         self._path2item = {}
         self._path2children = {}
+        self._fetch_requested_for_path = set()  # do not issue fetch request when previous is not yet completed
         self._id2path = {}
         self._path2id = {}
         self._id_counter = 0
@@ -49,11 +53,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def index(self, row, column, parent):
-        log.debug('_Model.index(%s, %s, %s), valid=%s, id=%s', row, column, parent, parent.isValid(), parent.internalId())
-        if not parent.isValid():
-            parent_path = ()
-        else:
-            parent_path = self._id2path[parent.internalId()]
+        parent_path = self._index2path(parent)
+        log.debug('_Model.index(%s, %s, %s), id=%s, path=%s', row, column, parent, parent.internalId(), parent_path)
         item_list = self._path2children[parent_path]
         id = getattr(item_list[row], self._item_id_attr)
         path = parent_path + (id,)
@@ -62,28 +63,27 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             id = self._get_next_id()
             self._path2id[path] = id
             self._id2path[id] = path
-        return self.createIndex(0, column, id)
+        return self.createIndex(row, column, id)
 
     def parent(self, index):
-        parent_path = self._id2path[index.internalId()]
-        path = parent_path[:-1]
-        if not path:
+        path = self._index2path(index)
+        if path and len(path) > 1:
+            parent_id = self._path2id[path[:-1]]
+            return self.createIndex(0, 0, parent_id)
+        else:
             return QtCore.QModelIndex()
-        parent_id = self._path2id[parent_path]
-        return self.createIndex(0, 0, parent_id)
 
     def hasChildren(self, index):
         return True
 
     def rowCount(self, index):
-        item_list = self._path2children.get(())
-        if item_list:
-            return len(item_list)
-        path = self._id2path.get(index.internalId())
-        if not path:
+        path = self._index2path(index)
+        item_list = self._path2children.get(path)
+        if item_list is None:
+            self._request_fetch(path)
             return 0
-        item_list = self._path2children[path]
-        return len(item_list)
+        else:
+            return len(item_list)
 
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
@@ -98,26 +98,43 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         return str(value)
 
     def canFetchMore(self, parent):
-        path = self._id2path.get(parent.internalId())
-        log.debug('_Model.canFetchMore id=%d, row=%d column=%r path=%s', parent.internalId(), parent.row(), parent.column(), path)
-        return parent.isValid()
+        path = self._index2path(parent)
+        result = path not in self._path2children
+        log.debug('_Model.canFetchMore id=%d, row=%d column=%r path=%s, result=%s', parent.internalId(), parent.row(), parent.column(), path, result)
+        return result
 
     def fetchMore(self, parent):
-        path = self._id2path.get(parent.internalId())
-        log.debug('_Model.fetchMore id=%d, row=%d column=%r path=%s', parent.internalId(), parent.row(), parent.column(), path)
+        path = self._index2path(parent)
+        log.debug('_Model.fetchMore id=%d, row=%d column=%r path=%s already fetching=%s',
+                  parent.internalId(), parent.row(), parent.column(), path, path in self._fetch_requested_for_path)
+        self._request_fetch(path)
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
-    def populate(self):
-        asyncio.ensure_future(self._object.fetch_items([]))
+    def _request_fetch(self, path):
+        if path not in self._fetch_requested_for_path:
+            self._fetch_requested_for_path.add(path)
+            log.info('  request fetch for %s', path)
+            asyncio.ensure_future(self._object.fetch_items(path))
 
     def process_fetch_results(self, path, item_list):
-        log.debug('tree view: fetched %d items at %s', len(item_list), path)
-        self._path2children[tuple(path)] = item_list
+        log.debug('fetched %d items at %s: %s', len(item_list), path, item_list)
+        path = tuple(path)
+        with suppress(KeyError):
+            self._fetch_requested_for_path.remove(path)
+        self._path2children[path] = item_list
         for item in item_list:
             id = getattr(item, self._item_id_attr)
-            self._path2item[tuple(path) + (id,)] = item
+            self._path2item[path + (id,)] = item
         self.rowsInserted.emit(QtCore.QModelIndex(), 1, len(item_list) - 1)
+        for idx in range(len(self._columns)):
+            self._view_wr().resizeColumnToContents(idx)
+
+    def _index2path(self, index):
+        if index.isValid():
+            return self._id2path[index.internalId()]
+        else:
+            return ()
 
     def _get_next_id(self):
         self._id_counter += 1
@@ -129,21 +146,12 @@ class TreeView(View, QtGui.QTreeView):
     def __init__(self, resource_resolver, locale, parent, resource_key, object):
         QtGui.QTreeView.__init__(self)
         View.__init__(self, parent)
-        self.setModel(_Model(resource_resolver, locale, resource_key, object))
+        self.setSelectionMode(self.ContiguousSelection)
+        self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
         self._object = object
-
-    def setVisible(self, visible):
-        QtGui.QTreeView.setVisible(self, visible)
-        if visible:
-            self.populate()
 
     def get_state(self):
         return htypes.tree_view.tree_handle('tree', self._object, None)
-
-    def populate(self):
-        self.model().populate()
-        for idx in range(len(self.model()._columns)):
-            self.resizeColumnToContents(idx)
 
 
 class ThisModule(ClientModule):
