@@ -159,10 +159,11 @@ class TreeView(View, QtGui.QTreeView):
         View.__init__(self, parent)
         self.setSelectionMode(self.ContiguousSelection)
         self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
+        self._resource_key = resource_key
         self._object = object
 
     def get_state(self):
-        return htypes.tree_view.tree_handle('tree', self._object, None)
+        return htypes.tree_view.tree_handle('tree', self._object, self._resource_key)
 
     def get_object(self):
         return self._object
