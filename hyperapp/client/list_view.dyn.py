@@ -35,9 +35,9 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         self._columns = object.get_columns()
         self._item_id_attr = single(column.id for column in self._columns if column.is_key)
         self._column2resource = {}
-        self._fetch_issued = False
         self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._item_list = []
+        self._eof = False
         self._key2item = {}
         self._load_resources()
         self._object.subscribe(self)
@@ -58,8 +58,6 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def rowCount(self, parent):
-        if parent.isValid():
-            return 0
         return len(self._item_list)
 
     def data(self, index, role):
@@ -71,15 +69,16 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         return str(value)
 
     def canFetchMore(self, parent):
-        log.debug('_Model.canFetchMore row=%d column=%r fetch issued=%s', parent.row(), parent.column(), self._fetch_issued)
-        return not self._fetch_issued
+        log.debug('_Model.canFetchMore row=%d column=%r eof=%s', parent.row(), parent.column(), self._eof)
+        return not self._eof
 
     def fetchMore(self, parent):
+        assert not self._eof
         log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
         if not self._fetch_pending:
             self._fetch_pending = True
-            log.info('  requesting fetch')
-            asyncio.ensure_future(self._object.fetch_items())
+            log.info('  requesting fetch from idx #%d', len(self._item_list))
+            asyncio.ensure_future(self._object.fetch_items(len(self._item_list)))
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
@@ -91,10 +90,14 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
     def process_fetch_results(self, item_list):
         log.debug('fetched %d items: %s', len(item_list), item_list)
         self._fetch_pending = False
-        prev_item_count = len(self._item_list)
+        self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), len(self._item_list) + len(item_list) - 1)
         self._item_list += item_list
-        self.rowsInserted.emit(QtCore.QModelIndex(), prev_item_count + 1, len(self._item_list) - 1)
+        self.endInsertRows()
         self._view_wr().resizeColumnsToContents()
+
+    def process_eof(self):
+        log.debug('reached eof')
+        self._eof = True
 
     def index2id(self, index):
         if not index.isValid():

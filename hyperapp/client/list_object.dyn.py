@@ -69,7 +69,10 @@ class Column(object):
 
 class ListObserver(ObjectObserver):
 
-    def process_fetch_results(self, result):
+    def process_fetch_results(self, item_list):
+        pass
+
+    def process_eof(self):
         pass
 
     def process_diff(self, diff):
@@ -84,13 +87,18 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def fetch_items(self):
+    async def fetch_items(self, from_idx):
         pass
 
     def _distribute_fetch_results(self, item_list):
         for observer in self._observers:
             log.debug('  Calling process_fetch_results on %s/%s', id(observer), observer)
             observer.process_fetch_results(item_list)
+
+    def _distribute_eof(self):
+        for observer in self._observers:
+            log.debug('  Calling eof on %s/%s', id(observer), observer)
+            observer.process_eof()
 
     def __del__(self):
         log.debug('~list_object self=%s', id(self))

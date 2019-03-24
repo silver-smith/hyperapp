@@ -25,6 +25,10 @@ class SampleObject(ListObject):
     def from_state(cls, state):
         return cls()
 
+    def __init__(self):
+        super().__init__()
+        self._lock = asyncio.Lock()
+
     def get_state(self):
         return htypes.core.object_base(self.impl_id)
 
@@ -38,14 +42,23 @@ class SampleObject(ListObject):
             Column('column_2', type=tInt),
             ]
 
-    async def fetch_items(self):
-        log.info('SampleObject.fetch_items')
-        self._distribute_fetch_results([
-            self._item(idx) for idx in range(10)])
-        # check async population works
-        await asyncio.sleep(1)
-        self._distribute_fetch_results([
-            self._item(5 + idx) for idx in range(5)])
+    async def fetch_items(self, from_idx):
+        log.info('fetch_items from #%d', from_idx)
+        async with self._lock:
+            if from_idx > 100:
+                log.info('  > already fetched')
+                return
+            log.info('  > distribute results')
+            self._distribute_fetch_results([
+                self._item(from_idx + idx) for idx in range(10)])
+            if from_idx == 100:
+                log.info('  > distribute more after 1 second')
+                # check async population works
+                await asyncio.sleep(1)
+                log.info('  > distributing more and eof')
+                self._distribute_fetch_results([
+                    self._item(from_idx + 10 + idx) for idx in range(5)])
+                self._distribute_eof()
 
     def _item(self, idx):
         return Item(
