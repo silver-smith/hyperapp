@@ -5,3 +5,10 @@ ThisModule:
       description: Open sample tree view
       shortcuts:
       - Alt+Ctrl+T
+TreeView:
+  columns:
+    name:
+      text: Name
+      description: Some name
+    column_1:
+      text: Column 1

@@ -5,6 +5,7 @@ import weakref
 
 from PySide import QtCore, QtGui
 
+from hyperapp.common.htypes import resource_key_t
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .tree_object import TreeObserver, TreeObject
@@ -35,6 +36,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._path2id = {}
         self._id_counter = 0
         self._column2resource = {}
+        self._load_resources()
         self._object.subscribe(self)
 
     # qt methods  -------------------------------------------------------------------------------------------------------
@@ -112,6 +114,11 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._request_fetch(path)
 
     # own methods  ------------------------------------------------------------------------------------------------------
+
+    def _load_resources(self):
+        for column in self._columns:
+            resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
+            self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
 
     def _request_fetch(self, path):
         if path not in self._fetch_requested_for_path:
