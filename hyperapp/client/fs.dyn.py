@@ -29,7 +29,9 @@ class FsDirObject(ListObject):
         self._fs_service = fs_service
         self._host = host
         self._path = path
-        self._key2row = {}  # cache for visited rows
+        self._key = []
+        self._key2item = {}  # cache for visited rows
+        self._idx2key = {}
 
     def get_state(self):
         return htypes.fs.fs_dir_object(self.impl_id, self._fs_service.to_ref(), self._host, self._path)
@@ -55,16 +57,23 @@ class FsDirObject(ListObject):
             Column('fsize', type=tInt),
             ]
 
-    def get_key_column_id(self):
-        return 'key'
-
-    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_items(self, from_idx):
+        if from_idx:
+            from_key = self._idx2key[from_idx - 1]
+        else:
+            from_key = None
         chunk = await self._fs_service.fetch_dir_contents(
-            self._host, self._path, sort_column_id, from_key, desc_count, asc_count)
-        self._key2row.update({row.key: row for row in chunk.rows})
-        elements = [Element(row.key, row, commands=None, order_key=getattr(row, sort_column_id))
-                    for row in chunk.rows]
-        return Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
+            self._host, self._path,
+            sort_column_id='key',
+            from_key=from_key,
+            desc_count=0,
+            asc_count=50,
+            )
+        self._key2item.update({row.key: row for row in chunk.rows})
+        self._idx2key.update({idx: row.key for idx, row in enumerate(chunk.rows)})
+        self._distribute_fetch_results(chunk.rows)
+        if chunk.eof:
+            self._distribute_eof()
 
     def process_diff(self, diff):
         assert isinstance(diff, ListDiff), repr(diff)
@@ -72,7 +81,7 @@ class FsDirObject(ListObject):
 
     def get_element_command_list(self, element_key):
         all_command_list = ListObject.get_element_command_list(self, element_key)
-        row = self._key2row[element_key]
+        row = self._key2item[element_key]
         if row.ftype == 'dir':
             return all_command_list
         else:
@@ -114,9 +123,10 @@ class ThisModule(ClientModule):
         handle_t = htypes.core.string_list_handle
         sort_column_id = 'key'
         resource_key = resource_key_t(__module_ref__, ['FsDirObject'])
-        list_handle = handle_t('list', dir_object, resource_key, sort_column_id, key=fs.current_file_name)
-        filter_object = htypes.line_object.line_object('line', '')
-        filter_view = htypes.line_object.line_edit_view('line_edit', filter_object, mode='edit')
-        narrower_object = htypes.narrower.narrower_object('narrower', filtered_field='key')
-        narrower_view = htypes.narrower.narrower_view('narrower', narrower_object, filter_view, list_handle)
-        return narrower_view
+        list_handle = handle_t('list', dir_object, resource_key, key=fs.current_file_name)
+        return list_handle
+        # filter_object = htypes.line_object.line_object('line', '')
+        # filter_view = htypes.line_object.line_edit_view('line_edit', filter_object, mode='edit')
+        # narrower_object = htypes.narrower.narrower_object('narrower', filtered_field='key')
+        # narrower_view = htypes.narrower.narrower_view('narrower', narrower_object, filter_view, list_handle)
+        # return narrower_view
