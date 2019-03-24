@@ -67,6 +67,6 @@ class ThisModule(ClientModule):
     @command('open_tree_view_sample')
     async def open_tree_view_sample(self):
         object = htypes.core.object_base(SampleObject.impl_id)
-        resource_key = resource_key_t(__module_ref__, ['TreeView'])
+        resource_key = resource_key_t(__module_ref__, ['tree'])
         handle = htypes.tree_view.tree_handle('tree', object, resource_key)
         return handle

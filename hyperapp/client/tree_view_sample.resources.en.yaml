@@ -5,7 +5,7 @@ ThisModule:
       description: Open sample tree view
       shortcuts:
       - Alt+Ctrl+T
-TreeView:
+tree:
   columns:
     name:
       text: Name
