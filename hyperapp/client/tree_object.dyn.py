@@ -33,7 +33,7 @@ class TreeObserver(ObjectObserver):
     def process_fetch_results(self, path, node_list):
         pass
 
-    def diff_applied(self, diff):
+    def process_diff(self, diff):
         pass
 
 
