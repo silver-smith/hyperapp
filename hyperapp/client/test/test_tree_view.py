@@ -77,7 +77,7 @@ def object(services):
                 ]
 
         async def fetch_items(self, path):
-            self._notify_fetch_results(path, [
+            self._distribute_fetch_results(path, [
                 Item('item-%d' % idx, 'column 1 for #%d' % idx, 'column 2 for #%d' % idx)
                 for idx in range(10)])
 
