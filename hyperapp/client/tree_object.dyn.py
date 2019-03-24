@@ -30,7 +30,7 @@ class Column(object):
 
 class TreeObserver(ObjectObserver):
 
-    def process_fetch_results(self, path, node_list):
+    def process_fetch_results(self, path, item_list):
         pass
 
     def process_diff(self, diff):
