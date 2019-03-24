@@ -93,5 +93,5 @@ async def test_instantiate(locale, services, object):
         resource_key=None,
         object=object,
         )
-    view.populate()
+    #view.populate()
     await wait_for_all_tasks_to_complete()
