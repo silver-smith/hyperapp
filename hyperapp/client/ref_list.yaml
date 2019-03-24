@@ -5,3 +5,5 @@ import:
     ref_list:
       - ref_list_object
       - dynamic_ref_list
+  code:
+    - client.list_object

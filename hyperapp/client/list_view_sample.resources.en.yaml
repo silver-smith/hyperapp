@@ -1,0 +1,14 @@
+ThisModule:
+  commands:
+    open_list_view_sample:
+      text: Open list view sample
+      description: Open sample list view
+      shortcuts:
+      - Alt+Ctrl+L
+list:
+  columns:
+    idx:
+      text: Index
+      description: Index, key field
+    column_1:
+      text: Column 1

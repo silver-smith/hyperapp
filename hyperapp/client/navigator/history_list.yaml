@@ -3,3 +3,5 @@ import:
     navigator:
       - item
       - history_list
+  code:
+    - client.list_object

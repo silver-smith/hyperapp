@@ -4,3 +4,4 @@ import:
       - handle
   code:
     - client.view
+    - client.list_object

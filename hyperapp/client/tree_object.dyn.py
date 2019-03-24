@@ -50,7 +50,7 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
 
     def _distribute_fetch_results(self, path, item_list):
         for observer in self._observers:
-            log.debug('  Calling process_fetch_result on %s/%s', id(observer), observer)
+            log.debug('  Calling process_fetch_results on %s/%s', id(observer), observer)
             observer.process_fetch_results(path, item_list)
 
 

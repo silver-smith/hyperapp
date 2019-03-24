@@ -27,7 +27,6 @@ redirect_handle = handle class redirect(view_handle):
 
 list_handle_base = handle class list_base(obj_handle):
     resource_key: resource_key
-    sort_column_id: string
 
 string_list_handle = handle class string_list(list_handle_base):
     key: string opt

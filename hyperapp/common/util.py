@@ -64,6 +64,13 @@ def flatten(list_of_lists):
     "Flatten one level of nesting"
     return list(itertools.chain.from_iterable(list_of_lists))
 
+
+def single(iter):
+    all = list(iter)
+    assert len(all) == 1, repr(all)  # Exactly one item is expected
+    return all[0]
+
+
 # todo: quote/unquote '|' chars
 def encode_path(path):
     return '|'.join(path)

@@ -13,3 +13,4 @@ import:
       - fs_dir_object
   code:
     - client.async_capsule_registry
+    - client.list_object

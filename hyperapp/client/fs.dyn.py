@@ -2,10 +2,10 @@ import logging
 
 from hyperapp.common.htypes import tInt, tString, resource_key_t
 from hyperapp.client.command import command
-from hyperapp.client.list_object import Element, Chunk, Column, ListObject
 from hyperapp.client.module import ClientModule
 from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 from . import htypes
+from .list_object import Column, ListObject
 
 log = logging.getLogger(__name__)
 

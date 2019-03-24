@@ -1,0 +1,8 @@
+import:
+  types:
+    core:
+      - object_base
+      - int_list_handle
+  code:
+    - client.list_object
+    - client.list_view

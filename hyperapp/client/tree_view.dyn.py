@@ -28,6 +28,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._resource_key = resource_key
         self._object = object
         self._columns = object.get_columns()
+        self._column2resource = {}
         self._item_id_attr = self._columns[0].id
         self._path2item = {}
         self._path2children = {}
@@ -35,7 +36,6 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._id2path = {}
         self._path2id = {}
         self._id_counter = 0
-        self._column2resource = {}
         self._load_resources()
         self._object.subscribe(self)
 
@@ -163,7 +163,7 @@ class TreeView(View, QtGui.QTreeView):
         self._object = object
 
     def get_state(self):
-        return htypes.tree_view.tree_handle('tree', self._object, self._resource_key)
+        return htypes.tree_view.tree_handle('tree', self._object.get_state(), self._resource_key)
 
     def get_object(self):
         return self._object

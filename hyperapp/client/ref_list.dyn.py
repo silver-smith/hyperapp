@@ -4,10 +4,10 @@ from collections import namedtuple
 
 from hyperapp.common.htypes import tInt, tString, resource_key_t
 from hyperapp.common.ref import ref_repr
-from hyperapp.client.list_object import Element, Chunk, Column, ListObject
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
+from .list_object import Column, ListObject
 
 log = logging.getLogger(__name__)
 

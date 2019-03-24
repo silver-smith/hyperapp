@@ -26,6 +26,7 @@ import:
       - article_ref_list_object
       - selector_callback
   code:
+    - client.list_object
     - client.text_object
     - client.form
     - client.object_selector

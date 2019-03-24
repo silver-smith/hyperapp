@@ -25,6 +25,9 @@ class SampleObject(TreeObject):
     def from_state(cls, state):
         return cls()
 
+    def get_state(self):
+        return htypes.core.object_base(self.impl_id)
+
     def get_title(self):
         return 'Tree test'
 

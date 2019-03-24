@@ -3,7 +3,6 @@ import asyncio
 
 from hyperapp.client.util import uni2str, key_match, key_match_any
 from hyperapp.client.object import ObjectObserver, Object
-from hyperapp.client.list_object import ListObserver, Chunk, ListObject
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from .line_list_panel import LineListPanel
