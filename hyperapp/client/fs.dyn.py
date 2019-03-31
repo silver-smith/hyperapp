@@ -31,7 +31,6 @@ class FsDirObject(ListObject):
         self._path = path
         self._key = []
         self._key2item = {}  # cache for visited rows
-        self._idx2key = {}
 
     def get_state(self):
         return htypes.fs.fs_dir_object(self.impl_id, self._fs_service.to_ref(), self._host, self._path)
@@ -57,11 +56,7 @@ class FsDirObject(ListObject):
             Column('fsize', type=tInt),
             ]
 
-    async def fetch_items(self, from_idx):
-        if from_idx:
-            from_key = self._idx2key[from_idx - 1]
-        else:
-            from_key = None
+    async def fetch_items(self, from_key):
         chunk = await self._fs_service.fetch_dir_contents(
             self._host, self._path,
             sort_column_id='key',
@@ -70,7 +65,6 @@ class FsDirObject(ListObject):
             asc_count=50,
             )
         self._key2item.update({row.key: row for row in chunk.rows})
-        self._idx2key.update({idx: row.key for idx, row in enumerate(chunk.rows)})
         self._distribute_fetch_results(chunk.rows)
         if chunk.eof:
             self._distribute_eof()

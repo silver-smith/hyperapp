@@ -42,8 +42,12 @@ class SampleObject(ListObject):
             Column('column_2', type=tInt),
             ]
 
-    async def fetch_items(self, from_idx):
-        log.info('fetch_items from #%d', from_idx)
+    async def fetch_items(self, from_key):
+        if from_key is None:
+            from_idx = 0
+        else:
+            from_idx = from_key + 1
+        log.info('fetch_items from %r / #%d', from_key, from_idx)
         async with self._lock:
             if from_idx > 100:
                 log.info('  > already fetched')

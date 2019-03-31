@@ -77,8 +77,12 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
         if not self._fetch_pending:
             self._fetch_pending = True
-            log.info('  requesting fetch from idx #%d', len(self._item_list))
-            asyncio.ensure_future(self._object.fetch_items(len(self._item_list)))
+            if self._item_list:
+                from_key = getattr(self._item_list[-1], self._item_id_attr)
+            else:
+                from_key = None
+            log.info('  requesting fetch from %r', from_key)
+            asyncio.ensure_future(self._object.fetch_items(from_key))
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
