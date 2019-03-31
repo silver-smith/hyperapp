@@ -90,10 +90,10 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     async def fetch_items(self, from_idx):
         pass
 
-    def _distribute_fetch_results(self, item_list):
+    def _distribute_fetch_results(self, item_list, fetch_finished=True):
         for observer in self._observers:
             log.debug('  Calling process_fetch_results on %s/%s', id(observer), observer)
-            observer.process_fetch_results(item_list)
+            observer.process_fetch_results(item_list, fetch_finished)
 
     def _distribute_eof(self):
         for observer in self._observers:

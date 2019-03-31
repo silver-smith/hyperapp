@@ -75,14 +75,15 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
     def fetchMore(self, parent):
         assert not self._eof
         log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
-        if not self._fetch_pending:
-            self._fetch_pending = True
-            if self._item_list:
-                from_key = getattr(self._item_list[-1], self._item_id_attr)
-            else:
-                from_key = None
-            log.info('  requesting fetch from %r', from_key)
-            asyncio.ensure_future(self._object.fetch_items(from_key))
+        if self._fetch_pending:
+            return
+        if self._item_list:
+            from_key = getattr(self._item_list[-1], self._item_id_attr)
+        else:
+            from_key = None
+        log.info('  requesting fetch from %r', from_key)
+        asyncio.ensure_future(self._object.fetch_items(from_key))
+        self._fetch_pending = True
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
@@ -91,13 +92,14 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
             resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
             self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
 
-    def process_fetch_results(self, item_list):
-        log.debug('fetched %d items: %s', len(item_list), item_list)
-        self._fetch_pending = False
+    def process_fetch_results(self, item_list, fetch_finished):
+        log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
         self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), len(self._item_list) + len(item_list) - 1)
         self._item_list += item_list
         self.endInsertRows()
         self._view_wr().resizeColumnsToContents()
+        if fetch_finished:
+            self._fetch_pending = False
 
     def process_eof(self):
         log.debug('reached eof')
