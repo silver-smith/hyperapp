@@ -49,7 +49,7 @@ class FsDir:
             Column('fsize', type=tInt),
             ]
 
-    async def fetch_items(self, path, from_key):
+    async def fetch_items(self, path, from_key=None):
         chunk = await self._fs_service.fetch_dir_contents(
             self.host, list(path),
             sort_column_id='key',
@@ -107,7 +107,7 @@ class ListAdapter(ListObject):
         return cls(dir, state.path)
 
     def __init__(self, dir, path):
-        ListObject.__init__(self)
+        super().__init__()
         self._dir = dir
         self._path = path
 
@@ -115,7 +115,7 @@ class ListAdapter(ListObject):
         return '%s:/%s' % (self._dir.host, '/'.join(self._path))
 
     def get_state(self):
-        return htypes.fs.fs_dir_object(self.impl_id, self._dir.fs_service_ref, self._dir.host, self._path)
+        return htypes.fs.fs_dir_list(self.impl_id, self._dir.fs_service_ref, self._dir.host, self._path)
 
     def get_columns(self):
         return self._dir.get_columns()
@@ -138,11 +138,11 @@ class ThisModule(ClientModule):
             ListAdapter.impl_id, ListAdapter.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
     async def _resolve_fs(self, fs_ref, fs):
-        dir_object = htypes.fs.fs_dir_object(ListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)
+        dir_list = htypes.fs.fs_dir_list(ListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)
         handle_t = htypes.core.string_list_handle
         sort_column_id = 'key'
         resource_key = resource_key_t(__module_ref__, ['FsDir'])
-        list_handle = handle_t('list', dir_object, resource_key, key=fs.current_file_name)
+        list_handle = handle_t('list', dir_list, resource_key, key=fs.current_file_name)
         return list_handle
         # filter_object = htypes.line_object.line_object('line', '')
         # filter_view = htypes.line_object.line_edit_view('line_edit', filter_object, mode='edit')

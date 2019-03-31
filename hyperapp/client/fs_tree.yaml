@@ -1,0 +1,12 @@
+import:
+  types:
+    core:
+      - object_base
+    fs:
+      - fs_dir_tree
+    tree_view:
+      - tree_handle
+  code:
+    - client.fs
+    - client.tree_object
+    - client.tree_view

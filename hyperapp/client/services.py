@@ -77,6 +77,9 @@ code_module_list = [
     'client.list_object',
     'client.list_view',
     'client.list_view_sample',
+    'client.tree_object',
+    'client.tree_view',
+    'client.tree_view_sample',
     'client.navigator.history_list',
     'client.navigator.navigator',
     'client.navigator.module',
@@ -100,13 +103,11 @@ code_module_list = [
     'client.fs',
     'client.fs_local_service',
     'client.fs_remote_service',
+    'client.fs_tree',
     'client.object_selector',
     'client.blog',
     'client.url_clipboard',
     'client.default_state_builder',
-    'client.tree_object',
-    'client.tree_view',
-    'client.tree_view_sample',
     ]
 
 
