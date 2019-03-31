@@ -1,4 +1,4 @@
-FsDirObject:
+FsDir:
   columns:
     key:
       text: File Name
