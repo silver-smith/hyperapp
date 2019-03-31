@@ -42,6 +42,10 @@ class TreeAdapter(TreeObject):
         while True:
             result = await self._dir.fetch_items(path, from_key)
             self._distribute_fetch_results(path, result.item_list)
+            for item in result.item_list:
+                if item.ftype != 'dir':
+                    # signal there are no children
+                    self._distribute_fetch_results(list(path) + [item.key], [])
             if result.eof:
                 self._distribute_eof()
                 break
