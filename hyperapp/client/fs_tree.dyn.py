@@ -47,7 +47,6 @@ class TreeAdapter(TreeObject):
                     # signal there are no children
                     self._distribute_fetch_results(list(path) + [item.key], [])
             if result.eof:
-                self._distribute_eof()
                 break
             from_key = result.item_list[-1].key
 
