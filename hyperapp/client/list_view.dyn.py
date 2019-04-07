@@ -186,9 +186,14 @@ class ListView(View, ListObserver, QtGui.QTableView):
 
     def _on_data_changed(self):
         self.resizeColumnsToContents()
-        if self._wanted_current_id is None:
-            return
-        index = self.model().id2index(self._wanted_current_id)
+        if self._wanted_current_id is not None:
+            index = self.model().id2index(self._wanted_current_id)
+        else:
+            if self.currentIndex().isValid():
+                return
+            else:
+                # ensure at least one item is selected
+                index = self.model().createIndex(0, 0)
         if index is None:
             return
         self.setCurrentIndex(index)
