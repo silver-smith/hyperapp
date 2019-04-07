@@ -8,8 +8,7 @@ from hyperapp.client.qt_keys import print_key_event
 from hyperapp.client.util import DEBUG_FOCUS, focused_index
 from hyperapp.client.module import ClientModule
 from hyperapp.client.object import ObjectObserver
-from hyperapp.client.commander import Commander
-from hyperapp.client.command import Command
+from hyperapp.client.commander import Command, Commander
 
 log = logging.getLogger(__name__)
 
@@ -17,13 +16,14 @@ log = logging.getLogger(__name__)
 class ViewCommand(Command):
 
     @classmethod
-    def from_command(cls, cmd, view):
-        return cls(cmd.id, cmd.kind, cmd.resource_key, cmd.enabled, cmd, weakref.ref(view))
+    def from_command(cls, cmd, view, *args):
+        return cls(cmd.id, cmd.kind, cmd.resource_key, cmd.enabled, cmd, weakref.ref(view), args)
 
-    def __init__(self, id, kind, resource_key, enabled, base_cmd, view_wr):
+    def __init__(self, id, kind, resource_key, enabled, base_cmd, view_wr, args):
         Command.__init__(self, id, kind, resource_key, enabled)
         self._base_cmd = base_cmd
         self._view_wr = view_wr  # weak ref to class instance
+        self._args = args
 
     def __repr__(self):
         return 'ViewCommand(%r (base=%r) -> %s/%r)' % (self.id, self._base_cmd, id(self._view_wr()), self._view_wr())
@@ -31,15 +31,14 @@ class ViewCommand(Command):
     def get_view(self):
         return self._view_wr()
 
-    def clone(self):
-        return ViewCommand(self.id, self.kind, self.resource_key, self.enabled, self._base_cmd, self._window_wr)
-
     async def run(self, *args, **kw):
         view = self._view_wr()
-        if not view: return
-        log.debug('ViewCommand.run: %r/%r, %r, (%s, %s), view=%r', self.id, self.kind, self._base_cmd, args, kw, id(view))
+        if not view:
+            return
+        all_args = self._args + args
+        log.debug('ViewCommand.run: %r/%r, %r, (%s, %s), view=%r', self.id, self.kind, self._base_cmd, all_args, kw, id(view))
         try:
-            handle = await self._base_cmd.run(*args, **kw)
+            handle = await self._base_cmd.run(*all_args, **kw)
             ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
         except Exception as x:
             log.exception('Error running command %r:', self.id)

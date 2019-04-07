@@ -27,9 +27,6 @@ class WindowCommand(Command):
     def get_view(self):
         return self._window_wr()
 
-    def clone(self):
-        return WindowCommand(self.id, self.kind, self.resource_key, self.enabled, self._base_cmd, self._window_wr)
-
     async def run(self, *args, **kw):
         window = self._window_wr()
         if not window: return

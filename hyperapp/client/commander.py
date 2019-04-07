@@ -44,10 +44,6 @@ class Command(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_view(self):
         pass
-
-    @abc.abstractmethod
-    def clone(self):
-        pass
     
     @abc.abstractmethod
     async def run(self, *args, **kw):
@@ -67,13 +63,6 @@ class BoundCommand(Command):
 
     def get_view(self):
         return self._inst_wr()
-
-    def clone(self, args=None):
-        if args is None:
-            args = self._args
-        else:
-            args = self._args + args
-        return BoundCommand(self.id, self.kind, self.resource_key, self.enabled, self._class_method, self._inst_wr, args)
 
     async def run(self, *args, **kw):
         inst = self._inst_wr()

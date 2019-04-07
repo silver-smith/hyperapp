@@ -197,7 +197,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
             self._elt_commands.append(wrapped_command)
 
     def _wrap_item_command(self, item_id, command):
-        return ViewCommand.from_command(command.clone(args=(item_id,)), self)
+        return ViewCommand.from_command(command, self, item_id)
 
     def __del__(self):
         log.debug('~list_view.ListView self=%r', id(self))
