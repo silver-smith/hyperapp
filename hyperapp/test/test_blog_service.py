@@ -53,6 +53,7 @@ client_code_module_list = [
     'client.composite',
     'client.form',
     'client.text_object',
+    'client.list_object',
     'client.blog',
     ]
 
@@ -98,10 +99,10 @@ class BlogObserver(object):
 
 
 async def pick_test_article(blog_service):
-    chunk = await blog_service.fetch_blog_contents(TEST_BLOG_ID, sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
-    if not chunk.rows:
+    chunk = await blog_service.fetch_blog_contents(TEST_BLOG_ID, from_key=None)
+    if not chunk.items:
         pytest.skip('No test articles in blog_1')
-    return chunk.rows[0]
+    return chunk.items[0]
 
 
 async def create_article(services, blog_service):
@@ -115,7 +116,7 @@ async def create_article(services, blog_service):
     assert blog_id == TEST_BLOG_ID
     # check article is actually created
     blog_service.invalidate_cache()
-    assert article == (await blog_service.get_blog_row(TEST_BLOG_ID, article_id))
+    assert article == (await blog_service.get_blog_item(TEST_BLOG_ID, article_id))
 
 
 async def save_article(services, blog_service):
@@ -141,13 +142,13 @@ async def delete_article(services, blog_service):
 
 
 async def fetch_blog_contents(services, blog_service):
-    chunk = await blog_service.fetch_blog_contents(TEST_BLOG_ID, sort_column_id='id', from_key=None, desc_count=0, asc_count=100)
+    chunk = await blog_service.fetch_blog_contents(TEST_BLOG_ID, from_key=None)
 
 
-async def get_blog_row(services, blog_service):
+async def get_blog_item(services, blog_service):
     article1 = await pick_test_article(blog_service)
     log.info('Requesting blog row for article#%d', article1.id)
-    article2 = await blog_service.get_blog_row(TEST_BLOG_ID, article1.id)
+    article2 = await blog_service.get_blog_item(TEST_BLOG_ID, article1.id)
     assert article1.id == article2.id
 
 
@@ -204,7 +205,7 @@ async def delete_article_ref(services, blog_service):
     save_article,
     delete_article,
     fetch_blog_contents,
-    get_blog_row,
+    get_blog_item,
     add_article_ref,
     update_article_ref,
     get_article_ref_list,
