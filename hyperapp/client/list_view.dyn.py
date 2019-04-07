@@ -178,7 +178,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
 
     def currentChanged(self, idx, prev_idx):
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
-        self._selected_elements_changed()
+        self._selected_items_changed()
 
     @property
     def _current_item_id(self):
@@ -199,7 +199,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         if self._default_command:
             asyncio.ensure_future(self._default_command.run())
 
-    def _selected_elements_changed(self):
+    def _selected_items_changed(self):
         self._update_selected_actions()
         if self.isVisible():  # we may being destructed now
             self.view_commands_changed(['element'])

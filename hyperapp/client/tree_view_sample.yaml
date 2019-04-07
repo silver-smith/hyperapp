@@ -2,8 +2,11 @@ import:
   types:
     core:
       - object_base
+      - obj_handle
     tree_view:
       - tree_handle
+    text_object:
+      - text_object
   code:
     - client.tree_object
     - client.tree_view

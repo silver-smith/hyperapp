@@ -5,10 +5,15 @@ ThisModule:
       description: Open sample tree view
       shortcuts:
       - Alt+Ctrl+T
-tree:
+SampleObject:
   columns:
     name:
       text: Name
       description: Some name
     column_1:
       text: Column 1
+  commands:
+    open:
+      text: Open
+      description: Open selected item
+      is_default: yes
