@@ -130,6 +130,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         self._object = object
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
+        self._default_command = None
         self.verticalHeader().hide()
         opts = self.viewOptions()
         self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + ROW_HEIGHT_PADDING)
@@ -137,6 +138,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         self.setShowGrid(False)
         self.setSelectionBehavior(self.SelectRows)
         self.setSelectionMode(self.SingleSelection)
+        self.activated.connect(self._on_activated)
 
     def get_state(self):
         return self._data_type('list', self._object.get_state(), self._resource_key, self._current_item_id)
@@ -166,6 +168,10 @@ class ListView(View, ListObserver, QtGui.QTableView):
     def _current_item_id(self):
         return self.model().index2id(self.currentIndex())
 
+    def _on_activated(self, index):
+        if self._default_command:
+            asyncio.ensure_future(self._default_command.run())
+
     def _selected_elements_changed(self):
         self._update_selected_actions()
         if self.isVisible():  # we may being destructed now
@@ -178,6 +184,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
             action_widget.removeAction(action)
         self._elt_actions.clear()
         self._elt_commands.clear()
+        self._default_command = None
         # pick selection and commands
         item_id = self._current_item_id
         if item_id is None:
@@ -195,6 +202,8 @@ class ListView(View, ListObserver, QtGui.QTableView):
             action_widget.addAction(action)
             self._elt_actions.append(action)
             self._elt_commands.append(wrapped_command)
+            if resource.is_default:
+                self._default_command = wrapped_command
 
     def _wrap_item_command(self, item_id, command):
         return ViewCommand.from_command(command, self, item_id)
