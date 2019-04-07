@@ -9,10 +9,10 @@ from PySide import QtCore, QtGui
 from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, resource_key_t
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
-from hyperapp.client.command import Command, ViewCommand
+from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
 from . import htypes
-from .view import View
+from .view import ViewCommand, View
 from .list_object import ListObserver, ListObject
 
 log = logging.getLogger(__name__)
@@ -123,9 +123,13 @@ class ListView(View, ListObserver, QtGui.QTableView):
         QtGui.QTableView.__init__(self)
         self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
         View.__init__(self, parent)
+        self._resource_resolver = resource_resolver
+        self._locale = locale
         self._resource_key = resource_key
         self._data_type = data_type
         self._object = object
+        self._elt_commands = []   # Command list - commands for selected elements
+        self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self.verticalHeader().hide()
         opts = self.viewOptions()
         self.verticalHeader().setDefaultSectionSize(QtGui.QFontInfo(opts.font).pixelSize() + ROW_HEIGHT_PADDING)
@@ -140,15 +144,60 @@ class ListView(View, ListObserver, QtGui.QTableView):
     def get_object(self):
         return self._object
 
+    def get_command_list(self, kinds):
+        command_list = View.get_command_list(self, kinds)
+        filtered_command_list = list(filter(lambda command: command.kind != 'element', command_list))
+        if not kinds or 'element' in kinds:
+            return filtered_command_list + self._elt_commands
+        else:
+            return filtered_command_list
+
     def keyPressEvent(self, evt):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
             evt.ignore()  # let splitter or tab view handle it
             return
         QtGui.QTableView.keyPressEvent(self, evt)
 
+    def currentChanged(self, idx, prev_idx):
+        QtGui.QTableView.currentChanged(self, idx, prev_idx)
+        self._selected_elements_changed()
+
     @property
     def _current_item_id(self):
         return self.model().index2id(self.currentIndex())
+
+    def _selected_elements_changed(self):
+        self._update_selected_actions()
+        if self.isVisible():  # we may being destructed now
+            self.view_commands_changed(['element'])
+
+    def _update_selected_actions(self):
+        # remove previous actions
+        action_widget = self
+        for action in self._elt_actions:
+            action_widget.removeAction(action)
+        self._elt_actions.clear()
+        self._elt_commands.clear()
+        # pick selection and commands
+        item_id = self._current_item_id
+        if item_id is None:
+            return
+        # create actions
+        for command in self._object.get_item_command_list(item_id):
+            assert isinstance(command, Command), repr(command)
+            assert command.kind == 'element', repr(command)
+            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
+            wrapped_command = self._wrap_item_command(item_id, command)
+            action = make_async_action(
+                action_widget, '%s/%s' % (wrapped_command.resource_key, wrapped_command.id),
+                resource.shortcut_list if resource else None, wrapped_command.run)
+            action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
+            action_widget.addAction(action)
+            self._elt_actions.append(action)
+            self._elt_commands.append(wrapped_command)
+
+    def _wrap_item_command(self, item_id, command):
+        return ViewCommand.from_command(command.clone(args=(item_id,)), self)
 
     def __del__(self):
         log.debug('~list_view.ListView self=%r', id(self))

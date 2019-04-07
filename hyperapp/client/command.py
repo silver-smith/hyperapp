@@ -10,40 +10,6 @@ from .error_handler_hook import get_handle_for_error
 log = logging.getLogger(__name__)
 
 
-class ViewCommand(Command):
-
-    @classmethod
-    def from_command(cls, cmd, view):
-        return cls(cmd.id, cmd.kind, cmd.resource_key, cmd.enabled, cmd, weakref.ref(view))
-
-    def __init__(self, id, kind, resource_key, enabled, base_cmd, view_wr):
-        Command.__init__(self, id, kind, resource_key, enabled)
-        self._base_cmd = base_cmd
-        self._view_wr = view_wr  # weak ref to class instance
-
-    def __repr__(self):
-        return 'ViewCommand(%r (base=%r) -> %s/%r)' % (self.id, self._base_cmd, id(self._view_wr()), self._view_wr())
-
-    def get_view(self):
-        return self._view_wr()
-
-    def clone(self):
-        return ViewCommand(self.id, self.kind, self.resource_key, self.enabled, self._base_cmd, self._window_wr)
-
-    async def run(self, *args, **kw):
-        view = self._view_wr()
-        if not view: return
-        log.debug('ViewCommand.run: %r/%r, %r, (%s, %s), view=%r', self.id, self.kind, self._base_cmd, args, kw, id(view))
-        try:
-            handle = await self._base_cmd.run(*args, **kw)
-            ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
-        except Exception as x:
-            log.exception('Error running command %r:', self.id)
-            handle = get_handle_for_error(x)
-        if handle:
-            view.open(handle)
-
-
 class WindowCommand(Command):
 
     @classmethod

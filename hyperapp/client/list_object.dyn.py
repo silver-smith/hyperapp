@@ -90,6 +90,9 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     async def fetch_items(self, from_idx):
         pass
 
+    def get_item_command_list(self, item_id):
+        return self.get_command_list(kinds=['element'])  # by default all items have same commands
+
     def _distribute_fetch_results(self, item_list, fetch_finished=True):
         for observer in self._observers:
             log.debug('  Calling process_fetch_results on %s/%s', id(observer), observer)

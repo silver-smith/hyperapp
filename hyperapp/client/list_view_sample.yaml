@@ -2,7 +2,10 @@ import:
   types:
     core:
       - object_base
+      - obj_handle
       - int_list_handle
+    text_object:
+      - text_object
   code:
     - client.list_object
     - client.list_view

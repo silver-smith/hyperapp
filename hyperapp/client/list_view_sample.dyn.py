@@ -68,6 +68,12 @@ class SampleObject(ListObject):
             column_2=idx * 10,
             )
 
+    @command('open', kind='element')
+    async def command_open(self, element_key):
+        text = "Opened element {}".format(element_key)
+        object = htypes.text_object.text_object('text', text)
+        return htypes.core.obj_handle('text_view', object)
+
 
 class ThisModule(ClientModule):
 
