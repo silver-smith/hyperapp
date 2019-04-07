@@ -1,4 +1,4 @@
-FsDir:
+FsDirListAdapter:
   columns:
     key:
       text: File Name

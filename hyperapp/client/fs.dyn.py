@@ -19,9 +19,8 @@ FetchResult = namedtuple('FetchResult', 'item_list eof')
 
 class FsDir:
 
-    def __init__(self, ref_registry, handle_resolver, fs_service, host):
+    def __init__(self, ref_registry, fs_service, host):
         self._ref_registry = ref_registry
-        self._handle_resolver = handle_resolver
         self._fs_service = fs_service
         self.host = host
         self._key = []
@@ -63,51 +62,31 @@ class FsDir:
             eof=chunk.eof,
             )
 
+    def get_item(self, path):
+        return self._path2item.get(tuple(path))
+
+    def get_path_ref(self, path, current_file_name=None):
+        object = htypes.fs.fs(self.fs_service_ref, self.host, path, current_file_name)
+        return self._ref_registry.register_object(object)
+
     # def process_diff(self, diff):
     #     assert isinstance(diff, ListDiff), repr(diff)
     #     log.info('-- FsDirObject.process_diff self=%r diff=%r', id(self), diff)
 
-    # def get_element_command_list(self, element_key):
-    #     all_command_list = ListObject.get_element_command_list(self, element_key)
-    #     row = self._key2item[element_key]
-    #     if row.ftype == 'dir':
-    #         return all_command_list
-    #     else:
-    #         return [command for command in all_command_list if command.id != 'open']
 
-    # def _get_path_ref(self, path, current_file_name=None):
-    #     fs_service_ref = self._fs_service.to_ref()
-    #     object = htypes.fs.fs(fs_service_ref, self._host, path, current_file_name)
-    #     return self._ref_registry.register_object(object)
-
-    # async def _open_path(self, path, current_file_name=None):
-    #     ref = self._get_path_ref(path, current_file_name)
-    #     return (await self._handle_resolver.resolve(ref))
-
-    # @command('open', kind='element')
-    # async def command_open(self, element_key):
-    #     path = self._path + [element_key]
-    #     return (await self._open_path(path))
-
-    # @command('open_parent')
-    # async def command_open_parent(self):
-    #     if len(self._path) > 0:
-    #         path = self._path[:-1]
-    #         return (await self._open_path(path, current_file_name=self._path[-1]))
-
-
-class ListAdapter(ListObject):
+class FsDirListAdapter(ListObject):
 
     impl_id = 'fs_dir_list'
 
     @classmethod
     async def from_state(cls, state, ref_registry, handle_resolver, fs_service_resolver):
         fs_service = await fs_service_resolver.resolve(state.fs_service_ref)
-        dir = FsDir(ref_registry, handle_resolver, fs_service, state.host)
-        return cls(dir, state.path)
+        dir = FsDir(ref_registry, fs_service, state.host)
+        return cls(handle_resolver, dir, state.path)
 
-    def __init__(self, dir, path):
+    def __init__(self, handle_resolver, dir, path):
         super().__init__()
+        self._handle_resolver = handle_resolver
         self._dir = dir
         self._path = path
 
@@ -126,6 +105,30 @@ class ListAdapter(ListObject):
         if result.eof:
             self._distribute_eof()
 
+    def get_item_command_list(self, item_id):
+        all_command_list = super().get_item_command_list(item_id)
+        item = self._dir.get_item(self._path + [item_id])
+        if item and item.ftype == 'dir':
+            return all_command_list
+        else:
+            return [command for command in all_command_list if command.id != 'open']
+
+    @command('open', kind='element')
+    async def command_open(self, item_id):
+        path = self._path + [item_id]
+        return (await self._open_path(path))
+
+    @command('open_parent')
+    async def command_open_parent(self):
+        if not self._path:
+            return
+        path = self._path[:-1]
+        return (await self._open_path(path, current_file_name=self._path[-1]))
+
+    async def _open_path(self, path, current_file_name=None):
+        ref = self._dir.get_path_ref(path, current_file_name)
+        return (await self._handle_resolver.resolve(ref))
+
 
 class ThisModule(ClientModule):
 
@@ -135,13 +138,13 @@ class ThisModule(ClientModule):
         services.fs_service_resolver = fs_service_resolver = AsyncCapsuleResolver(services.async_ref_resolver, fs_service_registry)
         services.handle_registry.register_type(htypes.fs.fs, self._resolve_fs)
         services.objimpl_registry.register(
-            ListAdapter.impl_id, ListAdapter.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
+            FsDirListAdapter.impl_id, FsDirListAdapter.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
     async def _resolve_fs(self, fs_ref, fs):
-        dir_list = htypes.fs.fs_dir_list(ListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)
+        dir_list = htypes.fs.fs_dir_list(FsDirListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)
         handle_t = htypes.core.string_list_handle
         sort_column_id = 'key'
-        resource_key = resource_key_t(__module_ref__, ['FsDir'])
+        resource_key = resource_key_t(__module_ref__, ['FsDirListAdapter'])
         list_handle = handle_t('list', dir_list, resource_key, key=fs.current_file_name)
         return list_handle
         # filter_object = htypes.line_object.line_object('line', '')

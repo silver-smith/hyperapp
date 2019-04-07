@@ -229,7 +229,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
             action_widget.addAction(action)
             self._elt_actions.append(action)
             self._elt_commands.append(wrapped_command)
-            if resource.is_default:
+            if resource and resource.is_default:
                 self._default_command = wrapped_command
 
     def _wrap_item_command(self, item_id, command):
