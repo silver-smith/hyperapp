@@ -168,6 +168,7 @@ class TreeView(View, QtGui.QTreeView):
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._default_command = None
+        self.activated.connect(self._on_activated)
 
     def get_state(self):
         return htypes.tree_view.tree_handle('tree', self._object.get_state(), self._resource_key)
@@ -190,6 +191,10 @@ class TreeView(View, QtGui.QTreeView):
     @property
     def _current_item_path(self):
         return self.model().index2path(self.currentIndex())
+
+    def _on_activated(self, index):
+        if self._default_command:
+            asyncio.ensure_future(self._default_command.run())
 
     def _selected_items_changed(self):
         self._update_selected_actions()
