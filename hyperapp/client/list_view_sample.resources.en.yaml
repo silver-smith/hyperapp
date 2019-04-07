@@ -5,10 +5,15 @@ ThisModule:
       description: Open sample list view
       shortcuts:
       - Alt+Ctrl+L
-list:
+SampleObject:
   columns:
     idx:
       text: Index
       description: Index, key field
     column_1:
       text: Column 1
+  commands:
+    open:
+      text: Open
+      description: Open selected item
+      is_default: yes

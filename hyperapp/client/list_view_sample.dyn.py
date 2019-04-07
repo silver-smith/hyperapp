@@ -84,6 +84,6 @@ class ThisModule(ClientModule):
     @command('open_list_view_sample')
     async def open_list_view_sample(self):
         object = htypes.core.object_base(SampleObject.impl_id)
-        resource_key = resource_key_t(__module_ref__, ['list'])
+        resource_key = resource_key_t(__module_ref__, ['SampleObject'])
         handle = htypes.core.int_list_handle('list', object, resource_key, key=2)
         return handle
