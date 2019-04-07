@@ -38,7 +38,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._item_list = []
         self._eof = False
-        self._key2item = {}
+        self._id2index = {}
         self._load_resources()
         self._object.subscribe(self)
 
@@ -73,8 +73,18 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         return not self._eof
 
     def fetchMore(self, parent):
-        assert not self._eof
         log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
+        self._fetch_more()
+
+    # own methods  ------------------------------------------------------------------------------------------------------
+
+    def _load_resources(self):
+        for column in self._columns:
+            resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
+            self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
+
+    def _fetch_more(self):
+        assert not self._eof
         if self._fetch_pending:
             return
         if self._item_list:
@@ -85,21 +95,23 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         asyncio.ensure_future(self._object.fetch_items(from_key))
         self._fetch_pending = True
 
-    # own methods  ------------------------------------------------------------------------------------------------------
-
-    def _load_resources(self):
-        for column in self._columns:
-            resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
-            self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
-
     def process_fetch_results(self, item_list, fetch_finished):
         log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
-        self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), len(self._item_list) + len(item_list) - 1)
+        prev_items_len = len(self._item_list)
+        self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), prev_items_len + len(item_list) - 1)
         self._item_list += item_list
+        self._id2index.update({
+            getattr(item, self._item_id_attr): self.createIndex(prev_items_len + i, 0)
+            for i, item in enumerate(item_list)})
         self.endInsertRows()
-        self._view_wr().resizeColumnsToContents()
+        view = self._view_wr()
+        if view:
+            view._on_data_changed()
         if fetch_finished:
             self._fetch_pending = False
+        if fetch_finished and not self._eof and view and view._wanted_current_id is not None:
+            # item we want to set as current is not fetched yet
+            self._fetch_more()
 
     def process_eof(self):
         log.debug('reached eof')
@@ -110,6 +122,9 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
             return None
         item = self._item_list[index.row()]
         return getattr(item, self._item_id_attr)
+
+    def id2index(self, item_id):
+        return self._id2index.get(item_id)
 
     def __del__(self):
         log.info('~list_view.Model self=%s', id(self))
@@ -128,6 +143,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         self._resource_key = resource_key
         self._data_type = data_type
         self._object = object
+        self._wanted_current_id = key  # will set it to current when rows are loaded
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._default_command = None
@@ -167,6 +183,17 @@ class ListView(View, ListObserver, QtGui.QTableView):
     @property
     def _current_item_id(self):
         return self.model().index2id(self.currentIndex())
+
+    def _on_data_changed(self):
+        self.resizeColumnsToContents()
+        if self._wanted_current_id is None:
+            return
+        index = self.model().id2index(self._wanted_current_id)
+        if index is None:
+            return
+        self.setCurrentIndex(index)
+        self.scrollTo(index)
+        self._wanted_current_id = None
 
     def _on_activated(self, index):
         if self._default_command:
