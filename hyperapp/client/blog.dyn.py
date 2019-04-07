@@ -104,12 +104,12 @@ class BlogObject(ListObject, BlogObserver):
         log.info('-- BlogObject.process_diff self=%r diff=%r', id(self), diff)
 
     @command('open', kind='element')
-    async def command_open(self, element_key):
-        return (await self._open_article(article_id=element_key, mode='view'))
+    async def command_open(self, item_id):
+        return (await self._open_article(article_id=item_id, mode='view'))
 
     @command('delete', kind='element')
-    async def command_delete(self, element_key):
-        await self._blog_service.delete_article(self._blog_id, article_id=element_key)
+    async def command_delete(self, item_id):
+        await self._blog_service.delete_article(self._blog_id, article_id=item_id)
 
     @command('add')
     async def command_add(self):
@@ -262,12 +262,11 @@ class ArticleRefListObject(ListObject):
     def get_key_column_id(self):
         return 'id'
 
-    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
+    async def fetch_items(self, from_key):
         ref_list = await self._blog_service.get_article_ref_list(self._blog_id, self._article_id)
-        self._id2ref.update({row.id: row.ref for row in ref_list})
-        elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id))
-                    for row in ref_list]
-        return Chunk(sort_column_id, from_key=None, elements=elements, bof=True, eof=True)
+        self._id2ref.update({item.id: item.ref for item in ref_list})
+        self._distribute_fetch_results(ref_list)
+        self._distribute_eof()
 
     async def get_ref_handle(self, id):
         ref = self._id2ref[id]
@@ -278,8 +277,8 @@ class ArticleRefListObject(ListObject):
         return (await this_module.open_article(self._blog_service, self._blog_id, self._article_id))
 
     @command('open', kind='element')
-    async def command_open(self, element_key):
-        return (await self.get_ref_handle(element_key))
+    async def command_open(self, item_id):
+        return (await self.get_ref_handle(item_id))
 
     @command('add')
     async def command_add(self):
@@ -292,15 +291,15 @@ class ArticleRefListObject(ListObject):
         return htypes.object_selector.object_selector_view('object_selector', object, target_handle)
 
     @command('change', kind='element')
-    async def command_change(self, element_key):
-        target_handle = await self.get_ref_handle(element_key)
-        callback = htypes.blog.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id, element_key)
+    async def command_change(self, item_id):
+        target_handle = await self.get_ref_handle(item_id)
+        callback = htypes.blog.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id, item_id)
         object = htypes.object_selector.object_selector_object('object_selector', callback)
         return htypes.object_selector.object_selector_view('object_selector', object, target_handle)
 
     @command('delete', kind='element')
-    async def command_delete(self, element_key):
-        await self._blog_service.delete_ref(self._blog_id, self._article_id, element_key)
+    async def command_delete(self, item_id):
+        await self._blog_service.delete_ref(self._blog_id, self._article_id, item_id)
 
 
 class SelectorCallback(object):
@@ -363,7 +362,7 @@ class BlogService(object):
         self._ref_registry = ref_registry
         self._service_registry = service_registry
         self._proxy = proxy
-        self._items_cache = {}  # (blog_id, article_id) -> blog_row, already fetched rows
+        self._items_cache = {}  # (blog_id, article_id) -> blog_item, already fetched items
         self._blog_id_to_observer_set = {}
         self._subscribed_to_blog_id_set = set()
         self._notification = BlogNotification(self)
@@ -407,24 +406,24 @@ class BlogService(object):
             log.info("Blog: notifying observer for 'article_deleted': %r", observer)
             observer.article_deleted(blog_id, article_id)
 
-    async def fetch_blog_contents(self, blog_id, from_key):
+    async def fetch_blog_contents(self, blog_id, from_key=None):
         result = await self._proxy.fetch_blog_contents(blog_id, from_key)
         self._items_cache.update({(blog_id, item.id): item for item in result.chunk.items})
         return result.chunk
 
-    async def get_blog_row(self, blog_id, article_id):
-        row = self._items_cache.get((blog_id, article_id))
-        if not row:
-            await self.fetch_blog_contents(blog_id, sort_column_id='id', from_key=article_id, desc_count=1, asc_count=0)
-            row = self._items_cache.get((blog_id, article_id))
-            assert row, repr((blog_id, article_id))  # expecting it to be fetched now
-        return row
+    async def get_blog_item(self, blog_id, article_id):
+        item = self._items_cache.get((blog_id, article_id))
+        if not item:
+            await self.fetch_blog_contents(blog_id)
+            item = self._items_cache.get((blog_id, article_id))
+            assert item, repr((blog_id, article_id))  # expecting it to be fetched now
+        return item
 
     async def create_article(self, blog_id, title, text):
         result = await self._proxy.create_article(blog_id, title, text)
-        row = result.blog_row
-        self._items_cache[(blog_id, row.id)] = row
-        return row.id
+        item = result.blog_item
+        self._items_cache[(blog_id, item.id)] = item
+        return item.id
 
     async def save_article(self, blog_id, article_id, title, text):
         await self._proxy.save_article(blog_id, article_id, title, text)
@@ -433,8 +432,8 @@ class BlogService(object):
         await self._proxy.delete_article(blog_id, article_id)
 
     async def get_article_ref_list(self, blog_id, article_id):
-        row = await self.get_blog_row(blog_id, article_id)
-        return row.ref_list
+        item = await self.get_blog_item(blog_id, article_id)
+        return item.ref_list
 
     async def update_ref(self, blog_id, article_id, ref_id, title, ref):
         await self._proxy.update_ref(blog_id, article_id, ref_id, title, ref)
@@ -492,11 +491,11 @@ class ThisModule(ClientModule):
         return (await self.open_article(blog_service, blog_article.blog_id, blog_article.article_id))
 
     async def open_article(self, blog_service, blog_id, article_id, mode='view'):
-        row = await blog_service.get_blog_row(blog_id, article_id)
+        item = await blog_service.get_blog_item(blog_id, article_id)
         form_object = htypes.blog.blog_article_form(
             BlogArticleForm.impl_id, blog_service.to_ref(), blog_id, article_id)
-        title_object = htypes.line_object.line_object('line', row.title)
-        contents_object = htypes.blog.blog_article_text(BlogArticleContents.impl_id, row.text, row.ref_list)
+        title_object = htypes.line_object.line_object('line', item.title)
+        contents_object = htypes.blog.blog_article_text(BlogArticleContents.impl_id, item.text, item.ref_list)
         return BlogArticleForm.construct(form_object, title_object, contents_object, mode=mode)
 
     async def _resolve_blog_article_ref_list(self, ref_list_object_ref, ref_list_object):
@@ -505,4 +504,4 @@ class ThisModule(ClientModule):
         handle_t = htypes.core.int_list_handle
         sort_column_id = 'id'
         resource_key = resource_key_t(__module_ref__, ['BlogArticleRefListObject'])
-        return handle_t('list', list_object, resource_key, sort_column_id, key=None)
+        return handle_t('list', list_object, resource_key, key=None)

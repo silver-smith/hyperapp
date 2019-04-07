@@ -35,10 +35,10 @@ class BlogService(object):
             idx = 0
         else:
             idx = single(idx for idx, item in enumerate(all_items)
-                         if item.id == from_key)
+                         if item.id == from_key) + 1
         chunk = htypes.blog.blog_chunk(
             from_key=from_key,
-            items=all_items[idx + 1:],
+            items=all_items[idx:],
             eof=True,
             )
         return request.make_response_result(chunk=chunk)
