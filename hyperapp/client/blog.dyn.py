@@ -81,22 +81,11 @@ class BlogObject(ListObject, BlogObserver):
             Column('title'),
             ]
 
-    def get_key_column_id(self):
-        return 'id'
-
-    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
-        chunk = await self._blog_service.fetch_blog_contents(
-            self._blog_id, sort_column_id, from_key, desc_count, asc_count)
-        elements = [self._row_to_element(row, sort_column_id) for row in chunk.rows]
-        return Chunk(sort_column_id, from_key, elements, chunk.bof, chunk.eof)
-
-    def _row_to_element(self, row, sort_column_id=None):
-        if sort_column_id:
-            order_key = getattr(row, sort_column_id)
-        else:
-            # order_key is not used for diffs - every view has it's own
-            order_key = None
-        return Element(row.id, row, commands=None, order_key=order_key)
+    async def fetch_items(self, from_key):
+        chunk = await self._blog_service.fetch_blog_contents(self._blog_id, from_key)
+        self._distribute_fetch_results(chunk.items)
+        if chunk.eof:
+            self._distribute_eof()
 
     def article_added(self, blog_id, article):
         diff = ListDiff.add_one(self._row_to_element(article))
@@ -374,7 +363,7 @@ class BlogService(object):
         self._ref_registry = ref_registry
         self._service_registry = service_registry
         self._proxy = proxy
-        self._rows_cache = {}  # (blog_id, article_id) -> blog_row, already fetched rows
+        self._items_cache = {}  # (blog_id, article_id) -> blog_row, already fetched rows
         self._blog_id_to_observer_set = {}
         self._subscribed_to_blog_id_set = set()
         self._notification = BlogNotification(self)
@@ -418,24 +407,23 @@ class BlogService(object):
             log.info("Blog: notifying observer for 'article_deleted': %r", observer)
             observer.article_deleted(blog_id, article_id)
 
-    async def fetch_blog_contents(self, blog_id, sort_column_id, from_key, desc_count, asc_count):
-        fetch_request = htypes.blog.row_fetch_request(sort_column_id, from_key, desc_count, asc_count)
-        result = await self._proxy.fetch_blog_contents(blog_id, fetch_request)
-        self._rows_cache.update({(blog_id, row.id): row for row in result.chunk.rows})
+    async def fetch_blog_contents(self, blog_id, from_key):
+        result = await self._proxy.fetch_blog_contents(blog_id, from_key)
+        self._items_cache.update({(blog_id, item.id): item for item in result.chunk.items})
         return result.chunk
 
     async def get_blog_row(self, blog_id, article_id):
-        row = self._rows_cache.get((blog_id, article_id))
+        row = self._items_cache.get((blog_id, article_id))
         if not row:
             await self.fetch_blog_contents(blog_id, sort_column_id='id', from_key=article_id, desc_count=1, asc_count=0)
-            row = self._rows_cache.get((blog_id, article_id))
+            row = self._items_cache.get((blog_id, article_id))
             assert row, repr((blog_id, article_id))  # expecting it to be fetched now
         return row
 
     async def create_article(self, blog_id, title, text):
         result = await self._proxy.create_article(blog_id, title, text)
         row = result.blog_row
-        self._rows_cache[(blog_id, row.id)] = row
+        self._items_cache[(blog_id, row.id)] = row
         return row.id
 
     async def save_article(self, blog_id, article_id, title, text):
@@ -459,7 +447,7 @@ class BlogService(object):
         await self._proxy.delete_ref(blog_id, article_id, ref_id)
 
     def invalidate_cache(self):
-        self._rows_cache.clear()
+        self._items_cache.clear()
 
 
 class ThisModule(ClientModule):
@@ -497,7 +485,7 @@ class ThisModule(ClientModule):
         handle_t = htypes.core.int_list_handle
         sort_column_id = 'created_at'
         resource_key = resource_key_t(__module_ref__, ['BlogObject'])
-        return handle_t('list', list_object, resource_key, sort_column_id, key=current_article_id)
+        return handle_t('list', list_object, resource_key, key=current_article_id)
 
     async def _resolve_blog_article(self, blog_article_ref, blog_article):
         blog_service = await self._blog_service_factory(blog_article.blog_service_ref)

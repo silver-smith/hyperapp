@@ -5,7 +5,7 @@ import codecs
 from pony.orm import db_session, flush, desc, Required, Optional, Set
 
 from hyperapp.common.htypes import ref_t
-from hyperapp.common.util import dt_naive_to_utc
+from hyperapp.common.util import dt_naive_to_utc, single
 from hyperapp.common.ref import ref_repr, ref_list_repr
 from hyperapp.common.list_object import rows2fetched_chunk
 from hyperapp.server.util import utcnow
@@ -29,20 +29,29 @@ class BlogService(object):
     def get_self(self):
         return self
 
-    def rpc_fetch_blog_contents(self, request, blog_id, fetch_request):
-        all_rows = self.fetch_blog_contents(blog_id)
-        chunk = rows2fetched_chunk('id', all_rows, fetch_request, htypes.blog.blog_chunk)
+    def rpc_fetch_blog_contents(self, request, blog_id, from_key):
+        all_items = self.fetch_blog_contents(blog_id)
+        if from_key is None:
+            idx = 0
+        else:
+            idx = single(idx for idx, item in enumerate(all_items)
+                         if item.id == from_key)
+        chunk = htypes.blog.blog_chunk(
+            from_key=from_key,
+            items=all_items[idx + 1:],
+            eof=True,
+            )
         return request.make_response_result(chunk=chunk)
 
     @db_session
     def fetch_blog_contents(self, blog_id):
         # blog_id is ignored now
-        return list(map(self.rec2row, this_module.BlogEntry.select().filter(blog_id=blog_id)))
+        return list(map(self.rec2item, this_module.BlogEntry.select().filter(blog_id=blog_id)))
 
     @classmethod
-    def rec2row(cls, rec):
+    def rec2item(cls, rec):
         ref_list = map(cls.rec2ref, rec.refs.select().order_by(this_module.ArticleRef.id))
-        return htypes.blog.blog_row(
+        return htypes.blog.blog_item(
             id=rec.id,
             created_at=dt_naive_to_utc(rec.created_at),
             title=rec.title,
@@ -73,8 +82,8 @@ class BlogService(object):
         for service_ref in subscribed_service_ref_list:
             log.info("Sending 'article_added' notification to %s", ref_repr(service_ref))
             proxy = self._proxy_factory.from_ref(service_ref)
-            proxy.article_added(blog_id, self.rec2row(article))
-        return request.make_response_result(blog_row=self.rec2row(article))
+            proxy.article_added(blog_id, self.rec2item(article))
+        return request.make_response_result(blog_item=self.rec2item(article))
 
     def _get_article(self, blog_id, article_id):
         article = this_module.BlogEntry.get(id=article_id)
@@ -94,7 +103,7 @@ class BlogService(object):
         for service_ref in subscribed_service_ref_list:
             log.info("Sending 'article_changed' notification to %s", ref_repr(service_ref))
             proxy = self._proxy_factory.from_ref(service_ref)
-            proxy.article_changed(blog_id, self.rec2row(article))
+            proxy.article_changed(blog_id, self.rec2item(article))
 
     @db_session
     def rpc_delete_article(self, request, blog_id, article_id):

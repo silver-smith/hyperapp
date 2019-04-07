@@ -26,18 +26,12 @@ blog_article_ref_list = record:
     selected_ref_id: int opt
 
 
-row_fetch_request = record:
-    sort_column_id: string
-    from_key: int opt
-    desc_count: int
-    asc_count: int
-
 article_ref = record:
     id: int
     title: string
     ref: ref
 
-blog_row = record:
+blog_item = record:
     id: int
     created_at: datetime
     title: string
@@ -45,20 +39,19 @@ blog_row = record:
     ref_list: article_ref list
 
 blog_chunk = record:
-    sort_column_id: string
     from_key: int opt
-    rows: blog_row list
-    bof: bool
+    items: blog_item list
     eof: bool
 
 unknown_article_error = error class unknown_article(client_error):
     blog_id: string
     article_id: int
 
+
 blog_service_iface = interface blog_service:
     commands:
-        fetch_blog_contents(blog_id: string, fetch_request: row_fetch_request) -> (chunk: blog_chunk)
-        create_article(blog_id: string, title: string, text: string) -> (blog_row: blog_row)
+        fetch_blog_contents(blog_id: string, from_key: int opt) -> (chunk: blog_chunk)
+        create_article(blog_id: string, title: string, text: string) -> (blog_item: blog_item)
         save_article(blog_id: string, article_id: int, title: string, text: string) -> ()
         delete_article(blog_id: string, article_id: int) -> ()
         update_ref(blog_id: string, article_id: int, ref_id: int, title: string, ref: ref) -> ()
@@ -68,8 +61,8 @@ blog_service_iface = interface blog_service:
 
 blog_notification_iface = interface blog_notification:
     commands:
-        article_added(blog_id: string, article: blog_row)
-        article_changed(blog_id: string, article: blog_row)
+        article_added(blog_id: string, article: blog_item)
+        article_changed(blog_id: string, article: blog_item)
         article_deleted(blog_id: string, article_id: int)
 
 
