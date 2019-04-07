@@ -2,7 +2,7 @@ import logging
 from operator import attrgetter
 from collections import namedtuple
 
-from hyperapp.common.htypes import tInt, tString, resource_key_t
+from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.ref import ref_repr
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
@@ -19,7 +19,7 @@ class RefListObject(ListObject):
 
     impl_id = 'ref_list'
 
-    Row = namedtuple('RefListObject_Row', 'id ref')
+    _Item = namedtuple('RefListObject_Item', 'id ref')
 
     @classmethod
     async def from_state(cls, state, handle_resolver, proxy_factory):
@@ -32,7 +32,7 @@ class RefListObject(ListObject):
         self._ref_list_service = ref_list_service
         self._ref_list_id = ref_list_id
         self._id2ref = None
-        self._rows = None
+        self._item_list = None
 
     def get_state(self):
         return htypes.ref_list.ref_list_object(self.impl_id, self._ref_list_service.to_ref(), self._ref_list_id)
@@ -46,30 +46,21 @@ class RefListObject(ListObject):
             Column('ref'),
             ]
 
-    def get_key_column_id(self):
-        return 'id'
-
-    async def fetch_elements_impl(self, sort_column_id, from_key, desc_count, asc_count):
-        if not self._rows:
+    async def fetch_items(self, from_key):
+        if self._item_list is None:
             ref_list = await self._ref_list_service.get_ref_list(self._ref_list_id)
-            assert sort_column_id in ['id', 'ref'], repr(sort_column_id)
-            self._rows = [self.Row(ref_item.id, ref_repr(ref_item.ref))
-                          for ref_item in ref_list.ref_list]
+            self._item_list = [self._Item(ref_item.id, ref_repr(ref_item.ref))
+                               for ref_item in ref_list.ref_list]
             self._id2ref = {ref_item.id: ref_item.ref for ref_item in ref_list.ref_list}
-        sorted_rows = sorted(self._rows, key=attrgetter(sort_column_id))
-        elements = [Element(row.id, row, commands=None, order_key=getattr(row, sort_column_id)) for row in sorted_rows]
-        return Chunk(sort_column_id, None, elements, True, True)
+        self._distribute_fetch_results(self._item_list)
+        self._distribute_eof()
 
     @command('open', kind='element')
-    async def command_open(self, element_key):
+    async def command_open(self, item_id):
         assert self._id2ref is not None  # fetch_element was not called yet
-        ref = self._id2ref[element_key]
-        log.info('Opening ref %r: %s', element_key, ref_repr(ref))
+        ref = self._id2ref[item_id]
+        log.info('Opening ref %r: %s', item_id, ref_repr(ref))
         return (await self._handle_resolver.resolve(ref))
-
-    def process_diff(self, diff):
-        assert isinstance(diff, ListDiff), repr(diff)
-        log.info('-- FsDirObject.process_diff self=%r diff=%r', id(self), diff)
 
 
 class RefListService(object):
@@ -103,4 +94,4 @@ class ThisModule(ClientModule):
         handle_t = htypes.core.string_list_handle
         sort_column_id = 'id'
         resource_key = resource_key_t(__module_ref__, ['RefListObject'])
-        return handle_t('list', object, resource_key, sort_column_id, None)
+        return handle_t('list', object, resource_key, None)
