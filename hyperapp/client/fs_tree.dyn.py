@@ -19,9 +19,9 @@ class TreeAdapter(TreeObject):
     impl_id = 'fs_dir_tree'
 
     @classmethod
-    async def from_state(cls, state, ref_registry, handle_resolver, fs_service_resolver):
+    async def from_state(cls, state, ref_registry, fs_service_resolver):
         fs_service = await fs_service_resolver.resolve(state.fs_service_ref)
-        dir = FsDir(ref_registry, handle_resolver, fs_service, state.host)
+        dir = FsDir(ref_registry, fs_service, state.host)
         return cls(dir)
 
     def __init__(self, dir):
@@ -57,7 +57,7 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._local_fs_service_ref = services.local_fs_service_ref
         services.objimpl_registry.register(
-            TreeAdapter.impl_id, TreeAdapter.from_state, services.ref_registry, services.handle_resolver, services.fs_service_resolver)
+            TreeAdapter.impl_id, TreeAdapter.from_state, services.ref_registry, services.fs_service_resolver)
 
     @command('open_local_fs_tree')
     async def open_local_fs_tree(self):
