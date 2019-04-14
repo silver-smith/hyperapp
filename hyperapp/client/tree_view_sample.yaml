@@ -4,7 +4,7 @@ import:
       - object_base
       - obj_handle
     tree_view:
-      - tree_handle
+      - string_tree_handle
     text_object:
       - text_object
   code:

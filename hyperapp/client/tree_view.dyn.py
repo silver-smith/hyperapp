@@ -57,7 +57,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def index(self, row, column, parent):
-        parent_path = self.index2path(parent)
+        parent_path = self.index2path(parent) or ()
         log.debug('_Model.index(%s, %s, %s), id=%s, path=%s', row, column, parent, parent.internalId(), parent_path)
         item_list = self._path2children[parent_path]
         id = getattr(item_list[row], self._item_id_attr)
@@ -79,12 +79,12 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def hasChildren(self, index):
         path = self.index2path(index)
-        item_list = self._path2children.get(path)
+        item_list = self._path2children.get(path or ())
         return item_list != []  # is empty item list already received for this path?
 
     def rowCount(self, index):
         path = self.index2path(index)
-        item_list = self._path2children.get(path)
+        item_list = self._path2children.get(path or ())
         if item_list is None:
             self._request_fetch(path)
             return 0
@@ -105,7 +105,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def canFetchMore(self, parent):
         path = self.index2path(parent)
-        result = path not in self._path2children
+        result = (path or ()) not in self._path2children
         log.debug('_Model.canFetchMore id=%d, row=%d column=%r path=%s, result=%s', parent.internalId(), parent.row(), parent.column(), path, result)
         return result
 
@@ -124,15 +124,15 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def _request_fetch(self, path):
         if path not in self._fetch_requested_for_path:
-            self._fetch_requested_for_path.add(path)
+            self._fetch_requested_for_path.add(path or None)
             log.info('  request fetch for %s', path)
-            asyncio.ensure_future(self._object.fetch_items(path))
+            asyncio.ensure_future(self._object.fetch_items(path or []))
 
     def process_fetch_results(self, path, item_list):
         log.debug('fetched %d items at %s: %s', len(item_list), path, item_list)
         path = tuple(path)
         with suppress(KeyError):
-            self._fetch_requested_for_path.remove(path)
+            self._fetch_requested_for_path.remove(path or None)
         current_item_list = self._path2children.setdefault(path, [])
         prev_item_count = len(current_item_list)
         current_item_list += item_list
@@ -147,7 +147,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         if index.isValid():
             return self._id2path[index.internalId()]
         else:
-            return ()
+            return None
 
     def _get_next_id(self):
         self._id_counter += 1
@@ -156,7 +156,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
 class TreeView(View, QtGui.QTreeView):
 
-    def __init__(self, resource_resolver, locale, parent, resource_key, object):
+    def __init__(self, resource_resolver, locale, parent, resource_key, data_type, object, current_path):
         QtGui.QTreeView.__init__(self)
         self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
         View.__init__(self, parent)
@@ -164,6 +164,7 @@ class TreeView(View, QtGui.QTreeView):
         self._resource_resolver = resource_resolver
         self._locale = locale
         self._resource_key = resource_key
+        self._data_type = data_type
         self._object = object
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
@@ -171,7 +172,7 @@ class TreeView(View, QtGui.QTreeView):
         self.activated.connect(self._on_activated)
 
     def get_state(self):
-        return htypes.tree_view.tree_handle('tree', self._object.get_state(), self._resource_key)
+        return self._data_type('tree', self._object.get_state(), self._resource_key, self._current_item_path)
 
     def get_object(self):
         return self._object
@@ -190,7 +191,11 @@ class TreeView(View, QtGui.QTreeView):
 
     @property
     def _current_item_path(self):
-        return self.model().index2path(self.currentIndex())
+        path = self.model().index2path(self.currentIndex())
+        if path is None:
+            return None
+        else:
+            return list(path)
 
     def _on_activated(self, index):
         if self._default_command:
@@ -245,8 +250,9 @@ class ThisModule(ClientModule):
         services.view_registry.register('tree', self._tree_view_from_state, services.objimpl_registry)
 
     async def _tree_view_from_state(self, locale, state, parent, objimpl_registry):
+        data_type = htypes.core.handle.get_object_class(state)
         object = await objimpl_registry.resolve_async(state.object)
-        return self._tree_view_factory(locale, parent, state.resource_key, object)
+        return self._tree_view_factory(locale, parent, state.resource_key, data_type, object, state.current_path)
 
-    def _tree_view_factory(self, locale, parent, resource_key, object):
-        return TreeView(self._resource_resolver, locale, parent, resource_key, object)
+    def _tree_view_factory(self, locale, parent, resource_key, data_type, object, current_path):
+        return TreeView(self._resource_resolver, locale, parent, resource_key, data_type, object, current_path)

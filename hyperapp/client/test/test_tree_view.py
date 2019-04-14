@@ -91,7 +91,9 @@ async def test_instantiate(locale, services, object):
         locale=locale,
         parent=None,
         resource_key=None,
+        data_type=None,
         object=object,
+        current_path=None,
         )
     #view.populate()
     await wait_for_all_tasks_to_complete()

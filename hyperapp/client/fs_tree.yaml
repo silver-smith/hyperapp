@@ -5,7 +5,7 @@ import:
     fs:
       - fs_dir_tree
     tree_view:
-      - tree_handle
+      - string_tree_handle
   code:
     - client.fs
     - client.tree_object

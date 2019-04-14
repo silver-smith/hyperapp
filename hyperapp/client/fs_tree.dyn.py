@@ -65,4 +65,4 @@ class ThisModule(ClientModule):
         path = 'usr/share/doc'.split('/')
         dir_tree = htypes.fs.fs_dir_tree(TreeAdapter.impl_id, fs_service_ref, LOCAL_HOST_NAME, path, current_name=None)
         resource_key = resource_key_t(__module_ref__, ['fs-tree'])
-        return htypes.tree_view.tree_handle('tree', dir_tree, resource_key)
+        return htypes.tree_view.string_tree_handle('tree', dir_tree, resource_key, current_path=None)
