@@ -171,6 +171,14 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         row = key_list.index(path[-1])
         return self.createIndex(row, 0, id)
 
+    def first_row_index(self):
+        item_list = self._path2children.get(())
+        if not item_list:
+            return None
+        item_0_key = getattr(item_list[0], self._item_id_attr)
+        id = self._path2id.get((item_0_key,))
+        return self.createIndex(0, 0, id)
+
     def _get_next_id(self):
         self._id_counter += 1
         return self._id_counter
@@ -222,6 +230,7 @@ class TreeView(View, QtGui.QTreeView):
 
     def _on_data_changed(self):
         self._process_wanted_current()
+        # only after some nodes are expanded we can resize columns:
         for idx in range(len(self.model().columns)):
             self.resizeColumnToContents(idx)
 
@@ -233,9 +242,8 @@ class TreeView(View, QtGui.QTreeView):
         else:
             if self.currentIndex().isValid():
                 return
-            # else:
-            #     # ensure at least one item is selected
-            #     index = self.model().createIndex(0, 0)
+            else:
+                index = self.model().first_row_index()
         if index is None:
             return
         for i in range(len(self._wanted_current_path or []) - 1):
