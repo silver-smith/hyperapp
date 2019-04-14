@@ -29,9 +29,9 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._locale = locale
         self._resource_key = resource_key
         self._object = object
-        self._columns = object.get_columns()
+        self.columns = object.get_columns()
         self._column2resource = {}
-        self._item_id_attr = self._columns[0].id
+        self._item_id_attr = self.columns[0].id
         self._path2item = {}
         self._path2children = {}
         self._fetch_requested_for_path = set()  # do not issue fetch request when previous is not yet completed
@@ -44,11 +44,11 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
     # qt methods  -------------------------------------------------------------------------------------------------------
 
     def columnCount(self, index):
-        return len(self._columns)
+        return len(self.columns)
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            column_id = self._columns[section].id
+            column_id = self.columns[section].id
             resource = self._column2resource.get(column_id)
             if resource:
                 return resource.text
@@ -58,7 +58,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def index(self, row, column, parent):
         parent_path = self.index2path(parent) or ()
-        log.debug('_Model.index(%s, %s, %s), id=%s, path=%s', row, column, parent, parent.internalId(), parent_path)
+        # log.debug('_Model.index(%s, %s, %s), id=%s, path=%s', row, column, parent, parent.internalId(), parent_path)
         item_list = self._path2children[parent_path]
         id = getattr(item_list[row], self._item_id_attr)
         path = parent_path + (id,)
@@ -86,7 +86,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         path = self.index2path(index)
         item_list = self._path2children.get(path or ())
         if item_list is None:
-            self._request_fetch(path)
+            self.request_fetch(path)
             return 0
         else:
             return len(item_list)
@@ -94,9 +94,9 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
     def data(self, index, role):
         if role != QtCore.Qt.DisplayRole:
             return None
-        column = self._columns[index.column()]
+        column = self.columns[index.column()]
         path = self._id2path.get(index.internalId())
-        log.debug('_Model.data id=%d, row=%d column=%r path=%s', index.internalId(), index.row(), index.column(), path)
+        # log.debug('_Model.data id=%d, row=%d column=%r path=%s', index.internalId(), index.row(), index.column(), path)
         if path is None:
             return None
         item = self._path2item[path]
@@ -113,20 +113,25 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         path = self.index2path(parent)
         log.debug('_Model.fetchMore id=%d, row=%d column=%r path=%s already fetching=%s',
                   parent.internalId(), parent.row(), parent.column(), path, path in self._fetch_requested_for_path)
-        self._request_fetch(path)
+        self.request_fetch(path)
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
     def _load_resources(self):
-        for column in self._columns:
+        for column in self.columns:
             resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
             self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
 
-    def _request_fetch(self, path):
-        if path not in self._fetch_requested_for_path:
-            self._fetch_requested_for_path.add(path or None)
-            log.info('  request fetch for %s', path)
-            asyncio.ensure_future(self._object.fetch_items(path or []))
+    def request_fetch(self, path):
+        if path:
+            path = tuple(path)
+        if (path or ()) in self._path2children:
+            return
+        if (path or None) in self._fetch_requested_for_path:
+            return
+        self._fetch_requested_for_path.add(path or None)
+        log.info('  request fetch for %s', path)
+        asyncio.ensure_future(self._object.fetch_items(path or []))
 
     def process_fetch_results(self, path, item_list):
         log.debug('fetched %d items at %s: %s', len(item_list), path, item_list)
@@ -137,17 +142,34 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         prev_item_count = len(current_item_list)
         current_item_list += item_list
         for item in item_list:
-            id = getattr(item, self._item_id_attr)
-            self._path2item[path + (id,)] = item
+            id = self._get_next_id()
+            key = getattr(item, self._item_id_attr)
+            item_path = path + (key,)
+            self._path2item[item_path] = item
+            self._path2id[item_path] = id
+            self._id2path[id] = item_path
         self.rowsInserted.emit(QtCore.QModelIndex(), prev_item_count + 1, len(current_item_list) - 1)
-        for idx in range(len(self._columns)):
-            self._view_wr().resizeColumnToContents(idx)
+        view = self._view_wr()
+        if view:
+            view._on_data_changed()
 
     def index2path(self, index):
         if index.isValid():
             return self._id2path[index.internalId()]
         else:
             return None
+
+    def path2index(self, path):
+        if not path:
+            return None
+        path = tuple(path)
+        id = self._path2id.get(path)
+        if id is None:
+            return None
+        item_list = self._path2children.get(path[:-1])
+        key_list = [getattr(item, self._item_id_attr) for item in item_list]
+        row = key_list.index(path[-1])
+        return self.createIndex(row, 0, id)
 
     def _get_next_id(self):
         self._id_counter += 1
@@ -166,6 +188,7 @@ class TreeView(View, QtGui.QTreeView):
         self._resource_key = resource_key
         self._data_type = data_type
         self._object = object
+        self._wanted_current_path = current_path  # will set it to current when rows are loaded
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._default_command = None
@@ -196,6 +219,40 @@ class TreeView(View, QtGui.QTreeView):
             return None
         else:
             return list(path)
+
+    def _on_data_changed(self):
+        self._process_wanted_current()
+        for idx in range(len(self.model().columns)):
+            self.resizeColumnToContents(idx)
+
+    def _process_wanted_current(self):
+        if self._wanted_current_path is not None:
+            index = self.model().path2index(self._wanted_current_path)
+            if not index:
+                self._fetch_nearest_parent_node(self._wanted_current_path)
+        else:
+            if self.currentIndex().isValid():
+                return
+            # else:
+            #     # ensure at least one item is selected
+            #     index = self.model().createIndex(0, 0)
+        if index is None:
+            return
+        for i in range(len(self._wanted_current_path or []) - 1):
+            path = self._wanted_current_path[:i + 1]
+            self.expand(self.model().path2index(path))
+        self.setCurrentIndex(index)
+        self.scrollTo(index)
+        self._wanted_current_path = None
+
+    def _fetch_nearest_parent_node(self, wanted_path):
+        while wanted_path:
+            wanted_path = wanted_path[:-1]
+            index = self.model().path2index(wanted_path)
+            if index:
+                log.debug('fetch nearest parent: %s', wanted_path)
+                self.model().request_fetch(wanted_path)
+                return
 
     def _on_activated(self, index):
         if self._default_command:
