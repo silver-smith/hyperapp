@@ -69,8 +69,8 @@ class SampleObject(ListObject):
             )
 
     @command('open', kind='element')
-    async def command_open(self, element_key):
-        text = "Opened element {}".format(element_key)
+    async def command_open(self, item_key):
+        text = "Opened item {}".format(item_key)
         object = htypes.text_object.text_object('text', text)
         return htypes.core.obj_handle('text_view', object)
 

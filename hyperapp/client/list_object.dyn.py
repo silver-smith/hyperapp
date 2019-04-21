@@ -87,10 +87,10 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def fetch_items(self, from_idx):
+    async def fetch_items(self, from_key):
         pass
 
-    def get_item_command_list(self, item_id):
+    def get_item_command_list(self, item_key):
         return self.get_command_list(kinds=['element'])  # by default all items have same commands
 
     def _distribute_fetch_results(self, item_list, fetch_finished=True):
