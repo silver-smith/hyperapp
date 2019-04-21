@@ -39,8 +39,8 @@ class HistoryList(ListObject):
         return []
 
     @command('open', kind='element')
-    def command_open(self, element_key):
-        return self._history[element_key].handle
+    def command_open(self, item_key):
+        return self._history[item_key].handle
 
     def get_columns(self):
         return [
@@ -48,13 +48,7 @@ class HistoryList(ListObject):
             Column('title'),
             ]
 
-    def get_key_column_id(self):
-        return 'idx'
-
-    async def fetch_elements_impl(self, sort_column_id, key, desc_count, asc_count):
-        return Chunk('idx', None, list(map(self._item2element, enumerate(self._history))), bof=True, eof=True)
-
-    def _item2element(self, idx_and_item):
-        idx, item = idx_and_item
-        commands = [self.command_open]
-        return Element(idx, self._Row(idx, item.title), commands)
+    async def fetch_items(self, from_key):
+        self._distribute_fetch_results(
+            [self._Row(idx, item.title) for idx, item in enumerate(self._history)])
+        self._distribute_eof()

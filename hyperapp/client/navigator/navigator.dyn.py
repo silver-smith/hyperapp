@@ -110,7 +110,7 @@ class NavigatorView(View):
         state = self.get_state()
         object = htypes.navigator.history_list(HistoryList.impl_id, state.history)
         resource_key = resource_key_t(history_list_module.__module_ref__, HISTORY_LIST_RESOURCE_PATH)
-        self.open(htypes.navigator.history_list_handle('list', object, resource_key, sort_column_id='idx', key=state.current_pos))
+        self.open(htypes.navigator.history_list_handle('list', object, resource_key, key=state.current_pos))
 
     def __del__(self):
         log.info('~navigator')
