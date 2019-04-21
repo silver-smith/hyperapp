@@ -2,7 +2,9 @@ from contextlib import contextmanager
 import logging
 import json
 
-log = logging.getLogger(__name__)
+import better_contextvars as contextvars
+
+_log = logging.getLogger(__name__)
 
 
 class _LogFnAdapter:
@@ -46,42 +48,65 @@ class _ContextAdapter:
 class _Logger:
 
     instance = None
+    _context_var = contextvars.ContextVar('logger_context', default=None)
+    _pending_entry = contextvars.ContextVar('logger_pending_entry', default=None)
 
     def __init__(self, storage):
         self._storage = storage
-        self._pending_entry = None
-        self._context_name_stack = []
+        self._context_counter = 0
 
     def add_entry(self, entry):
+        self._log('add_entry: %r', entry)
         self.flush()
-        self._pending_entry = entry
+        if self._context:
+            entry['context'] = self._context[:]
+        self._pending_entry.set(entry)
 
     def push_context(self):
-        assert self._pending_entry
-        entry = self._pending_entry
-        self._pending_entry = None
+        self._log('push_context')
+        assert self._pending_entry.get()
+        entry = self._pending_entry.get()
+        self._pending_entry.set(None)
+        self._context_counter += 1
+        self._context.append(self._context_counter)
         entry['type'] = 'context-enter'
+        assert self._context
+        entry['context'] = self._context[:]
         self._store_entry(entry)
-        self._context_name_stack.append(entry['name'])
 
     def exit_context(self):
+        self._log('exit_context')
         self.flush()
-        self._store_entry(dict(type='context-exit', name=self._context_name_stack[-1]))
-        self._context_name_stack.pop()
+        assert self._context
+        self._store_entry(dict(type='context-exit', context=self._context[:]))
+        self._context.pop()
 
     def flush(self):
-        if self._pending_entry:
-            self._store_entry(self._pending_entry)
-            self._pending_entry = None
+        if self._pending_entry.get():
+            self._store_entry(self._pending_entry.get())
+            self._pending_entry.set(None)
+
+    @property
+    def _context(self):
+        context = self._context_var.get()
+        if context is None:
+            context = []
+            self._context_var.set(context)
+        return context
 
     def _store_entry(self, entry):
+        self._log('store entry: %r', entry)
         self._storage.add_entry(entry)
+
+    def _log(self, format, *args):
+        _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_entry.get(), *args)
 
 
 @contextmanager
 def logger_inited(storage):
     _Logger.instance = logger = _Logger(storage)
     yield
+    _Logger.instance = None
     logger.flush()
     storage.close()
 
