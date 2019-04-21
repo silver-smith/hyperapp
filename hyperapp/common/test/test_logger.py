@@ -19,7 +19,7 @@ class StubStorage:
 
 
 @pytest.fixture
-def logger():
+def init():
 
     @contextmanager
     def inited():
@@ -30,8 +30,8 @@ def logger():
     return inited
 
 
-def test_entry(logger):
-    with logger() as storage:
+def test_entry(init):
+    with init() as storage:
         log.test_entry(foo='foo-value', bar='bar-value')
     assert storage.entries == [dict(
         type='entry',
@@ -41,8 +41,8 @@ def test_entry(logger):
         )]
 
 
-def test_context(logger):
-    with logger() as storage:
+def test_context(init):
+    with init() as storage:
         with log.test_context(foo='foo-value'):
             log.test_entry(bar='bar-value')
     assert storage.entries == [
@@ -52,8 +52,8 @@ def test_context(logger):
         ]
 
 
-def test_nested_context(logger):
-    with logger() as storage:
+def test_nested_context(init):
+    with init() as storage:
         with log.root_context(foo='foo'):
             log.foo_entry(bar='bar')
             with log.nested_context(bar='bar'):
