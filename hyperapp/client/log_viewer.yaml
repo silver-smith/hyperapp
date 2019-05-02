@@ -1,0 +1,8 @@
+import:
+  types:
+    tree_view:
+      - int_tree_handle
+    log_viewer:
+      - log_viewer
+  code:
+    - client.tree_object

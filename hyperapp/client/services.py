@@ -40,6 +40,7 @@ type_module_list = [
     'object_selector',
     'blog',
     'tree_view',
+    'log_viewer',
     ]
 
 code_module_list = [
@@ -107,6 +108,7 @@ code_module_list = [
     'client.object_selector',
     'client.blog',
     'client.url_clipboard',
+    'client.log_viewer',
     'client.default_state_builder',
     ]
 

@@ -1,0 +1,14 @@
+ThisModule:
+  commands:
+    open_last_session:
+      text: Last session logs
+      description: Open last session logs
+      shortcuts:
+      - Alt+Ctrl+S
+SessionLogs:
+  columns:
+    name:
+      text: Name
+      description: Some name
+    type:
+      text: Type
