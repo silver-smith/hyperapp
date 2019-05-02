@@ -79,11 +79,11 @@ def test_nested_context(init):
 
 class Barrier:
 
-    def __init__(self, wanted_entries):
-        self._wanted_entries = wanted_entries
+    def __init__(self, parties):
+        self._wanted_entries = parties
         self._cond = asyncio.Condition()
 
-    async def enter(self):
+    async def wait(self):
         async with self._cond:
             self._wanted_entries -= 1
             await self._cond.wait_for(lambda: self._wanted_entries == 0)
@@ -99,14 +99,14 @@ async def test_async_context(init):
 
     async def level_3(num):
         _log.info('level_3 %r', num)
-        await level_3_barrier.enter()
+        await level_3_barrier.wait()
         log.level_3_entry(num=num)
         _log.info('level_3 %r finished', num)
 
     async def level_2(num):
         _log.info('level_2 %r', num)
         with log.level_2_context(num=num):
-            await level_2_barrier.enter()
+            await level_2_barrier.wait()
             log.level_2_entry(num=num)
             await level_3(num)
         _log.info('level_2 %r finished', num)
@@ -114,7 +114,7 @@ async def test_async_context(init):
     async def level_1(num):
         _log.info('level_1 %r', num)
         with log.level_1_context(num=num):
-            await level_1_barrier.enter()
+            await level_1_barrier.wait()
             log.level_1_entry(num=num)
             await level_2(num)
         _log.info('level_1 %r finished', num)
