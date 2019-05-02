@@ -142,3 +142,19 @@ async def test_async_context(init):
             dict(type='context-exit', context=context_2),
             dict(type='context-exit', context=context_1),
             ]
+
+
+def test_fn_decorator(init):
+
+    @log
+    def decorated_fn():
+        log.inner(foo=1)
+
+    with init() as storage:
+        decorated_fn()
+    context = storage.entries[0]['context']
+    assert storage.entries == [
+        dict(type='context-enter', name='decorated_fn', context=context),
+        dict(type='entry', name='inner', foo=1, context=context),
+        dict(type='context-exit', context=context),
+        ]

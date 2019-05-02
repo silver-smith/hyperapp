@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from functools import wraps
 import logging
 import json
 
@@ -14,6 +15,21 @@ class _LogFnAdapter:
 
     def __getattr__(self, name):
         return _LoggerAdapter(name)
+
+    def __call__(self, *args, **kw):
+        assert len(args) == 1 and not kw and callable(args[0])
+        fn = args[0]
+        entry = dict(name=fn.__name__)
+
+        @wraps(fn)
+        def wrapper(*args, **kw):
+            _Logger.instance.enter_context(entry)
+            try:
+                return fn(*args, **kw)
+            finally:
+                _Logger.instance.exit_context()
+
+        return wrapper
 
 
 log = _LogFnAdapter()
@@ -73,6 +89,10 @@ class _Logger:
         assert self._context
         entry['context'] = self._context[:]
         self._store_entry(entry)
+
+    def enter_context(self, entry):
+        self.add_entry(entry)
+        self.push_context()
 
     def exit_context(self):
         self._log('exit_context')
