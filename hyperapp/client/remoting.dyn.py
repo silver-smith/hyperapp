@@ -6,11 +6,12 @@ from collections import namedtuple
 from hyperapp.common.htypes import EncodableEmbedded
 from hyperapp.common.ref import ref_repr, ref_list_repr
 from hyperapp.common.visual_rep import pprint
+from hyperapp.common.logger import log
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .request import Request
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'remoting'
@@ -33,7 +34,7 @@ class Remoting(object):
             service_id=str(uuid.uuid4())))
 
     async def send_request(self, service_ref, iface, command, params):
-        log.info('Remoting: sending request %s %s to %s', iface.name, command.command_id, ref_repr(service_ref))
+        _log.info('Remoting: sending request %s %s to %s', iface.name, command.command_id, ref_repr(service_ref))
         transport_ref_set = await self._async_route_resolver.resolve(service_ref)
         assert transport_ref_set, 'No routes for service %s' % ref_repr(service_ref)
         assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
@@ -60,39 +61,40 @@ class Remoting(object):
         future = asyncio.Future()
         self._pending_requests[request_id] = PendingRequest(iface, command, future)
         try:
-            log.info('Remoting: awaiting for response future...')
+            _log.info('Remoting: awaiting for response future...')
             result = (await asyncio.wait_for(future, timeout=REQUEST_TIMEOUT_SEC))
-            log.info('Remoting: got result future: %r', result)
+            _log.info('Remoting: got result future: %r', result)
             return result
         finally:
             del self._pending_requests[request_id]
 
+    @log
     def process_rpc_message(self, rpc_message_ref, rpc_message):
-        log.info('Remoting: processing incoming RPC message %s:', ref_repr(rpc_message_ref))
+        _log.info('Remoting: processing incoming RPC message %s:', ref_repr(rpc_message_ref))
         pprint(rpc_message, indent=1)
         if isinstance(rpc_message, htypes.hyper_ref.rpc_request):
             self._process_rpc_request(rpc_message)
         if isinstance(rpc_message, htypes.hyper_ref.rpc_response):
             self._process_rpc_response(rpc_message)
-        log.info('Remoting: processing incoming RPC message %s: done', ref_repr(rpc_message_ref))
+        _log.info('Remoting: processing incoming RPC message %s: done', ref_repr(rpc_message_ref))
 
     def _process_rpc_request(self, rpc_request):
         iface = self._type_resolver.resolve(rpc_request.iface_type_ref)
         command = iface.get(rpc_request.command_id)
         if not command:
-            log.warning('Got request for unknown command %r for interface %s',
+            _log.warning('Got request for unknown command %r for interface %s',
                             rpc_request.command_id, full_type_name_to_str(rpc_request.iface_full_type_name))
             return
         params = rpc_request.params.decode(command.request)
         pprint(params, title='params:')
         if command.is_request:
-            log.warning('Got request, but only notifications are supported for server-to-client calls')
+            _log.warning('Got request, but only notifications are supported for server-to-client calls')
             return
         servant = self._service_registry.resolve(rpc_request.target_service_ref)
         request = Request()
         method_name = 'rpc_' + rpc_request.command_id
         method = getattr(servant, method_name, None)
-        log.info('Calling %s %r', command.request_type, method)
+        _log.info('Calling %s %r', command.request_type, method)
         assert method, '%r does not implement method %s' % (servant, method_name)
         response = self._call_servant(command, method, request, params)
         assert not response, 'Only notifications are supported for now'
@@ -107,7 +109,7 @@ class Remoting(object):
             if isinstance(x, htypes.error.error):
                 error = x
             else:
-                log.exception('Error processing %s %r:', command.request_type, method)
+                _log.exception('Error processing %s %r:', command.request_type, method)
                 error = htypes.error.server_error()
             return request.make_response(error=error)
         if not command.is_request:
@@ -124,9 +126,9 @@ class Remoting(object):
     def _process_rpc_response(self, rpc_response):
         request = self._pending_requests.get(rpc_response.request_id)
         if not request:
-            log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
+            _log.warning('No one is waiting for response %r; ignoring', rpc_response.request_id)
             return
-        log.info('Response is for %s %s', request.iface.name, request.command.command_id)
+        _log.info('Response is for %s %s', request.iface.name, request.command.command_id)
         if rpc_response.is_succeeded:
             result_t = request.iface[request.command.command_id].response
             result = rpc_response.result_or_error.decode(result_t)

@@ -1,9 +1,10 @@
 import logging
 
 from .ref import ref_repr
+from hyperapp.common.logger import log
 from .module import Module
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'ref_resolver'
@@ -17,14 +18,15 @@ class RefResolver(object):
     def add_source(self, source):
         self._sources.append(source)
 
+    @log
     def resolve_ref(self, ref):
-        log.debug('Resolving ref: %s', ref_repr(ref))
+        _log.debug('Resolving ref: %s', ref_repr(ref))
         for source in self._sources:
             capsule = source.resolve_ref(ref)
             if capsule:
-                log.info('Ref %s is resolved to capsule, type %s', ref_repr(ref), ref_repr(capsule.type_ref))
+                _log.info('Ref %s is resolved to capsule, type %s', ref_repr(ref), ref_repr(capsule.type_ref))
                 return capsule
-        log.warning('Ref %s is failed to be resolved', ref_repr(ref))
+        _log.warning('Ref %s is failed to be resolved', ref_repr(ref))
         return None
 
 
