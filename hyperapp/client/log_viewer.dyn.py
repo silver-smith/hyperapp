@@ -46,14 +46,21 @@ class SessionLogs(TreeObject):
         leafs = []
         contexts = {}
         path2items = {}
+        context = []
         for idx, entry in enumerate(self._storage_reader.enumerate_entries()):
-            if entry['type'] == 'entry':
-                leafs.append(entry)
+            if not context:
+                items.append(entry)
+            if entry['type'] == 'entry' and not context:
+                leafs.append(idx)
             if entry['type'] == 'context-enter':
                 contexts[tuple(entry['context'])] = entry
-            items.append(entry)
+                context.append(entry['context'])
+            if entry['type'] == 'context-exit':
+                context.pop()
         self._distribute_fetch_results(path, [
             self._log_entry(contexts, idx, entry) for idx, entry in enumerate(items)])
+        for idx in leafs:
+            self._distribute_fetch_results([idx], [])
 
     def _log_entry(self, contexts, idx, entry):
         if entry['type'] == 'context-exit':
