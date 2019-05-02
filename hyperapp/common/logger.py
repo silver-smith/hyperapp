@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from functools import wraps
+import inspect
 import logging
 import json
 
@@ -19,10 +20,24 @@ class _LogFnAdapter:
     def __call__(self, *args, **kw):
         assert len(args) == 1 and not kw and callable(args[0])
         fn = args[0]
-        entry = dict(name=fn.__name__)
+        sig = inspect.signature(fn)
 
         @wraps(fn)
         def wrapper(*args, **kw):
+            params = {
+                param: args[idx]
+                for idx, param in enumerate(sig.parameters)
+                if idx < len(args)
+                }
+            params.update({    
+                param: kw[param]
+                for param in sig.parameters
+                if param in kw
+                })
+            entry = dict(
+                params,
+                name=fn.__name__,
+                )
             _Logger.instance.enter_context(entry)
             try:
                 return fn(*args, **kw)

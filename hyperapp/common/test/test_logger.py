@@ -158,3 +158,19 @@ def test_fn_decorator(init):
         dict(type='entry', name='inner', foo=1, context=context),
         dict(type='context-exit', context=context),
         ]
+
+
+def test_fn_decorator_args(init):
+
+    @log
+    def decorated_fn(foo, bar):
+        log.inner(foo=foo)
+
+    with init() as storage:
+        decorated_fn(123, bar=456)
+    context = storage.entries[0]['context']
+    assert storage.entries == [
+        dict(type='context-enter', name='decorated_fn', foo=123, bar=456, context=context),
+        dict(type='entry', name='inner', foo=123, context=context),
+        dict(type='context-exit', context=context),
+        ]
