@@ -12,13 +12,16 @@ from hyperapp.client.application import Application
 def main():
     init_logging('client.yaml')
     with logger_inited(json_file_log_storage_session()):
-        with log.client_running():
 
-            parser = argparse.ArgumentParser(description='Hyperapp client')
-            args = parser.parse_args()
+        log.client_started()
 
-            app = Application(sys.argv)
-            app.exec_()
+        parser = argparse.ArgumentParser(description='Hyperapp client')
+        args = parser.parse_args()
+
+        app = Application(sys.argv)
+        app.exec_()
+
+        log.client_stopped()
 
 
 main()
