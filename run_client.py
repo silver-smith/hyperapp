@@ -19,7 +19,7 @@ LOGS_DIR = Path('~/.local/share/hyperapp/client/logs').expanduser()
 def main():
     init_logging('client.yaml')
     with logger_inited(json_file_log_storage(LOGS_DIR, datetime.now(tzlocal()))):
-        with log.client_started():
+        with log.client_running():
 
             parser = argparse.ArgumentParser(description='Hyperapp client')
             args = parser.parse_args()
