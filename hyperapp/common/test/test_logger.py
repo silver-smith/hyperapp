@@ -130,47 +130,68 @@ async def test_async_context(init):
         if entry['type'] == 'context-enter' and entry['name'] == 'level_2_context'}
 
     for num in range(1, 4):
-        context_1 = context_1_map[num]
-        context_2 = context_2_map[num]
+        context_1 = context_1_map[str(num)]
+        context_2 = context_2_map[str(num)]
         assert context_2[0] == context_1[0]
         assert [entry for entry in storage.entries if entry['context'] in [context_1, context_2]] == [
-            dict(type='context-enter', name='level_1_context', num=num, context=context_1),
-            dict(type='entry', name='level_1_entry', num=num, context=context_1),
-            dict(type='context-enter', name='level_2_context', num=num, context=context_2),
-            dict(type='entry', name='level_2_entry', num=num, context=context_2),
-            dict(type='entry', name='level_3_entry', num=num, context=context_2),
+            dict(type='context-enter', name='level_1_context', num=str(num), context=context_1),
+            dict(type='entry', name='level_1_entry', num=str(num), context=context_1),
+            dict(type='context-enter', name='level_2_context', num=str(num), context=context_2),
+            dict(type='entry', name='level_2_entry', num=str(num), context=context_2),
+            dict(type='entry', name='level_3_entry', num=str(num), context=context_2),
             dict(type='context-exit', context=context_2),
             dict(type='context-exit', context=context_1),
             ]
 
 
+@log
+def decorated_fn():
+    log.inner(foo=1)
+
+
 def test_fn_decorator(init):
-
-    @log
-    def decorated_fn():
-        log.inner(foo=1)
-
     with init() as storage:
         decorated_fn()
     context = storage.entries[0]['context']
     assert storage.entries == [
         dict(type='context-enter', name='decorated_fn', context=context),
-        dict(type='entry', name='inner', foo=1, context=context),
+        dict(type='entry', name='inner', foo='1', context=context),
         dict(type='context-exit', context=context),
         ]
 
 
+@log
+def decorated_fn_with_args(foo, bar, baz=789):
+    log.inner(foo=foo)
+
+
 def test_fn_decorator_args(init):
-
-    @log
-    def decorated_fn(foo, bar, baz=789):
-        log.inner(foo=foo)
-
     with init() as storage:
-        decorated_fn(123, bar=456)
+        decorated_fn_with_args(123, bar=456)
     context = storage.entries[0]['context']
     assert storage.entries == [
-        dict(type='context-enter', name='decorated_fn', foo=123, bar=456, baz=789, context=context),
-        dict(type='entry', name='inner', foo=123, context=context),
+        dict(type='context-enter', name='decorated_fn_with_args', foo='123', bar='456', baz='789', context=context),
+        dict(type='entry', name='inner', foo='123', context=context),
+        dict(type='context-exit', context=context),
+        ]
+
+
+class TestClass:
+
+    def __str__(self):
+        return 'TestClass'
+
+    @log
+    def method(self, foo, bar, baz=789):
+        log.inner(foo=foo)
+
+
+def test_method_decorator_args(init):
+    with init() as storage:
+        TestClass().method(123, bar=456)
+    context = storage.entries[0]['context']
+    assert storage.entries == [
+        dict(type='context-enter', name='TestClass.method', foo='123', bar='456', baz='789', self='TestClass', context=context),
+        dict(type='entry', name='inner', foo='123', context=context),
         dict(type='context-exit', context=context),
         ]

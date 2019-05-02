@@ -25,23 +25,23 @@ class _LogFnAdapter:
         @wraps(fn)
         def wrapper(*args, **kw):
             params = {
-                name: parameter.default
+                name: str(parameter.default)
                 for name, parameter in sig.parameters.items()
                 if parameter.default is not inspect.Parameter.empty
                 }
             params.update({
-                name: args[idx]
+                name: str(args[idx])
                 for idx, name in enumerate(sig.parameters)
                 if idx < len(args)
                 })
             params.update({    
-                name: kw[name]
+                name: str(kw[name])
                 for name in sig.parameters
                 if name in kw
                 })
             entry = dict(
                 params,
-                name=fn.__name__,
+                name=fn.__qualname__,
                 )
             _Logger.instance.enter_context(entry)
             try:
@@ -64,7 +64,7 @@ class _LoggerAdapter:
         entry = dict(
             type='entry',
             name=self._entry_name,
-            **kw)
+            **{name: str(value) for name, value in kw.items()})
         _Logger.instance.add_entry(entry)
         return _ContextAdapter()
 
