@@ -25,14 +25,19 @@ class _LogFnAdapter:
         @wraps(fn)
         def wrapper(*args, **kw):
             params = {
-                param: args[idx]
-                for idx, param in enumerate(sig.parameters)
-                if idx < len(args)
+                name: parameter.default
+                for name, parameter in sig.parameters.items()
+                if parameter.default is not inspect.Parameter.empty
                 }
+            params.update({
+                name: args[idx]
+                for idx, name in enumerate(sig.parameters)
+                if idx < len(args)
+                })
             params.update({    
-                param: kw[param]
-                for param in sig.parameters
-                if param in kw
+                name: kw[name]
+                for name in sig.parameters
+                if name in kw
                 })
             entry = dict(
                 params,
