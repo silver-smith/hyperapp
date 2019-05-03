@@ -78,4 +78,3 @@ class TypeModuleLoader(object):
             _log.debug('Type module loader: %r is mapped to %s:', typedef.name, ref_repr(ref))
             pprint(rec)
         return local_type_module
-

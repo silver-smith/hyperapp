@@ -36,6 +36,7 @@ class _LogRecord(namedtuple('_LogRecord', 'kind context name params')):
 def _make_record(name, params, kind=RecordKind.LEAF, context=None):
     return _LogRecord(kind, context[:] if context else [], name, {name: str(value) for name, value in params.items()})
 
+
 def _exit_record(context, params=None):
     return _make_record(None, params or {}, RecordKind.EXIT, context)
 
