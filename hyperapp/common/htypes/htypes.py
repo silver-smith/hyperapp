@@ -27,17 +27,6 @@ class Type(object):
     def __instancecheck__(self, value):
         raise NotImplementedError(self.__class__)
 
-    def expect(self, path, value, name, expr):
-        if not expr:
-            self.failure(path, '%s is expected, but got: %r' % (name, value))
-
-    def assert_(self, path, expr, desc):
-        if not expr:
-            self.failure(path, desc)
-
-    def failure(self, path, desc):
-        raise TypeError('%s: %s' % (path, desc))
-
 
 class TPrimitive(Type):
 
