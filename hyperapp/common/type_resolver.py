@@ -11,11 +11,12 @@ from .htypes import (
     )
 from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
+from .logger import log
 from .ref import phony_ref, ref_repr
 from .visual_rep import pprint
 from .capsule_registry import CapsuleRegistry, CapsuleResolver
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 DEFAULT_CAPSULE_ENCODING = 'cdr'
@@ -60,17 +61,19 @@ class TypeResolver(object):
             self._type2ref[t] = ref
             self._ref2type_cache[ref] = t
 
+    @log
     def resolve(self, type_ref):
         t = self._ref2type_cache.get(type_ref)
         if t:
-            log.info('Resolve type %s -> (cached) %s', ref_repr(type_ref), t)
+            _log.info('Resolve type %s -> (cached) %s', ref_repr(type_ref), t)
             return t
         t = self._type_capsule_resolver.resolve(type_ref)
         self._ref2type_cache[type_ref] = t
         self._type2ref[t] = type_ref
-        log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
+        _log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
         return t
 
+    @log
     def reverse_resolve(self, t):
         return self._type2ref[t]
 
