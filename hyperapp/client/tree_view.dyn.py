@@ -139,6 +139,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         with suppress(KeyError):
             self._fetch_requested_for_path.remove(path or None)
         current_item_list = self._path2children.setdefault(path, [])
+        if not item_list:
+            return
         prev_item_count = len(current_item_list)
         current_item_list += item_list
         for item in item_list:

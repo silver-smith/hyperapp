@@ -45,7 +45,12 @@ class SessionLogs(TreeObject):
             ]
 
     async def fetch_items(self, path):
-        item_list = self._path2item_list.get(tuple(path), [])
+        path = tuple(path)
+        item_list = self._path2item_list.get(path, [])
+        for item in item_list:
+            p = path + (item.idx,)
+            if p not in self._path2item_list:
+                self._distribute_fetch_results(p, [])
         self._distribute_fetch_results(path, item_list)
 
     def _load_session(self, storage_reader):
