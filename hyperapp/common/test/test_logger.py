@@ -41,6 +41,7 @@ def test_entry(init):
         log.test_entry(foo='foo-value', bar='bar-value')
     assert storage.entries == [dict(
         type='entry',
+        context=[],
         name='test_entry',
         foo='foo-value',
         bar='bar-value',

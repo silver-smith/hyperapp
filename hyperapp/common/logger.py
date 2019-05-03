@@ -101,8 +101,7 @@ class _Logger:
     def add_entry(self, entry):
         self._log('add_entry: %r', entry)
         self.flush()
-        if self._context:
-            entry['context'] = self._context[:]
+        entry['context'] = self._context[:]
         self._pending_entry.set(entry)
 
     def push_context(self):
