@@ -2,7 +2,7 @@ from collections import namedtuple
 import logging
 
 from hyperapp.common.htypes import tInt, resource_key_t
-from hyperapp.common.logger import JsonFileLogStorageReader, json_storage_session_list
+from hyperapp.common.logger import RecordKind, JsonFileLogStorageReader, json_storage_session_list
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
@@ -13,7 +13,7 @@ _log = logging.getLogger(__name__)
 MODULE_NAME = 'log_viewer'
 
 
-_LogEntryItem = namedtuple('_LogEntryItem', 'idx context name type params')
+_LogRecordItem = namedtuple('_LogRecordItem', 'idx context name type params')
 
 
 class SessionLogs(TreeObject):
@@ -56,23 +56,22 @@ class SessionLogs(TreeObject):
     def _load_session(self, storage_reader):
         path2item_list = {}
         context2path = {(): ()}
-        for idx, entry in enumerate(storage_reader.enumerate_entries()):
-            context = context_path = tuple(entry['context'])
-            if entry['type'] == 'context-enter':
+        for idx, record in enumerate(storage_reader.enumerate_entries()):
+            context = context_path = tuple(record.context)
+            if record.kind == RecordKind.ENTER:
                 context_path = context[:-1]
                 context2path[context] = context2path[context_path] + (idx,)
-            if entry['type'] == 'context-exit':
+            if record.kind == RecordKind.EXIT:
                 continue
             path = context2path[context_path]
             item_list = path2item_list.setdefault(path, [])
-            item_list.append(self._entry2item(idx, entry))
+            item_list.append(self._record2item(idx, record))
         return path2item_list
         
-    def _entry2item(self, idx, entry):
-        return _LogEntryItem(
-            idx, '/'.join(map(str, entry['context'])), entry['name'], entry['type'],
-            params=', '.join('{}={}'.format(key, value) for key, value in entry.items()
-                             if key not in {'name', 'type', 'context'}))
+    def _record2item(self, idx, record):
+        return _LogRecordItem(
+            idx, '/'.join(map(str, record.context)), record.name, record.kind.name,
+            params=', '.join('{}={}'.format(key, value) for key, value in record.params.items()))
 
 
 class ThisModule(ClientModule):

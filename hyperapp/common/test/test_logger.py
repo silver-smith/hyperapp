@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from hyperapp.common.logger import log, logger_inited
+from hyperapp.common.logger import RecordKind, _LogRecord, log, logger_inited
 
 _log = logging.getLogger(__name__)
 
@@ -12,10 +12,10 @@ _log = logging.getLogger(__name__)
 class StubStorage:
 
     def __init__(self):
-        self.entries = []
+        self.records = []
 
-    def add_entry(self, entry):
-        self.entries.append(entry)
+    def add_record(self, record):
+        self.records.append(record)
 
     def close(self):
         pass
@@ -29,9 +29,9 @@ def init():
         storage = StubStorage()
         with logger_inited(storage):
             yield storage
-        _log.info('storage.entries: %r', storage.entries)
-        for entry in storage.entries:
-            _log.info('Entry: %r', entry)
+        _log.info('storage.records: %r', storage.records)
+        for record in storage.records:
+            _log.info('Record: %r', record)
 
     return inited
 
@@ -39,12 +39,11 @@ def init():
 def test_entry(init):
     with init() as storage:
         log.test_entry(foo='foo-value', bar='bar-value')
-    assert storage.entries == [dict(
-        type='entry',
+    assert storage.records == [_LogRecord(
+        kind=RecordKind.LEAF,
         context=[],
         name='test_entry',
-        foo='foo-value',
-        bar='bar-value',
+        params=dict(foo='foo-value', bar='bar-value'),
         )]
 
 
@@ -52,11 +51,11 @@ def test_context(init):
     with init() as storage:
         with log.test_context(foo='foo-value'):
             log.test_entry(bar='bar-value')
-    context = storage.entries[0]['context']
-    assert storage.entries == [
-        dict(type='context-enter', name='test_context', foo='foo-value', context=context),
-        dict(type='entry', name='test_entry', bar='bar-value', context=context),
-        dict(type='context-exit', context=context),
+    context = storage.records[0].context
+    assert storage.records == [
+        _LogRecord(RecordKind.ENTER, context, 'test_context', dict(foo='foo-value')),
+        _LogRecord(RecordKind.LEAF, context, 'test_entry', dict(bar='bar-value')),
+        _LogRecord(RecordKind.EXIT, context, None, {}),
         ]
 
 
@@ -66,15 +65,15 @@ def test_nested_context(init):
             log.foo_entry(bar='bar')
             with log.nested_context(bar='bar'):
                 log.inner_entry(foo='foo')
-    context_1 = storage.entries[0]['context']
-    context_2 = storage.entries[2]['context']
-    assert storage.entries == [
-        dict(type='context-enter', name='root_context', foo='foo', context=context_1),
-        dict(type='entry', name='foo_entry', bar='bar', context=context_1),
-        dict(type='context-enter', name='nested_context', bar='bar', context=context_2),
-        dict(type='entry', name='inner_entry', foo='foo', context=context_2),
-        dict(type='context-exit', context=context_2),
-        dict(type='context-exit', context=context_1),
+    context_1 = storage.records[0].context
+    context_2 = storage.records[2].context
+    assert storage.records == [
+        _LogRecord(RecordKind.ENTER, context_1, 'root_context', dict(foo='foo')),
+        _LogRecord(RecordKind.LEAF, context_1, 'foo_entry', dict(bar='bar')),
+        _LogRecord(RecordKind.ENTER, context_2, 'nested_context', dict(bar='bar')),
+        _LogRecord(RecordKind.LEAF, context_2, 'inner_entry', dict(foo='foo')),
+        _LogRecord(RecordKind.EXIT, context_2, None, {}),
+        _LogRecord(RecordKind.EXIT, context_1, None, {}),
         ]
 
 
@@ -124,24 +123,24 @@ async def test_async_context(init):
         await asyncio.gather(level_1(1), level_1(2), level_1(3))
 
     context_1_map = {
-        entry['num']: entry['context'] for entry in storage.entries
-        if entry['type'] == 'context-enter' and entry['name'] == 'level_1_context'}
+        record.params['num']: record.context for record in storage.records
+        if record.kind == RecordKind.ENTER and record.name == 'level_1_context'}
     context_2_map = {
-        entry['num']: entry['context'] for entry in storage.entries
-        if entry['type'] == 'context-enter' and entry['name'] == 'level_2_context'}
+        record.params['num']: record.context for record in storage.records
+        if record.kind == RecordKind.ENTER and record.name == 'level_2_context'}
 
     for num in range(1, 4):
         context_1 = context_1_map[str(num)]
         context_2 = context_2_map[str(num)]
         assert context_2[0] == context_1[0]
-        assert [entry for entry in storage.entries if entry['context'] in [context_1, context_2]] == [
-            dict(type='context-enter', name='level_1_context', num=str(num), context=context_1),
-            dict(type='entry', name='level_1_entry', num=str(num), context=context_1),
-            dict(type='context-enter', name='level_2_context', num=str(num), context=context_2),
-            dict(type='entry', name='level_2_entry', num=str(num), context=context_2),
-            dict(type='entry', name='level_3_entry', num=str(num), context=context_2),
-            dict(type='context-exit', context=context_2),
-            dict(type='context-exit', context=context_1),
+        assert [record for record in storage.records if record.context in [context_1, context_2]] == [
+            _LogRecord(RecordKind.ENTER, context_1, 'level_1_context', dict(num=str(num))),
+            _LogRecord(RecordKind.LEAF, context_1, 'level_1_entry', dict(num=str(num))),
+            _LogRecord(RecordKind.ENTER, context_2, 'level_2_context', dict(num=str(num))),
+            _LogRecord(RecordKind.LEAF, context_2, 'level_2_entry', dict(num=str(num))),
+            _LogRecord(RecordKind.LEAF, context_2, 'level_3_entry', dict(num=str(num))),
+            _LogRecord(RecordKind.EXIT, context_2, None, {}),
+            _LogRecord(RecordKind.EXIT, context_1, None, {}),
             ]
 
 
@@ -153,11 +152,11 @@ def decorated_fn():
 def test_fn_decorator(init):
     with init() as storage:
         decorated_fn()
-    context = storage.entries[0]['context']
-    assert storage.entries == [
-        dict(type='context-enter', name='decorated_fn', context=context),
-        dict(type='entry', name='inner', foo='1', context=context),
-        dict(type='context-exit', context=context),
+    context = storage.records[0].context
+    assert storage.records == [
+        _LogRecord(RecordKind.ENTER, context, 'decorated_fn', {}),
+        _LogRecord(RecordKind.LEAF, context, 'inner', dict(foo='1')),
+        _LogRecord(RecordKind.EXIT, context, None, {}),
         ]
 
 
@@ -169,11 +168,11 @@ def decorated_fn_with_args(foo, bar, baz=789):
 def test_fn_decorator_args(init):
     with init() as storage:
         decorated_fn_with_args(123, bar=456)
-    context = storage.entries[0]['context']
-    assert storage.entries == [
-        dict(type='context-enter', name='decorated_fn_with_args', foo='123', bar='456', baz='789', context=context),
-        dict(type='entry', name='inner', foo='123', context=context),
-        dict(type='context-exit', context=context),
+    context = storage.records[0].context
+    assert storage.records == [
+        _LogRecord(RecordKind.ENTER, context, 'decorated_fn_with_args', dict(foo='123', bar='456', baz='789')),
+        _LogRecord(RecordKind.LEAF, context, 'inner', dict(foo='123')),
+        _LogRecord(RecordKind.EXIT, context, None, {}),
         ]
 
 
@@ -190,9 +189,9 @@ class TestClass:
 def test_method_decorator_args(init):
     with init() as storage:
         TestClass().method(123, bar=456)
-    context = storage.entries[0]['context']
-    assert storage.entries == [
-        dict(type='context-enter', name='TestClass.method', foo='123', bar='456', baz='789', self='TestClass', context=context),
-        dict(type='entry', name='inner', foo='123', context=context),
-        dict(type='context-exit', context=context),
+    context = storage.records[0].context
+    assert storage.records == [
+        _LogRecord(RecordKind.ENTER, context, 'TestClass.method', dict(foo='123', bar='456', baz='789', self='TestClass')),
+        _LogRecord(RecordKind.LEAF, context, 'inner', dict(foo='123')),
+        _LogRecord(RecordKind.EXIT, context, None, {}),
         ]

@@ -1,5 +1,7 @@
+from collections import namedtuple
 from contextlib import contextmanager
 from datetime import datetime
+from enum import Enum
 from functools import wraps
 import inspect
 import logging
@@ -14,6 +16,28 @@ _log = logging.getLogger(__name__)
 
 
 JSON_LOGS_DIR = Path('~/.local/share/hyperapp/client/logs').expanduser()
+
+
+class RecordKind(Enum):
+    LEAF = 1
+    ENTER = 2
+    EXIT = 3
+
+
+class _LogRecord(namedtuple('_LogRecord', 'kind context name params')):
+
+    def with_kind(self, kind):
+        return _LogRecord(kind, self.context, self.name, self.params)
+
+    def with_context(self, context):
+        return _LogRecord(self.kind, context[:], self.name, self.params)
+
+
+def _make_record(name, params, kind=RecordKind.LEAF, context=None):
+    return _LogRecord(kind, context[:] if context else [], name, {name: str(value) for name, value in params.items()})
+
+def _exit_record(context, params=None):
+    return _make_record(None, params or {}, RecordKind.EXIT, context)
 
 
 class _LogFnAdapter:
@@ -32,25 +56,22 @@ class _LogFnAdapter:
         @wraps(fn)
         def wrapper(*args, **kw):
             params = {
-                name: str(parameter.default)
+                name: parameter.default
                 for name, parameter in sig.parameters.items()
                 if parameter.default is not inspect.Parameter.empty
                 }
             params.update({
-                name: str(args[idx])
+                name: args[idx]
                 for idx, name in enumerate(sig.parameters)
                 if idx < len(args)
                 })
             params.update({    
-                name: str(kw[name])
+                name: kw[name]
                 for name in sig.parameters
                 if name in kw
                 })
-            entry = dict(
-                params,
-                name=fn.__qualname__,
-                )
-            _Logger.instance.enter_context(entry)
+            record = _make_record(fn.__qualname__, params, kind=RecordKind.ENTER)
+            _Logger.instance.enter_context(record)
             try:
                 return fn(*args, **kw)
             finally:
@@ -64,15 +85,12 @@ log = _LogFnAdapter()
 
 class _LoggerAdapter:
 
-    def __init__(self, entry_name):
-        self._entry_name = entry_name
+    def __init__(self, record_name):
+        self._record_name = record_name
 
     def __call__(self, **kw):
-        entry = dict(
-            type='entry',
-            name=self._entry_name,
-            **{name: str(value) for name, value in kw.items()})
-        _Logger.instance.add_entry(entry)
+        record = _make_record(self._record_name, kw)
+        _Logger.instance.add_entry(record)
         return _ContextAdapter()
 
 
@@ -92,45 +110,45 @@ class _Logger:
 
     instance = None
     _context_var = contextvars.ContextVar('logger_context', default=None)
-    _pending_entry = contextvars.ContextVar('logger_pending_entry', default=None)
+    _pending_record = contextvars.ContextVar('logger_pending_record', default=None)
 
     def __init__(self, storage):
         self._storage = storage
         self._context_counter = 0
 
-    def add_entry(self, entry):
-        self._log('add_entry: %r', entry)
+    def add_entry(self, record):
+        self._log('add_entry: %r', record)
         self.flush()
-        entry['context'] = self._context[:]
-        self._pending_entry.set(entry)
+        self._pending_record.set(record.with_context(self._context))
 
     def push_context(self):
         self._log('push_context')
-        assert self._pending_entry.get()
-        entry = self._pending_entry.get()
-        self._pending_entry.set(None)
+        assert self._pending_record.get()
+        record = self._pending_record.get()
+        self._pending_record.set(None)
         self._context_counter += 1
         self._context.append(self._context_counter)
-        entry['type'] = 'context-enter'
         assert self._context
-        entry['context'] = self._context[:]
-        self._store_entry(entry)
+        self._store_record(
+            record
+            .with_kind(RecordKind.ENTER)
+            .with_context(self._context))
 
-    def enter_context(self, entry):
-        self.add_entry(entry)
+    def enter_context(self, record):
+        self.add_entry(record)
         self.push_context()
 
     def exit_context(self):
         self._log('exit_context')
         self.flush()
         assert self._context
-        self._store_entry(dict(type='context-exit', context=self._context[:]))
+        self._store_record(_exit_record(self._context))
         self._context.pop()
 
     def flush(self):
-        if self._pending_entry.get():
-            self._store_entry(self._pending_entry.get())
-            self._pending_entry.set(None)
+        if self._pending_record.get():
+            self._store_record(self._pending_record.get())
+            self._pending_record.set(None)
 
     @property
     def _context(self):
@@ -140,12 +158,12 @@ class _Logger:
             self._context_var.set(context)
         return context
 
-    def _store_entry(self, entry):
-        self._log('store entry: %r', entry)
-        self._storage.add_entry(entry)
+    def _store_record(self, record):
+        self._log('store record: %r', record)
+        self._storage.add_record(record)
 
     def _log(self, format, *args):
-        _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_entry.get(), *args)
+        _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
 
 
 _current_session_storage = None
@@ -180,8 +198,10 @@ class _JsonFileLogStorage:
     def close(self):
         self._f.close()
 
-    def add_entry(self, entry):
-        line = json.dumps(entry)
+    def add_record(self, record):
+        d = record._asdict()
+        d['kind'] = record.kind.name
+        line = json.dumps(d)
         self._f.write(line + '\n')
 
 
@@ -196,7 +216,9 @@ class JsonFileLogStorageReader:
                 line = f.readline()
                 if not line:
                     return
-                yield json.loads(line)
+                d = json.loads(line)
+                kind = RecordKind[d['kind']]
+                yield _LogRecord(kind, d['context'], d['name'], d['params'])
 
 
 def json_storage_session_list():
