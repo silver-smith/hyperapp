@@ -1,4 +1,5 @@
 from collections import namedtuple
+import logging
 
 from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.common.logger import JsonFileLogStorageReader, json_storage_session_list
@@ -7,11 +8,12 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .tree_object import Column, TreeObject
 
+_log = logging.getLogger(__name__)
 
 MODULE_NAME = 'log_viewer'
 
 
-_LogEntry = namedtuple('_LogEntry', 'idx name type args')
+_LogEntryItem = namedtuple('_LogEntryItem', 'idx context name type params')
 
 
 class SessionLogs(TreeObject):
@@ -24,53 +26,48 @@ class SessionLogs(TreeObject):
 
     def __init__(self, storage_reader):
         super().__init__()
-        self._storage_reader = storage_reader
+        self._session = storage_reader.session
+        self._path2item_list = self._load_session(storage_reader)
 
     def get_state(self):
-        return htypes.log_viewer.log_viewer(self.impl_id, self._storage_reader.session)
+        return htypes.log_viewer.log_viewer(self.impl_id, self._session)
 
     def get_title(self):
-        return self._storage_reader.session
+        return self._session
 
     def get_columns(self):
         return [
             Column('idx', type=tInt),
+            Column('context'),
             Column('name'),
             Column('type'),
-            Column('args'),
+            Column('params'),
             ]
 
     async def fetch_items(self, path):
-        assert not path
-        items = []
-        leafs = []
-        contexts = {}
-        path2items = {}
-        context = []
-        for idx, entry in enumerate(self._storage_reader.enumerate_entries()):
-            if not context:
-                items.append(entry)
-            if entry['type'] == 'entry' and not context:
-                leafs.append(idx)
-            if entry['type'] == 'context-enter':
-                contexts[tuple(entry['context'])] = entry
-                context.append(entry['context'])
-            if entry['type'] == 'context-exit':
-                context.pop()
-        self._distribute_fetch_results(path, [
-            self._log_entry(contexts, idx, entry) for idx, entry in enumerate(items)])
-        for idx in leafs:
-            self._distribute_fetch_results([idx], [])
+        item_list = self._path2item_list.get(tuple(path), [])
+        self._distribute_fetch_results(path, item_list)
 
-    def _log_entry(self, contexts, idx, entry):
-        if entry['type'] == 'context-exit':
-            name = contexts[tuple(entry['context'])]
-        else:
-            name = entry['name']
-        return _LogEntry(
-            idx, name, entry['type'],
-            ', '.join('{}={}'.format(key, value) for key, value in entry.items()
-                      if key not in {'name', 'type', 'context'}))
+    def _load_session(self, storage_reader):
+        path2item_list = {}
+        context2path = {(): ()}
+        for idx, entry in enumerate(storage_reader.enumerate_entries()):
+            context = context_path = tuple(entry['context'])
+            if entry['type'] == 'context-enter':
+                context_path = context[:-1]
+                context2path[context] = context2path[context_path] + (idx,)
+            if entry['type'] == 'context-exit':
+                continue
+            path = context2path[context_path]
+            item_list = path2item_list.setdefault(path, [])
+            item_list.append(self._entry2item(idx, entry))
+        return path2item_list
+        
+    def _entry2item(self, idx, entry):
+        return _LogEntryItem(
+            idx, '/'.join(map(str, entry['context'])), entry['name'], entry['type'],
+            params=', '.join('{}={}'.format(key, value) for key, value in entry.items()
+                             if key not in {'name', 'type', 'context'}))
 
 
 class ThisModule(ClientModule):

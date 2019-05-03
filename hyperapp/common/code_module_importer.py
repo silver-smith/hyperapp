@@ -5,11 +5,12 @@ import importlib.util
 import logging
 import sys
 
+from .logger import log
 from .ref import ref_repr
 from .code_module import code_module_t
 
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 def _ref_to_name(ref):
@@ -45,7 +46,7 @@ class _CodeModuleLoader(_Finder):
         self._code_module = code_module
 
     def exec_module(self, module):
-        log.debug('Executing code module %r %s', ref_repr(self._code_module_ref), module)
+        _log.debug('Executing code module %r %s', ref_repr(self._code_module_ref), module)
         # using compile allows associate file path with loaded module
         ast = compile(self._code_module.source, self._code_module.file_path, 'exec')
         module.__dict__['__module_ref__'] = self._code_module_ref
@@ -103,9 +104,10 @@ class CodeModuleImporter(object):
     def _code_module_ref_to_fullname(cls, code_module_ref):
         return '{}.{}'.format(cls.ROOT_PACKAGE, _ref_to_name(code_module_ref))
 
+    @log
     def import_code_module(self, code_module_ref):
         code_module = self._type_resolver.resolve_ref_to_data(code_module_ref, code_module_t)
-        log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
+        _log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}
         # module itself
@@ -136,7 +138,7 @@ class CodeModuleImporter(object):
 
     # MetaPathFinder implementation
     def find_spec(self, fullname, path, target=None):
-        log.debug('find_spec fullname=%r path=%r target=%r', fullname, path, target)
+        _log.debug('find_spec fullname=%r path=%r target=%r', fullname, path, target)
         loader = self._fullname_to_loader.get(fullname)
         if loader:
             return loader.get_spec(fullname)

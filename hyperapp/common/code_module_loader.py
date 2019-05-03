@@ -1,4 +1,6 @@
 import yaml
+
+from .logger import log
 from .code_module import type_import_t, code_import_t, code_module_t
 
 
@@ -12,6 +14,7 @@ class CodeModuleLoader(object):
         self._local_type_module_registry = local_type_module_registry
         self._local_code_module_registry = local_code_module_registry
 
+    @log
     def load_code_module(self, file_path, module_name=None):
         module_name = module_name or file_path.stem
         info_path = file_path.with_suffix('.yaml')
