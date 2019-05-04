@@ -19,16 +19,17 @@ from .htypes import (
     TClass,
     Interface,
     )
+from .htypes.deduce_value_type import deduce_value_type
 
 
 class DictEncoder(object, metaclass=abc.ABCMeta):
 
-    def encode(self, value, t):
-        return self._dict_to_str(self.dispatch(t, value)).encode()
+    def encode(self, value, t=None):
+        t = t or deduce_value_type(value)
+        return self._encode_dict(self.dispatch(t, value))
 
-    @abc.abstractmethod
-    def _dict_to_str(self, value):
-        pass
+    def _encode_dict(self, value):
+        return value
 
     @method_dispatch
     def dispatch(self, t, value):
@@ -88,11 +89,11 @@ class JsonEncoder(DictEncoder):
     def __init__(self, pretty=True):
         self._pretty = pretty
 
-    def _dict_to_str(self, value):
-        return json.dumps(value, indent=2 if self._pretty else None)
+    def _encode_dict(self, value):
+        return json.dumps(value, indent=2 if self._pretty else None).encode()
 
 
 class YamlEncoder(DictEncoder):
 
-    def _dict_to_str(self, value):
-        return yaml.dump(value)
+    def _encode_dict(self, value):
+        return yaml.dump(value).encode()
