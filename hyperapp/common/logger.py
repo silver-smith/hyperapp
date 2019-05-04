@@ -1,21 +1,13 @@
 from collections import namedtuple
 from contextlib import contextmanager
-from datetime import datetime
 from enum import Enum
 from functools import wraps
 import inspect
 import logging
-import json
-from pathlib import Path
-
-from dateutil.tz import tzlocal
 
 import better_contextvars as contextvars
 
 _log = logging.getLogger(__name__)
-
-
-JSON_LOGS_DIR = Path('~/.local/share/hyperapp/client/logs').expanduser()
 
 
 class RecordKind(Enum):
@@ -24,17 +16,17 @@ class RecordKind(Enum):
     EXIT = 3
 
 
-class _LogRecord(namedtuple('_LogRecord', 'kind context name params')):
+class LogRecord(namedtuple('LogRecord', 'kind context name params')):
 
     def with_kind(self, kind):
-        return _LogRecord(kind, self.context, self.name, self.params)
+        return LogRecord(kind, self.context, self.name, self.params)
 
     def with_context(self, context):
-        return _LogRecord(self.kind, context[:], self.name, self.params)
+        return LogRecord(self.kind, context[:], self.name, self.params)
 
 
 def _make_record(name, params, kind=RecordKind.LEAF, context=None):
-    return _LogRecord(kind, context[:] if context else [], name, {name: str(value) for name, value in params.items()})
+    return LogRecord(kind, context[:] if context else [], name, {name: str(value) for name, value in params.items()})
 
 
 def _exit_record(context, params=None):
@@ -183,46 +175,3 @@ def logger_inited(storage):
     logger.flush()
     storage.close()
     _current_session_storage = None
-
-
-def json_file_log_storage_session():
-    start_time = datetime.now(tzlocal())
-    path = JSON_LOGS_DIR.joinpath(start_time.strftime('%Y-%m-%d-%H-%M-%S')).with_suffix('.json')
-    return _JsonFileLogStorage(path)
-
-    
-class _JsonFileLogStorage:
-
-    def __init__(self, path):
-        path.parent.mkdir(parents=True, exist_ok=True)
-        self.session = path.stem
-        self._f = path.open('w')
-
-    def close(self):
-        self._f.close()
-
-    def add_record(self, record):
-        d = record._asdict()
-        d['kind'] = record.kind.name
-        line = json.dumps(d)
-        self._f.write(line + '\n')
-
-
-class JsonFileLogStorageReader:
-
-    def __init__(self, session):
-        self.session = session
-
-    def enumerate_entries(self):
-        with JSON_LOGS_DIR.joinpath(self.session).with_suffix('.json').open() as f:
-            while True:
-                line = f.readline()
-                if not line:
-                    return
-                d = json.loads(line)
-                kind = RecordKind[d['kind']]
-                yield _LogRecord(kind, d['context'], d['name'], d['params'])
-
-
-def json_storage_session_list():
-    return sorted(path.stem for path in JSON_LOGS_DIR.glob('*.json'))

@@ -2,7 +2,8 @@ from collections import namedtuple
 import logging
 
 from hyperapp.common.htypes import tInt, resource_key_t
-from hyperapp.common.logger import RecordKind, JsonFileLogStorageReader, json_storage_session_list
+from hyperapp.common.logger import RecordKind
+from hyperapp.common.logger_json_storage import JsonFileLogStorageReader, json_storage_session_list
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
@@ -13,7 +14,7 @@ _log = logging.getLogger(__name__)
 MODULE_NAME = 'log_viewer'
 
 
-_LogRecordItem = namedtuple('_LogRecordItem', 'idx context name type params')
+LogRecordItem = namedtuple('LogRecordItem', 'idx context name type params')
 
 
 class SessionLogs(TreeObject):
@@ -69,7 +70,7 @@ class SessionLogs(TreeObject):
         return path2item_list
         
     def _record2item(self, idx, record):
-        return _LogRecordItem(
+        return LogRecordItem(
             idx, '/'.join(map(str, record.context)), record.name, record.kind.name,
             params=', '.join('{}={}'.format(key, value) for key, value in record.params.items()))
 

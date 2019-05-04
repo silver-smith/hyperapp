@@ -5,7 +5,8 @@ import logging
 import argparse
 
 from hyperapp.common.init_logging import init_logging
-from hyperapp.common.logger import log, logger_inited, json_file_log_storage_session
+from hyperapp.common.logger import log, logger_inited
+from hyperapp.common.logger_json_storage import json_file_log_storage_session
 from hyperapp.client.application import Application
 
 
