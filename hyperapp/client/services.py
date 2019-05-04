@@ -126,7 +126,7 @@ class Services(ClientServicesBase):
         self.event_loop = event_loop
         self._hyperapp_client_dir = self.hyperapp_dir / 'client'
         self.client_resources_dir = self._hyperapp_client_dir
-        ServicesBase.init_services(self)
+        self.init_services()
         self.client_module_dir = self._hyperapp_client_dir
         self.module_registry = ModuleRegistry()
         self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))

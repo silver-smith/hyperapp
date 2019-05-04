@@ -91,7 +91,7 @@ class Services(ServerServicesBase):
         super().__init__()
         self.start_args = start_args
         self.server_dir = self.hyperapp_dir / 'server'
-        ServicesBase.init_services(self)
+        self.init_services()
         self._load_type_module_list(type_module_list)
         try:
             self._load_code_module_list(code_module_list)
