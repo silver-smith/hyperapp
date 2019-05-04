@@ -31,10 +31,9 @@ class _NameToRefMapper(Mapper):
 
     def _map_named_t(self, rec):
         ref = self._local_name_dict.get(rec.name)
-        if ref:
-            return t_ref(ref)
-        t = self._type_resolver.builtin_type_by_name[rec.name]
-        return t_ref(self._type_resolver.reverse_resolve(t))
+        if not ref:
+            ref = self._type_resolver.get_builtin_type_ref(rec.name)
+        return t_ref(ref)
 
 
 class TypeModuleLoader(object):
