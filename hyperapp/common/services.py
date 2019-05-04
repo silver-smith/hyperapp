@@ -5,6 +5,8 @@ import logging
 import abc
 
 from .htypes import register_builtin_types
+from .logger import log, init_logger, close_logger
+from .logger_json_storage import json_file_log_storage_session
 from .local_type_module import LocalTypeModuleRegistry
 from .code_module import code_module_t
 from .ref_registry import RefRegistry
@@ -17,7 +19,7 @@ from .code_module_importer import CodeModuleImporter
 from .module import ModuleRegistry
 
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 TYPE_MODULE_EXT = '.types'
@@ -44,6 +46,9 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         register_builtin_types(self.ref_registry, self.type_resolver)
         register_code_module_types(self.ref_registry, self.type_resolver)
         self.ref_resolver.add_source(self.ref_registry)
+        self._logger_storage = json_file_log_storage_session(self.type_resolver, self.ref_registry)
+        init_logger(self._logger_storage)
+        log.session_started()
         self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()
         self.type_module_loader = TypeModuleLoader(self.type_resolver, self.ref_registry, self.local_type_module_registry)
@@ -58,17 +63,20 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
 
     def stop(self):
         if self._is_stopped:
-            log.info('Already stopped.')
+            _log.info('Already stopped.')
             return
-        log.info('Stopping modules...')
+        _log.info('Stopping modules...')
         for stop in self.on_stop:
             stop()
-        log.info('Stopping modules: done')
+        _log.info('Stopping modules: done')
         self.on_stopped()
+        log.session_stopped()
+        close_logger()
+        self._logger_storage.close()
         self._is_stopped = True
 
     def failed(self, reason):
-        log.error('Failed: %r', reason)
+        _log.error('Failed: %r', reason)
         self.failure_reason_list.append(reason)
         self.schedule_stopping()
 

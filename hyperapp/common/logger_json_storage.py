@@ -19,10 +19,11 @@ class LineType(Enum):
     LOG_RECORD = 2
 
 
-def json_file_log_storage_session():
+def json_file_log_storage_session(type_resolver, ref_registry):
+    converter = _RecordsToLineConverter(type_resolver, ref_registry)
     start_time = datetime.now(tzlocal())
     path = JSON_LOGS_DIR.joinpath(start_time.strftime('%Y-%m-%d-%H-%M-%S')).with_suffix('.json')
-    return _JsonFileLogStorage(path)
+    return _JsonFileLogStorage(converter, path)
 
 
 
@@ -54,6 +55,7 @@ class _RecordsToLineConverter:
         return self._dict_encoder.encode(value)
 
     def _make_params_type(self, type_name, params):
+        field_values = {}
         fields = []
         for name, value in params.items():
             try:
@@ -62,7 +64,8 @@ class _RecordsToLineConverter:
                 continue
             type_ref = self._type_resolver.reverse_resolve(t)
             fields.append(t_field_meta(name, t_ref(type_ref)))
-        rec = meta_ref_t(type_name, t_record_meta(fields))
+            field_values[name] = value
+        rec = meta_ref_t(type_name.replace('.', '_'), t_record_meta(fields))
         capsule, type_ref = self._ref_registry.register_object_to_capsule_and_ref(rec)
         params_t = self._type_resolver.resolve(type_ref)
         return (capsule, type_ref, params_t)
@@ -70,11 +73,11 @@ class _RecordsToLineConverter:
 
 class _JsonFileLogStorage:
 
-    def __init__(self, path):
+    def __init__(self, converter, path):
         path.parent.mkdir(parents=True, exist_ok=True)
         self.session = path.stem
         self._f = path.open('w')
-        self._converter = _RecordsToLineConverter()
+        self._converter = converter
 
     def close(self):
         self._f.close()

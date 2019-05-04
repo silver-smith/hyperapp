@@ -161,17 +161,11 @@ class _Logger:
         _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
 
 
-_current_session_storage = None
+def init_logger(storage):
+    _Logger.instance = _Logger(storage)
 
 
-@contextmanager
-def logger_inited(storage):
-    global _current_session_storage
-
-    _current_session_storage = storage
-    _Logger.instance = logger = _Logger(storage)
-    yield
+def close_logger():
+    logger = _Logger.instance
     _Logger.instance = None
     logger.flush()
-    storage.close()
-    _current_session_storage = None

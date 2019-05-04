@@ -4,7 +4,7 @@ import logging
 
 import pytest
 
-from hyperapp.common.logger import RecordKind, LogRecord, log, logger_inited
+from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, close_logger
 
 _log = logging.getLogger(__name__)
 
@@ -17,9 +17,6 @@ class StubStorage:
     def add_record(self, record):
         self.records.append(record)
 
-    def close(self):
-        pass
-
 
 @pytest.fixture
 def init():
@@ -27,8 +24,9 @@ def init():
     @contextmanager
     def inited():
         storage = StubStorage()
-        with logger_inited(storage):
-            yield storage
+        init_logger(storage)
+        yield storage
+        close_logger()
         _log.info('storage.records: %r', storage.records)
         for record in storage.records:
             _log.info('Record: %r', record)
