@@ -72,11 +72,13 @@ class _LogFnAdapter:
                 if name in kw
                 })
             record = _make_record(fn.__qualname__, params, kind=RecordKind.ENTER)
-            _Logger.instance.enter_context(record)
+            if _Logger.instance:
+                _Logger.instance.enter_context(record)
             try:
                 return fn(*args, **kw)
             finally:
-                _Logger.instance.exit_context()
+                if _Logger.instance:
+                    _Logger.instance.exit_context()
 
         return wrapper
 
