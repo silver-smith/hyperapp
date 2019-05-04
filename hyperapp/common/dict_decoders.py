@@ -125,12 +125,12 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
 
     def decode_record_fields(self, fields, value, path):
         decoded_fields = {}
-        for field in fields:
-            if field.name in value:
-                elt = self.dispatch(field.type, value[field.name], join_path(path, field.name))
-                decoded_fields[field.name] = elt
-            elif not isinstance(field.type, TOptional):
-                self.failure(path, 'field %r is missing' % field.name)
+        for field_name, field_type in fields.items():
+            if field_name in value:
+                elt = self.dispatch(field_type, value[field_name], join_path(path, field_name))
+                decoded_fields[field_name] = elt
+            elif not isinstance(field_type, TOptional):
+                self.failure(path, 'field %r is missing' % field_name)
         return decoded_fields
 
 

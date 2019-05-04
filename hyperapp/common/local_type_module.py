@@ -1,6 +1,7 @@
+from collections import OrderedDict
+
 from .htypes import (
     tString,
-    Field,
     TRecord,
     TList,
     tMetaType,
@@ -8,21 +9,21 @@ from .htypes import (
     )
 
 
-type_import_t = TRecord('type_import', [
-    Field('module_name', tString),
-    Field('name', tString),
-    ])
+type_import_t = TRecord('type_import', OrderedDict([
+    ('module_name', tString),
+    ('name', tString),
+    ]))
 
-type_def_t = TRecord('typedef', [
-    Field('name', tString),
-    Field('type', tMetaType),
-    ])
+type_def_t = TRecord('typedef', OrderedDict([
+    ('name', tString),
+    ('type', tMetaType),
+    ]))
 
-type_module_t = TRecord('type_module', [
-    Field('module_name', tString),
-    Field('import_list', TList(type_import_t)),
-    Field('typedefs', TList(type_def_t)),
-    ])
+type_module_t = TRecord('type_module', OrderedDict([
+    ('module_name', tString),
+    ('import_list', TList(type_import_t)),
+    ('typedefs', TList(type_def_t)),
+    ]))
 
 
 class LocalTypeModule(object):

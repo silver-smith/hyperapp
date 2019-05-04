@@ -1,7 +1,7 @@
 import logging
 
-from ..util import is_list_inst
-from .htypes import join_path, all_match, Type, tString, Field, TRecord, TList
+from ..util import is_ordered_dict_inst
+from .htypes import join_path, odict_all_match, Type, tString, TRecord, TList
 
 log = logging.getLogger(__name__)
 
@@ -18,13 +18,13 @@ class TClass(TRecord):
         return self._name
 
     def __repr__(self):
-        return "%s('%s.%s': [%s])" % (self.__class__.__name__, self.hierarchy.hierarchy_id, self.id, ', '.join(map(repr, self.fields)))
+        return "%s('%s.%s': [%s])" % (self.__class__.__name__, self.hierarchy.hierarchy_id, self.id, ', '.join(map(repr, self.fields.values())))
 
     def match(self, other):
         assert isinstance(other, TClass), repr(other)
         return (other.hierarchy.hierarchy_id == self.hierarchy.hierarchy_id
                 and other.id == self.id
-                and all_match(other.fields, self.fields))
+                and odict_all_match(other.fields, self.fields))
 
 
 class THierarchy(Type):
@@ -46,7 +46,7 @@ class THierarchy(Type):
     def register(self, id, fields=None, base=None):
         assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
-        assert is_list_inst(fields or [], Field), repr(fields)
+        assert fields is None or is_ordered_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TClass), repr(base)
         tclass = self.make_tclass(id, fields, base)
         self.registry[id] = tclass

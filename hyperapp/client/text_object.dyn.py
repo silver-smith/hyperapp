@@ -1,7 +1,6 @@
 import logging
 from enum import Enum
 
-from hyperapp.common.htypes import tString, Field
 from hyperapp.client.module import ClientModule
 from hyperapp.client.command import command
 from hyperapp.client.object import Object

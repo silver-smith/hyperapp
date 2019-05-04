@@ -1,5 +1,6 @@
 # test types serialization
 
+from collections import OrderedDict
 import logging
 import pytest
 
@@ -12,7 +13,6 @@ from hyperapp.common.htypes import (
     tBool,
     tDateTime,
     TOptional,
-    Field,
     TRecord,
     TList,
     TClass,
@@ -115,11 +115,11 @@ def test_record(builtin_ref, resolve):
         t_field_meta('bool_optional_field', t_optional_meta(builtin_ref('bool'))),
         ])
     t = resolve('some_record', data)
-    assert t.match(TRecord('some_record', [
-        Field('int_field', tInt),
-        Field('string_list_field', TList(tString)),
-        Field('bool_optional_field', TOptional(tBool)),
-        ]))
+    assert t.match(TRecord('some_record', OrderedDict([
+        ('int_field', tInt),
+        ('string_list_field', TList(tString)),
+        ('bool_optional_field', TOptional(tBool)),
+        ])))
 
 
 def test_based_record(builtin_ref, type_ref, resolve):
@@ -132,10 +132,10 @@ def test_based_record(builtin_ref, type_ref, resolve):
         t_field_meta('string_field', builtin_ref('string')),
         ], base=base_record_ref)
     t = resolve('some_record', record_data)
-    assert t.match(TRecord('some_record', [
-        Field('int_field', tInt),
-        Field('string_field', tString),
-        ]))
+    assert t.match(TRecord('some_record', OrderedDict([
+        ('int_field', tInt),
+        ('string_field', tString),
+        ])))
 
 
 def test_hierarchy(builtin_ref, type_ref, resolve):
@@ -153,10 +153,11 @@ def test_hierarchy(builtin_ref, type_ref, resolve):
     assert THierarchy('test_hierarchy').match(hierarchy)
     class_a = resolve('some_class_a', class_a_data)
     class_b = resolve('some_class_b', class_b_data)
-    assert class_a.match(TClass(hierarchy, 'class_a', [Field('field_a_1', tString)]))
-    assert class_b.match(TClass(hierarchy, 'class_b', [
-        Field('field_a_1', tString),
-        Field('field_b_1', TList(tInt))]))
+    assert class_a.match(TClass(hierarchy, 'class_a', OrderedDict([('field_a_1', tString)])))
+    assert class_b.match(TClass(hierarchy, 'class_b', OrderedDict([
+        ('field_a_1', tString),
+        ('field_b_1', TList(tInt)),
+        ])))
 
 def test_interface(builtin_ref, resolve):
     iface_data = t_interface_meta([
@@ -173,13 +174,14 @@ def test_interface(builtin_ref, resolve):
     assert t.match(Interface(['test_iface'],
         commands=[
             RequestCmd(['test_iface', 'request_one'], 'request_one',
-                       [Field('req_param1', tString)],
-                       [Field('req_result1', TList(tInt))]),
+                       OrderedDict([('req_param1', tString)]),
+                       OrderedDict([('req_result1', TList(tInt))])),
             NotificationCmd(['test_iface', 'notification_one'], 'notification_one',
-                            [Field('noti_param1', TOptional(tBool)),
-                             Field('noti_param2', tDateTime)]),
-            RequestCmd(['test_iface', 'request_open'], 'request_open', [],
-                       [Field('result', TOptional(tInt))]),
+                            OrderedDict([('noti_param1', TOptional(tBool)),
+                                         ('noti_param2', tDateTime)])),
+            RequestCmd(['test_iface', 'request_open'], 'request_open',
+                       OrderedDict(),
+                       OrderedDict([('result', TOptional(tInt))])),
         ]))
 
 
@@ -201,6 +203,6 @@ def test_based_interface(builtin_ref, type_ref, resolve):
     iface_b = resolve('iface_b', iface_b_data)
     assert iface_b.match(Interface(['iface_b'], base=iface_a, commands=[
         NotificationCmd(['iface_b', 'notification_one'], 'notification_one',
-                        [Field('noti_param1', TOptional(tBool)),
-                         Field('noti_param2', tDateTime)]),
+                        OrderedDict([('noti_param1', TOptional(tBool)),
+                                     ('noti_param2', tDateTime)])),
         ]))

@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from hyperapp.common.htypes import tString, Field, TRecord, bundle_t
+from hyperapp.common.htypes import tString, TRecord, bundle_t
 from hyperapp.common.ref import make_ref
 from hyperapp.test.utils import resolve_type
 from hyperapp.test.test_services import TestClientServices

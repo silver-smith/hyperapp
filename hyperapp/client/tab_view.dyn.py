@@ -2,7 +2,6 @@ import logging
 from PySide import QtCore, QtGui
 
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import tInt, TList, Field, TRecord
 from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule

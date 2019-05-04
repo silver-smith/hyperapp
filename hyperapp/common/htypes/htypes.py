@@ -1,7 +1,7 @@
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import datetime
 
-from ..util import is_list_inst
+from ..util import is_list_inst, is_ordered_dict_inst
 
 
 class TypeError(Exception): pass
@@ -10,8 +10,14 @@ class TypeError(Exception): pass
 def join_path(*args):
     return '.'.join([_f for _f in args if _f])
 
-def all_match(x_list, y_list):
+def list_all_match(x_list, y_list):
     return all(x.match(y) for x, y in zip(x_list, y_list))
+
+def odict_all_match(x_fields, y_fields):
+    return all(
+        x_name == y_name and x_type.match(y_type)
+        for (x_name, x_type), (y_name, y_type)
+        in zip(x_fields.items(), y_fields.items()))
 
 
 class Type(object):
@@ -96,53 +102,28 @@ class TOptional(Type):
         return value is None or isinstance(value, self.base_t)
 
 
-class Field(object):
-
-    @classmethod
-    def from_data(cls, registry, rec):
-        return cls(rec.name, registry.resolve(rec.type))
-
-    def __init__(self, name, type):
-        assert isinstance(name, str), repr(name)
-        assert isinstance(type, Type), repr(type)
-        self.name = name
-        self.type = type
-
-    def isinstance(self, value):
-        if not self.type:
-            return True  # todo: check why
-        return isinstance(value, self.type)
-
-    def __repr__(self):
-        return '%r: %r' % (self.name, self.type)
-
-    def match(self, other):
-        assert isinstance(other, Field), repr(other)
-        return other.name == self.name and other.type.match(self.type)
-
-
 class TRecord(Type):
 
     def __init__(self, name, fields=None, base=None):
         assert name
-        assert is_list_inst(fields or [], Field), repr(fields)
+        assert fields is None or is_ordered_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
         super().__init__(name)
-        self.fields = fields or []
+        self.fields = fields or OrderedDict()
         if base:
-            self.fields = base.fields + self.fields
+            self.fields = OrderedDict(list(base.fields.items()) + list(self.fields.items()))
         self.base = base
-        self._named_tuple = namedtuple(name, ['t'] + [field.name for field in self.fields])
+        self._named_tuple = namedtuple(name, ['t'] + [name for name in self.fields])
 
     def __repr__(self):
         if self.name:
             return self.name
         else:
-            return 'TRecord<%d: %s>' % (id(self), ', '.join(map(repr, self.fields)))
+            return 'TRecord<%d: %s>' % (id(self), ', '.join("%r: %r" % (name, t) for name, t in self.fields.items()))
 
     def match(self, other):
         return (isinstance(other, TRecord)
-                and all_match(other.fields, self.fields))
+                and odict_all_match(other.fields, self.fields))
 
     def __subclasscheck__(self, cls):
         ## print('__subclasscheck__', self, cls)
@@ -154,12 +135,6 @@ class TRecord(Type):
 
     def __call__(self, *args, **kw):
         return self.instantiate(*args, **kw)
-
-    def get_field(self, name):
-        for field in self.fields:
-            if field.name == name:
-                return field
-        assert False, repr((name, self.fields))  # Unknown field
 
     def __instancecheck__(self, rec):
         ## print '__instancecheck__', self, rec
@@ -192,21 +167,21 @@ class TIndexedList(TList):
 
 tRoute = TList(tString, name='route')
 
-tServerRoutes = TRecord('server_routes', [
-    Field('public_key_der', tBinary),
-    Field('routes', TList(tRoute)),
-    ])
+tServerRoutes = TRecord('server_routes', OrderedDict([
+    ('public_key_der', tBinary),
+    ('routes', TList(tRoute)),
+    ]))
 
 tIfaceId = TString(name='iface_id')
 
 tPath = TList(tString, name='path')
 
-tUrl = TRecord('url', [
-    Field('iface', tIfaceId),
-    Field('public_key_der', tBinary),
-    Field('path', tPath),
-    ])
+tUrl = TRecord('url', OrderedDict([
+    ('iface', tIfaceId),
+    ('public_key_der', tBinary),
+    ('path', tPath),
+    ]))
 
-tUrlWithRoutes = TRecord('url_with_routes', base=tUrl, fields=[
-    Field('routes', TList(tRoute)),
-    ])
+tUrlWithRoutes = TRecord('url_with_routes', base=tUrl, fields=OrderedDict([
+    ('routes', TList(tRoute)),
+    ]))

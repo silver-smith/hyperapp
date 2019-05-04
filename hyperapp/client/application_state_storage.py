@@ -1,9 +1,11 @@
 # load&save client application state from/to file
 
+from collections import OrderedDict
 import os.path
 import logging
+
 from ..common.util import encode_path, decode_path, flatten
-from ..common.htypes import TList, TRecord, Field, tString, tEmbedded, EncodableEmbedded
+from ..common.htypes import TList, TRecord, tString, tEmbedded, EncodableEmbedded
 #from ..common.requirements_collector import RequirementsCollector
 from ..common.visual_rep import pprint
 from ..common.htypes.packet_coders import DecodeError, packet_coders
@@ -45,12 +47,12 @@ class ApplicationStateStorage(object):
         self._module_manager = module_manager
         self._resources_manager = resources_manager
         #self._code_repository = code_repository
-        self._state_with_requirements_type = TRecord([
-            Field('module_ids', TList(tString)),
-            Field('code_modules', TList(module_types.module)),
-            Field('resource_rec_list', resource_types.resource_rec_list),
-            Field('state', tEmbedded),
-            ])
+        self._state_with_requirements_type = TRecord(OrderedDict([
+            ('module_ids', TList(tString)),
+            ('code_modules', TList(module_types.module)),
+            ('resource_rec_list', resource_types.resource_rec_list),
+            ('state', tEmbedded),
+            ]))
         self._state_type = TList(window.get_state_type())
         
     def save_state(self, state):

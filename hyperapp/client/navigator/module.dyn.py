@@ -1,10 +1,3 @@
-from hyperapp.common.htypes import (
-    tInt,
-    tString,
-    TList,
-    Field,
-    TRecord,
-    )
 from hyperapp.client.module import ClientModule
 from .history_list import HistoryList
 from .navigator import NavigatorView

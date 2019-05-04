@@ -75,8 +75,8 @@ class CdrEncoder(object):
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
         ## print '*** encoding record', value, t, [field.name for field in t.fields]
-        for field in t.fields:
-            self.dispatch(field.type, getattr(value, field.name))
+        for field_name, field_type in t.fields.items():
+            self.dispatch(field_type, getattr(value, field_name))
 
     @dispatch.register(TList)
     def encode_list(self, t, value):

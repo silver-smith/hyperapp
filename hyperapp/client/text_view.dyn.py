@@ -4,7 +4,6 @@ import re
 
 from PySide import QtCore, QtGui
 
-from hyperapp.common.htypes import tString, Field
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View

@@ -1,6 +1,7 @@
+from collections import OrderedDict
+
 from .htypes import (
     tString,
-    Field,
     TRecord,
     TList,
     ref_t,
@@ -8,24 +9,24 @@ from .htypes import (
     )
 
 
-type_import_t = TRecord('type_import', [
-    Field('type_module_name', tString),
-    Field('type_name', tString),
-    Field('type_ref', ref_t),
-    ])
+type_import_t = TRecord('type_import', OrderedDict([
+    ('type_module_name', tString),
+    ('type_name', tString),
+    ('type_ref', ref_t),
+    ]))
 
-code_import_t = TRecord('code_import', [
-    Field('import_name', tString),
-    Field('code_module_ref', ref_t),
-    ])
+code_import_t = TRecord('code_import', OrderedDict([
+    ('import_name', tString),
+    ('code_module_ref', ref_t),
+    ]))
 
-code_module_t = TRecord('code_module', [
-    Field('module_name', tString),
-    Field('type_import_list', TList(type_import_t)),
-    Field('code_import_list', TList(code_import_t)),
-    Field('source', tString),
-    Field('file_path', tString),
-    ])
+code_module_t = TRecord('code_module', OrderedDict([
+    ('module_name', tString),
+    ('type_import_list', TList(type_import_t)),
+    ('code_import_list', TList(code_import_t)),
+    ('source', tString),
+    ('file_path', tString),
+    ]))
 
 
 class LocalCodeModuleRegistry(object):

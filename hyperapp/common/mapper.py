@@ -51,8 +51,8 @@ class Mapper(object):
 
     def map_record_fields(self, t, value):
         mapped_fields = {}
-        for field in t.fields:
-            field_val = getattr(value, field.name)
-            mapped_val = self.dispatch(field.type, field_val)
-            mapped_fields[field.name] = mapped_val
+        for field_name, field_type in t.fields.items():
+            field_val = getattr(value, field_name)
+            mapped_val = self.dispatch(field_type, field_val)
+            mapped_fields[field_name] = mapped_val
         return mapped_fields

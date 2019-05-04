@@ -1,6 +1,7 @@
 # meta type is type for storing types themselves as data
 
 import abc
+from collections import OrderedDict
 
 from types import SimpleNamespace
 from ..util import is_list_inst
@@ -13,7 +14,6 @@ from .htypes import (
     tBool,
     tDateTime,
     TOptional,
-    Field,
     TRecord,
     TList,
     )
@@ -26,32 +26,32 @@ from .interface import IfaceCommand, Interface
 
 tMetaType = THierarchy('type', name='type')
 
-tRootMetaType = tMetaType.register('root', fields=[
-    Field('type_id', tString),
-    ])
+tRootMetaType = tMetaType.register('root', fields=OrderedDict([
+    ('type_id', tString),
+    ]))
 
 
-builtin_ref_t = TRecord('builtin_ref', [
-    Field('name', tString),
-    ])
+builtin_ref_t = TRecord('builtin_ref', OrderedDict([
+    ('name', tString),
+    ]))
 
-meta_ref_t = TRecord('meta_ref', [
-    Field('name', tString),
-    Field('type', tMetaType),
-    ])
+meta_ref_t = TRecord('meta_ref', OrderedDict([
+    ('name', tString),
+    ('type', tMetaType),
+    ]))
 
 
-tNamed = tMetaType.register('named', base=tRootMetaType, fields=[
-    Field('name', tString),
-    ])
+tNamed = tMetaType.register('named', base=tRootMetaType, fields=OrderedDict([
+    ('name', tString),
+    ]))
 
 def t_named(name):
     return tNamed(tNamed.id, name)
 
 
-ref_type_t = tMetaType.register('ref', base=tRootMetaType, fields=[
-    Field('ref', ref_t),
-    ])
+ref_type_t = tMetaType.register('ref', base=tRootMetaType, fields=OrderedDict([
+    ('ref', ref_t),
+    ]))
 
 def t_ref(ref):
     return ref_type_t(ref_type_t.id, ref)
@@ -61,9 +61,9 @@ def ref_from_data(meta_type_registry, ref_resolver, rec, name):
 
 
 tOptionalMeta = tMetaType.register(
-    'optional', base=tRootMetaType, fields=[
-        Field('base', tMetaType),
-        ])
+    'optional', base=tRootMetaType, fields=OrderedDict([
+        ('base', tMetaType),
+        ]))
 
 def t_optional_meta(base_t):
     return tOptionalMeta(tOptionalMeta.id, base_t)
@@ -74,9 +74,9 @@ def optional_from_data(meta_type_registry, type_ref_resolver, rec, name):
 
 
 tListMeta = tMetaType.register(
-    'list', base=tRootMetaType, fields=[
-        Field('element', tMetaType),
-        ])
+    'list', base=tRootMetaType, fields=OrderedDict([
+        ('element', tMetaType),
+        ]))
 
 def t_list_meta(element_t):
     return tListMeta(tListMeta.id, element_t)
@@ -86,19 +86,19 @@ def list_from_data(meta_type_registry, type_ref_resolver, rec, name):
     return TList(element_t)
 
 
-tFieldMeta = TRecord('field', [
-    Field('name', tString),
-    Field('type', tMetaType),
-    ])
+tMeta = TRecord('field', OrderedDict([
+    ('name', tString),
+    ('type', tMetaType),
+    ]))
 
 tRecordMeta = tMetaType.register(
-    'record', base=tRootMetaType, fields=[
-        Field('base', TOptional(tMetaType)),
-        Field('fields', TList(tFieldMeta)),
-        ])
+    'record', base=tRootMetaType, fields=OrderedDict([
+        ('base', TOptional(tMetaType)),
+        ('fields', TList(tMeta)),
+        ]))
 
 def t_field_meta(name, type):
-    return tFieldMeta(name, type)
+    return tMeta(name, type)
 
 def t_record_meta(fields, base=None):
     assert base is None or isinstance(base, tMetaType), repr(base)
@@ -106,10 +106,10 @@ def t_record_meta(fields, base=None):
 
 def field_from_data(meta_type_registry, type_ref_resolver, rec):
     t = meta_type_registry.resolve(type_ref_resolver, rec.type)
-    return Field(rec.name, t)
+    return (rec.name, t)
 
-def field_list_from_data(meta_type_registry, type_ref_resolver, fields):
-    return [field_from_data(meta_type_registry, type_ref_resolver, field) for field in fields]
+def field_odict_from_data(meta_type_registry, type_ref_resolver, fields):
+    return OrderedDict([field_from_data(meta_type_registry, type_ref_resolver, field) for field in fields])
 
 def record_from_data(meta_type_registry, type_ref_resolver, rec, name):
     if rec.base:
@@ -118,22 +118,22 @@ def record_from_data(meta_type_registry, type_ref_resolver, rec, name):
             'Base for record %s, %s is not a record' % (name, base.name))
     else:
         base = None
-    return TRecord(name, field_list_from_data(meta_type_registry, type_ref_resolver, rec.fields), base=base)
+    return TRecord(name, field_odict_from_data(meta_type_registry, type_ref_resolver, rec.fields), base=base)
 
 
 tHierarchyMeta = tMetaType.register(
-    'hierarchy', base=tRootMetaType, fields=[
-        Field('hierarchy_id', tString),
-        ])
+    'hierarchy', base=tRootMetaType, fields=OrderedDict([
+        ('hierarchy_id', tString),
+        ]))
 
 tExceptionHierarchyMeta = tMetaType.register('exception_hierarchy', base=tHierarchyMeta)
 
-tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, fields=[
-    Field('hierarchy', tMetaType),  # tNamed is expected
-    Field('class_id', tString),
-    Field('base', TOptional(tMetaType)),  # tRecordMeta is expected
-    Field('fields', TList(tFieldMeta)),
-    ])
+tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, fields=OrderedDict([
+    ('hierarchy', tMetaType),  # tNamed is expected
+    ('class_id', tString),
+    ('base', TOptional(tMetaType)),  # tRecordMeta is expected
+    ('fields', TList(tMeta)),
+    ]))
 
 def t_hierarchy_meta(hierarchy_id):
     return tHierarchyMeta(tHierarchyMeta.id, hierarchy_id)
@@ -157,21 +157,21 @@ def hierarchy_class_from_data(meta_type_registry, type_ref_resolver, rec, name):
         base = meta_type_registry.resolve(type_ref_resolver, rec.base, name)
     else:
         base = None
-    fields = field_list_from_data(meta_type_registry, type_ref_resolver, rec.fields)
+    fields = field_odict_from_data(meta_type_registry, type_ref_resolver, rec.fields)
     return hierarchy.register(rec.class_id, base=base, fields=fields)
 
 
-tIfaceCommandMeta = TRecord('iface_command', [
-    Field('request_type', tString),
-    Field('command_id', tString),
-    Field('params_fields', TList(tFieldMeta)),
-    Field('result_fields', TList(tFieldMeta)),
-    ])
+tIfaceCommandMeta = TRecord('iface_command', OrderedDict([
+    ('request_type', tString),
+    ('command_id', tString),
+    ('params_fields', TList(tMeta)),
+    ('result_fields', TList(tMeta)),
+    ]))
 
-tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=[
-    Field('base', TOptional(tMetaType)),
-    Field('commands', TList(tIfaceCommandMeta)),
-    ])
+tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=OrderedDict([
+    ('base', TOptional(tMetaType)),
+    ('commands', TList(tIfaceCommandMeta)),
+    ]))
 
 
 def t_command_meta(request_type, command_id, params_fields, result_fields=None):
@@ -182,8 +182,8 @@ def t_interface_meta(commands, base=None):
     return tInterfaceMeta(tInterfaceMeta.id, base, commands)
 
 def command_from_data(meta_type_registry, type_ref_resolver, rec, name):
-    params_fields = field_list_from_data(meta_type_registry, type_ref_resolver, rec.params_fields)
-    result_fields = field_list_from_data(meta_type_registry, type_ref_resolver, rec.result_fields)
+    params_fields = field_odict_from_data(meta_type_registry, type_ref_resolver, rec.params_fields)
+    result_fields = field_odict_from_data(meta_type_registry, type_ref_resolver, rec.result_fields)
     return IfaceCommand([name, rec.command_id], rec.request_type, rec.command_id, params_fields, result_fields)
 
 def interface_from_data(meta_type_registry, type_ref_resolver, rec, name):

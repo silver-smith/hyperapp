@@ -121,7 +121,7 @@ class TExceptionClass(TClass):
 
     def __init__(self, hierarchy, id, fields=None, base=None):
         super().__init__(hierarchy, id, fields, base)
-        self._exception_class = _make_exception_class(id, ['t'] + [field.name for field in self.fields])
+        self._exception_class = _make_exception_class(id, ['t'] + [name for name in self.fields])
 
     def instantiate(self, *args, **kw):
         return self._exception_class(self, *args, **kw)

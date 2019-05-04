@@ -5,7 +5,6 @@ from ..common.util import is_list_inst, encode_path
 # from ..common.htypes import (
 #     tString,
 #     tInt,
-#     Field,
 #     Interface,
 #     )
 #from ..common.request import Update

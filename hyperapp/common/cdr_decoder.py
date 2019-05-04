@@ -118,9 +118,9 @@ class CdrDecoder(object):
 
     def decode_record_fields(self, fields, path):
         decoded_fields = {}
-        for field in fields:
-            elt = self.dispatch(field.type, join_path(path, field.name))
-            decoded_fields[field.name] = elt
+        for field_name, field_type in fields.items():
+            elt = self.dispatch(field_type, join_path(path, field_name))
+            decoded_fields[field_name] = elt
         return decoded_fields
 
     @dispatch.register(TList)

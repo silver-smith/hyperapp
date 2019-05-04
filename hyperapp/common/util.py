@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import functools
 import itertools
 from dateutil.tz import tzutc, tzlocal
@@ -58,6 +59,18 @@ def is_tuple_inst(val, cls):
         if not isinstance(elt, cls):
             return False
     return True
+
+
+def is_ordered_dict_inst(value, key_cls, val_cls):
+    if not isinstance(value, OrderedDict):
+        return False
+    for key, val in value.items():
+        if not isinstance(key, key_cls):
+            return False
+        if not isinstance(val, val_cls):
+            return False
+    return True
+
 
 # from itertools recipes
 def flatten(list_of_lists):

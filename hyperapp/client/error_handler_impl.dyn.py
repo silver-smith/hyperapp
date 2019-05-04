@@ -1,4 +1,5 @@
-from hyperapp.common.htypes import Field
+from collections import OrderedDict
+
 from hyperapp.client.module import ClientModule
 from hyperapp.client.error_handler_hook import set_error_handler
 from . import htypes
@@ -16,9 +17,9 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._resource_resolver = services.resource_resolver
         self._error_handle_t = htypes.core.handle.register(
-            ERROR_HANDLER_CLASS_ID, base=htypes.core.view_handle, fields=[
-                Field('error', htypes.error.error),
-                ])
+            ERROR_HANDLER_CLASS_ID, base=htypes.core.view_handle, fields=OrderedDict([
+                ('error', htypes.error.error),
+                ]))
         services.view_registry.register(ERROR_HANDLER_VIEW_ID, self.resolve_error_handler)
         set_error_handler(self.error_handler)
 

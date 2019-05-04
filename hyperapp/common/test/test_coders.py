@@ -1,8 +1,10 @@
+from collections import OrderedDict
+
 import pytest
+
 from hyperapp.common.htypes import (
     tString,
     tInt,
-    Field,
     TRecord,
     tEmbedded,
     EncodableEmbedded,
@@ -18,14 +20,14 @@ def encoding(request):
 
 
 def test_embedded(encoding):
-    t = TRecord('test_record', [
-        Field('something', tString),
-        Field('embedded', tEmbedded),
-        ])
-    embedded_t = TRecord('embedded_rec', [
-        Field('x', tString),
-        Field('y', tInt),
-        ])
+    t = TRecord('test_record', OrderedDict([
+        ('something', tString),
+        ('embedded', tEmbedded),
+        ]))
+    embedded_t = TRecord('embedded_rec', OrderedDict([
+        ('x', tString),
+        ('y', tInt),
+        ]))
     embedded = embedded_t(
         x='some embedded value',
         y=12345,

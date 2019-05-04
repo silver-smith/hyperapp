@@ -3,7 +3,6 @@ import weakref
 from PySide import QtCore, QtGui
 
 from hyperapp.common.util import is_list_inst
-from hyperapp.common.htypes import tInt, Field, TRecord, Interface
 from hyperapp.client.util import DEBUG_FOCUS, call_after
 from hyperapp.client.menu_bar import MenuBar
 from hyperapp.client import cmd_pane

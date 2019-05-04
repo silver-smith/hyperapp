@@ -143,18 +143,18 @@ class VisualRepEncoder(object):
 
     def encode_record_fields(self, fields, value, custom_encoders=None):
         children = []
-        for field in fields:
-            custom_encoder = (custom_encoders or {}).get(field.name)
-            rep = self.field_rep(field, value, custom_encoder)
+        for field_name, field_type in fields.items():
+            custom_encoder = (custom_encoders or {}).get(field_name)
+            rep = self.field_rep(field_name, field_type, value, custom_encoder)
             children.append(rep)
         return children
 
-    def field_rep(self, field, value, custom_encoder):
+    def field_rep(self, field_name, field_type, value, custom_encoder):
         if custom_encoder:
             rep = custom_encoder(value)
         else:
-            rep = self.dispatch(field.type, getattr(value, field.name))
-        return RepNode('%s=%s' % (field.name, rep.text), rep.children)
+            rep = self.dispatch(field_type, getattr(value, field_name))
+        return RepNode('%s=%s' % (field_name, rep.text), rep.children)
 
     @dispatch.register(TEmbedded)
     def encode_list(self, t, value):

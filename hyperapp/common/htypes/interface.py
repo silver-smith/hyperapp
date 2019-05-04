@@ -1,14 +1,16 @@
+from collections import OrderedDict
 import logging
-from ..util import is_list_inst, cached_property
+
+from ..util import is_list_inst, is_ordered_dict_inst, cached_property
 from .htypes import (
     join_path,
-    all_match,
+    list_all_match,
+    odict_all_match,
     Type,
     tNone,
     tBinary,
     tString,
     TOptional,
-    Field,
     TRecord,
     TList,
     tPath,
@@ -29,14 +31,14 @@ class IfaceCommand(TypeNamespace):
     def __init__(self, full_name, request_type, command_id, params_fields=None, result_fields=None):
         assert request_type in [self.rt_request, self.rt_notification], repr(request_type)
         assert isinstance(command_id, str), repr(command_id)
-        assert is_list_inst(params_fields or [], Field), repr(params_fields)
-        assert is_list_inst(result_fields or [], Field), repr(result_fields)
+        assert params_fields is None or is_ordered_dict_inst(params_fields, str, Type), repr(params_fields)
+        assert result_fields is None or is_ordered_dict_inst(result_fields, str, Type), repr(result_fields)
         super().__init__()
         self._full_name = full_name
         self.request_type = request_type
         self.command_id = command_id
-        self.params_fields = params_fields or []
-        self.result_fields = result_fields or []
+        self.params_fields = params_fields or OrderedDict()
+        self.result_fields = result_fields or OrderedDict()
         self['request'] = TRecord('_'.join(self._full_name + ['request']), self.params_fields)
         if self.is_request:
             self['response'] = TRecord('_'.join(self._full_name + ['response']), self.result_fields)
@@ -46,8 +48,8 @@ class IfaceCommand(TypeNamespace):
         return (self._full_name == other._full_name and
                 self.request_type == other.request_type and
                 self.command_id == other.command_id and
-                all_match(self.params_fields, other.params_fields) and
-                all_match(self.result_fields, other.result_fields))
+                odict_all_match(self.params_fields, other.params_fields) and
+                odict_all_match(self.result_fields, other.result_fields))
 
     @property
     def full_name(self):
@@ -88,7 +90,7 @@ class Interface(TypeNamespace):
     def match(self, other):
         return (isinstance(other, Interface)
                 and (self._base is other._base is None or other._base.match(self._base))
-                and all_match(other._command_list, self._command_list))
+                and list_all_match(other._command_list, self._command_list))
 
     @property
     def full_name(self):

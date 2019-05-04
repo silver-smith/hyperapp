@@ -58,9 +58,9 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
         fields = {}
-        for field in t.fields:
-            attr = getattr(value, field.name)
-            fields[field.name] = self.dispatch(field.type, attr)
+        for field_name, field_type in t.fields.items():
+            attr = getattr(value, field_name)
+            fields[field_name] = self.dispatch(field_type, attr)
         return fields
 
     @dispatch.register(TList)
