@@ -18,7 +18,6 @@ class RefResolver(object):
     def add_source(self, source):
         self._sources.append(source)
 
-    @log
     def resolve_ref(self, ref):
         _log.debug('Resolving ref: %s', ref_repr(ref))
         for source in self._sources:
