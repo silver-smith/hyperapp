@@ -34,11 +34,7 @@ class _NameToRefMapper(Mapper):
         if ref:
             return t_ref(ref)
         t = self._type_resolver.builtin_type_by_name[rec.name]
-        return t_ref(self._make_builtin_type_ref(t))
-
-    def _make_builtin_type_ref(self, t):
-        rec = builtin_ref_t(t.name)
-        return self._ref_registry.register_object(rec)  # expected fail for duplicates; todo: move ref to Type
+        return t_ref(self._type_resolver.reverse_resolve(t))
 
 
 class TypeModuleLoader(object):
