@@ -32,12 +32,16 @@ class RefRegistry(object):
         return ref
 
     def register_object(self, object, t=None):
+        capsule, ref = self.register_object_to_capsule_and_ref(object, t)
+        return ref
+
+    def register_object_to_capsule_and_ref(self, object, t=None):
         t = t or deduce_value_type(object)
         log.debug('Registering ref for object %s', t.name)
         capsule = self._type_resolver.make_capsule(object, t)
         ref = self.register_capsule(capsule)
         log.debug('  -> registered ref %s for object %s', ref_repr(ref), t.name)
-        return ref
+        return (capsule, ref)
 
     def resolve_ref(self, ref):
         return self._registry.get(ref)
