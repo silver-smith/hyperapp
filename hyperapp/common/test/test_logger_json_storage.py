@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from hyperapp.common.htypes import register_builtin_types
+from hyperapp.common.htypes import ref_t, register_builtin_types
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_resolver import TypeResolver
 from hyperapp.common.ref_registry import RefRegistry
@@ -31,8 +31,20 @@ def ref_registry(ref_resolver, type_resolver):
     return registry
 
 
-def test_record_to_line_converter(type_resolver, ref_registry):
-    storage = _RecordsToLineConverter(type_resolver, ref_registry)
-    record = LogRecord(RecordKind.ENTER, [1, 2], 'context_enter', dict(num=123, name='sam'))
-    for line in storage.record2lines(record):
+@pytest.fixture
+def converter(type_resolver, ref_registry):
+    return _RecordsToLineConverter(type_resolver, ref_registry)
+
+
+def test_primitives(converter):
+    record_1 = LogRecord(RecordKind.ENTER, [1, 2], 'context_enter', dict(num=123, name='sam'))
+    for line in converter.record2lines(record_1):
+        _log.info("storage line: %r", line)
+    record_2 = LogRecord(RecordKind.ENTER, [1, 3], 'context_enter', dict(num=456, name='mike'))
+    assert len(list(converter.record2lines(record_2))) == 1  # type should be reused
+
+
+def test_ref(converter):
+    record = LogRecord(RecordKind.ENTER, [1, 2], 'context_enter', dict(test_ref=ref_t('sha-whatever', b'some-hash')))
+    for line in converter.record2lines(record):
         _log.info("storage line: %r", line)

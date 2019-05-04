@@ -32,13 +32,16 @@ class _RecordsToLineConverter:
         self._type_resolver = type_resolver
         self._ref_registry = ref_registry
         self._dict_encoder = DictEncoder()
+        self._stored_type_refs = set()
 
     def record2lines(self, record):
-        type_capsule, params_t = self._make_params_type(record.name, record.params)
-        yield json.dumps(dict(
-            line_type=LineType.TYPE.name,
-            type_capsule=self._to_dict(type_capsule),
-            ))
+        type_capsule, type_ref, params_t = self._make_params_type(record.name, record.params)
+        if type_ref not in self._stored_type_refs:
+            yield json.dumps(dict(
+                line_type=LineType.TYPE.name,
+                type_capsule=self._to_dict(type_capsule),
+                ))
+            self._stored_type_refs.add(type_ref)
         yield json.dumps(dict(
             line_type=LineType.LOG_RECORD.name,
             kind=record.kind.name,
@@ -62,7 +65,7 @@ class _RecordsToLineConverter:
         rec = meta_ref_t(type_name, t_record_meta(fields))
         capsule, type_ref = self._ref_registry.register_object_to_capsule_and_ref(rec)
         params_t = self._type_resolver.resolve(type_ref)
-        return (capsule, params_t)
+        return (capsule, type_ref, params_t)
 
 
 class _JsonFileLogStorage:
