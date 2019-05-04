@@ -36,19 +36,27 @@ class _RecordsToLineConverter:
         self._stored_type_refs = set()
 
     def record2lines(self, record):
-        type_capsule, type_ref, params_t = self._make_params_type(record.name, record.params)
-        if type_ref not in self._stored_type_refs:
-            yield json.dumps(dict(
-                line_type=LineType.TYPE.name,
-                type_capsule=self._to_dict(type_capsule),
-                ))
-            self._stored_type_refs.add(type_ref)
+        if record.kind != RecordKind.EXIT:
+            type_capsule, type_ref, params_t = self._make_params_type(record.name, record.params)
+            if type_ref not in self._stored_type_refs:
+                yield json.dumps(dict(
+                    line_type=LineType.TYPE.name,
+                    type_capsule=self._to_dict(type_capsule),
+                    ))
+                self._stored_type_refs.add(type_ref)
+            # remove params those type we were unable to deduce
+            params_fields = {
+                name: value for name, value in record.params.items()
+                if name in params_t.fields}
+            params_dict = self._to_dict(params_t(**params_fields))
+        else:
+            params_dict = None
         yield json.dumps(dict(
             line_type=LineType.LOG_RECORD.name,
             kind=record.kind.name,
             context=record.context,
             name=record.name,
-            params=self._to_dict(params_t(**record.params)),
+            params=params_dict,
             ))
 
     def _to_dict(self, value):
@@ -58,6 +66,8 @@ class _RecordsToLineConverter:
         field_values = {}
         fields = []
         for name, value in params.items():
+            if name == 'self':
+                continue
             try:
                 t = deduce_value_type(value)
             except DeduceTypeError:
