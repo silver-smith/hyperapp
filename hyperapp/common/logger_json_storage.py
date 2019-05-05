@@ -21,10 +21,10 @@ class LineType(Enum):
 
 
 def json_file_log_storage_session(type_resolver, ref_registry):
-    converter = _RecordsJsonEncoder(type_resolver, ref_registry)
+    encoder = _RecordsJsonEncoder(type_resolver, ref_registry)
     start_time = datetime.now(tzlocal())
     path = JSON_LOGS_DIR.joinpath(start_time.strftime('%Y-%m-%d-%H-%M-%S')).with_suffix('.json')
-    return _JsonFileLogStorage(converter, path)
+    return _JsonFileLogStorage(encoder, path)
 
 
 
@@ -104,9 +104,13 @@ class _RecordsJsonDecoder:
         self._ref_registry.register_capsule(type_capsule)
 
     def _process_record(self, d):
-        params_type_ref = self._dict_decoder.decode_dict(ref_t, d['params_type_ref'])
-        params_t = self._type_resolver.resolve(params_type_ref)
-        params = self._dict_decoder.decode_dict(params_t, d['params'])
+        params_type_ref_encoded = d['params_type_ref']
+        if params_type_ref_encoded is not None:
+            params_type_ref = self._dict_decoder.decode_dict(ref_t, params_type_ref_encoded)
+            params_t = self._type_resolver.resolve(params_type_ref)
+            params = self._dict_decoder.decode_dict(params_t, d['params'])
+        else:
+            params = None
         return LogRecord(
             kind=RecordKind[d['kind']],
             context=d['context'],
@@ -117,24 +121,25 @@ class _RecordsJsonDecoder:
 
 class _JsonFileLogStorage:
 
-    def __init__(self, converter, path):
+    def __init__(self, encoder, path):
         path.parent.mkdir(parents=True, exist_ok=True)
         self.session = path.stem
         self._f = path.open('w')
-        self._converter = converter
+        self._encoder = encoder
 
     def close(self):
         self._f.close()
 
     def add_record(self, record):
-        for line in self._converter.record2lines(record):
+        for line in self._encoder.record2lines(record):
             self._f.write(line + '\n')
 
 
 class JsonFileLogStorageReader:
 
-    def __init__(self, session):
+    def __init__(self, type_resolver, ref_registry, session):
         self.session = session
+        self._decoder = _RecordsJsonDecoder(type_resolver, ref_registry)
 
     def enumerate_entries(self):
         with JSON_LOGS_DIR.joinpath(self.session).with_suffix('.json').open() as f:
@@ -142,9 +147,7 @@ class JsonFileLogStorageReader:
                 line = f.readline()
                 if not line:
                     return
-                d = json.loads(line)
-                kind = RecordKind[d['kind']]
-                yield LogRecord(kind, d['context'], d['name'], d['params'])
+                yield from self._decoder.decode_line(line)
 
 
 def json_storage_session_list():

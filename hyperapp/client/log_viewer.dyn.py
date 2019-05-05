@@ -22,8 +22,8 @@ class SessionLogs(TreeObject):
     impl_id = 'session-logs'
 
     @classmethod
-    def from_state(cls, state):
-        return cls(JsonFileLogStorageReader(state.session))
+    def from_state(cls, state, type_resolver, ref_registry):
+        return cls(JsonFileLogStorageReader(type_resolver, ref_registry, state.session))
 
     def __init__(self, storage_reader):
         super().__init__()
@@ -72,14 +72,16 @@ class SessionLogs(TreeObject):
     def _record2item(self, idx, record):
         return LogRecordItem(
             idx, '/'.join(map(str, record.context)), record.name, record.kind.name,
-            params=', '.join('{}={}'.format(key, value) for key, value in record.params.items()))
+            params=', '.join('{}={}'.format(key, value)
+                             for key, value in record.params._asdict().items()
+                             if key != 't'))
 
 
 class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.objimpl_registry.register(SessionLogs.impl_id, SessionLogs.from_state)
+        services.objimpl_registry.register(SessionLogs.impl_id, SessionLogs.from_state, services.type_resolver, services.ref_registry)
 
     @command('open_last_session')
     async def open_last_session(self):
