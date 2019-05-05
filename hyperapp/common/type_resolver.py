@@ -61,6 +61,7 @@ class TypeResolver(object):
             self._type2ref[t] = ref
             self._ref2type_cache[ref] = t
 
+    @log
     def resolve(self, type_ref):
         t = self._ref2type_cache.get(type_ref)
         if t:
@@ -72,6 +73,7 @@ class TypeResolver(object):
         _log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
         return t
 
+    @log
     def reverse_resolve(self, t):
         return self._type2ref[t]
 
