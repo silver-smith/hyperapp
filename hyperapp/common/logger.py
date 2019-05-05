@@ -69,13 +69,14 @@ class _LogFnAdapter:
                 if name in kw
                 })
             record = _make_record(fn.__qualname__, _filter_params(params), kind=RecordKind.ENTER)
-            if _Logger.instance:
-                _Logger.instance.enter_context(record)
+            logger = _Logger.get_instance()
+            if logger:
+                logger.enter_context(record)
             try:
                 return fn(*args, **kw)
             finally:
-                if _Logger.instance:
-                    _Logger.instance.exit_context()
+                if logger:
+                    logger.exit_context()
 
         return wrapper
 
@@ -90,7 +91,9 @@ class _LoggerAdapter:
 
     def __call__(self, **kw):
         record = _make_record(self._record_name, _filter_params(kw))
-        _Logger.instance.add_entry(record)
+        logger = _Logger.get_instance()
+        if logger:
+            logger.add_entry(record)
         return _ContextAdapter()
 
 
@@ -100,17 +103,29 @@ class _ContextAdapter:
         pass
 
     def __enter__(self):
-        _Logger.instance.push_context()
+        logger = _Logger.get_instance()
+        if logger:
+            logger.push_context()
 
     def __exit__(self, exc, value, tb):
-        _Logger.instance.exit_context()
+        logger = _Logger.get_instance()
+        if logger:
+            logger.exit_context()
 
 
 class _Logger:
 
     instance = None
+    _inside_storage = contextvars.ContextVar('logger_context', default=False)
     _context_var = contextvars.ContextVar('logger_context', default=None)
     _pending_record = contextvars.ContextVar('logger_pending_record', default=None)
+
+    @classmethod
+    def get_instance(cls):
+        if cls._inside_storage.get():
+            return None
+        else:
+            return cls.instance
 
     def __init__(self, storage):
         self._storage = storage
@@ -160,7 +175,11 @@ class _Logger:
 
     def _store_record(self, record):
         self._log('store record: %r', record)
-        self._storage.add_record(record)
+        self._inside_storage.set(True)
+        try:
+            self._storage.add_record(record)
+        finally:
+            self._inside_storage.set(False)
 
     def _log(self, format, *args):
         _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
