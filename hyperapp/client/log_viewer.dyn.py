@@ -84,8 +84,7 @@ class SessionLogs(TreeObject):
             repr_fn = type_repr_registry[t]
             return repr_fn(value)
         except (DeduceTypeError, KeyError):
-            pass
-        return repr(value)
+            return repr(value)
 
 
 class ThisModule(ClientModule):
