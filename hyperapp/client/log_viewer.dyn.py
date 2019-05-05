@@ -73,7 +73,7 @@ class SessionLogs(TreeObject):
         
     def _record2item(self, idx, record):
         return LogRecordItem(
-            idx, '/'.join(map(str, record.context)), record.name, record.kind.name,
+            idx, '/'.join(map(str, record.context)), record.name, record.kind.name.lower(),
             params=', '.join('{}={}'.format(key, self._value_repr(value))
                              for key, value in record.params._asdict().items()
                              if key != 't'))
