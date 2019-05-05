@@ -26,13 +26,16 @@ class LogRecord(namedtuple('LogRecord', 'kind context name params')):
 
 
 def _make_record(name, params, kind=RecordKind.LEAF, context=None):
-    return LogRecord(
-        kind, context[:] if context else [], name,
-        {name: value for name, value in params.items() if name != 'self'})
+    return LogRecord(kind, context[:] if context else [], name, params)
 
 
 def _exit_record(context, params=None):
     return _make_record(None, params or {}, RecordKind.EXIT, context)
+
+
+def _filter_params(params):
+    return {name: value for name, value in params.items()
+            if name != 'self' and value is not None}
 
 
 class _LogFnAdapter:
@@ -65,7 +68,7 @@ class _LogFnAdapter:
                 for name in sig.parameters
                 if name in kw
                 })
-            record = _make_record(fn.__qualname__, params, kind=RecordKind.ENTER)
+            record = _make_record(fn.__qualname__, _filter_params(params), kind=RecordKind.ENTER)
             if _Logger.instance:
                 _Logger.instance.enter_context(record)
             try:
@@ -86,7 +89,7 @@ class _LoggerAdapter:
         self._record_name = record_name
 
     def __call__(self, **kw):
-        record = _make_record(self._record_name, kw)
+        record = _make_record(self._record_name, _filter_params(kw))
         _Logger.instance.add_entry(record)
         return _ContextAdapter()
 
