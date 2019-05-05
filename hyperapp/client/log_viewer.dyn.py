@@ -4,6 +4,8 @@ import logging
 from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.common.logger import RecordKind
 from hyperapp.common.logger_json_storage import JsonFileLogStorageReader, json_storage_session_list
+from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_value_type
+from hyperapp.common.type_repr import type_repr_registry
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
@@ -72,9 +74,18 @@ class SessionLogs(TreeObject):
     def _record2item(self, idx, record):
         return LogRecordItem(
             idx, '/'.join(map(str, record.context)), record.name, record.kind.name,
-            params=', '.join('{}={}'.format(key, value)
+            params=', '.join('{}={}'.format(key, self._value_repr(value))
                              for key, value in record.params._asdict().items()
                              if key != 't'))
+
+    def _value_repr(self, value):
+        try:
+            t = deduce_value_type(value)
+            repr_fn = type_repr_registry[t]
+            return repr_fn(value)
+        except (DeduceTypeError, KeyError):
+            pass
+        return repr(value)
 
 
 class ThisModule(ClientModule):
