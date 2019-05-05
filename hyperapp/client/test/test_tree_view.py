@@ -4,7 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from hyperapp.common.htypes import tInt
+from hyperapp.common.htypes import tInt, resource_key_t
+from hyperapp.common.ref import phony_ref
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.test.test_services import TestServicesMixin
 from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
@@ -90,7 +91,7 @@ async def test_instantiate(locale, services, object):
     view = services.tree_view_factory(
         locale=locale,
         parent=None,
-        resource_key=None,
+        resource_key=resource_key_t(phony_ref('test_module'), []),
         data_type=None,
         object=object,
         current_path=None,
