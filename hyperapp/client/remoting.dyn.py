@@ -68,7 +68,6 @@ class Remoting(object):
         finally:
             del self._pending_requests[request_id]
 
-    @log
     def process_rpc_message(self, rpc_message_ref, rpc_message):
         _log.info('Remoting: processing incoming RPC message %s:', ref_repr(rpc_message_ref))
         pprint(rpc_message, indent=1)
