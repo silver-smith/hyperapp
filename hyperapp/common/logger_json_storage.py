@@ -66,8 +66,6 @@ class _RecordsToLineConverter:
         field_values = {}
         fields = []
         for name, value in params.items():
-            if name == 'self':
-                continue
             try:
                 t = deduce_value_type(value)
             except DeduceTypeError:

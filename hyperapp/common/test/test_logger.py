@@ -128,15 +128,15 @@ async def test_async_context(init):
         if record.kind == RecordKind.ENTER and record.name == 'level_2_context'}
 
     for num in range(1, 4):
-        context_1 = context_1_map[str(num)]
-        context_2 = context_2_map[str(num)]
+        context_1 = context_1_map[num]
+        context_2 = context_2_map[num]
         assert context_2[0] == context_1[0]
         assert [record for record in storage.records if record.context in [context_1, context_2]] == [
-            LogRecord(RecordKind.ENTER, context_1, 'level_1_context', dict(num=str(num))),
-            LogRecord(RecordKind.LEAF, context_1, 'level_1_entry', dict(num=str(num))),
-            LogRecord(RecordKind.ENTER, context_2, 'level_2_context', dict(num=str(num))),
-            LogRecord(RecordKind.LEAF, context_2, 'level_2_entry', dict(num=str(num))),
-            LogRecord(RecordKind.LEAF, context_2, 'level_3_entry', dict(num=str(num))),
+            LogRecord(RecordKind.ENTER, context_1, 'level_1_context', dict(num=num)),
+            LogRecord(RecordKind.LEAF, context_1, 'level_1_entry', dict(num=num)),
+            LogRecord(RecordKind.ENTER, context_2, 'level_2_context', dict(num=num)),
+            LogRecord(RecordKind.LEAF, context_2, 'level_2_entry', dict(num=num)),
+            LogRecord(RecordKind.LEAF, context_2, 'level_3_entry', dict(num=num)),
             LogRecord(RecordKind.EXIT, context_2, None, {}),
             LogRecord(RecordKind.EXIT, context_1, None, {}),
             ]
@@ -153,7 +153,7 @@ def test_fn_decorator(init):
     context = storage.records[0].context
     assert storage.records == [
         LogRecord(RecordKind.ENTER, context, 'decorated_fn', {}),
-        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo='1')),
+        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo=1)),
         LogRecord(RecordKind.EXIT, context, None, {}),
         ]
 
@@ -168,16 +168,13 @@ def test_fn_decorator_args(init):
         decorated_fn_with_args(123, bar=456)
     context = storage.records[0].context
     assert storage.records == [
-        LogRecord(RecordKind.ENTER, context, 'decorated_fn_with_args', dict(foo='123', bar='456', baz='789')),
-        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo='123')),
+        LogRecord(RecordKind.ENTER, context, 'decorated_fn_with_args', dict(foo=123, bar=456, baz=789)),
+        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo=123)),
         LogRecord(RecordKind.EXIT, context, None, {}),
         ]
 
 
 class TestClass:
-
-    def __str__(self):
-        return 'TestClass'
 
     @log
     def method(self, foo, bar, baz=789):
@@ -189,7 +186,7 @@ def test_method_decorator_args(init):
         TestClass().method(123, bar=456)
     context = storage.records[0].context
     assert storage.records == [
-        LogRecord(RecordKind.ENTER, context, 'TestClass.method', dict(foo='123', bar='456', baz='789', self='TestClass')),
-        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo='123')),
+        LogRecord(RecordKind.ENTER, context, 'TestClass.method', dict(foo=123, bar=456, baz=789)),
+        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo=123)),
         LogRecord(RecordKind.EXIT, context, None, {}),
         ]
