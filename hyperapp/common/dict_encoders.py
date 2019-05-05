@@ -75,7 +75,7 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
     @dispatch.register(THierarchy)
     def encode_hierarchy_obj(self, t, value):
         tclass = t.get_object_class(value)
-        return dict(self.dispatch(tclass.get_trecord(), value),
+        return dict(self.encode_record(tclass, value),
                     _class_id=self.dispatch(tString, tclass.id))
 
     @dispatch.register(TClass)
