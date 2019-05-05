@@ -86,7 +86,7 @@ def list_from_data(meta_type_registry, type_ref_resolver, rec, name):
     return TList(element_t)
 
 
-tMeta = TRecord('field', OrderedDict([
+tFieldMeta = TRecord('field', OrderedDict([
     ('name', tString),
     ('type', tMetaType),
     ]))
@@ -94,11 +94,11 @@ tMeta = TRecord('field', OrderedDict([
 tRecordMeta = tMetaType.register(
     'record', base=tRootMetaType, fields=OrderedDict([
         ('base', TOptional(tMetaType)),
-        ('fields', TList(tMeta)),
+        ('fields', TList(tFieldMeta)),
         ]))
 
 def t_field_meta(name, type):
-    return tMeta(name, type)
+    return tFieldMeta(name, type)
 
 def t_record_meta(fields, base=None):
     assert base is None or isinstance(base, tMetaType), repr(base)
@@ -132,7 +132,7 @@ tHierarchyClassMeta = tMetaType.register('hierarchy_class', base=tRootMetaType, 
     ('hierarchy', tMetaType),  # tNamed is expected
     ('class_id', tString),
     ('base', TOptional(tMetaType)),  # tRecordMeta is expected
-    ('fields', TList(tMeta)),
+    ('fields', TList(tFieldMeta)),
     ]))
 
 def t_hierarchy_meta(hierarchy_id):
@@ -164,8 +164,8 @@ def hierarchy_class_from_data(meta_type_registry, type_ref_resolver, rec, name):
 tIfaceCommandMeta = TRecord('iface_command', OrderedDict([
     ('request_type', tString),
     ('command_id', tString),
-    ('params_fields', TList(tMeta)),
-    ('result_fields', TList(tMeta)),
+    ('params_fields', TList(tFieldMeta)),
+    ('result_fields', TList(tFieldMeta)),
     ]))
 
 tInterfaceMeta = tMetaType.register('interface', base=tRootMetaType, fields=OrderedDict([
