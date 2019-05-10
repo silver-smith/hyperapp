@@ -18,7 +18,18 @@ _log = logging.getLogger(__name__)
 MODULE_NAME = 'log_viewer'
 
 
-LogRecordItem = namedtuple('LogRecordItem', 'idx context name type params')
+SessionLogItem = namedtuple('SessionLogItem', 'idx context name type params')
+LogRecordItem = namedtuple('LogRecordItem', 'name value')
+
+
+
+def _value_repr(value):
+    try:
+        t = deduce_value_type(value)
+        repr_fn = type_repr_registry[t]
+        return repr_fn(value)
+    except (DeduceTypeError, KeyError):
+        return repr(value)
 
 
 class Session:
@@ -30,7 +41,7 @@ class Session:
 
     def __init__(self, session_id, reader):
         self.session_id = session_id
-        self.path2item = {}
+        self.path2record = {}
         self.path2item_list = {}
         self._load(reader)
 
@@ -45,24 +56,16 @@ class Session:
                 continue
             path = context2path[context_path]
             item = self._record2item(idx, record)
-            self.path2item[path + (idx,)] = item
+            self.path2record[path + (idx,)] = record
             item_list = self.path2item_list.setdefault(path, [])
             item_list.append(item)
     
     def _record2item(self, idx, record):
-        return LogRecordItem(
+        return SessionLogItem(
             idx, '/'.join(map(str, record.context)), record.name, record.kind.name.lower(),
-            params=', '.join('{}={}'.format(key, self._value_repr(value))
+            params=', '.join('{}={}'.format(key, _value_repr(value))
                              for key, value in record.params._asdict().items()
                              if key != 't'))
-
-    def _value_repr(self, value):
-        try:
-            t = deduce_value_type(value)
-            repr_fn = type_repr_registry[t]
-            return repr_fn(value)
-        except (DeduceTypeError, KeyError):
-            return repr(value)
 
 
 class SessionCache:
@@ -124,8 +127,7 @@ class SessionLogs(TreeObject):
 
     @command('open', kind='element')
     async def command_open(self, item_path):
-        item = self._session.path2item.get(tuple(item_path))
-        object = htypes.core.object_base(LogRecord.impl_id)
+        object = htypes.log_viewer.log_record(LogRecord.impl_id, self._session.session_id, item_path)
         resource_key = resource_key_t(__module_ref__, ['LogRecord'])
         return htypes.core.string_list_handle('list', object, resource_key, key=None)
 
@@ -136,16 +138,19 @@ class LogRecord(ListObject):
 
     @classmethod
     def from_state(cls, state, session_cache):
-        return cls()
+        return cls(session_cache, state.session_id, state.item_path)
 
-    def __init__(self):
+    def __init__(self, session_cache, session_id, item_path):
         super().__init__()
+        self._session_cache = session_cache
+        self._session_id = session_id
+        self._item_path = item_path
 
     def get_state(self):
-        return htypes.core.object_base(self.impl_id)
+        return htypes.log_viewer.log_record(self.impl_id, self._session_id, self._item_path)
 
     def get_title(self):
-        return 'log record'
+        return "{} {}".format(self._session_id, '/'.join(map(str, self._item_path)))
 
     def get_columns(self):
         return [
@@ -154,6 +159,12 @@ class LogRecord(ListObject):
             ]
 
     async def fetch_items(self, from_key):
+        session = self._session_cache.get_session(self._session_id)
+        record = session.path2record.get(tuple(self._item_path))
+        if record:
+            self._distribute_fetch_results(
+                [LogRecordItem(name, _value_repr(value)) for name, value
+                 in record.params._asdict().items() if name != 't'])
         self._distribute_eof()
 
 
