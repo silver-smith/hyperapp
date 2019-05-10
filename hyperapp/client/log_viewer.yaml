@@ -1,5 +1,8 @@
 import:
   types:
+    core:
+      - object_base
+      - string_list_handle
     tree_view:
       - int_tree_handle
     log_viewer:
@@ -7,3 +10,4 @@ import:
   code:
     - client.items_object
     - client.tree_object
+    - client.list_object

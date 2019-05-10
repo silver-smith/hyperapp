@@ -11,6 +11,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .items_object import Column
 from .tree_object import TreeObject
+from .list_object import ListObject
 
 _log = logging.getLogger(__name__)
 
@@ -31,6 +32,7 @@ class SessionLogs(TreeObject):
     def __init__(self, storage_reader):
         super().__init__()
         self._session = storage_reader.session
+        self._path2item = {}
         self._path2item_list = self._load_session(storage_reader)
 
     def get_state(self):
@@ -68,8 +70,10 @@ class SessionLogs(TreeObject):
             if record.kind == RecordKind.EXIT:
                 continue
             path = context2path[context_path]
+            item = self._record2item(idx, record)
+            self._path2item[path + (idx,)] = item
             item_list = path2item_list.setdefault(path, [])
-            item_list.append(self._record2item(idx, record))
+            item_list.append(item)
         return path2item_list
         
     def _record2item(self, idx, record):
@@ -87,12 +91,47 @@ class SessionLogs(TreeObject):
         except (DeduceTypeError, KeyError):
             return repr(value)
 
+    @command('open', kind='element')
+    async def command_open(self, item_path):
+        item = self._path2item.get(tuple(item_path))
+        object = htypes.core.object_base(LogRecord.impl_id)
+        resource_key = resource_key_t(__module_ref__, ['LogRecord'])
+        return htypes.core.string_list_handle('list', object, resource_key, key=None)
+
+
+class LogRecord(ListObject):
+
+    impl_id = 'log_record'
+
+    @classmethod
+    def from_state(cls, state):
+        return cls()
+
+    def __init__(self):
+        super().__init__()
+
+    def get_state(self):
+        return htypes.core.object_base(self.impl_id)
+
+    def get_title(self):
+        return 'log record'
+
+    def get_columns(self):
+        return [
+            Column('name', is_key=True),
+            Column('value'),
+            ]
+
+    async def fetch_items(self, from_key):
+        self._distribute_eof()
+
 
 class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         services.objimpl_registry.register(SessionLogs.impl_id, SessionLogs.from_state, services.type_resolver, services.ref_registry)
+        services.objimpl_registry.register(LogRecord.impl_id, LogRecord.from_state)
 
     @command('open_last_session')
     async def open_last_session(self):

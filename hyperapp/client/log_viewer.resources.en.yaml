@@ -5,6 +5,7 @@ ThisModule:
       description: Open last session logs
       shortcuts:
       - Alt+Ctrl+S
+
 SessionLogs:
   columns:
     name:
@@ -12,3 +13,15 @@ SessionLogs:
       description: Some name
     type:
       text: Type
+  commands:
+    open:
+      text: Open params viewer
+      is_default: true
+
+LogRecord:
+  columns:
+    name:
+      text: Name
+      description: Parameter name
+    value:
+      text: Value
