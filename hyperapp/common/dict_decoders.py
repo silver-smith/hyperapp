@@ -116,7 +116,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         self.expect(path, '_class_id' in value, '_class_id field is missing')
         id = self.dispatch(tString, value['_class_id'], join_path(path, '_class_id'))
         tclass = t.resolve(id)
-        fields = self.decode_record_fields(tclass.get_fields(), value, path)
+        fields = self.decode_record_fields(tclass.fields, value, path)
         return tclass(**fields)
 
     @dispatch.register(TClass)
