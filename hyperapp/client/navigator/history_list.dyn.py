@@ -3,7 +3,8 @@ from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import tInt
 from hyperapp.client.command import command
 from . import htypes
-from .list_object import Column, ListObject
+from .items_object import Column
+from .list_object import ListObject
 
 log = logging.getLogger(__name__)
 

@@ -4,28 +4,13 @@ import abc
 from hyperapp.common.htypes import Type, tString
 from hyperapp.client.object import ObjectObserver, Object
 from hyperapp.client.module import ClientModule
+from .items_object import Column
 
 log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'tree_object'
 
-
-class Column(object):
-
-    def __init__(self, id, type=tString):
-        assert isinstance(id, str), repr(id)
-        assert isinstance(type, Type), repr(type)
-        self.id = id
-        self.type = type
-
-    def __eq__(self, other):
-        assert isinstance(other, Column), repr(other)
-        return (other.id == self.id and
-                other.type == self.type)
-
-    def __hash__(self):
-        return hash((self.id, self.type))
 
 
 class TreeObserver(ObjectObserver):
@@ -62,4 +47,4 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         services.TreeObject = TreeObject
-        services.TreeColumn = Column
+        services.Column = Column

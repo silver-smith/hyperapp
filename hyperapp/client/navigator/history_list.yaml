@@ -4,4 +4,5 @@ import:
       - item
       - history_list
   code:
+    - client.items_object
     - client.list_object

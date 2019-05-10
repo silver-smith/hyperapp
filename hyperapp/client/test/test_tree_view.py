@@ -31,6 +31,7 @@ code_module_list = [
     'client.objimpl_registry',
     'client.view',
     'client.view_registry',
+    'client.items_object',
     'client.tree_object',
     'client.tree_view',
     ]
@@ -72,9 +73,9 @@ def object(services):
 
         def get_columns(self):
             return [
-                services.TreeColumn('name'),
-                services.TreeColumn('column_1', type=tInt),
-                services.TreeColumn('column_2', type=tInt),
+                services.Column('name'),
+                services.Column('column_1', type=tInt),
+                services.Column('column_2', type=tInt),
                 ]
 
         async def fetch_items(self, path):

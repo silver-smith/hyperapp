@@ -9,7 +9,8 @@ from hyperapp.common.type_repr import type_repr_registry
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
-from .tree_object import Column, TreeObject
+from .items_object import Column
+from .tree_object import TreeObject
 
 _log = logging.getLogger(__name__)
 

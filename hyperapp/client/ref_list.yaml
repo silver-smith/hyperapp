@@ -6,4 +6,5 @@ import:
       - ref_list_object
       - dynamic_ref_list
   code:
+    - client.items_object
     - client.list_object

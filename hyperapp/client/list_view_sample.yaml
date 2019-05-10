@@ -7,5 +7,6 @@ import:
     text_object:
       - text_object
   code:
+    - client.items_object
     - client.list_object
     - client.list_view

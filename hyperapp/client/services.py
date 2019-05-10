@@ -75,6 +75,7 @@ code_module_list = [
     'client.splitter',
     'client.tab_view',
     'client.window',
+    'client.items_object',
     'client.list_object',
     'client.list_view',
     'client.list_view_sample',

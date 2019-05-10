@@ -5,4 +5,5 @@ import:
     log_viewer:
       - log_viewer
   code:
+    - client.items_object
     - client.tree_object
