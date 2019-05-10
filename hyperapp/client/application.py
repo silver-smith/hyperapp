@@ -6,7 +6,6 @@ from .commander import Commander
 from .command import command
 from .services import Services
 from .async_application import AsyncApplication
-from .application_state_storage import ApplicationStateStorage
 
 log = logging.getLogger(__name__)
 
@@ -23,20 +22,7 @@ class Application(AsyncApplication, Commander):
         self._view_registry = self.services.view_registry
         self._window_from_state = self.services.window_from_state
         self._windows = []
-#        self._state_storage = ApplicationStateStorage(
-#            self.services.types.error,
-#            self.services.types.module,
-#            self.services.types.packet,
-#            self.services.types.resource,
-#            self.services.types.core,
-#            self.services.types.param_editor,
-#            self.services.objimpl_registry,
-#            self.services.view_registry,
-#            self.services.type_module_repository,
-#            self.services.resource_resolver,
-#            self.services.module_manager,
-#            #self.services.code_repository,
-#            )
+        self._state_storage = self.services.application_state_storage
 
     def get_state(self):
         return [view.get_state() for view in self._windows]
@@ -58,19 +44,18 @@ class Application(AsyncApplication, Commander):
         state = self.get_state()
         self._windows.remove(view)
         if not self._windows:  # Was it the last window? Then it is time to exit
-            #self._state_storage.save_state(state)
+            self._state_storage.save_state(state)
             self.stop_loop()
 
     @command('quit')
     def quit(self):
         ## module.set_shutdown_flag()
         state = self.get_state()
-        #self._state_storage.save_state(state)
+        self._state_storage.save_state(state)
         self.stop_loop()
 
     def exec_(self):
-        #state = self._state_storage.load_state_with_requirements(self.event_loop)
-        state = None
+        state = self._state_storage.load_state()
         if not state:
             state = self.services.build_default_state()
         self.event_loop.run_until_complete(self.services.async_init())

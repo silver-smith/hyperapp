@@ -110,6 +110,7 @@ code_module_list = [
     'client.url_clipboard',
     'client.log_viewer',
     'client.default_state_builder',
+    'client.application_state_storage',
     ]
 
 
