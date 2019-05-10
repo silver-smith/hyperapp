@@ -28,7 +28,7 @@ class ApplicationStateStorage(object):
         try:
             data = STATE_FILE_PATH.read_bytes()
             return packet_coders.decode(STATE_FILE_ENCODING, data, self._state_type)
-        except FileNotFoundError as x:
+        except (FileNotFoundError, DecodeError) as x:
             log.info('Error loading %s: %r', STATE_FILE_PATH, x)
             return None
 
