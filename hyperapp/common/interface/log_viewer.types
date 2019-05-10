@@ -2,4 +2,4 @@ from core import object, object_base
 
 
 log_viewer = object class log_viewer(object_base):
-    session: string
+    session_id: string
