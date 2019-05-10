@@ -1,7 +1,7 @@
 from collections import namedtuple
 import logging
 
-from hyperapp.common.htypes import tInt, resource_key_t
+from hyperapp.common.htypes import tInt, resource_key_t, ref_t
 from hyperapp.common.logger import RecordKind
 from hyperapp.common.logger_json_storage import JsonFileLogStorageReader, json_storage_session_list
 from hyperapp.common.htypes.deduce_value_type import DeduceTypeError, deduce_value_type
@@ -19,7 +19,7 @@ MODULE_NAME = 'log_viewer'
 
 
 SessionLogItem = namedtuple('SessionLogItem', 'idx context name type params')
-LogRecordItem = namedtuple('LogRecordItem', 'name value')
+LogRecordItem = namedtuple('LogRecordItem', 'name value details')
 
 
 
@@ -137,11 +137,13 @@ class LogRecord(ListObject):
     impl_id = 'log_record'
 
     @classmethod
-    def from_state(cls, state, session_cache):
-        return cls(session_cache, state.session_id, state.item_path)
+    def from_state(cls, state, ref_resolver, type_resolver, session_cache):
+        return cls(ref_resolver, type_resolver, session_cache, state.session_id, state.item_path)
 
-    def __init__(self, session_cache, session_id, item_path):
+    def __init__(self, ref_resolver, type_resolver, session_cache, session_id, item_path):
         super().__init__()
+        self._ref_resolver = ref_resolver
+        self._type_resolver = type_resolver
         self._session_cache = session_cache
         self._session_id = session_id
         self._item_path = item_path
@@ -156,6 +158,7 @@ class LogRecord(ListObject):
         return [
             Column('name', is_key=True),
             Column('value'),
+            Column('details'),
             ]
 
     async def fetch_items(self, from_key):
@@ -163,9 +166,18 @@ class LogRecord(ListObject):
         record = session.path2record.get(tuple(self._item_path))
         if record:
             self._distribute_fetch_results(
-                [LogRecordItem(name, _value_repr(value)) for name, value
+                [self._make_item(name, value) for name, value
                  in record.params._asdict().items() if name != 't'])
         self._distribute_eof()
+
+    def _make_item(self, name, value):
+        details = None
+        if isinstance(value, ref_t):
+            capsule = self._ref_resolver.resolve_ref(value)
+            if capsule:
+                t = self._type_resolver.resolve(capsule.type_ref)
+                details = "{} ({}), encoding {}".format(t.name, _value_repr(capsule.type_ref), capsule.encoding)
+        return LogRecordItem(name, _value_repr(value), details)
 
 
 class ThisModule(ClientModule):
@@ -174,7 +186,7 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._session_cache = SessionCache(services.type_resolver, services.ref_registry)
         services.objimpl_registry.register(SessionLogs.impl_id, SessionLogs.from_state, self._session_cache)
-        services.objimpl_registry.register(LogRecord.impl_id, LogRecord.from_state, self._session_cache)
+        services.objimpl_registry.register(LogRecord.impl_id, LogRecord.from_state, services.ref_resolver, services.type_resolver, self._session_cache)
 
     @command('open_last_session')
     async def open_last_session(self):

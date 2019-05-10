@@ -66,7 +66,10 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         column = self._columns[index.column()]
         item = self._item_list[index.row()]
         value = getattr(item, column.id)
-        return str(value)
+        if value is None:
+            return ''
+        else:
+            return str(value)
 
     def canFetchMore(self, parent):
         log.debug('_Model.canFetchMore row=%d column=%r eof=%s', parent.row(), parent.column(), self._eof)

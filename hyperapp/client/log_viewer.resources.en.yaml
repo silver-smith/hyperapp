@@ -25,3 +25,5 @@ LogRecord:
       description: Parameter name
     value:
       text: Value
+    details:
+      text: Details
