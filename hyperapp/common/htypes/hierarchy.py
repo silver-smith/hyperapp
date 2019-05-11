@@ -30,7 +30,7 @@ class TClass(TRecord):
 class THierarchy(Type):
 
     def __init__(self, hierarchy_id, name=None):
-        super().__init__(name)
+        super().__init__(name or hierarchy_id)
         self.hierarchy_id = hierarchy_id
         self.registry = {}  # id -> TClass
 
