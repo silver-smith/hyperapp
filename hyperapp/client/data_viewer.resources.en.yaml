@@ -1,0 +1,8 @@
+DataViewer:
+  columns:
+    name:
+      text: Name
+    t:
+      text: Type
+    value:
+      text: Value
