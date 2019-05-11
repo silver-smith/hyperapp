@@ -30,8 +30,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._resource_key = resource_key
         self._object = object
         self.columns = object.get_columns()
+        self._key_attr = object.key_attribute
         self._column2resource = {}
-        self._item_id_attr = self.columns[0].id
         self._path2item = {}
         self._path2children = {}
         self._fetch_requested_for_path = set()  # do not issue fetch request when previous is not yet completed
@@ -60,8 +60,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         parent_path = self.index2path(parent) or ()
         # log.debug('_Model.index(%s, %s, %s), id=%s, path=%s', row, column, parent, parent.internalId(), parent_path)
         item_list = self._path2children[parent_path]
-        id = getattr(item_list[row], self._item_id_attr)
-        path = parent_path + (id,)
+        key = getattr(item_list[row], self._key_attr)
+        path = parent_path + (key,)
         id = self._path2id.get(path)
         if id is None:
             id = self._get_next_id()
@@ -145,7 +145,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         current_item_list += item_list
         for item in item_list:
             id = self._get_next_id()
-            key = getattr(item, self._item_id_attr)
+            key = getattr(item, self._key_attr)
             item_path = path + (key,)
             self._path2item[item_path] = item
             self._path2id[item_path] = id
@@ -169,7 +169,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         if id is None:
             return None
         item_list = self._path2children.get(path[:-1])
-        key_list = [getattr(item, self._item_id_attr) for item in item_list]
+        key_list = [getattr(item, self._key_attr) for item in item_list]
         row = key_list.index(path[-1])
         return self.createIndex(row, 0, id)
 
@@ -177,7 +177,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         item_list = self._path2children.get(())
         if not item_list:
             return None
-        item_0_key = getattr(item_list[0], self._item_id_attr)
+        item_0_key = getattr(item_list[0], self._key_attr)
         id = self._path2id.get((item_0_key,))
         return self.createIndex(0, 0, id)
 

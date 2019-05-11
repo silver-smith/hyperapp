@@ -111,7 +111,7 @@ class SessionLogs(TreeObject):
 
     def get_columns(self):
         return [
-            Column('idx', type=tInt),
+            Column('idx', type=tInt, is_key=True),
             Column('context'),
             Column('name'),
             Column('type'),

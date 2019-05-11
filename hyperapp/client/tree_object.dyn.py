@@ -1,6 +1,7 @@
 import logging
 import abc
 
+from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, tString
 from hyperapp.client.object import ObjectObserver, Object
 from hyperapp.client.module import ClientModule
@@ -28,6 +29,10 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_columns(self):
         pass
+
+    @property
+    def key_attribute(self):
+        return single(column.id for column in self.get_columns() if column.is_key)
 
     @abc.abstractmethod
     async def fetch_items(self, path):

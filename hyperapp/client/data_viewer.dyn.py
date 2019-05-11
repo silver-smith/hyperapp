@@ -52,11 +52,14 @@ class DataViewer(TreeObject):
 
     def get_columns(self):
         return [
-            Column('idx', type=tInt),
             Column('name'),
             Column('t'),
             Column('value'),
             ]
+
+    @property
+    def key_attribute(self):
+        return 'idx'
 
     async def fetch_items(self, path):
         path = tuple(path)

@@ -33,7 +33,7 @@ class SampleObject(TreeObject):
 
     def get_columns(self):
         return [
-            Column('name'),
+            Column('name', is_key=True),
             Column('column_1'),
             Column('column_2', type=tInt),
             ]
