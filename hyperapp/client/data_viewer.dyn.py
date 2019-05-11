@@ -1,5 +1,8 @@
+from collections import namedtuple
+
 from hyperapp.common.htypes import tInt
 from hyperapp.common.ref import ref_repr
+from hyperapp.common.visual_rep import VisualRepEncoder
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .items_object import Column
@@ -7,6 +10,23 @@ from .tree_object import TreeObject
 
 
 MODULE_NAME = 'data_viewer'
+
+
+ValueItem = namedtuple('ValueItem', 'idx t name value')
+
+
+def _load_visual_rep(t, value):
+    path2item_list = {}
+
+    def add_rep(path, idx, rep):
+        item = ValueItem(idx, rep.t, rep.name, rep.value)
+        path2item_list.setdefault(path, []).append(item)
+        for i, child in enumerate(rep.children):
+            add_rep(path + (idx,), i, child)
+
+    rep = VisualRepEncoder().encode(t, value)
+    add_rep((), 0, rep)
+    return path2item_list
 
 
 class DataViewer(TreeObject):
@@ -22,7 +42,7 @@ class DataViewer(TreeObject):
         super().__init__()
         self._data_ref = data_ref
         self._t = t
-        self._value = value
+        self._path2item_list = _load_visual_rep(t, value)
 
     def get_state(self):
         return htypes.data_viewer.data_viewer(self.impl_id, self._data_ref)
@@ -34,13 +54,18 @@ class DataViewer(TreeObject):
         return [
             Column('idx', type=tInt),
             Column('name'),
-            Column('type'),
+            Column('t'),
             Column('value'),
             ]
 
     async def fetch_items(self, path):
         path = tuple(path)
-        self._distribute_fetch_results(path, [])
+        item_list = self._path2item_list.get(path, [])
+        for item in item_list:
+            p = path + (item.idx,)
+            if p not in self._path2item_list:
+                self._distribute_fetch_results(p, [])
+        self._distribute_fetch_results(path, item_list)
 
 
 class ThisModule(ClientModule):
