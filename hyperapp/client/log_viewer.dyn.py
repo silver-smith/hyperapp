@@ -12,8 +12,10 @@ from . import htypes
 from .items_object import Column
 from .tree_object import TreeObject
 from .list_object import ListObject
+from . import data_viewer
 
 _log = logging.getLogger(__name__)
+
 
 MODULE_NAME = 'log_viewer'
 
@@ -138,15 +140,17 @@ class LogRecord(ListObject):
 
     @classmethod
     def from_state(cls, state, ref_resolver, type_resolver, session_cache):
-        return cls(ref_resolver, type_resolver, session_cache, state.session_id, state.item_path)
+        session = session_cache.get_session(state.session_id)
+        record = session.path2record.get(tuple(state.item_path))
+        return cls(ref_resolver, type_resolver, state.session_id, state.item_path, record)
 
-    def __init__(self, ref_resolver, type_resolver, session_cache, session_id, item_path):
+    def __init__(self, ref_resolver, type_resolver, session_id, item_path, record):
         super().__init__()
         self._ref_resolver = ref_resolver
         self._type_resolver = type_resolver
-        self._session_cache = session_cache
         self._session_id = session_id
         self._item_path = item_path
+        self._record = record
 
     def get_state(self):
         return htypes.log_viewer.log_record(self.impl_id, self._session_id, self._item_path)
@@ -162,12 +166,10 @@ class LogRecord(ListObject):
             ]
 
     async def fetch_items(self, from_key):
-        session = self._session_cache.get_session(self._session_id)
-        record = session.path2record.get(tuple(self._item_path))
-        if record:
+        if self._record:
             self._distribute_fetch_results(
                 [self._make_item(name, value) for name, value
-                 in record.params._asdict().items() if name != 't'])
+                 in self._record.params._asdict().items() if name != 't'])
         self._distribute_eof()
 
     def _make_item(self, name, value):
@@ -178,6 +180,15 @@ class LogRecord(ListObject):
                 t = self._type_resolver.resolve(capsule.type_ref)
                 details = "{} ({}), encoding {}".format(t.name, _value_repr(capsule.type_ref), capsule.encoding)
         return LogRecordItem(name, _value_repr(value), details)
+
+    @command('open', kind='element')
+    async def command_open(self, key):
+        value = getattr(self._record.params, key)
+        if not isinstance(value, ref_t):
+            return None
+        object = htypes.data_viewer.data_viewer(data_viewer.DataViewer.impl_id, value)
+        resource_key = resource_key_t(data_viewer.__module_ref__, ['DataViewer'])
+        return htypes.tree_view.int_tree_handle('tree', object, resource_key, current_path=None)
 
 
 class ThisModule(ClientModule):

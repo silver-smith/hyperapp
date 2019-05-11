@@ -1,0 +1,5 @@
+from core import object, object_base
+
+
+data_viewer = object class data_viewer(object_base):
+    data_ref: ref

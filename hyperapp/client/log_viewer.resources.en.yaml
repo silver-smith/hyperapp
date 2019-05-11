@@ -27,3 +27,7 @@ LogRecord:
       text: Value
     details:
       text: Details
+  commands:
+    open:
+      text: Open
+      is_default: true
