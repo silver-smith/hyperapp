@@ -79,7 +79,7 @@ class Remoting(object):
 
     def process_rpc_request(self, rpc_request_ref, rpc_request):
         capsule = self._ref_resolver.resolve_ref(rpc_request_ref)
-        rpc_request = self._type_resolver.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message)
+        rpc_request = self._type_resolver.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
         assert isinstance(rpc_request, htypes.hyper_ref.rpc_request), repr(rpc_request)
         rpc_response_ref, rpc_response = self._process_request(rpc_request_ref, rpc_request)
         if rpc_response is not None:

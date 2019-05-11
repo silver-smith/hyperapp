@@ -20,7 +20,7 @@ class ResourceResolver:
         resource_ref = self._resource_registry.resolve(key, locale)
         if not resource_ref:
             return None
-        return self._type_resolver.resolve_ref_to_data(resource_ref, expected_type)
+        return self._type_resolver.resolve_ref(resource_ref, expected_type).value
 
 
 class ThisModule(Module):

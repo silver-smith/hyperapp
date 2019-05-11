@@ -28,7 +28,7 @@ class RefRegistry(object):
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
         log.debug('  (already exists)')
         self._registry[ref] = capsule
-        pprint(self._type_resolver.decode_capsule(capsule), indent=1, logger=log.debug)
+        pprint(self._type_resolver.decode_capsule(capsule).value, indent=1, logger=log.debug)
         return ref
 
     def register_object(self, object, t=None):

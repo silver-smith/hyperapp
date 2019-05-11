@@ -106,7 +106,7 @@ class CodeModuleImporter(object):
 
     @log
     def import_code_module(self, code_module_ref):
-        code_module = self._type_resolver.resolve_ref_to_data(code_module_ref, code_module_t)
+        code_module = self._type_resolver.resolve_ref(code_module_ref, code_module_t).value
         _log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}

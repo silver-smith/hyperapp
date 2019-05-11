@@ -151,7 +151,7 @@ class TcpClient(object):
         self._unbundler.register_bundle(bundle)
         self._register_incoming_routes(bundle.route_list)
         for rpc_request_ref in bundle.roots:
-            rpc_request = self._type_resolver.resolve_ref_to_data(rpc_request_ref, expected_type=htypes.hyper_ref.rpc_message)
+            rpc_request = self._type_resolver.resolve_ref(rpc_request_ref, expected_type=htypes.hyper_ref.rpc_message).value
             self._remoting.process_rpc_request(rpc_request_ref, rpc_request)
 
     def _register_incoming_routes(self, route_list):

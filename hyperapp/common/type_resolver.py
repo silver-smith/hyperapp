@@ -1,3 +1,4 @@
+from collections import namedtuple
 import logging
 
 from .htypes import (
@@ -35,6 +36,9 @@ class _TypeRefResolver(TypeRefResolver):
 
     def resolve(self, type_ref, name=None):
         return self._type_resolver.resolve(type_ref.ref)
+
+
+_DecodedCapsule = namedtuple('_DecodedCapsule', 't value')
 
 
 class TypeResolver(object):
@@ -97,7 +101,8 @@ class TypeResolver(object):
         t = self.resolve(capsule.type_ref)
         if expected_type and t is not expected_type:
             raise UnexpectedTypeError(expected_type, t)
-        return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
+        return _DecodedCapsule(t, value)
 
     def decode_object(self, t, capsule):
         type_ref = self.reverse_resolve(t)
@@ -120,7 +125,7 @@ class TypeResolver(object):
         t = self._builtin_name_to_type[name]
         return self.reverse_resolve(t)
 
-    def resolve_ref_to_data(self, ref, expected_type=None):
+    def resolve_ref(self, ref, expected_type=None):
         capsule = self._ref_resolver.resolve_ref(ref)
         assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
         return self.decode_capsule(capsule, expected_type)

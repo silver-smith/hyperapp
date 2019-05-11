@@ -63,7 +63,7 @@ class TcpProtocol(asyncio.Protocol):
         pprint(bundle, indent=1)
         self._unbundler.register_bundle(bundle)
         for rpc_message_ref in bundle.roots:
-            rpc_message = self._type_resolver.resolve_ref_to_data(rpc_message_ref, expected_type=htypes.hyper_ref.rpc_message)
+            rpc_message = self._type_resolver.resolve_ref(rpc_message_ref, expected_type=htypes.hyper_ref.rpc_message).value
             self._remoting.process_rpc_message(rpc_message_ref, rpc_message)
 
     def send(self, message_ref):
