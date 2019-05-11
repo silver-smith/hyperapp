@@ -53,6 +53,7 @@ client_code_module_list = [
     'client.composite',
     'client.form',
     'client.text_object',
+    'client.items_object',
     'client.list_object',
     'client.blog',
     ]
