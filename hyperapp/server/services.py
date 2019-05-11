@@ -33,7 +33,6 @@ type_module_list = [
     ]
 
 code_module_list = [
-    'common.visual_rep_encoders',
     'common.local_server_paths',
     'common.route_resolver',
     'common.tcp_packet',

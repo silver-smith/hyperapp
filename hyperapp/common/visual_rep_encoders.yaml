@@ -1,7 +1,0 @@
-import:
-  types:
-    module:
-      - requirement
-      - module
-    resource:
-      - resource_rec

@@ -22,7 +22,6 @@ type_module_list = [
     ]
 
 client_code_module_list = [
-    'common.visual_rep_encoders',
     'common.route_resolver',
     'common.visitor',
     'common.ref_collector',
