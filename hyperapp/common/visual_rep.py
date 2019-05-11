@@ -66,7 +66,7 @@ class VisualRepEncoder(object):
     def __init__(self):
         pass
 
-    def encode(self, value, t, name=None):
+    def encode(self, t, value, name=None):
         assert isinstance(value, t), repr(value)
         return self.dispatch(t, name or t.name, value)
 
@@ -139,7 +139,7 @@ class VisualRepEncoder(object):
 
 def pprint(value, t=None, indent=0, title=None, logger=log.info):
     t = t or deduce_value_type(value)
-    rep = VisualRepEncoder().encode(value, t)
+    rep = VisualRepEncoder().encode(t, value)
     if title:
         logger(title)
         indent += 1
