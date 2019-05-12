@@ -3,38 +3,55 @@
 from pathlib import Path
 import logging
 
-from hyperapp.common.htypes import TList
+from hyperapp.common.htypes import TList, t_ref, t_list_meta, meta_ref_t
 from hyperapp.common.htypes.packet_coders import DecodeError, packet_coders
 from hyperapp.client.module import ClientModule
 from . import htypes
+from .local_server_paths import save_bundle_to_file, load_bundle_from_file
 
 log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'application_state_storage'
 STATE_FILE_PATH = Path('~/.local/share/hyperapp/client/state.json').expanduser()
-STATE_FILE_ENCODING = 'json'
 
 
 class ApplicationStateStorage(object):
 
-    def __init__(self):
+    def __init__(self, type_resolver, ref_registry, ref_collector_factory, unbundler):
+        self._type_resolver = type_resolver
+        self._ref_registry = ref_registry
+        self._ref_collector_factory = ref_collector_factory
+        self._unbundler = unbundler
         self._state_type = TList(htypes.window.window_state)
+        self._state_type_ref = self._register_type(self._state_type)
         
     def save_state(self, state):
-        STATE_FILE_PATH.write_bytes(packet_coders.encode(STATE_FILE_ENCODING, state, self._state_type))
+        state_ref = self._ref_registry.register_object(state, self._state_type)
+        ref_collector = self._ref_collector_factory()
+        bundle = ref_collector.make_bundle([state_ref])
+        save_bundle_to_file(bundle, STATE_FILE_PATH)
 
     def load_state(self):
         try:
-            data = STATE_FILE_PATH.read_bytes()
-            return packet_coders.decode(STATE_FILE_ENCODING, data, self._state_type)
+            bundle = load_bundle_from_file(STATE_FILE_PATH)
+            self._unbundler.register_bundle(bundle)
+            assert len(bundle.roots) == 1
+            state_ref = bundle.roots[0]
+            return self._type_resolver.resolve_ref(state_ref)
         except (FileNotFoundError, DecodeError) as x:
             log.info('Error loading %s: %r', STATE_FILE_PATH, x)
             return None
 
+    def _register_type(self, t):
+        window_state_ref = self._type_resolver.reverse_resolve(htypes.window.window_state)
+        rec = meta_ref_t('application_state', t_list_meta(t_ref(window_state_ref)))
+        return self._ref_registry.register_object(rec)
+        
 
 class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.application_state_storage = ApplicationStateStorage()
+        services.application_state_storage = ApplicationStateStorage(
+            services.type_resolver, services.ref_registry, services.ref_collector_factory, services.unbundler)

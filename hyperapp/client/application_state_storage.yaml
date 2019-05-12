@@ -2,3 +2,5 @@ import:
   types:
     window:
       - window_state
+  code:
+    - common.local_server_paths
