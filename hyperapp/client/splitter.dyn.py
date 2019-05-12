@@ -72,7 +72,7 @@ class SplitterView(QtGui.QSplitter, View):
         if DEBUG_FOCUS:
             log.info('*** splitter.handle self=%r focused=%r focused-widget=%r',
                      self, self._focused, self._get_view(self._focused).get_widget() if self._focused is not None else None)
-        return htypes.splitter.splitter_handle(
+        return splitter_handle(
             x=self._x.get_state(),
             y=self._y.get_state(),
             orientation=qt2orient(self.orientation()),
@@ -174,9 +174,9 @@ class SplitterView(QtGui.QSplitter, View):
 
 def map_current(handle, mapper):
     if handle.focused == 0:
-        return htypes.splitter.splitter_handle(mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
+        return splitter_handle(mapper(handle.x), handle.y, handle.orientation, handle.focused, handle.sizes)
     elif handle.focused == 1:
-        return this_module.splitter_handle(handle.x, mapper(handle.y), handle.orientation, handle.focused, handle.sizes)
+        return splitter_handle(handle.x, mapper(handle.y), handle.orientation, handle.focused, handle.sizes)
     else:
         assert False, repr(handle.focused)  # 0 or 1 is expected
 
