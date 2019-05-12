@@ -41,6 +41,7 @@ type_module_list = [
     'blog',
     'tree_view',
     'data_viewer',
+    'master_details',
     'log_viewer',
     ]
 
@@ -110,6 +111,7 @@ code_module_list = [
     'client.blog',
     'client.url_clipboard',
     'client.data_viewer',
+    'client.master_details',
     'client.log_viewer',
     'client.default_state_builder',
     'client.application_state_storage',

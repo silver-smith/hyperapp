@@ -7,3 +7,6 @@ log_viewer = object class log_viewer(object_base):
 log_record = object class log_record(object_base):
     session_id: string
     item_path: int list
+
+log_record_constructor = record:
+    session_id: string

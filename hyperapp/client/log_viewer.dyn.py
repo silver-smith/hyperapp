@@ -13,6 +13,7 @@ from .items_object import Column
 from .tree_object import TreeObject
 from .list_object import ListObject
 from . import data_viewer
+from . import master_details
 
 _log = logging.getLogger(__name__)
 
@@ -32,6 +33,16 @@ def _value_repr(value):
         return repr_fn(value)
     except (DeduceTypeError, KeyError):
         return repr(value)
+
+
+def _make_session_logs_handle(object):
+    resource_key = resource_key_t(__module_ref__, ['SessionLogs'])
+    return htypes.tree_view.int_tree_handle('tree', object, resource_key, current_path=None)
+
+def _make_log_record_handle(session_id, item_path):
+    object = htypes.log_viewer.log_record(LogRecord.impl_id, session_id, item_path)
+    resource_key = resource_key_t(__module_ref__, ['LogRecord'])
+    return htypes.core.string_list_handle('list', object, resource_key, key=None)
 
 
 class Session:
@@ -96,11 +107,13 @@ class SessionLogs(TreeObject):
     impl_id = 'session-logs'
 
     @classmethod
-    def from_state(cls, state, session_cache):
-        return cls(session_cache.get_session(state.session_id))
+    def from_state(cls, state, ref_registry, session_cache):
+        session = session_cache.get_session(state.session_id)
+        return cls(ref_registry, session)
 
-    def __init__(self, session):
+    def __init__(self, ref_registry, session):
         super().__init__()
+        self._ref_registry = ref_registry
         self._session = session
 
     def get_state(self):
@@ -127,11 +140,22 @@ class SessionLogs(TreeObject):
                 self._distribute_fetch_results(p, [])
         self._distribute_fetch_results(path, item_list)
 
+    @command('details')
+    async def command_details(self):
+        constructor = htypes.log_viewer.log_record_constructor(session_id=self._session.session_id)
+        constructor_ref = self._ref_registry.register_object(constructor)
+        object = self.get_state()
+        master_handle = _make_session_logs_handle(object)
+        return htypes.master_details.master_details_handle(
+            view_id=master_details.MasterDetailsView.impl_id,
+            master_handle=master_handle,
+            details_constructor_ref=constructor_ref,
+            sizes=None,
+            )
+
     @command('open', kind='element')
     async def command_open(self, item_path):
-        object = htypes.log_viewer.log_record(LogRecord.impl_id, self._session.session_id, item_path)
-        resource_key = resource_key_t(__module_ref__, ['LogRecord'])
-        return htypes.core.string_list_handle('list', object, resource_key, key=None)
+        return _make_log_record_handle(self._session.session_id, item_path)
 
 
 class LogRecord(ListObject):
@@ -191,16 +215,31 @@ class LogRecord(ListObject):
         return htypes.tree_view.int_tree_handle('tree', object, resource_key, current_path=None)
 
 
+class LogRecordConstructor(master_details.DetailsConstructor):
+
+    def __init__(self, ref, constructor):
+        super().__init__()
+        self._session_id = constructor.session_id
+
+    def construct_details_handle(self, master_view, current_key):
+        if current_key is None:
+            return None
+        return _make_log_record_handle(self._session_id, item_path=current_key)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         self._session_cache = SessionCache(services.type_resolver, services.ref_registry)
-        services.objimpl_registry.register(SessionLogs.impl_id, SessionLogs.from_state, self._session_cache)
+        services.objimpl_registry.register(SessionLogs.impl_id, SessionLogs.from_state, services.ref_registry, self._session_cache)
         services.objimpl_registry.register(LogRecord.impl_id, LogRecord.from_state, services.ref_resolver, services.type_resolver, self._session_cache)
+        services.details_constructor_registry.register_type(
+            htypes.log_viewer.log_record_constructor,
+            LogRecordConstructor,
+            )
 
     @command('open_last_session')
     async def open_last_session(self):
         object = htypes.log_viewer.log_viewer(SessionLogs.impl_id, self._session_cache.prev_session_id)
-        resource_key = resource_key_t(__module_ref__, ['SessionLogs'])
-        return htypes.tree_view.int_tree_handle('tree', object, resource_key, current_path=None)
+        return _make_session_logs_handle(object)

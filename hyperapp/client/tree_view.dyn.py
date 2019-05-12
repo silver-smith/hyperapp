@@ -205,7 +205,7 @@ class TreeView(View, QtGui.QTreeView):
         self.activated.connect(self._on_activated)
 
     def get_state(self):
-        return self._data_type('tree', self._object.get_state(), self._resource_key, self._current_item_path)
+        return self._data_type('tree', self._object.get_state(), self._resource_key, self.current_item_path)
 
     def get_object(self):
         return self._object
@@ -223,7 +223,7 @@ class TreeView(View, QtGui.QTreeView):
         self._selected_items_changed()
 
     @property
-    def _current_item_path(self):
+    def current_item_path(self):
         path = self.model().index2path(self.currentIndex())
         if path is None:
             return None
@@ -282,7 +282,7 @@ class TreeView(View, QtGui.QTreeView):
         self._elt_commands.clear()
         self._default_command = None
         # pick selection and commands
-        item_path = self._current_item_path
+        item_path = self.current_item_path
         if item_path is None:
             return
         # create actions

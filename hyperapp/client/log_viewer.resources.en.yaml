@@ -14,6 +14,9 @@ SessionLogs:
     type:
       text: Type
   commands:
+    details:
+      text: Open record details
+      shortcuts: [D]
     open:
       text: Open params viewer
       is_default: true

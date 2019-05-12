@@ -6,11 +6,15 @@ import:
       - int_tree_handle
     data_viewer:
       - data_viewer
+    master_details:
+      - master_details_handle
     log_viewer:
       - log_viewer
       - log_record
+      - log_record_constructor
   code:
     - client.items_object
     - client.tree_object
     - client.list_object
     - client.data_viewer
+    - client.master_details
