@@ -50,24 +50,20 @@ class _LogFnAdapter:
         assert len(args) == 1 and not kw and callable(args[0])
         fn = args[0]
         sig = inspect.signature(fn)
+        default_params = {
+            name: parameter.default
+            for name, parameter in sig.parameters.items()
+            if parameter.default is not inspect.Parameter.empty
+            }
+        param_names = list(sig.parameters)
 
         @wraps(fn)
         def wrapper(*args, **kw):
-            params = {
-                name: parameter.default
-                for name, parameter in sig.parameters.items()
-                if parameter.default is not inspect.Parameter.empty
+            args_params = {
+                param_names[idx]: arg
+                for idx, arg in enumerate(args)
                 }
-            params.update({
-                name: args[idx]
-                for idx, name in enumerate(sig.parameters)
-                if idx < len(args)
-                })
-            params.update({    
-                name: kw[name]
-                for name in sig.parameters
-                if name in kw
-                })
+            params = {**default_params, **args_params, **kw}
             record = _make_record(fn.__qualname__, _filter_params(params), kind=RecordKind.ENTER)
             logger = _Logger.get_instance()
             if logger:
