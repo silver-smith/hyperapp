@@ -73,7 +73,7 @@ def object(services):
 
         def get_columns(self):
             return [
-                services.Column('name'),
+                services.Column('name', is_key=True),
                 services.Column('column_1', type=tInt),
                 services.Column('column_2', type=tInt),
                 ]
