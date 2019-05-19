@@ -1,5 +1,6 @@
 import os
 import logging
+from ..common.visual_rep import pprint
 from ..common.url import UrlWithRoutes
 from ..common import dict_coders, cdr_coders
 from .commander import Commander
@@ -58,6 +59,7 @@ class Application(AsyncApplication, Commander):
         state = self._state_storage.load_state()
         if not state:
             state = self.services.build_default_state()
+        pprint(state, title="Application state")
         self.event_loop.run_until_complete(self.services.async_init())
         self.event_loop.run_until_complete(self.open_windows(state))
         AsyncApplication.exec_(self)

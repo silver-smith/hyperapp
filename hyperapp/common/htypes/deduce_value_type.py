@@ -1,6 +1,6 @@
 import datetime
 
-from .htypes import tString, tBinary, tInt, tBool, tDateTime, TRecord
+from .htypes import tString, tBinary, tInt, tBool, tDateTime, TList, TRecord
 from .hierarchy import TClass
 
 
@@ -26,4 +26,6 @@ def deduce_value_type(value):
         if isinstance(t, TClass):
             return t.hierarchy
         return t
+    if isinstance(value, list):
+        return TList(deduce_value_type(value[0]))
     raise DeduceTypeError("Unable to deduce type for {!r} ({!r}). Use explicit type parameter.".format(value, t))

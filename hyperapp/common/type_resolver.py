@@ -39,6 +39,7 @@ class _TypeRefResolver(TypeRefResolver):
 
 
 _DecodedCapsule = namedtuple('_DecodedCapsule', 't value')
+_RegisteredType = namedtuple('_RegisteredType', 't ref')
 
 
 class TypeResolver(object):
@@ -113,9 +114,18 @@ class TypeResolver(object):
         assert t not in self._type2ref, repr(t)
         type_rec = builtin_ref_t(t.name)
         type_ref = ref_registry.register_object(type_rec)
+        self._register_type(type_ref, t)
+        self._builtin_name_to_type[t.name] = t
+
+    def register_type(self, ref_registry, type_rec):
+        type_ref = ref_registry.register_object(type_rec)
+        t = self.resolve(type_ref)
+        self._register_type(type_ref, t)
+        return _RegisteredType(t, type_ref)
+
+    def _register_type(self, type_ref, t):
         self._type2ref[t] = type_ref
         self._ref2type_cache[type_ref] = t
-        self._builtin_name_to_type[t.name] = t
 
     @property
     def builtin_type_by_name(self):

@@ -23,8 +23,7 @@ class ApplicationStateStorage(object):
         self._ref_registry = ref_registry
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
-        self._state_type = TList(htypes.window.window_state)
-        self._state_type_ref = self._register_type(self._state_type)
+        self._state_type = self._register_state_type()
         
     def save_state(self, state):
         state_ref = self._ref_registry.register_object(state, self._state_type)
@@ -38,15 +37,15 @@ class ApplicationStateStorage(object):
             self._unbundler.register_bundle(bundle)
             assert len(bundle.roots) == 1
             state_ref = bundle.roots[0]
-            return self._type_resolver.resolve_ref(state_ref)
+            return self._type_resolver.resolve_ref(state_ref).value
         except (FileNotFoundError, DecodeError) as x:
             log.info('Error loading %s: %r', STATE_FILE_PATH, x)
             return None
 
-    def _register_type(self, t):
+    def _register_state_type(self):
         window_state_ref = self._type_resolver.reverse_resolve(htypes.window.window_state)
-        rec = meta_ref_t('application_state', t_list_meta(t_ref(window_state_ref)))
-        return self._ref_registry.register_object(rec)
+        type_rec = meta_ref_t('application_state', t_list_meta(t_ref(window_state_ref)))
+        return self._type_resolver.register_type(self._ref_registry, type_rec).t
         
 
 class ThisModule(ClientModule):
