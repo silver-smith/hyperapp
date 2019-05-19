@@ -16,21 +16,20 @@ class RecordKind(Enum):
     EXIT = 3
 
 
-class LogRecord(namedtuple('LogRecord', 'kind context name params')):
+class LogRecord(namedtuple('_LogRecordBase', 'kind context module_ref name params')):
 
-    def with_kind(self, kind):
-        return LogRecord(kind, self.context, self.name, self.params)
+    def __new__(cls, kind, context, module_ref=None, name=None, params=None):
+        return super().__new__(cls, kind, context.copy(), module_ref, name, params or {})
 
-    def with_context(self, context):
-        return LogRecord(self.kind, context[:], self.name, self.params)
-
-
-def _make_record(name, params, kind=RecordKind.LEAF, context=None):
-    return LogRecord(kind, context[:] if context else [], name, params)
+    def clone_with(self, kind, context):
+        return LogRecord(kind, context, self.module_ref, self.name, self.params)
 
 
-def _exit_record(context, params=None):
-    return _make_record(None, params or {}, RecordKind.EXIT, context)
+def _module_vars(globals):
+    try:
+        return {'__module_ref__': globals['__module_ref__']}
+    except KeyError:
+        return {'__name__': globals['__name__']}
 
 
 def _filter_params(params):
@@ -59,15 +58,15 @@ class _LogFnAdapter:
 
         @wraps(fn)
         def wrapper(*args, **kw):
+            module_vars = _module_vars(inspect.stack()[1].frame.f_globals)
             args_params = {
                 param_names[idx]: arg
                 for idx, arg in enumerate(args)
                 }
             params = {**default_params, **args_params, **kw}
-            record = _make_record(fn.__qualname__, _filter_params(params), kind=RecordKind.ENTER)
             logger = _Logger.get_instance()
             if logger:
-                logger.enter_context(record)
+                logger.enter_context(module_vars, fn.__qualname__, _filter_params(params))
             try:
                 return fn(*args, **kw)
             finally:
@@ -86,10 +85,10 @@ class _LoggerAdapter:
         self._record_name = record_name
 
     def __call__(self, **kw):
-        record = _make_record(self._record_name, _filter_params(kw))
+        module_vars = _module_vars(inspect.stack()[1].frame.f_globals)
         logger = _Logger.get_instance()
         if logger:
-            logger.add_entry(record)
+            logger.add_entry(module_vars, self._record_name, kw)
         return _ContextAdapter()
 
 
@@ -123,43 +122,60 @@ class _Logger:
         else:
             return cls.instance
 
-    def __init__(self, storage):
+    def __init__(self, module_ref_resolver, storage):
+        self._module_ref_resolver = module_ref_resolver
         self._storage = storage
         self._context_counter = 0
 
-    def add_entry(self, record):
-        self._log('add_entry: %r', record)
-        self.flush()
-        self._pending_record.set(record.with_context(self._context))
+    def add_entry(self, module_vars, name, params):
+        with self._inside_flag_set:
+            self._log('add_entry: %r %r %r', module_vars, name, params)
+            self._flush()
+            self._pending_record.set(
+                self._make_record(RecordKind.LEAF, self._context, module_vars, name, params))
+
+    def enter_context(self, module_vars, name, params):
+        with self._inside_flag_set:
+            self._log('enter_context: %r %r %r', module_vars, name, params)
+            self._flush()
+            self._context_counter += 1
+            self._context.append(self._context_counter)
+            self._store_record(
+                self._make_record(RecordKind.ENTER, self._context, module_vars, name, params))
 
     def push_context(self):
-        self._log('push_context')
-        assert self._pending_record.get()
-        record = self._pending_record.get()
-        self._pending_record.set(None)
-        self._context_counter += 1
-        self._context.append(self._context_counter)
-        assert self._context
-        self._store_record(
-            record
-            .with_kind(RecordKind.ENTER)
-            .with_context(self._context))
-
-    def enter_context(self, record):
-        self.add_entry(record)
-        self.push_context()
+        with self._inside_flag_set:
+            self._log('push_context')
+            record = self._pending_record.get()
+            assert record
+            self._pending_record.set(None)
+            self._context_counter += 1
+            self._context.append(self._context_counter)
+            self._store_record(
+                record.clone_with(RecordKind.ENTER, self._context))
 
     def exit_context(self):
-        self._log('exit_context')
-        self.flush()
-        assert self._context
-        self._store_record(_exit_record(self._context))
-        self._context.pop()
+        with self._inside_flag_set:
+            self._log('exit_context')
+            self._flush()
+            assert self._context
+            self._store_record(
+                LogRecord(RecordKind.EXIT, self._context))
+            self._context.pop()
 
     def flush(self):
-        if self._pending_record.get():
-            self._store_record(self._pending_record.get())
+        with self._inside_flag_set:
+            self._flush()
+
+    def _flush(self):
+        pending_record = self._pending_record.get()
+        if pending_record:
+            self._store_record(pending_record)
             self._pending_record.set(None)
+
+    def _make_record(self, kind, context, module_vars, name, params):
+        module_ref = self._module_ref_resolver.get_module_ref(module_vars)
+        return LogRecord(kind, context, module_ref, name, params)
 
     @property
     def _context(self):
@@ -169,20 +185,25 @@ class _Logger:
             self._context_var.set(context)
         return context
 
-    def _store_record(self, record):
-        self._log('store record: %r', record)
+    @property
+    @contextmanager
+    def _inside_flag_set(self):
         self._inside_storage.set(True)
         try:
-            self._storage.add_record(record)
+            yield
         finally:
             self._inside_storage.set(False)
+        
+    def _store_record(self, record):
+        self._log('store record: %r', record)
+        self._storage.add_record(record)
 
     def _log(self, format, *args):
         _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
 
 
-def init_logger(storage):
-    _Logger.instance = _Logger(storage)
+def init_logger(module_ref_resolver, storage):
+    _Logger.instance = _Logger(module_ref_resolver, storage)
 
 
 def close_logger():

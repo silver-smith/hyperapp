@@ -11,6 +11,7 @@ from .local_type_module import LocalTypeModuleRegistry
 from .code_module import code_module_t
 from .ref_registry import RefRegistry
 from .ref_resolver import RefResolver
+from .module_ref_resolver import ModuleRefResolver
 from .type_module_loader import TypeModuleLoader
 from .type_resolver import TypeResolver
 from .code_module import LocalCodeModuleRegistry, register_code_module_types
@@ -43,11 +44,12 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         self.ref_resolver = RefResolver()
         self.type_resolver = TypeResolver(self.ref_resolver)
         self.ref_registry = RefRegistry(self.type_resolver)
+        self.module_ref_resolver = ModuleRefResolver(self.ref_registry)
         register_builtin_types(self.ref_registry, self.type_resolver)
         register_code_module_types(self.ref_registry, self.type_resolver)
         self.ref_resolver.add_source(self.ref_registry)
         self._logger_storage = json_file_log_storage_session(self.type_resolver, self.ref_registry)
-        init_logger(self._logger_storage)
+        init_logger(self.module_ref_resolver, self._logger_storage)
         log.session_started()
         self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()

@@ -4,6 +4,13 @@ import logging
 
 import pytest
 
+from hyperapp.common.htypes import register_builtin_types
+from hyperapp.common.code_module import register_code_module_types
+from hyperapp.common.ref_registry import RefRegistry
+from hyperapp.common.ref_resolver import RefResolver
+from hyperapp.common.type_resolver import TypeResolver
+from hyperapp.common.module_ref_resolver import ModuleRefResolver
+from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, close_logger
 
 _log = logging.getLogger(__name__)
@@ -19,12 +26,41 @@ class StubStorage:
 
 
 @pytest.fixture
-def init():
+def ref_resolver():
+    return RefResolver()
+
+
+@pytest.fixture
+def type_resolver(ref_resolver):
+    return TypeResolver(ref_resolver)
+
+
+@pytest.fixture
+def ref_registry(ref_resolver, type_resolver):
+    registry = RefRegistry(type_resolver)
+    register_builtin_types(registry, type_resolver)
+    register_code_module_types(registry, type_resolver)
+    ref_resolver.add_source(registry)
+    return registry
+
+
+@pytest.fixture
+def module_ref_resolver(ref_registry):
+    return ModuleRefResolver(ref_registry)
+
+
+@pytest.fixture
+def this_module_ref(module_ref_resolver):
+    return module_ref_resolver.get_module_ref({'__name__': __name__})
+
+
+@pytest.fixture
+def init(module_ref_resolver):
 
     @contextmanager
     def inited():
         storage = StubStorage()
-        init_logger(storage)
+        init_logger(module_ref_resolver, storage)
         yield storage
         close_logger()
         _log.info('storage.records: %r', storage.records)
@@ -34,30 +70,31 @@ def init():
     return inited
 
 
-def test_entry(init):
+def test_entry(this_module_ref, init):
     with init() as storage:
         log.test_entry(foo='foo-value', bar='bar-value')
     assert storage.records == [LogRecord(
         kind=RecordKind.LEAF,
         context=[],
+        module_ref=this_module_ref,
         name='test_entry',
         params=dict(foo='foo-value', bar='bar-value'),
         )]
 
 
-def test_context(init):
+def test_context(this_module_ref, init):
     with init() as storage:
         with log.test_context(foo='foo-value'):
             log.test_entry(bar='bar-value')
     context = storage.records[0].context
     assert storage.records == [
-        LogRecord(RecordKind.ENTER, context, 'test_context', dict(foo='foo-value')),
-        LogRecord(RecordKind.LEAF, context, 'test_entry', dict(bar='bar-value')),
-        LogRecord(RecordKind.EXIT, context, None, {}),
+        LogRecord(RecordKind.ENTER, context, this_module_ref, 'test_context', dict(foo='foo-value')),
+        LogRecord(RecordKind.LEAF, context, this_module_ref, 'test_entry', dict(bar='bar-value')),
+        LogRecord(RecordKind.EXIT, context),
         ]
 
 
-def test_nested_context(init):
+def test_nested_context(this_module_ref, init):
     with init() as storage:
         with log.root_context(foo='foo'):
             log.foo_entry(bar='bar')
@@ -66,12 +103,12 @@ def test_nested_context(init):
     context_1 = storage.records[0].context
     context_2 = storage.records[2].context
     assert storage.records == [
-        LogRecord(RecordKind.ENTER, context_1, 'root_context', dict(foo='foo')),
-        LogRecord(RecordKind.LEAF, context_1, 'foo_entry', dict(bar='bar')),
-        LogRecord(RecordKind.ENTER, context_2, 'nested_context', dict(bar='bar')),
-        LogRecord(RecordKind.LEAF, context_2, 'inner_entry', dict(foo='foo')),
-        LogRecord(RecordKind.EXIT, context_2, None, {}),
-        LogRecord(RecordKind.EXIT, context_1, None, {}),
+        LogRecord(RecordKind.ENTER, context_1, this_module_ref, 'root_context', dict(foo='foo')),
+        LogRecord(RecordKind.LEAF,  context_1, this_module_ref, 'foo_entry', dict(bar='bar')),
+        LogRecord(RecordKind.ENTER, context_2, this_module_ref, 'nested_context', dict(bar='bar')),
+        LogRecord(RecordKind.LEAF,  context_2, this_module_ref, 'inner_entry', dict(foo='foo')),
+        LogRecord(RecordKind.EXIT,  context_2),
+        LogRecord(RecordKind.EXIT,  context_1),
         ]
 
 
@@ -89,7 +126,7 @@ class Barrier:
 
 
 @pytest.mark.asyncio
-async def test_async_context(init):
+async def test_async_context(this_module_ref, init):
 
     level_1_barrier = Barrier(3)
     level_2_barrier = Barrier(3)
@@ -132,13 +169,13 @@ async def test_async_context(init):
         context_2 = context_2_map[num]
         assert context_2[0] == context_1[0]
         assert [record for record in storage.records if record.context in [context_1, context_2]] == [
-            LogRecord(RecordKind.ENTER, context_1, 'level_1_context', dict(num=num)),
-            LogRecord(RecordKind.LEAF, context_1, 'level_1_entry', dict(num=num)),
-            LogRecord(RecordKind.ENTER, context_2, 'level_2_context', dict(num=num)),
-            LogRecord(RecordKind.LEAF, context_2, 'level_2_entry', dict(num=num)),
-            LogRecord(RecordKind.LEAF, context_2, 'level_3_entry', dict(num=num)),
-            LogRecord(RecordKind.EXIT, context_2, None, {}),
-            LogRecord(RecordKind.EXIT, context_1, None, {}),
+            LogRecord(RecordKind.ENTER, context_1, this_module_ref, 'level_1_context', dict(num=num)),
+            LogRecord(RecordKind.LEAF,  context_1, this_module_ref, 'level_1_entry', dict(num=num)),
+            LogRecord(RecordKind.ENTER, context_2, this_module_ref, 'level_2_context', dict(num=num)),
+            LogRecord(RecordKind.LEAF,  context_2, this_module_ref, 'level_2_entry', dict(num=num)),
+            LogRecord(RecordKind.LEAF,  context_2, this_module_ref, 'level_3_entry', dict(num=num)),
+            LogRecord(RecordKind.EXIT,  context_2),
+            LogRecord(RecordKind.EXIT,  context_1),
             ]
 
 
@@ -147,14 +184,14 @@ def decorated_fn():
     log.inner(foo=1)
 
 
-def test_fn_decorator(init):
+def test_fn_decorator(this_module_ref, init):
     with init() as storage:
         decorated_fn()
     context = storage.records[0].context
     assert storage.records == [
-        LogRecord(RecordKind.ENTER, context, 'decorated_fn', {}),
-        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo=1)),
-        LogRecord(RecordKind.EXIT, context, None, {}),
+        LogRecord(RecordKind.ENTER, context, this_module_ref, 'decorated_fn', {}),
+        LogRecord(RecordKind.LEAF,  context, this_module_ref, 'inner', dict(foo=1)),
+        LogRecord(RecordKind.EXIT,  context),
         ]
 
 
@@ -163,14 +200,14 @@ def decorated_fn_with_args(foo, bar, baz=789):
     log.inner(foo=foo)
 
 
-def test_fn_decorator_args(init):
+def test_fn_decorator_args(this_module_ref, init):
     with init() as storage:
         decorated_fn_with_args(123, bar=456)
     context = storage.records[0].context
     assert storage.records == [
-        LogRecord(RecordKind.ENTER, context, 'decorated_fn_with_args', dict(foo=123, bar=456, baz=789)),
-        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo=123)),
-        LogRecord(RecordKind.EXIT, context, None, {}),
+        LogRecord(RecordKind.ENTER, context, this_module_ref, 'decorated_fn_with_args', dict(foo=123, bar=456, baz=789)),
+        LogRecord(RecordKind.LEAF,  context, this_module_ref, 'inner', dict(foo=123)),
+        LogRecord(RecordKind.EXIT,  context),
         ]
 
 
@@ -181,12 +218,12 @@ class TestClass:
         log.inner(foo=foo)
 
 
-def test_method_decorator_args(init):
+def test_method_decorator_args(this_module_ref, init):
     with init() as storage:
         TestClass().method(123, bar=456)
     context = storage.records[0].context
     assert storage.records == [
-        LogRecord(RecordKind.ENTER, context, 'TestClass.method', dict(foo=123, bar=456, baz=789)),
-        LogRecord(RecordKind.LEAF, context, 'inner', dict(foo=123)),
-        LogRecord(RecordKind.EXIT, context, None, {}),
+        LogRecord(RecordKind.ENTER, context, this_module_ref, 'TestClass.method', dict(foo=123, bar=456, baz=789)),
+        LogRecord(RecordKind.LEAF,  context, this_module_ref, 'inner', dict(foo=123)),
+        LogRecord(RecordKind.EXIT,  context),
         ]

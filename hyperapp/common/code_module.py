@@ -28,6 +28,10 @@ code_module_t = TRecord('code_module', OrderedDict([
     ('file_path', tString),
     ]))
 
+builtin_module_t = TRecord('builtin_module', OrderedDict([
+    ('module_name', tString),  # full dotted name
+    ]))
+
 
 class LocalCodeModuleRegistry(object):
 
@@ -47,6 +51,7 @@ class LocalCodeModuleRegistry(object):
 
 _code_module_type_list = [
     code_module_t,
+    builtin_module_t,
     ]
 
 
