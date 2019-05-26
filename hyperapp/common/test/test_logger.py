@@ -16,13 +16,24 @@ from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, clos
 _log = logging.getLogger(__name__)
 
 
+def _drop_t(d):
+    d = d.copy()
+    del d['t']
+    return d
+
+
 class StubStorage:
 
     def __init__(self):
-        self.records = []
+        self._records = []
 
     def add_record(self, record):
-        self.records.append(record)
+        self._records.append(record)
+
+    @property
+    def records(self):
+        return [LogRecord(r.kind, r.context, r.module_ref, r.name, _drop_t(r.params._asdict()) if r.params else r.params)
+                for r in self._records]
 
 
 @pytest.fixture
@@ -55,12 +66,12 @@ def this_module_ref(module_ref_resolver):
 
 
 @pytest.fixture
-def init(module_ref_resolver):
+def init(type_resolver, ref_registry, module_ref_resolver):
 
     @contextmanager
     def inited():
         storage = StubStorage()
-        init_logger(module_ref_resolver, storage)
+        init_logger(type_resolver, ref_registry, module_ref_resolver, storage)
         yield storage
         close_logger()
         _log.info('storage.records: %r', storage.records)

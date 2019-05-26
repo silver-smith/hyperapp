@@ -7,6 +7,9 @@ import logging
 
 import better_contextvars as contextvars
 
+from .htypes import meta_ref_t, t_ref, t_field_meta, t_record_meta, ref_t, capsule_t
+from .htypes.deduce_value_type import DeduceTypeError, deduce_value_type
+
 _log = logging.getLogger(__name__)
 
 
@@ -19,7 +22,7 @@ class RecordKind(Enum):
 class LogRecord(namedtuple('_LogRecordBase', 'kind context module_ref name params')):
 
     def __new__(cls, kind, context, module_ref=None, name=None, params=None):
-        return super().__new__(cls, kind, context.copy(), module_ref, name, params or {})
+        return super().__new__(cls, kind, context.copy(), module_ref, name, params)
 
     def clone_with(self, kind, context):
         return LogRecord(kind, context, self.module_ref, self.name, self.params)
@@ -32,7 +35,7 @@ def _module_vars(globals):
         return {'__name__': globals['__name__']}
 
 
-def _filter_params(params):
+def _filter_fn_params(params):
     return {name: value for name, value in params.items()
             if name != 'self' and value is not None}
 
@@ -55,18 +58,24 @@ class _LogFnAdapter:
             if parameter.default is not inspect.Parameter.empty
             }
         param_names = list(sig.parameters)
+        cached_params_t = [None]
 
         @wraps(fn)
         def wrapper(*args, **kw):
             module_vars = _module_vars(inspect.stack()[1].frame.f_globals)
+            name = fn.__qualname__
             args_params = {
                 param_names[idx]: arg
                 for idx, arg in enumerate(args)
                 }
-            params = {**default_params, **args_params, **kw}
+            fn_params = _filter_fn_params({**default_params, **args_params, **kw})
             logger = _Logger.get_instance()
             if logger:
-                logger.enter_context(module_vars, fn.__qualname__, _filter_params(params))
+                params_t = cached_params_t[0]
+                if not params_t:
+                    cached_params_t[0] = params_t = logger.make_params_t(name, fn_params)
+                params = params_t(**fn_params)
+                logger.enter_context(module_vars, name, params)
             try:
                 return fn(*args, **kw)
             finally:
@@ -83,12 +92,17 @@ class _LoggerAdapter:
 
     def __init__(self, record_name):
         self._record_name = record_name
+        self._params_t = None
 
     def __call__(self, **kw):
         module_vars = _module_vars(inspect.stack()[1].frame.f_globals)
         logger = _Logger.get_instance()
         if logger:
-            logger.add_entry(module_vars, self._record_name, kw)
+            params_t = self._params_t
+            if not params_t:
+                self._params_t = params_t = logger.make_params_t(self._record_name, kw)
+            params = params_t(**kw)
+            logger.add_entry(module_vars, self._record_name, params)
         return _ContextAdapter()
 
 
@@ -131,10 +145,27 @@ class _Logger:
         else:
             return cls.instance
 
-    def __init__(self, module_ref_resolver, storage):
+    def __init__(self, type_resolver, ref_registry, module_ref_resolver, storage):
+        self._type_resolver = type_resolver
+        self._ref_registry = ref_registry
         self._module_ref_resolver = module_ref_resolver
         self._storage = storage
         self._context_counter = 0
+
+    @with_flag_set(_inside_storage)
+    def make_params_t(self, type_name, params):
+        field_values = {}
+        fields = []
+        for name, value in params.items():
+            try:
+                t = deduce_value_type(value)
+            except DeduceTypeError:
+                continue
+            type_ref = self._type_resolver.reverse_resolve(t)
+            fields.append(t_field_meta(name, t_ref(type_ref)))
+            field_values[name] = value
+        type_rec = meta_ref_t(type_name.replace('.', '_'), t_record_meta(fields))
+        return self._type_resolver.register_type(self._ref_registry, type_rec).t
 
     @with_flag_set(_inside_storage)
     def add_entry(self, module_vars, name, params):
@@ -202,8 +233,8 @@ class _Logger:
         _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
 
 
-def init_logger(module_ref_resolver, storage):
-    _Logger.instance = _Logger(module_ref_resolver, storage)
+def init_logger(type_resolver, ref_registry, module_ref_resolver, storage):
+    _Logger.instance = _Logger(type_resolver, ref_registry, module_ref_resolver, storage)
 
 
 def close_logger():
