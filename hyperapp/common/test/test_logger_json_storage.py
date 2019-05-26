@@ -43,8 +43,8 @@ def decoder(type_resolver, ref_registry):
 
 
 def test_primitives(encoder, decoder):
-    record_1 = LogRecord(RecordKind.ENTER, [1, 2], 'context_enter', dict(num=123, name='sam'))
-    record_2 = LogRecord(RecordKind.ENTER, [1, 3], 'context_enter', dict(num=456, name='mike'))
+    record_1 = LogRecord(RecordKind.ENTER, [1, 2], None, 'context_enter', dict(num=123, name='sam'))
+    record_2 = LogRecord(RecordKind.ENTER, [1, 3], None, 'context_enter', dict(num=456, name='mike'))
     line_list = list(encoder.record2lines(record_1)) + list(encoder.record2lines(record_2))
     for line in line_list:
         _log.info("storage line: %r", line)
@@ -58,7 +58,7 @@ def test_primitives(encoder, decoder):
 
 def test_ref(encoder, decoder):
     test_ref = ref_t('sha-whatever', b'some-hash')
-    record = LogRecord(RecordKind.ENTER, [1, 2], 'context_enter', dict(test_ref=test_ref))
+    record = LogRecord(RecordKind.ENTER, [1, 2], None, 'context_enter', dict(test_ref=test_ref))
     line_list = list(encoder.record2lines(record))
     for line in line_list:
         _log.info("storage line: %r", line)
