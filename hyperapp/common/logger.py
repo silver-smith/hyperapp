@@ -108,6 +108,15 @@ class _ContextAdapter:
             logger.exit_context()
 
 
+@contextmanager
+def with_flag_set(flag):
+    flag.set(True)
+    try:
+        yield
+    finally:
+        flag.set(False)
+
+
 class _Logger:
 
     instance = None
@@ -127,45 +136,45 @@ class _Logger:
         self._storage = storage
         self._context_counter = 0
 
+    @with_flag_set(_inside_storage)
     def add_entry(self, module_vars, name, params):
-        with self._inside_flag_set:
-            self._log('add_entry: %r %r %r', module_vars, name, params)
-            self._flush()
-            self._pending_record.set(
-                self._make_record(RecordKind.LEAF, self._context, module_vars, name, params))
+        self._log('add_entry: %r %r %r', module_vars, name, params)
+        self._flush()
+        self._pending_record.set(
+            self._make_record(RecordKind.LEAF, self._context, module_vars, name, params))
 
+    @with_flag_set(_inside_storage)
     def enter_context(self, module_vars, name, params):
-        with self._inside_flag_set:
-            self._log('enter_context: %r %r %r', module_vars, name, params)
-            self._flush()
-            self._context_counter += 1
-            self._context.append(self._context_counter)
-            self._store_record(
-                self._make_record(RecordKind.ENTER, self._context, module_vars, name, params))
+        self._log('enter_context: %r %r %r', module_vars, name, params)
+        self._flush()
+        self._context_counter += 1
+        self._context.append(self._context_counter)
+        self._store_record(
+            self._make_record(RecordKind.ENTER, self._context, module_vars, name, params))
 
+    @with_flag_set(_inside_storage)
     def push_context(self):
-        with self._inside_flag_set:
-            self._log('push_context')
-            record = self._pending_record.get()
-            assert record
-            self._pending_record.set(None)
-            self._context_counter += 1
-            self._context.append(self._context_counter)
-            self._store_record(
-                record.clone_with(RecordKind.ENTER, self._context))
+        self._log('push_context')
+        record = self._pending_record.get()
+        assert record
+        self._pending_record.set(None)
+        self._context_counter += 1
+        self._context.append(self._context_counter)
+        self._store_record(
+            record.clone_with(RecordKind.ENTER, self._context))
 
+    @with_flag_set(_inside_storage)
     def exit_context(self):
-        with self._inside_flag_set:
-            self._log('exit_context')
-            self._flush()
-            assert self._context
-            self._store_record(
-                LogRecord(RecordKind.EXIT, self._context))
-            self._context.pop()
+        self._log('exit_context')
+        self._flush()
+        assert self._context
+        self._store_record(
+            LogRecord(RecordKind.EXIT, self._context))
+        self._context.pop()
 
+    @with_flag_set(_inside_storage)
     def flush(self):
-        with self._inside_flag_set:
-            self._flush()
+        self._flush()
 
     def _flush(self):
         pending_record = self._pending_record.get()
@@ -184,15 +193,6 @@ class _Logger:
             context = []
             self._context_var.set(context)
         return context
-
-    @property
-    @contextmanager
-    def _inside_flag_set(self):
-        self._inside_storage.set(True)
-        try:
-            yield
-        finally:
-            self._inside_storage.set(False)
         
     def _store_record(self, record):
         self._log('store record: %r', record)
