@@ -152,7 +152,6 @@ class _Logger:
 
     @with_flag_set(_inside_storage)
     def make_params_t(self, type_name, params):
-        field_values = {}
         fields = []
         for name, value in params.items():
             try:
@@ -161,7 +160,6 @@ class _Logger:
                 continue
             type_ref = self._type_resolver.reverse_resolve(t)
             fields.append(t_field_meta(name, t_ref(type_ref)))
-            field_values[name] = value
         type_rec = meta_ref_t(type_name.replace('.', '_'), t_record_meta(fields))
         return self._type_resolver.register_type(self._ref_registry, type_rec).t
 
