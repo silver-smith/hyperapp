@@ -20,8 +20,8 @@ class LineType(Enum):
     LOG_RECORD = 2
 
 
-def json_file_log_storage_session(type_resolver, ref_registry):
-    encoder = _RecordsJsonEncoder(type_resolver, ref_registry)
+def json_file_log_storage_session(ref_resolver, type_resolver):
+    encoder = _RecordsJsonEncoder(ref_resolver, type_resolver)
     start_time = datetime.now(tzlocal())
     path = JSON_LOGS_DIR.joinpath(start_time.strftime('%Y-%m-%d-%H-%M-%S')).with_suffix('.json')
     return _JsonFileLogStorage(encoder, path)
