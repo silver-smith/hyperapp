@@ -9,6 +9,7 @@ import better_contextvars as contextvars
 
 from .htypes import meta_ref_t, t_ref, t_field_meta, t_record_meta, ref_t, capsule_t
 from .htypes.deduce_value_type import DeduceTypeError, deduce_value_type
+from .ref import ref_repr
 
 _log = logging.getLogger(__name__)
 
@@ -26,13 +27,6 @@ class LogRecord(namedtuple('_LogRecordBase', 'kind context module_ref name param
 
     def clone_with(self, kind, context):
         return LogRecord(kind, context, self.module_ref, self.name, self.params)
-
-
-def _module_vars(globals):
-    try:
-        return {'__module_ref__': globals['__module_ref__']}
-    except KeyError:
-        return {'__name__': globals['__name__']}
 
 
 def _filter_fn_params(params):
@@ -62,7 +56,6 @@ class _LogFnAdapter:
 
         @wraps(fn)
         def wrapper(*args, **kw):
-            module_vars = _module_vars(inspect.stack()[1].frame.f_globals)
             name = fn.__qualname__
             args_params = {
                 param_names[idx]: arg
@@ -71,11 +64,12 @@ class _LogFnAdapter:
             fn_params = _filter_fn_params({**default_params, **args_params, **kw})
             logger = _Logger.get_instance()
             if logger:
+                module_ref = logger.make_module_ref(inspect.stack()[1].frame.f_globals)
                 params_t = cached_params_t[0]
                 if not params_t:
                     cached_params_t[0] = params_t = logger.make_params_t(name, fn_params)
                 params = params_t(**fn_params)
-                logger.enter_context(module_vars, name, params)
+                logger.enter_context(module_ref, name, params)
             try:
                 return fn(*args, **kw)
             finally:
@@ -95,14 +89,14 @@ class _LoggerAdapter:
         self._params_t = None
 
     def __call__(self, **kw):
-        module_vars = _module_vars(inspect.stack()[1].frame.f_globals)
         logger = _Logger.get_instance()
         if logger:
+            module_ref = logger.make_module_ref(inspect.stack()[1].frame.f_globals)
             params_t = self._params_t
             if not params_t:
                 self._params_t = params_t = logger.make_params_t(self._record_name, kw)
             params = params_t(**kw)
-            logger.add_entry(module_vars, self._record_name, params)
+            logger.add_entry(module_ref, self._record_name, params)
         return _ContextAdapter()
 
 
@@ -153,6 +147,10 @@ class _Logger:
         self._context_counter = 0
 
     @with_flag_set(_inside_storage)
+    def make_module_ref(self, module_vars):
+        return self._module_ref_resolver.get_module_ref(module_vars)
+
+    @with_flag_set(_inside_storage)
     def make_params_t(self, type_name, params):
         field_values = {}
         fields = []
@@ -168,20 +166,20 @@ class _Logger:
         return self._type_resolver.register_type(self._ref_registry, type_rec).t
 
     @with_flag_set(_inside_storage)
-    def add_entry(self, module_vars, name, params):
-        self._log('add_entry: %r %r %r', module_vars, name, params)
+    def add_entry(self, module_ref, name, params):
+        self._log('add_entry: %s %r %r', ref_repr(module_ref), name, params)
         self._flush()
         self._pending_record.set(
-            self._make_record(RecordKind.LEAF, self._context, module_vars, name, params))
+            LogRecord(RecordKind.LEAF, self._context, module_ref, name, params))
 
     @with_flag_set(_inside_storage)
-    def enter_context(self, module_vars, name, params):
-        self._log('enter_context: %r %r %r', module_vars, name, params)
+    def enter_context(self, module_ref, name, params):
+        self._log('enter_context: %s %r %r', ref_repr(module_ref), name, params)
         self._flush()
         self._context_counter += 1
         self._context.append(self._context_counter)
         self._store_record(
-            self._make_record(RecordKind.ENTER, self._context, module_vars, name, params))
+            LogRecord(RecordKind.ENTER, self._context, module_ref, name, params))
 
     @with_flag_set(_inside_storage)
     def push_context(self):
@@ -212,10 +210,6 @@ class _Logger:
         if pending_record:
             self._store_record(pending_record)
             self._pending_record.set(None)
-
-    def _make_record(self, kind, context, module_vars, name, params):
-        module_ref = self._module_ref_resolver.get_module_ref(module_vars)
-        return LogRecord(kind, context, module_ref, name, params)
 
     @property
     def _context(self):
