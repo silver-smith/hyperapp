@@ -164,7 +164,7 @@ class _Logger:
             try:
                 t = deduce_value_type(value)
             except DeduceTypeError:
-                continue
+                raise RuntimeError("Undeducable parameter {}.{}".format(type_name, name))
             type_ref = self._type_resolver.reverse_resolve(t)
             fields.append(t_field_meta(name, t_ref(type_ref)))
         type_rec = meta_ref_t(type_name.replace('.', '_'), t_record_meta(fields))
