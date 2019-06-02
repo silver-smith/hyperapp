@@ -1,4 +1,6 @@
 from .htypes import *
+from .record import *
+from .builtins import *
 from .namespace import *
 from .hierarchy import *
 from .exception_hierarchy import *

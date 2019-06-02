@@ -1,5 +1,6 @@
 from collections import OrderedDict
-from .htypes import tString, tBinary, TRecord, TList
+from .htypes import tString, tBinary, TList
+from .record import TRecord
 
 
 hash_t = tBinary

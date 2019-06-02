@@ -1,7 +1,8 @@
 import logging
 
 from ..util import is_ordered_dict_inst
-from .htypes import join_path, odict_all_match, Type, tString, TRecord, TList
+from .htypes import join_path, Type, tString, TList
+from .record import odict_all_match, TRecord
 
 log = logging.getLogger(__name__)
 

@@ -5,18 +5,15 @@ from ..util import is_list_inst, is_ordered_dict_inst, cached_property
 from .htypes import (
     join_path,
     list_all_match,
-    odict_all_match,
     Type,
     tNone,
     tBinary,
     tString,
     TOptional,
-    TRecord,
     TList,
-    tPath,
-    tUrl,
-    tIfaceId,
     )
+from .record import odict_all_match, TRecord
+from .builtins import tIfaceId, tPath, tUrl
 from .meta_type import TypeNamespace
 
 log = logging.getLogger(__name__)

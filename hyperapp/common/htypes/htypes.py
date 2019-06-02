@@ -1,7 +1,6 @@
-from collections import namedtuple, OrderedDict
 import datetime
 
-from ..util import is_list_inst, is_ordered_dict_inst
+from ..util import is_list_inst
 
 
 class TypeError(Exception): pass
@@ -12,12 +11,6 @@ def join_path(*args):
 
 def list_all_match(x_list, y_list):
     return all(x.match(y) for x, y in zip(x_list, y_list))
-
-def odict_all_match(x_fields, y_fields):
-    return all(
-        x_name == y_name and x_type.match(y_type)
-        for (x_name, x_type), (y_name, y_type)
-        in zip(x_fields.items(), y_fields.items()))
 
 
 class Type(object):
@@ -102,48 +95,6 @@ class TOptional(Type):
         return value is None or isinstance(value, self.base_t)
 
 
-class TRecord(Type):
-
-    def __init__(self, name, fields=None, base=None):
-        assert name
-        assert fields is None or is_ordered_dict_inst(fields, str, Type), repr(fields)
-        assert base is None or isinstance(base, TRecord), repr(base)
-        super().__init__(name)
-        self.fields = fields or OrderedDict()
-        if base:
-            self.fields = OrderedDict(list(base.fields.items()) + list(self.fields.items()))
-        self.base = base
-        self._named_tuple = namedtuple(name, ['t'] + [name for name in self.fields])
-
-    def __repr__(self):
-        if self.name:
-            return self.name
-        else:
-            return 'TRecord<%d: %s>' % (id(self), ', '.join("%r: %r" % (name, t) for name, t in self.fields.items()))
-
-    def match(self, other):
-        return (isinstance(other, TRecord)
-                and odict_all_match(other.fields, self.fields))
-
-    def __subclasscheck__(self, cls):
-        ## print('__subclasscheck__', self, cls)
-        if cls is self:
-            return True
-        if not isinstance(cls, TRecord):
-            return False
-        return issubclass(cls.base, self)
-
-    def __call__(self, *args, **kw):
-        return self.instantiate(*args, **kw)
-
-    def __instancecheck__(self, rec):
-        ## print '__instancecheck__', self, rec
-        return issubclass(getattr(rec, 't', None), self)
-
-    def instantiate(self, *args, **kw):
-        return self._named_tuple(self, *args, **kw)
-
-
 class TList(Type):
 
     def __init__(self, element_t, name=None):
@@ -163,25 +114,3 @@ class TList(Type):
 
 class TIndexedList(TList):
     pass
-
-
-tRoute = TList(tString, name='route')
-
-tServerRoutes = TRecord('server_routes', OrderedDict([
-    ('public_key_der', tBinary),
-    ('routes', TList(tRoute)),
-    ]))
-
-tIfaceId = TString(name='iface_id')
-
-tPath = TList(tString, name='path')
-
-tUrl = TRecord('url', OrderedDict([
-    ('iface', tIfaceId),
-    ('public_key_der', tBinary),
-    ('path', tPath),
-    ]))
-
-tUrlWithRoutes = TRecord('url_with_routes', base=tUrl, fields=OrderedDict([
-    ('routes', TList(tRoute)),
-    ]))

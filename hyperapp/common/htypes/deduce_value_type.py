@@ -1,6 +1,7 @@
 import datetime
 
-from .htypes import tString, tBinary, tInt, tBool, tDateTime, TList, TRecord
+from .htypes import tString, tBinary, tInt, tBool, tDateTime, TList
+from .record import TRecord
 from .hierarchy import TClass
 
 

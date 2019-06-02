@@ -14,9 +14,9 @@ from .htypes import (
     tBool,
     tDateTime,
     TOptional,
-    TRecord,
     TList,
     )
+from .record import TRecord
 from .namespace import TypeNamespace
 from .hierarchy import TClass, THierarchy
 from .exception_hierarchy import TExceptionHierarchy
