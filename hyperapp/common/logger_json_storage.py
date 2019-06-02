@@ -30,56 +30,34 @@ def json_file_log_storage_session(type_resolver, ref_registry):
 
 class _RecordsJsonEncoder:
 
-    def __init__(self, type_resolver, ref_registry):
+    def __init__(self, ref_resolver, type_resolver):
+        self._ref_resolver = ref_resolver
         self._type_resolver = type_resolver
-        self._ref_registry = ref_registry
         self._dict_encoder = DictEncoder()
         self._stored_type_refs = set()
 
     def record2lines(self, record):
-        if record.kind != RecordKind.EXIT:
-            type_capsule, params_type_ref, params_t = self._make_params_type(record.name, record.params)
+        encoder = self._dict_encoder
+        params = record.params
+        if params:
+            params_t = params.t
+            params_type_ref = self._type_resolver.reverse_resolve(params_t)
             if params_type_ref not in self._stored_type_refs:
+                capsule = self._ref_resolver.resolve_ref(params_type_ref)
                 yield json.dumps(dict(
                     line_type=LineType.TYPE.name,
-                    type_capsule=self._to_dict(type_capsule),
+                    type_capsule=encoder.encode(capsule),
                     ))
                 self._stored_type_refs.add(params_type_ref)
-            # remove params those type we were unable to deduce
-            params_fields = {
-                name: value for name, value in record.params.items()
-                if name in params_t.fields}
-            params_dict = self._to_dict(params_t(**params_fields))
-        else:
-            params_type_ref = None
-            params_dict = None
         yield json.dumps(dict(
             line_type=LineType.LOG_RECORD.name,
             kind=record.kind.name,
             context=record.context,
+            module_ref=encoder.encode(record.module_ref) if record.module_ref else None,
             name=record.name,
-            params_type_ref=self._to_dict(params_type_ref) if params_type_ref else None,
-            params=params_dict,
+            params_type_ref=encoder.encode(params_type_ref) if params else None,
+            params=encoder.encode(params) if params else None,
             ))
-
-    def _to_dict(self, value):
-        return self._dict_encoder.encode(value)
-
-    def _make_params_type(self, type_name, params):
-        field_values = {}
-        fields = []
-        for name, value in params.items():
-            try:
-                t = deduce_value_type(value)
-            except DeduceTypeError:
-                continue
-            type_ref = self._type_resolver.reverse_resolve(t)
-            fields.append(t_field_meta(name, t_ref(type_ref)))
-            field_values[name] = value
-        rec = meta_ref_t(type_name.replace('.', '_'), t_record_meta(fields))
-        capsule, type_ref = self._ref_registry.register_object_to_capsule_and_ref(rec)
-        params_t = self._type_resolver.resolve(type_ref)
-        return (capsule, type_ref, params_t)
 
 
 class _RecordsJsonDecoder:
