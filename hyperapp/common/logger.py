@@ -2,6 +2,7 @@ from collections import namedtuple
 from contextlib import contextmanager
 from enum import Enum
 from functools import wraps
+from pathlib import Path
 import inspect
 import logging
 
@@ -29,8 +30,14 @@ class LogRecord(namedtuple('_LogRecordBase', 'kind context module_ref name param
         return LogRecord(kind, context, self.module_ref, self.name, self.params)
 
 
-def _filter_fn_params(params):
-    return {name: value for name, value in params.items()
+def _adjust_fn_params(params):
+
+    def adjust_value(value):
+        if isinstance(value, Path):
+            return str(value)
+        return value
+
+    return {name: adjust_value(value) for name, value in params.items()
             if name != 'self' and value is not None}
 
 
@@ -61,7 +68,7 @@ class _LogFnAdapter:
                 param_names[idx]: arg
                 for idx, arg in enumerate(args)
                 }
-            fn_params = _filter_fn_params({**default_params, **args_params, **kw})
+            fn_params = _adjust_fn_params({**default_params, **args_params, **kw})
             logger = _Logger.get_instance()
             if logger:
                 module_ref = logger.make_module_ref(inspect.stack()[1].frame.f_globals)
