@@ -82,11 +82,12 @@ class _RecordsJsonDecoder:
         self._ref_registry.register_capsule(type_capsule)
 
     def _process_record(self, d):
+        decoder = self._dict_decoder
         params_type_ref_encoded = d['params_type_ref']
         if params_type_ref_encoded is not None:
-            params_type_ref = self._dict_decoder.decode_dict(ref_t, params_type_ref_encoded)
+            params_type_ref = decoder.decode_dict(ref_t, params_type_ref_encoded)
             params_t = self._type_resolver.resolve(params_type_ref)
-            params = self._dict_decoder.decode_dict(params_t, d['params'])
+            params = decoder.decode_dict(params_t, d['params'])
         else:
             params = None
         return LogRecord(
