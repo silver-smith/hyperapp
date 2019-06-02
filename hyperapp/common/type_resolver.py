@@ -78,7 +78,6 @@ class TypeResolver(object):
         _log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
         return t
 
-    @log
     def reverse_resolve(self, t):
         return self._type2ref[t]
 
