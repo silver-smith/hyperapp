@@ -40,7 +40,7 @@ class _RecordsJsonEncoder:
         encoder = self._dict_encoder
         params = record.params
         if params:
-            params_t = params.t
+            params_t = params._t
             params_type_ref = self._type_resolver.reverse_resolve(params_t)
             if params_type_ref not in self._stored_type_refs:
                 capsule = self._ref_resolver.resolve_ref(params_type_ref)

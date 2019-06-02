@@ -100,9 +100,7 @@ class Remoting(object):
 
     def _call_servant(self, command, method, request, params):
         try:
-            kw = params._asdict()
-            kw.pop('t')
-            response = method(request, **kw)
+            response = method(request, **params._asdict())
         except Exception as x:
             assert command.is_request  # todo: error handling for notifications
             if isinstance(x, htypes.error.error):

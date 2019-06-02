@@ -16,12 +16,6 @@ from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, clos
 _log = logging.getLogger(__name__)
 
 
-def _drop_t(d):
-    d = d.copy()
-    del d['t']
-    return d
-
-
 class StubStorage:
 
     def __init__(self):
@@ -32,7 +26,7 @@ class StubStorage:
 
     @property
     def records(self):
-        return [LogRecord(r.kind, r.context, r.module_ref, r.name, _drop_t(r.params._asdict()) if r.params else r.params)
+        return [LogRecord(r.kind, r.context, r.module_ref, r.name, r.params._asdict() if r.params else r.params)
                 for r in self._records]
 
 

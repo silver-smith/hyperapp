@@ -22,7 +22,7 @@ def deduce_value_type(value):
     t = _primitive_types.get(type(value))
     if t:
         return t
-    t = getattr(value, 't', None)
+    t = getattr(value, '_t', None)
     if isinstance(t, TRecord):
         if isinstance(t, TClass):
             return t.hierarchy

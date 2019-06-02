@@ -9,9 +9,9 @@ log = logging.getLogger(__name__)
 
 class TClass(TRecord):
 
-    def __init__(self, hierarchy, id, fields=None, base=None):
+    def __init__(self, hierarchy, id, fields=None, base=None, verbose=False):
         assert isinstance(hierarchy, THierarchy), repr(hierarchy)
-        super().__init__(id, fields, base)
+        super().__init__(id, fields, base, verbose=verbose)
         self.hierarchy = hierarchy
 
     @property
@@ -44,26 +44,23 @@ class THierarchy(Type):
                 sorted(other.registry.values(), key=lambda cls: cls.id) ==
                 sorted(self.registry.values(), key=lambda cls: cls.id))
 
-    def register(self, id, fields=None, base=None):
+    def register(self, id, fields=None, base=None, verbose=False):
         assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
         assert fields is None or is_ordered_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TClass), repr(base)
-        tclass = self.make_tclass(id, fields, base)
+        tclass = self.make_tclass(id, fields, base, verbose)
         self.registry[id] = tclass
         #print('registered %s %s' % (self.hierarchy_id, id))
         return tclass
 
-    def make_tclass(self, id, fields, base):
-        return TClass(self, id, fields, base)
-
-    def is_tclassrecord(self, rec):
-        return isinstance(getattr(rec, 't', None), TRecord)
+    def make_tclass(self, id, fields, base, verbose=False):
+        return TClass(self, id, fields, base, verbose)
 
     def __instancecheck__(self, rec):
-        if not self.is_tclassrecord(rec):
+        if not isinstance(getattr(rec, '_t', None), TClass):
             return False
-        return rec.t.hierarchy is self
+        return rec._t.hierarchy is self
 
     def resolve(self, class_id):
         assert isinstance(class_id, str), repr(class_id)
@@ -74,7 +71,7 @@ class THierarchy(Type):
 
     def get_object_class(self, rec):
         assert isinstance(rec, self), repr(rec)
-        return rec.t
+        return rec._t
 
     def is_my_class(self, tclass):
         if not isinstance(tclass, TClass):

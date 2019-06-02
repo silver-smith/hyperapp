@@ -77,8 +77,7 @@ class Session:
         return SessionLogItem(
             idx, '/'.join(map(str, record.context)), record.name, record.kind.name.lower(),
             params=', '.join('{}={}'.format(key, _value_repr(value))
-                             for key, value in record.params._asdict().items()
-                             if key != 't'))
+                             for key, value in record.params._asdict().items()))
 
 
 class SessionCache:
@@ -193,7 +192,7 @@ class LogRecord(ListObject):
         if self._record:
             self._distribute_fetch_results(
                 [self._make_item(name, value) for name, value
-                 in self._record.params._asdict().items() if name != 't'])
+                 in self._record.params._asdict().items()])
         self._distribute_eof()
 
     def _make_item(self, name, value):

@@ -2,13 +2,70 @@ from collections import OrderedDict
 
 from hyperapp.common.htypes import (
     tString,
+    tInt,
     THierarchy,
     TExceptionHierarchy,
     )
 
 
+def test_tclass_instantiate():
+    hierarchy = THierarchy('test_hierarchy')
+    tclass = hierarchy.register('test_tclass', OrderedDict([
+        ('some_str', tString),
+        ('some_int', tInt),
+        ]), verbose=True)
+    rec_1 = tclass(some_str='foo', some_int=123)
+    assert rec_1.some_str == 'foo'
+    assert rec_1.some_int == 123
+    assert rec_1[0] == 'foo'
+    assert rec_1[1] == 123
+    assert list(rec_1) == ['foo', 123]
+    assert isinstance(rec_1, tclass)
+    assert isinstance(rec_1, hierarchy)
+    # should omit '_t' member
+    assert rec_1._asdict() == {
+        'some_str': 'foo',
+        'some_int': 123,
+        }
+    assert repr(rec_1) == "test_tclass(some_str='foo', some_int=123)"
+
+
+def test_exception_class_instantiate():
+    hierarchy = TExceptionHierarchy('test_hierarchy')
+    tclass = hierarchy.register('test_tclass', OrderedDict([
+        ('some_str', tString),
+        ('some_int', tInt),
+        ]), verbose=True)
+    rec_1 = tclass(some_str='foo', some_int=123)
+    assert rec_1.some_str == 'foo'
+    assert rec_1.some_int == 123
+    assert rec_1[0] == 'foo'
+    assert rec_1[1] == 123
+    assert list(rec_1) == ['foo', 123]
+    assert isinstance(rec_1, tclass)
+    assert isinstance(rec_1, hierarchy)
+    # should omit '_t' member
+    assert rec_1._asdict() == {
+        'some_str': 'foo',
+        'some_int': 123,
+        }
+    assert repr(rec_1) == "test_tclass(some_str='foo', some_int=123)"
+
+    rec_2 = tclass('foo', 123)
+    assert rec_2.some_str == 'foo'
+    assert rec_2.some_int == 123
+
+
 def test_isinstance_empty():
     hierarchy = THierarchy('test_hierarchy')
+    tclass = hierarchy.register('test_tclass')
+    rec = tclass()
+    assert isinstance(rec, tclass)
+    assert isinstance(rec, hierarchy)
+
+
+def test_isinstance_empty_exception():
+    hierarchy = TExceptionHierarchy('test_hierarchy')
     tclass = hierarchy.register('test_tclass')
     rec = tclass()
     assert isinstance(rec, tclass)
@@ -68,17 +125,3 @@ def test_isinstance_different_classes():
     rec = tclass_1(some_field='some value')
     assert isinstance(rec, tclass_1)
     assert not isinstance(rec, tclass_2)
-
-
-def test_exception_class():
-    hierarchy = TExceptionHierarchy('test_hierarchy')
-    tclass = hierarchy.register('test_tclass', OrderedDict([
-        ('a', tString),
-        ('b', tString),
-        ]))
-    rec = tclass(a='a value', b='b value')
-    assert isinstance(rec, tclass)
-    assert isinstance(rec, hierarchy)
-    assert list(rec) == [tclass, 'a value', 'b value']
-    assert rec.a == 'a value'
-    assert rec[2] == 'b value'
