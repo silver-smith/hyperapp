@@ -59,7 +59,6 @@ class _LogFnAdapter:
             if parameter.default is not inspect.Parameter.empty
             }
         param_names = list(sig.parameters)
-        cached_params_t = [None]
 
         @wraps(fn)
         def wrapper(*args, **kw):
@@ -72,9 +71,7 @@ class _LogFnAdapter:
             logger = _Logger.get_instance()
             if logger:
                 module_ref = logger.make_module_ref(inspect.stack()[1].frame.f_globals)
-                params_t = cached_params_t[0]
-                if not params_t:
-                    cached_params_t[0] = params_t = logger.make_params_t(name, fn_params)
+                params_t = logger.get_params_t(module_ref, name, fn_params)
                 params = params_t(**fn_params)
                 logger.enter_context(module_ref, name, params)
             try:
@@ -93,15 +90,12 @@ class _LoggerAdapter:
 
     def __init__(self, record_name):
         self._record_name = record_name
-        self._params_t = None
 
     def __call__(self, **kw):
         logger = _Logger.get_instance()
         if logger:
             module_ref = logger.make_module_ref(inspect.stack()[1].frame.f_globals)
-            params_t = self._params_t
-            if not params_t:
-                self._params_t = params_t = logger.make_params_t(self._record_name, kw)
+            params_t = logger.get_params_t(module_ref, self._record_name, kw)
             params = params_t(**kw)
             logger.add_entry(module_ref, self._record_name, params)
         return _ContextAdapter()
@@ -152,23 +146,31 @@ class _Logger:
         self._module_ref_resolver = module_ref_resolver
         self._storage = storage
         self._context_counter = 0
+        self._params_t_cache = {}  # (module_ref, name) -> params_t
 
     @with_flag_set(_inside_storage)
     def make_module_ref(self, module_vars):
         return self._module_ref_resolver.get_module_ref(module_vars)
 
     @with_flag_set(_inside_storage)
-    def make_params_t(self, type_name, params):
+    def get_params_t(self, module_ref, entry_name, params):
+        key = (module_ref, entry_name)
+        params_t = self._params_t_cache.get(key)
+        if params_t is not None:
+            return params_t
         fields = []
         for name, value in params.items():
             try:
                 t = deduce_value_type(value)
             except DeduceTypeError:
-                raise RuntimeError("Undeducable parameter {}.{}".format(type_name, name))
+                raise RuntimeError("Undeducable parameter {}.{}".format(entry_name, name))
             type_ref = self._type_resolver.reverse_resolve(t)
             fields.append(t_field_meta(name, t_ref(type_ref)))
-        type_rec = meta_ref_t(type_name.replace('.', '_'), t_record_meta(fields))
-        return self._type_resolver.register_type(self._ref_registry, type_rec).t
+        type_name = entry_name.replace('.', '_')
+        type_rec = meta_ref_t(type_name, t_record_meta(fields))
+        params_t = self._type_resolver.register_type(self._ref_registry, type_rec).t
+        self._params_t_cache[key] = params_t
+        return params_t
 
     @with_flag_set(_inside_storage)
     def add_entry(self, module_ref, name, params):
