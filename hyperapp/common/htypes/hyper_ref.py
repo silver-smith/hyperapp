@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from .htypes import tString, tBinary, TList
+from .htypes import tString, tBinary, tDateTime, TList
 from .record import TRecord
 
 
@@ -19,6 +19,7 @@ capsule_t = TRecord('capsule', OrderedDict([
 route_t = TRecord('route', OrderedDict([
     ('endpoint_ref', ref_t),
     ('transport_ref', ref_t),
+    ('available_at', tDateTime),
     ]))
 
 bundle_t = TRecord('bundle', OrderedDict([

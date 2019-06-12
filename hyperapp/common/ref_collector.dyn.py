@@ -1,4 +1,7 @@
+from datetime import datetime
 import logging
+
+from dateutil.tz import tzlocal
 
 from hyperapp.common.htypes import ref_t, route_t, bundle_t
 from hyperapp.common.util import is_list_inst
@@ -92,6 +95,7 @@ class RefCollector(Visitor):
             self._collected_route_set.add(route_t(
                 endpoint_ref=endpoint_ref,
                 transport_ref=transport_ref,
+                available_at=datetime.now(tzlocal()),
                 ))
             self._collected_ref_set.add(transport_ref)
 
