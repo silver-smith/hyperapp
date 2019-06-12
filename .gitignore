@@ -7,3 +7,4 @@ parsetab.py
 .cache
 .idea
 .pytest_cache
+.mypy_cache
