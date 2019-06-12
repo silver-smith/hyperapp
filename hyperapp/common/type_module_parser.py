@@ -463,7 +463,3 @@ def parse_type_module_source(fname, module_name, contents, debug=False):
 def load_type_module_source(fpath, module_name, debug=False):
     contents = fpath.read_text()
     return parse_type_module_source(fpath, module_name, contents, debug)
-
-
-if __name__ == '__main__':
-    main()
