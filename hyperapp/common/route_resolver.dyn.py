@@ -51,7 +51,11 @@ class RouteResolver(object):
         rec_set = set()
         for source in self._source_list:
             rec_set |= set(source.resolve(service_ref))
-        log.info('Route resolver: %s resolved to %d recs', ref_repr(service_ref), len(rec_set))
+        log.info('Route resolver: %s resolved to %d recs: %s',
+                 ref_repr(service_ref),
+                 len(rec_set),
+                 ', '.join("{} @ {}".format(ref_repr(rec.transport_ref), rec.available_at) for rec in rec_set),
+                 )
         return rec_set
 
 
