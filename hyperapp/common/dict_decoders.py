@@ -54,22 +54,22 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
         assert False, repr((t, path, value))  # Unknown type
 
     @dispatch.register(TString)
-    def decode_primitive(self, t, value, path):
+    def decode_string(self, t, value, path):
         self.expect_type(path, isinstance(value, str), value, 'string')
         return value
 
     @dispatch.register(TBinary)
-    def decode_primitive(self, t, value, path):
+    def decode_binary(self, t, value, path):
         self.expect_type(path, isinstance(value, str), value, 'string')
         return base64.b64decode(value)
 
     @dispatch.register(TInt)
-    def decode_primitive(self, t, value, path):
+    def decode_int(self, t, value, path):
         self.expect_type(path, isinstance(value, int), value, 'integer')
         return value
 
     @dispatch.register(TBool)
-    def decode_primitive(self, t, value, path):
+    def decode_bool(self, t, value, path):
         self.expect_type(path, isinstance(value, bool), value, 'bool')
         return value
 
@@ -97,7 +97,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
                 for idx, elt in enumerate(value)]
 
     @dispatch.register(TIndexedList)
-    def decode_list(self, t, value, path):
+    def decode_indexed_list(self, t, value, path):
         self.expect_type(path, isinstance(value, list), value, 'list')
         decoded_elts = []
         for idx, elt in enumerate(value):

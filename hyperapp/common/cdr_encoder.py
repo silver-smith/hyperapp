@@ -47,11 +47,11 @@ class CdrEncoder(object):
         self.data += value
 
     @dispatch.register(TInt)
-    def encode_primitive(self, t, value):
+    def encode_int(self, t, value):
         self.write_int(value)
 
     @dispatch.register(TBool)
-    def encode_primitive(self, t, value):
+    def encode_bool(self, t, value):
         self.write_bool(value)
 
     @dispatch.register(TBinary)
@@ -59,7 +59,7 @@ class CdrEncoder(object):
         self.write_binary(value)
 
     @dispatch.register(TString)
-    def encode_primitive(self, t, value):
+    def encode_string(self, t, value):
         self.write_unicode(value)
 
     @dispatch.register(TDateTime)

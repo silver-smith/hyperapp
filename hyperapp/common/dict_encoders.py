@@ -42,7 +42,7 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
         return value
 
     @dispatch.register(TBinary)
-    def encode_primitive(self, t, value):
+    def encode_binary(self, t, value):
         return str(base64.b64encode(value), 'ascii')
 
     @dispatch.register(TDateTime)

@@ -84,19 +84,19 @@ class CdrDecoder(object):
         return data.decode('utf-8')
 
     @dispatch.register(TBinary)
-    def decode_primitive(self, t, path):
+    def decode_binary(self, t, path):
         return self.read_binary(path)
 
     @dispatch.register(TString)
-    def decode_primitive(self, t, path):
+    def decode_string(self, t, path):
         return self.read_unicode(path)
 
     @dispatch.register(TInt)
-    def decode_primitive(self, t, path):
+    def decode_int(self, t, path):
         return self.read_int(path)
 
     @dispatch.register(TBool)
-    def decode_primitive(self, t, path):
+    def decode_bool(self, t, path):
         return self.read_bool(path)
 
     @dispatch.register(TDateTime)
