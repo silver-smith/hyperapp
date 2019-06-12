@@ -1,8 +1,11 @@
-import logging
 import abc
+from collections import namedtuple
+import logging
+from typing import Sequence, Set
 
 from hyperapp.common.ref import ref_repr, ref_list_repr
 from hyperapp.common.module import Module
+from .htypes.hyper_ref import route_rec
 
 log = logging.getLogger(__name__)
 
@@ -13,24 +16,23 @@ MODULE_NAME = 'route_resolver'
 class RouteSource(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def resolve(self, endpoint_ref):
+    def resolve(self, endpoint_ref) -> Sequence[route_rec]:
         pass
 
 
 class RouteRegistry(RouteSource):
 
     def __init__(self):
-        self._registry = {}
+        self._registry = {}  # endpoint_ref -> route_rec list
 
-    def resolve(self, endpoint_ref):
-        return self._registry.get(endpoint_ref, set())
+    def resolve(self, endpoint_ref) -> Sequence[route_rec]:
+        return self._registry.get(endpoint_ref, [])
 
-    def register(self, endpoint_ref, transport_ref):
-        log.info('Route registry: adding route %s -> %s', ref_repr(endpoint_ref), ref_repr(transport_ref))
-        self._registry.setdefault(endpoint_ref, set()).add(transport_ref)
-
-    def register_route(self, route):
-        self.register(route.endpoint_ref, route.transport_ref)
+    def register(self, route):
+        log.info('Route registry: adding route %s -> %s @ %s',
+                 ref_repr(route.endpoint_ref), ref_repr(route.transport_ref), route.available_at)
+        rec_list = self._registry.setdefault(route.endpoint_ref, [])
+        rec_list.append(route_rec(route.transport_ref, route.available_at))
 
         
 class RouteResolver(object):
@@ -45,12 +47,12 @@ class RouteResolver(object):
     def remove_source(self, source):
         self._source_list.remove(source)
 
-    def resolve(self, service_ref):
-        transport_ref_set = set()
+    def resolve(self, service_ref) -> Set[route_rec]:
+        rec_set = set()
         for source in self._source_list:
-            transport_ref_set |= source.resolve(service_ref)
-        log.info('Route resolver: %s resolved to %s', ref_repr(service_ref), ref_list_repr(transport_ref_set))
-        return transport_ref_set
+            rec_set |= set(source.resolve(service_ref))
+        log.info('Route resolver: %s resolved to %d recs', ref_repr(service_ref), len(rec_set))
+        return rec_set
 
 
 class ThisModule(Module):

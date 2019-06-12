@@ -7,7 +7,7 @@ import uuid
 from queue import Queue
 from functools import partial
 
-from hyperapp.common.htypes import ref_t
+from hyperapp.common.htypes import ref_t, route_t
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.ref import LOCAL_TRANSPORT_REF, ref_repr, ref_list_repr
 from hyperapp.common.module import Module
@@ -157,7 +157,8 @@ class TcpClient(object):
     def _register_incoming_routes(self, route_list):
         for route in route_list:
             if route.transport_ref == LOCAL_TRANSPORT_REF:
-                self._my_route_registry.register(route.endpoint_ref, self._my_address_ref)
+                self._my_route_registry.register(
+                    route_t(route.endpoint_ref, self._my_address_ref, route.available_at))
 
     def _send_outcoming_messages(self):
         while not self._outcoming_queue.empty():

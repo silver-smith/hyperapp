@@ -27,14 +27,14 @@ class AsyncRouteResolver(object):
         self._async_source_list.append(source)
 
     async def resolve(self, endpoint_ref):
-        transport_ref_set = self._route_resolver.resolve(endpoint_ref)
+        rec_set = self._route_resolver.resolve(endpoint_ref)
         # Although we may have some transport refs now, they all may be unaccessible.
         # But we do not want to request routes again for every rpc call.
-        if transport_ref_set:
-            return transport_ref_set
+        if rec_set:
+            return rec_set
         for source in self._async_source_list:
-            transport_ref_set |= await source.resolve(endpoint_ref)
-        return transport_ref_set
+            rec_set |= await source.resolve(endpoint_ref)
+        return rec_set
 
 
 class ThisModule(ClientModule):

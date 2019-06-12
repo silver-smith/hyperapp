@@ -1,6 +1,11 @@
+from datetime import datetime
+
+from dateutil.tz import tzlocal
+
 from hyperapp.common.ref import LOCAL_TRANSPORT_REF
 from hyperapp.client.module import ClientModule
 from .route_resolver import RouteSource
+from .htypes.hyper_ref import route_rec
 
 
 MODULE_NAME = 'endpoint_registry'
@@ -31,9 +36,9 @@ class LocalRouteSource(RouteSource):
 
     def resolve(self, endpoint_ref):
         if self._endpoint_registry.is_registered(endpoint_ref):
-            return {LOCAL_TRANSPORT_REF}
+            return [route_rec(LOCAL_TRANSPORT_REF, datetime.now(tzlocal()))]
         else:
-            return set()
+            return []
 
 
 class ThisModule(ClientModule):

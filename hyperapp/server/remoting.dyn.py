@@ -1,5 +1,9 @@
+from datetime import datetime
 import logging
+from operator import attrgetter
 import uuid
+
+from dateutil.tz import tzlocal
 
 from hyperapp.common.htypes import EncodableEmbedded
 from hyperapp.common.ref import ref_repr, ref_list_repr
@@ -8,7 +12,7 @@ from hyperapp.common.registry import UnknownRegistryIdError, Registry
 from hyperapp.common.module import Module
 from .request import Request, Response
 from .route_resolver import RouteSource
-from . import htypes
+from .htypes.hyper_ref import route_rec
 
 log = logging.getLogger(__name__)
 
@@ -35,7 +39,8 @@ class LocalRouteSource(RouteSource):
 
     def resolve(self, service_ref):
         if self._service_registry.is_registered(service_ref):
-            return self._local_transport_ref_set
+            now = datetime.now(tzlocal())
+            return {route_rec(transport_ref, now) for transport_ref in self._local_transport_ref_set}
         else:
             return set()
 
@@ -54,10 +59,10 @@ class Remoting(object):
         # todo: may be create server endpoint registry and register my endpoint there
 
     def send_request(self, service_ref, iface, command, params):
-        transport_ref_set = self._route_resolver.resolve(service_ref)
-        assert transport_ref_set, 'No routes for service %s' % ref_repr(service_ref)
-        assert len(transport_ref_set) == 1, repr(transport_ref_set)  # todo: multiple route support
-        transport = self._transport_resolver.resolve(transport_ref_set.pop())
+        route_rec_set = self._route_resolver.resolve(service_ref)
+        assert route_rec_set, 'No routes for service %s' % ref_repr(service_ref)
+        route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
+        transport = self._transport_resolver.resolve(route_rec.transport_ref)
         if command.is_request:
             request_id = str(uuid.uuid4())
         else:
@@ -86,10 +91,10 @@ class Remoting(object):
             self._send_rpc_response(rpc_response_ref, rpc_response)
 
     def _send_rpc_response(self, rpc_response_ref, rpc_response):
-        transport_ref_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
-        assert transport_ref_set, 'No routes for service %s' % ref_repr(rpc_response.target_endpoint_ref)
-        assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
-        transport = self._transport_resolver.resolve(transport_ref_set.pop())
+        route_rec_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
+        assert route_rec_set, 'No routes for service %s' % ref_repr(rpc_response.target_endpoint_ref)
+        route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
+        transport = self._transport_resolver.resolve(route_rec.transport_ref)
         transport.send(rpc_response_ref)
 
     def _process_request(self, rpc_request_ref, rpc_request):

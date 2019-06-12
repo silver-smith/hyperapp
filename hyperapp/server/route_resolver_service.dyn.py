@@ -17,8 +17,8 @@ class RouteResolverService(object):
         self._route_resolver = route_resolver
 
     def rpc_resolve_route(self, request, endpoint_ref):
-        transport_ref_set = self._route_resolver.resolve(endpoint_ref)
-        return request.make_response_result(transport_ref_list=list(transport_ref_set))
+        route_rec_set = self._route_resolver.resolve(endpoint_ref)
+        return request.make_response_result(route_rec_list=list(route_rec_set))
 
 
 class ThisModule(Module):

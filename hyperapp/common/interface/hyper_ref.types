@@ -25,6 +25,11 @@ rpc_response = rpc_message class response:
     result_or_error: embedded
 
 
+route_rec = record:
+    transport_ref: ref
+    available_at: datetime
+
+
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref
 
@@ -34,4 +39,4 @@ ref_resolver = interface ref_resolver:
 
 route_resolver = interface route_resolver:
     commands:
-        resolve_route (endpoint_ref: ref) -> (transport_ref_list: ref list)
+        resolve_route (endpoint_ref: ref) -> (route_rec_list: route_rec list)

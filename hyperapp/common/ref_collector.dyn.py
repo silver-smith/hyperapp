@@ -90,14 +90,14 @@ class RefCollector(Visitor):
             self._collected_ref_set.add(value)
 
     def _handle_endpoint_ref(self, endpoint_ref):
-        transport_ref_set = self._route_resolver.resolve(endpoint_ref)
-        for transport_ref in transport_ref_set:
+        route_rec_set = self._route_resolver.resolve(endpoint_ref)
+        for route_rec in route_rec_set:
             self._collected_route_set.add(route_t(
                 endpoint_ref=endpoint_ref,
-                transport_ref=transport_ref,
-                available_at=datetime.now(tzlocal()),
+                transport_ref=route_rec.transport_ref,
+                available_at=route_rec.available_at,
                 ))
-            self._collected_ref_set.add(transport_ref)
+            self._collected_ref_set.add(route_rec.transport_ref)
 
     def _handle_rpc_message(self, rpc_message):
         if isinstance(rpc_message, htypes.hyper_ref.rpc_request):

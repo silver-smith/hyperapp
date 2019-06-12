@@ -1,7 +1,11 @@
+from datetime import datetime
 import logging
 import threading
 import queue
 
+from dateutil.tz import tzlocal
+
+from hyperapp.common.htypes import route_t
 from hyperapp.common.ref import LOCAL_TRANSPORT_REF, encode_bundle, decode_bundle
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.module import Module
@@ -64,13 +68,15 @@ class PhonyServer(object):
             capsule = self._ref_resolver.resolve_ref(root_ref)
             rpc_request = self._type_resolver.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
             assert isinstance(rpc_request, htypes.hyper_ref.rpc_request)
-            self._route_registry.register(rpc_request.source_endpoint_ref, self._phony_client_address_ref)
+            self._route_registry.register(
+                route_t(rpc_request.source_endpoint_ref, self._phony_client_address_ref, datetime.now(tzlocal())))
             self._remoting.process_rpc_request(root_ref, rpc_request)
 
     def _register_incoming_routes(self, route_list):
         for route in route_list:
             if route.transport_ref == LOCAL_TRANSPORT_REF:
-                self._route_registry.register(route.endpoint_ref, self._phony_client_address_ref)
+                self._route_registry.register(
+                    route_t(route.endpoint_ref, self._phony_client_address_ref, route.available_at))
 
 
 class PhonyTransport(object):

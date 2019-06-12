@@ -1,7 +1,8 @@
-import logging
-import uuid
 import asyncio
 from collections import namedtuple
+import logging
+from operator import attrgetter
+import uuid
 
 from hyperapp.common.htypes import EncodableEmbedded
 from hyperapp.common.ref import ref_repr, ref_list_repr
@@ -35,10 +36,10 @@ class Remoting(object):
 
     async def send_request(self, service_ref, iface, command, params):
         _log.info('Remoting: sending request %s %s to %s', iface.name, command.command_id, ref_repr(service_ref))
-        transport_ref_set = await self._async_route_resolver.resolve(service_ref)
-        assert transport_ref_set, 'No routes for service %s' % ref_repr(service_ref)
-        assert len(transport_ref_set) == 1, ref_list_repr(transport_ref_set)  # todo: multiple route support
-        transport = await self._transport_resolver.resolve(transport_ref_set.pop())
+        route_rec_set = await self._async_route_resolver.resolve(service_ref)
+        assert route_rec_set, 'No routes for service %s' % ref_repr(service_ref)
+        route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
+        transport = await self._transport_resolver.resolve(route_rec.transport_ref)
         if command.is_request:
             request_id = str(uuid.uuid4())
         else:

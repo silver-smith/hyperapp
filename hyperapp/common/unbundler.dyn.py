@@ -24,7 +24,7 @@ class Unbundler(object):
         for route in bundle.route_list:
             if route.transport_ref == LOCAL_TRANSPORT_REF:
                 continue  # must be handled by transport
-            self._route_registry.register_route(route)
+            self._route_registry.register(route)
 
 
 class ThisModule(Module):

@@ -1,6 +1,7 @@
 import logging
 import asyncio
 
+from hyperapp.common.htypes import route_t
 from hyperapp.client.module import ClientModule
 from .local_server_paths import LOCAL_ROUTE_RESOLVER_REF_PATH, load_bundle_from_file
 from .async_route_resolver import AsyncRouteSource
@@ -27,8 +28,9 @@ class RemoteRouteResolver(AsyncRouteSource):
         with (await self._entry_lock):
             result = await self._proxy.resolve_route(endpoint_ref)
             # cache received routes
-            for transport_ref in result.transport_ref_list:
-                self._route_registry.register(endpoint_ref, transport_ref)
+            for route_rec in result.route_rec_list:
+                self._route_registry.register(
+                    route_t(endpoint_ref, route_rec.transport_ref, route_rec.available_at))
                 return set(result.transport_ref_list)
 
 
