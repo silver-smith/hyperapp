@@ -25,8 +25,8 @@ class TreeAdapter(TreeObject):
         return cls(dir)
 
     def __init__(self, dir):
+        self._dir = dir  # used from inside __init__ below
         super().__init__()
-        self._dir = dir
 
     def get_title(self):
         return '%s' % self._dir.host
