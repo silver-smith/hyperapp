@@ -1,3 +1,4 @@
+import abc
 import sys
 import logging
 import asyncio
@@ -133,6 +134,13 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         log.info('~list_view.Model self=%s', id(self))
 
 
+class ListViewObserver(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def current_changed(self, current_key):
+        pass
+
+
 class ListView(View, ListObserver, QtGui.QTableView):
 
     def __init__(self, resource_resolver, locale, parent, resource_key, data_type, object, key):
@@ -147,6 +155,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         self._data_type = data_type
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded
+        self._observers = weakref.WeakSet()
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._default_command = None
@@ -173,6 +182,9 @@ class ListView(View, ListObserver, QtGui.QTableView):
         else:
             return filtered_command_list
 
+    def add_observer(self, observer):
+        self._observers.add(observer)
+
     def keyPressEvent(self, evt):
         if key_match_any(evt, ['Tab', 'Backtab', 'Ctrl+Tab', 'Ctrl+Shift+Backtab']):
             evt.ignore()  # let splitter or tab view handle it
@@ -182,6 +194,9 @@ class ListView(View, ListObserver, QtGui.QTableView):
     def currentChanged(self, idx, prev_idx):
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
         self._selected_items_changed()
+        current_key = self._current_item_id
+        for observer in self._observers:
+            observer.current_changed(current_key)
 
     @property
     def _current_item_id(self):

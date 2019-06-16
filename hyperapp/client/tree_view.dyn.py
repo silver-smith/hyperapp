@@ -1,3 +1,4 @@
+import abc
 import asyncio
 from contextlib import suppress
 import logging
@@ -186,6 +187,13 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         return self._id_counter
 
 
+class TreeViewObserver(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    def current_changed(self, current_path):
+        pass
+
+
 class TreeView(View, QtGui.QTreeView):
 
     def __init__(self, resource_resolver, locale, parent, resource_key, data_type, object, current_path):
@@ -198,6 +206,7 @@ class TreeView(View, QtGui.QTreeView):
         self._resource_key = resource_key
         self._data_type = data_type
         self._object = object
+        self._observers = weakref.WeakSet()
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
         self._elt_commands = []   # Command list - commands for selected elements
         self._elt_actions = []    # QtGui.QAction list - actions for selected elements
@@ -218,9 +227,15 @@ class TreeView(View, QtGui.QTreeView):
         else:
             return filtered_command_list
 
+    def add_observer(self, observer):
+        self._observers.add(observer)
+
     def currentChanged(self, idx, prev_idx):
         QtGui.QTreeView.currentChanged(self, idx, prev_idx)
         self._selected_items_changed()
+        current_path = self.current_item_path
+        for observer in self._observers:
+            observer.current_changed(current_path)
 
     @property
     def current_item_path(self):

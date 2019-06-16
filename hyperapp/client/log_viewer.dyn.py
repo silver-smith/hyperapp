@@ -220,10 +220,10 @@ class LogRecordConstructor(master_details.DetailsConstructor):
         super().__init__()
         self._session_id = constructor.session_id
 
-    def construct_details_handle(self, master_view, current_key):
-        if current_key is None:
+    def construct_details_handle(self, master_view, current_path):
+        if current_path is None:
             return None
-        return _make_log_record_handle(self._session_id, item_path=current_key)
+        return _make_log_record_handle(self._session_id, item_path=current_path)
 
 
 class ThisModule(ClientModule):

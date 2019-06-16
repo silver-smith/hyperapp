@@ -40,7 +40,7 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
         self._want_sizes = sizes
         master.set_parent(self)
         self.insertWidget(0, master.get_widget())
-        asyncio.ensure_future(self._set_details(master.current_item_path))
+        master.add_observer(self)
 
     def get_state(self):
         return htypes.master_details.master_details_handle(
@@ -53,10 +53,17 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
     def get_current_child(self):
         return self._master
 
-    async def _set_details(self, item_path):
-        details_handle = self._details_constructor.construct_details_handle(self._master, item_path)
+    def current_changed(self, current_key):
+        asyncio.ensure_future(self._set_details(current_key))
+
+    async def _set_details(self, current_key):
+        details_handle = self._details_constructor.construct_details_handle(self._master, current_key)
         if details_handle is None:
             return
+        if self.count() > 1:
+            w = self.widget(1)
+            w.setParent(None)
+            w.deleteLater()
         details = await self._view_registry.resolve_async(self._locale, details_handle)
         details.set_parent(self)
         self.insertWidget(1, details.get_widget())
