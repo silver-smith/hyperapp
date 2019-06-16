@@ -17,7 +17,7 @@ DEFAULT_ADDR = 'localhost:8888'
 
 
 def main():
-    init_logging('server.yaml')
+    init_logging('server')
 
     parser = argparse.ArgumentParser(description='Hyperapp server')
     parser.add_argument('identity_fpath', type=Path, help='path to identity file')

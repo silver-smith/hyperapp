@@ -9,7 +9,7 @@ from hyperapp.client.application import Application
 
 
 def main():
-    init_logging('client.yaml')
+    init_logging('client')
 
     parser = argparse.ArgumentParser(description='Hyperapp client')
     args = parser.parse_args()

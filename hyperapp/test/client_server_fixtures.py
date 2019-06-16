@@ -134,7 +134,7 @@ class ClientServices(TestClientServices):
 @contextmanager
 def client_services_running(event_loop, queues, type_module_list, code_module_list):
     event_loop.set_debug(True)
-    init_logging('test.yaml', context='client')
+    init_logging('test', context='client')
     services = ClientServices(
         event_loop,
         queues,

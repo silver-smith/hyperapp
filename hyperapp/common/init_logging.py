@@ -35,13 +35,8 @@ def setup_filter():
 def init_logging(default_config_name, context=''):
     global _logger_context
 
-    config_path = os.environ.get(LOGGING_CONFIG_ENV_KEY)
-    if config_path:
-        config_path = Path(config_path).expanduser()
-        if not config_path.is_absolute():
-            config_path = CONFIG_DIR / config_path
-    if not config_path:
-        config_path = CONFIG_DIR / default_config_name
+    config_name = os.environ.get(LOGGING_CONFIG_ENV_KEY) or default_config_name
+    config_path = CONFIG_DIR.joinpath(config_name).with_suffix('.yaml')
     config = yaml.load(config_path.read_text())
     logging.config.dictConfig(config)
 
