@@ -83,6 +83,9 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
+    def has_rows(self):
+        return bool(self._item_list)
+
     def _load_resources(self):
         for column in self._columns:
             resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
@@ -211,11 +214,11 @@ class ListView(View, ListObserver, QtGui.QTableView):
         else:
             if self.currentIndex().isValid():
                 return
-            else:
+            elif self.model().has_rows():
                 # ensure at least one item is selected
                 index = self.model().createIndex(0, 0)
-        if index is None:
-            return
+            else:
+                return
         self.setCurrentIndex(index)
         self.scrollTo(index)
         self._wanted_current_id = None
