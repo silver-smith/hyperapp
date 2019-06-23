@@ -227,11 +227,11 @@ class _Logger:
         return context
         
     def _store_record(self, record):
-        self._log('store record: %r', record)
+        self._log('store record: %r', record, level=logging.INFO)
         self._storage.add_record(record)
 
-    def _log(self, format, *args):
-        _log.debug('  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
+    def _log(self, format, *args, level=logging.DEBUG):
+        _log.log(level, '  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
 
 
 def init_logger(type_resolver, ref_registry, module_ref_resolver, storage):
