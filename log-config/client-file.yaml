@@ -22,7 +22,7 @@ handlers:
 
 loggers:
   hyperapp.common.ref_resolver: {level: WARNING}
-  hyperapp.common.logger: {level: WARNING}
+  hyperapp.common.logger: {level: INFO}
   hyperapp.common.ref_collector: {level: INFO}
   hyperapp.client.registry: {level: INFO}
 
