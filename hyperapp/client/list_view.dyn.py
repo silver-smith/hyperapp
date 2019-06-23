@@ -11,12 +11,13 @@ from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, resource_key_t
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 from hyperapp.client.command import Command
+from hyperapp.common.logger import log
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import ViewCommand, View
 from .list_object import ListObserver, ListObject
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 MODULE_NAME = 'list_view'
@@ -73,11 +74,11 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
             return str(value)
 
     def canFetchMore(self, parent):
-        log.debug('_Model.canFetchMore row=%d column=%r eof=%s', parent.row(), parent.column(), self._eof)
+        _log.debug('_Model.canFetchMore row=%d column=%r eof=%s', parent.row(), parent.column(), self._eof)
         return not self._eof
 
     def fetchMore(self, parent):
-        log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
+        _log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
         self._fetch_more()
 
     # own methods  ------------------------------------------------------------------------------------------------------
@@ -95,12 +96,12 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
             from_key = getattr(self._item_list[-1], self._item_id_attr)
         else:
             from_key = None
-        log.info('  requesting fetch from %r', from_key)
+        _log.info('  requesting fetch from %r', from_key)
         asyncio.ensure_future(self._object.fetch_items(from_key))
         self._fetch_pending = True
 
     def process_fetch_results(self, item_list, fetch_finished):
-        log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
+        _log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
         prev_items_len = len(self._item_list)
         self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), prev_items_len + len(item_list) - 1)
         self._item_list += item_list
@@ -118,7 +119,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
             self._fetch_more()
 
     def process_eof(self):
-        log.debug('reached eof')
+        _log.debug('reached eof')
         self._eof = True
 
     def index2id(self, index):
@@ -131,7 +132,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         return self._id2index.get(item_id)
 
     def __del__(self):
-        log.info('~list_view.Model self=%s', id(self))
+        _log.info('~list_view.Model self=%s', id(self))
 
 
 class ListViewObserver(metaclass=abc.ABCMeta):
@@ -192,6 +193,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         QtGui.QTableView.keyPressEvent(self, evt)
 
     def currentChanged(self, idx, prev_idx):
+        log.current_changed(row=idx.row())
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
         self._selected_items_changed()
         current_key = self._current_item_id
@@ -259,7 +261,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         return ViewCommand.from_command(command, self, item_id)
 
     def __del__(self):
-        log.debug('~list_view.ListView self=%r', id(self))
+        _log.debug('~list_view.ListView self=%r', id(self))
 
 
 class ThisModule(ClientModule):
