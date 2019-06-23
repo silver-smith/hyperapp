@@ -1,7 +1,6 @@
 import abc
 import sys
 import logging
-import asyncio
 import bisect
 import weakref
 
@@ -11,7 +10,7 @@ from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, resource_key_t
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 from hyperapp.client.command import Command
-from hyperapp.common.logger import log
+from hyperapp.common.logger import log, create_task
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import ViewCommand, View
@@ -100,7 +99,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         else:
             from_key = None
         _log.info('  requesting fetch from %r', from_key)
-        asyncio.ensure_future(self._object.fetch_items(from_key))
+        create_task(self._object.fetch_items(from_key), log.fetch_more)
         self._fetch_pending = True
 
     def process_fetch_results(self, item_list, fetch_finished):
@@ -225,7 +224,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
 
     def _on_activated(self, index):
         if self._default_command:
-            asyncio.ensure_future(self._default_command.run())
+            create_task(self._default_command.run(), log.activated)
 
     def _selected_items_changed(self):
         self._update_selected_actions()

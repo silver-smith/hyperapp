@@ -1,3 +1,4 @@
+import asyncio
 from collections import namedtuple
 from contextlib import contextmanager
 from enum import Enum
@@ -242,3 +243,12 @@ def close_logger():
     logger = _Logger.instance
     _Logger.instance = None
     logger.flush()
+
+
+def create_task(coro, log_context, **kw):
+    async def wrapper():
+        with log_context(**kw):
+            await coro
+        if _Logger.instance:
+            _Logger.instance.flush()
+    return asyncio.ensure_future(wrapper())
