@@ -1,7 +1,6 @@
 import logging
 
 from .ref import ref_repr
-from hyperapp.common.logger import log
 from .module import Module
 
 _log = logging.getLogger(__name__)
