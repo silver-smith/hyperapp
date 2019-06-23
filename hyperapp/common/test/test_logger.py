@@ -77,14 +77,12 @@ def init(type_resolver, ref_registry, module_ref_resolver):
 
 def test_entry(this_module_ref, init):
     with init() as storage:
-        log.test_entry(foo='foo-value', bar='bar-value')
-    assert storage.records == [LogRecord(
-        kind=RecordKind.LEAF,
-        context=[],
-        module_ref=this_module_ref,
-        name='test_entry',
-        params=dict(foo='foo-value', bar='bar-value'),
-        )]
+        log.test_entry_1(foo='foo-value-1')
+        log.test_entry_2(foo='foo-value-2', bar='bar-value')
+    assert storage.records == [
+        LogRecord(RecordKind.LEAF, [], this_module_ref, 'test_entry_1', dict(foo='foo-value-1')),
+        LogRecord(RecordKind.LEAF, [], this_module_ref, 'test_entry_2', dict(foo='foo-value-2', bar='bar-value')),
+        ]
 
 
 def test_context(this_module_ref, init):
