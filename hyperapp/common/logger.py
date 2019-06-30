@@ -245,10 +245,18 @@ def close_logger():
     logger.flush()
 
 
-def create_task(coro, log_context, **kw):
+def create_context_task(coro, log_context, **kw):
     async def wrapper():
         with log_context(**kw):
             await coro
+        if _Logger.instance:
+            _Logger.instance.flush()
+    return asyncio.ensure_future(wrapper())
+
+
+def create_task(coro):
+    async def wrapper():
+        await coro
         if _Logger.instance:
             _Logger.instance.flush()
     return asyncio.ensure_future(wrapper())
