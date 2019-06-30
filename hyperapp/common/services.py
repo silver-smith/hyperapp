@@ -49,7 +49,7 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         register_code_module_types(self.ref_registry, self.type_resolver)
         self.ref_resolver.add_source(self.ref_registry)
         self._logger_storage = json_file_log_storage_session(self.ref_resolver, self.type_resolver)
-        init_logger(self.type_resolver, self.ref_registry, self.module_ref_resolver, self._logger_storage)
+        self.logger = init_logger(self.type_resolver, self.ref_registry, self.module_ref_resolver, self._logger_storage)
         log.session_started()
         self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()

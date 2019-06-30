@@ -213,6 +213,17 @@ class _Logger:
     def flush(self):
         self._flush()
 
+    def init_asyncio_task_factory(self):
+        loop = asyncio.get_event_loop()
+        loop.set_task_factory(self._task_factory)
+
+    def _task_factory(self, loop, coro):
+        async def wrapper():
+            await coro
+            if _Logger.instance:
+                _Logger.instance.flush()
+        return asyncio.Task(wrapper(), loop=loop)
+
     def _flush(self):
         pending_record = self._pending_record.get()
         if pending_record:
@@ -236,7 +247,8 @@ class _Logger:
 
 
 def init_logger(type_resolver, ref_registry, module_ref_resolver, storage):
-    _Logger.instance = _Logger(type_resolver, ref_registry, module_ref_resolver, storage)
+    _Logger.instance = logger = _Logger(type_resolver, ref_registry, module_ref_resolver, storage)
+    return logger
 
 
 def close_logger():

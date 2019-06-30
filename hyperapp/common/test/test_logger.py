@@ -11,7 +11,7 @@ from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_resolver import TypeResolver
 from hyperapp.common.module_ref_resolver import ModuleRefResolver
 from hyperapp.common import cdr_coders  # register codec
-from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, close_logger, create_task
+from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, close_logger
 
 _log = logging.getLogger(__name__)
 
@@ -65,7 +65,8 @@ def init(type_resolver, ref_registry, module_ref_resolver):
     @contextmanager
     def inited():
         storage = StubStorage()
-        init_logger(type_resolver, ref_registry, module_ref_resolver, storage)
+        logger = init_logger(type_resolver, ref_registry, module_ref_resolver, storage)
+        logger.init_asyncio_task_factory()
         yield storage
         close_logger()
         _log.info('storage.records: %r', storage.records)
@@ -189,7 +190,7 @@ async def test_async_task(this_module_ref, init):
         log.test_entry(foo=123)
 
     with init() as storage:
-        future = create_task(task())
+        future = asyncio.ensure_future(task())
         await future
 
     assert storage.records == [
