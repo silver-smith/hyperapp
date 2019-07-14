@@ -67,6 +67,13 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     def get_columns(self):
         pass
 
+    @property
+    def key_column(self):
+        for column in self.get_columns():
+            if column.is_key:
+                return column
+        raise RuntimeError("No key column is defined by class {}".format(self.__class__.__name__))
+
     @abc.abstractmethod
     async def fetch_items(self, from_key):
         pass
