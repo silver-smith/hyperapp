@@ -21,7 +21,7 @@ class LayoutManager(object):
         text_view = TextView(text_object)
         tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
-        window = Window()
+        window = Window(on_closed=app.stop)
         window.setCentralWidget(tab_view)
         # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         window.menuBar().addMenu(self._build_global_menu(app, window, "&File"))

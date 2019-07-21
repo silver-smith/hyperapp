@@ -23,9 +23,10 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class Window(View, QtGui.QMainWindow):
 
-    def __init__(self, size=None, pos=None):
+    def __init__(self, on_closed, size=None, pos=None):
         QtGui.QMainWindow.__init__(self)
         View.__init__(self)
+        self._on_closed = on_closed
         self._child_widget = None
         if size:
             self.resize(size)
@@ -40,7 +41,7 @@ class Window(View, QtGui.QMainWindow):
     def closeEvent(self, evt):
         QtGui.QMainWindow.closeEvent(self, evt)
         ## self.deleteLater()  # seems not required, at least when moved to QMainWindow from QWidget
-        self._parent().window_closed(self)
+        self._on_closed()
 
     def get_state(self):
         return htypes.window.window_state(

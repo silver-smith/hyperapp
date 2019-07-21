@@ -48,6 +48,10 @@ class Application(AsyncApplication, Commander):
             self._state_storage.save_state(state)
             self.stop_loop()
 
+    def stop(self):
+        # self._state_storage.save_state(state)
+        self.stop_loop()
+
     @command('quit')
     def quit(self):
         ## module.set_shutdown_flag()
