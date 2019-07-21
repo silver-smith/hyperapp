@@ -91,8 +91,4 @@ class ThisModule(ClientModule):
             RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.proxy_factory)
 
     async def _resolve_dynamic_ref_list_object(self, dynamic_ref_list_ref, dynamic_ref_list):
-        object = htypes.ref_list.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
-        handle_t = htypes.core.string_list_handle
-        sort_column_id = 'id'
-        resource_key = resource_key_t(__module_ref__, ['RefListObject'])
-        return handle_t('list', object, resource_key, None)
+        return htypes.ref_list.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
