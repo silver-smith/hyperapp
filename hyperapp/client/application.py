@@ -57,5 +57,5 @@ class Application(AsyncApplication, Commander):
 
     def exec_(self):
         self.event_loop.run_until_complete(self.services.async_init())
-        self._layout_manager.build_default_layout()
+        self._layout_manager.build_default_layout(self)
         AsyncApplication.exec_(self)
