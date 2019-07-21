@@ -94,6 +94,7 @@ code_module_list = [
     'client.text_view',
     'client.text_edit',
     #                'form_view',
+    'client.layout_manager',
     'client.error_handler_impl',
 #    'bookmarks',
 #    'client.ref_redirect_handle',

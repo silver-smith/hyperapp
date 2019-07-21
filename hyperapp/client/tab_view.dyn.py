@@ -17,35 +17,16 @@ MODULE_NAME = 'tab_view'
 
 class TabView(QtGui.QTabWidget, View):
 
-    @classmethod
-    async def from_state(cls, locale, state, module_command_registry, view_registry):
-        children = []
-        for tab_state in state.tabs:
-            child = await view_registry.resolve_async(locale, tab_state)
-            children.append(child)
-        view = cls(locale, view_registry, children, state.current_tab)
-        view.init(module_command_registry)
-        return view
-
     @staticmethod    
     def map_current(state, mapper):
         idx = state.current_tab
         return htypes.tab_view.tab_view_state(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
-    def __init__(self, locale, view_registry, children, current_idx):
-        assert is_list_inst(children, View), repr(children)
+    def __init__(self):
         QtGui.QTabWidget.__init__(self)
         View.__init__(self)
-        self._locale = locale
-        self._view_registry = view_registry
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
-        self._children = []  # view list
-        for child in children:
-            child.set_parent(self)
-            self.addTab(child.get_widget(), child.get_title())
-            self._children.append(child)
-        self.setCurrentIndex(current_idx)
         self.currentChanged.connect(self._on_current_changed)
 
     def get_state(self):

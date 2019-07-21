@@ -17,11 +17,11 @@ class Application(AsyncApplication, Commander):
         AsyncApplication.__init__(self, sys_argv)
         Commander.__init__(self, commands_kind='view')
         self.services = Services(self.event_loop)
+        self._layout_manager = self.services.layout_manager
         self._module_command_registry = self.services.module_command_registry
         self._remoting = self.services.remoting
         self._resource_resolver = self.services.resource_resolver
         self._view_registry = self.services.view_registry
-        self._window_from_state = self.services.window_from_state
         self._windows = []
         self._state_storage = self.services.application_state_storage
 
@@ -56,10 +56,6 @@ class Application(AsyncApplication, Commander):
         self.stop_loop()
 
     def exec_(self):
-        state = self._state_storage.load_state()
-        if not state:
-            state = self.services.build_default_state()
-        pprint(state, title="Application state")
         self.event_loop.run_until_complete(self.services.async_init())
-        self.event_loop.run_until_complete(self.open_windows(state))
+        self._layout_manager.build_default_layout()
         AsyncApplication.exec_(self)

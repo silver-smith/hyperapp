@@ -4,8 +4,6 @@ from PySide import QtCore, QtGui
 
 from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import DEBUG_FOCUS, call_after
-from hyperapp.client.menu_bar import MenuBar
-from hyperapp.client import cmd_pane
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
@@ -25,23 +23,9 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class Window(View, QtGui.QMainWindow):
 
-    @classmethod
-    async def from_state(cls, state, app, module_command_registry, view_registry, resource_resolver):
-        locale = LOCALE
-        child = await TabView.from_state(locale, state.tab_view, module_command_registry, view_registry)
-        return cls(locale, view_registry, module_command_registry, resource_resolver, app, child,
-                   size=QtCore.QSize(state.size.w, state.size.h),
-                   pos=QtCore.QPoint(state.pos.x, state.pos.y))
-
-    def __init__(self, locale, view_registry, module_command_registry, resource_resolver, app, child, size=None, pos=None):
-        assert isinstance(child, TabView), repr(child)
+    def __init__(self, size=None, pos=None):
         QtGui.QMainWindow.__init__(self)
-        View.__init__(self, app)
-        self._locale = locale
-        self._view_registry = view_registry
-        self._resource_resolver = resource_resolver
-        self._app = app  # alias for _parent()
-        self._view = None
+        View.__init__(self)
         self._child_widget = None
         if size:
             self.resize(size)
@@ -51,15 +35,7 @@ class Window(View, QtGui.QMainWindow):
             self.move(pos)
         else:
             self.move(800, 100)
-        self._menu_bar = MenuBar(app, weakref.ref(self), LOCALE, module_command_registry, resource_resolver)
-        self._cmd_pane = cmd_pane.View(self, LOCALE, resource_resolver)
-        #self._filter_pane = filter_pane.View(self)
-        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
-        self.init(module_command_registry)
-        self.set_child(child)
-        self.show()
-        self._parent().window_created(self)
 
     def closeEvent(self, evt):
         QtGui.QMainWindow.closeEvent(self, evt)
@@ -125,4 +101,3 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.window_from_state = Window.from_state

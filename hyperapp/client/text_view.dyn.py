@@ -17,14 +17,9 @@ MODULE_NAME = 'text_view'
 
 class TextView(View, QtGui.QTextBrowser):
 
-    @classmethod
-    async def from_state(cls, locale, state, parent, objimpl_registry):
-        object = await objimpl_registry.resolve_async(state.object)
-        return cls(object, parent)
-
-    def __init__(self, object, parent):
+    def __init__(self, object):
         QtGui.QTextBrowser.__init__(self)
-        View.__init__(self, parent)
+        View.__init__(self)
         self.setOpenLinks(False)
         self.object = object
         self.setHtml(self.text2html(object.text or ''))
@@ -67,4 +62,3 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.view_registry.register('text_view', TextView.from_state, services.objimpl_registry)

@@ -1,0 +1,6 @@
+import:
+  code:
+    - client.text_object
+    - client.text_view
+    - client.tab_view
+    - client.window
