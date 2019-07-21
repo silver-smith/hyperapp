@@ -146,16 +146,13 @@ class ListViewObserver(metaclass=abc.ABCMeta):
 
 class ListView(View, ListObserver, QtGui.QTableView):
 
-    def __init__(self, resource_resolver, locale, parent, resource_key, data_type, object, key):
-        assert parent is None or isinstance(parent, View), repr(parent)
-        assert data_type is None or isinstance(data_type, Type), repr(data_type)
+    def __init__(self, resource_resolver, locale, resource_key, object, key=None):
         QtGui.QTableView.__init__(self)
         self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
-        View.__init__(self, parent)
+        View.__init__(self)
         self._resource_resolver = resource_resolver
         self._locale = locale
         self._resource_key = resource_key
-        self._data_type = data_type
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded
         self._observers = weakref.WeakSet()

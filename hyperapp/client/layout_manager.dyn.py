@@ -1,11 +1,14 @@
 from PySide import QtCore, QtGui
 
+from hyperapp.common.htypes import resource_key_t
 from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
 from .text_object import TextObject
 from .text_view import TextView
 from .tab_view import TabView
 from .window import Window
+from .list_object import ListObject
+from .list_view import ListView
 
 
 MODULE_NAME = 'layout_manager'
@@ -13,13 +16,15 @@ MODULE_NAME = 'layout_manager'
 
 class LayoutManager(object):
 
-    def __init__(self, module_command_registry):
+    def __init__(self, resource_resolver, module_command_registry, objimpl_registry):
+        self._resource_resolver = resource_resolver
         self._module_command_registry = module_command_registry
+        self._objimpl_registry = objimpl_registry
 
     def build_default_layout(self, app):
         text_object = TextObject('hello')
         text_view = TextView(text_object)
-        tab_view = TabView()
+        self._tab_view = tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
         window = Window(on_closed=app.stop)
         window.setCentralWidget(tab_view)
@@ -38,12 +43,27 @@ class LayoutManager(object):
             menu.addAction(make_async_action(menu, command.id, [], self._run_global_command, command))
         return menu
 
-    def _run_global_command(self, command):
-        assert 0, command
+    async def _run_global_command(self, command):
+        state = await command.run()
+        object = await self._objimpl_registry.resolve_async(state)
+        assert isinstance(object, ListObject), repr(object)
+        locale = 'en'
+        sort_column_id = 'key'
+        resource_key = resource_key_t(__module_ref__, [])
+        list_view = ListView(self._resource_resolver, locale, resource_key, object)
+        tab_view = self._tab_view
+        old_widget = tab_view.widget(0)
+        tab_view.removeTab(0)
+        old_widget.deleteLater()
+        tab_view.insertTab(0, list_view, list_view.get_title())
 
 
 class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.layout_manager = LayoutManager(services.module_command_registry)
+        services.layout_manager = LayoutManager(
+            services.resource_resolver,
+            services.module_command_registry,
+            services.objimpl_registry,
+            )

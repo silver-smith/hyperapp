@@ -86,10 +86,10 @@ class FsDirListAdapter(ListObject):
         return cls(handle_resolver, dir, state.path)
 
     def __init__(self, handle_resolver, dir, path):
-        super().__init__()
-        self._handle_resolver = handle_resolver
         self._dir = dir
         self._path = path
+        super().__init__()
+        self._handle_resolver = handle_resolver
 
     def get_title(self):
         return '%s:/%s' % (self._dir.host, '/'.join(self._path))
@@ -142,14 +142,4 @@ class ThisModule(ClientModule):
             FsDirListAdapter.impl_id, FsDirListAdapter.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
     async def _resolve_fs(self, fs_ref, fs):
-        dir_list = htypes.fs.fs_dir_list(FsDirListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)
-        handle_t = htypes.core.string_list_handle
-        sort_column_id = 'key'
-        resource_key = resource_key_t(__module_ref__, ['FsDirListAdapter'])
-        list_handle = handle_t('list', dir_list, resource_key, key=fs.current_file_name)
-        return list_handle
-        # filter_object = htypes.line_object.line_object('line', '')
-        # filter_view = htypes.line_object.line_edit_view('line_edit', filter_object, mode='edit')
-        # narrower_object = htypes.narrower.narrower_object('narrower', filtered_field='key')
-        # narrower_view = htypes.narrower.narrower_view('narrower', narrower_object, filter_view, list_handle)
-        # return narrower_view
+        return htypes.fs.fs_dir_list(FsDirListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)
