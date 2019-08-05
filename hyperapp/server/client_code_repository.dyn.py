@@ -43,7 +43,7 @@ class ClientModuleRepository(object):
 
     def _load_dynamic_module(self, info_path):
         with open(info_path) as f:
-            info = yaml.load(f.read())
+            info = yaml.safe_load(f.read())
         log.info('loaded client module info: %r', info)
         source_path = os.path.abspath(os.path.join(self._dynamic_module_dir, info['source_path']))
         satisfies = [path.split('/') for path in info['satisfies']]

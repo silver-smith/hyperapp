@@ -37,7 +37,7 @@ def init_logging(default_config_name, context=''):
 
     config_name = os.environ.get(LOGGING_CONFIG_ENV_KEY) or default_config_name
     config_path = CONFIG_DIR.joinpath(config_name).with_suffix('.yaml')
-    config = yaml.load(config_path.read_text())
+    config = yaml.safe_load(config_path.read_text())
     logging.config.dictConfig(config)
 
     _logger_context = context
@@ -47,7 +47,7 @@ def init_logging(default_config_name, context=''):
 def init_subprocess_logger(context='subprocess'):
     global _logger_context
 
-    config = yaml.load(CONFIG_DIR.joinpath('subprocess.yaml').read_text())
+    config = yaml.safe_load(CONFIG_DIR.joinpath('subprocess.yaml').read_text())
     logging.config.dictConfig(config)
 
     handler = logging.handlers.QueueHandler(_subprocess_logger_queue)

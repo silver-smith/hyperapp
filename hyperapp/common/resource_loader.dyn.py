@@ -33,7 +33,7 @@ class ResourceLoader(object):
 
     def _load_resources_from_file(self, locale, code_module_ref, fpath):
         with fpath.open() as f:
-            object_items = yaml.load(f)
+            object_items = yaml.safe_load(f)
             for object_id, sections in object_items.items():
                 for section_type, item_elements in sections.items():
                     self._load_resource_section(section_type, locale, code_module_ref, object_id, item_elements)

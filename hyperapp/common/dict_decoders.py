@@ -158,4 +158,4 @@ class JsonDecoder(DictDecoderBase):
 class YamlDecoder(DictDecoderBase):
 
     def _str_to_dict(self, value):
-        return yaml.load(value)
+        return yaml.safe_load(value)
