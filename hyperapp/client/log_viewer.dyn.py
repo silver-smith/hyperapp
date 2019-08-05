@@ -216,7 +216,7 @@ class LogRecord(ListObject):
 
 class LogRecordConstructor(master_details.DetailsConstructor):
 
-    def __init__(self, ref, constructor):
+    def __init__(self, constructor):
         super().__init__()
         self._session_id = constructor.session_id
 

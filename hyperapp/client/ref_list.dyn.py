@@ -90,5 +90,5 @@ class ThisModule(ClientModule):
         services.objimpl_registry.register(
             RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.proxy_factory)
 
-    async def _resolve_dynamic_ref_list_object(self, dynamic_ref_list_ref, dynamic_ref_list):
+    async def _resolve_dynamic_ref_list_object(self, dynamic_ref_list):
         return htypes.ref_list.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)

@@ -81,7 +81,7 @@ class PhonyServer(object):
 
 class PhonyTransport(object):
 
-    def __init__(self, address_ref, address, ref_collector_factory, response_queue):
+    def __init__(self, address, ref_collector_factory, response_queue):
         self._ref_collector_factory = ref_collector_factory
         self._response_queue = response_queue
 

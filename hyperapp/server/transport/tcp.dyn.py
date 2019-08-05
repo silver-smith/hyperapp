@@ -287,7 +287,7 @@ class TcpServer(object):
 
 class IncomingConnectionTransport(object):
 
-    def __init__(self, address_ref, address, server):
+    def __init__(self, address, server):
         self._queue = server.get_outcoming_queue(address.connection_id)
 
     def send(self, message_ref):

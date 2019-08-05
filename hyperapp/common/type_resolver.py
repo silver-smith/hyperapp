@@ -80,11 +80,11 @@ class TypeResolver(object):
     def reverse_resolve(self, t):
         return self._type2ref[t]
 
-    def _resolve_meta_ref(self, ref, meta_ref, name=None):
+    def _resolve_meta_ref(self, meta_ref, name=None):
         return self._meta_type_registry.resolve(self._type_ref_resolver, meta_ref.type, meta_ref.name)
 
-    def _resolve_builtin_ref(self, ref, builtin_ref, name=None):
-        return self._ref2type_cache[ref]  # must be registered using register_builtin_type
+    def _resolve_builtin_ref(self, builtin_ref, name=None):
+        return self._builtin_name_to_type[builtin_ref.name]  # must be registered using register_builtin_type
 
     def make_capsule(self, object, t=None):
         t = t or deduce_value_type(object)

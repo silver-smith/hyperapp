@@ -141,5 +141,5 @@ class ThisModule(ClientModule):
         services.objimpl_registry.register(
             FsDirListAdapter.impl_id, FsDirListAdapter.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
 
-    async def _resolve_fs(self, fs_ref, fs):
+    async def _resolve_fs(self, fs):
         return htypes.fs.fs_dir_list(FsDirListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)

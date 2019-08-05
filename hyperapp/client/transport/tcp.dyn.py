@@ -27,7 +27,6 @@ class TcpProtocol(asyncio.Protocol):
             ref_collector_factory,
             unbundler,
             remoting,
-            address_ref,
             address,
             ):
         self._ref_resolver = ref_resolver
@@ -37,12 +36,11 @@ class TcpProtocol(asyncio.Protocol):
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
         self._remoting = remoting
-        self._address_ref = address_ref
         self._address = address
         self._recv_buf = b''
 
     def __str__(self):
-        return 'to %s %s:%d' % (ref_repr(self._address_ref), self._address.host, self._address.port)
+        return 'to %s:%d' % (self._address.host, self._address.port)
 
     def connection_made(self, asyncio_transport):
         log.info('tcp connection made')
@@ -107,7 +105,6 @@ class ThisModule(ClientModule):
 
     async def _resolve_address(
             self,
-            address_ref,
             address,
             ref_resolver,
             type_resolver,
@@ -117,14 +114,14 @@ class ThisModule(ClientModule):
             unbundler,
             remoting,
             ):
-        log.debug('Tcp transport: resolving address %s: %s', ref_repr(address_ref), address)
+        log.debug('Tcp transport: resolving address: %s', address)
         # use lock to avoid multiple connections to same address established in parallel
         with (await self._connect_lock):
             protocol = self._address_to_protocol.get(address)
             if protocol:
-                log.info('Tcp transport: reusing connection %s for %s', protocol, ref_repr(address_ref))
+                log.info('Tcp transport: reusing connection %s for %s', protocol, address)
                 return protocol
-            log.info('Tcp transport: establishing connection for %s', ref_repr(address_ref))
+            log.info('Tcp transport: establishing connection for %s', address)
             constructor = lambda: TcpProtocol(
                 self._event_loop,
                 ref_resolver,
@@ -134,10 +131,9 @@ class ThisModule(ClientModule):
                 ref_collector_factory,
                 unbundler,
                 remoting,
-                address_ref,
                 address,
                 )
             asyncio_transport, protocol = await self._event_loop.create_connection(constructor, address.host, address.port)
             self._address_to_protocol[address] = protocol
-            log.debug('Tcp transport: connection for %s is established', ref_repr(address_ref))
+            log.debug('Tcp transport: connection for %s is established', address)
             return protocol

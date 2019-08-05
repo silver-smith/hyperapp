@@ -22,7 +22,7 @@ class AsyncCapsuleRegistry(CapsuleRegistry):
         log.info('Producing %s for capsule %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, ref_repr(ref), ref_repr(capsule.type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
-        return (await run_awaitable_factory(rec.factory, ref, object, *(rec.args + args), **dict(rec.kw, **kw)))
+        return (await run_awaitable_factory(rec.factory, object, *(rec.args + args), **dict(rec.kw, **kw)))
 
 
 class AsyncCapsuleResolver(object):

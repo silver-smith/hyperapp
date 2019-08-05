@@ -46,7 +46,7 @@ class ThisModule(ClientModule):
         services.on_start.append(self._start_queue_thread)
         services.on_stop.append(self._stop_queue_thread)
 
-    def _resolve_address(self, address_ref, address, ref_collector_factory, request_queue):
+    def _resolve_address(self, address, ref_collector_factory, request_queue):
         return Transport(ref_collector_factory, request_queue)
 
     def _start_queue_thread(self):

@@ -477,7 +477,7 @@ class ThisModule(ClientModule):
     async def _blog_service_factory(self, blog_service_ref):
         return (await BlogService.from_data(self._type_resolver, self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
 
-    async def _resolve_blog(self, blog_ref, blog):
+    async def _resolve_blog(self, blog):
         return (await self.open_blog(blog.blog_service_ref, blog.blog_id, blog.current_article_id))
 
     async def open_blog(self, blog_service_ref, blog_id, current_article_id=None):
@@ -487,7 +487,7 @@ class ThisModule(ClientModule):
         resource_key = resource_key_t(__module_ref__, ['BlogObject'])
         return handle_t('list', list_object, resource_key, key=current_article_id)
 
-    async def _resolve_blog_article(self, blog_article_ref, blog_article):
+    async def _resolve_blog_article(self, blog_article):
         blog_service = await self._blog_service_factory(blog_article.blog_service_ref)
         return (await self.open_article(blog_service, blog_article.blog_id, blog_article.article_id))
 
@@ -499,7 +499,7 @@ class ThisModule(ClientModule):
         contents_object = htypes.blog.blog_article_text(BlogArticleContents.impl_id, item.text, item.ref_list)
         return BlogArticleForm.construct(form_object, title_object, contents_object, mode=mode)
 
-    async def _resolve_blog_article_ref_list(self, ref_list_object_ref, ref_list_object):
+    async def _resolve_blog_article_ref_list(self, ref_list_object):
         list_object = htypes.blog.article_ref_list_object(
             ArticleRefListObject.impl_id, ref_list_object.blog_service_ref, ref_list_object.blog_id, ref_list_object.article_id)
         handle_t = htypes.core.int_list_handle
