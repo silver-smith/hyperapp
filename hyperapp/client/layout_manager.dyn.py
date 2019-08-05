@@ -29,7 +29,32 @@ class _CurrentItemObserver:
         self._layout_manager.update_element_commands(self._object, current_item_key)
 
 
-class LayoutManager(object):
+class History:
+
+    def __init__(self):
+        self._backward = []
+        self._forward = []
+
+    def add_new(self, state):
+        self._backward.append(state)
+        self._forward.clear()
+
+    def pop_back(self, current_state):
+        if not self._backward:
+            return None
+        if current_state is not None:
+            self._forward.append(current_state)
+        return self._backward.pop(-1)
+
+    def pop_forward(self, current_state):
+        if not self._forward:
+            return None
+        if current_state is not None:
+            self._backward.append(current_state)
+        return self._forward.pop(-1)
+
+
+class LayoutManager:
 
     def __init__(self, resource_resolver, module_command_registry, objimpl_registry):
         self._resource_resolver = resource_resolver
@@ -38,7 +63,9 @@ class LayoutManager(object):
         self._cmd_pane = self._construct_cmd_pane()
         self._dir_buttons = []
         self._element_buttons = []
+        self._current_state = None
         self._current_item_observer = None
+        self._history = History()
 
     def build_default_layout(self, app):
         text_object = TextObject('hello')
@@ -49,11 +76,12 @@ class LayoutManager(object):
         window.setCentralWidget(tab_view)
         window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
-        window.menuBar().addMenu(self._build_global_menu(app, window, "&File"))
+        window.menuBar().addMenu(self._build_global_menu(app, "&File"))
+        window.menuBar().addMenu(self._build_navigation_menu("&Navigation"))
         window.show()
         self._window = window
 
-    def _build_global_menu(self, app, window, title):
+    def _build_global_menu(self, app, title):
         menu = QtGui.QMenu(title)
         for command in self._module_command_registry.get_all_commands():
             menu.addAction(make_async_action(menu, command.id, [], self._run_command, command))
@@ -61,6 +89,12 @@ class LayoutManager(object):
             menu.addSeparator()
         for command in app.get_global_commands():
             menu.addAction(make_async_action(menu, command.id, [], self._run_command, command))
+        return menu
+
+    def _build_navigation_menu(self, title):
+        menu = QtGui.QMenu(title)
+        menu.addAction(make_async_action(menu, 'Go back', ['Escape', 'Alt+Left'], self._navigate_backward))
+        menu.addAction(make_async_action(menu, 'Go forward', ['Alt+Right'], self._navigate_forward))
         return menu
 
     def _construct_cmd_pane(self):
@@ -105,6 +139,13 @@ class LayoutManager(object):
     async def _run_command(self, command, *args, **kw):
         _log.info('Run command: %r', command.id)
         state = await command.run(*args, **kw)
+        if state is None:
+            return
+        if self._current_state:
+            self._history.add_new(self._current_state)
+        await self._open(state)
+
+    async def _open(self, state):
         object = await self._objimpl_registry.resolve_async(state)
         assert isinstance(object, ListObject), repr(object)
         locale = 'en'
@@ -119,6 +160,17 @@ class LayoutManager(object):
         self._update_dir_buttons(object)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
         list_view.add_observer(observer)
+        self._current_state = state
+
+    async def _navigate_backward(self):
+        state = self._history.pop_back(self._current_state)
+        if state is not None:
+            await self._open(state)
+
+    async def _navigate_forward(self):
+        state = self._history.pop_forward(self._current_state)
+        if state is not None:
+            await self._open(state)
 
 
 class ThisModule(ClientModule):
