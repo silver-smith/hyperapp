@@ -13,6 +13,8 @@ from .tab_view import TabView
 from .window import Window
 from .list_object import ListObject
 from .list_view import ListView
+from .tree_object import TreeObject
+from .tree_view import TreeView
 
 _log = logging.getLogger(__name__)
 
@@ -147,20 +149,38 @@ class LayoutManager:
 
     async def _open(self, state):
         object = await self._objimpl_registry.resolve_async(state)
-        assert isinstance(object, ListObject), repr(object)
-        locale = 'en'
-        sort_column_id = 'key'
-        resource_key = resource_key_t(__module_ref__, [])
-        list_view = ListView(self._resource_resolver, locale, resource_key, object)
+        self._current_item_observer = observer = _CurrentItemObserver(self, object)
+        view = self._make_view(object, observer)
         tab_view = self._tab_view
         old_widget = tab_view.widget(0)
         tab_view.removeTab(0)
         old_widget.deleteLater()
-        tab_view.insertTab(0, list_view, list_view.get_title())
+        tab_view.insertTab(0, view, view.get_title())
         self._update_dir_buttons(object)
-        self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        list_view.add_observer(observer)
         self._current_state = state
+
+    def _make_view(self, object, observer):
+        if isinstance(object, ListObject):
+            return self._make_list_view(object, observer)
+        if isinstance(object, TreeObject):
+            return self._make_tree_view(object, observer)
+        assert False, repr(object)
+
+    def _make_list_view(self, object, observer):
+        locale = 'en'
+        sort_column_id = 'key'
+        resource_key = resource_key_t(__module_ref__, [])
+        list_view = ListView(self._resource_resolver, locale, resource_key, object)
+        list_view.add_observer(observer)
+        return list_view
+
+    def _make_tree_view(self, object, observer):
+        locale = 'en'
+        sort_column_id = 'key'
+        resource_key = resource_key_t(__module_ref__, [])
+        tree_view = TreeView(self._resource_resolver, locale, resource_key, object)
+        tree_view.add_observer(observer)
+        return tree_view
 
     async def _navigate_backward(self):
         state = self._history.pop_back(self._current_state)

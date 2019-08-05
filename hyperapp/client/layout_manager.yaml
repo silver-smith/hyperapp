@@ -6,3 +6,5 @@ import:
     - client.window
     - client.list_object
     - client.list_view
+    - client.tree_object
+    - client.tree_view

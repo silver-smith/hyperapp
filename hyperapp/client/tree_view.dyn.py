@@ -196,15 +196,14 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
 
 class TreeView(View, QtGui.QTreeView):
 
-    def __init__(self, resource_resolver, locale, parent, resource_key, data_type, object, current_path):
+    def __init__(self, resource_resolver, locale, resource_key, object, current_path=None):
         QtGui.QTreeView.__init__(self)
         self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
-        View.__init__(self, parent)
+        View.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)
         self._resource_resolver = resource_resolver
         self._locale = locale
         self._resource_key = resource_key
-        self._data_type = data_type
         self._object = object
         self._observers = weakref.WeakSet()
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
@@ -213,6 +212,7 @@ class TreeView(View, QtGui.QTreeView):
         self._default_command = None
         self.activated.connect(self._on_activated)
 
+    # obsolete
     def get_state(self):
         return self._data_type('tree', self._object.get_state(), self._resource_key, self.current_item_path)
 

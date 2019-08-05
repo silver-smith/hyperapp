@@ -168,6 +168,7 @@ class ListView(View, ListObserver, QtGui.QTableView):
         self.setSelectionMode(self.SingleSelection)
         self.activated.connect(self._on_activated)
 
+    # obsolete
     def get_state(self):
         return self._data_type('list', self._object.get_state(), self._resource_key, self._current_item_id)
 

@@ -63,6 +63,4 @@ class ThisModule(ClientModule):
     async def open_local_fs_tree(self):
         fs_service_ref = self._local_fs_service_ref
         path = 'usr/share/doc'.split('/')
-        dir_tree = htypes.fs.fs_dir_tree(TreeAdapter.impl_id, fs_service_ref, LOCAL_HOST_NAME, path, current_name=None)
-        resource_key = resource_key_t(__module_ref__, ['fs-tree'])
-        return htypes.tree_view.string_tree_handle('tree', dir_tree, resource_key, current_path=None)
+        return htypes.fs.fs_dir_tree(TreeAdapter.impl_id, fs_service_ref, LOCAL_HOST_NAME, path, current_name=None)

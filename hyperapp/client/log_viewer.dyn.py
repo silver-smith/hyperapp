@@ -240,5 +240,4 @@ class ThisModule(ClientModule):
 
     @command('open_last_session')
     async def open_last_session(self):
-        object = htypes.log_viewer.log_viewer(SessionLogs.impl_id, self._session_cache.prev_session_id)
-        return _make_session_logs_handle(object)
+        return htypes.log_viewer.log_viewer(SessionLogs.impl_id, self._session_cache.prev_session_id)
