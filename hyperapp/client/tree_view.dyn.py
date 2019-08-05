@@ -336,5 +336,5 @@ class ThisModule(ClientModule):
         object = await objimpl_registry.resolve_async(state.object)
         return self._tree_view_factory(locale, parent, state.resource_key, data_type, object, state.current_path)
 
-    def _tree_view_factory(self, locale, parent, resource_key, data_type, object, current_path):
-        return TreeView(self._resource_resolver, locale, parent, resource_key, data_type, object, current_path)
+    def _tree_view_factory(self, locale, resource_key, object, current_path):
+        return TreeView(self._resource_resolver, locale, resource_key, object, current_path)
