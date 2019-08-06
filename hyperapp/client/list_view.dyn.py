@@ -270,7 +270,7 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         self._resource_resolver = services.resource_resolver
         services.list_view_factory = self._list_view_factory
-        services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry)
+        # services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry)
 
     async def _list_view_from_state(self, locale, state, parent, objimpl_registry):
         data_type = htypes.core.handle.get_object_class(state)

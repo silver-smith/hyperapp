@@ -6,6 +6,8 @@ import:
       - int_list_handle
     text_object:
       - text_object
+    list_view_sample:
+      - list_view_sample_object
   code:
     - client.items_object
     - client.list_object

@@ -58,10 +58,10 @@ class History:
 
 class LayoutManager:
 
-    def __init__(self, resource_resolver, module_command_registry, objimpl_registry):
+    def __init__(self, resource_resolver, module_command_registry, object_registry):
         self._resource_resolver = resource_resolver
         self._module_command_registry = module_command_registry
-        self._objimpl_registry = objimpl_registry
+        self._object_registry = object_registry
         self._cmd_pane = self._construct_cmd_pane()
         self._dir_buttons = []
         self._element_buttons = []
@@ -148,7 +148,7 @@ class LayoutManager:
         await self._open(state)
 
     async def _open(self, state):
-        object = await self._objimpl_registry.resolve_async(state)
+        object = await self._object_registry.resolve_async(state)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
         view = self._make_view(object, observer)
         tab_view = self._tab_view
@@ -200,5 +200,5 @@ class ThisModule(ClientModule):
         services.layout_manager = LayoutManager(
             services.resource_resolver,
             services.module_command_registry,
-            services.objimpl_registry,
+            services.object_registry,
             )

@@ -43,6 +43,7 @@ type_module_list = [
     'data_viewer',
     'master_details',
     'log_viewer',
+    'list_view_sample',
     ]
 
 code_module_list = [
@@ -70,6 +71,7 @@ code_module_list = [
     'client.remote_ref_resolver',
     'client.remote_route_resolver',
     'client.objimpl_registry',
+    'client.object_registry',
     'client.view',
     'client.composite',
     'client.view_registry',

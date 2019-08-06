@@ -71,7 +71,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.objimpl_registry.register(SampleObject.impl_id, SampleObject.from_state)
+        # services.objimpl_registry.register(SampleObject.impl_id, SampleObject.from_state)
 
     @command('open_tree_view_sample')
     async def open_tree_view_sample(self):

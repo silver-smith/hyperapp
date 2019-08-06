@@ -22,7 +22,7 @@ class AsyncCapsuleRegistry(CapsuleRegistry):
     async def resolve_async(self, object, *args, **kw):
         t = deduce_value_type(object)
         type_ref = self._type_resolver.reverse_resolve(t)
-        return (await self._resolve_object_async(capsule.type_ref, t, object, args, kw))
+        return (await self._resolve_object_async(type_ref, t, object, args, kw))
 
     async def _resolve_object_async(self, type_ref, t, object, args, kw):
         pprint(object, t=t, title='Producing %s for %s of type %s' % (self._produce_name, object, ref_repr(type_ref)))

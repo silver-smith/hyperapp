@@ -26,6 +26,7 @@ class SampleObject(ListObject):
     def from_state(cls, state):
         return cls()
 
+    # obsolete
     def get_state(self):
         return htypes.core.object_base(self.impl_id)
 
@@ -80,8 +81,8 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.objimpl_registry.register(SampleObject.impl_id, SampleObject.from_state)
+        services.object_registry.register_type(htypes.list_view_sample.list_view_sample_object, SampleObject.from_state)
 
     @command('open_list_view_sample')
     async def open_list_view_sample(self):
-        return htypes.core.object_base(SampleObject.impl_id)
+        return htypes.list_view_sample.list_view_sample_object()
