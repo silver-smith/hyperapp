@@ -1,6 +1,7 @@
 import logging
 
 from .htypes import Type, ref_t, capsule_t
+from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
 from .ref import ref_repr
 from .visual_rep import pprint
@@ -49,7 +50,7 @@ class CapsuleRegistry(RegistryBase):
         log.info('Producing %s for %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, object, ref_repr(type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
-        return rec.factory(object, *(rec.args + args), **dict(rec.kw, **kw))
+        return rec.factory(object, *(*rec.args, *args), **{**rec.kw, **kw})
 
 
 class CapsuleResolver(object):
