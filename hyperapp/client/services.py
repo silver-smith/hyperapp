@@ -44,6 +44,7 @@ type_module_list = [
     'master_details',
     'log_viewer',
     'list_view_sample',
+    'tree_view_sample',
     ]
 
 code_module_list = [

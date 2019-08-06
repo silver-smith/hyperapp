@@ -20,15 +20,9 @@ Item = namedtuple('Item', 'idx column_1 column_2')
 
 class SampleObject(ListObject):
 
-    impl_id = 'sample-list-object'
-
     @classmethod
     def from_state(cls, state):
         return cls()
-
-    # obsolete
-    def get_state(self):
-        return htypes.core.object_base(self.impl_id)
 
     def get_title(self):
         return 'List test'

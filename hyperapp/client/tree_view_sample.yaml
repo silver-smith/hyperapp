@@ -3,8 +3,8 @@ import:
     core:
       - object_base
       - obj_handle
-    tree_view:
-      - string_tree_handle
+    tree_view_sample:
+      - tree_view_sample_object
     text_object:
       - text_object
   code:
