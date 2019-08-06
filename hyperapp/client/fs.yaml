@@ -10,7 +10,6 @@ import:
       - narrower_view
     fs:
       - fs
-      - fs_dir_list
   code:
     - client.async_capsule_registry
     - client.items_object

@@ -16,7 +16,7 @@ LOCAL_HOST_NAME = 'local'
 class LocalFsService(object):
 
     @classmethod
-    def from_data(cls, unused_local_fs_service_ref, unused_local_fs_service, ref_registry):
+    def from_data(cls, unused_local_fs_service, ref_registry):
         return cls(ref_registry)
 
     def __init__(self, ref_registry):
@@ -38,7 +38,6 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         ref_registry = services.ref_registry
-        self._handle_resolver = services.handle_resolver
         services.fs_service_registry.register_type(
             htypes.fs.local_fs_service, LocalFsService.from_data, services.ref_registry)
         fs_service = htypes.fs.local_fs_service()
@@ -46,9 +45,8 @@ class ThisModule(ClientModule):
         services.local_fs_service_ref = fs_service_ref
         # home_path = os.path.expanduser('~').split('/')[1:]
         home_path = ['usr', 'share', 'doc']
-        object = htypes.fs.fs(fs_service_ref, LOCAL_HOST_NAME, home_path, current_file_name=None)
-        self._home_fs_ref = ref_registry.register_object(object)
+        self._local_fs = htypes.fs.fs(fs_service_ref, LOCAL_HOST_NAME, home_path, current_file_name=None)
 
     @command('open_local_fs')
     async def open_local_fs(self):
-        return (await self._handle_resolver.resolve(self._home_fs_ref))
+        return self._local_fs

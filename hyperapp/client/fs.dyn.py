@@ -66,9 +66,8 @@ class FsDir:
     def get_item(self, path):
         return self._path2item.get(tuple(path))
 
-    def get_path_ref(self, path, current_file_name=None):
-        object = htypes.fs.fs(self.fs_service_ref, self.host, path, current_file_name)
-        return self._ref_registry.register_object(object)
+    def get_fs(self, path, current_file_name=None):
+        return htypes.fs.fs(self.fs_service_ref, self.host, path, current_file_name)
 
     # def process_diff(self, diff):
     #     assert isinstance(diff, ListDiff), repr(diff)
@@ -77,19 +76,16 @@ class FsDir:
 
 class FsDirListAdapter(ListObject):
 
-    impl_id = 'fs_dir_list'
-
     @classmethod
-    async def from_state(cls, state, ref_registry, handle_resolver, fs_service_resolver):
+    async def from_state(cls, state, ref_registry, fs_service_resolver):
         fs_service = await fs_service_resolver.resolve(state.fs_service_ref)
         dir = FsDir(ref_registry, fs_service, state.host)
-        return cls(handle_resolver, dir, state.path)
+        return cls(dir, state.path)
 
-    def __init__(self, handle_resolver, dir, path):
+    def __init__(self, dir, path):
         self._dir = dir
         self._path = path
         super().__init__()
-        self._handle_resolver = handle_resolver
 
     def get_title(self):
         return '%s:/%s' % (self._dir.host, '/'.join(self._path))
@@ -127,8 +123,7 @@ class FsDirListAdapter(ListObject):
         return (await self._open_path(path, current_file_name=self._path[-1]))
 
     async def _open_path(self, path, current_file_name=None):
-        ref = self._dir.get_path_ref(path, current_file_name)
-        return (await self._handle_resolver.resolve(ref))
+        return self._dir.get_fs(path, current_file_name)
 
 
 class ThisModule(ClientModule):
@@ -137,9 +132,5 @@ class ThisModule(ClientModule):
         super().__init__(MODULE_NAME, services)
         services.fs_service_registry = fs_service_registry = AsyncCapsuleRegistry('fs_service', services.type_resolver)
         services.fs_service_resolver = fs_service_resolver = AsyncCapsuleResolver(services.async_ref_resolver, fs_service_registry)
-        services.handle_registry.register_type(htypes.fs.fs, self._resolve_fs)
-        services.objimpl_registry.register(
-            FsDirListAdapter.impl_id, FsDirListAdapter.from_state, services.ref_registry, services.handle_resolver, fs_service_resolver)
-
-    async def _resolve_fs(self, fs):
-        return htypes.fs.fs_dir_list(FsDirListAdapter.impl_id, fs.fs_service_ref, fs.host, fs.path)
+        services.object_registry.register_type(
+            htypes.fs.fs, FsDirListAdapter.from_state, services.ref_registry, fs_service_resolver)
