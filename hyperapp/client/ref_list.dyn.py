@@ -18,25 +18,21 @@ MODULE_NAME = 'ref_list'
 
 class RefListObject(ListObject):
 
-    impl_id = 'ref_list'
-
     _Item = namedtuple('RefListObject_Item', 'id ref')
 
     @classmethod
-    async def from_state(cls, state, handle_resolver, proxy_factory):
+    async def from_state(cls, state, type_resolver, async_ref_resolver, proxy_factory):
         ref_list_service = await RefListService.from_ref(state.ref_list_service, proxy_factory)
-        return cls(handle_resolver, ref_list_service, state.ref_list_id)
+        return cls(type_resolver, async_ref_resolver, ref_list_service, state.ref_list_id)
 
-    def __init__(self, handle_resolver, ref_list_service, ref_list_id):
+    def __init__(self, type_resolver, async_ref_resolver, ref_list_service, ref_list_id):
         ListObject.__init__(self)
-        self._handle_resolver = handle_resolver
+        self._type_resolver = type_resolver
+        self._async_ref_resolver = async_ref_resolver
         self._ref_list_service = ref_list_service
         self._ref_list_id = ref_list_id
         self._id2ref = None
         self._item_list = None
-
-    def get_state(self):
-        return htypes.ref_list.ref_list_object(self.impl_id, self._ref_list_service.to_ref(), self._ref_list_id)
 
     def get_title(self):
         return 'Ref List %s' % self._ref_list_id
@@ -61,7 +57,7 @@ class RefListObject(ListObject):
         assert self._id2ref is not None  # fetch_element was not called yet
         ref = self._id2ref[item_id]
         log.info('Opening ref %r: %s', item_id, ref_repr(ref))
-        return (await self._handle_resolver.resolve(ref))
+        return (await self._async_ref_resolver.resolve_ref_to_object(ref))
 
 
 class RefListService(object):
@@ -86,9 +82,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.handle_registry.register_type(htypes.ref_list.dynamic_ref_list, self._resolve_dynamic_ref_list_object)
-        services.objimpl_registry.register(
-            RefListObject.impl_id, RefListObject.from_state, services.handle_resolver, services.proxy_factory)
-
-    async def _resolve_dynamic_ref_list_object(self, dynamic_ref_list):
-        return htypes.ref_list.ref_list_object(RefListObject.impl_id, dynamic_ref_list.ref_list_service, dynamic_ref_list.ref_list_id)
+        services.object_registry.register_type(
+            htypes.ref_list.dynamic_ref_list, RefListObject.from_state, services.type_resolver, services.async_ref_resolver, services.proxy_factory)
