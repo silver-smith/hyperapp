@@ -1,4 +1,4 @@
-ThisModule:
+module:client.local_server_ref_list:ThisModule:
   commands:
     open_local_server:
       text: Open local server

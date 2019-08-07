@@ -1,4 +1,4 @@
-RefListObject:
+type:ref_list.dynamic_ref_list:
   columns:
     id:
       text: Id

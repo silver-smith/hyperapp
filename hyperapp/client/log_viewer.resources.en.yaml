@@ -1,4 +1,4 @@
-ThisModule:
+module:client.log_viewer:ThisModule:
   commands:
     open_last_session:
       text: Last session logs
@@ -6,7 +6,7 @@ ThisModule:
       shortcuts:
       - Alt+Ctrl+S
 
-SessionLogs:
+type:log_viewer.log_viewer:
   columns:
     name:
       text: Name

@@ -155,7 +155,7 @@ class LayoutManager:
             else:
                 text = command.id
                 shortcut_list = None
-                description = '.'.join(cmd.resource_key.path)
+                description = '.'.join(command.resource_key.path)
             button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
             if shortcut_list:
                 button.setShortcut(shortcut_list[0])

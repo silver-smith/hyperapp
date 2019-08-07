@@ -1,4 +1,4 @@
-FsDirListAdapter:
+type:fs.fs:
   columns:
     key:
       text: File Name
