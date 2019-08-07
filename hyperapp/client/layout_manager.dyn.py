@@ -5,6 +5,7 @@ from functools import partial
 from PySide import QtCore, QtGui
 
 from hyperapp.common.htypes import resource_key_t
+from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
 from .text_object import TextObject
@@ -58,7 +59,8 @@ class History:
 
 class LayoutManager:
 
-    def __init__(self, resource_resolver, module_command_registry, object_registry):
+    def __init__(self, type_resolver, resource_resolver, module_command_registry, object_registry):
+        self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._module_command_registry = module_command_registry
         self._object_registry = object_registry
@@ -139,8 +141,25 @@ class LayoutManager:
             button.deleteLater()
         self._element_buttons.clear()
         for command in object.get_item_command_list(current_item_key):
-            text = command.id
+            type_ref = self._type_resolver.reverse_resolve(deduce_value_type(self._current_state))
+            resource_key = resource_key_t(type_ref, command.resource_key.path[1:])  # skip class name
+            resource = self._resource_resolver.resolve(resource_key, self._locale)
+            if resource:
+                text = resource.text
+                shortcut_list = resource.shortcut_list
+                if resource.is_default:
+                    shortcut_list = ['Return', *shortcut_list]
+                if shortcut_list:
+                    text = '%s (%s)' % (text, shortcut_list[0])
+                description = resource.description
+            else:
+                text = command.id
+                shortcut_list = None
+                description = '.'.join(cmd.resource_key.path)
             button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
+            if shortcut_list:
+                button.setShortcut(shortcut_list[0])
+            button.setToolTip(description)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command, current_item_key)))
             layout = self._cmd_pane.widget().layout()
             layout.addWidget(button)
@@ -204,6 +223,7 @@ class ThisModule(ClientModule):
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
         services.layout_manager = LayoutManager(
+            services.type_resolver,
             services.resource_resolver,
             services.module_command_registry,
             services.object_registry,
