@@ -6,6 +6,7 @@ from PySide import QtCore, QtGui
 
 from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
+from hyperapp.common.ref import ref_repr
 from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
 from .text_object import TextObject
@@ -161,7 +162,7 @@ class LayoutManager:
         else:
             text = command.id
             shortcut_list = None
-            description = '.'.join(command.resource_key.path)
+            description = '.'.join(resource_key.path)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         if shortcut_list:
             button.setShortcut(shortcut_list[0])
@@ -187,8 +188,8 @@ class LayoutManager:
         old_widget.deleteLater()
         tab_view.insertTab(0, view, view.get_title())
         view.setFocus()
-        self._update_dir_buttons(object)
         self._current_state = state
+        self._update_dir_buttons(object)
 
     def _make_view(self, object, observer):
         if isinstance(object, ListObject):
