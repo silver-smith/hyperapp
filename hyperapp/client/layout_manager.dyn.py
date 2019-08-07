@@ -183,6 +183,7 @@ class LayoutManager:
         tab_view.removeTab(0)
         old_widget.deleteLater()
         tab_view.insertTab(0, view, view.get_title())
+        view.setFocus()
         self._update_dir_buttons(object)
         self._current_state = state
 
