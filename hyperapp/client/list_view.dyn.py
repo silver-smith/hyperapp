@@ -87,7 +87,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
 
     def _load_resources(self):
         for column in self._columns:
-            resource_key = resource_key_t(self._resource_key.module_ref, self._resource_key.path + ['column', column.id])
+            resource_key = resource_key_t(self._resource_key.base_ref, self._resource_key.path + ['column', column.id])
             self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
 
     def _fetch_more(self):

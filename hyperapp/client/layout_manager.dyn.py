@@ -62,6 +62,7 @@ class LayoutManager:
         self._resource_resolver = resource_resolver
         self._module_command_registry = module_command_registry
         self._object_registry = object_registry
+        self._locale = 'en'
         self._cmd_pane = self._construct_cmd_pane()
         self._dir_buttons = []
         self._element_buttons = []
@@ -86,7 +87,14 @@ class LayoutManager:
     def _build_global_menu(self, app, title):
         menu = QtGui.QMenu(title)
         for command in self._module_command_registry.get_all_commands():
-            menu.addAction(make_async_action(menu, command.id, [], self._run_command, command))
+            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
+            if resource:
+                text = resource.text
+                shortcut_list = resource.shortcut_list
+            else:
+                text = command.id
+                shortcut_list = None
+            menu.addAction(make_async_action(menu, text, shortcut_list, self._run_command, command))
         if not menu.isEmpty():
             menu.addSeparator()
         for command in app.get_global_commands():
@@ -167,18 +175,16 @@ class LayoutManager:
         assert False, repr(object)
 
     def _make_list_view(self, object, observer):
-        locale = 'en'
         sort_column_id = 'key'
         resource_key = resource_key_t(__module_ref__, [])
-        list_view = ListView(self._resource_resolver, locale, resource_key, object)
+        list_view = ListView(self._resource_resolver, self._locale, resource_key, object)
         list_view.add_observer(observer)
         return list_view
 
     def _make_tree_view(self, object, observer):
-        locale = 'en'
         sort_column_id = 'key'
         resource_key = resource_key_t(__module_ref__, [])
-        tree_view = TreeView(self._resource_resolver, locale, resource_key, object)
+        tree_view = TreeView(self._resource_resolver, self._locale, resource_key, object)
         tree_view.add_observer(observer)
         return tree_view
 

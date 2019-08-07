@@ -32,6 +32,6 @@ bundle_t = TRecord('bundle', OrderedDict([
 resource_path_t = TList(tString, name='resource_path')
 
 resource_key_t = TRecord('resource_key', OrderedDict([
-    ('module_ref', ref_t),
+    ('base_ref', ref_t),
     ('path', resource_path_t),
     ]))
