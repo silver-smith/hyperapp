@@ -37,8 +37,6 @@ class BlogObserver(object, metaclass=abc.ABCMeta):
 
 class BlogObject(ListObject, BlogObserver):
 
-    impl_id = 'blog'
-
     @classmethod
     async def from_state(cls, state, ref_registry, blog_service_factory, handle_resolver):
         blog_service = await blog_service_factory(state.blog_service_ref)
@@ -460,11 +458,10 @@ class ThisModule(ClientModule):
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
-        services.handle_registry.register_type(htypes.blog.blog, self._resolve_blog)
         services.handle_registry.register_type(htypes.blog.blog_article, self._resolve_blog_article)
         services.handle_registry.register_type(htypes.blog.blog_article_ref_list, self._resolve_blog_article_ref_list)
-        services.objimpl_registry.register(
-            BlogObject.impl_id, BlogObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
+        services.object_registry.register_type(
+            htypes.blog.blog, BlogObject.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         services.form_impl_registry.register(
             BlogArticleForm.impl_id, BlogArticleForm.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
         services.objimpl_registry.register(
@@ -476,16 +473,6 @@ class ThisModule(ClientModule):
 
     async def _blog_service_factory(self, blog_service_ref):
         return (await BlogService.from_data(self._type_resolver, self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
-
-    async def _resolve_blog(self, blog):
-        return (await self.open_blog(blog.blog_service_ref, blog.blog_id, blog.current_article_id))
-
-    async def open_blog(self, blog_service_ref, blog_id, current_article_id=None):
-        list_object = htypes.blog.blog_object(BlogObject.impl_id, blog_service_ref, blog_id)
-        handle_t = htypes.core.int_list_handle
-        sort_column_id = 'created_at'
-        resource_key = resource_key_t(__module_ref__, ['BlogObject'])
-        return handle_t('list', list_object, resource_key, key=current_article_id)
 
     async def _resolve_blog_article(self, blog_article):
         blog_service = await self._blog_service_factory(blog_article.blog_service_ref)

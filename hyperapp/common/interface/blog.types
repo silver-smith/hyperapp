@@ -66,10 +66,6 @@ blog_notification_iface = interface blog_notification:
         article_deleted(blog_id: string, article_id: int)
 
 
-blog_object = object class blog_object(object_base):
-    blog_service_ref: ref
-    blog_id: string
-
 blog_article_form = form class blog_article_form(form_base):
     blog_service_ref: ref
     blog_id: string
