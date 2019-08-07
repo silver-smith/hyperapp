@@ -13,7 +13,8 @@ MODULE_NAME = 'fs.remote'
 class RemoteFsService(object):
 
     @classmethod
-    async def from_data(cls, service_ref, unused_service, proxy_factory):
+    async def from_data(cls, service, ref_registry, proxy_factory):
+        service_ref = ref_registry.register_object(service)  # making duplicate/overwrite
         proxy = await proxy_factory.from_ref(service_ref)
         return cls(proxy)
 
@@ -33,4 +34,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.fs_service_registry.register_type(htypes.hyper_ref.service, RemoteFsService.from_data, services.proxy_factory)
+        services.fs_service_registry.register_type(
+            htypes.hyper_ref.service, RemoteFsService.from_data, services.ref_registry, services.proxy_factory)
