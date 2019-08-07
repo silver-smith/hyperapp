@@ -128,8 +128,7 @@ class LayoutManager:
         for command in object.get_command_list():
             if command.kind != 'object':
                 continue
-            text = command.id
-            button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
+            button = self._make_button_for_current_object(command)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command)))
             layout = self._cmd_pane.widget().layout()
             layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
@@ -141,29 +140,33 @@ class LayoutManager:
             button.deleteLater()
         self._element_buttons.clear()
         for command in object.get_item_command_list(current_item_key):
-            type_ref = self._type_resolver.reverse_resolve(deduce_value_type(self._current_state))
-            resource_key = resource_key_t(type_ref, command.resource_key.path[1:])  # skip class name
-            resource = self._resource_resolver.resolve(resource_key, self._locale)
-            if resource:
-                text = resource.text
-                shortcut_list = resource.shortcut_list
-                if resource.is_default:
-                    shortcut_list = ['Return', *shortcut_list]
-                if shortcut_list:
-                    text = '%s (%s)' % (text, shortcut_list[0])
-                description = resource.description
-            else:
-                text = command.id
-                shortcut_list = None
-                description = '.'.join(command.resource_key.path)
-            button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
-            if shortcut_list:
-                button.setShortcut(shortcut_list[0])
-            button.setToolTip(description)
+            button = self._make_button_for_current_object(command)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command, current_item_key)))
             layout = self._cmd_pane.widget().layout()
             layout.addWidget(button)
             self._element_buttons.append(button)
+
+    def _make_button_for_current_object(self, command):
+        type_ref = self._type_resolver.reverse_resolve(deduce_value_type(self._current_state))
+        resource_key = resource_key_t(type_ref, command.resource_key.path[1:])  # skip class name
+        resource = self._resource_resolver.resolve(resource_key, self._locale)
+        if resource:
+            text = resource.text
+            shortcut_list = resource.shortcut_list
+            if resource.is_default:
+                shortcut_list = ['Return', *shortcut_list]
+            if shortcut_list:
+                text = '%s (%s)' % (text, shortcut_list[0])
+            description = resource.description
+        else:
+            text = command.id
+            shortcut_list = None
+            description = '.'.join(command.resource_key.path)
+        button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
+        if shortcut_list:
+            button.setShortcut(shortcut_list[0])
+        button.setToolTip(description)
+        return button
 
     async def _run_command(self, command, *args, **kw):
         _log.info('Run command: %r', command.id)
