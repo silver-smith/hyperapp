@@ -31,7 +31,7 @@ class RemoteRouteResolver(AsyncRouteSource):
             for route_rec in result.route_rec_list:
                 self._route_registry.register(
                     route_t(endpoint_ref, route_rec.transport_ref, route_rec.available_at))
-                return set(result.transport_ref_list)
+                return set(result.route_rec_list)
 
 
 class ThisModule(ClientModule):
