@@ -24,7 +24,6 @@ SessionLogItem = namedtuple('SessionLogItem', 'idx context name type params')
 LogRecordItem = namedtuple('LogRecordItem', 'name value details')
 
 
-
 def _value_repr(value):
     try:
         t = deduce_value_type(value)

@@ -115,7 +115,7 @@ class Commander(object):
             assert isinstance(command, BoundCommand), repr(command)
             if command.id == command_id:
                 return command
-        return None
+        raise KeyError("Unknown command: {!r}".format(command_id))
 
     def get_command_list(self, kinds=None):
         if kinds is None:

@@ -7,7 +7,7 @@ from . import view
 
 class Composite(view.View):
 
-    def __init__(self, parent, children=None):
+    def __init__(self, parent=None, children=None):
         view.View.__init__(self, parent)
         self._children = children or []
 

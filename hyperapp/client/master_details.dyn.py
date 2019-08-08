@@ -1,54 +1,32 @@
 from abc import ABCMeta, abstractmethod
 import asyncio
+import logging
 
 from PySide import QtCore, QtGui
 
-from hyperapp.common.capsule_registry import CapsuleRegistry, CapsuleResolver
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .composite import Composite
 
+_log = logging.getLogger(__name__)
 
 MODULE_NAME = 'master_details'
 
 
-class DetailsConstructor(metaclass=ABCMeta):
-
-    @abstractmethod
-    def construct_details_handle(self, master_view, current_key):
-        pass
-
-
 class MasterDetailsView(QtGui.QSplitter, Composite):
 
-    impl_id = 'master_details'
-
-    @classmethod
-    async def from_state(cls, locale, state, parent, details_constructor_resolver, view_registry):
-        master = await view_registry.resolve_async(locale, state.master_handle)
-        details_constructor = details_constructor_resolver.resolve(state.details_constructor_ref)
-        return cls(locale, parent, view_registry, master, state.details_constructor_ref, details_constructor, state.sizes)
-
-    def __init__(self, locale, parent, view_registry, master, details_constructor_ref, details_constructor, sizes):
+    def __init__(self, object_registry, view_producer, master, details_command, sizes=None):
         QtGui.QSplitter.__init__(self, QtCore.Qt.Vertical)
-        Composite.__init__(self, parent, [master])
-        self._locale = locale
-        self._view_registry = view_registry
+        Composite.__init__(self, children=[master])
+        self._object_registry = object_registry
+        self._view_producer = view_producer
         self._master = master
-        self._details_constructor_ref = details_constructor_ref
-        self._details_constructor = details_constructor
+        self._details_command = details_command
         self._want_sizes = sizes
         master.set_parent(self)
-        self.insertWidget(0, master.get_widget())
+        self.insertWidget(0, master)
+        master.setFocus()
         master.add_observer(self)
-
-    def get_state(self):
-        return htypes.master_details.master_details_handle(
-            view_id=self.impl_id,
-            master_handle=self._master.get_state(),
-            details_constructor_ref=self._details_constructor_ref,
-            sizes=self.sizes(),
-            )
 
     def get_current_child(self):
         return self._master
@@ -57,16 +35,17 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
         asyncio.ensure_future(self._set_details(current_key))
 
     async def _set_details(self, current_key):
-        details_handle = self._details_constructor.construct_details_handle(self._master, current_key)
-        if details_handle is None:
-            return
         if self.count() > 1:
             w = self.widget(1)
             w.setParent(None)
             w.deleteLater()
-        details = await self._view_registry.resolve_async(self._locale, details_handle)
-        details.set_parent(self)
-        self.insertWidget(1, details.get_widget())
+        _log.info('Run command to open details: %r', self._details_command.id)
+        state = await self._details_command.run(current_key)
+        if not state:
+            return
+        object = await self._object_registry.resolve_async(state)
+        view = self._view_producer.produce_view(state, object)
+        self.insertWidget(1, view)
         if self._want_sizes:
             self.setSizes(self._want_sizes)
             self._want_sizes = None
@@ -76,6 +55,3 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.details_constructor_registry = dc_registry = CapsuleRegistry('details_constructor', services.type_resolver)
-        services.details_constructor_resolver = dc_resolver = CapsuleResolver(services.ref_resolver, dc_registry)
-        services.view_registry.register(MasterDetailsView.impl_id, MasterDetailsView.from_state, dc_resolver, services.view_registry)

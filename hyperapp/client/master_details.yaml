@@ -1,6 +1,3 @@
 import:
-  types:
-    master_details:
-      - master_details_handle
   code:
     - client.composite

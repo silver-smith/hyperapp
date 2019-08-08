@@ -41,7 +41,6 @@ type_module_list = [
     'blog',
     'tree_view',
     'data_viewer',
-    'master_details',
     'log_viewer',
     'list_view_sample',
     'tree_view_sample',
@@ -97,8 +96,6 @@ code_module_list = [
     'client.text_view',
     'client.text_edit',
     #                'form_view',
-    'client.view_producer',
-    'client.layout_manager',
     'client.error_handler_impl',
 #    'bookmarks',
 #    'client.ref_redirect_handle',
@@ -118,6 +115,8 @@ code_module_list = [
     'client.data_viewer',
     'client.master_details',
     'client.log_viewer',
+    'client.view_producer',
+    'client.layout_manager',
     'client.application_state_storage',
     ]
 
