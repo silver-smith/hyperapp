@@ -13,10 +13,6 @@ MODULE_NAME = 'text_object'
 
 class TextObject(Object):
 
-    class Mode(Enum):
-        VIEW = 'view'
-        EDIT = 'edit'
-
     @classmethod
     def from_state(cls, state):
         return cls(state.text)
@@ -28,10 +24,6 @@ class TextObject(Object):
     def get_title(self):
         return 'Local text object'
 
-    def get_command_list(self, mode, kinds):
-        assert mode in self.Mode, repr(mode)
-        return self.filter_mode_commands(Object.get_command_list(self, kinds), mode)
-
     @property
     def text(self):
         return self._text
@@ -40,17 +32,6 @@ class TextObject(Object):
     def text(self, text):
         self._text = text
         self._notify_object_changed()
-
-    def filter_mode_commands(self, commands, mode):
-        return [command for command in commands
-                if self.command_must_be_visible_for_mode(command, mode)]
-
-    def command_must_be_visible_for_mode(self, command, mode):
-        if mode is self.Mode.VIEW:
-            return command.id != 'view'
-        if mode is self.Mode.EDIT:
-            return command.id != 'edit'
-        assert False, repr(mode)  # Unknown mode
 
     def text_changed(self, new_text, emitter_view=None):
         self._text = new_text
