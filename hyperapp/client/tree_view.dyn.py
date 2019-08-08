@@ -21,11 +21,10 @@ MODULE_NAME = 'tree_view'
 
 class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
-    def __init__(self, view, locale, columns, object):
+    def __init__(self, view, columns, object):
         QtCore.QAbstractItemModel.__init__(self)
         TreeObserver.__init__(self)
         self._view_wr = weakref.ref(view)
-        self._locale = locale
         self._object = object
         self.columns = columns
         self._key_attr = object.key_attribute
@@ -181,12 +180,11 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
 
 class TreeView(View, QtGui.QTreeView):
 
-    def __init__(self, locale, columns, object, current_path=None):
+    def __init__(self, columns, object, current_path=None):
         QtGui.QTreeView.__init__(self)
-        self.setModel(_Model(self, locale, columns, object))
+        self.setModel(_Model(self, columns, object))
         View.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)
-        self._locale = locale
         self._object = object
         self._observers = weakref.WeakSet()
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
@@ -276,5 +274,5 @@ class ThisModule(ClientModule):
         services.tree_view_factory = self._tree_view_factory
         # services.view_registry.register('tree', self._tree_view_from_state, services.objimpl_registry)
 
-    def _tree_view_factory(self, locale, columns, object, current_path):
-        return TreeView(locale, columns, object, current_path)
+    def _tree_view_factory(self, columns, object, current_path):
+        return TreeView(columns, object, current_path)

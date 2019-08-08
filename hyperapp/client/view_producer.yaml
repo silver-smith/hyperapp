@@ -1,0 +1,8 @@
+import:
+  code:
+    - client.list_object
+    - client.list_view
+    - client.tree_object
+    - client.tree_view
+    - client.text_object
+    - client.text_view

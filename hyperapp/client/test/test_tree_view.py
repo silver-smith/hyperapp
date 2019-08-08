@@ -48,11 +48,6 @@ class Services(ClientServicesBase, TestServicesMixin):
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
-@pytest.fixture
-def locale():
-    return 'en'
-
-
 @pytest.fixture(autouse=True)
 def event_loop(application):
     return application.event_loop
@@ -88,9 +83,8 @@ def object(services):
 
 
 @pytest.mark.asyncio
-async def test_instantiate(locale, services, object):
+async def test_instantiate(services, object):
     view = services.tree_view_factory(
-        locale=locale,
         columns=[column.to_view_column(column.id) for column in object.get_columns()],
         object=object,
         current_path=None,

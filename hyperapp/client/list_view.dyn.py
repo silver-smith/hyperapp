@@ -25,10 +25,9 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 class _Model(QtCore.QAbstractTableModel, ListObserver):
 
-    def __init__(self, view, locale, columns, object):
+    def __init__(self, view, columns, object):
         QtCore.QAbstractTableModel.__init__(self)
         self._view_wr = weakref.ref(view)
-        self._locale = locale
         self._object = object
         self._columns = columns
         self._item_id_attr = single(column.id for column in self._columns if column.is_key)
@@ -131,11 +130,10 @@ class ListViewObserver(metaclass=abc.ABCMeta):
 
 class ListView(View, ListObserver, QtGui.QTableView):
 
-    def __init__(self, locale, columns, object, key=None):
+    def __init__(self, columns, object, key=None):
         QtGui.QTableView.__init__(self)
-        self.setModel(_Model(self, locale, columns, object))
+        self.setModel(_Model(self, columns, object))
         View.__init__(self)
-        self._locale = locale
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded
         self._observers = weakref.WeakSet()

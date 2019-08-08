@@ -13,12 +13,6 @@ from .text_object import TextObject
 from .text_view import TextView
 from .tab_view import TabView
 from .window import Window
-from .list_object import ListObject
-from .list_view import ListView
-from .tree_object import TreeObject
-from .tree_view import TreeView
-from .text_object import TextObject
-from .text_view import TextView
 
 _log = logging.getLogger(__name__)
 
@@ -62,11 +56,12 @@ class History:
 
 class LayoutManager:
 
-    def __init__(self, type_resolver, resource_resolver, module_command_registry, object_registry):
+    def __init__(self, type_resolver, resource_resolver, module_command_registry, object_registry, view_producer):
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._module_command_registry = module_command_registry
         self._object_registry = object_registry
+        self._view_producer = view_producer
         self._locale = 'en'
         self._cmd_pane = self._construct_cmd_pane()
         self._dir_buttons = []
@@ -187,7 +182,7 @@ class LayoutManager:
     async def _open(self, state):
         object = await self._object_registry.resolve_async(state)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        view = self._make_view(state, object, observer)
+        view = self._view_producer.produce_view(state, object, observer)
         tab_view = self._tab_view
         old_widget = tab_view.widget(0)
         tab_view.removeTab(0)
@@ -196,43 +191,6 @@ class LayoutManager:
         view.setFocus()
         self._current_state = state
         self._update_dir_buttons(object)
-
-    def _make_view(self, state, object, observer):
-        if isinstance(object, ListObject):
-            return self._make_list_view(state, object, observer)
-        if isinstance(object, TreeObject):
-            return self._make_tree_view(state, object, observer)
-        if isinstance(object, TextObject):
-            return self._make_text_view(state, object, observer)
-        assert False, repr(object)
-
-    def _make_list_view(self, state, object, observer):
-        columns = list(self._map_columns_to_view(state, object.get_columns()))
-        list_view = ListView(self._locale, columns, object)
-        list_view.add_observer(observer)
-        return list_view
-
-    def _make_tree_view(self, state, object, observer):
-        columns = list(self._map_columns_to_view(state, object.get_columns()))
-        tree_view = TreeView(self._locale, columns, object)
-        tree_view.add_observer(observer)
-        return tree_view
-
-    def _make_text_view(self, state, object, observer):
-        return TextView(object)
-
-    def _map_columns_to_view(self, state, column_list):
-        type_ref = self._state_type_ref(state)
-        for column in column_list:
-            resource_key = resource_key_t(type_ref, ['column', column.id])
-            resource = self._resource_resolver.resolve(resource_key, self._locale)
-            if resource:
-                if not resource.is_visible:
-                    continue
-                text = resource.text
-            else:
-                text = column.id
-            yield column.to_view_column(text)
 
     async def _navigate_backward(self):
         state = self._history.pop_back(self._current_state)
@@ -254,4 +212,5 @@ class ThisModule(ClientModule):
             services.resource_resolver,
             services.module_command_registry,
             services.object_registry,
+            services.view_producer,
             )
