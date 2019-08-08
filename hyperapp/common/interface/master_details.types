@@ -1,7 +1,0 @@
-from core import handle, view_handle
-
-
-master_details_handle = handle class master_details(view_handle):
-    master_handle: handle
-    details_constructor_ref: ref
-    sizes: int list

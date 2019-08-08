@@ -1,12 +1,7 @@
-from core import object, object_base
 
-
-log_viewer = object class log_viewer(object_base):
+log_viewer = record:
     session_id: string
 
-log_record = object class log_record(object_base):
+log_record = record:
     session_id: string
     item_path: int list
-
-log_record_constructor = record:
-    session_id: string
