@@ -25,8 +25,12 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
         self._want_sizes = sizes
         master.set_parent(self)
         self.insertWidget(0, master)
-        master.setFocus()
         master.add_observer(self)
+
+    def setVisible(self, visible):
+        QtGui.QSplitter.setVisible(self, visible)
+        if visible:
+            self.widget(0).setFocus()
 
     def get_current_child(self):
         return self._master
