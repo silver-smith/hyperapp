@@ -8,13 +8,10 @@ from . import htypes
 
 log = logging.getLogger(__name__)
 
-
 MODULE_NAME = 'text_object'
 
 
 class TextObject(Object):
-
-    impl_id = 'text'
 
     class Mode(Enum):
         VIEW = 'view'
@@ -24,19 +21,12 @@ class TextObject(Object):
     def from_state(cls, state):
         return cls(state.text)
 
-    @staticmethod
-    def get_state_type():
-        return htypes.text_object.text_object
-
     def __init__(self, text):
         self._text = text
         Object.__init__(self)
 
     def get_title(self):
         return 'Local text object'
-
-    def get_state(self):
-        return htypes.text_object.text_object(self.impl_id, self._text)
 
     def get_command_list(self, mode, kinds):
         assert mode in self.Mode, repr(mode)
@@ -77,4 +67,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.objimpl_registry.register(TextObject.impl_id, TextObject.from_state)
+        services.object_registry.register_type(htypes.text_object.text_object, TextObject.from_state)

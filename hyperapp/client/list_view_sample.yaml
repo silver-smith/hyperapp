@@ -1,9 +1,5 @@
 import:
   types:
-    core:
-      - object_base
-      - obj_handle
-      - int_list_handle
     list_view_sample:
       - list_view_sample_object
     text_object:

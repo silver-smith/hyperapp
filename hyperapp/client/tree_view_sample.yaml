@@ -1,8 +1,5 @@
 import:
   types:
-    core:
-      - object_base
-      - obj_handle
     tree_view_sample:
       - tree_view_sample_object
     text_object:

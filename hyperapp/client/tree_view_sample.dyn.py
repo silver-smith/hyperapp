@@ -10,7 +10,6 @@ from .tree_object import Column, TreeObject
 
 log = logging.getLogger(__name__)
 
-
 MODULE_NAME = 'tree_view_sample'
 
 
@@ -19,14 +18,9 @@ Item = namedtuple('Item', 'name column_1 column_2')
 
 class SampleObject(TreeObject):
 
-    impl_id = 'sample-tree-object'
-
     @classmethod
     def from_state(cls, state):
         return cls()
-
-    def get_state(self):
-        return htypes.core.object_base(self.impl_id)
 
     def get_title(self):
         return 'Tree test'
@@ -63,8 +57,7 @@ class SampleObject(TreeObject):
     @command('open', kind='element')
     async def command_open(self, item_path):
         text = "Opened item {}".format('/'.join(item_path))
-        object = htypes.text_object.text_object('text', text)
-        return htypes.core.obj_handle('text_view', object)
+        return htypes.text_object.text_object(text)
 
 
 class ThisModule(ClientModule):

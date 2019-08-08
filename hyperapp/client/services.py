@@ -117,7 +117,6 @@ code_module_list = [
     'client.data_viewer',
     'client.master_details',
     'client.log_viewer',
-    'client.default_state_builder',
     'client.application_state_storage',
     ]
 

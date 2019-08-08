@@ -71,7 +71,7 @@ blog_article_form = form class blog_article_form(form_base):
     blog_id: string
     article_id: int
 
-blog_article_text = object class blog_article_text(text_object):
+blog_article_text = record(text_object):
     ref_list: article_ref list
 
 article_ref_list_object = object class article_ref_list_object(object_base):

@@ -26,9 +26,6 @@ class TextView(View, QtGui.QTextBrowser):
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.object.subscribe(self)
 
-    def get_state(self):
-        return htypes.text_object.text_view('text_view', self.object.get_state())
-
     def get_title(self):
         return self.object.get_title()
 

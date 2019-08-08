@@ -1,7 +1,3 @@
-from core import object, object_base, obj_handle
 
-
-text_object = object class text(object_base):
+text_object = record:
   text: string
-
-text_view = obj_handle

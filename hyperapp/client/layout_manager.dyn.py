@@ -17,6 +17,8 @@ from .list_object import ListObject
 from .list_view import ListView
 from .tree_object import TreeObject
 from .tree_view import TreeView
+from .text_object import TextObject
+from .text_view import TextView
 
 _log = logging.getLogger(__name__)
 
@@ -200,6 +202,8 @@ class LayoutManager:
             return self._make_list_view(state, object, observer)
         if isinstance(object, TreeObject):
             return self._make_tree_view(state, object, observer)
+        if isinstance(object, TextObject):
+            return self._make_text_view(state, object, observer)
         assert False, repr(object)
 
     def _make_list_view(self, state, object, observer):
@@ -213,6 +217,9 @@ class LayoutManager:
         tree_view = TreeView(self._locale, columns, object)
         tree_view.add_observer(observer)
         return tree_view
+
+    def _make_text_view(self, state, object, observer):
+        return TextView(object)
 
     def _map_columns_to_view(self, state, column_list):
         type_ref = self._state_type_ref(state)
