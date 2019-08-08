@@ -36,9 +36,9 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
         return self._master
 
     def current_changed(self, current_key):
-        asyncio.ensure_future(self._set_details(current_key))
+        asyncio.ensure_future(self._update_details(current_key))
 
-    async def _set_details(self, current_key):
+    async def _update_details(self, current_key):
         if self.count() > 1:
             w = self.widget(1)
             w.setParent(None)
