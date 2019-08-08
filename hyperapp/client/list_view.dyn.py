@@ -214,14 +214,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        self._resource_resolver = services.resource_resolver
-        services.list_view_factory = self._list_view_factory
         # services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry)
-
-    async def _list_view_from_state(self, locale, state, parent, objimpl_registry):
-        data_type = htypes.core.handle.get_object_class(state)
-        object = await objimpl_registry.resolve_async(state.object)
-        return self._list_view_factory(locale, parent, state.resource_key, data_type, object, state.key)
-
-    def _list_view_factory(self, locale, parent, resource_key, data_type, object, key):
-        return ListView(self._resource_resolver, locale, parent, resource_key, data_type, object, key)

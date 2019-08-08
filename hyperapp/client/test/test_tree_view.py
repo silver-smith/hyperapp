@@ -91,7 +91,7 @@ def object(services):
 async def test_instantiate(locale, services, object):
     view = services.tree_view_factory(
         locale=locale,
-        resource_key=resource_key_t(phony_ref('test_module'), []),
+        columns=[column.to_view_column(column.id) for column in object.get_columns()],
         object=object,
         current_path=None,
         )
