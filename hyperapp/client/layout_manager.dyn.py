@@ -147,8 +147,12 @@ class LayoutManager:
             layout.addWidget(button)
             self._element_buttons.append(button)
 
+    def _state_type_ref(self, state):
+        current_t = deduce_value_type(state)
+        return self._type_resolver.reverse_resolve(current_t)
+
     def _make_button_for_current_object(self, command):
-        type_ref = self._type_resolver.reverse_resolve(deduce_value_type(self._current_state))
+        type_ref = self._state_type_ref(self._current_state)
         resource_key = resource_key_t(type_ref, command.resource_key.path[1:])  # skip class name
         resource = self._resource_resolver.resolve(resource_key, self._locale)
         if resource:
@@ -181,7 +185,7 @@ class LayoutManager:
     async def _open(self, state):
         object = await self._object_registry.resolve_async(state)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        view = self._make_view(object, observer)
+        view = self._make_view(state, object, observer)
         tab_view = self._tab_view
         old_widget = tab_view.widget(0)
         tab_view.removeTab(0)
@@ -191,26 +195,37 @@ class LayoutManager:
         self._current_state = state
         self._update_dir_buttons(object)
 
-    def _make_view(self, object, observer):
+    def _make_view(self, state, object, observer):
         if isinstance(object, ListObject):
-            return self._make_list_view(object, observer)
+            return self._make_list_view(state, object, observer)
         if isinstance(object, TreeObject):
-            return self._make_tree_view(object, observer)
+            return self._make_tree_view(state, object, observer)
         assert False, repr(object)
 
-    def _make_list_view(self, object, observer):
-        sort_column_id = 'key'
-        resource_key = resource_key_t(__module_ref__, [])
-        list_view = ListView(self._resource_resolver, self._locale, resource_key, object)
+    def _make_list_view(self, state, object, observer):
+        columns = list(self._map_columns_to_view(state, object.get_columns()))
+        list_view = ListView(self._locale, columns, object)
         list_view.add_observer(observer)
         return list_view
 
-    def _make_tree_view(self, object, observer):
-        sort_column_id = 'key'
-        resource_key = resource_key_t(__module_ref__, [])
-        tree_view = TreeView(self._resource_resolver, self._locale, resource_key, object)
+    def _make_tree_view(self, state, object, observer):
+        columns = list(self._map_columns_to_view(state, object.get_columns()))
+        tree_view = TreeView(self._locale, columns, object)
         tree_view.add_observer(observer)
         return tree_view
+
+    def _map_columns_to_view(self, state, column_list):
+        type_ref = self._state_type_ref(state)
+        for column in column_list:
+            resource_key = resource_key_t(type_ref, ['column', column.id])
+            resource = self._resource_resolver.resolve(resource_key, self._locale)
+            if resource:
+                if not resource.is_visible:
+                    continue
+                text = resource.text
+            else:
+                text = column.id
+            yield column.to_view_column(text)
 
     async def _navigate_backward(self):
         state = self._history.pop_back(self._current_state)

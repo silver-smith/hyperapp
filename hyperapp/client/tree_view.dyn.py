@@ -6,13 +6,12 @@ import weakref
 
 from PySide import QtCore, QtGui
 
-from hyperapp.common.htypes import resource_key_t
 from hyperapp.client.util import make_async_action
 from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .tree_object import TreeObserver, TreeObject
-from .view import ViewCommand, View
+from .view import View
 
 log = logging.getLogger(__name__)
 
@@ -22,24 +21,20 @@ MODULE_NAME = 'tree_view'
 
 class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
-    def __init__(self, view, resource_resolver, locale, resource_key, object):
+    def __init__(self, view, locale, columns, object):
         QtCore.QAbstractItemModel.__init__(self)
         TreeObserver.__init__(self)
         self._view_wr = weakref.ref(view)
-        self._resource_resolver = resource_resolver
         self._locale = locale
-        self._resource_key = resource_key
         self._object = object
-        self.columns = object.get_columns()
+        self.columns = columns
         self._key_attr = object.key_attribute
-        self._column2resource = {}
         self._path2item = {}
         self._path2children = {}
         self._fetch_requested_for_path = set()  # do not issue fetch request when previous is not yet completed
         self._id2path = {}
         self._path2id = {}
         self._id_counter = 0
-        self._load_resources()
         self._object.subscribe(self)
 
     # qt methods  -------------------------------------------------------------------------------------------------------
@@ -49,12 +44,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            column_id = self.columns[section].id
-            resource = self._column2resource.get(column_id)
-            if resource:
-                return resource.text
-            else:
-                return column_id
+            return self.columns[section].title
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def index(self, row, column, parent):
@@ -117,11 +107,6 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self.request_fetch(path)
 
     # own methods  ------------------------------------------------------------------------------------------------------
-
-    def _load_resources(self):
-        for column in self.columns:
-            resource_key = resource_key_t(self._resource_key.base_ref, self._resource_key.path + ['column', column.id])
-            self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
 
     def request_fetch(self, path):
         if path:
@@ -196,14 +181,12 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
 
 class TreeView(View, QtGui.QTreeView):
 
-    def __init__(self, resource_resolver, locale, resource_key, object, current_path=None):
+    def __init__(self, locale, columns, object, current_path=None):
         QtGui.QTreeView.__init__(self)
-        self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
+        self.setModel(_Model(self, locale, columns, object))
         View.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)
-        self._resource_resolver = resource_resolver
         self._locale = locale
-        self._resource_key = resource_key
         self._object = object
         self._observers = weakref.WeakSet()
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
@@ -232,7 +215,6 @@ class TreeView(View, QtGui.QTreeView):
 
     def currentChanged(self, idx, prev_idx):
         QtGui.QTreeView.currentChanged(self, idx, prev_idx)
-        self._selected_items_changed()
         current_path = self.current_item_path
         for observer in self._observers:
             observer.current_changed(current_path)
@@ -282,42 +264,6 @@ class TreeView(View, QtGui.QTreeView):
     def _on_activated(self, index):
         if self._default_command:
             asyncio.ensure_future(self._default_command.run())
-
-    def _selected_items_changed(self):
-        self._update_selected_actions()
-        if self.isVisible():  # we may being destructed now
-            self.view_commands_changed(['element'])
-
-    def _update_selected_actions(self):
-        # remove previous actions
-        action_widget = self
-        for action in self._elt_actions:
-            action_widget.removeAction(action)
-        self._elt_actions.clear()
-        self._elt_commands.clear()
-        self._default_command = None
-        # pick selection and commands
-        item_path = self.current_item_path
-        if item_path is None:
-            return
-        # create actions
-        for command in self._object.get_item_command_list(item_path):
-            assert isinstance(command, Command), repr(command)
-            assert command.kind == 'element', repr(command)
-            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
-            wrapped_command = self._wrap_item_command(item_path, command)
-            action = make_async_action(
-                action_widget, '%s/%s' % (wrapped_command.resource_key, wrapped_command.id),
-                resource.shortcut_list if resource else None, wrapped_command.run)
-            action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-            action_widget.addAction(action)
-            self._elt_actions.append(action)
-            self._elt_commands.append(wrapped_command)
-            if resource and resource.is_default:
-                self._default_command = wrapped_command
-
-    def _wrap_item_command(self, item_path, command):
-        return ViewCommand.from_command(command, self, item_path)
 
     def __del__(self):
         log.debug('~tree_view.TreeView self=%r', id(self))

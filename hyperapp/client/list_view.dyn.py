@@ -7,13 +7,12 @@ import weakref
 from PySide import QtCore, QtGui
 
 from hyperapp.common.util import single
-from hyperapp.common.htypes import Type, resource_key_t
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 from hyperapp.client.command import Command
 from hyperapp.common.logger import log, create_context_task
 from hyperapp.client.module import ClientModule
 from . import htypes
-from .view import ViewCommand, View
+from .view import View
 from .list_object import ListObserver, ListObject
 
 _log = logging.getLogger(__name__)
@@ -26,21 +25,17 @@ ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 class _Model(QtCore.QAbstractTableModel, ListObserver):
 
-    def __init__(self, view, resource_resolver, locale, resource_key, object):
+    def __init__(self, view, locale, columns, object):
         QtCore.QAbstractTableModel.__init__(self)
         self._view_wr = weakref.ref(view)
-        self._resource_resolver = resource_resolver
         self._locale = locale
-        self._resource_key = resource_key
         self._object = object
-        self._columns = object.get_columns()
+        self._columns = columns
         self._item_id_attr = single(column.id for column in self._columns if column.is_key)
-        self._column2resource = {}
         self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._item_list = []
         self._eof = False
         self._id2index = {}
-        self._load_resources()
         self._object.subscribe(self)
 
     # qt methods  -------------------------------------------------------------------------------------------------------
@@ -50,12 +45,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
 
     def headerData(self, section, orient, role):
         if role == QtCore.Qt.DisplayRole and orient == QtCore.Qt.Orientation.Horizontal:
-            column_id = self._columns[section].id
-            resource = self._column2resource.get(column_id)
-            if resource:
-                return resource.text
-            else:
-                return column_id
+            return self._columns[section].title
         return QtCore.QAbstractTableModel.headerData(self, section, orient, role)
 
     def rowCount(self, parent):
@@ -84,11 +74,6 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
 
     def has_rows(self):
         return bool(self._item_list)
-
-    def _load_resources(self):
-        for column in self._columns:
-            resource_key = resource_key_t(self._resource_key.base_ref, self._resource_key.path + ['column', column.id])
-            self._column2resource[column.id] = self._resource_resolver.resolve(resource_key, self._locale)
 
     def _fetch_more(self):
         assert not self._eof
@@ -146,13 +131,11 @@ class ListViewObserver(metaclass=abc.ABCMeta):
 
 class ListView(View, ListObserver, QtGui.QTableView):
 
-    def __init__(self, resource_resolver, locale, resource_key, object, key=None):
+    def __init__(self, locale, columns, object, key=None):
         QtGui.QTableView.__init__(self)
-        self.setModel(_Model(self, resource_resolver, locale, resource_key, object))
+        self.setModel(_Model(self, locale, columns, object))
         View.__init__(self)
-        self._resource_resolver = resource_resolver
         self._locale = locale
-        self._resource_key = resource_key
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded
         self._observers = weakref.WeakSet()
@@ -195,7 +178,6 @@ class ListView(View, ListObserver, QtGui.QTableView):
     def currentChanged(self, idx, prev_idx):
         log.current_changed(row=idx.row())
         QtGui.QTableView.currentChanged(self, idx, prev_idx)
-        self._selected_items_changed()
         current_key = self._current_item_id
         for observer in self._observers:
             observer.current_changed(current_key)
@@ -223,42 +205,6 @@ class ListView(View, ListObserver, QtGui.QTableView):
     def _on_activated(self, index):
         if self._default_command:
             create_context_task(self._default_command.run(), log.activated)
-
-    def _selected_items_changed(self):
-        self._update_selected_actions()
-        if self.isVisible():  # we may being destructed now
-            self.view_commands_changed(['element'])
-
-    def _update_selected_actions(self):
-        # remove previous actions
-        action_widget = self
-        for action in self._elt_actions:
-            action_widget.removeAction(action)
-        self._elt_actions.clear()
-        self._elt_commands.clear()
-        self._default_command = None
-        # pick selection and commands
-        item_id = self._current_item_id
-        if item_id is None:
-            return
-        # create actions
-        for command in self._object.get_item_command_list(item_id):
-            assert isinstance(command, Command), repr(command)
-            assert command.kind == 'element', repr(command)
-            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
-            wrapped_command = self._wrap_item_command(item_id, command)
-            action = make_async_action(
-                action_widget, '%s/%s' % (wrapped_command.resource_key, wrapped_command.id),
-                resource.shortcut_list if resource else None, wrapped_command.run)
-            action.setShortcutContext(QtCore.Qt.WidgetWithChildrenShortcut)
-            action_widget.addAction(action)
-            self._elt_actions.append(action)
-            self._elt_commands.append(wrapped_command)
-            if resource and resource.is_default:
-                self._default_command = wrapped_command
-
-    def _wrap_item_command(self, item_id, command):
-        return ViewCommand.from_command(command, self, item_id)
 
     def __del__(self):
         _log.debug('~list_view.ListView self=%r', id(self))

@@ -3,7 +3,7 @@
 from hyperapp.common.htypes import Type, tString
 
 
-class Column(object):
+class Column:
 
     def __init__(self, id, type=tString, is_key=False):
         assert isinstance(id, str), repr(id)
@@ -21,3 +21,15 @@ class Column(object):
 
     def __hash__(self):
         return hash((self.id, self.type, self.is_key))
+
+    def to_view_column(self, title):
+        return ViewColumn(self.id, self.type, self.is_key, title)
+
+
+class ViewColumn:
+
+    def __init__(self, id, type, is_key, title):
+        self.id = id
+        self.type = type
+        self.is_key = is_key
+        self.title = title
