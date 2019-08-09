@@ -1,7 +1,6 @@
 import logging
 
 from .ref import ref_repr
-from .module import Module
 
 _log = logging.getLogger(__name__)
 
@@ -23,10 +22,3 @@ class RefResolver(object):
                 return capsule
         _log.warning('Ref %s is failed to be resolved', ref_repr(ref))
         return None
-
-
-class ThisModule(Module):
-
-    def __init__(self, module_name, services):
-        super().__init__(module_name)
-        services.ref_resolver = RefResolver(services.types)
