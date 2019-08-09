@@ -10,9 +10,6 @@ from .visual_rep import pprint
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'ref_registry'
-
-
 class RefRegistry(object):
 
     def __init__(self, type_resolver):

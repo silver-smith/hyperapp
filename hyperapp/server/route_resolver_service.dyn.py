@@ -8,8 +8,6 @@ log = logging.getLogger(__name__)
 
 
 ROUTE_RESOLVER_SERVICE_ID = 'route_resolver'
-MODULE_NAME = 'route_resolver_service'
-
 
 class RouteResolverService(object):
 
@@ -23,8 +21,8 @@ class RouteResolverService(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         iface_type_ref = services.type_resolver.reverse_resolve(htypes.hyper_ref.route_resolver)
         service = htypes.hyper_ref.service(ROUTE_RESOLVER_SERVICE_ID, iface_type_ref)
         service_ref = services.ref_registry.register_object(service)

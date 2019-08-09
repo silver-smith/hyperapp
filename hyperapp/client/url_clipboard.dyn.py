@@ -5,13 +5,10 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 
-MODULE_NAME = 'url_clipboard'
-
-
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         #self._packet_types = services.types.packet
         #self._iface_registry = services.iface_registry
         self._remoting = services.remoting

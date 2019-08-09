@@ -9,9 +9,6 @@ from hyperapp.client.async_registry import run_awaitable_factory
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'objimpl_registry'
-
-
 class ObjImplRegistry(Registry):
 
     def __init__(self, produce_name):
@@ -26,6 +23,6 @@ class ObjImplRegistry(Registry):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.objimpl_registry = ObjImplRegistry('object')

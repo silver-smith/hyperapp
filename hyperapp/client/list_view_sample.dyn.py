@@ -12,9 +12,6 @@ from .list_object import ListObserver, ListObject
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'list_view_sample'
-
-
 Item = namedtuple('Item', 'idx column_1 column_2')
 
 
@@ -72,8 +69,8 @@ class SampleObject(ListObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.object_registry.register_type(htypes.list_view_sample.list_view_sample_object, SampleObject.from_state)
 
     @command('open_list_view_sample')

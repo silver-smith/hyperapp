@@ -12,8 +12,6 @@ from .local_server_paths import (
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'management'
 DYNAMIC_REF_LIST_SERVICE_ID = 'dynamic_ref_list'
 SERVER_MANAGEMENT_REF_LIST_ID = 'server_management'
 
@@ -47,8 +45,8 @@ class ManagementRefList(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._module_registry = services.module_registry
         self._dynamic_ref_list_service = DynamicRefListService()
         services.management_ref_list = management_ref_list = ManagementRefList()

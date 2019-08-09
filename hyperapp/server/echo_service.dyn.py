@@ -8,8 +8,6 @@ log = logging.getLogger(__name__)
 
 
 ECHO_SERVICE_ID = 'echo'
-MODULE_NAME = 'echo_service'
-
 
 class EchoService(object):
 
@@ -42,8 +40,8 @@ class EchoService(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
         echo_iface_ref = services.type_resolver.reverse_resolve(htypes.test.echo)
         service = htypes.hyper_ref.service(ECHO_SERVICE_ID, echo_iface_ref)

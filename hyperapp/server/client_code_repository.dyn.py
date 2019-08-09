@@ -12,8 +12,6 @@ from .resources_loader import ResourcesLoader
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'code_repository'
 DYNAMIC_MODULE_INFO_EXT = '.module.yaml'
 CODE_REPOSITORY_CLASS_NAME = 'code_repository'
 CODE_REPOSITORY_FACETS = [code_repository_types.code_repository, code_repository_types.code_repository_browser]
@@ -164,8 +162,8 @@ class ClientCodeRepositoryBrowser(SmallListObject):
 
 class ThisModule(module_mod.Module):
 
-    def __init__(self, services):
-        module_mod.Module.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._module_repository = ClientModuleRepository(services.dynamic_module_dir)
         self._client_code_repository = ClientCodeRepository(services.type_module_repository, self._module_repository, services.resources_loader)
         services.module_repository = self._module_repository

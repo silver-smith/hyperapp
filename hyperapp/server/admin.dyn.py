@@ -8,9 +8,6 @@ from .ponyorm_module import PonyOrmModule
 from .object import SmallListObject
 
 
-MODULE_NAME = 'admin'
-
-
 class UserList(SmallListObject):
 
     iface = admin_iface.user_list
@@ -57,8 +54,8 @@ class UserList(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self, services):
-        PonyOrmModule.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self.User = self.make_entity('User',
                                      user_name=Required(str),
                                      public_key_pem=Required(str),

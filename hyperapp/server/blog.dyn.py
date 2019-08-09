@@ -14,8 +14,6 @@ from .ponyorm_module import PonyOrmModule
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'blog'
 BLOG_SERVICE_ID = 'blog'
 
 
@@ -153,8 +151,8 @@ class BlogService(object):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._blog_service = BlogService(services.ref_storage, services.proxy_factory)
         iface_type_ref = services.type_resolver.reverse_resolve(htypes.blog.blog_service_iface)
         service = htypes.hyper_ref.service(BLOG_SERVICE_ID, iface_type_ref)

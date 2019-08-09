@@ -9,8 +9,6 @@ from .tree_object import TreeObject
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'fs_tree'
 LOCAL_HOST_NAME = 'local'
 
 
@@ -53,8 +51,8 @@ class TreeAdapter(TreeObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         self._local_fs_service_ref = services.local_fs_service_ref
         services.objimpl_registry.register(
             TreeAdapter.impl_id, TreeAdapter.from_state, services.ref_registry, services.fs_service_resolver)

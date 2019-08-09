@@ -12,8 +12,6 @@ from . import htypes
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'ref_collector'
 RECURSION_LIMIT = 100
 
 
@@ -112,8 +110,8 @@ class RefCollector(Visitor):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._ref_resolver = services.ref_resolver
         self._type_resolver = services.type_resolver
         self._route_resolver = services.route_resolver

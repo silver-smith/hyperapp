@@ -12,9 +12,6 @@ from .view import View
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'line_edit'
-
-
 class LineObject(Object):
 
     impl_id = 'line'
@@ -100,7 +97,7 @@ class LineEditView(View, QtGui.QLineEdit):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.objimpl_registry.register(LineObject.impl_id, LineObject.from_state)
         services.view_registry.register(LineEditView.impl_id, LineEditView.from_state, services.objimpl_registry)

@@ -14,9 +14,6 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'transport.phony'
-
-
 class PhonyServer(object):
 
     def __init__(self, on_failure, ref_resolver, type_resolver, route_registry, unbundler, remoting, request_queue, phony_client_address_ref):
@@ -95,8 +92,8 @@ class PhonyTransport(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         # queues are expected to be created by test
         phony_client_address_ref = services.ref_registry.register_object(
             htypes.phony_transport.client_address())

@@ -10,8 +10,6 @@ from .tree_object import Column, TreeObject
 
 log = logging.getLogger(__name__)
 
-MODULE_NAME = 'tree_view_sample'
-
 
 Item = namedtuple('Item', 'name column_1 column_2')
 
@@ -62,8 +60,8 @@ class SampleObject(TreeObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.object_registry.register_type(htypes.tree_view_sample.tree_view_sample_object, SampleObject.from_state)
 
     @command('open_tree_view_sample')

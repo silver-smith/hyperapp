@@ -12,9 +12,6 @@ from .view import View
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'object_selector'
-
-
 class ObjectSelectorObject(Object):
 
     impl_id = 'object_selector'
@@ -104,8 +101,8 @@ class CallbackRegistry(Registry):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.objimpl_registry.register(ObjectSelectorObject.impl_id, ObjectSelectorObject.from_state)
         services.view_registry.register(ObjectSelectorView.impl_id, ObjectSelectorView.from_state, services.objimpl_registry, services.view_registry)
         self.callback_registry = CallbackRegistry()

@@ -10,10 +10,6 @@ from .items_object import Column
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'tree_object'
-
-
-
 class TreeObserver(ObjectObserver):
 
     def process_fetch_results(self, path, item_list):
@@ -49,7 +45,7 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.TreeObject = TreeObject
         services.Column = Column

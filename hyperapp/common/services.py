@@ -19,7 +19,6 @@ from .code_module_loader import CodeModuleLoader
 from .code_module_importer import CodeModuleImporter
 from .module import ModuleRegistry
 
-
 _log = logging.getLogger(__name__)
 
 
@@ -106,11 +105,11 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
             code_module_ref = self.ref_registry.register_object(code_module)
             module = self.code_module_importer.import_code_module(code_module_ref)
             self.name2module[module_name] = module
-            self._init_module(module)
+            self._init_module(code_module.module_name, module)
 
-    def _init_module(self, module):
+    def _init_module(self, module_name, module):
         this_module_class = module.__dict__.get('ThisModule')
         if this_module_class:
-            this_module = this_module_class(self)
+            this_module = this_module_class(module_name, self)
             module.__dict__['this_module'] = this_module
             self.module_registry.register(this_module)

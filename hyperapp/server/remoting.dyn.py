@@ -17,9 +17,6 @@ from .htypes.hyper_ref import route_rec
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'remoting'
-
-
 class ServiceRegistry(Registry):
 
     def id_to_str(self, id):
@@ -144,8 +141,8 @@ class Remoting(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._ref_registry = services.ref_registry
         services.service_registry = service_registry = ServiceRegistry()
         services.remoting = Remoting(

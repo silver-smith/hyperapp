@@ -24,8 +24,6 @@ NOTIFICATION_DELAY_TIME_SEC = 1
 RECV_SIZE = 4096
 TCP_PACKET_ENCODING = 'cdr'
 
-MODULE_NAME = 'transport.tcp'
-
 
 class SocketClosedError(Exception):
 
@@ -297,9 +295,9 @@ class IncomingConnectionTransport(object):
         
 class ThisModule(Module):
 
-    def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
-        config = services.config.get(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
+        config = services.config.get(module_name)
         bind_address = None
         if config:
             bind_address = config.get('bind_address')

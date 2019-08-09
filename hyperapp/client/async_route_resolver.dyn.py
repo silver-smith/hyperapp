@@ -6,9 +6,6 @@ from hyperapp.client.module import ClientModule
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'route_resolver'
-
-
 class AsyncRouteSource(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
@@ -39,6 +36,6 @@ class AsyncRouteResolver(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.async_route_resolver = AsyncRouteResolver(services.route_resolver)

@@ -17,9 +17,6 @@ from . import data_viewer
 _log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'log_viewer'
-
-
 SessionLogItem = namedtuple('SessionLogItem', 'idx context name type params')
 LogRecordItem = namedtuple('LogRecordItem', 'name value details')
 
@@ -179,8 +176,8 @@ class LogRecord(ListObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         self._session_cache = SessionCache(services.type_resolver, services.ref_registry)
         services.object_registry.register_type(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.ref_registry, self._session_cache)
         services.object_registry.register_type(htypes.log_viewer.log_record, LogRecord.from_state, services.ref_resolver, services.type_resolver, self._session_cache)

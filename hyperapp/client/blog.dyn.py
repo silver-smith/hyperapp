@@ -17,9 +17,6 @@ from . import object_selector
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'blog'
-
-
 class BlogObserver(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
@@ -450,8 +447,8 @@ class BlogService(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         self._type_resolver = services.type_resolver
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver

@@ -2,13 +2,10 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 
 
-MODULE_NAME = 'default_state_builder'
-
-
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.build_default_state = self._build_default_state
 
     def _build_default_state(self):

@@ -16,8 +16,6 @@ from .window import Window
 
 _log = logging.getLogger(__name__)
 
-MODULE_NAME = 'layout_manager'
-
 
 class _CurrentItemObserver:
 
@@ -205,8 +203,8 @@ class LayoutManager:
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.layout_manager = LayoutManager(
             services.type_resolver,
             services.resource_resolver,

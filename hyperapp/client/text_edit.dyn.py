@@ -10,9 +10,6 @@ from .text_object import TextObject
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'text_edit'
-
-
 class TextEditView(View, QtGui.QTextEdit):
 
     @classmethod
@@ -64,7 +61,7 @@ class TextEditView(View, QtGui.QTextEdit):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         self.state_type = htypes.core.obj_handle
         services.view_registry.register('text_edit', TextEditView.from_state, services.objimpl_registry)

@@ -6,9 +6,6 @@ from .. common.interface import text_object as text_object_types
 from .module import Module, ModuleCommand
 
 
-MODULE_NAME = 'test_text_object'
-
-
 sample_text = '''
 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
 Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -21,8 +18,8 @@ and more recently with desktop publishing software like Aldus PageMaker includin
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
 
     def get_commands(self):
         return [

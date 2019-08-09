@@ -7,8 +7,6 @@ from . import htypes
 
 log = logging.getLogger(__name__)
 
-MODULE_NAME = 'resource_resolver'
-
 
 class ResourceResolver:
 
@@ -25,6 +23,6 @@ class ResourceResolver:
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.resource_resolver = ResourceResolver(services.type_resolver, services.resource_registry)

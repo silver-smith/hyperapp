@@ -12,9 +12,6 @@ from .tab_view import TabView
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'window'
-
 LOCALE = 'en'
 
 DEFAULT_SIZE = QtCore.QSize(800, 800)
@@ -100,5 +97,5 @@ class Window(View, QtGui.QMainWindow):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)

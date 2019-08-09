@@ -2,9 +2,6 @@ from hyperapp.client.module import ClientModule
 from .htypes import hyper_ref
 
 
-MODULE_NAME = 'remoting_proxy'
-
-
 class ProxyMethod(object):
 
     def __init__(self, remoting, service_ref, iface, command):
@@ -51,6 +48,6 @@ class ProxyFactory(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.proxy_factory = ProxyFactory(services.type_resolver, services.remoting, services.async_ref_resolver)

@@ -12,8 +12,6 @@ from .module import Module, ModuleCommand
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'test_list'
 DEFAULT_SIZE = 10000
 MAX_ROWS_RETURNED = 100
 
@@ -86,8 +84,8 @@ class TestList(ListObject):
     
 class ThisModule(Module):
 
-    def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
 
     def resolve(self, iface, path):
         class_name = path.pop_str()

@@ -7,9 +7,6 @@ from hyperapp.client.module import ClientModule
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'service_registry'
-
-
 class ClientServiceRegistry(Registry):
 
     def __init__(self, endpoint_registry):
@@ -31,6 +28,6 @@ class ClientServiceRegistry(Registry):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.service_registry = ClientServiceRegistry(services.endpoint_registry)

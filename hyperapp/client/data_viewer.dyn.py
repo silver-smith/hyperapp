@@ -8,9 +8,6 @@ from .items_object import Column
 from .tree_object import TreeObject
 
 
-MODULE_NAME = 'data_viewer'
-
-
 ValueItem = namedtuple('ValueItem', 'idx t name value')
 
 
@@ -67,6 +64,6 @@ class DataViewer(TreeObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.object_registry.register_type(htypes.data_viewer.data_viewer, DataViewer.from_state, services.type_resolver)

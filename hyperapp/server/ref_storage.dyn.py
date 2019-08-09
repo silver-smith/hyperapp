@@ -11,9 +11,6 @@ from .ponyorm_module import PonyOrmModule
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'ref_storage'
-
-
 class RefStorage(object):
 
     def __init__(self, ref_resolver):
@@ -60,8 +57,8 @@ class RefStorage(object):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.ref_storage = self._ref_storage = RefStorage(services.ref_resolver)
 
     def init_phase_2(self, services):

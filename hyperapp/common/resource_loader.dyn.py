@@ -9,8 +9,6 @@ from . import htypes
 
 log = logging.getLogger(__name__)
 
-MODULE_NAME = 'resource_loader'
-
 
 class ResourceLoader(object):
 
@@ -83,8 +81,8 @@ class ResourceLoader(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._resource_loader = ResourceLoader(
             services.ref_registry, services.local_type_module_registry, services.local_code_module_registry, services.resource_registry)
         self._client_resources_dir = services.client_resources_dir

@@ -7,9 +7,6 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'fs.remote'
-
-
 class RemoteFsService(object):
 
     @classmethod
@@ -32,7 +29,7 @@ class RemoteFsService(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.fs_service_registry.register_type(
             htypes.hyper_ref.service, RemoteFsService.from_data, services.ref_registry, services.proxy_factory)

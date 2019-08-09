@@ -18,8 +18,6 @@ from .list_object import ListObserver, ListObject
 _log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'list_view'
-
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 
@@ -210,6 +208,6 @@ class ListView(View, ListObserver, QtGui.QTableView):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         # services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry)

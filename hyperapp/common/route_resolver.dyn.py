@@ -10,9 +10,6 @@ from .htypes.hyper_ref import route_rec
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'route_resolver'
-
-
 class RouteSource(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
@@ -61,8 +58,8 @@ class RouteResolver(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.route_resolver = route_resolver = RouteResolver()
         services.route_registry = route_registry = RouteRegistry()
         route_resolver.add_source(route_registry)

@@ -13,9 +13,6 @@ from .list_object import ListObject
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'ref_list'
-
-
 class RefListObject(ListObject):
 
     _Item = namedtuple('RefListObject_Item', 'id ref')
@@ -80,7 +77,7 @@ class RefListService(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.object_registry.register_type(
             htypes.ref_list.dynamic_ref_list, RefListObject.from_state, services.type_resolver, services.async_ref_resolver, services.proxy_factory)

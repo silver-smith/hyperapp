@@ -16,9 +16,6 @@ from .view import View
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'tree_view'
-
-
 class _Model(QtCore.QAbstractItemModel, TreeObserver):
 
     def __init__(self, view, columns, object):
@@ -269,8 +266,8 @@ class TreeView(View, QtGui.QTreeView):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.tree_view_factory = self._tree_view_factory
         # services.view_registry.register('tree', self._tree_view_from_state, services.objimpl_registry)
 

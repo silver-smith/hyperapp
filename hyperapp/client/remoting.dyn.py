@@ -14,9 +14,6 @@ from .request import Request
 
 _log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'remoting'
-
 REQUEST_TIMEOUT_SEC = 5
 
 PendingRequest = namedtuple('PendingRequest', 'iface command future')
@@ -140,8 +137,8 @@ class Remoting(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.remoting = remoting = Remoting(
             services.type_resolver,
             services.ref_registry,

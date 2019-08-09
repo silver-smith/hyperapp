@@ -12,9 +12,6 @@ from .module import ModuleCommand
 #from .form import stringFieldHandle, formHandle
 
 
-MODULE_NAME = 'module_list'
-
-
 def splitter_handle(x, y):
     return splitter_types.splitter_handle('splitter', x, y, orientation='horizontal', focused=0, sizes=[])
 
@@ -214,8 +211,8 @@ class AvailableDepList(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self, services):
-        PonyOrmModule.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
 
     def init_phase_2(self, services):
         self.Module = self.make_entity('Module',

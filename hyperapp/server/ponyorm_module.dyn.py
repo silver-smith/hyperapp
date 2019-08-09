@@ -7,8 +7,6 @@ from hyperapp.common.module import Module
 
 
 SQLITE_DB_PATH = Path('~/.local/share/hyperapp/server/db.sqlite').expanduser()
-MODULE_NAME = 'ponyorm'
-
 
 # base class for modules using ponyorm
 class PonyOrmModule(Module):
@@ -32,8 +30,8 @@ class PonyOrmModule(Module):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         sql_debug('SQL_DEBUG' in os.environ)
         SQLITE_DB_PATH.parent.mkdir(exist_ok=True)
         self.db = Database('sqlite', str(SQLITE_DB_PATH), create_db=True)

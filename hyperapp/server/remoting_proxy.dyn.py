@@ -2,9 +2,6 @@ from hyperapp.common.module import Module
 from . import htypes
 
 
-MODULE_NAME = 'remoting_proxy'
-
-
 class ProxyMethod(object):
 
     def __init__(self, remoting, service_ref, iface, command):
@@ -50,6 +47,6 @@ class ProxyFactory(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.proxy_factory = ProxyFactory(services.type_resolver, services.remoting)

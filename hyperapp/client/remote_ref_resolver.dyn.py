@@ -7,9 +7,6 @@ from .async_ref_resolver import AsyncRefSource
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'remote_ref_resolver'
-
-
 class RemoteRefResolver(AsyncRefSource):
 
     @classmethod
@@ -29,8 +26,8 @@ class RemoteRefResolver(AsyncRefSource):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
 
     async def async_init(self, services):
         service_ref = self._load_ref_resolver_ref(services.unbundler)

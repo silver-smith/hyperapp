@@ -10,8 +10,6 @@ from .text_view import TextView
 from .log_viewer import SessionLogs
 from .master_details import MasterDetailsView
 
-MODULE_NAME = 'view_producer'
-
 
 class ViewProducer:
 
@@ -74,8 +72,8 @@ class ViewProducer:
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.view_producer = ViewProducer(
             services.type_resolver,
             services.resource_resolver,

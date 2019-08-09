@@ -4,8 +4,6 @@ from .command import command
 from .object import SmallListObject
 from .module import Module, ModuleCommand
 
-MODULE_NAME = 'exception_test'
-
 
 class TestObject(SmallListObject):
 
@@ -53,8 +51,8 @@ class TestObject(SmallListObject):
     
 class ThisModule(Module):
 
-    def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
 
     def resolve(self, iface, path):
         class_name = path.pop_str()

@@ -8,8 +8,6 @@ log = logging.getLogger(__name__)
 
 
 REF_RESOLVER_SERVICE_ID = 'ref_resolver'
-MODULE_NAME = 'ref_resolver_service'
-
 
 class RefResolverService(object):
 
@@ -25,8 +23,8 @@ class RefResolverService(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._ref_registry = services.ref_registry
         self._ref_resolver = services.ref_resolver
         self._service_registry = services.service_registry

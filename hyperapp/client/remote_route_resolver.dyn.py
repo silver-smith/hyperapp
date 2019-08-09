@@ -9,9 +9,6 @@ from .async_route_resolver import AsyncRouteSource
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'remote_route_resolver'
-
-
 class RemoteRouteResolver(AsyncRouteSource):
 
     @classmethod
@@ -36,8 +33,8 @@ class RemoteRouteResolver(AsyncRouteSource):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
 
     async def async_init(self, services):
         service_ref = self._load_route_resolver_ref(services.unbundler)

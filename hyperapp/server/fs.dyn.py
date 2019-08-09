@@ -2,8 +2,6 @@ from hyperapp.common.module import Module
 from . import htypes
 from .fs_service_impl import FsServiceImpl
 
-
-MODULE_NAME = 'fs'
 FS_SERVICE_ID = 'fs'
 
 
@@ -20,8 +18,8 @@ class FsService(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._init_fs_service(services)
 
     def _init_fs_service(self, services):

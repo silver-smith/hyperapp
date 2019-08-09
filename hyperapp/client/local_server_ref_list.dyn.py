@@ -5,13 +5,10 @@ from hyperapp.client.module import ClientModule
 from .local_server_paths import LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH, load_bundle_from_file
 
 
-MODULE_NAME = 'local_server_ref_list'
-
-
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         ref = self._load_local_server_ref(services.unbundler)
         self._local_server_ref_list = services.type_resolver.resolve_ref(ref).value
 

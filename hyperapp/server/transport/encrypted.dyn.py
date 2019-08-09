@@ -7,15 +7,13 @@ from ..module import Module
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'transport.encrypted'
 IDENTITY_PATH = '~/.local/share/hyperapp/server/transport/encrypted/identity.pem'
 
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         self._identity = self._produce_identity()
         address = encrypted_transport_types.address(
             public_key_der=self._identity.public_key.to_der(),

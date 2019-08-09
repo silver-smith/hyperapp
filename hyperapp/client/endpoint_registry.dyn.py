@@ -8,9 +8,6 @@ from .route_resolver import RouteSource
 from .htypes.hyper_ref import route_rec
 
 
-MODULE_NAME = 'endpoint_registry'
-
-
 class EndpointRegistry(object):
 
     def __init__(self, ref_registry):
@@ -43,7 +40,7 @@ class LocalRouteSource(RouteSource):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.endpoint_registry = endpoint_registry = EndpointRegistry(services.ref_registry)
         services.route_resolver.add_source(LocalRouteSource(endpoint_registry))

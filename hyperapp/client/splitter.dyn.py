@@ -10,8 +10,6 @@ from .view import View
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'splitter'
-
 # orientation constants
 horizontal = 'horizontal'
 vertical = 'vertical'
@@ -204,6 +202,6 @@ def unsplit(handle):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.view_registry.register(SplitterView.view_id, SplitterView.from_state, services.view_registry)

@@ -9,9 +9,6 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'transport.phony'
-
-
 class Transport(object):
 
     def __init__(self, ref_collector_factory, request_queue):
@@ -27,8 +24,8 @@ class Transport(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         self._event_loop = services.event_loop
         self._response_queue = services.response_queue
         self._ref_resolver = services.ref_resolver

@@ -12,9 +12,6 @@ from .text_object import TextObject
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'text_view'
-
-
 class TextView(View, QtGui.QTextBrowser):
 
     def __init__(self, object):
@@ -54,5 +51,5 @@ class TextView(View, QtGui.QTextBrowser):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)

@@ -11,8 +11,6 @@ from .local_server_paths import save_bundle_to_file, load_bundle_from_file
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'application_state_storage'
 STATE_FILE_PATH = Path('~/.local/share/hyperapp/client/state.json').expanduser()
 
 
@@ -50,7 +48,7 @@ class ApplicationStateStorage(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.application_state_storage = ApplicationStateStorage(
             services.type_resolver, services.ref_registry, services.ref_collector_factory, services.unbundler)

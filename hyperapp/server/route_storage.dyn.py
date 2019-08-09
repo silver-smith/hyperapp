@@ -10,9 +10,6 @@ from .ponyorm_module import PonyOrmModule
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'server_info'
-
-
 class DbRouteRepository(RouteRepository):
 
     def enumerate(self):
@@ -45,8 +42,8 @@ class DbRouteRepository(RouteRepository):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self, services):
-        PonyOrmModule.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.route_storage = RouteStorage(DbRouteRepository())
 
     def init_phase_2(self, services):

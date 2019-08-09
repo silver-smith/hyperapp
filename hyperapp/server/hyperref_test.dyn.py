@@ -2,13 +2,10 @@ from ..common.interface import hyper_ref as href_types
 from .module import Module, ModuleCommand
 
 
-MODULE_NAME = 'hyperref_test'
-
-
 class ThisModule(Module):
 
-    def __init__(self, services):
-        Module.__init__(self, MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
 
     def get_commands(self):
         return [

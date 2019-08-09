@@ -5,16 +5,14 @@ from hyperapp.client.error_handler_hook import set_error_handler
 from . import htypes
 
 
-MODULE_NAME = 'ereror_handler_impl'
-
 ERROR_HANDLER_VIEW_ID = 'error_handler'
 ERROR_HANDLER_CLASS_ID = 'error_handler'
 
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         self._resource_resolver = services.resource_resolver
         self._error_handle_t = htypes.core.handle.register(
             ERROR_HANDLER_CLASS_ID, base=htypes.core.view_handle, fields=OrderedDict([

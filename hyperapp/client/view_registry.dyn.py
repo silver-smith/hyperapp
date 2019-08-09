@@ -7,8 +7,6 @@ from .view import View
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'view_registry'
 MAX_REDIRECT_COUNT = 10
 
 
@@ -39,6 +37,6 @@ class ViewRegistry(Registry):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.view_registry = ViewRegistry(services.module_command_registry)

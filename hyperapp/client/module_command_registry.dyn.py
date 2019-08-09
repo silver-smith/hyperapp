@@ -2,9 +2,6 @@ from hyperapp.common.util import flatten
 from hyperapp.client.module import ClientModule
 
 
-MODULE_NAME = 'module_command_registry'
-
-
 class ModuleCommandRegistry:
 
     def __init__(self, module_registry):
@@ -22,6 +19,6 @@ class ModuleCommandRegistry:
         
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.module_command_registry = ModuleCommandRegistry(services.module_registry)

@@ -9,9 +9,6 @@ from hyperapp.common.module import Module
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'unbundler'
-
-
 class Unbundler(object):
 
     def __init__(self, ref_registry, route_registry):
@@ -29,6 +26,6 @@ class Unbundler(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.unbundler = Unbundler(services.ref_registry, services.route_registry)

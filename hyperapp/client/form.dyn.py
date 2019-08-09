@@ -14,9 +14,6 @@ from .composite import Composite
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'form'
-
-
 class FormObject(Object):
 
     impl_id = 'form'
@@ -105,8 +102,8 @@ class FormView(Composite, QtGui.QWidget):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.form_impl_registry = form_impl_registry = ObjImplRegistry('form')
         form_impl_registry.register(FormObject.impl_id, FormObject.from_state)
         services.view_registry.register(FormView.impl_id, FormView.from_state, services.form_impl_registry, services.view_registry)

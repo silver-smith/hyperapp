@@ -6,9 +6,6 @@ from .module import Module
 _log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'ref_resolver'
-
-
 class RefResolver(object):
 
     def __init__(self):
@@ -30,6 +27,6 @@ class RefResolver(object):
 
 class ThisModule(Module):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME)
+    def __init__(self, module_name, services):
+        super().__init__(module_name)
         services.ref_resolver = RefResolver(services.types)

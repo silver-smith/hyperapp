@@ -10,8 +10,6 @@ from .tcp_packet import has_full_tcp_packet, encode_tcp_packet, decode_tcp_packe
 
 log = logging.getLogger(__name__)
 
-
-MODULE_NAME = 'transport.tcp'
 TCP_PACKET_ENCODING = 'cdr'
 
 
@@ -86,8 +84,8 @@ class TcpTransport(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         self._event_loop = services.event_loop
         self._address_to_protocol = {}  # htypes.tcp_transport.address -> TcpProtocol
         self._connect_lock = asyncio.Lock()

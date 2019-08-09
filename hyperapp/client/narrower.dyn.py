@@ -12,9 +12,6 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'narrower'
-
-
 class NarrowerObject(Object):
 
 
@@ -134,8 +131,8 @@ class NarrowerView(LineListPanel):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         # hack to just make application storage and dynamic module registry's get_dynamic_module_id happy, not used otherwise:
         services.objimpl_registry.register(NarrowerObject.impl_id, NarrowerObject.from_state)
         services.view_registry.register(NarrowerView.impl_id, NarrowerView.from_state, services.view_registry)

@@ -12,9 +12,6 @@ from .list_object import ListObject
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'fs'
-
-
 FetchResult = namedtuple('FetchResult', 'item_list eof')
 
 
@@ -128,8 +125,8 @@ class FsDirListAdapter(ListObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
         services.fs_service_registry = fs_service_registry = AsyncCapsuleRegistry('fs_service', services.type_resolver)
         services.fs_service_resolver = fs_service_resolver = AsyncCapsuleResolver(services.async_ref_resolver, fs_service_registry)
         services.object_registry.register_type(

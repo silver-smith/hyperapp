@@ -12,9 +12,6 @@ from . import splitter
 log = logging.getLogger(__name__)
 
 
-MODULE_NAME = 'tab_view'
-
-
 class TabView(QtGui.QTabWidget, View):
 
     @staticmethod    
@@ -121,5 +118,5 @@ class TabView(QtGui.QTabWidget, View):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, services):
-        super().__init__(MODULE_NAME, services)
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
