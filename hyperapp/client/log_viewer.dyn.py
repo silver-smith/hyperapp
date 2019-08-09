@@ -9,7 +9,7 @@ from hyperapp.common.type_repr import type_repr_registry
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
-from .items_object import Column
+from .column import Column
 from .tree_object import TreeObject
 from .list_object import ListObject
 from . import data_viewer

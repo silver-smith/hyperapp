@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 from hyperapp.client.command import command
 from hyperapp.client.mode_command import mode_command
 from . import htypes
-from .items_object import Column
+from .column import Column
 from .list_object import ListObject
 from .text_object import TextObject
 from .form import FormObject, FormView

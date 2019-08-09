@@ -6,7 +6,7 @@ import:
       - log_viewer
       - log_record
   code:
-    - client.items_object
+    - client.column
     - client.tree_object
     - client.list_object
     - client.data_viewer

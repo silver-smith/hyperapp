@@ -12,5 +12,5 @@ import:
       - fs
   code:
     - client.async_capsule_registry
-    - client.items_object
+    - client.column
     - client.list_object

@@ -6,7 +6,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 from . import htypes
-from .items_object import Column
+from .column import Column
 from .list_object import ListObject
 
 log = logging.getLogger(__name__)

@@ -3,5 +3,5 @@ import:
     data_viewer:
       - data_viewer
   code:
-    - client.items_object
+    - client.column
     - client.tree_object

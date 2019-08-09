@@ -5,7 +5,7 @@ from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, tString
 from hyperapp.client.object import ObjectObserver, Object
 from hyperapp.client.module import ClientModule
-from .items_object import Column
+from .column import Column
 
 log = logging.getLogger(__name__)
 
