@@ -1,6 +1,5 @@
 from collections import namedtuple
 
-from hyperapp.common.htypes import tInt
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.visual_rep import VisualRepEncoder
 from hyperapp.client.module import ClientModule
@@ -31,8 +30,6 @@ def _load_visual_rep(t, value):
 
 class DataViewer(TreeObject):
 
-    impl_id = 'data_viewer'
-
     @classmethod
     def from_state(cls, state, type_resolver):
         dc = type_resolver.resolve_ref(state.data_ref)
@@ -43,9 +40,6 @@ class DataViewer(TreeObject):
         self._data_ref = data_ref
         self._t = t
         self._path2item_list = _load_visual_rep(t, value)
-
-    def get_state(self):
-        return htypes.data_viewer.data_viewer(self.impl_id, self._data_ref)
 
     def get_title(self):
         return "{} ({})".format(ref_repr(self._data_ref), self._t.name)
@@ -75,4 +69,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, services):
         super().__init__(MODULE_NAME, services)
-        services.objimpl_registry.register(DataViewer.impl_id, DataViewer.from_state, services.type_resolver)
+        services.object_registry.register_type(htypes.data_viewer.data_viewer, DataViewer.from_state, services.type_resolver)

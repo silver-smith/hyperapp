@@ -1,7 +1,5 @@
 import:
   types:
-    tree_view:
-      - int_tree_handle
     data_viewer:
       - data_viewer
   code:

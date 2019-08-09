@@ -174,9 +174,7 @@ class LogRecord(ListObject):
         value = getattr(self._record.params, key)
         if not isinstance(value, ref_t):
             return None
-        object = htypes.data_viewer.data_viewer(data_viewer.DataViewer.impl_id, value)
-        resource_key = resource_key_t(data_viewer.__module_ref__, ['DataViewer'])
-        return htypes.tree_view.int_tree_handle('tree', object, resource_key, current_path=None)
+        return htypes.data_viewer.data_viewer(value)
 
 
 class ThisModule(ClientModule):

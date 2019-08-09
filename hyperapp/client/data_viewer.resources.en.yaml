@@ -1,4 +1,4 @@
-DataViewer:
+type:data_viewer.data_viewer:
   columns:
     name:
       text: Name
