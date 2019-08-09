@@ -21,7 +21,7 @@ type:log_viewer.log_viewer:
       text: Open params viewer
       is_default: true
 
-LogRecord:
+type:log_viewer.log_record:
   columns:
     name:
       text: Name
