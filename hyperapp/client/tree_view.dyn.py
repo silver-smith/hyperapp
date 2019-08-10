@@ -12,6 +12,8 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .tree_object import TreeObserver, TreeObject
 from .view import View
+from .view_registry import NotApplicable
+from .items_view import map_columns_to_view
 
 log = logging.getLogger(__name__)
 
@@ -268,8 +270,18 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._resource_resolver = services.resource_resolver
         services.tree_view_factory = self._tree_view_factory
-        # services.view_registry.register('tree', self._tree_view_from_state, services.objimpl_registry)
+        services.view_registry.register_view_producer(self._produce_view)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
+
+    def _produce_view(self, type_ref, object, observer):
+        if not isinstance(object, TreeObject):
+            raise NotApplicable(object)
+        columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))
+        tree_view = TreeView(columns, object)
+        if observer:
+            tree_view.add_observer(observer)
+        return tree_view

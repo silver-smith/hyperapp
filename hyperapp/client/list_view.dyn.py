@@ -14,6 +14,8 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
 from .list_object import ListObserver, ListObject
+from .view_registry import NotApplicable
+from .items_view import map_columns_to_view
 
 _log = logging.getLogger(__name__)
 
@@ -210,4 +212,14 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        # services.view_registry.register('list', self._list_view_from_state, services.objimpl_registry)
+        self._resource_resolver = services.resource_resolver
+        services.view_registry.register_view_producer(self._produce_view)
+
+    def _produce_view(self, type_ref, object, observer):
+        if not isinstance(object, ListObject):
+            raise NotApplicable(object)
+        columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))
+        list_view = ListView(columns, object)
+        if observer:
+            list_view.add_observer(observer)
+        return list_view

@@ -8,6 +8,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
 from .text_object import TextObject
+from .view_registry import NotApplicable
 
 log = logging.getLogger(__name__)
 
@@ -53,3 +54,9 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        services.view_registry.register_view_producer(self._produce_view)
+
+    def _produce_view(self, type_ref, object, observer):
+        if not isinstance(object, TextObject):
+            raise NotApplicable(object)
+        return TextView(object)

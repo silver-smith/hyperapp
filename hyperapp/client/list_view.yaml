@@ -5,3 +5,5 @@ import:
   code:
     - client.view
     - client.list_object
+    - client.view_registry
+    - client.items_view

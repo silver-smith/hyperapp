@@ -5,3 +5,4 @@ import:
   code:
     - client.view
     - client.text_object
+    - client.view_registry

@@ -11,7 +11,6 @@ from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .text_object import TextObject
-from .text_view import TextView
 from .tab_view import TabView
 from .window import Window
 
@@ -72,7 +71,7 @@ class LayoutManager:
     def build_default_layout(self, app):
         self._current_state = state = htypes.text.text("Welcome to hyperapp")
         text_object = self._object_registry.resolve(state)
-        text_view = TextView(text_object)
+        text_view = self._view_producer.produce_view(state, text_object)
         self._tab_view = tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
         window = Window(on_closed=app.stop)
