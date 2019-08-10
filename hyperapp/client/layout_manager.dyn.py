@@ -174,9 +174,12 @@ class LayoutManager:
         state = await command.run(*args, **kw)
         if state is None:
             return
+        await self.open(state)
+
+    async def open(self, rec):
         if self._current_state:
             self._history.add_new(self._current_state)
-        await self._open(state)
+        await self._open(rec)
 
     async def _open(self, state):
         object = await self._object_registry.resolve_async(state)
@@ -202,14 +205,24 @@ class LayoutManager:
             await self._open(state)
 
 
+class ViewOpener:
+
+    def __init__(self, layout_manager):
+        self._layout_manager = layout_manager
+
+    async def open_rec(self, rec):
+        await self._layout_manager.open(rec)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.layout_manager = LayoutManager(
+        services.layout_manager = layout_manager = LayoutManager(
             services.type_resolver,
             services.resource_resolver,
             services.module_command_registry,
             services.object_registry,
             services.view_producer,
             )
+        services.view_opener = ViewOpener(layout_manager)
