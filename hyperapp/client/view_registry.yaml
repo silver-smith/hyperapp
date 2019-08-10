@@ -1,6 +1,0 @@
-import:
-  types:
-    core:
-      - handle
-  code:
-    - client.view

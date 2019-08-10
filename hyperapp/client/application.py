@@ -21,16 +21,16 @@ class Application(AsyncApplication, Commander):
         self._module_command_registry = self.services.module_command_registry
         self._remoting = self.services.remoting
         self._resource_resolver = self.services.resource_resolver
-        self._view_registry = self.services.view_registry
+        # self._view_registry = self.services.view_registry
         self._windows = []
         self._state_storage = self.services.application_state_storage
 
     def get_state(self):
         return [view.get_state() for view in self._windows]
 
-    async def open_windows(self, state):
-        for s in state or []:
-            await self._window_from_state(s, self, self._module_command_registry, self._view_registry, self._resource_resolver)
+    # async def open_windows(self, state):
+    #     for s in state or []:
+    #         await self._window_from_state(s, self, self._module_command_registry, self._view_registry, self._resource_resolver)
 
     def pick_arg(self, kind):
         return None

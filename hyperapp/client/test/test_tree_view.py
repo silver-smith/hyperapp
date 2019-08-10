@@ -30,7 +30,6 @@ code_module_list = [
     'client.module_command_registry',
     'client.objimpl_registry',
     'client.view',
-    'client.view_registry',
     'client.column',
     'client.tree_object',
     'client.tree_view',

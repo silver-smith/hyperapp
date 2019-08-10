@@ -4,4 +4,3 @@ import:
       - tab_view_state
   code:
     - client.view
-    - client.splitter

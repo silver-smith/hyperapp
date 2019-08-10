@@ -27,5 +27,5 @@ import:
     - client.column
     - client.list_object
     - client.text_object
-    - client.form
-    - client.object_selector
+#    - client.form
+#    - client.object_selector

@@ -7,7 +7,6 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
-from . import splitter
 
 log = logging.getLogger(__name__)
 

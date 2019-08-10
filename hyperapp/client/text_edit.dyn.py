@@ -64,4 +64,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self.state_type = htypes.core.obj_handle
-        services.view_registry.register('text_edit', TextEditView.from_state, services.objimpl_registry)
+        # services.view_registry.register('text_edit', TextEditView.from_state, services.objimpl_registry)
