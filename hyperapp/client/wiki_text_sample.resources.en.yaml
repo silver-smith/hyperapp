@@ -1,0 +1,7 @@
+module:client.wiki_text_sample:ThisModule:
+  commands:
+    open_wiki_sample:
+      text: Open wiki text sample
+      description: Open wiki text sample view
+      shortcuts:
+      - Alt+Ctrl+X
