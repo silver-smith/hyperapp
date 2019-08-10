@@ -31,7 +31,7 @@ type_module_list = [
     'window',
 #    'server_management',
 #    'code_repository',
-    'text_object',
+    'text',
     'form',
     'ref_list',
     'line_object',
@@ -118,6 +118,7 @@ code_module_list = [
     'client.view_producer',
     'client.layout_manager',
     'client.application_state_storage',
+    'client.wiki_text_sample',
     ]
 
 

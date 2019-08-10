@@ -7,5 +7,5 @@ import:
       - handle
       - view_handle
       - obj_handle
-    text_object:
-      - text_object
+    text:
+      - text

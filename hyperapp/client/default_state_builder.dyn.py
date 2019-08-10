@@ -9,8 +9,8 @@ class ThisModule(ClientModule):
         services.build_default_state = self._build_default_state
 
     def _build_default_state(self):
-        text_object_state = htypes.text_object.text_object('text', 'hello')
-        text_handle = htypes.text_object.text_view('text_view', text_object_state)
+        text_object_state = htypes.text.text('text', 'hello')
+        text_handle = htypes.text.text_view('text_view', text_object_state)
         navigator_state = htypes.navigator.state(
             view_id='navigator',
             history=[htypes.navigator.item('sample text', text_handle)],

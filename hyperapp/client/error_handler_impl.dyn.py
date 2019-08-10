@@ -30,7 +30,7 @@ class ThisModule(ClientModule):
             message = 'Unexpected error: %s' % state.error._class_id
         # somehow this state got stuck forever, holding all objects in it's traceback, including views subscribed to events
         state.error.__traceback__ = None
-        obj = htypes.text_object.text_object('text', message)
+        obj = htypes.text.text('text', message)
         return htypes.core.obj_handle('text_view', obj)
 
     def error_handler(self, exception):

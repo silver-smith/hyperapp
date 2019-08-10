@@ -23,7 +23,7 @@ TEST_BLOG_ID = 'test_blog_service.blog'
 
 type_module_list = [
     'object_selector',
-    'text_object',
+    'text',
     'form',
     'blog',
     ]

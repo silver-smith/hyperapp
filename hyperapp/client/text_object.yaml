@@ -1,4 +1,5 @@
 import:
   types:
-    text_object:
-      - text_object
+    text:
+      - text
+      - wiki_text

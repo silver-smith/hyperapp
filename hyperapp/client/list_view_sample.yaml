@@ -2,8 +2,8 @@ import:
   types:
     list_view_sample:
       - list_view_sample_object
-    text_object:
-      - text_object
+    text:
+      - text
   code:
     - client.column
     - client.list_object

@@ -64,7 +64,7 @@ class SampleObject(ListObject):
     @command('open', kind='element')
     async def command_open(self, item_key):
         text = "Opened item {}".format(item_key)
-        return htypes.text_object.text_object(text)
+        return htypes.text.text(text)
 
 
 class ThisModule(ClientModule):

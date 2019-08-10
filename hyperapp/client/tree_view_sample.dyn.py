@@ -55,7 +55,7 @@ class SampleObject(TreeObject):
     @command('open', kind='element')
     async def command_open(self, item_path):
         text = "Opened item {}".format('/'.join(item_path))
-        return htypes.text_object.text_object(text)
+        return htypes.text.text(text)
 
 
 class ThisModule(ClientModule):

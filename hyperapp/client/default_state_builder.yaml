@@ -2,8 +2,8 @@ import:
   types:
     core:
       - handle
-    text_object:
-      - text_object
+    text:
+      - text
       - text_view
     navigator:
       - item

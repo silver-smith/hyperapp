@@ -2,8 +2,8 @@ import:
   types:
     tree_view_sample:
       - tree_view_sample_object
-    text_object:
-      - text_object
+    text:
+      - text
   code:
     - client.tree_object
     - client.tree_view

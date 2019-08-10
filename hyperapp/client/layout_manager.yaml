@@ -1,7 +1,7 @@
 import:
   types:
-    text_object:
-      - text_object
+    text:
+      - text
   code:
     - client.text_object
     - client.text_view

@@ -70,7 +70,7 @@ class LayoutManager:
         self._history = History()
 
     def build_default_layout(self, app):
-        self._current_state = state = htypes.text_object.text_object("Welcome to hyperapp")
+        self._current_state = state = htypes.text.text("Welcome to hyperapp")
         text_object = self._object_registry.resolve(state)
         text_view = TextView(text_object)
         self._tab_view = tab_view = TabView()

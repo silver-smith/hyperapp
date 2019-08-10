@@ -23,7 +23,7 @@ type_module_list = [
 #    'splitter',
 #    'admin',
     'object_selector',
-    'text_object',
+    'text',
     'form',
     'blog',
 #    'module_list',
