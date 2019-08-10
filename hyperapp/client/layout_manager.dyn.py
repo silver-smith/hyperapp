@@ -9,6 +9,7 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import ref_repr
 from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
+from . import htypes
 from .text_object import TextObject
 from .text_view import TextView
 from .tab_view import TabView
@@ -69,7 +70,8 @@ class LayoutManager:
         self._history = History()
 
     def build_default_layout(self, app):
-        text_object = TextObject('hello')
+        self._current_state = state = htypes.text_object.text_object("Welcome to hyperapp")
+        text_object = self._object_registry.resolve(state)
         text_view = TextView(text_object)
         self._tab_view = tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
