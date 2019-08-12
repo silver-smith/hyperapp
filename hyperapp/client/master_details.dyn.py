@@ -46,7 +46,7 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
         if not state:
             return
         object = await self._object_registry.resolve_async(state)
-        view = self._view_producer.produce_view(state, object)
+        view = await self._view_producer.produce_view(state, object)
         self.insertWidget(1, view)
         if self._want_sizes:
             self.setSizes(self._want_sizes)

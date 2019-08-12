@@ -22,6 +22,7 @@ class ViewProducer:
     async def _make_session_logs(self, type_ref, object, observer):
         master = await self._view_registry.produce_view(type_ref, object, observer)
         details_command = object.get_command('open')
+        return MasterDetailsView(self._object_registry, self, master, details_command)
 
     def _state_type_ref(self, state):
         current_t = deduce_value_type(state)
