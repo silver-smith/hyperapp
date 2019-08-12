@@ -15,17 +15,25 @@ class RecordView(QtGui.QWidget):
     def __init__(self, object):
         super().__init__()
         self._object = object
+        self._field_views = None
 
     def get_title(self):
         return self._object.get_title()
 
+    def setVisible(self, visible):
+        super().setVisible(visible)
+        if visible:
+            self._field_views[0].setFocus()
+
     async def _construct(self, object_registry, view_producer):
         layout = QtGui.QVBoxLayout()
         has_expandable_field = False
+        self._field_views = []
         for field_id, field_rec in self._object.get_fields().items():
             field_view = await self._construct_field_view(object_registry, view_producer, layout, field_id, field_rec)
             if field_view.sizePolicy().verticalPolicy() & QtGui.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
+            self._field_views.append(field_view)
         if not has_expandable_field:
             layout.addStretch()
         self.setLayout(layout)
