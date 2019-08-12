@@ -2,11 +2,7 @@ from error import error, client_error
 from core import object, object_base, handle
 from form import form, form_base
 from object_selector import object_selector_callback
-from text import text
-
-
-blog_service = record:
-    service_url: url
+from text import text, wiki_ref
 
 
 blog = record:
@@ -26,17 +22,12 @@ blog_article_ref_list = record:
     selected_ref_id: int opt
 
 
-article_ref = record:
-    id: int
-    title: string
-    ref: ref
-
 blog_item = record:
     id: int
     created_at: datetime
     title: string
     text: string
-    ref_list: article_ref list
+    ref_list: wiki_ref list
 
 blog_chunk = record:
     from_key: int opt
@@ -70,9 +61,6 @@ blog_article_form = form class blog_article_form(form_base):
     blog_service_ref: ref
     blog_id: string
     article_id: int
-
-blog_article_text = record(text):
-    ref_list: article_ref list
 
 article_ref_list_object = object class article_ref_list_object(object_base):
     blog_service_ref: ref

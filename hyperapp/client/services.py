@@ -119,6 +119,8 @@ code_module_list = [
     'client.ref_list',
     'client.local_server_ref_list',
     'client.wiki_text_sample',
+    'client.record_object',
+    'client.record_view',
     'client.blog',
     ]
 

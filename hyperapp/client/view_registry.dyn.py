@@ -18,10 +18,10 @@ class ViewRegistry:
     def register_view_producer(self, producer):
         self._producer_list.append(producer)
 
-    def produce_view(self, state, object, observer):
+    async def produce_view(self, state, object, observer):
         for producer in self._producer_list:
             try:
-                return producer(state, object, observer)
+                return (await producer(state, object, observer))
             except NotApplicable:
                 pass
         raise RuntimeError("No view is known to support object {}".format(object))

@@ -4,7 +4,6 @@ import:
       - service
     blog:
       - blog
-      - article_ref
       - blog_item
       - blog_chunk
       - unknown_article_error

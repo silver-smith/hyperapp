@@ -215,7 +215,7 @@ class ThisModule(ClientModule):
         self._resource_resolver = services.resource_resolver
         services.view_registry.register_view_producer(self._produce_view)
 
-    def _produce_view(self, type_ref, object, observer):
+    async def _produce_view(self, type_ref, object, observer):
         if not isinstance(object, ListObject):
             raise NotApplicable(object)
         columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))

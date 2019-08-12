@@ -68,10 +68,10 @@ class LayoutManager:
         self._current_item_observer = None
         self._history = History()
 
-    def build_default_layout(self, app):
+    async def build_default_layout(self, app):
         self._current_state = state = htypes.text.text("Welcome to hyperapp")
         text_object = self._object_registry.resolve(state)
-        text_view = self._view_producer.produce_view(state, text_object)
+        text_view = await self._view_producer.produce_view(state, text_object)
         self._tab_view = tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
         window = Window(on_closed=app.stop)
@@ -184,7 +184,7 @@ class LayoutManager:
     async def _open(self, state):
         object = await self._object_registry.resolve_async(state)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        view = self._view_producer.produce_view(state, object, observer)
+        view = await self._view_producer.produce_view(state, object, observer)
         tab_view = self._tab_view
         old_widget = tab_view.widget(0)
         tab_view.removeTab(0)

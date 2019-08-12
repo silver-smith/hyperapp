@@ -13,14 +13,14 @@ class ViewProducer:
         self._view_registry = view_registry
         self._locale = 'en'
 
-    def produce_view(self, state, object, observer=None):
+    async def produce_view(self, state, object, observer=None):
         type_ref = self._state_type_ref(state)
         if isinstance(object, SessionLogs):
-            return self._make_session_logs(type_ref, object, observer)
-        return self._view_registry.produce_view(type_ref, object, observer)
+            return await self._make_session_logs(type_ref, object, observer)
+        return (await self._view_registry.produce_view(type_ref, object, observer))
 
-    def _make_session_logs(self, type_ref, object, observer):
-        master = self._view_registry.produce_view(type_ref, object, observer)
+    async def _make_session_logs(self, type_ref, object, observer):
+        master = await self._view_registry.produce_view(type_ref, object, observer)
         details_command = object.get_command('open')
 
     def _state_type_ref(self, state):

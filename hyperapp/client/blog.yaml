@@ -1,31 +1,29 @@
 import:
   types:
-    core:
-      - obj_handle
-      - int_list_handle
     hyper_ref:
       - service
     line_object:
       - line_object
       - line_edit_view
-    form:
-      - form_view_field
-      - form_handle
-    object_selector:
-      - object_selector_object
-      - object_selector_view
+    # object_selector:
+    #   - object_selector_object
+    #   - object_selector_view
+    text:
+      - text
+      - wiki_ref
+      - wiki_text
     blog:
       - blog
       - blog_article
       - blog_article_ref_list
       - blog_notification_iface
       - blog_article_form
-      - blog_article_text
       - article_ref_list_object
       - selector_callback
   code:
     - client.column
     - client.list_object
     - client.text_object
+    - client.record_object
 #    - client.form
 #    - client.object_selector

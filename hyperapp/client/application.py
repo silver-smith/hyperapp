@@ -60,6 +60,9 @@ class Application(AsyncApplication, Commander):
         self.stop_loop()
 
     def exec_(self):
-        self.event_loop.run_until_complete(self.services.async_init())
-        self._layout_manager.build_default_layout(self)
+        self.event_loop.run_until_complete(self._async_init())
         AsyncApplication.exec_(self)
+
+    async def _async_init(self):
+        await self.services.async_init()
+        await self._layout_manager.build_default_layout(self)

@@ -58,7 +58,7 @@ class ThisModule(ClientModule):
         self._view_opener = services.view_opener
         services.view_registry.register_view_producer(self._produce_view)
 
-    def _produce_view(self, type_ref, object, observer):
+    async def _produce_view(self, type_ref, object, observer):
         if not isinstance(object, TextObject):
             raise NotApplicable(object)
         return TextView(self._view_opener, object)

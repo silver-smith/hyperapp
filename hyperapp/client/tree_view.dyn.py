@@ -277,7 +277,7 @@ class ThisModule(ClientModule):
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
 
-    def _produce_view(self, type_ref, object, observer):
+    async def _produce_view(self, type_ref, object, observer):
         if not isinstance(object, TreeObject):
             raise NotApplicable(object)
         columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))

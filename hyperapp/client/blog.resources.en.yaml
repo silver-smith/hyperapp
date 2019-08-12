@@ -1,4 +1,4 @@
-BlogObject:
+type:blog.blog:
   columns:
     id:
       text: Id
@@ -21,7 +21,7 @@ BlogObject:
       description: Create new article
       shortcuts:
         - Ins
-BlogArticleForm:
+type:blog.blog_article:
   commands:
     parent:
       text: Parent
