@@ -133,15 +133,18 @@ class LayoutManager:
 
     def update_element_commands(self, object, current_item_key):
         _log.debug('Update element commands for item %r', current_item_key)
-        for button in self._element_buttons:
-            button.deleteLater()
-        self._element_buttons.clear()
+        self._clean_element_commands()
         for command in object.get_item_command_list(current_item_key):
             button = self._make_button_for_current_object(command)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command, current_item_key)))
             layout = self._cmd_pane.widget().layout()
             layout.addWidget(button)
             self._element_buttons.append(button)
+
+    def _clean_element_commands(self):
+        for button in self._element_buttons:
+            button.deleteLater()
+        self._element_buttons.clear()
 
     def _state_type_ref(self, state):
         current_t = deduce_value_type(state)
@@ -192,6 +195,7 @@ class LayoutManager:
         tab_view.insertTab(0, view, view.get_title())
         view.setFocus()
         self._current_state = state
+        self._clean_element_commands()
         self._update_dir_buttons(object)
 
     async def _navigate_backward(self):
