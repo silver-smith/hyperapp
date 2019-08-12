@@ -272,7 +272,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._resource_resolver = services.resource_resolver
         services.tree_view_factory = self._tree_view_factory
-        services.view_registry.register_view_producer(self._produce_view)
+        services.view_producer_registry.register_view_producer(self._produce_view)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)

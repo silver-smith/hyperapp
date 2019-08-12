@@ -10,7 +10,7 @@ class NotApplicable(Exception):
         super().__init__("This view producer is not applicable for object {}".format(object))
 
 
-class ViewRegistry:
+class ViewProducerRegistry:
 
     def __init__(self):
         self._producer_list = []
@@ -31,4 +31,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry = ViewRegistry()
+        services.view_producer_registry = ViewProducerRegistry()

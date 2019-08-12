@@ -55,7 +55,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._object_registry = services.object_registry
         self._view_producer = services.view_producer
-        services.view_registry.register_view_producer(self._produce_view)
+        services.view_producer_registry.register_view_producer(self._produce_view)
 
     async def _produce_view(self, type_ref, object, observer):
         if not isinstance(object, RecordObject):

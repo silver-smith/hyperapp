@@ -213,7 +213,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._resource_resolver = services.resource_resolver
-        services.view_registry.register_view_producer(self._produce_view)
+        services.view_producer_registry.register_view_producer(self._produce_view)
 
     async def _produce_view(self, type_ref, object, observer):
         if not isinstance(object, ListObject):
