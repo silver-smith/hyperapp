@@ -2,6 +2,8 @@ import:
   types:
     hyper_ref:
       - service
+    text:
+      - wiki_ref
     blog:
       - blog
       - blog_item

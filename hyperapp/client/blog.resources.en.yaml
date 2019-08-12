@@ -48,7 +48,7 @@ type:blog.blog_article:
       description: Open references list
       shortcuts:
         - Ctrl+R
-ArticleRefListObject:
+type:blog.blog_article_ref_list:
   commands:
     parent:
       text: Parent

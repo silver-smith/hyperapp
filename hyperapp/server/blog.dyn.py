@@ -59,7 +59,7 @@ class BlogService(object):
 
     @staticmethod
     def rec2ref(rec):
-        return htypes.blog.article_ref(
+        return htypes.text.wiki_ref(
             id=rec.id,
             title=rec.title,
             ref=ref_t(rec.ref_hash_algorithm, rec.ref_hash),
