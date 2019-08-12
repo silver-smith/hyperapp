@@ -11,7 +11,6 @@ class ViewProducer:
         self._resource_resolver = resource_resolver
         self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry
-        self._locale = 'en'
 
     async def produce_view(self, state, object, observer=None):
         type_ref = self._state_type_ref(state)
