@@ -33,6 +33,7 @@ type_module_list = [
     # 'code_repository',
     'text',
     'form',
+    'record_view',
     'ref_list',
     'line_object',
     'narrower',

@@ -1,0 +1,7 @@
+
+field_layout = record:
+    field_id: string
+    layout: ref
+
+record_view_layout = record:
+    fields: field_layout list

@@ -9,3 +9,5 @@ wiki_ref = record:
 
 wiki_text = record(text):
     ref_list: wiki_ref list
+
+text_edit_layout = record

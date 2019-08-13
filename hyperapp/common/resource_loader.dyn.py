@@ -92,10 +92,23 @@ class ResourceLoader(object):
         module_name, type_name = value['type'].split('.')
         type_ref = self._local_type_module_registry[module_name][type_name]
         t = self._type_resolver.resolve(type_ref)
-        record = self._dict_decoder.decode_dict(t, value['value'])
+        if value['type'] == 'record_view.record_view_layout':
+            # special case for record view layout; todo: general solution, such as htype mapper or move out of resource yaml at all
+            record = self._value2record_layout(value['value'], t)
+        else:
+            record = self._dict_decoder.decode_dict(t, value.get('value', {}))
         resource_ref = self._ref_registry.register_object(record, t)
         _log.debug("Loaded layout %s: %s", ref_repr(resource_ref), record)
         return resource_ref
+
+    def _value2record_layout(self, value, t):
+        field_layout_ref = self._local_type_module_registry['record_view']['field_layout']
+        field_layout_t = self._type_resolver.resolve(field_layout_ref)
+        field_list = []
+        for field in value['fields']:
+            layout_ref = self._value2layout(field['layout'])
+            field_list.append(field_layout_t(field['field_id'], layout_ref))
+        return t(field_list)
 
 
 class ThisModule(Module):
