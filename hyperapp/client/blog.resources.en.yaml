@@ -15,12 +15,13 @@ type:blog.blog:
       text: Delete
       description: Delete selected article
       shortcuts:
-        - Del
+      - Del
     add:
       text: Add
       description: Create new article
       shortcuts:
-        - Ins
+      - Ins
+
 type:blog.blog_article:
   commands:
     parent:
@@ -47,7 +48,8 @@ type:blog.blog_article:
       text: Refs
       description: Open references list
       shortcuts:
-        - Ctrl+R
+      - Ctrl+R
+
 type:blog.blog_article_ref_list:
   commands:
     parent:
@@ -59,7 +61,7 @@ type:blog.blog_article_ref_list:
       text: Add
       description: Add new reference
       shortcuts:
-        - Ins
+      - Ins
     open:
       text: Open
       description: Open selected hyper reference
@@ -68,9 +70,9 @@ type:blog.blog_article_ref_list:
       text: Change
       description: Select another object for this reference
       shortcuts:
-        - Space
+      - Space
     delete:
       text: Delete
       description: Delete selected hyper reference
       shortcuts:
-        - Del
+      - Del
