@@ -1,3 +1,7 @@
 import:
+  types:
+    master_details:
+    - master_details_layout
   code:
-    - client.composite
+  - client.composite
+  - client.layout_registry

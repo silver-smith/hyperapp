@@ -7,6 +7,7 @@ from PySide import QtCore, QtGui
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .composite import Composite
+from .layout_registry import LayoutViewProducer
 
 _log = logging.getLogger(__name__)
 
@@ -53,7 +54,22 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
             self._want_sizes = None
 
 
+class MasterDetailProducer(LayoutViewProducer):
+
+    def __init__(self, layout, object_registry, view_producer):
+        self._command_id = layout.command_id
+        self._object_registry = object_registry
+        self._view_producer = view_producer
+
+    async def produce_view(self, type_ref, object, observer):
+        details_command = object.get_command(self._command_id)
+        master = await self._view_producer.produce_view(type_ref, object, observer)
+        return MasterDetailsView(self._object_registry, self._view_producer, master, details_command)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        services.layout_registry.register_type(
+            htypes.master_details.master_details_layout, MasterDetailProducer, services.object_registry, services.view_producer)

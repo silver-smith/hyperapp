@@ -93,8 +93,9 @@ class ResourceLoader(object):
         type_ref = self._local_type_module_registry[module_name][type_name]
         t = self._type_resolver.resolve(type_ref)
         record = self._dict_decoder.decode_dict(t, value['value'])
-        _log.debug("Loaded layout: %s", record)
-        return self._ref_registry.register_object(record, t)
+        resource_ref = self._ref_registry.register_object(record, t)
+        _log.debug("Loaded layout %s: %s", ref_repr(resource_ref), record)
+        return resource_ref
 
 
 class ThisModule(Module):
