@@ -20,6 +20,10 @@ type:log_viewer.log_viewer:
     open:
       text: Open params viewer
       is_default: true
+  layout:
+    type: master_details.master_details_layout
+    value:
+      command_id: open
 
 type:log_viewer.log_record:
   columns:

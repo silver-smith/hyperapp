@@ -36,6 +36,7 @@ type_module_list = [
     'ref_list',
     'line_object',
     'narrower',
+    'master_details',
     'fs',
     'object_selector',
     'blog',
