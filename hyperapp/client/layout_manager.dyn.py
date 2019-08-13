@@ -118,6 +118,32 @@ class LayoutManager:
         pane.setFeatures(pane.NoDockWidgetFeatures)
         return pane
 
+    async def _run_command(self, command, *args, **kw):
+        _log.info('Run command: %r', command.id)
+        state = await command.run(*args, **kw)
+        if state is None:
+            return
+        await self.open(state)
+
+    async def open(self, rec):
+        if self._current_state:
+            self._history.add_new(self._current_state)
+        await self._open(rec)
+
+    async def _open(self, state):
+        object = await self._object_registry.resolve_async(state)
+        self._current_item_observer = observer = _CurrentItemObserver(self, object)
+        view = await self._view_producer.produce_view(state, object, observer)
+        tab_view = self._tab_view
+        old_widget = tab_view.widget(0)
+        tab_view.removeTab(0)
+        old_widget.deleteLater()
+        tab_view.insertTab(0, view, view.get_title())
+        view.setFocus()
+        self._current_state = state
+        self._clean_element_commands()
+        self._update_dir_buttons(object)
+
     def _update_dir_buttons(self, object):
         for button in self._dir_buttons:
             button.deleteLater()
@@ -171,32 +197,6 @@ class LayoutManager:
             button.setShortcut(shortcut_list[0])
         button.setToolTip(description)
         return button
-
-    async def _run_command(self, command, *args, **kw):
-        _log.info('Run command: %r', command.id)
-        state = await command.run(*args, **kw)
-        if state is None:
-            return
-        await self.open(state)
-
-    async def open(self, rec):
-        if self._current_state:
-            self._history.add_new(self._current_state)
-        await self._open(rec)
-
-    async def _open(self, state):
-        object = await self._object_registry.resolve_async(state)
-        self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        view = await self._view_producer.produce_view(state, object, observer)
-        tab_view = self._tab_view
-        old_widget = tab_view.widget(0)
-        tab_view.removeTab(0)
-        old_widget.deleteLater()
-        tab_view.insertTab(0, view, view.get_title())
-        view.setFocus()
-        self._current_state = state
-        self._clean_element_commands()
-        self._update_dir_buttons(object)
 
     async def _navigate_backward(self):
         state = self._history.pop_back(self._current_state)
