@@ -2,45 +2,27 @@ import logging
 
 from PySide import QtCore, QtGui
 
+from hyperapp.client.object import ObjectObserver
 from hyperapp.client.module import ClientModule
 from . import htypes
-from .view import View
 from .text_object import TextObject
+from .layout_registry import LayoutViewProducer
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
-class TextEditView(View, QtGui.QTextEdit):
+class TextEditView(QtGui.QTextEdit, ObjectObserver):
 
-    @classmethod
-    async def from_state(cls, locale, state, parent, objimpl_registry):
-        object = await objimpl_registry.resolve_async(state.object)
-        return cls(object, parent)
-
-    @staticmethod
-    def get_state_type():
-        return this_module.state_type
-
-    def __init__(self, object, parent):
-        QtGui.QTextEdit.__init__(self)
-        View.__init__(self, parent)
+    def __init__(self, object):
+        super().__init__()
         self.object = object
         self.notify_on_text_changed = True
         self.setPlainText(object.text)
         self.textChanged.connect(self._on_text_changed)
         self.object.subscribe(self)
 
-    def get_state(self):
-        return this_module.state_type('text_edit', self.object.get_state())
-
     def get_title(self):
         return self.object.get_title()
-
-    def get_object(self):
-        return self.object
-
-    def get_object_command_list(self, object, kinds=None):
-        return object.get_command_list(TextObject.Mode.EDIT, kinds)
 
     def _on_text_changed(self):
         if self.notify_on_text_changed:
@@ -56,12 +38,20 @@ class TextEditView(View, QtGui.QTextEdit):
         View.object_changed(self)
 
     def __del__(self):
-        log.info('~text_edit %r', self)
+        _log.info('~text_edit %r', self)
+
+
+class TextEditProducer(LayoutViewProducer):
+
+    def __init__(self, layout):
+        pass
+
+    async def produce_view(self, type_ref, object, observer=None):
+        return TextEditView(object)
 
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self.state_type = htypes.core.obj_handle
-        # services.view_registry.register('text_edit', TextEditView.from_state, services.objimpl_registry)
+        services.layout_registry.register_type(htypes.text.text_edit_layout, TextEditProducer)
