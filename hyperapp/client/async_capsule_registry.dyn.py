@@ -5,6 +5,7 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.visual_rep import pprint
+from hyperapp.common.registry import UnknownRegistryIdError
 from hyperapp.common.capsule_registry import CapsuleRegistry
 from hyperapp.client.async_registry import run_awaitable_factory
 
@@ -26,7 +27,10 @@ class AsyncCapsuleRegistry(CapsuleRegistry):
 
     async def _resolve_object_async(self, type_ref, t, object, args, kw):
         pprint(object, t=t, title='Producing %s for %s of type %s' % (self._produce_name, object, ref_repr(type_ref)))
-        rec = self._resolve(type_ref)
+        try:
+            rec = self._resolve(type_ref)
+        except UnknownRegistryIdError as x:
+            raise RuntimeError("No resolver is registered for {}: {} {}".format(self._produce_name, t, ref_repr(type_ref)))
         log.info('Producing %s for %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, object, ref_repr(type_ref), rec.factory, rec.args, args, rec.kw, kw, object)
         return (await run_awaitable_factory(rec.factory, object, *(*rec.args, *args), **{**rec.kw, **kw}))
