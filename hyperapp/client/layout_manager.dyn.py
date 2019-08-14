@@ -135,9 +135,9 @@ class LayoutManager:
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
         view = await self._view_producer.produce_view(state, object, observer)
         tab_view = self._tab_view
-        old_widget = tab_view.widget(0)
+        old_view = tab_view.widget(0)
         tab_view.removeTab(0)
-        old_widget.deleteLater()
+        old_view.deleteLater()
         tab_view.insertTab(0, view, view.get_title())
         view.setFocus()
         self._current_state = state
