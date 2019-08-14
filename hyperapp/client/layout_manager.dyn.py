@@ -33,22 +33,22 @@ class History:
         self._backward = []
         self._forward = []
 
-    def add_new(self, state):
-        self._backward.append(state)
+    def add_new(self, piece):
+        self._backward.append(piece)
         self._forward.clear()
 
-    def pop_back(self, current_state):
+    def pop_back(self, current_piece):
         if not self._backward:
             return None
-        if current_state is not None:
-            self._forward.append(current_state)
+        if current_piece is not None:
+            self._forward.append(current_piece)
         return self._backward.pop(-1)
 
-    def pop_forward(self, current_state):
+    def pop_forward(self, current_piece):
         if not self._forward:
             return None
-        if current_state is not None:
-            self._backward.append(current_state)
+        if current_piece is not None:
+            self._backward.append(current_piece)
         return self._forward.pop(-1)
 
 
@@ -64,12 +64,12 @@ class LayoutManager:
         self._cmd_pane = self._construct_cmd_pane()
         self._dir_buttons = []
         self._element_buttons = []
-        self._current_state = None
+        self._current_piece = None
         self._current_item_observer = None
         self._history = History()
 
     async def build_default_layout(self, app):
-        self._current_state = piece = htypes.text.text("Welcome to hyperapp")
+        self._current_piece = piece = htypes.text.text("Welcome to hyperapp")
         text_object = self._object_registry.resolve(piece)
         text_view = await self._view_producer.produce_view(piece, text_object)
         self._tab_view = tab_view = TabView()
@@ -126,21 +126,21 @@ class LayoutManager:
         await self.open(piece)
 
     async def open(self, rec):
-        if self._current_state:
-            self._history.add_new(self._current_state)
+        if self._current_piece:
+            self._history.add_new(self._current_piece)
         await self._open(rec)
 
-    async def _open(self, state):
-        object = await self._object_registry.resolve_async(state)
+    async def _open(self, piece):
+        object = await self._object_registry.resolve_async(piece)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        view = await self._view_producer.produce_view(state, object, observer)
+        view = await self._view_producer.produce_view(piece, object, observer)
         tab_view = self._tab_view
         old_view = tab_view.widget(0)
         tab_view.removeTab(0)
         old_view.deleteLater()
         tab_view.insertTab(0, view, view.get_title())
         view.setFocus()
-        self._current_state = state
+        self._current_piece = piece
         self._clean_element_commands()
         self._update_dir_buttons(object)
 
@@ -177,7 +177,7 @@ class LayoutManager:
         return self._type_resolver.reverse_resolve(t)
 
     def _make_button_for_current_object(self, command):
-        type_ref = self._piece_type_ref(self._current_state)
+        type_ref = self._piece_type_ref(self._current_piece)
         resource_key = resource_key_t(type_ref, command.resource_key.path[1:])  # skip class name
         resource = self._resource_resolver.resolve(resource_key, self._locale)
         if resource:
@@ -199,14 +199,14 @@ class LayoutManager:
         return button
 
     async def _navigate_backward(self):
-        state = self._history.pop_back(self._current_state)
-        if state is not None:
-            await self._open(state)
+        piece = self._history.pop_back(self._current_piece)
+        if piece is not None:
+            await self._open(piece)
 
     async def _navigate_forward(self):
-        state = self._history.pop_forward(self._current_state)
-        if state is not None:
-            await self._open(state)
+        piece = self._history.pop_forward(self._current_piece)
+        if piece is not None:
+            await self._open(piece)
 
 
 class ViewOpener:
