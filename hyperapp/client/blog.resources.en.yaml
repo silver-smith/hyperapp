@@ -52,12 +52,12 @@ type:blog.blog_article:
   layout_commands:
   - command_id: edit
     layout:
-        type: record_view.record_view_layout
-        value:
-          fields:
-          - field_id: contents
-            layout:
-              type: text.text_edit_layout
+      type: record_view.record_view_layout
+      value:
+        fields:
+        - field_id: contents
+          layout:
+            type: text.text_edit_layout
 
 type:blog.blog_article_ref_list:
   commands:
