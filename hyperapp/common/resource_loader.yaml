@@ -1,5 +1,7 @@
 import:
   types:
     resource:
-      - command_resource
-      - column_resource
+    - command_resource
+    - column_resource
+    - layout_command
+    - layout_commands_resource

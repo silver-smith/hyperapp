@@ -34,8 +34,8 @@ class ResourceLoader(object):
                 base_ref, path = self._base_path_to_ref(file_path, base_path)
                 if not base_ref:
                     continue
-                for section_type, item_elements in sections.items():
-                    self._load_resource_section(locale, base_ref, section_type, path, item_elements)
+                for section_type, section_contents in sections.items():
+                    self._load_resource_section(locale, base_ref, section_type, path, section_contents)
 
     def _base_path_to_ref(self, file_path, base_path):
         if ':' not in base_path:
@@ -52,12 +52,19 @@ class ResourceLoader(object):
             _log.warning("%s: Skipping resource because %s %r is unknown", file_path, kind, base_path)
             return (None, None)
 
-    def _load_resource_section(self, locale, base_ref, section_type, path, item_elements):
+    def _load_resource_section(self, locale, base_ref, section_type, path, section_contents):
         if section_type == 'layout':
-            resource_ref = self._value2layout(item_elements)
+            resource_ref = self._value2layout(section_contents)
             resource_key = resource_key_t(base_ref, [*path, 'layout'])
             self._resource_registry.register(resource_key, locale, resource_ref)
-            return
+        elif section_type == 'layout_commands':
+            resource_ref = self._value2layout_commands(section_contents)
+            resource_key = resource_key_t(base_ref, [*path, 'layout'])
+            self._resource_registry.register(resource_key, locale, resource_ref)
+        else:
+            self._load_resource_section_elements(locale, base_ref, section_type, path, section_contents)
+
+    def _load_resource_section_elements(self, locale, base_ref, section_type, path, item_elements):
         for item_id, items in item_elements.items():
             resource_ref = None
             resource = None
@@ -88,15 +95,15 @@ class ResourceLoader(object):
             description=value.get('description'),
             )
 
-    def _value2layout(self, value):
-        module_name, type_name = value['type'].split('.')
+    def _value2layout(self, section_contents):
+        module_name, type_name = section_contents['type'].split('.')
         type_ref = self._local_type_module_registry[module_name][type_name]
         t = self._type_resolver.resolve(type_ref)
-        if value['type'] == 'record_view.record_view_layout':
+        if section_contents['type'] == 'record_view.record_view_layout':
             # special case for record view layout; todo: general solution, such as htype mapper or move out of resource yaml at all
-            record = self._value2record_layout(value['value'], t)
+            record = self._value2record_layout(section_contents['value'], t)
         else:
-            record = self._dict_decoder.decode_dict(t, value.get('value', {}))
+            record = self._dict_decoder.decode_dict(t, section_contents.get('value', {}))
         resource_ref = self._ref_registry.register_object(record, t)
         _log.debug("Loaded layout %s: %s", ref_repr(resource_ref), record)
         return resource_ref
@@ -110,6 +117,16 @@ class ResourceLoader(object):
             field_list.append(field_layout_t(field['field_id'], layout_ref))
         return t(field_list)
 
+    def _value2layout_commands(self, section_contents):
+        command_list = []
+        for command in section_contents:
+            layout_ref = self._value2layout(command['layout'])
+            command_list.append(htypes.resource.layout_command(command['command_id'], layout_ref))
+        resource = htypes.resource.layout_commands_resource(command_list)
+        resource_ref = self._ref_registry.register_object(resource)
+        _log.debug("Loaded layout commands %s: %s", ref_repr(resource_ref), resource)
+        return resource_ref
+        
 
 class ThisModule(Module):
 

@@ -19,5 +19,12 @@ column_resource = record:
     text: string opt
     description: string opt
 
+layout_command = record:
+    command_id: string
+    layout_ref: ref
+
+layout_commands_resource = record:
+    layout_commands: layout_command list
+
 error_message_resource = record:
     message: string
