@@ -61,7 +61,7 @@ class MasterDetailProducer(LayoutViewProducer):
         self._object_registry = object_registry
         self._view_producer = view_producer
 
-    async def produce_view(self, type_ref, object, observer):
+    async def produce_view(self, type_ref, object, observer=None):
         details_command = object.get_command(self._command_id)
         master = await self._view_producer.produce_view(type_ref, object, observer)
         return MasterDetailsView(self._object_registry, self._view_producer, master, details_command)
