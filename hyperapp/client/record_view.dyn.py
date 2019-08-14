@@ -68,7 +68,7 @@ class RecordViewProducer(LayoutViewProducer):
         self._view_producer = view_producer
         self._layout_resolver = layout_resolver
 
-    async def produce_view(self, type_ref, object, observer=None):
+    async def produce_view(self, piece, object, observer=None):
         return (await RecordView.make(self._object_registry, self._view_producer, self._layout_resolver, object, self._layout))
 
 
@@ -83,7 +83,7 @@ class ThisModule(ClientModule):
         services.layout_registry.register_type(
             htypes.record_view.record_view_layout, RecordViewProducer, services.object_registry, services.view_producer, services.layout_resolver)
 
-    async def _produce_view(self, type_ref, object, observer):
+    async def _produce_view(self, piece, object, observer):
         if not isinstance(object, RecordObject):
             raise NotApplicable(object)
         return (await RecordView.make(self._object_registry, self._view_producer, self._layout_resolver, object))

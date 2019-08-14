@@ -20,19 +20,22 @@ class ViewProducer(LayoutViewProducer):
         self._view_producer_registry = view_producer_registry
         self._layout_registry = layout_registry
 
-    async def produce_view(self, state, object, observer=None):
-        type_ref = self._state_type_ref(state)
+    async def produce_view(self, piece, object, observer=None):
+        type_ref = self._piece_type_ref(piece)
         resource_key = resource_key_t(type_ref, ['layout'])
         layout = self._resource_resolver.resolve(resource_key, LOCALE)
         if layout:
             producer = self._layout_registry.resolve(layout)
-            _log.info("Producing view for %s %r with %s using %s", ref_repr(type_ref), state, layout, producer)
-            return (await producer.produce_view(type_ref, object, observer))
-        return (await self._view_producer_registry.produce_view(type_ref, object, observer))
+            _log.info("Producing view for %s %r with %s using %s", ref_repr(type_ref), piece, layout, producer)
+            return (await producer.produce_view(piece, object, observer))
+        return (await self.produce_default_view(piece, object, observer))
 
-    def _state_type_ref(self, state):
-        current_t = deduce_value_type(state)
-        return self._type_resolver.reverse_resolve(current_t)
+    async def produce_default_view(self, piece, object, observer=None):
+        return (await self._view_producer_registry.produce_view(piece, object, observer))
+
+    def _piece_type_ref(self, piece):
+        t = deduce_value_type(piece)
+        return self._type_resolver.reverse_resolve(t)
 
 
 class ThisModule(ClientModule):

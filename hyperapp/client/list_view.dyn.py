@@ -6,6 +6,7 @@ import weakref
 
 from PySide import QtCore, QtGui
 
+from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.util import single
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 from hyperapp.client.command import Command
@@ -212,14 +213,20 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
         services.view_producer_registry.register_view_producer(self._produce_view)
 
-    async def _produce_view(self, type_ref, object, observer):
+    async def _produce_view(self, piece, object, observer):
         if not isinstance(object, ListObject):
             raise NotApplicable(object)
+        type_ref = self._piece_type_ref(piece)
         columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))
         list_view = ListView(columns, object)
         if observer:
             list_view.add_observer(observer)
         return list_view
+
+    def _piece_type_ref(self, piece):
+        t = deduce_value_type(piece)
+        return self._type_resolver.reverse_resolve(t)

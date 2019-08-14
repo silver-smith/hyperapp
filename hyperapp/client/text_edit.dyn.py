@@ -46,7 +46,7 @@ class TextEditProducer(LayoutViewProducer):
     def __init__(self, layout):
         pass
 
-    async def produce_view(self, type_ref, object, observer=None):
+    async def produce_view(self, piece, object, observer=None):
         return TextEditView(object)
 
 

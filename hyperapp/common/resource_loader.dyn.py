@@ -59,7 +59,7 @@ class ResourceLoader(object):
             self._resource_registry.register(resource_key, locale, resource_ref)
         elif section_type == 'layout_commands':
             resource_ref = self._value2layout_commands(section_contents)
-            resource_key = resource_key_t(base_ref, [*path, 'layout'])
+            resource_key = resource_key_t(base_ref, [*path, 'layout_commands'])
             self._resource_registry.register(resource_key, locale, resource_ref)
         else:
             self._load_resource_section_elements(locale, base_ref, section_type, path, section_contents)

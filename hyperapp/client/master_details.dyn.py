@@ -43,11 +43,11 @@ class MasterDetailsView(QtGui.QSplitter, Composite):
             w.setParent(None)
             w.deleteLater()
         _log.info('Run command to open details: %r', self._details_command.id)
-        state = await self._details_command.run(current_key)
-        if not state:
+        piece = await self._details_command.run(current_key)
+        if not piece:
             return
-        object = await self._object_registry.resolve_async(state)
-        view = await self._view_producer.produce_view(state, object)
+        object = await self._object_registry.resolve_async(piece)
+        view = await self._view_producer.produce_view(piece, object)
         self.insertWidget(1, view)
         if self._want_sizes:
             self.setSizes(self._want_sizes)
@@ -61,9 +61,9 @@ class MasterDetailProducer(LayoutViewProducer):
         self._object_registry = object_registry
         self._view_producer = view_producer
 
-    async def produce_view(self, type_ref, object, observer=None):
+    async def produce_view(self, piece, object, observer=None):
         details_command = object.get_command(self._command_id)
-        master = await self._view_producer.produce_view(type_ref, object, observer)
+        master = await self._view_producer.produce_default_view(piece, object, observer)
         return MasterDetailsView(self._object_registry, self._view_producer, master, details_command)
 
 

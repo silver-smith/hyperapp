@@ -6,6 +6,7 @@ import weakref
 
 from PySide import QtCore, QtGui
 
+from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import make_async_action
 from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
@@ -270,6 +271,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
         services.tree_view_factory = self._tree_view_factory
         services.view_producer_registry.register_view_producer(self._produce_view)
@@ -277,11 +279,16 @@ class ThisModule(ClientModule):
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
 
-    async def _produce_view(self, type_ref, object, observer):
+    async def _produce_view(self, piece, object, observer):
         if not isinstance(object, TreeObject):
             raise NotApplicable(object)
+        type_ref = self._piece_type_ref(piece)
         columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))
         tree_view = TreeView(columns, object)
         if observer:
             tree_view.add_observer(observer)
         return tree_view
+
+    def _piece_type_ref(self, piece):
+        t = deduce_value_type(piece)
+        return self._type_resolver.reverse_resolve(t)

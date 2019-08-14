@@ -69,9 +69,9 @@ class LayoutManager:
         self._history = History()
 
     async def build_default_layout(self, app):
-        self._current_state = state = htypes.text.text("Welcome to hyperapp")
-        text_object = self._object_registry.resolve(state)
-        text_view = await self._view_producer.produce_view(state, text_object)
+        self._current_state = piece = htypes.text.text("Welcome to hyperapp")
+        text_object = self._object_registry.resolve(piece)
+        text_view = await self._view_producer.produce_view(piece, text_object)
         self._tab_view = tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
         window = Window(on_closed=app.stop)
@@ -120,10 +120,10 @@ class LayoutManager:
 
     async def _run_command(self, command, *args, **kw):
         _log.info('Run command: %r', command.id)
-        state = await command.run(*args, **kw)
-        if state is None:
+        piece = await command.run(*args, **kw)
+        if piece is None:
             return
-        await self.open(state)
+        await self.open(piece)
 
     async def open(self, rec):
         if self._current_state:
@@ -172,12 +172,12 @@ class LayoutManager:
             button.deleteLater()
         self._element_buttons.clear()
 
-    def _state_type_ref(self, state):
-        current_t = deduce_value_type(state)
-        return self._type_resolver.reverse_resolve(current_t)
+    def _piece_type_ref(self, piece):
+        t = deduce_value_type(piece)
+        return self._type_resolver.reverse_resolve(t)
 
     def _make_button_for_current_object(self, command):
-        type_ref = self._state_type_ref(self._current_state)
+        type_ref = self._piece_type_ref(self._current_state)
         resource_key = resource_key_t(type_ref, command.resource_key.path[1:])  # skip class name
         resource = self._resource_resolver.resolve(resource_key, self._locale)
         if resource:

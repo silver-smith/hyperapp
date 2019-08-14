@@ -7,7 +7,7 @@ from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 class LayoutViewProducer(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def produce_view(self, type_ref, object, observer):
+    def produce_view(self, piece, object, observer):
         pass
 
 
