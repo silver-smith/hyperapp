@@ -16,6 +16,8 @@ from .window import Window
 
 _log = logging.getLogger(__name__)
 
+LOCALE = 'en'
+
 
 class _CurrentItemObserver:
 
@@ -54,12 +56,13 @@ class History:
 
 class LayoutManager:
 
-    def __init__(self, type_resolver, resource_resolver, module_command_registry, object_registry, view_producer):
+    def __init__(self, type_resolver, resource_resolver, module_command_registry, object_registry, view_producer, layout_resolver):
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._module_command_registry = module_command_registry
         self._object_registry = object_registry
         self._view_producer = view_producer
+        self._layout_resolver = layout_resolver
         self._locale = 'en'
         self._cmd_pane = self._construct_cmd_pane()
         self._dir_buttons = []
@@ -119,21 +122,27 @@ class LayoutManager:
         return pane
 
     async def _run_command(self, command, *args, **kw):
-        _log.info('Run command: %r', command.id)
+        _log.info('Run command %r', command.id)
         piece = await command.run(*args, **kw)
         if piece is None:
             return
         await self.open(piece)
 
-    async def open(self, rec):
+    async def _run_command_with_producer(self, command_id, view_producer, *args, **kw):
+        _log.info('Run command %r with view producer %r', command_id, view_producer)
+        await self.open(self._current_piece, view_producer)
+
+    async def open(self, piece, view_producer=None):
         if self._current_piece:
             self._history.add_new(self._current_piece)
-        await self._open(rec)
+        await self._open(piece, view_producer)
 
-    async def _open(self, piece):
+    async def _open(self, piece, view_producer=None):
         object = await self._object_registry.resolve_async(piece)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        view = await self._view_producer.produce_view(piece, object, observer)
+        if not view_producer:
+            view_producer = self._view_producer
+        view = await view_producer.produce_view(piece, object, observer)
         tab_view = self._tab_view
         old_view = tab_view.widget(0)
         tab_view.removeTab(0)
@@ -142,17 +151,30 @@ class LayoutManager:
         view.setFocus()
         self._current_piece = piece
         self._clean_element_commands()
-        self._update_dir_buttons(object)
+        await self._update_dir_buttons(piece, object)
 
-    def _update_dir_buttons(self, object):
+    async def _update_dir_buttons(self, piece, object):
         for button in self._dir_buttons:
             button.deleteLater()
         self._dir_buttons.clear()
         for command in object.get_command_list():
             if command.kind != 'object':
                 continue
-            button = self._make_button_for_current_object(command)
+            button = self._make_button_for_current_object_command(command)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command)))
+            layout = self._cmd_pane.widget().layout()
+            layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
+            self._dir_buttons.append(button)
+        type_ref = self._piece_type_ref(piece)
+        resource_key = resource_key_t(type_ref, ['layout_commands'])
+        layout_commands = self._resource_resolver.resolve(resource_key, LOCALE)
+        if not layout_commands:
+            return
+        for command in layout_commands.layout_commands:
+            view_producer = await self._layout_resolver.resolve(command.layout_ref)
+            resource_path = ['command', command.command_id]
+            button = self._make_button_for_current_object(command.command_id, resource_path)
+            button.pressed.connect(partial(asyncio.ensure_future, self._run_command_with_producer(command.command_id, view_producer)))
             layout = self._cmd_pane.widget().layout()
             layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
             self._dir_buttons.append(button)
@@ -161,7 +183,7 @@ class LayoutManager:
         _log.debug('Update element commands for item %r', current_item_key)
         self._clean_element_commands()
         for command in object.get_item_command_list(current_item_key):
-            button = self._make_button_for_current_object(command)
+            button = self._make_button_for_current_object_command(command)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command, current_item_key)))
             layout = self._cmd_pane.widget().layout()
             layout.addWidget(button)
@@ -176,9 +198,13 @@ class LayoutManager:
         t = deduce_value_type(piece)
         return self._type_resolver.reverse_resolve(t)
 
-    def _make_button_for_current_object(self, command):
+    def _make_button_for_current_object_command(self, command):
+        resource_path = command.resource_key.path[1:]  # skip class name
+        return self._make_button_for_current_object(command.id, resource_path)
+
+    def _make_button_for_current_object(self, command_id, resource_path):
         type_ref = self._piece_type_ref(self._current_piece)
-        resource_key = resource_key_t(type_ref, command.resource_key.path[1:])  # skip class name
+        resource_key = resource_key_t(type_ref, resource_path)
         resource = self._resource_resolver.resolve(resource_key, self._locale)
         if resource:
             text = resource.text
@@ -189,7 +215,7 @@ class LayoutManager:
                 text = '%s (%s)' % (text, shortcut_list[0])
             description = resource.description
         else:
-            text = command.id
+            text = command_id
             shortcut_list = None
             description = '.'.join(resource_key.path)
         button = QtGui.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
@@ -228,5 +254,6 @@ class ThisModule(ClientModule):
             services.module_command_registry,
             services.object_registry,
             services.view_producer,
+            services.layout_resolver,
             )
         services.view_opener = ViewOpener(layout_manager)
