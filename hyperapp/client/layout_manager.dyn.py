@@ -206,7 +206,10 @@ class LayoutManager:
         if not layout:
             return
         for command in layout.layout_commands:
-            layout = await self._ref_resolver.resolve_ref_to_object(command.layout_ref)
+            if command.layout_ref:
+                layout = await self._ref_resolver.resolve_ref_to_object(command.layout_ref)
+            else:
+                layout = None
             resource_path = ['command', command.command_id]
             button = self._make_button_for_current_object(command.command_id, resource_path)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command_with_layout(command.command_id, layout)))
