@@ -5,7 +5,7 @@ from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
 from .ref import ref_repr
 from .visual_rep import pprint
-from .registry import RegistryBase
+from .registry import UnknownRegistryIdError, RegistryBase
 
 log = logging.getLogger(__name__)
 
@@ -46,7 +46,10 @@ class CapsuleRegistry(RegistryBase):
     def _resolve_object(self, type_ref, t, object, args, kw):
         pprint(object, t=t, title='Producing %s for %s of type %s'
                % (self._produce_name, object, ref_repr(type_ref)))
-        rec = self._resolve(type_ref)
+        try:
+            rec = self._resolve(type_ref)
+        except UnknownRegistryIdError as x:
+            raise RuntimeError("No resolver is registered for {}: {} {}".format(self._produce_name, ref_repr(type_ref), object))
         log.info('Producing %s for %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, object, ref_repr(type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)

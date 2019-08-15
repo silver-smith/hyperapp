@@ -30,7 +30,7 @@ class AsyncCapsuleRegistry(CapsuleRegistry):
         try:
             rec = self._resolve(type_ref)
         except UnknownRegistryIdError as x:
-            raise RuntimeError("No resolver is registered for {}: {} {}".format(self._produce_name, t, ref_repr(type_ref)))
+            raise RuntimeError("No resolver is registered for {}: {} {}".format(self._produce_name, ref_repr(type_ref), object))
         log.info('Producing %s for %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, object, ref_repr(type_ref), rec.factory, rec.args, args, rec.kw, kw, object)
         return (await run_awaitable_factory(rec.factory, object, *(*rec.args, *args), **{**rec.kw, **kw}))
