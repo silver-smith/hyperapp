@@ -10,6 +10,7 @@ from hyperapp.common.ref import ref_repr
 from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
 from . import htypes
+from .layout_registry import LayoutViewProducer
 from .text_object import TextObject
 from .tab_view import TabView
 from .window import Window
@@ -56,12 +57,22 @@ class History:
 
 class LayoutManager:
 
-    def __init__(self, type_resolver, resource_resolver, module_command_registry, object_registry, view_producer, layout_resolver):
+    def __init__(
+            self,
+            type_resolver,
+            resource_resolver,
+            module_command_registry,
+            object_registry,
+            view_producer_registry,
+            layout_registry,
+            layout_resolver,
+            ):
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._module_command_registry = module_command_registry
         self._object_registry = object_registry
-        self._view_producer = view_producer
+        self._view_producer_registry = view_producer_registry
+        self._layout_registry = layout_registry
         self._layout_resolver = layout_resolver
         self._locale = 'en'
         self._cmd_pane = self._construct_cmd_pane()
@@ -74,7 +85,7 @@ class LayoutManager:
     async def build_default_layout(self, app):
         self._current_piece = piece = htypes.text.text("Welcome to hyperapp")
         text_object = self._object_registry.resolve(piece)
-        text_view = await self._view_producer.produce_view(piece, text_object)
+        text_view = await self.produce_view(piece, text_object)
         self._tab_view = tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
         window = Window(on_closed=app.stop)
@@ -141,7 +152,7 @@ class LayoutManager:
         object = await self._object_registry.resolve_async(piece)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
         if not view_producer:
-            view_producer = self._view_producer
+            view_producer = self
         view = await view_producer.produce_view(piece, object, observer)
         tab_view = self._tab_view
         old_view = tab_view.widget(0)
@@ -152,6 +163,19 @@ class LayoutManager:
         self._current_piece = piece
         self._clean_element_commands()
         await self._update_dir_buttons(piece, object)
+
+    async def produce_view(self, piece, object, observer=None):
+        type_ref = self._piece_type_ref(piece)
+        resource_key = resource_key_t(type_ref, ['layout'])
+        layout = self._resource_resolver.resolve(resource_key, LOCALE)
+        if layout:
+            producer = self._layout_registry.resolve(layout)
+            _log.info("Producing view for %s %r with %s using %s", ref_repr(type_ref), piece, layout, producer)
+            return (await producer.produce_view(piece, object, observer))
+        return (await self.produce_default_view(piece, object, observer))
+
+    async def produce_default_view(self, piece, object, observer=None):
+        return (await self._view_producer_registry.produce_view(piece, object, observer))
 
     async def _update_dir_buttons(self, piece, object):
         for button in self._dir_buttons:
@@ -235,6 +259,18 @@ class LayoutManager:
             await self._open(piece)
 
 
+class ViewProducer(LayoutViewProducer):
+
+    def __init__(self, layout_manager):
+        self._layout_manager = layout_manager
+
+    async def produce_view(self, piece, object, observer=None):
+        return self._layout_manager.produce_view(piece, object, observer)
+
+    async def produce_default_view(self, piece, object, observer=None):
+        return self._layout_manager.produce_default_view(piece, object, observer)
+
+
 class ViewOpener:
 
     def __init__(self, layout_manager):
@@ -253,7 +289,9 @@ class ThisModule(ClientModule):
             services.resource_resolver,
             services.module_command_registry,
             services.object_registry,
-            services.view_producer,
+            services.view_producer_registry,
+            services.layout_registry,
             services.layout_resolver,
             )
+        services.view_producer = ViewProducer(layout_manager)
         services.view_opener = ViewOpener(layout_manager)

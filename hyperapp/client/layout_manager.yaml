@@ -1,8 +1,9 @@
 import:
   types:
     text:
-      - text
+    - text
   code:
-    - client.text_object
-    - client.tab_view
-    - client.window
+  - client.layout_registry
+  - client.text_object
+  - client.tab_view
+  - client.window

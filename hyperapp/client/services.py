@@ -104,7 +104,6 @@ code_module_list = [
     'client.data_viewer',
     'client.log_viewer',
     'client.view_registry',
-    'client.view_producer',
     'client.layout_manager',
     'client.application_state_storage',
     'client.master_details',
