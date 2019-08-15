@@ -123,7 +123,7 @@ class ResourceLoader(object):
         field_layout_t = self._type_resolver.resolve(field_layout_ref)
         field_list = []
         for field in value['fields']:
-            view_ref = self._value2layout(field['layout'])
+            view_ref = self._value2layout_view(field['layout'])
             field_list.append(field_layout_t(field['field_id'], view_ref))
         return t(field_list)
 
