@@ -49,15 +49,19 @@ type:blog.blog_article:
       description: Open references list
       shortcuts:
       - Ctrl+R
-  layout_commands:
-  - command_id: edit
-    layout:
-      type: record_view.record_view_layout
-      value:
-        fields:
-        - field_id: contents
-          layout:
-            type: text.text_edit_layout
+  layout:
+    commands:
+    - command_id: edit
+      layout:
+        view:
+          type: record_view.record_view_layout
+          value:
+            fields:
+            - field_id: contents
+              layout:
+                type: text.text_edit_layout
+        commands:
+        - command_id: view
 
 type:blog.blog_article_ref_list:
   commands:

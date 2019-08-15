@@ -4,4 +4,4 @@ import:
     - command_resource
     - column_resource
     - layout_command
-    - layout_commands_resource
+    - layout_resource

@@ -96,36 +96,44 @@ class ResourceLoader(object):
             )
 
     def _value2layout(self, section_contents):
-        module_name, type_name = section_contents['type'].split('.')
+        view_ref = self._value2layout_view(section_contents.get('view'))
+        layout_commands = list(self._value2layout_commands(section_contents.get('commands', [])))
+        layout = htypes.resource.layout_resource(view_ref, layout_commands)
+        layout_ref = self._ref_registry.register_object(layout)
+        _log.debug("Loaded layout %s: %s", ref_repr(layout_ref), layout)
+        return layout_ref
+
+    def _value2layout_view(self, value):
+        if not value:
+            return None
+        module_name, type_name = value['type'].split('.')
         type_ref = self._local_type_module_registry[module_name][type_name]
         t = self._type_resolver.resolve(type_ref)
-        if section_contents['type'] == 'record_view.record_view_layout':
+        if value['type'] == 'record_view.record_view_layout':
             # special case for record view layout; todo: general solution, such as htype mapper or move out of resource yaml at all
-            record = self._value2record_layout(section_contents['value'], t)
+            view = self._value2record_view(value['value'], t)
         else:
-            record = self._dict_decoder.decode_dict(t, section_contents.get('value', {}))
-        resource_ref = self._ref_registry.register_object(record, t)
-        _log.debug("Loaded layout %s: %s", ref_repr(resource_ref), record)
-        return resource_ref
+            view = self._dict_decoder.decode_dict(t, value.get('value', {}))
+        view_ref = self._ref_registry.register_object(view, t)
+        _log.debug("Loaded layout view %s: %s", ref_repr(view_ref), view)
+        return view_ref
 
-    def _value2record_layout(self, value, t):
+    def _value2record_view(self, value, t):
         field_layout_ref = self._local_type_module_registry['record_view']['field_layout']
         field_layout_t = self._type_resolver.resolve(field_layout_ref)
         field_list = []
         for field in value['fields']:
-            layout_ref = self._value2layout(field['layout'])
-            field_list.append(field_layout_t(field['field_id'], layout_ref))
+            view_ref = self._value2layout(field['layout'])
+            field_list.append(field_layout_t(field['field_id'], view_ref))
         return t(field_list)
 
-    def _value2layout_commands(self, section_contents):
-        command_list = []
-        for command in section_contents:
-            layout_ref = self._value2layout(command['layout'])
-            command_list.append(htypes.resource.layout_command(command['command_id'], layout_ref))
-        resource = htypes.resource.layout_commands_resource(command_list)
-        resource_ref = self._ref_registry.register_object(resource)
-        _log.debug("Loaded layout commands %s: %s", ref_repr(resource_ref), resource)
-        return resource_ref
+    def _value2layout_commands(self, value):
+        for command in value:
+            if 'layout' in command:
+                layout_ref = self._value2layout(command['layout'])
+            else:
+                layout_ref = None
+            yield htypes.resource.layout_command(command['command_id'], layout_ref)
         
 
 class ThisModule(Module):
