@@ -23,7 +23,7 @@ layout_command = record:
     command_id: string
     layout_ref: ref opt
 
-layout_resource = record:
+layout = record:
     view_ref: ref opt
     layout_commands: layout_command list
 

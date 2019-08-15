@@ -98,7 +98,7 @@ class ResourceLoader(object):
     def _value2layout(self, section_contents):
         view_ref = self._value2layout_view(section_contents.get('view'))
         layout_commands = list(self._value2layout_commands(section_contents.get('commands', [])))
-        layout = htypes.resource.layout_resource(view_ref, layout_commands)
+        layout = htypes.resource.layout(view_ref, layout_commands)
         layout_ref = self._ref_registry.register_object(layout)
         _log.debug("Loaded layout %s: %s", ref_repr(layout_ref), layout)
         return layout_ref

@@ -139,7 +139,7 @@ class LayoutManager:
             return
         await self.open(piece)
 
-    async def _run_command_with_producer(self, command_id, view_producer, *args, **kw):
+    async def _run_command_with_layout(self, command_id, view_producer, *args, **kw):
         _log.info('Run command %r with view producer %r', command_id, view_producer)
         await self.open(self._current_piece, view_producer)
 
@@ -198,7 +198,7 @@ class LayoutManager:
             view_producer = await self._layout_resolver.resolve(command.layout_ref)
             resource_path = ['command', command.command_id]
             button = self._make_button_for_current_object(command.command_id, resource_path)
-            button.pressed.connect(partial(asyncio.ensure_future, self._run_command_with_producer(command.command_id, view_producer)))
+            button.pressed.connect(partial(asyncio.ensure_future, self._run_command_with_layout(command.command_id, view_producer)))
             layout = self._cmd_pane.widget().layout()
             layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
             self._dir_buttons.append(button)
