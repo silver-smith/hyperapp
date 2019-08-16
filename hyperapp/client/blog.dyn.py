@@ -260,7 +260,7 @@ class RefSelector(RecordObject):
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
-        self._ref_id = ref_id
+        self._ref_id = ref_id  # None for new ref
         self._current_piece_ref = current_piece_ref
         self._current_piece = current_piece
         self._current_object = current_object
@@ -274,6 +274,27 @@ class RefSelector(RecordObject):
             ('title', htypes.text.text("Select for: {}.{}.{}".format(self._blog_id, self._article_id, self._ref_id or 'new'))),
             ('current', self._current_piece),
             ])
+
+    def get_command_list(self):
+        return super().get_command_list() + [
+            command.with_wrapper(self._command_wrapper) for command in self._current_object.get_command_list()
+            ]
+
+    def get_item_command_list(self, current_item_key):
+        pass
+
+    async def _command_wrapper(self, fn_coro):
+        piece = await fn_coro
+        if piece is None:
+            return piece
+        piece_ref = self._ref_registry.register_object(piece)
+        return htypes.blog.blog_article_ref_selector(
+            self._blog_service.ref,
+            self._blog_id,
+            self._article_id,
+            self._ref_id,
+            current_piece_ref=piece_ref,
+            )
 
     @command('choose')
     async def command_choose(self):

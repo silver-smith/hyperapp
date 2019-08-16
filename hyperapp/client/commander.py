@@ -40,10 +40,6 @@ class Command(metaclass=abc.ABCMeta):
 
     def disable(self):
         self.set_enabled(False)
-
-    @abc.abstractmethod
-    def get_view(self):
-        pass
     
     @abc.abstractmethod
     async def run(self, *args, **kw):
@@ -72,6 +68,25 @@ class BoundCommand(Command):
             return (await self._class_method(inst, *(self._args + args), **kw))
         else:
             return self._class_method(inst, *(self._args + args), **kw)
+
+    def with_wrapper(self, wrapper):
+        async def fn(*args, **kw):
+            return (await wrapper(self.run(*args, **kw)))
+        return FreeFnCommand(self.id, self.kind, self.resource_key, self.enabled, fn)
+
+
+class FreeFnCommand(Command):
+
+    def __init__(self, id, kind, resource_key, enabled, fn):
+        Command.__init__(self, id, kind, resource_key, enabled)
+        self._fn = fn
+
+    def __repr__(self):
+        return 'FreeFnCommand(%r/%r -> %r)' % (self.id, self.kind, self._fn)
+
+    async def run(self, *args, **kw):
+        log.debug('FreefnCommand.run: %s, %r/%r, (%s, %s)', self, self.id, self.kind, args, kw)
+        return (await self._fn(*args, **kw))
 
 
 class UnboundCommand(object):
