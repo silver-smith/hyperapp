@@ -36,7 +36,7 @@ class BlogObserver(object, metaclass=abc.ABCMeta):
 class BlogObject(ListObject, BlogObserver):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, blog_service_factory):
+    async def from_piece(cls, state, ref_registry, blog_service_factory):
         blog_service = await blog_service_factory(state.blog_service_ref)
         return cls(ref_registry, blog_service, state.blog_id)
 
@@ -111,7 +111,7 @@ class BlogObject(ListObject, BlogObserver):
 class BlogArticle(RecordObject):
 
     @classmethod
-    async def from_state(cls, state, blog_service_factory):
+    async def from_piece(cls, state, blog_service_factory):
         blog_service = await blog_service_factory(state.blog_service_ref)
         item = await blog_service.get_blog_item(state.blog_id, state.article_id)
         return cls(blog_service, state.blog_id, item)
@@ -178,13 +178,14 @@ class BlogArticle(RecordObject):
 class ArticleRefListObject(ListObject):
 
     @classmethod
-    async def from_state(cls, state, blog_service_factory):
+    async def from_piece(cls, state, blog_service_factory, ref_registry, async_ref_resolver):
         blog_service = await blog_service_factory(state.blog_service_ref)
-        return cls(blog_service, state.blog_id, state.article_id)
+        return cls(ref_registry, async_ref_resolver, blog_service, state.blog_id, state.article_id)
 
-    def __init__(self, blog_service, blog_id, article_id):
+    def __init__(self, ref_registry, async_ref_resolver, blog_service, blog_id, article_id):
         ListObject.__init__(self)
-        # self._ref_registry = ref_registry
+        self._ref_registry = ref_registry
+        self._async_ref_resolver = async_ref_resolver
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
@@ -209,68 +210,81 @@ class ArticleRefListObject(ListObject):
         self._distribute_fetch_results(ref_list)
         self._distribute_eof()
 
-    async def get_ref_handle(self, id):
-        ref = self._id2ref[id]
-        return (await self._handle_resolver.resolve(ref))
-
     @command('parent')
     async def command_parent(self):
         return htypes.blog.blog_article(self._blog_service.ref, self._blog_id, self._article_id)
 
     @command('open', kind='element')
     async def command_open(self, item_id):
-        return (await self.get_ref_handle(item_id))
+        current_piece_ref = self._id2ref[item_id]
+        return (await self._async_ref_resolver.resolve_ref_to_object(current_piece_ref))
 
     @command('add')
     async def command_add(self):
-        blog_service_ref = self._blog_service.to_ref()
-        article_ref_list_object = htypes.blog.blog_article_ref_list(blog_service_ref, self._blog_id, self._article_id)
-        target_ref = self._ref_registry.register_object(article_ref_list_object)
-        target_handle = await self._handle_resolver.resolve(target_ref)
-        callback = htypes.blog.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id)
-        object = htypes.object_selector.object_selector_object('object_selector', callback)
-        return htypes.object_selector.object_selector_view('object_selector', object, target_handle)
+        current_piece = htypes.blog.blog_article_ref_list(self._blog_service.ref, self._blog_id, self._article_id, selected_ref_id=None)
+        current_piece_ref = self._ref_registry.register_object(current_piece)
+        return htypes.blog.blog_article_ref_selector(
+            self._blog_service.ref,
+            self._blog_id,
+            self._article_id,
+            ref_id=None,
+            current_piece_ref=current_piece_ref,
+            )
 
     @command('change', kind='element')
     async def command_change(self, item_id):
-        target_handle = await self.get_ref_handle(item_id)
-        callback = htypes.blog.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id, item_id)
-        object = htypes.object_selector.object_selector_object('object_selector', callback)
-        return htypes.object_selector.object_selector_view('object_selector', object, target_handle)
+        current_piece_ref = self._id2ref[item_id]
+        return htypes.blog.blog_article_ref_selector(
+            self._blog_service.ref,
+            self._blog_id,
+            self._article_id,
+            ref_id=item_id,
+            current_piece_ref=current_piece_ref,
+            )
 
     @command('delete', kind='element')
     async def command_delete(self, item_id):
         await self._blog_service.delete_ref(self._blog_id, self._article_id, item_id)
 
 
-# class SelectorCallback(object):
+class RefSelector(RecordObject):
 
-#     @classmethod
-#     async def from_data(cls, state, ref_registry, blog_service_factory, handle_resolver):
-#         blog_service = await blog_service_factory(state.blog_service_ref)
-#         return cls(ref_registry, handle_resolver, blog_service, state.blog_id, state.article_id, state.ref_id)
+    @classmethod
+    async def from_piece(cls, piece, blog_service_factory, ref_registry, async_ref_resolver, object_registry):
+        blog_service = await blog_service_factory(piece.blog_service_ref)
+        current_piece = await async_ref_resolver.resolve_ref_to_object(piece.current_piece_ref)
+        current_object = await object_registry.resolve_async(current_piece)
+        return cls(ref_registry, blog_service, piece.blog_id, piece.article_id, piece.ref_id, piece.current_piece_ref, current_piece, current_object)
 
-#     def __init__(self, ref_registry, handle_resolver, blog_service, blog_id, article_id, ref_id):
-#         self._ref_registry = ref_registry
-#         self._handle_resolver = handle_resolver
-#         self._blog_service = blog_service
-#         self._blog_id = blog_id
-#         self._article_id = article_id
-#         self._ref_id = ref_id
+    def __init__(self, ref_registry, blog_service, blog_id, article_id, ref_id, current_piece_ref, current_piece, current_object):
+        super().__init__()
+        self._ref_registry = ref_registry
+        self._blog_service = blog_service
+        self._blog_id = blog_id
+        self._article_id = article_id
+        self._ref_id = ref_id
+        self._current_piece_ref = current_piece_ref
+        self._current_piece = current_piece
+        self._current_object = current_object
+        self._current_title = current_object.get_title()
 
-#     async def set_ref(self, title, ref):
-#         if self._ref_id is not None:
-#             await self._blog_service.update_ref(self._blog_id, self._article_id, self._ref_id, title, ref)
-#             ref_id = self._ref_id
-#         else:
-#             ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, title, ref)
-#         blog_service_ref = self._blog_service.to_ref()
-#         object = htypes.blog.blog_article_ref_list(blog_service_ref, self._blog_id, self._article_id, ref_id)
-#         ref = self._ref_registry.register_object(object)
-#         return (await self._handle_resolver.resolve(ref))
+    def get_title(self):
+        return self._current_title
 
-#     def to_data(self):
-#         return htypes.blog.selector_callback(self._blog_service.to_ref(), self._blog_id, self._article_id, self._ref_id)
+    def get_fields(self):
+        return OrderedDict([
+            ('title', htypes.text.text("Select for: {}.{}.{}".format(self._blog_id, self._article_id, self._ref_id or 'new'))),
+            ('current', self._current_piece),
+            ])
+
+    @command('choose')
+    async def command_choose(self):
+        if self._ref_id is not None:
+            await self._blog_service.update_ref(self._blog_id, self._article_id, self._ref_id, self._current_title, self._current_piece_ref)
+            ref_id = self._ref_id
+        else:
+            ref_id = await self._blog_service.add_ref(self._blog_id, self._article_id, self._current_title, self._current_piece_ref)
+        return htypes.blog.blog_article_ref_list(self._blog_service.ref, self._blog_id, self._article_id, selected_ref_id=None)
     
 
 class BlogNotification(object):
@@ -401,40 +415,25 @@ class ThisModule(ClientModule):
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
-        # services.handle_registry.register_type(htypes.blog.blog_article, self._resolve_blog_article)
-        # services.handle_registry.register_type(htypes.blog.blog_article_ref_list, self._resolve_blog_article_ref_list)
         services.object_registry.register_type(
-            htypes.blog.blog, BlogObject.from_state, services.ref_registry, self._blog_service_factory)
+            htypes.blog.blog, BlogObject.from_piece, services.ref_registry, self._blog_service_factory)
         services.object_registry.register_type(
-            htypes.blog.blog_article, BlogArticle.from_state, self._blog_service_factory)
+            htypes.blog.blog_article, BlogArticle.from_piece, self._blog_service_factory)
         services.object_registry.register_type(
-            htypes.blog.blog_article_ref_list, ArticleRefListObject.from_state, self._blog_service_factory)
-        # services.form_impl_registry.register(
-        #     BlogArticleForm.impl_id, BlogArticleForm.from_state, services.ref_registry, self._blog_service_factory, services.handle_resolver)
-        # services.objimpl_registry.register(
-        #     BlogArticleContents.impl_id, BlogArticleContents.from_state, services.handle_resolver)
-        # object_selector.this_module.register_callback(
-        #     htypes.blog.selector_callback, SelectorCallback.from_data, services.ref_registry, self._blog_service_factory, services.handle_resolver)
+            htypes.blog.blog_article_ref_list,
+            ArticleRefListObject.from_piece,
+            self._blog_service_factory,
+            services.ref_registry,
+            services.async_ref_resolver,
+            )
+        services.object_registry.register_type(
+            htypes.blog.blog_article_ref_selector,
+            RefSelector.from_piece,
+            self._blog_service_factory,
+            services.ref_registry,
+            services.async_ref_resolver,
+            services.object_registry,
+            )
 
     async def _blog_service_factory(self, blog_service_ref):
         return (await BlogService.from_data(self._type_resolver, self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
-
-    # async def _resolve_blog_article(self, blog_article):
-    #     blog_service = await self._blog_service_factory(blog_article.blog_service_ref)
-    #     return (await self.open_article(blog_service, blog_article.blog_id, blog_article.article_id))
-
-    # async def open_article(self, blog_service, blog_id, article_id, mode='view'):
-    #     item = await blog_service.get_blog_item(blog_id, article_id)
-    #     form_object = htypes.blog.blog_article_form(
-    #         BlogArticleForm.impl_id, blog_service.to_ref(), blog_id, article_id)
-    #     title_object = htypes.line_object.line_object('line', item.title)
-    #     contents_object = htypes.blog.blog_article_text(BlogArticleContents.impl_id, item.text, item.ref_list)
-    #     return BlogArticleForm.construct(form_object, title_object, contents_object, mode=mode)
-
-    # async def _resolve_blog_article_ref_list(self, ref_list_object):
-    #     list_object = htypes.blog.article_ref_list_object(
-    #         ArticleRefListObject.impl_id, ref_list_object.blog_service_ref, ref_list_object.blog_id, ref_list_object.article_id)
-    #     handle_t = htypes.core.int_list_handle
-    #     sort_column_id = 'id'
-    #     resource_key = resource_key_t(__module_ref__, ['BlogArticleRefListObject'])
-    #     return handle_t('list', list_object, resource_key, key=None)

@@ -89,3 +89,11 @@ type:blog.blog_article_ref_list:
       description: Delete selected hyper reference
       shortcuts:
       - Del
+
+type:blog.blog_article_ref_selector:
+  commands:
+    choose:
+      text: Choose
+      description: Choose current view
+      shortcuts:
+      - Ctrl+Return

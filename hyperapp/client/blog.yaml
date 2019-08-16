@@ -1,29 +1,22 @@
 import:
   types:
     hyper_ref:
-      - service
+    - service
     line_object:
-      - line_object
-      - line_edit_view
-    # object_selector:
-    #   - object_selector_object
-    #   - object_selector_view
+    - line_object
+    - line_edit_view
     text:
-      - text
-      - wiki_ref
-      - wiki_text
+    - text
+    - wiki_ref
+    - wiki_text
     blog:
-      - blog
-      - blog_article
-      - blog_article_ref_list
-      - blog_notification_iface
-      - blog_article_form
-      - article_ref_list_object
-      - selector_callback
+    - blog
+    - blog_article
+    - blog_article_ref_list
+    - blog_article_ref_selector
+    - blog_notification_iface
   code:
-    - client.column
-    - client.list_object
-    - client.text_object
-    - client.record_object
-#    - client.form
-#    - client.object_selector
+  - client.column
+  - client.list_object
+  - client.text_object
+  - client.record_object

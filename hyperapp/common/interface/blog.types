@@ -21,6 +21,13 @@ blog_article_ref_list = record:
     article_id: int
     selected_ref_id: int opt
 
+blog_article_ref_selector = record:
+    blog_service_ref: ref
+    blog_id: string
+    article_id: int
+    ref_id: int opt  # none for new ref
+    current_piece_ref: ref
+
 
 blog_item = record:
     id: int
@@ -55,20 +62,3 @@ blog_notification_iface = interface blog_notification:
         article_added(blog_id: string, article: blog_item)
         article_changed(blog_id: string, article: blog_item)
         article_deleted(blog_id: string, article_id: int)
-
-
-blog_article_form = form class blog_article_form(form_base):
-    blog_service_ref: ref
-    blog_id: string
-    article_id: int
-
-article_ref_list_object = object class article_ref_list_object(object_base):
-    blog_service_ref: ref
-    blog_id: string
-    article_id: int
-
-selector_callback = object_selector_callback class blog_callback:
-    blog_service_ref: ref
-    blog_id: string
-    article_id: int
-    ref_id: int opt
