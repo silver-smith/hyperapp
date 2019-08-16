@@ -133,7 +133,8 @@ class BlogService(object):
     def rpc_update_ref(self, request, blog_id, article_id, ref_id, title, ref):
         rec = this_module.ArticleRef[ref_id]
         rec.title = title
-        rec.ref = ref
+        rec.ref_hash_algorithm = ref.hash_algorithm
+        rec.ref_hash = ref.hash
         self._ref_storage.store_ref(ref)
         log.info('Blog %r article#%d ref#%d is updated to %s, title %r', blog_id, article_id, rec.id, ref_repr(ref), title)
 
