@@ -1,4 +1,4 @@
-type:ref_list.dynamic_ref_list:
+module:client.ref_list:RefListObject:
   columns:
     id:
       text: Id

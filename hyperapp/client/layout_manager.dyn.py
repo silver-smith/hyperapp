@@ -237,8 +237,7 @@ class LayoutManager:
         return self._type_resolver.reverse_resolve(t)
 
     def _make_button_for_current_object_command(self, command):
-        resource_path = command.resource_key.path[1:]  # skip class name
-        return self._make_button_for_current_object(command.id, resource_path)
+        return self._make_button_for_current_object(command.id, command.resource_key.path)
 
     def _make_button_for_current_object(self, command_id, resource_path):
         type_ref = self._piece_type_ref(self._current_piece)

@@ -1,4 +1,4 @@
-type:blog.blog:
+module:client.blog:BlogObject:
   columns:
     id:
       text: Id
