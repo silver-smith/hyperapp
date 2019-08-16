@@ -47,9 +47,8 @@ client_code_module_list = [
     'client.object_registry',
     'client.objimpl_registry',
     'client.view',
-#    'client.handle_resolver',
     'client.composite',
-#    'client.form',
+    'client.record_object',
     'client.text_object',
     'client.column',
     'client.list_object',
@@ -154,13 +153,13 @@ async def get_blog_item(services, blog_service):
 async def add_article_ref(services, blog_service):
     article = await pick_test_article(blog_service)
     log.info('Adding ref to article#%d', article.id)
-    ref_id = await blog_service.add_ref(TEST_BLOG_ID, article.id, 'Test ref title', blog_service.to_ref())
+    ref_id = await blog_service.add_ref(TEST_BLOG_ID, article.id, 'Test ref title', blog_service.ref)
     # check ref is actually created
     blog_service.invalidate_cache()
     ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
     ref = next(ref for ref in ref_list if ref.id == ref_id)
     assert ref.title == 'Test ref title'
-    assert ref.ref == blog_service.to_ref()
+    assert ref.ref == blog_service.ref
 
 
 async def update_article_ref(services, blog_service):
@@ -170,7 +169,7 @@ async def update_article_ref(services, blog_service):
         pytest.skip('No test refs in blog_1 article#%d' % article.id)
     log.info('Updating ref to article#%d', article.id)
     ref_id = ref_list[0].id
-    await blog_service.update_ref(TEST_BLOG_ID, article.id, ref_id, 'Changed ref title', blog_service.to_ref())
+    await blog_service.update_ref(TEST_BLOG_ID, article.id, ref_id, 'Changed ref title', blog_service.ref)
     # check ref is actually changed
     blog_service.invalidate_cache()
     ref_list = await blog_service.get_article_ref_list(TEST_BLOG_ID, article.id)
