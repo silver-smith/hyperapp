@@ -281,7 +281,9 @@ class RefSelector(RecordObject):
             ]
 
     def get_item_command_list(self, current_item_key):
-        pass
+        return [
+            command.with_wrapper(self._command_wrapper) for command in self._current_object.get_item_command_list(current_item_key)
+            ]
 
     async def _command_wrapper(self, fn_coro):
         piece = await fn_coro

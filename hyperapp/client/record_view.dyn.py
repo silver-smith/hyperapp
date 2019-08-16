@@ -9,9 +9,9 @@ from .layout_registry import LayoutViewProducer
 class RecordView(QtGui.QWidget):
 
     @classmethod
-    async def make(cls, object_registry, view_producer, layout_resolver, object, layout=None):
+    async def make(cls, object_registry, view_producer, layout_resolver, object, observer, layout=None):
         view = cls(object)
-        await view._construct(object_registry, view_producer, layout_resolver, layout)
+        await view._construct(object_registry, view_producer, layout_resolver, observer, layout)
         return view
 
     def __init__(self, object):
@@ -27,7 +27,7 @@ class RecordView(QtGui.QWidget):
         if visible:
             self._field_views[0].setFocus()
 
-    async def _construct(self, object_registry, view_producer, layout_resolver, layout):
+    async def _construct(self, object_registry, view_producer, layout_resolver, observer, layout):
         if layout:
             field_to_layout_ref = {field.field_id: field.layout_ref for field in layout.fields}
         else:
@@ -41,7 +41,7 @@ class RecordView(QtGui.QWidget):
                 producer = await layout_resolver.resolve(layout_ref)
             else:
                 producer = view_producer
-            field_view = await self._construct_field_view(object_registry, producer, qt_layout, field_id, field_rec, layout)
+            field_view = await self._construct_field_view(object_registry, producer, qt_layout, field_id, field_rec, observer, layout)
             if field_view.sizePolicy().verticalPolicy() & QtGui.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_views.append(field_view)
@@ -49,9 +49,9 @@ class RecordView(QtGui.QWidget):
             qt_layout.addStretch()
         self.setLayout(qt_layout)
 
-    async def _construct_field_view(self, object_registry, producer, qt_layout, field_id, field_rec, layout):
+    async def _construct_field_view(self, object_registry, producer, qt_layout, field_id, field_rec, observer, layout):
         field_object = await object_registry.resolve_async(field_rec)
-        field_view = await producer.produce_view(field_rec, field_object)
+        field_view = await producer.produce_view(field_rec, field_object, observer)
         label = QtGui.QLabel(field_id)
         label.setBuddy(field_view)
         qt_layout.addWidget(label)
@@ -69,7 +69,7 @@ class RecordViewProducer(LayoutViewProducer):
         self._layout_resolver = layout_resolver
 
     async def produce_view(self, piece, object, observer=None):
-        return (await RecordView.make(self._object_registry, self._view_producer, self._layout_resolver, object, self._layout))
+        return (await RecordView.make(self._object_registry, self._view_producer, self._layout_resolver, object, observer, self._layout))
 
 
 class ThisModule(ClientModule):
@@ -86,4 +86,4 @@ class ThisModule(ClientModule):
     async def _produce_view(self, piece, object, observer):
         if not isinstance(object, RecordObject):
             raise NotApplicable(object)
-        return (await RecordView.make(self._object_registry, self._view_producer, self._layout_resolver, object))
+        return (await RecordView.make(self._object_registry, self._view_producer, self._layout_resolver, object, observer))
