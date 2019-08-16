@@ -1,7 +1,4 @@
 from error import error, client_error
-from core import object, object_base, handle
-from form import form, form_base
-from object_selector import object_selector_callback
 from text import text, wiki_ref
 
 

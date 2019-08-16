@@ -1,7 +1,0 @@
-ObjectSelectorView:
-  commands:
-    choose:
-      text: Choose
-      description: Choose current view
-      shortcuts:
-        - Ctrl+Return

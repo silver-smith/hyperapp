@@ -12,8 +12,6 @@ from .column import Column
 from .list_object import ListObject
 from .text_object import TextObject
 from .record_object import RecordObject
-#from .form import FormObject, FormView
-#from . import object_selector
 
 log = logging.getLogger(__name__)
 

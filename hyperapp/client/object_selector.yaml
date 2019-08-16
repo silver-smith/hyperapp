@@ -1,8 +1,0 @@
-import:
-  types:
-    object_selector:
-      - object_selector_object
-      - object_selector_view
-      - object_selector_callback
-  code:
-    - client.view
