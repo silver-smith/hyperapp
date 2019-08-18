@@ -151,9 +151,9 @@ class LayoutManager:
         await self._open(piece, layout)
 
     async def _open(self, piece, layout=None):
-        if not layout:
-            layout = self._pick_piece_layout(piece)
         object = await self._object_registry.resolve_async(piece)
+        if not layout:
+            layout = self._pick_object_layout(object)
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
         view = await self._produce_view(layout, piece, object, observer)
         self._set_current_view(view)
@@ -170,9 +170,8 @@ class LayoutManager:
         view.setFocus()
 
     # returns None if none registered
-    def _pick_piece_layout(self, piece):
-        type_ref = self._piece_type_ref(piece)
-        resource_key = resource_key_t(type_ref, ['layout'])
+    def _pick_object_layout(self, object):
+        resource_key = object.resource_key(['layout'])
         return self._resource_resolver.resolve(resource_key, LOCALE)
 
     async def _produce_view(self, layout, piece, object, observer=None):
@@ -185,7 +184,7 @@ class LayoutManager:
         return (await view_producer.produce_view(piece, object, observer))
 
     async def pick_layout_and_produce_view(self, piece, object, observer=None):
-        layout = self._pick_piece_layout(piece)
+        layout = self._pick_object_layout(object)
         return (await self._produce_view(layout, piece, object, observer))
 
     async def produce_view(self, piece, object, observer=None):
@@ -198,7 +197,8 @@ class LayoutManager:
         for command in object.get_command_list():
             if command.kind != 'object':
                 continue
-            button = self._make_button_for_current_object_command(command)
+            resource_key = object.resource_key(['command', command.id])
+            button = self._make_button_for_current_object(command.id, resource_key)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command)))
             qt_layout = self._cmd_pane.widget().layout()
             qt_layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
@@ -210,8 +210,8 @@ class LayoutManager:
                 layout = await self._ref_resolver.resolve_ref_to_object(command.layout_ref)
             else:
                 layout = None
-            resource_path = ['command', command.command_id]
-            button = self._make_button_for_current_object(command.command_id, resource_path)
+            resource_key = object.resource_key(['command', command.command_id])
+            button = self._make_button_for_current_object(command.command_id, resource_key)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command_with_layout(command.command_id, layout)))
             qt_layout = self._cmd_pane.widget().layout()
             qt_layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
@@ -221,7 +221,8 @@ class LayoutManager:
         _log.debug('Update element commands for item %r', current_item_key)
         self._clean_element_commands()
         for command in object.get_item_command_list(current_item_key):
-            button = self._make_button_for_current_object_command(command)
+            resource_key = object.resource_key(['command', command.id])
+            button = self._make_button_for_current_object(command.id, resource_key)
             button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command, current_item_key)))
             layout = self._cmd_pane.widget().layout()
             layout.addWidget(button)
@@ -236,12 +237,7 @@ class LayoutManager:
         t = deduce_value_type(piece)
         return self._type_resolver.reverse_resolve(t)
 
-    def _make_button_for_current_object_command(self, command):
-        return self._make_button_for_current_object(command.id, command.resource_key.path)
-
-    def _make_button_for_current_object(self, command_id, resource_path):
-        type_ref = self._piece_type_ref(self._current_piece)
-        resource_key = resource_key_t(type_ref, resource_path)
+    def _make_button_for_current_object(self, command_id, resource_key):
         resource = self._resource_resolver.resolve(resource_key, self._locale)
         if resource:
             text = resource.text

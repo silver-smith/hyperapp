@@ -22,7 +22,7 @@ module:client.blog:BlogObject:
       shortcuts:
       - Ins
 
-type:blog.blog_article:
+module:client.blog:BlogArticle:
   commands:
     parent:
       text: Parent
@@ -63,7 +63,7 @@ type:blog.blog_article:
         commands:
         - command_id: view
 
-type:blog.blog_article_ref_list:
+module:client.blog:ArticleRefListObject:
   commands:
     parent:
       text: Parent
@@ -90,7 +90,7 @@ type:blog.blog_article_ref_list:
       shortcuts:
       - Del
 
-type:blog.blog_article_ref_selector:
+module:client.blog:RefSelector:
   commands:
     choose:
       text: Choose
