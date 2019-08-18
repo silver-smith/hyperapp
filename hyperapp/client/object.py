@@ -25,19 +25,6 @@ class Object(Commander):
     def get_title(self):
         raise NotImplementedError(self.__class__)
 
-    def to_data(self):
-        raise NotImplementedError(self.__class__)
-
-    # collect references for currently visible objects
-    def pick_current_refs(self):
-        return []
-
-    def get_url(self):
-        return None
-
-    def get_facets(self):
-        return []
-
     async def run_command(self, command_id, *args, **kw):
         command = self.get_command(command_id)
         assert command, 'Unknown command: %r; known are: %r' % (command_id, [cmd.id for cmd in self._commands])  # Unknown command
