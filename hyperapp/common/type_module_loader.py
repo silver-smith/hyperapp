@@ -53,11 +53,15 @@ class TypeModuleLoader(object):
     def _map_names_to_refs(self, module_name, module_source):
         local_name_dict = {}  # name -> ref
         for import_ in module_source.import_list:
-            imported_module = self._local_type_module_registry[import_.module_name]
+            try:
+                imported_module = self._local_type_module_registry[import_.module_name]
+            except KeyError:
+                raise RuntimeError('Type module {0!r} wants name {1!r} from module {2!r}, but module {2!r} does not exist'.format(
+                    module_name, import_.module_name, import_.name))
             try:
                 local_name_dict[import_.name] = imported_module[import_.name]
             except KeyError:
-                raise RuntimeError('Module {0!r} wants name {1!r} from module {2!r}, but module {2!r} does not have it'.format(
+                raise RuntimeError('Type module {0!r} wants name {1!r} from module {2!r}, but module {2!r} does not have it'.format(
                     module_name, import_.module_name, import_.name))
         local_type_module = LocalTypeModule()
         mapper = _NameToRefMapper(self._type_resolver, self._ref_registry, local_name_dict)
