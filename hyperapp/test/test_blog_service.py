@@ -32,7 +32,7 @@ server_type_module_list = [
     ]
 
 client_type_module_list = [
-    'line_object',
+    'line',
     ]
 
 server_code_module_list = [
