@@ -15,7 +15,7 @@ def main():
     args = parser.parse_args()
 
     app = Application(sys.argv)
-    app.exec_()
+    app.run_event_loop()
 
 
 main()

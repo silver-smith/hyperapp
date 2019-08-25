@@ -59,9 +59,9 @@ class Application(AsyncApplication, Commander):
         self._state_storage.save_state(state)
         self.stop_loop()
 
-    def exec_(self):
+    def run_event_loop(self):
         self.event_loop.run_until_complete(self._async_init())
-        AsyncApplication.exec_(self)
+        AsyncApplication.run_event_loop(self)
 
     async def _async_init(self):
         await self.services.async_init()
