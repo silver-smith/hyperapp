@@ -57,6 +57,9 @@ module:client.blog:BlogArticle:
           type: record_view.record_view_layout
           value:
             fields:
+            - field_id: title
+              layout:
+                type: line.line_edit_layout
             - field_id: contents
               layout:
                 type: text.text_edit_layout

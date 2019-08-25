@@ -9,6 +9,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
 from .view_registry import NotApplicable
+from .layout_registry import LayoutViewProducer
 
 log = logging.getLogger(__name__)
 
@@ -52,11 +53,6 @@ class LineEditView(View, QtGui.QLineEdit):
         VIEW = 'view'
         EDIT = 'edit'
 
-    @classmethod
-    async def from_state(cls, locale, state, parent, objimpl_registry):
-        object = await objimpl_registry.resolve_async(state.object)
-        return cls(object, cls.Mode(state.mode), parent)
-
     def __init__(self, object, mode):
         QtGui.QLineEdit.__init__(self, object.line)
         View.__init__(self)
@@ -85,12 +81,22 @@ class LineEditView(View, QtGui.QLineEdit):
         log.info('~line_edit')
 
 
+class LineEditProducer(LayoutViewProducer):
+
+    def __init__(self, layout):
+        pass
+
+    async def produce_view(self, piece, object, observer=None):
+        return LineEditView(object, LineEditView.Mode.EDIT)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
         services.view_producer_registry.register_view_producer(self._produce_view)
+        services.layout_registry.register_type(htypes.line.line_edit_layout, LineEditProducer)
 
     async def _produce_view(self, type_ref, object, observer):
         if not isinstance(object, LineObject):
