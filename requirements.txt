@@ -9,6 +9,7 @@ aiomock
 ply
 immutables==0.9  # required by better-contextvars below
 git+https://github.com/itsVale/better-contextvars#egg=better-contextvars
+PySide2
 
 # installing pyside using pip has following package requirements:
 # apt-get install build-essential git cmake libqt4-dev libphonon-dev python2.7-dev libxml2-dev libxslt1-dev qtmobility-dev
