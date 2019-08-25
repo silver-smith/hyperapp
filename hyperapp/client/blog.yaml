@@ -2,9 +2,8 @@ import:
   types:
     hyper_ref:
     - service
-    line_object:
-    - line_object
-    - line_edit_view
+    line:
+    - line
     text:
     - text
     - wiki_ref

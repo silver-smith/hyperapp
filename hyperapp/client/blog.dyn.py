@@ -125,7 +125,7 @@ class BlogArticle(RecordObject):
 
     def get_fields(self):
         return OrderedDict([
-            ('title', htypes.text.text(self._item.title)),
+            ('title', htypes.line.line(self._item.title)),
             ('contents', htypes.text.wiki_text(self._item.text, self._item.ref_list)),
             ])
 

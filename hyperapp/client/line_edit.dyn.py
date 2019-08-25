@@ -8,13 +8,12 @@ from hyperapp.client.object import Object
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
+from .view_registry import NotApplicable
 
 log = logging.getLogger(__name__)
 
 
 class LineObject(Object):
-
-    impl_id = 'line'
 
     @classmethod
     def from_state(cls, state):
@@ -26,9 +25,6 @@ class LineObject(Object):
 
     def get_title(self):
         return 'Line'
-
-    def get_state(self):
-        return htypes.line_object.line_object(self.impl_id, self._line)
 
     @property
     def line(self):
@@ -61,21 +57,15 @@ class LineEditView(View, QtGui.QLineEdit):
         object = await objimpl_registry.resolve_async(state.object)
         return cls(object, cls.Mode(state.mode), parent)
 
-    def __init__(self, object, mode, parent):
+    def __init__(self, object, mode):
         QtGui.QLineEdit.__init__(self, object.line)
-        View.__init__(self, parent)
+        View.__init__(self)
         self._object = object
         self._mode = mode
         self._notify_on_line_changed = True
         self.setReadOnly(self._mode == self.Mode.VIEW)
         self.textChanged.connect(self._on_line_changed)
         self._object.subscribe(self)
-
-    def get_state(self):
-        return htypes.line_object.line_edit_view(self.impl_id, self._object.get_state(), self._mode.value)
-
-    def get_object(self):
-        return self._object
 
     def _on_line_changed(self, line):
         log.debug('line_edit.on_line_changed: %r', line)
@@ -99,5 +89,10 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.objimpl_registry.register(LineObject.impl_id, LineObject.from_state)
-        services.view_registry.register(LineEditView.impl_id, LineEditView.from_state, services.objimpl_registry)
+        services.object_registry.register_type(htypes.line.line, LineObject.from_state)
+        services.view_producer_registry.register_view_producer(self._produce_view)
+
+    async def _produce_view(self, type_ref, object, observer):
+        if not isinstance(object, LineObject):
+            raise NotApplicable(object)
+        return LineEditView(object, LineEditView.Mode.VIEW)

@@ -1,7 +1,8 @@
 import:
   types:
-    line_object:
-      - line_object
-      - line_edit_view
+    line:
+      - line
+      - line_edit_layout
   code:
     - client.view
+    - client.view_registry

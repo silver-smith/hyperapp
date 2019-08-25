@@ -1,8 +1,0 @@
-from core import object, object_base, handle, obj_handle
-
-
-line_object = object class line(object_base):
-    line: string
-
-line_edit_view = handle class line_edit(obj_handle):
-    mode: string
