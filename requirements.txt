@@ -16,7 +16,3 @@ asyncqt==0.7.0
 # apt-get install build-essential git cmake libqt4-dev libphonon-dev python2.7-dev libxml2-dev libxslt1-dev qtmobility-dev
 # see: http://pyside.readthedocs.org/en/latest/building/linux.html
 # also, maybe: apt-get install qmake
-# ----
-# by now under debian 9 pyside versions installable by pip does not support python 3.5,
-# but debian has python3-pyside package for 1.2.2; so we need to use --system-site-packages for virtualenv
-# PySide==1.2.2
