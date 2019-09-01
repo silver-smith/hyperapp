@@ -185,7 +185,7 @@ class _Logger:
         self._log('enter_context: %s %r %r', ref_repr(module_ref), name, params)
         self._flush()
         self._context_counter += 1
-        self._context.append(self._context_counter)
+        self._context_append(self._context_counter)
         self._store_record(
             LogRecord(RecordKind.ENTER, self._context, module_ref, name, params))
 
@@ -196,7 +196,7 @@ class _Logger:
         assert record
         self._pending_record.set(None)
         self._context_counter += 1
-        self._context.append(self._context_counter)
+        self._context_append(self._context_counter)
         self._store_record(
             record.clone_with(RecordKind.ENTER, self._context))
 
@@ -207,7 +207,7 @@ class _Logger:
         assert self._context
         self._store_record(
             LogRecord(RecordKind.EXIT, self._context))
-        self._context.pop()
+        self._context_pop()
 
     @with_flag_set(_inside_storage)
     def flush(self):
@@ -232,12 +232,17 @@ class _Logger:
 
     @property
     def _context(self):
+        return self._context_var.get() or []
+
+    def _context_append(self, value):
+        context = self._context_var.get() or []
+        self._context_var.set(context + [value])
+
+    def _context_pop(self):
         context = self._context_var.get()
-        if context is None:
-            context = []
-            self._context_var.set(context)
-        return context
-        
+        assert context
+        self._context_var.set(context[:-1])
+
     def _store_record(self, record):
         self._log('store record: %r', record, level=logging.INFO)
         self._storage.add_record(record)

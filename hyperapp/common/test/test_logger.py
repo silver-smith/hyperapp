@@ -141,7 +141,9 @@ async def test_async_context(this_module_ref, init):
     async def level_1(num):
         _log.info('level_1 %r', num)
         with log.level_1_context(num=num):
+            _log.info('level_1 %r: entered context, wait barrier', num)
             await level_1_barrier.wait()
+            _log.info('level_1 %r: got barrier, wait level2', num)
             log.level_1_entry(num=num)
             await level_2(num)
         _log.info('level_1 %r finished', num)
