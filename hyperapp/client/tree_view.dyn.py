@@ -181,15 +181,15 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
 class TreeView(View, QtWidgets.QTreeView):
 
     def __init__(self, columns, object, current_path=None):
+        self._observers = weakref.WeakSet()
+        self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         QtWidgets.QTreeView.__init__(self)
         self.setModel(_Model(self, columns, object))
         View.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)
         self._object = object
-        self._observers = weakref.WeakSet()
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
         self._elt_commands = []   # Command list - commands for selected elements
-        self._elt_actions = []    # QtGui.QAction list - actions for selected elements
         self._default_command = None
         self.activated.connect(self._on_activated)
 
