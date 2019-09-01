@@ -12,6 +12,7 @@ from hyperapp.common.type_resolver import TypeResolver
 from hyperapp.common.module_ref_resolver import ModuleRefResolver
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, close_logger
+from hyperapp.common.test.barrier import Barrier
 
 _log = logging.getLogger(__name__)
 
@@ -114,19 +115,6 @@ def test_nested_context(this_module_ref, init):
         LogRecord(RecordKind.EXIT,  context_2),
         LogRecord(RecordKind.EXIT,  context_1),
         ]
-
-
-class Barrier:
-
-    def __init__(self, parties):
-        self._wanted_entries = parties
-        self._cond = asyncio.Condition()
-
-    async def wait(self):
-        async with self._cond:
-            self._wanted_entries -= 1
-            await self._cond.wait_for(lambda: self._wanted_entries == 0)
-            self._cond.notify_all()
 
 
 @pytest.mark.asyncio
