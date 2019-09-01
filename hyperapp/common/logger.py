@@ -7,7 +7,7 @@ from pathlib import Path
 import inspect
 import logging
 
-import better_contextvars as contextvars
+import contextvars
 
 from .htypes import meta_ref_t, t_ref, t_field_meta, t_record_meta, ref_t, capsule_t
 from .htypes.deduce_value_type import DeduceTypeError, deduce_value_type
