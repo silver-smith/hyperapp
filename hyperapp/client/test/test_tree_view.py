@@ -83,11 +83,11 @@ def object(services):
 
 
 @pytest.mark.asyncio
-async def test_instantiate(services, object):
+async def test_instantiate(event_loop, services, object):
     view = services.tree_view_factory(
         columns=[column.to_view_column(column.id) for column in object.get_columns()],
         object=object,
         current_path=None,
         )
     #view.populate()
-    await wait_for_all_tasks_to_complete()
+    await wait_for_all_tasks_to_complete(event_loop)

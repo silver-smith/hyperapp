@@ -114,7 +114,7 @@ class ThisModule(ClientModule):
             ):
         log.debug('Tcp transport: resolving address: %s', address)
         # use lock to avoid multiple connections to same address established in parallel
-        with (await self._connect_lock):
+        async with self._connect_lock:
             protocol = self._address_to_protocol.get(address)
             if protocol:
                 log.info('Tcp transport: reusing connection %s for %s', protocol, address)

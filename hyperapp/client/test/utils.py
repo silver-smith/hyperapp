@@ -13,11 +13,11 @@ async def wait_for(timeout_sec, fn, *args, **kw):
         await asyncio.sleep(0.1)
 
 
-async def wait_for_all_tasks_to_complete(timeout_sec=1):
+async def wait_for_all_tasks_to_complete(event_loop, timeout_sec=1):
     t = time.time()
     future = asyncio.Future()
     def check_pending():
-        pending = [task for task in asyncio.Task.all_tasks() if not task.done()]
+        pending = asyncio.all_tasks(event_loop)
         log.debug('%d pending tasks:', len(pending))
         for task in pending:
             log.debug('\t%s', task)
