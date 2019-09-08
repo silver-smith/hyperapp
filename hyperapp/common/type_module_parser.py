@@ -23,6 +23,10 @@ from .local_type_module import (
     )
 
 
+class ParseError(Exception):
+    pass
+
+
 keywords = [
     'import',
     'from',
@@ -421,8 +425,9 @@ class Lexer(object):
                 # first indent found, this is file tab size
                 assert '\t' not in tinfo.string, 'Tab indentation is not supported'
                 self._tab_size = len(tinfo.string)
-            assert len(tinfo.string) % self._tab_size == 0, \
-              'line %d: Invalid indent: %r (detected tab size: %d)' % (tinfo.start[0], tinfo.string, self._tab_size)
+            if len(tinfo.string) % self._tab_size != 0:
+                raise ParseError('line {}: Invalid indent: {!r} (detected tab size: {})'
+                                 .format(tinfo.start[0], tinfo.string, self._tab_size))
             assert len(tinfo.string)/self._tab_size == self._indent + 1, 'Invalid indent: %r (detected tab size: %d)' % (tinfo.string, self._tab_size)
             self._indent += 1
             t = BLOCK_BEGIN
@@ -455,7 +460,10 @@ def parse_type_module_source(fname, module_name, contents, debug=False):
     parser.error_line = None
     parser.error = None
     #parser.provided_class_list = []
-    module = parser.parse(contents, lexer=Lexer())
+    try:
+        module = parser.parse(contents, lexer=Lexer())
+    except ParseError as x:
+        raise RuntimeError('Failed to parse {}: {}'.format(fname, x))
     if not module:
         raise RuntimeError('Failed to parse {}:\n{}\n{}'.format(fname, parser.error_line, parser.error))
     return module
