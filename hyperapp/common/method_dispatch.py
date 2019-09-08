@@ -1,7 +1,6 @@
 # http://stackoverflow.com/questions/24601722/how-can-i-use-functools-singledispatch-with-instance-methods
 
-from singledispatch import singledispatch
-from functools import update_wrapper
+from functools import singledispatch, update_wrapper
 
 
 def method_dispatch(func):

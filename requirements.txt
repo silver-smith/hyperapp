@@ -1,6 +1,5 @@
 pony==0.7.4  # first version compatible with python3.7
 python-dateutil==2.8.0
-singledispatch
 PyYAML>=3.12  # under debian requires: libyaml-dev, libpython3-dev
 cryptography>=1.0.2  # under debian requires: libffi-dev:amd64 libssl-dev:amd64
 pytest==4.0.2
