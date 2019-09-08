@@ -1,0 +1,4 @@
+
+tree_to_list_adapter = record:
+    base_ref: ref
+    path: string list
