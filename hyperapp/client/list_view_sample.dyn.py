@@ -7,7 +7,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .column import Column
-from .list_object import ListObserver, ListObject
+from .list_object import ListObject
 
 log = logging.getLogger(__name__)
 
