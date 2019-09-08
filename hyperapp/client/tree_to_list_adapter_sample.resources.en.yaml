@@ -1,0 +1,7 @@
+module:client.tree_to_list_adapter_sample:ThisModule:
+  commands:
+    open_tree_to_list_adapter_sample:
+      text: Open tree-to-list adapter sample
+      description: Open tree-to-list adapter sample
+      shortcuts:
+      - Alt+Ctrl+Shift+T
