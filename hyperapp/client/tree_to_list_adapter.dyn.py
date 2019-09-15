@@ -1,5 +1,6 @@
 # Provide list view interface to tree view object
 
+from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .list_object import ListObject
@@ -20,9 +21,10 @@ class TreeToListAdapter(ListObject):
     @classmethod
     async def from_state(cls, state, object_resolver):
         tree_object = await object_resolver.resolve(state.base_ref)
-        return cls(tree_object, state.path)
+        return cls(state.base_ref, tree_object, state.path)
 
-    def __init__(self, tree_object, path):
+    def __init__(self, base_ref, tree_object, path):
+        self._base_ref = base_ref
         self._tree_object = tree_object
         self._path = path
         super().__init__()
@@ -50,12 +52,11 @@ class TreeToListAdapter(ListObject):
     #     text = "Opened item {}".format(item_key)
     #     return htypes.text.text(text)
 
-    # @command('open_parent')
-    # async def command_open_parent(self):
-    #     if not self._path:
-    #         return
-    #     path = self._path[:-1]
-    #     return (await self._open_path(path, current_file_name=self._path[-1]))
+    @command('open_parent')
+    async def command_open_parent(self):
+        if not self._path:
+            return
+        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path[:-1])
 
 
 class ThisModule(ClientModule):
