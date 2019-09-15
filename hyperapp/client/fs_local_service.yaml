@@ -1,8 +1,10 @@
 import:
   types:
     fs:
-      - fs
-      - row_fetch_request
-      - local_fs_service
+    - fs
+    - row_fetch_request
+    - local_fs_service
+    tree_to_list_adapter:
+    - tree_to_list_adapter
   code:
-    - common.fs_service_impl
+  - common.fs_service_impl

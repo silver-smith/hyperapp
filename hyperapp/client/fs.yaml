@@ -1,10 +1,10 @@
 import:
   types:
     core:
-      - string_list_handle
+    - string_list_handle
     fs:
-      - fs
+    - fs
   code:
-    - client.async_capsule_registry
-    - client.column
-    - client.list_object
+  - client.async_capsule_registry
+  - client.column
+  - client.tree_object

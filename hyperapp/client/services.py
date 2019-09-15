@@ -118,7 +118,6 @@ code_module_list = [
     'client.fs',
     'client.fs_local_service',
     'client.fs_remote_service',
-    'client.fs_tree',
     'client.ref_list',
     'client.local_server_ref_list',
     'client.wiki_text_sample',

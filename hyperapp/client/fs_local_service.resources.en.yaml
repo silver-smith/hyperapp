@@ -2,6 +2,11 @@ module:client.fs_local_service:ThisModule:
   commands:
     open_local_fs:
       text: Open local file system
-      description: Open local file system (home directory)
+      description: Open local file system
       shortcuts:
       - Alt+Ctrl+F
+    open_local_fs_list:
+      text: Open local file list
+      description: Open local file system wrapped in list adapter
+      shortcuts:
+      - Alt+Ctrl+Shift+F

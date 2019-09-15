@@ -33,7 +33,5 @@ fs_service_iface = interface fs_service:
     commands:
         fetch_dir_contents (host: string, fs_path: fs_path, fetch_request: row_fetch_request) -> (chunk: fs_dir_chunk)
 
-fs_dir_tree = record  # todo
-
 
 local_fs_service = record
