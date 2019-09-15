@@ -94,7 +94,6 @@ code_module_list = [
     # 'client.ref_redirect_handle',
     # 'client.line_list_panel',
     # 'client.narrower',
-    # 'client.handle_resolver',
     # 'client.url_clipboard',
     'client.text_object',
     'client.list_object',
