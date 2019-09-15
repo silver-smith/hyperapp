@@ -47,10 +47,10 @@ class TreeToListAdapter(ListObject):
         self._distribute_fetch_results(item_list, fetch_finished=True)
         self._distribute_eof()
 
-    # @command('open', kind='element')
-    # async def command_open(self, item_key):
-    #     text = "Opened item {}".format(item_key)
-    #     return htypes.text.text(text)
+    # todo: distinguish leaf items, do not open them
+    @command('open', kind='element')
+    async def command_open(self, item_key):
+        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path + [item_key])
 
     @command('open_parent')
     async def command_open_parent(self):
