@@ -90,7 +90,7 @@ class LayoutManager:
         text_view = await self.produce_view(piece, text_object)
         self._tab_view = tab_view = TabView()
         tab_view.addTab(text_view, text_view.get_title())
-        window = Window(on_closed=app.stop)
+        window = Window()
         window.setCentralWidget(tab_view)
         window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
         # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)

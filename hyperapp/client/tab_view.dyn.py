@@ -111,9 +111,6 @@ class TabView(QtWidgets.QTabWidget, View):
         self._children.insert(idx, child)
         self.setCurrentIndex(idx)
 
-    def __del__(self):
-        log.info('~tab_view')
-
 
 class ThisModule(ClientModule):
 

@@ -20,10 +20,9 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 
 class Window(View, QtWidgets.QMainWindow):
 
-    def __init__(self, on_closed, size=None, pos=None):
+    def __init__(self, size=None, pos=None):
         QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
-        self._on_closed = on_closed
         self._child_widget = None
         if size:
             self.resize(size)
@@ -34,11 +33,6 @@ class Window(View, QtWidgets.QMainWindow):
         else:
             self.move(800, 100)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
-
-    def closeEvent(self, evt):
-        QtWidgets.QMainWindow.closeEvent(self, evt)
-        ## self.deleteLater()  # seems not required, at least when moved to QMainWindow from QWidget
-        self._on_closed()
 
     def get_state(self):
         return htypes.window.window(
@@ -90,9 +84,6 @@ class Window(View, QtWidgets.QMainWindow):
         state.pos.x += DUP_OFFSET.x()
         state.pos.y += DUP_OFFSET.y()
         await self.from_state(state, self._app, self._module_command_registry, self._view_registry, self._resource_resolver)
-
-    def __del__(self):
-        log.info('~window')
 
 
 class ThisModule(ClientModule):
