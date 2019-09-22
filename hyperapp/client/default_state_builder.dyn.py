@@ -15,8 +15,8 @@ class ThisModule(ClientModule):
             view_id='navigator',
             history=[htypes.navigator.item('sample text', text_handle)],
             current_pos=0)
-        tabs_state = htypes.tab_view.tab_view_state(tabs=[navigator_state], current_tab=0)
-        window_state = htypes.window.window_state(
+        tabs_state = htypes.tab_view.tab_view(tabs=[navigator_state], current_tab=0)
+        window_state = htypes.window.window(
             tab_view=tabs_state,
             size=htypes.window.size(1000, 800),
             pos=htypes.window.pos(500, 100))

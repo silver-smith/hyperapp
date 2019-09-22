@@ -1,6 +1,4 @@
-from core import handle
 
-
-tab_view_state = record:
-    tabs: handle list
+tab_view = record:
+    tabs: ref list
     current_tab: int

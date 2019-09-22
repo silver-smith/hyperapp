@@ -16,7 +16,7 @@ class TabView(QtWidgets.QTabWidget, View):
     @staticmethod    
     def map_current(state, mapper):
         idx = state.current_tab
-        return htypes.tab_view.tab_view_state(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
+        return htypes.tab_view.tab_view(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
     def __init__(self):
         QtWidgets.QTabWidget.__init__(self)
@@ -26,7 +26,7 @@ class TabView(QtWidgets.QTabWidget, View):
         self.currentChanged.connect(self._on_current_changed)
 
     def get_state(self):
-        return htypes.tab_view.tab_view_state([view.get_state() for view in self._children], self.currentIndex())
+        return htypes.tab_view.tab_view([view.get_state() for view in self._children], self.currentIndex())
 
     def get_current_child(self):
         idx = self.currentIndex()

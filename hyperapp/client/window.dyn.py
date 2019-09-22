@@ -41,7 +41,7 @@ class Window(View, QtWidgets.QMainWindow):
         self._on_closed()
 
     def get_state(self):
-        return htypes.window.window_state(
+        return htypes.window.window(
             tab_view=self._view.get_state(),
             size=htypes.window.size(w=self.width(), h=self.height()),
             pos=htypes.window.pos(x=self.x(), y=self.y()),

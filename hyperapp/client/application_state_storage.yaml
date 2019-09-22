@@ -1,6 +1,6 @@
 import:
   types:
     window:
-      - window_state
+      - window
   code:
     - common.local_server_paths

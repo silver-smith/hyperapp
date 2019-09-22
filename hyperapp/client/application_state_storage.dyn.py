@@ -41,7 +41,7 @@ class ApplicationStateStorage(object):
             return None
 
     def _register_state_type(self):
-        window_state_ref = self._type_resolver.reverse_resolve(htypes.window.window_state)
+        window_state_ref = self._type_resolver.reverse_resolve(htypes.window.window)
         type_rec = meta_ref_t('application_state', t_list_meta(t_ref(window_state_ref)))
         return self._type_resolver.register_type(self._ref_registry, type_rec).t
         
