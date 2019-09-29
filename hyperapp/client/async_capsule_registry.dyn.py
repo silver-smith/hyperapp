@@ -42,10 +42,10 @@ class AsyncCapsuleResolver(object):
         self._async_ref_resolver = async_ref_resolver
         self._async_capsule_registry = async_capsule_registry
 
-    async def resolve(self, ref):
+    async def resolve(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = await self._async_ref_resolver.resolve_ref(ref)
-        produce = await self._async_capsule_registry.resolve_capsule_async(capsule)
+        produce = await self._async_capsule_registry.resolve_capsule_async(capsule, *args, **kw)
         assert produce, repr(produce)
         log.debug('Capsule %s is resolved to %s %r', ref_repr(ref), self._async_capsule_registry.produce_name, produce)
         return produce

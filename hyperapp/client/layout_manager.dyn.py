@@ -67,6 +67,8 @@ class LayoutManager:
             view_producer_registry,
             layout_registry,
             layout_resolver,
+            view_registry,
+            default_state_builder,
             ):
         self._ref_resolver = ref_resolver
         self._type_resolver = type_resolver
@@ -76,7 +78,10 @@ class LayoutManager:
         self._view_producer_registry = view_producer_registry
         self._layout_registry = layout_registry
         self._layout_resolver = layout_resolver
+        self._view_registry = view_registry
+        self._default_state_builder = default_state_builder
         self._locale = 'en'
+        self._window_list = []
         self._cmd_pane = self._construct_cmd_pane()
         self._dir_buttons = []
         self._element_buttons = []
@@ -85,19 +90,24 @@ class LayoutManager:
         self._history = History()
 
     async def build_default_layout(self, app):
-        self._current_piece = piece = htypes.text.text("Welcome to hyperapp")
-        text_object = self._object_registry.resolve(piece)
-        text_view = await self.produce_view(piece, text_object)
-        self._tab_view = tab_view = TabView()
-        tab_view.addTab(text_view, text_view.get_title())
-        window = Window()
-        window.setCentralWidget(tab_view)
-        window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
+        state = self._default_state_builder()
+        for window_state in state:
+            window = await self._view_registry.resolve_async(window_state, None, None)
+            window.show()
+            self._window_list.append(window)
+        # self._current_piece = piece = htypes.text.text("Welcome to hyperapp")
+        # text_object = self._object_registry.resolve(piece)
+        # text_view = await self.produce_view(piece, text_object)
+        # self._tab_view = tab_view = TabView()
+        # tab_view.addTab(text_view, text_view.get_title())
+        # window = Window()
+        # window.setCentralWidget(tab_view)
         # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
-        window.menuBar().addMenu(self._build_global_menu(app, "&File"))
-        window.menuBar().addMenu(self._build_navigation_menu("&Navigation"))
-        window.show()
-        self._window = window
+        # # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
+        # window.menuBar().addMenu(self._build_global_menu(app, "&File"))
+        # window.menuBar().addMenu(self._build_navigation_menu("&Navigation"))
+        # window.show()
+        # self._window = window
 
     def _build_global_menu(self, app, title):
         menu = QtWidgets.QMenu(title)
@@ -302,6 +312,8 @@ class ThisModule(ClientModule):
             services.view_producer_registry,
             services.layout_registry,
             services.layout_resolver,
+            services.view_registry,
+            services.default_state_builder,
             )
         services.view_producer = ViewProducer(layout_manager)
         services.view_opener = ViewOpener(layout_manager)

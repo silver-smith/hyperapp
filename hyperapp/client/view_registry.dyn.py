@@ -1,5 +1,6 @@
 import logging
 from hyperapp.client.module import ClientModule
+from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 
 _log = logging.getLogger(__name__)
 
@@ -32,3 +33,5 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.view_producer_registry = ViewProducerRegistry()
+        services.view_registry = view_registry = AsyncCapsuleRegistry('view', services.type_resolver)
+        services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)
