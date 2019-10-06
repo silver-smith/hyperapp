@@ -19,7 +19,7 @@ class ViewProducerRegistry:
     def register_view_producer(self, producer):
         self._producer_list.append(producer)
 
-    async def produce_view(self, piece, object, observer):
+    async def produce_view(self, piece, object, observer=None):
         for producer in self._producer_list:
             try:
                 return (await producer(piece, object, observer))

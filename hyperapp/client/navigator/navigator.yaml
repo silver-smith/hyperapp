@@ -1,11 +1,6 @@
 import:
   types:
     navigator:
-      - item
-      - state
-      - history_list
-      - history_list_handle
+    - navigator
   code:
-    - client.view
-    - client.navigator.history_list
-    - client.list_view
+  - client.view

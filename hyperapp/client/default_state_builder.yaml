@@ -1,11 +1,9 @@
 import:
   types:
-    # text:
-    #   - text
-    #   - text_view
-    # navigator:
-    #   - item
-    #   - state
+    text:
+    - text
+    navigator:
+    - navigator
     tab_view:
     - tab_view
     window:

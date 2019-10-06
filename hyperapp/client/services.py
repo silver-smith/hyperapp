@@ -83,7 +83,7 @@ code_module_list = [
     'client.window',
     'client.column',
     # 'client.navigator.history_list',
-    # 'client.navigator.navigator',
+    'client.navigator.navigator',
     # 'client.navigator.module',
     # 'client.form',
     # 'code_repository',

@@ -1,4 +1,4 @@
 import:
   code:
-    - client.navigator.history_list
-    - client.navigator.navigator
+  # - client.navigator.history_list
+  - client.navigator.navigator

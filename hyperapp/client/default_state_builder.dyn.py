@@ -11,7 +11,11 @@ class ThisModule(ClientModule):
         services.default_state_builder = self._build_default_state
 
     def _build_default_state(self):
-        tab_view = htypes.tab_view.tab_view([], 0)
+        piece = htypes.text.text("Welcome to hyperapp")
+        piece_ref = self._ref_registry.register_object(piece)
+        navigator = htypes.navigator.navigator(piece_ref)
+        navigator_ref = self._ref_registry.register_object(navigator)
+        tab_view = htypes.tab_view.tab_view([navigator_ref], 0)
         tab_view_ref = self._ref_registry.register_object(tab_view)
         window_state = htypes.window.window(
             central_view_ref=tab_view_ref,

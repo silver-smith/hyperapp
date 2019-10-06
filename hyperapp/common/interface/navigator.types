@@ -1,16 +1,3 @@
-from core import object, object_base, handle, view_handle, int_list_handle
 
-
-item = record:
-    title: string
-    handle: handle
-
-state = handle class navigator(view_handle):
-    history: item list
-    current_pos: int
-
-history_list = object class history_list(object_base):
-    history: item list
-
-
-history_list_handle = int_list_handle
+navigator = record:
+    current_piece_ref: ref
