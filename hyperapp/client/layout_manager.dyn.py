@@ -11,6 +11,7 @@ from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .layout_registry import LayoutViewProducer
+from .command_registry import CommandRegistry
 from .text_object import TextObject
 from .tab_view import TabView
 from .window import Window
@@ -88,11 +89,12 @@ class LayoutManager:
         self._current_piece = None
         self._current_item_observer = None
         self._history = History()
+        self._command_registry = CommandRegistry()
 
     async def build_default_layout(self, app):
         state = self._default_state_builder()
         for window_state in state:
-            window = await self._view_registry.resolve_async(window_state, None)
+            window = await self._view_registry.resolve_async(window_state, self._command_registry)
             window.show()
             self._window_list.append(window)
         # self._current_piece = piece = htypes.text.text("Welcome to hyperapp")

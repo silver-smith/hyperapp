@@ -101,6 +101,7 @@ code_module_list = [
     'client.tree_object',
     'client.data_viewer',
     'client.log_viewer',
+    'client.command_registry',
     'client.default_state_builder',
     'client.layout_manager',
     'client.application_state_storage',

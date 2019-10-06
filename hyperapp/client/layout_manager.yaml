@@ -4,6 +4,7 @@ import:
     - text
   code:
   - client.layout_registry
+  - client.command_registry
   - client.text_object
   - client.tab_view
   - client.window
