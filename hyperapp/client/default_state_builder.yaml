@@ -6,9 +6,9 @@ import:
     # navigator:
     #   - item
     #   - state
-    # tab_view:
-    #   - tab_view
+    tab_view:
+    - tab_view
     window:
-      - size
-      - pos
-      - window
+    - size
+    - pos
+    - window

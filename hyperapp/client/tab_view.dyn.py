@@ -18,12 +18,17 @@ class TabView(QtWidgets.QTabWidget, View):
         idx = state.current_tab
         return htypes.tab_view.tab_view(state.tabs[:idx] + [mapper(state.tabs[idx])] + state.tabs[idx+1:], idx)
 
+    @classmethod
+    def from_data(cls, state, command_registry):
+        return cls()
+
     def __init__(self):
         QtWidgets.QTabWidget.__init__(self)
         View.__init__(self)
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
         self.currentChanged.connect(self._on_current_changed)
+        self.addTab(QtWidgets.QWidget(), 'sample tab')
 
     def get_state(self):
         return htypes.tab_view.tab_view([view.get_state() for view in self._children], self.currentIndex())
@@ -116,3 +121,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        services.view_registry.register_type(htypes.tab_view.tab_view, TabView.from_data)

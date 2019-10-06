@@ -21,10 +21,11 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class Window(View, QtWidgets.QMainWindow):
 
     @classmethod
-    def from_data(cls, state, parent, command_registry):
-        return cls(state.size, state.pos)
+    async def from_data(cls, state, command_registry, view_resolver):
+        central_view = await view_resolver.resolve(state.central_view_ref, command_registry)
+        return cls(central_view, state.size, state.pos)
 
-    def __init__(self, size=None, pos=None):
+    def __init__(self, central_view, size=None, pos=None):
         QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
         self._child_widget = None
@@ -37,6 +38,7 @@ class Window(View, QtWidgets.QMainWindow):
         else:
             self.move(800, 100)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
+        self.setCentralWidget(central_view)
 
     def get_state(self):
         return htypes.window.window(
@@ -94,4 +96,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.window.window, Window.from_data)
+        services.view_registry.register_type(htypes.window.window, Window.from_data, services.view_resolver)

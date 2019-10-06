@@ -92,7 +92,7 @@ class LayoutManager:
     async def build_default_layout(self, app):
         state = self._default_state_builder()
         for window_state in state:
-            window = await self._view_registry.resolve_async(window_state, None, None)
+            window = await self._view_registry.resolve_async(window_state, None)
             window.show()
             self._window_list.append(window)
         # self._current_piece = piece = htypes.text.text("Welcome to hyperapp")

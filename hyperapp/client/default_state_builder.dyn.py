@@ -7,11 +7,14 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
         services.default_state_builder = self._build_default_state
 
     def _build_default_state(self):
+        tab_view = htypes.tab_view.tab_view([], 0)
+        tab_view_ref = self._ref_registry.register_object(tab_view)
         window_state = htypes.window.window(
-            central_view=phony_ref('some-tabs'),
+            central_view_ref=tab_view_ref,
             size=htypes.window.size(1000, 800),
             pos=htypes.window.pos(500, 100))
         return [window_state]

@@ -53,7 +53,7 @@ class CapsuleRegistry(RegistryBase):
         log.info('Producing %s for %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, object, ref_repr(type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
-        return rec.factory(object, *(*rec.args, *args), **{**rec.kw, **kw})
+        return rec.factory(object, *(*args, *rec.args), **{**kw, **rec.kw})
 
 
 class CapsuleResolver(object):
