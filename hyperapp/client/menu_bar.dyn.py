@@ -1,52 +1,54 @@
 import logging
 import weakref
+
 from PySide2 import QtCore, QtWidgets
-from .util import make_action, make_async_action
-from .command import Command, WindowCommand
+
+from hyperapp.client.util import make_action, make_async_action
+from hyperapp.client.command import Command, WindowCommand
+from hyperapp.client.module import ClientModule
+from . import htypes
 
 log = logging.getLogger(__name__)
 
 
-class MenuBar(object):
+class MenuBar(QtWidgets.QMenuBar):
 
-    def __init__(self, app, window, locale, module_command_registry, resource_resolver):
-        self.app = app
-        self.window = window  # weakref.ref
-        self._locale = locale
-        self._module_command_registry = module_command_registry
-        self._resource_resolver = resource_resolver
-        self.current_dir = None
+    @classmethod
+    async def from_data(cls, state, command_registry):
+        return cls(command_registry)
+
+    def __init__(self, command_registry):
+        super().__init__()
         self._build()
 
     def _build(self):
         self.file_menu = self._build_global_menu('&File')
-        self.dir_menu = QtWidgets.QMenu('&Dir')
-        self.window_menu = QtWidgets.QMenu('&Window')
-        self.help_menu = QtWidgets.QMenu('H&elp')
-        self.add_action_to_menu(self.help_menu, '&Dir commands', ['F1'], MenuBar._open_dir_commands, weakref.ref(self))
-        self.add_action_to_menu(self.help_menu, '&Current element commands', ['.'], MenuBar._open_elt_commands, weakref.ref(self))
+        # self.dir_menu = QtWidgets.QMenu('&Dir')
+        # self.window_menu = QtWidgets.QMenu('&Window')
+        # self.help_menu = QtWidgets.QMenu('H&elp')
+        # self.add_action_to_menu(self.help_menu, '&Dir commands', ['F1'], MenuBar._open_dir_commands, weakref.ref(self))
+        # self.add_action_to_menu(self.help_menu, '&Current element commands', ['.'], MenuBar._open_elt_commands, weakref.ref(self))
         ## self.help_menu.setEnabled(False)
-        menu_bar = self.window().menuBar()
-        menu_bar.addMenu(self.file_menu)
-        menu_bar.addMenu(self.dir_menu)
-        menu_bar.addMenu(self.window_menu)
-        menu_bar.addMenu(self.help_menu)
+        self.addMenu(self.file_menu)
+        # menu_bar.addMenu(self.dir_menu)
+        # menu_bar.addMenu(self.window_menu)
+        # menu_bar.addMenu(self.help_menu)
 
     def add_action_to_menu(self, menu, text, shortcut_list, fn, self_wr):
         menu.addAction(make_action(menu, text, shortcut_list, fn, self_wr))
 
     def _build_global_menu(self, title):
         menu = QtWidgets.QMenu(title)
-        window = self.window()
-        for cmd in self._module_command_registry.get_all_commands():
-            assert isinstance(cmd, Command), repr(cmd)
-            window_command = WindowCommand.from_command(cmd, window)
-            menu.addAction(self._make_action(menu, window_command))
-        if not menu.isEmpty():
-            menu.addSeparator()
-        for cmd in self.window().get_global_commands():
-            assert isinstance(cmd, Command), repr(cmd)
-            menu.addAction(self._make_action(menu, cmd))
+        # window = self.window()
+        # for cmd in self._module_command_registry.get_all_commands():
+        #     assert isinstance(cmd, Command), repr(cmd)
+        #     window_command = WindowCommand.from_command(cmd, window)
+        #     menu.addAction(self._make_action(menu, window_command))
+        # if not menu.isEmpty():
+        #     menu.addSeparator()
+        # for cmd in self.window().get_global_commands():
+        #     assert isinstance(cmd, Command), repr(cmd)
+        #     menu.addAction(self._make_action(menu, cmd))
         return menu
 
     def _current_view(self):
@@ -126,3 +128,10 @@ class MenuBar(object):
 
     def __del__(self):
         log.info('~menu_bar')
+
+
+class ThisModule(ClientModule):
+
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
+        services.view_registry.register_type(htypes.menu_bar.menu_bar, MenuBar.from_data)

@@ -8,6 +8,7 @@ size = record:
     h: int
 
 window = record:
+    menu_bar_ref: ref
     central_view_ref: ref
     size: size
     pos: pos

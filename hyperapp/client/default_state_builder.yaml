@@ -6,6 +6,8 @@ import:
     - navigator
     tab_view:
     - tab_view
+    menu_bar:
+    - menu_bar
     window:
     - size
     - pos

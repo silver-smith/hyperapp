@@ -22,10 +22,11 @@ class Window(View, QtWidgets.QMainWindow):
 
     @classmethod
     async def from_data(cls, state, command_registry, view_resolver):
+        menu_bar = await view_resolver.resolve(state.menu_bar_ref, command_registry)
         central_view = await view_resolver.resolve(state.central_view_ref, command_registry)
-        return cls(central_view, state.size, state.pos)
+        return cls(menu_bar, central_view, state.size, state.pos)
 
-    def __init__(self, central_view, size=None, pos=None):
+    def __init__(self, menu_bar, central_view, size=None, pos=None):
         QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
         self._child_widget = None
@@ -38,6 +39,7 @@ class Window(View, QtWidgets.QMainWindow):
         else:
             self.move(800, 100)
         #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
+        self.setMenuWidget(menu_bar)
         self.setCentralWidget(central_view)
 
     def get_state(self):
