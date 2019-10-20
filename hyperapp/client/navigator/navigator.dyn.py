@@ -3,6 +3,7 @@
 import logging
 from functools import partial
 
+from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -33,13 +34,13 @@ class ThisModule(ClientModule):
 
     def _get_global_commands(self):
         for command in self._module_command_registry.get_all_commands():
-            yield partial(self._run_command, command)
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
 
     def _get_object_commands(self, object):
         for command in object.get_command_list():
             if command.kind != 'object':
                 continue
-            yield partial(self._run_command, command)
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
 
     async def _run_command(self, command):
         piece = await command.run()

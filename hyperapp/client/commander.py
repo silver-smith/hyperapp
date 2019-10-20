@@ -77,6 +77,10 @@ class BoundCommand(Command):
 
 class FreeFnCommand(Command):
 
+    @classmethod
+    def from_command(cls, command, fn):
+        return cls(command.id, command.kind, command.resource_key, command.enabled, fn)
+
     def __init__(self, id, kind, resource_key, enabled, fn):
         Command.__init__(self, id, kind, resource_key, enabled)
         self._fn = fn
