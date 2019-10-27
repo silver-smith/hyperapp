@@ -10,4 +10,4 @@ cd $(dirname $0)
 
 ./run_client.py
 
-tail -n500 /tmp/client.log
+tail -n500 /tmp/client-info.log

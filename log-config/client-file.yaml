@@ -13,10 +13,24 @@ handlers:
     level: DEBUG
     formatter: simple
     stream: ext://sys.stdout
-  file:
+  file-full:
     class : logging.handlers.RotatingFileHandler
     formatter: full
     filename: /tmp/client.log
+    maxBytes: 10485760  # 10M
+    backupCount: 20
+  file-info:
+    class : logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: full
+    filename: /tmp/client-info.log
+    maxBytes: 10485760  # 10M
+    backupCount: 20
+  file-warning:
+    class : logging.handlers.RotatingFileHandler
+    level: WARNING
+    formatter: full
+    filename: /tmp/client-warning.log
     maxBytes: 10485760  # 10M
     backupCount: 20
 
@@ -28,4 +42,4 @@ loggers:
 
 root:
   level: DEBUG
-  handlers: [file]
+  handlers: [file-full, file-info, file-warning]
