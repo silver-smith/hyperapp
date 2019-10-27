@@ -54,6 +54,7 @@ class TabView(QtWidgets.QTabWidget, View):
         self.removeTab(idx)
         old_widget.deleteLater()
         self.insertTab(idx, view.get_widget(), view.get_title())
+        view.ensure_has_focus()
 
     def setVisible(self, visible):
         QtWidgets.QTabWidget.setVisible(self, visible)
