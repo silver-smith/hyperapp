@@ -12,6 +12,18 @@ from .view import View
 _log = logging.getLogger(__name__)
 
 
+class _CurrentItemObserver:
+
+    def __init__(self, module, command_registry, view_opener, object):
+        self._module = module
+        self._command_registry = command_registry
+        self._view_opener = view_opener
+        self._object = object
+
+    def current_changed(self, current_item_key):
+        self._module._update_element_commands(self._command_registry, self._view_opener, self._object, current_item_key)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
@@ -44,11 +56,19 @@ class ThisModule(ClientModule):
                 continue
             yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command))
 
-    async def _run_command(self, command_registry, view_opener, command):
-        piece = await command.run()
+    def _get_element_commands(self, command_registry, view_opener, object, current_item_key):
+        for command in object.get_item_command_list(current_item_key):
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command, current_item_key))
+
+    async def _run_command(self, command_registry, view_opener, command, *args, **kw):
+        piece = await command.run(*args, **kw)
         if piece is None:
             return
         object = await self._object_registry.resolve_async(piece)
-        view = await self._view_producer_registry.produce_view(piece, object)
+        self._current_item_observer = observer = _CurrentItemObserver(self, command_registry, view_opener, object)
+        view = await self._view_producer_registry.produce_view(piece, object, observer)
         view_opener.open(view)
         command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
+
+    def _update_element_commands(self, command_registry, view_opener, object, current_item_key):
+        command_registry.set_commands('element', list(self._get_element_commands(command_registry, view_opener, object, current_item_key)))

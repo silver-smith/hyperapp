@@ -9,6 +9,7 @@ size = record:
 
 window = record:
     menu_bar_ref: ref
+    command_pane_ref: ref
     central_view_ref: ref
     size: size
     pos: pos

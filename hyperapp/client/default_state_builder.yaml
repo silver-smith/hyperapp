@@ -8,6 +8,8 @@ import:
     - tab_view
     menu_bar:
     - menu_bar
+    command_pane:
+    - command_pane
     window:
     - size
     - pos

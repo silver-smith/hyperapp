@@ -23,10 +23,11 @@ class Window(View, QtWidgets.QMainWindow):
     @classmethod
     async def from_data(cls, state, command_registry, view_resolver):
         menu_bar = await view_resolver.resolve(state.menu_bar_ref, command_registry)
+        command_pane = await view_resolver.resolve(state.command_pane_ref, command_registry)
         central_view = await view_resolver.resolve(state.central_view_ref, command_registry)
-        return cls(menu_bar, central_view, state.size, state.pos)
+        return cls(menu_bar, command_pane, central_view, state.size, state.pos)
 
-    def __init__(self, menu_bar, central_view, size=None, pos=None):
+    def __init__(self, menu_bar, command_pane, central_view, size=None, pos=None):
         QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
         self._child_widget = None
@@ -38,7 +39,7 @@ class Window(View, QtWidgets.QMainWindow):
             self.move(pos.x, pos.y)
         else:
             self.move(800, 100)
-        #self.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._filter_pane)
+        self.addDockWidget(QtCore.Qt.RightDockWidgetArea, command_pane)
         self.setMenuWidget(menu_bar)
         self.setCentralWidget(central_view)
 
@@ -79,12 +80,12 @@ class Window(View, QtWidgets.QMainWindow):
             self._child_widget = w
         self.setWindowTitle(view.get_title())
         self._menu_bar.view_changed(self)
-        self._cmd_pane.view_changed(self)
+        self._command_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
 
     def view_commands_changed(self, command_kinds):
         self._menu_bar.view_commands_changed(self, command_kinds)
-        self._cmd_pane.view_commands_changed(self, command_kinds)
+        self._command_pane.view_commands_changed(self, command_kinds)
         
     @command('duplicate_window')
     async def duplicate_window(self):

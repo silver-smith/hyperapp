@@ -42,22 +42,22 @@ class MenuBar(QtWidgets.QMenuBar):
         for command in command_list:
             menu.addAction(self._make_action(menu, command))
 
-    def _make_action(self, menu, cmd, used_shortcut_set=None):
-        resource = self._resource_resolver.resolve(cmd.resource_key, self._locale)
+    def _make_action(self, menu, command, used_shortcut_set=None):
+        resource = self._resource_resolver.resolve(command.resource_key, self._locale)
         if resource:
             text = resource.text
             shortcut_list = resource.shortcut_list
         else:
-            text = '.'.join(cmd.resource_key.path)
+            text = '.'.join(command.resource_key.path)
             shortcut_list = None
-        if not cmd.is_enabled():
+        if not command.is_enabled():
             shortcut_list = None
         if used_shortcut_set is not None:
             # remove duplicates
             shortcut_list = [sc for sc in shortcut_list or [] if sc not in used_shortcut_set]
             used_shortcut_set |= set(shortcut_list)
-        action = make_async_action(menu, text, shortcut_list, cmd.run)
-        action.setEnabled(cmd.is_enabled())
+        action = make_async_action(menu, text, shortcut_list, command.run)
+        action.setEnabled(command.is_enabled())
         return action
 
     def __del__(self):

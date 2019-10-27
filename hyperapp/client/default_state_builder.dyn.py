@@ -19,8 +19,11 @@ class ThisModule(ClientModule):
         tab_view_ref = self._ref_registry.register_object(tab_view)
         menu_bar = htypes.menu_bar.menu_bar()
         menu_bar_ref = self._ref_registry.register_object(menu_bar)
+        command_pane = htypes.command_pane.command_pane()
+        command_pane_ref = self._ref_registry.register_object(command_pane)
         window_state = htypes.window.window(
             menu_bar_ref=menu_bar_ref,
+            command_pane_ref=command_pane_ref,
             central_view_ref=tab_view_ref,
             size=htypes.window.size(1000, 800),
             pos=htypes.window.pos(500, 100))
