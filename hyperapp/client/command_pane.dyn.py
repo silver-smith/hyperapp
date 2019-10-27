@@ -49,7 +49,6 @@ class CommandPane(QtWidgets.QDockWidget):
             if command.kind != 'object':
                 continue
             button = self._make_button(command)
-            button.pressed.connect(lambda command=command: asyncio.ensure_future(command.run()))
             self._layout.insertWidget(idx, button)  # must be inserted before spacing
             self._dir_buttons.append(button)
             idx += 1
@@ -59,12 +58,11 @@ class CommandPane(QtWidgets.QDockWidget):
             button.deleteLater()
         self._element_buttons.clear()
         for command in command_list:
-            button = self._make_button(command)
-            button.pressed.connect(lambda command=command: asyncio.ensure_future(command.run()))
+            button = self._make_button(command, set_shortcuts=True)
             self._layout.addWidget(button)
             self._element_buttons.append(button)
 
-    def _make_button(self, command):
+    def _make_button(self, command, set_shortcuts=False):
         resource = self._resource_resolver.resolve(command.resource_key, self._locale)
         if resource:
             if resource.shortcut_list:
@@ -78,6 +76,12 @@ class CommandPane(QtWidgets.QDockWidget):
         button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(description)
         button.setEnabled(command.is_enabled())
+        button.pressed.connect(lambda command=command: asyncio.ensure_future(command.run()))
+        if set_shortcuts and resource:
+            if resource.shortcut_list:
+                button.setShortcut(resource.shortcut_list[0])
+            if resource.is_default:
+                button.setShortcut('Return')
         return button
 
     def __del__(self):
