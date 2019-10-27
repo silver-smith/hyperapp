@@ -22,6 +22,12 @@ class RecordView(QtWidgets.QWidget):
     def get_title(self):
         return self._object.get_title()
 
+    def get_widget(self):
+        return self
+
+    def ensure_has_focus(self):
+        self.setFocus()
+
     def setVisible(self, visible):
         super().setVisible(visible)
         if visible:
