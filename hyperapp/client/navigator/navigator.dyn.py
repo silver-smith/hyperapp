@@ -30,26 +30,25 @@ class ThisModule(ClientModule):
     async def _resolve_data(self, state, command_registry, view_opener, async_ref_resolver, object_registry, view_producer_registry):
         piece = await async_ref_resolver.resolve_ref_to_object(state.current_piece_ref)
         object = object_registry.resolve(piece)
-        command_registry.set_commands('global', list(self._get_global_commands(view_opener)))
-        command_registry.set_commands('object', list(self._get_object_commands(view_opener, object)))
+        command_registry.set_commands('global', list(self._get_global_commands(command_registry, view_opener)))
+        command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
         return (await view_producer_registry.produce_view(piece, object))
 
-    def _get_global_commands(self, view_opener):
+    def _get_global_commands(self, command_registry, view_opener):
         for command in self._module_command_registry.get_all_commands():
-            yield FreeFnCommand.from_command(command, partial(self._run_command, view_opener, command))
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command))
 
-    def _get_object_commands(self, view_opener, object):
+    def _get_object_commands(self, command_registry, view_opener, object):
         for command in object.get_command_list():
             if command.kind != 'object':
                 continue
-            yield FreeFnCommand.from_command(command, partial(self._run_command, view_opener, command))
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command))
 
-    async def _run_command(self, view_opener, command):
+    async def _run_command(self, command_registry, view_opener, command):
         piece = await command.run()
-        if piece is not None:
-            view = await self._make_view(piece)
-            view_opener.open(view)
-
-    async def _make_view(self, piece):
+        if piece is None:
+            return
         object = await self._object_registry.resolve_async(piece)
-        return (await self._view_producer_registry.produce_view(piece, object))
+        view = await self._view_producer_registry.produce_view(piece, object)
+        view_opener.open(view)
+        command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
