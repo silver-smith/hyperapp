@@ -86,9 +86,9 @@ class ThisModule(ClientModule):
             yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command, current_item_key))
 
     def _get_layout_commands(self, command_registry, view_opener):
-        yield FreeFnCommand('backward', 'layout', resource_key_t(__module_ref__, ['navigator', 'backward']), True,
+        yield FreeFnCommand('backward', 'layout', resource_key_t(__module_ref__, ['global', 'command', 'backward']), True,
                             partial(self._go_backward, command_registry, view_opener))
-        yield FreeFnCommand('forward', 'layout', resource_key_t(__module_ref__, ['navigator', 'forward']), True,
+        yield FreeFnCommand('forward', 'layout', resource_key_t(__module_ref__, ['global', 'command', 'forward']), True,
                             partial(self._go_forward, command_registry, view_opener))
 
     async def _run_command(self, command_registry, view_opener, command, *args, **kw):

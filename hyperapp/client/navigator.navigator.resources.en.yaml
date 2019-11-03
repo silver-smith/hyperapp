@@ -1,12 +1,12 @@
-NavigatorView:
+module:client.navigator.navigator:global:
   commands:
-    go_back:
+    backward:
       text: Go back
       description: Go backward to previous page
       shortcuts:
       - Escape
       - Alt+Left
-    go_forward:
+    forward:
       text: Go forward
       description: Go forward to next page
       shortcuts:
