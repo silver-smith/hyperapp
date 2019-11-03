@@ -16,7 +16,7 @@ _log = logging.getLogger(__name__)
 class _History:
 
     def __init__(self):
-        self._backward_piece_list = []
+        self._backward_piece_list = []  # last element is current piece
         self._forward_piece_list = []
 
     def append(self, piece):
