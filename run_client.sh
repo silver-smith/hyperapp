@@ -6,6 +6,8 @@ venv=${VENV:-$HOME/venv}
 
 export LOG_CFG=client-file
 
+rm /tmp/client*.log
+
 cd $(dirname $0)
 
 ./run_client.py
