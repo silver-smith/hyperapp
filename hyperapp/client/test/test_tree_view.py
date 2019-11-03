@@ -28,6 +28,8 @@ code_module_list = [
     'common.resource_registry',
     'common.resource_resolver',
     'client.module_command_registry',
+    'client.async_ref_resolver',
+    'client.async_capsule_registry',
     'client.view_registry',
     'client.view',
     'client.items_view',
