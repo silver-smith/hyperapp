@@ -16,14 +16,22 @@ _log = logging.getLogger(__name__)
 class _History:
 
     def __init__(self):
-        self._piece_list = []
+        self._backward_piece_list = []
+        self._forward_piece_list = []
 
     def append(self, piece):
-        self._piece_list.append(piece)
+        self._backward_piece_list.append(piece)
+        self._forward_piece_list.clear()
 
-    def pop_back(self):
-        del self._piece_list[-1]
-        return self._piece_list[-1]
+    def move_backward(self):
+        current_piece = self._backward_piece_list.pop()
+        self._forward_piece_list.append(current_piece)
+        return self._backward_piece_list[-1]
+
+    def move_forward(self):
+        current_piece = self._forward_piece_list.pop()
+        self._backward_piece_list.append(current_piece)
+        return current_piece
 
 
 class _CurrentItemObserver:
@@ -60,6 +68,7 @@ class ThisModule(ClientModule):
         command_registry.set_commands('layout', list(self._get_layout_commands(command_registry, view_opener)))
         command_registry.set_commands('global', list(self._get_global_commands(command_registry, view_opener)))
         command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
+        self._history.append(piece)
         return (await view_producer_registry.produce_view(piece, object))
 
     def _get_global_commands(self, command_registry, view_opener):
@@ -77,7 +86,10 @@ class ThisModule(ClientModule):
             yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command, current_item_key))
 
     def _get_layout_commands(self, command_registry, view_opener):
-        yield FreeFnCommand('back', 'layout', resource_key_t(__module_ref__, ['navigator', 'back']), True, partial(self._go_back, command_registry, view_opener))
+        yield FreeFnCommand('backward', 'layout', resource_key_t(__module_ref__, ['navigator', 'backward']), True,
+                            partial(self._go_backward, command_registry, view_opener))
+        yield FreeFnCommand('forward', 'layout', resource_key_t(__module_ref__, ['navigator', 'forward']), True,
+                            partial(self._go_forward, command_registry, view_opener))
 
     async def _run_command(self, command_registry, view_opener, command, *args, **kw):
         piece = await command.run(*args, **kw)
@@ -96,9 +108,16 @@ class ThisModule(ClientModule):
     def _update_element_commands(self, command_registry, view_opener, object, current_item_key):
         command_registry.set_commands('element', list(self._get_element_commands(command_registry, view_opener, object, current_item_key)))
 
-    async def _go_back(self, command_registry, view_opener):
+    async def _go_backward(self, command_registry, view_opener):
         try:
-            piece = self._history.pop_back()
+            piece = self._history.move_backward()
+        except IndexError:
+            return
+        await self._open_piece(piece, command_registry, view_opener)
+
+    async def _go_forward(self, command_registry, view_opener):
+        try:
+            piece = self._history.move_forward()
         except IndexError:
             return
         await self._open_piece(piece, command_registry, view_opener)
