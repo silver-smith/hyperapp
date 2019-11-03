@@ -24,6 +24,7 @@ class _History:
         self._forward_piece_list.clear()
 
     def move_backward(self):
+        # Move current piece to forward list and return previous one
         current_piece = self._backward_piece_list.pop()
         self._forward_piece_list.append(current_piece)
         return self._backward_piece_list[-1]
