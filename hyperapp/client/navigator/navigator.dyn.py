@@ -3,6 +3,7 @@
 import logging
 from functools import partial
 
+from hyperapp.common.htypes import resource_key_t
 from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.module import ClientModule
 
@@ -10,6 +11,19 @@ from . import htypes
 from .view import View
 
 _log = logging.getLogger(__name__)
+
+
+class _History:
+
+    def __init__(self):
+        self._piece_list = []
+
+    def append(self, piece):
+        self._piece_list.append(piece)
+
+    def pop_back(self):
+        del self._piece_list[-1]
+        return self._piece_list[-1]
 
 
 class _CurrentItemObserver:
@@ -31,6 +45,7 @@ class ThisModule(ClientModule):
         self._object_registry = services.object_registry
         self._view_producer_registry = services.view_producer_registry
         self._module_command_registry = services.module_command_registry
+        self._history = _History()
         services.view_registry.register_type(
             htypes.navigator.navigator,
             self._resolve_data,
@@ -42,6 +57,7 @@ class ThisModule(ClientModule):
     async def _resolve_data(self, state, command_registry, view_opener, async_ref_resolver, object_registry, view_producer_registry):
         piece = await async_ref_resolver.resolve_ref_to_object(state.current_piece_ref)
         object = object_registry.resolve(piece)
+        command_registry.set_commands('layout', list(self._get_layout_commands(command_registry, view_opener)))
         command_registry.set_commands('global', list(self._get_global_commands(command_registry, view_opener)))
         command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
         return (await view_producer_registry.produce_view(piece, object))
@@ -60,10 +76,17 @@ class ThisModule(ClientModule):
         for command in object.get_item_command_list(current_item_key):
             yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command, current_item_key))
 
+    def _get_layout_commands(self, command_registry, view_opener):
+        yield FreeFnCommand('back', 'layout', resource_key_t(__module_ref__, ['navigator', 'back']), True, partial(self._go_back, command_registry, view_opener))
+
     async def _run_command(self, command_registry, view_opener, command, *args, **kw):
         piece = await command.run(*args, **kw)
         if piece is None:
             return
+        await self._open_piece(piece, command_registry, view_opener)
+        self._history.append(piece)
+
+    async def _open_piece(self, piece, command_registry, view_opener):
         object = await self._object_registry.resolve_async(piece)
         self._current_item_observer = observer = _CurrentItemObserver(self, command_registry, view_opener, object)
         view = await self._view_producer_registry.produce_view(piece, object, observer)
@@ -72,3 +95,10 @@ class ThisModule(ClientModule):
 
     def _update_element_commands(self, command_registry, view_opener, object, current_item_key):
         command_registry.set_commands('element', list(self._get_element_commands(command_registry, view_opener, object, current_item_key)))
+
+    async def _go_back(self, command_registry, view_opener):
+        try:
+            piece = self._history.pop_back()
+        except IndexError:
+            return
+        await self._open_piece(piece, command_registry, view_opener)
