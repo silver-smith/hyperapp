@@ -6,7 +6,7 @@ module:client.log_viewer:ThisModule:
       shortcuts:
       - Alt+Ctrl+S
 
-type:log_viewer.log_viewer:
+module:client.log_viewer:SessionLogs:
   columns:
     name:
       text: Name
@@ -18,7 +18,7 @@ type:log_viewer.log_viewer:
       text: Open record details
       shortcuts: [D]
     open:
-      text: Open params viewer
+      text: Params
       is_default: true
   layout:
     view:
@@ -26,7 +26,7 @@ type:log_viewer.log_viewer:
       value:
         command_id: open
 
-type:log_viewer.log_record:
+module:client.log_viewer:LogRecord:
   columns:
     name:
       text: Name
