@@ -29,9 +29,9 @@ class _History:
         return self._backward_piece_list[-1]
 
     def move_forward(self):
-        current_piece = self._forward_piece_list.pop()
-        self._backward_piece_list.append(current_piece)
-        return current_piece
+        piece = self._forward_piece_list.pop()
+        self._backward_piece_list.append(piece)
+        return piece
 
 
 class _CurrentItemObserver:
