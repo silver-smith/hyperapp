@@ -105,6 +105,7 @@ class ThisModule(ClientModule):
         view = await self._view_producer_registry.produce_view(piece, object, observer)
         view_opener.open(view)
         command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
+        command_registry.set_commands('element', [])
 
     def _update_element_commands(self, command_registry, view_opener, object, current_item_key):
         command_registry.set_commands('element', list(self._get_element_commands(command_registry, view_opener, object, current_item_key)))
