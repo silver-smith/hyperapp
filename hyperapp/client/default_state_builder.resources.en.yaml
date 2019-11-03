@@ -1,0 +1,7 @@
+module:client.default_state_builder:ThisModule:
+  commands:
+    open_layout:
+      text: Open layout
+      description: Open default layout in data viewer
+      shortcuts:
+      - Alt+Ctrl+Y
