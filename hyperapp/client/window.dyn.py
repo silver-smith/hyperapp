@@ -18,14 +18,25 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
 
-class Window(View, QtWidgets.QMainWindow):
+async def _create_view(view_resolver, state_ref, command_registry):
+    handler = await view_resolver.resolve(state_ref)
+    return (await handler.create_view(command_registry))
 
-    @classmethod
-    async def from_data(cls, state, command_registry, view_resolver):
-        menu_bar = await view_resolver.resolve(state.menu_bar_ref, command_registry)
-        command_pane = await view_resolver.resolve(state.command_pane_ref, command_registry)
-        central_view = await view_resolver.resolve(state.central_view_ref, command_registry)
-        return cls(menu_bar, command_pane, central_view, state.size, state.pos)
+    
+class WindowHandler:
+
+    def __init__(self, state, view_resolver):
+        self._state = state
+        self._view_resolver = view_resolver
+
+    async def create_view(self, command_registry, view_opener=None):
+        menu_bar = await _create_view(self._view_resolver, self._state.menu_bar_ref, command_registry)
+        command_pane = await _create_view(self._view_resolver, self._state.command_pane_ref, command_registry)
+        central_view = await _create_view(self._view_resolver, self._state.central_view_ref, command_registry)
+        return Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
+
+
+class Window(View, QtWidgets.QMainWindow):
 
     def __init__(self, menu_bar, command_pane, central_view, size=None, pos=None):
         QtWidgets.QMainWindow.__init__(self)
@@ -99,4 +110,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.window.window, Window.from_data, services.view_resolver)
+        services.view_registry.register_type(htypes.window.window, WindowHandler, services.view_resolver)

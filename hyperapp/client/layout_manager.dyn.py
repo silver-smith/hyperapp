@@ -94,7 +94,8 @@ class LayoutManager:
     async def build_default_layout(self, app):
         state = self._default_state_builder()
         for window_state in state:
-            window = await self._view_registry.resolve_async(window_state, self._command_registry)
+            window_handler = await self._view_registry.resolve_async(window_state)
+            window = await window_handler.create_view(self._command_registry)
             window.show()
             self._window_list.append(window)
         # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)

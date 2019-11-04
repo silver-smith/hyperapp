@@ -1,3 +1,4 @@
+import abc
 import logging
 from hyperapp.client.module import ClientModule
 from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
@@ -26,6 +27,13 @@ class ViewProducerRegistry:
             except NotApplicable:
                 pass
         raise RuntimeError("No view is known to support object {}".format(object))
+
+
+class ViewHandler(metaclass=abc.ABCMeta):
+
+    @abc.abstractmethod
+    async def create_view(self, command_registry, view_opener=None):
+        pass
 
 
 class ThisModule(ClientModule):

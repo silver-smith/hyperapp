@@ -11,6 +11,27 @@ from .view import View
 log = logging.getLogger(__name__)
 
 
+class TabViewHandler:
+
+    def __init__(self, state, view_resolver):
+        self._state = state
+        self._view_resolver = view_resolver
+
+    async def create_view(self, command_registry, view_opener=None):
+        children = []
+        opener_list = []
+        for idx, tab_ref in enumerate(self._state.tabs):
+            opener = _ViewOpener(idx)
+            handler = await self._view_resolver.resolve(tab_ref)
+            child = await handler.create_view(command_registry, opener)
+            opener_list.append(opener)
+            children.append(child)
+        tab_view = TabView(children, self._state.current_tab)
+        for opener in opener_list:
+            opener.set_tab_view(tab_view)
+        return tab_view
+
+
 class _ViewOpener:
 
     def __init__(self, tab_index):
@@ -25,20 +46,6 @@ class _ViewOpener:
 
 
 class TabView(QtWidgets.QTabWidget, View):
-
-    @classmethod
-    async def from_data(cls, state, command_registry, view_resolver):
-        children = []
-        opener_list = []
-        for idx, tab_ref in enumerate(state.tabs):
-            opener = _ViewOpener(idx)
-            child = await view_resolver.resolve(tab_ref, command_registry, opener)
-            opener_list.append(opener)
-            children.append(child)
-        tab_view = cls(children, state.current_tab)
-        for opener in opener_list:
-            opener.set_tab_view(tab_view)
-        return tab_view
 
     def __init__(self, children, current_tab):
         QtWidgets.QTabWidget.__init__(self)
@@ -64,4 +71,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.tab_view.tab_view, TabView.from_data, services.view_resolver)
+        services.view_registry.register_type(htypes.tab_view.tab_view, TabViewHandler, services.view_resolver)

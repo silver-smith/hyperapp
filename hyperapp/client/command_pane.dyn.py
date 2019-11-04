@@ -12,11 +12,16 @@ from . import htypes
 log = logging.getLogger(__name__)
 
 
-class CommandPane(QtWidgets.QDockWidget):
+class CommandPaneHandler:
 
-    @classmethod
-    async def from_data(cls, state, command_registry, resource_resolver):
-        return cls(resource_resolver, command_registry)
+    def __init__(self, state, resource_resolver):
+        self._resource_resolver = resource_resolver
+
+    async def create_view(self, command_registry, view_opener=None):
+        return CommandPane(self._resource_resolver, command_registry)
+
+
+class CommandPane(QtWidgets.QDockWidget):
 
     def __init__(self, resource_resolver, command_registry):
         QtWidgets.QDockWidget.__init__(self, 'Commands')
@@ -92,4 +97,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.command_pane.command_pane, CommandPane.from_data, services.resource_resolver)
+        services.view_registry.register_type(htypes.command_pane.command_pane, CommandPaneHandler, services.resource_resolver)
