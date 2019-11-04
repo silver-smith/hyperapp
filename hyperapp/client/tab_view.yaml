@@ -1,6 +1,7 @@
 import:
   types:
     tab_view:
-      - tab_view
+    - tab_view
   code:
-    - client.view
+  - client.view
+  - client.view_registry

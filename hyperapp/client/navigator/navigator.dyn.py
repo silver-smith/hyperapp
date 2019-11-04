@@ -9,6 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
+from .view_registry import Item, ViewHandler
 
 _log = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ class _CurrentItemObserver:
         self._module._update_element_commands(self._command_registry, self._view_opener, self._object, current_item_key)
 
 
-class NavigatorHandler:
+class NavigatorHandler(ViewHandler):
 
     def __init__(self, state, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
         self._state = state
@@ -65,6 +66,10 @@ class NavigatorHandler:
         command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
         self._history.append(piece)
         return (await self._view_producer_registry.produce_view(piece, object))
+
+    async def visual_items(self):
+        piece = await self._async_ref_resolver.resolve_ref_to_object(self._state.current_piece_ref)
+        return ('Navigator', {(): [Item(0, 'current', str(piece))]})
 
     def _get_global_commands(self, command_registry, view_opener):
         for command in self._module_command_registry.get_all_commands():

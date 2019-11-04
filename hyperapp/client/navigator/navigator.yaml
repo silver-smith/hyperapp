@@ -4,3 +4,4 @@ import:
     - navigator
   code:
   - client.view
+  - client.view_registry

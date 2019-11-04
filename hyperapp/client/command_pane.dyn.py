@@ -7,18 +7,23 @@ import weakref
 from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.module import ClientModule
+
 from . import htypes
+from .view_registry import ViewHandler
 
 log = logging.getLogger(__name__)
 
 
-class CommandPaneHandler:
+class CommandPaneHandler(ViewHandler):
 
     def __init__(self, state, resource_resolver):
         self._resource_resolver = resource_resolver
 
     async def create_view(self, command_registry, view_opener=None):
         return CommandPane(self._resource_resolver, command_registry)
+
+    async def visual_items(self):
+        return ('CommandPane', {})
 
 
 class CommandPane(QtWidgets.QDockWidget):

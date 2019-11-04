@@ -14,5 +14,5 @@ import:
     - size
     - pos
     - window
-    data_viewer:
-    - data_viewer
+    layout_viewer:
+    - layout_viewer

@@ -6,18 +6,23 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.util import make_action, make_async_action
 from hyperapp.client.command import Command, WindowCommand
 from hyperapp.client.module import ClientModule
+
 from . import htypes
+from .view_registry import ViewHandler
 
 log = logging.getLogger(__name__)
 
 
-class MenuBarHandler:
+class MenuBarHandler(ViewHandler):
 
     def __init__(self, state, resource_resolver):
         self._resource_resolver = resource_resolver
 
     async def create_view(self, command_registry, view_opener=None):
         return MenuBar(self._resource_resolver, command_registry)
+
+    async def visual_items(self):
+        return ('MenuBar', {})
 
 
 class MenuBar(QtWidgets.QMenuBar):

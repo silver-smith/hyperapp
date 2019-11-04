@@ -5,13 +5,15 @@ from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
+
 from . import htypes
 from .view import View
+from .view_registry import Item, ViewHandler
 
 log = logging.getLogger(__name__)
 
 
-class TabViewHandler:
+class TabViewHandler(ViewHandler):
 
     def __init__(self, state, view_resolver):
         self._state = state
@@ -30,6 +32,16 @@ class TabViewHandler:
         for opener in opener_list:
             opener.set_tab_view(tab_view)
         return tab_view
+
+    async def visual_items(self):
+        items = []
+        sub_items = {}
+        for idx, tab_ref in enumerate(self._state.tabs):
+            handler = await self._view_resolver.resolve(tab_ref)
+            name, tab_items = await handler.visual_items()
+            items.append(Item(idx, f'tab#{idx}', name))
+            sub_items = {(idx,) + key: value for key, value in tab_items.items()}
+        return ('TabView', {(): items, **sub_items})
 
 
 class _ViewOpener:

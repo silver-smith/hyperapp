@@ -6,8 +6,10 @@ from hyperapp.common.util import is_list_inst
 from hyperapp.client.util import DEBUG_FOCUS, call_after
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
+
 from . import htypes
 from .view import View
+from .view_registry import Item, ViewHandler
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)
@@ -22,8 +24,12 @@ async def _create_view(view_resolver, state_ref, command_registry):
     handler = await view_resolver.resolve(state_ref)
     return (await handler.create_view(command_registry))
 
+async def _visual_items(view_resolver, state_ref):
+    handler = await view_resolver.resolve(state_ref)
+    return (await handler.visual_items())
+
     
-class WindowHandler:
+class WindowHandler(ViewHandler):
 
     def __init__(self, state, view_resolver):
         self._state = state
@@ -34,6 +40,20 @@ class WindowHandler:
         command_pane = await _create_view(self._view_resolver, self._state.command_pane_ref, command_registry)
         central_view = await _create_view(self._view_resolver, self._state.central_view_ref, command_registry)
         return Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
+
+    async def visual_items(self):
+        menu_bar_value, menu_bar_items = await _visual_items(self._view_resolver, self._state.menu_bar_ref)
+        command_pane_value, command_pane_items = await _visual_items(self._view_resolver, self._state.command_pane_ref)
+        central_view_value, central_view_items = await _visual_items(self._view_resolver, self._state.central_view_ref)
+        menu_bar_sub_items = {(0,) + key: value for key, value in menu_bar_items.items()}
+        command_pane_sub_items = {(1,) + key: value for key, value in command_pane_items.items()}
+        central_view_sub_items = {(2,) + key: value for key, value in central_view_items.items()}
+        root_items = {(): [
+            Item(0, 'menu_bar', menu_bar_value),
+            Item(1, 'command_pane', command_pane_value),
+            Item(2, 'central_view', central_view_value),
+            ]}
+        return ('Window', {**root_items, **menu_bar_sub_items, **command_pane_sub_items, **central_view_sub_items})
 
 
 class Window(View, QtWidgets.QMainWindow):

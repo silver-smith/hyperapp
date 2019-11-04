@@ -2,3 +2,5 @@ import:
   types:
     command_pane:
     - command_pane
+  code:
+  - client.view_registry

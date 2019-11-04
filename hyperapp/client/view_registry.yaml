@@ -1,3 +1,8 @@
 import:
+  types:
+    layout_viewer:
+    - layout_viewer
   code:
     - client.async_capsule_registry
+    - client.column
+    - client.tree_object

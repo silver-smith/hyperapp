@@ -33,5 +33,5 @@ class ThisModule(ClientModule):
     @command('open_layout')
     async def open_layout(self):
         [window_state] = self._build_default_state()
-        state_ref = self._ref_registry.register_object(window_state)
-        return htypes.data_viewer.data_viewer(data_ref=state_ref)
+        window_ref = self._ref_registry.register_object(window_state)
+        return htypes.layout_viewer.layout_viewer(root_ref=window_ref)

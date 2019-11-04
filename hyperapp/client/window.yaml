@@ -1,9 +1,10 @@
 import:
   types:
     window:
-      - window
-      - pos
-      - size
+    - window
+    - pos
+    - size
   code:
-    - client.view
-    - client.tab_view
+  - client.view
+  - client.view_registry
+  - client.tab_view
