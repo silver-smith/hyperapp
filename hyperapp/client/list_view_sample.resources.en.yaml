@@ -5,6 +5,7 @@ module:client.list_view_sample:ThisModule:
       description: Open sample list view
       shortcuts:
       - Alt+Ctrl+L
+
 type:list_view_sample.list_view_sample_object:
   columns:
     idx:
@@ -12,6 +13,8 @@ type:list_view_sample.list_view_sample_object:
       description: Index, key field
     column_1:
       text: Column 1
+
+module:client.list_view_sample:SampleObject:
   commands:
     open:
       text: Open
