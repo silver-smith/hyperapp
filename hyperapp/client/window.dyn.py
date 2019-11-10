@@ -19,15 +19,6 @@ LOCALE = 'en'
 DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
-
-async def _create_view(view_resolver, state_ref, command_registry):
-    handler = await view_resolver.resolve(state_ref)
-    return (await handler.create_view(command_registry))
-
-async def _visual_tree(view_resolver, state_ref):
-    handler = await view_resolver.resolve(state_ref)
-    return (await handler.visual_tree())
-
     
 class WindowHandler(ViewHandler):
 
@@ -35,17 +26,31 @@ class WindowHandler(ViewHandler):
         super().__init__()
         self._state = state
         self._view_resolver = view_resolver
+        self._menu_bar_handler = None
+        self._handlers_created = False
+        self._command_pane_handler = None
+        self._central_view_handler = None
+        self._menu_bar_handler = None
+
+    async def _ensure_handlers_created(self):
+        if not self._handlers_created:
+            self._menu_bar_handler = await self._view_resolver.resolve(self._state.menu_bar_ref)
+            self._command_pane_handler = await self._view_resolver.resolve(self._state.command_pane_ref)
+            self._central_view_handler = await self._view_resolver.resolve(self._state.central_view_ref)
+            self._handlers_created = True
 
     async def create_view(self, command_registry, view_opener=None):
-        menu_bar = await _create_view(self._view_resolver, self._state.menu_bar_ref, command_registry)
-        command_pane = await _create_view(self._view_resolver, self._state.command_pane_ref, command_registry)
-        central_view = await _create_view(self._view_resolver, self._state.central_view_ref, command_registry)
+        await self._ensure_handlers_created()
+        menu_bar = await self._menu_bar_handler.create_view(command_registry)
+        command_pane = await self._command_pane_handler.create_view(command_registry)
+        central_view = await self._central_view_handler.create_view(command_registry)
         return Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
 
     async def visual_tree(self):
-        menu_bar = await _visual_tree(self._view_resolver, self._state.menu_bar_ref)
-        command_pane = await _visual_tree(self._view_resolver, self._state.command_pane_ref)
-        central_view = await _visual_tree(self._view_resolver, self._state.central_view_ref)
+        await self._ensure_handlers_created()
+        menu_bar = await self._menu_bar_handler.visual_tree()
+        command_pane = await self._command_pane_handler.visual_tree()
+        central_view = await self._central_view_handler.visual_tree()
         menu_bar_sub_items = {(0,) + key: value for key, value in menu_bar.items.items()}
         command_pane_sub_items = {(1,) + key: value for key, value in command_pane.items.items()}
         central_view_sub_items = {(2,) + key: value for key, value in central_view.items.items()}

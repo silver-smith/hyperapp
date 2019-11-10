@@ -44,12 +44,15 @@ class LayoutViewer(TreeObject):
 
     @classmethod
     async def from_state(cls, state, view_resolver):
-        path2item_list = await cls._load_items(state.root_ref, view_resolver)
-        return cls(path2item_list)
+        handler = await view_resolver.resolve(state.root_ref)
+        path2item_list = await cls._load_items(handler)
+        return cls(handler, path2item_list, view_resolver)
 
-    def __init__(self, path2item_list):
+    def __init__(self, handler, path2item_list, view_resolver):
         super().__init__()
+        self._handler = handler
         self._path2item_list = path2item_list
+        self._view_resolver = view_resolver
 
     def get_title(self):
         return "Layout"
@@ -84,8 +87,7 @@ class LayoutViewer(TreeObject):
         self._distribute_fetch_results(path, item_list)
 
     @staticmethod
-    async def _load_items(root_ref, view_resolver):
-        handler = await view_resolver.resolve(root_ref)
+    async def _load_items(handler):
         tree = await handler.visual_tree()
         sub_items = {(0,) + key: value for key, value in tree.items.items()}
         return {(): [Item(0, 'root', tree.name)], **sub_items}
