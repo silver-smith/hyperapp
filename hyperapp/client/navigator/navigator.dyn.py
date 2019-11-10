@@ -3,7 +3,6 @@
 import logging
 from functools import partial
 
-from hyperapp.common.htypes import resource_key_t
 from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
