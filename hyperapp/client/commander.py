@@ -64,7 +64,7 @@ class BoundCommand(Command):
     async def run(self, *args, **kw):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
-        log.debug('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, self._kw, args, kw)
+        log.info('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, self._kw, args, kw)
         if asyncio.iscoroutinefunction(self._class_method):
             return (await self._class_method(inst, *(*self._args, *args), **{**self._kw, **kw}))
         else:
@@ -94,7 +94,7 @@ class FreeFnCommand(Command):
         return 'FreeFnCommand(%r/%r -> %r)' % (self.id, self.kind, self._fn)
 
     async def run(self, *args, **kw):
-        log.debug('FreefnCommand.run: %s, %r/%r, (%s, %s)', self, self.id, self.kind, args, kw)
+        log.info('FreefnCommand.run: %s, %r/%r, (%s, %s)', self, self.id, self.kind, args, kw)
         return (await self._fn(*args, **kw))
 
 
