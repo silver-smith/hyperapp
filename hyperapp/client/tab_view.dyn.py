@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 class TabViewHandler(ViewHandler):
 
     def __init__(self, state, view_resolver):
+        super().__init__()
         self._state = state
         self._view_resolver = view_resolver
 

@@ -2,6 +2,7 @@ import abc
 import logging
 from collections import namedtuple
 
+from hyperapp.client.commander import Commander
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -80,7 +81,10 @@ class LayoutViewer(TreeObject):
         return {(): [Item(0, 'root', tree.name)], **sub_items}
         
 
-class ViewHandler(metaclass=abc.ABCMeta):
+class ViewHandler(Commander, metaclass=abc.ABCMeta):
+
+    def __init__(self):
+        super().__init__(commands_kind='layout')
 
     @abc.abstractmethod
     async def create_view(self, command_registry, view_opener=None):

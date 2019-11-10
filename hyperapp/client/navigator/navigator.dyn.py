@@ -5,6 +5,7 @@ from functools import partial
 
 from hyperapp.common.htypes import resource_key_t
 from hyperapp.client.commander import FreeFnCommand
+from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -51,6 +52,7 @@ class _CurrentItemObserver:
 class NavigatorHandler(ViewHandler):
 
     def __init__(self, state, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
+        super().__init__()
         self._state = state
         self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry
@@ -86,10 +88,8 @@ class NavigatorHandler(ViewHandler):
             yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command, current_item_key))
 
     def _get_layout_commands(self, command_registry, view_opener):
-        yield FreeFnCommand('backward', 'layout', resource_key_t(__module_ref__, ['global', 'command', 'backward']), True,
-                            partial(self._go_backward, command_registry, view_opener))
-        yield FreeFnCommand('forward', 'layout', resource_key_t(__module_ref__, ['global', 'command', 'forward']), True,
-                            partial(self._go_forward, command_registry, view_opener))
+        yield self._go_backward.partial(command_registry, view_opener)
+        yield self._go_forward.partial(command_registry, view_opener)
 
     async def _run_command(self, command_registry, view_opener, command, *args, **kw):
         piece = await command.run(*args, **kw)
@@ -109,6 +109,7 @@ class NavigatorHandler(ViewHandler):
     def _update_element_commands(self, command_registry, view_opener, object, current_item_key):
         command_registry.set_commands('element', list(self._get_element_commands(command_registry, view_opener, object, current_item_key)))
 
+    @command('go_backward')
     async def _go_backward(self, command_registry, view_opener):
         try:
             piece = self._history.move_backward()
@@ -116,6 +117,7 @@ class NavigatorHandler(ViewHandler):
             return
         await self._open_piece(piece, command_registry, view_opener)
 
+    @command('go_forward')
     async def _go_forward(self, command_registry, view_opener):
         try:
             piece = self._history.move_forward()

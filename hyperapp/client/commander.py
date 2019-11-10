@@ -48,14 +48,15 @@ class Command(metaclass=abc.ABCMeta):
 
 class BoundCommand(Command):
 
-    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None):
+    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None, kw=None):
         Command.__init__(self, id, kind, resource_key, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
+        self._kw = kw or {}
 
     def __repr__(self):
-        return 'BoundCommand(%r/%r -> %r, args=%r)' % (self.id, self.kind, self._inst_wr, self._args)
+        return 'BoundCommand(%r/%r -> %r, (%r, %r))' % (self.id, self.kind, self._inst_wr, self._args, self._kw)
 
     def get_view(self):
         return self._inst_wr()
@@ -63,16 +64,20 @@ class BoundCommand(Command):
     async def run(self, *args, **kw):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
-        log.debug('BoundCommand.run: %s, %r/%r, %r, (%s/%s, %s)', self, self.id, self.kind, inst, self._args, args, kw)
+        log.debug('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, self._kw, args, kw)
         if asyncio.iscoroutinefunction(self._class_method):
-            return (await self._class_method(inst, *(self._args + args), **kw))
+            return (await self._class_method(inst, *(*self._args, *args), **{**self._kw, **kw}))
         else:
-            return self._class_method(inst, *(self._args + args), **kw)
+            return self._class_method(inst, *(*self._args, *args), **{**self._kw, **kw})
 
     def with_wrapper(self, wrapper):
         async def fn(*args, **kw):
             return (await wrapper(self.run(*args, **kw)))
         return FreeFnCommand(self.id, self.kind, self.resource_key, self.enabled, fn)
+
+    def partial(self, *args, **kw):
+        return BoundCommand(self.id, self.kind, self.resource_key, self.enabled, self._class_method, self._inst_wr,
+                            (*self._args, *args), {**self._kw, **kw})
 
 
 class FreeFnCommand(Command):
