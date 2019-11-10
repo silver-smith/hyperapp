@@ -40,9 +40,13 @@ class TabViewHandler(ViewHandler):
         for idx, tab_ref in enumerate(self._state.tabs):
             handler = await self._view_resolver.resolve(tab_ref)
             child = await handler.visual_tree()
-            items.append(Item(idx, f'tab#{idx}', child.name))
+            items.append(Item(idx, f'tab#{idx}', child.name, [self._duplicate_tab.partial(idx)]))
             sub_items = {(idx,) + key: value for key, value in child.items.items()}
         return VisualTree('TabView', {(): items, **sub_items})
+
+    @command('duplicate_tab')
+    async def _duplicate_tab(self, tab_idx):
+        assert 0
 
 
 class _ViewOpener:

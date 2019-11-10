@@ -36,7 +36,7 @@ class ViewProducerRegistry:
         raise RuntimeError("No view is known to support object {}".format(object))
 
 
-Item = namedtuple('Item', 'idx name value')
+Item = namedtuple('Item', 'idx name value commands', defaults=[None])
 VisualTree = namedtuple('VisualTree', 'name items')
 
 
@@ -63,6 +63,16 @@ class LayoutViewer(TreeObject):
     @property
     def key_attribute(self):
         return 'idx'
+
+    def get_item_command_list(self, item_path):
+        if not item_path:
+            return []
+        item_list = self._path2item_list.get(tuple(item_path[:-1]), [])
+        try:
+            item = next(i for i in item_list if i.idx == item_path[-1])
+        except StopIteration:
+            return []
+        return item.commands or []
 
     async def fetch_items(self, path):
         path = tuple(path)
