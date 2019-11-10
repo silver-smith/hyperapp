@@ -157,14 +157,6 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
     def get_object(self):
         return self._object
 
-    def get_command_list(self, kinds):
-        command_list = View.get_command_list(self, kinds)
-        filtered_command_list = list(filter(lambda command: command.kind != 'element', command_list))
-        if not kinds or 'element' in kinds:
-            return filtered_command_list + self._elt_commands
-        else:
-            return filtered_command_list
-
     def add_observer(self, observer):
         self._observers.add(observer)
 
