@@ -40,16 +40,16 @@ class MenuBar(QtWidgets.QMenuBar):
             self._update_menu(self._file_menu, command_list)
         if kind == 'object':
             self._update_menu(self._dir_menu, command_list)
-        if kind == 'layout':
-            self._update_menu(self._layout_menu, command_list)
+        if kind == 'view':
+            self._update_menu(self._view_menu, command_list)
 
     def _build(self):
         self._file_menu = QtWidgets.QMenu('&File')
         self._dir_menu = QtWidgets.QMenu('&Dir')
-        self._layout_menu = QtWidgets.QMenu('La&yout')
+        self._view_menu = QtWidgets.QMenu('La&yout')
         self.addMenu(self._file_menu)
         self.addMenu(self._dir_menu)
-        self.addMenu(self._layout_menu)
+        self.addMenu(self._view_menu)
 
     def _update_menu(self, menu, command_list):
         menu.clear()

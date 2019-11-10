@@ -62,7 +62,7 @@ class NavigatorHandler(ViewHandler):
     async def create_view(self, command_registry, view_opener=None):
         piece = await self._async_ref_resolver.resolve_ref_to_object(self._state.current_piece_ref)
         object = self._object_registry.resolve(piece)
-        command_registry.set_commands('layout', list(self._get_layout_commands(command_registry, view_opener)))
+        command_registry.set_commands('view', list(self._get_view_commands(command_registry, view_opener)))
         command_registry.set_commands('global', list(self._get_global_commands(command_registry, view_opener)))
         command_registry.set_commands('object', list(self._get_object_commands(command_registry, view_opener, object)))
         self._history.append(piece)
@@ -86,7 +86,7 @@ class NavigatorHandler(ViewHandler):
         for command in object.get_item_command_list(current_item_key):
             yield FreeFnCommand.from_command(command, partial(self._run_command, command_registry, view_opener, command, current_item_key))
 
-    def _get_layout_commands(self, command_registry, view_opener):
+    def _get_view_commands(self, command_registry, view_opener):
         yield self._go_backward.partial(command_registry, view_opener)
         yield self._go_forward.partial(command_registry, view_opener)
 

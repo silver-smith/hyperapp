@@ -84,7 +84,7 @@ class LayoutViewer(TreeObject):
 class ViewHandler(Commander, metaclass=abc.ABCMeta):
 
     def __init__(self):
-        super().__init__(commands_kind='layout')
+        super().__init__(commands_kind='view')
 
     @abc.abstractmethod
     async def create_view(self, command_registry, view_opener=None):
