@@ -70,7 +70,7 @@ class BoundCommand(Command):
         else:
             return self._class_method(inst, *(*self._args, *args), **{**self._kw, **kw})
 
-    def with_wrapper(self, wrapper):
+    def wrap(self, wrapper):
         async def fn(*args, **kw):
             return (await wrapper(self.run(*args, **kw)))
         return FreeFnCommand(self.id, self.kind, self.resource_key, self.enabled, fn)

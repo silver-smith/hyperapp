@@ -277,12 +277,12 @@ class RefSelector(RecordObject):
 
     def get_command_list(self):
         return super().get_command_list() + [
-            command.with_wrapper(self._command_wrapper) for command in self._current_object.get_command_list()
+            command.wrap(self._command_wrapper) for command in self._current_object.get_command_list()
             ]
 
     def get_item_command_list(self, current_item_key):
         return [
-            command.with_wrapper(self._command_wrapper) for command in self._current_object.get_item_command_list(current_item_key)
+            command.wrap(self._command_wrapper) for command in self._current_object.get_item_command_list(current_item_key)
             ]
 
     async def _command_wrapper(self, fn_coro):
