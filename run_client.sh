@@ -6,7 +6,7 @@ venv=${VENV:-$HOME/venv}
 
 export LOG_CFG=client-file
 
-rm /tmp/client*.log
+rm /tmp/client*.log || true
 
 cd $(dirname $0)
 
