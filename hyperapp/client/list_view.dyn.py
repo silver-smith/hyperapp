@@ -139,7 +139,6 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         View.__init__(self)
         self._object = object
         self._wanted_current_id = key  # will set it to current when rows are loaded
-        self._elt_commands = []   # Command list - commands for selected elements
         self._default_command = None
         self.verticalHeader().hide()
         opts = self.viewOptions()

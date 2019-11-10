@@ -189,7 +189,6 @@ class TreeView(View, QtWidgets.QTreeView):
         self.setSelectionMode(self.ContiguousSelection)
         self._object = object
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
-        self._elt_commands = []   # Command list - commands for selected elements
         self._default_command = None
         self.activated.connect(self._on_activated)
 
