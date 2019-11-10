@@ -36,6 +36,7 @@ class ViewProducerRegistry:
 
 
 Item = namedtuple('Item', 'idx name value')
+VisualTree = namedtuple('VisualTree', 'name items')
 
 
 class LayoutViewer(TreeObject):
@@ -74,9 +75,9 @@ class LayoutViewer(TreeObject):
     @staticmethod
     async def _load_items(root_ref, view_resolver):
         handler = await view_resolver.resolve(root_ref)
-        root_value, root_items = await handler.visual_items()
-        sub_items = {(0,) + key: value for key, value in root_items.items()}
-        return {(): [Item(0, 'root', root_value)], **sub_items}
+        tree = await handler.visual_tree()
+        sub_items = {(0,) + key: value for key, value in tree.items.items()}
+        return {(): [Item(0, 'root', tree.name)], **sub_items}
         
 
 class ViewHandler(metaclass=abc.ABCMeta):
@@ -86,7 +87,7 @@ class ViewHandler(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def visual_items(self):
+    async def visual_tree(self) -> VisualTree:
         pass
 
 

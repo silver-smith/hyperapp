@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_registry import Item, ViewHandler
+from .view_registry import Item, VisualTree, ViewHandler
 
 log = logging.getLogger(__name__)
 
@@ -33,15 +33,15 @@ class TabViewHandler(ViewHandler):
             opener.set_tab_view(tab_view)
         return tab_view
 
-    async def visual_items(self):
+    async def visual_tree(self):
         items = []
         sub_items = {}
         for idx, tab_ref in enumerate(self._state.tabs):
             handler = await self._view_resolver.resolve(tab_ref)
-            name, tab_items = await handler.visual_items()
-            items.append(Item(idx, f'tab#{idx}', name))
-            sub_items = {(idx,) + key: value for key, value in tab_items.items()}
-        return ('TabView', {(): items, **sub_items})
+            child = await handler.visual_tree()
+            items.append(Item(idx, f'tab#{idx}', child.name))
+            sub_items = {(idx,) + key: value for key, value in child.items.items()}
+        return VisualTree('TabView', {(): items, **sub_items})
 
 
 class _ViewOpener:

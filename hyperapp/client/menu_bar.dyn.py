@@ -8,7 +8,7 @@ from hyperapp.client.command import Command, WindowCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_registry import ViewHandler
+from .view_registry import VisualTree, ViewHandler
 
 log = logging.getLogger(__name__)
 
@@ -21,8 +21,8 @@ class MenuBarHandler(ViewHandler):
     async def create_view(self, command_registry, view_opener=None):
         return MenuBar(self._resource_resolver, command_registry)
 
-    async def visual_items(self):
-        return ('MenuBar', {})
+    async def visual_tree(self):
+        return VisualTree('MenuBar', {})
 
 
 class MenuBar(QtWidgets.QMenuBar):
