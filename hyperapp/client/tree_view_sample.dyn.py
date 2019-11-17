@@ -5,8 +5,10 @@ import logging
 from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
+
 from . import htypes
-from .tree_object import Column, TreeObject
+from .column import Column
+from .tree_object import AppendItemDiff, TreeObject
 
 log = logging.getLogger(__name__)
 
@@ -38,9 +40,10 @@ class SampleObject(TreeObject):
         for idx in range(4):
             self._distribute_fetch_results(list(path) + [self._key(idx * 2 + 1)], [])
         # check async population works
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.5)
         self._distribute_fetch_results(path, [
             self._item(path, 5 + idx) for idx in range(3)])
+        asyncio.get_event_loop().create_task(self._send_diffs(path))
 
     def _item(self, path, idx):
         return Item(
@@ -51,6 +54,10 @@ class SampleObject(TreeObject):
 
     def _key(self, idx):
         return 'item-{}'.format(idx)
+
+    async def _send_diffs(self, path):
+        await asyncio.sleep(0.5)
+        self._distribute_diff(path, AppendItemDiff(self._item(path, 8)))
 
     @command('open', kind='element')
     async def command_open(self, item_path):

@@ -1,5 +1,6 @@
-import logging
 import abc
+import logging
+from dataclasses import dataclass
 
 from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, tString
@@ -15,8 +16,17 @@ class TreeObserver(ObjectObserver):
     def process_fetch_results(self, path, item_list):
         pass
 
-    def process_diff(self, diff):
+    def process_diff(self, path, diff):
         pass
+
+
+class Diff:
+    pass
+
+
+@dataclass
+class AppendItemDiff(Diff):
+    item: object
 
 
 class TreeObject(Object, metaclass=abc.ABCMeta):
@@ -41,6 +51,11 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
         for observer in self._observers:
             log.debug('  Calling process_fetch_results for %s on %s/%s: %s', path, id(observer), observer, item_list)
             observer.process_fetch_results(path, item_list)
+
+    def _distribute_diff(self, path, diff):
+        for observer in self._observers:
+            log.debug('  Calling process_diff for %s on %s/%s: %s', path, id(observer), observer, diff)
+            observer.process_diff(path, diff)
 
 
 class ThisModule(ClientModule):

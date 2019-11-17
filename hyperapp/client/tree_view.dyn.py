@@ -10,8 +10,9 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import make_async_action
 from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
+
 from . import htypes
-from .tree_object import TreeObserver, TreeObject
+from .tree_object import AppendItemDiff, TreeObserver, TreeObject
 from .view import View
 from .view_registry import NotApplicable
 from .items_view import map_columns_to_view
@@ -105,24 +106,23 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
                   parent.internalId(), parent.row(), parent.column(), path, path in self._fetch_requested_for_path)
         self.request_fetch(path)
 
-    # own methods  ------------------------------------------------------------------------------------------------------
-
-    def request_fetch(self, path):
-        if path:
-            path = tuple(path)
-        if (path or ()) in self._path2children:
-            return
-        if (path or None) in self._fetch_requested_for_path:
-            return
-        self._fetch_requested_for_path.add(path or None)
-        log.info('  request fetch for %s', path)
-        asyncio.ensure_future(self._object.fetch_items(path or []))
+    # TreeObserver methods  ---------------------------------------------------------------------------------------------
 
     def process_fetch_results(self, path, item_list):
         log.debug('fetched %d items at %s: %s', len(item_list), path, item_list)
         path = tuple(path)
         with suppress(KeyError):
             self._fetch_requested_for_path.remove(path or None)
+        self._append_items(path, item_list)
+
+    def process_diff(self, path, item):
+        path = tuple(path)
+        if isinstance(item, AppendItemDiff):
+            self._append_items(path, [item.item])
+
+    # own methods  ------------------------------------------------------------------------------------------------------
+
+    def _append_items(self, path, item_list):
         current_item_list = self._path2children.setdefault(path, [])
         if not item_list:
             return
@@ -140,6 +140,16 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         if view:
             view._on_data_changed()
 
+    def request_fetch(self, path):
+        if path:
+            path = tuple(path)
+        if (path or ()) in self._path2children:
+            return
+        if (path or None) in self._fetch_requested_for_path:
+            return
+        self._fetch_requested_for_path.add(path or None)
+        log.info('  request fetch for %s', path)
+        asyncio.ensure_future(self._object.fetch_items(path or []))
     def index2path(self, index):
         if index.isValid():
             return self._id2path[index.internalId()]
