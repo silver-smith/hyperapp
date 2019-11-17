@@ -12,7 +12,7 @@ from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .tree_object import AppendItemDiff, InsertItemDiff, TreeObserver, TreeObject
+from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, TreeObserver, TreeObject
 from .view import View
 from .view_registry import NotApplicable
 from .items_view import map_columns_to_view
@@ -119,8 +119,12 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         path = tuple(path)
         if isinstance(diff, AppendItemDiff):
             self._append_items(path, [diff.item])
-        if isinstance(diff, InsertItemDiff):
+        elif isinstance(diff, InsertItemDiff):
             self._insert_item(path, diff.idx, diff.item)
+        elif isinstance(diff, RemoveItemDiff):
+            self._remove_item(path)
+        else:
+            raise RuntimeError(f"Unknown Diff class: {diff}")
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
@@ -155,6 +159,26 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         view = self._view_wr()
         if view:
             view._on_data_changed()
+
+    def _remove_item(self, path):
+        assert path  # Can't remove root item
+        parent_path = path[:-1]
+        item_list = self._path2children.get(parent_path, [])
+        assert item_list, path
+        for idx, item in enumerate(item_list):
+            key = getattr(item, self._key_attr)
+            if key == path[-1]:
+                break
+        else:
+            raise RuntimeError(f"No item at path: {path}")
+        index = self.path2index(parent_path) or QtCore.QModelIndex()
+        id = self._path2id[path]
+        self.beginRemoveRows(index, idx, idx)
+        del item_list[idx]
+        del self._path2item[path]
+        del self._path2id[path]
+        del self._id2path[id]
+        self.endRemoveRows()
 
     def request_fetch(self, path):
         if path:

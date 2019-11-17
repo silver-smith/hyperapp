@@ -35,6 +35,11 @@ class InsertItemDiff(Diff):
     item: object
 
 
+@dataclass
+class RemoveItemDiff(Diff):
+    pass
+
+
 class TreeObject(Object, metaclass=abc.ABCMeta):
 
     # return Column list

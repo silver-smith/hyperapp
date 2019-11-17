@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .column import Column
-from .tree_object import AppendItemDiff, InsertItemDiff, TreeObject
+from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, TreeObject
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ class SampleObject(TreeObject):
         for idx in range(4):
             self._distribute_fetch_results(list(path) + [self._key(idx * 2 + 1)], [])
         # check async population works
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.3)
         self._distribute_fetch_results(path, [
             self._item(path, 5 + idx) for idx in range(3)])
         asyncio.get_event_loop().create_task(self._send_diffs(path))
@@ -56,13 +56,15 @@ class SampleObject(TreeObject):
         return 'item-{}'.format(idx)
 
     async def _send_diffs(self, path):
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.3)
         self._distribute_diff(path, AppendItemDiff(self._item(path, 8)))
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.3)
         self._distribute_diff(path, InsertItemDiff(7, self._item(path, 9)))
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.3)
         nested_path = list(path) + [self._key(9)]
         self._distribute_diff(nested_path, AppendItemDiff(self._item(nested_path, 10)))
+        remove_path = list(path) + [self._key(5)]
+        self._distribute_diff(remove_path, RemoveItemDiff())
 
     @command('open', kind='element')
     async def command_open(self, item_path):
