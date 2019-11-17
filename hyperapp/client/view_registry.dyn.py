@@ -1,6 +1,8 @@
 import abc
 import logging
 from collections import namedtuple
+from dataclasses import dataclass
+from typing import List
 
 from hyperapp.client.commander import Commander
 from hyperapp.client.module import ClientModule
@@ -8,7 +10,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 from .column import Column
-from .tree_object import TreeObject
+from .tree_object import InsertItemDiff, TreeObject
 
 _log = logging.getLogger(__name__)
 
@@ -38,6 +40,16 @@ class ViewProducerRegistry:
 
 Item = namedtuple('Item', 'idx name value commands', defaults=[None])
 VisualTree = namedtuple('VisualTree', 'name items')
+
+
+class VisualItemDiff:
+    pass
+
+
+@dataclass
+class InsertVisualItemDiff(VisualItemDiff):
+    path: List[int]
+    item: Item
 
 
 class LayoutViewer(TreeObject):
@@ -75,7 +87,7 @@ class LayoutViewer(TreeObject):
             item = next(i for i in item_list if i.idx == item_path[-1])
         except StopIteration:
             return []
-        return item.commands or []
+        return [command.wrap(self._process_diff) for command in item.commands or []]
 
     async def fetch_items(self, path):
         path = tuple(path)
@@ -91,7 +103,14 @@ class LayoutViewer(TreeObject):
         tree = await handler.visual_tree()
         sub_items = {(0,) + key: value for key, value in tree.items.items()}
         return {(): [Item(0, 'root', tree.name)], **sub_items}
-        
+
+    async def _process_diff(self, vdiff):
+        if isinstance(vdiff, InsertVisualItemDiff):
+            diff = InsertItemDiff(vdiff.path[-1], vdiff.item)
+            self._distribute_diff(vdiff.path[:-1], diff)
+        else:
+            raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
+
 
 class ViewHandler(Commander, metaclass=abc.ABCMeta):
 

@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_registry import Item, VisualTree, ViewHandler
+from .view_registry import Item, InsertVisualItemDiff, VisualTree, ViewHandler
 
 log = logging.getLogger(__name__)
 
@@ -17,7 +17,8 @@ class TabViewHandler(ViewHandler):
 
     def __init__(self, state, path, view_resolver):
         super().__init__()
-        self._state = state
+        self._tab_list = state.tabs
+        self._current_tab = state.current_tab
         self._path = path
         self._view_resolver = view_resolver
         self._tab_handler_list = None
@@ -38,7 +39,7 @@ class TabViewHandler(ViewHandler):
             child = await tab_handler.create_view(command_registry, opener)
             opener_list.append(opener)
             children.append(child)
-        tab_view = TabView(children, self._state.current_tab)
+        tab_view = TabView(children, self._current_tab)
         for opener in opener_list:
             opener.set_tab_view(tab_view)
         return tab_view
@@ -49,13 +50,26 @@ class TabViewHandler(ViewHandler):
         sub_items = {}
         for idx, tab_handler in enumerate(self._tab_handler_list):
             child = await tab_handler.visual_tree()
-            items.append(Item(idx, f'tab#{idx}', child.name, [self._duplicate_tab.partial(idx)]))
+            item = await self._visual_item(idx)
+            items.append(item)
             sub_items = {(idx,) + key: value for key, value in child.items.items()}
         return VisualTree('TabView', {(): items, **sub_items})
 
+    async def _visual_item(self, idx):
+        tab_handler = self._tab_handler_list[idx]
+        child = await tab_handler.visual_tree()
+        commands = [self._duplicate_tab.partial(idx)]
+        return Item(idx, f'tab#{idx}', child.name, commands)
+
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx, item_path):
-        assert 0
+        tab_ref = self._tab_list[tab_idx]
+        idx = tab_idx + 1
+        tab_handler = await self._view_resolver.resolve(tab_ref, [*self._path, idx])
+        self._tab_list.insert(idx, tab_ref)
+        self._tab_handler_list.insert(idx, tab_handler)
+        item = await self._visual_item(idx)
+        return InsertVisualItemDiff([*self._path, idx], item)
 
 
 class _ViewOpener:

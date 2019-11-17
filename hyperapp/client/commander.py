@@ -72,7 +72,8 @@ class BoundCommand(Command):
 
     def wrap(self, wrapper):
         async def fn(*args, **kw):
-            return (await wrapper(self.run(*args, **kw)))
+            result = await self.run(*args, **kw)
+            return (await wrapper(result))
         return FreeFnCommand(self.id, self.kind, self.resource_key, self.enabled, fn)
 
     def partial(self, *args, **kw):
