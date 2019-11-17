@@ -217,6 +217,7 @@ class TreeView(View, QtWidgets.QTreeView):
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
         self._default_command = None
         self.activated.connect(self._on_activated)
+        self.expanded.connect(self._on_expanded)
 
     # obsolete
     def get_state(self):
@@ -245,6 +246,9 @@ class TreeView(View, QtWidgets.QTreeView):
     def _on_data_changed(self):
         self._process_wanted_current()
         # only after some nodes are expanded we can resize columns:
+        self._resize_columns_to_contents()
+
+    def _resize_columns_to_contents(self):
         for idx in range(len(self.model().columns)):
             self.resizeColumnToContents(idx)
 
@@ -279,6 +283,10 @@ class TreeView(View, QtWidgets.QTreeView):
     def _on_activated(self, index):
         if self._default_command:
             asyncio.ensure_future(self._default_command.run())
+
+    def _on_expanded(self, index):
+        # Some items may be inserted by now, but not still visible.
+        self._resize_columns_to_contents()
 
     def __del__(self):
         log.debug('~tree_view.TreeView self=%r', id(self))

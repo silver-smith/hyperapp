@@ -60,6 +60,9 @@ class SampleObject(TreeObject):
         self._distribute_diff(path, AppendItemDiff(self._item(path, 8)))
         await asyncio.sleep(0.5)
         self._distribute_diff(path, InsertItemDiff(7, self._item(path, 9)))
+        await asyncio.sleep(0.5)
+        nested_path = list(path) + [self._key(9)]
+        self._distribute_diff(nested_path, AppendItemDiff(self._item(nested_path, 10)))
 
     @command('open', kind='element')
     async def command_open(self, item_path):
