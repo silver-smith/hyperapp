@@ -29,6 +29,12 @@ class AppendItemDiff(Diff):
     item: object
 
 
+@dataclass
+class InsertItemDiff(Diff):
+    idx: int
+    item: object
+
+
 class TreeObject(Object, metaclass=abc.ABCMeta):
 
     # return Column list

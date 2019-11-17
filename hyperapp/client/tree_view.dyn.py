@@ -12,7 +12,7 @@ from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .tree_object import AppendItemDiff, TreeObserver, TreeObject
+from .tree_object import AppendItemDiff, InsertItemDiff, TreeObserver, TreeObject
 from .view import View
 from .view_registry import NotApplicable
 from .items_view import map_columns_to_view
@@ -115,10 +115,12 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             self._fetch_requested_for_path.remove(path or None)
         self._append_items(path, item_list)
 
-    def process_diff(self, path, item):
+    def process_diff(self, path, diff):
         path = tuple(path)
-        if isinstance(item, AppendItemDiff):
-            self._append_items(path, [item.item])
+        if isinstance(diff, AppendItemDiff):
+            self._append_items(path, [diff.item])
+        if isinstance(diff, InsertItemDiff):
+            self._insert_item(path, diff.idx, diff.item)
 
     # own methods  ------------------------------------------------------------------------------------------------------
 
@@ -136,6 +138,20 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             self._path2id[item_path] = id
             self._id2path[id] = item_path
         self.rowsInserted.emit(QtCore.QModelIndex(), prev_item_count + 1, len(current_item_list) - 1)
+        view = self._view_wr()
+        if view:
+            view._on_data_changed()
+
+    def _insert_item(self, path, idx, item):
+        item_list = self._path2children.setdefault(path, [])
+        item_list.insert(idx, item)
+        id = self._get_next_id()
+        key = getattr(item, self._key_attr)
+        item_path = path + (key,)
+        self._path2item[item_path] = item
+        self._path2id[item_path] = id
+        self._id2path[id] = item_path
+        self.rowsInserted.emit(QtCore.QModelIndex(), idx + 1, idx + 1)
         view = self._view_wr()
         if view:
             view._on_data_changed()

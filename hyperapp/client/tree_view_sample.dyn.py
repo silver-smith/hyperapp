@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .column import Column
-from .tree_object import AppendItemDiff, TreeObject
+from .tree_object import AppendItemDiff, InsertItemDiff, TreeObject
 
 log = logging.getLogger(__name__)
 
@@ -58,6 +58,8 @@ class SampleObject(TreeObject):
     async def _send_diffs(self, path):
         await asyncio.sleep(0.5)
         self._distribute_diff(path, AppendItemDiff(self._item(path, 8)))
+        await asyncio.sleep(0.5)
+        self._distribute_diff(path, InsertItemDiff(7, self._item(path, 9)))
 
     @command('open', kind='element')
     async def command_open(self, item_path):
