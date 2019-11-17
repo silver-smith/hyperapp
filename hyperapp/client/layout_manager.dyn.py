@@ -94,7 +94,7 @@ class LayoutManager:
     async def build_default_layout(self, app):
         state = self._default_state_builder()
         for window_state in state:
-            window_handler = await self._view_registry.resolve_async(window_state)
+            window_handler = await self._view_registry.resolve_async(window_state, [0])
             window = await window_handler.create_view(self._command_registry)
             window.show()
             self._window_list.append(window)

@@ -22,9 +22,10 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
     
 class WindowHandler(ViewHandler):
 
-    def __init__(self, state, view_resolver):
+    def __init__(self, state, path, view_resolver):
         super().__init__()
         self._state = state
+        self._path = path
         self._view_resolver = view_resolver
         self._menu_bar_handler = None
         self._handlers_created = False
@@ -34,9 +35,9 @@ class WindowHandler(ViewHandler):
 
     async def _ensure_handlers_created(self):
         if not self._handlers_created:
-            self._menu_bar_handler = await self._view_resolver.resolve(self._state.menu_bar_ref)
-            self._command_pane_handler = await self._view_resolver.resolve(self._state.command_pane_ref)
-            self._central_view_handler = await self._view_resolver.resolve(self._state.central_view_ref)
+            self._menu_bar_handler = await self._view_resolver.resolve(self._state.menu_bar_ref, [*self._path, 0])
+            self._command_pane_handler = await self._view_resolver.resolve(self._state.command_pane_ref, [*self._path, 1])
+            self._central_view_handler = await self._view_resolver.resolve(self._state.central_view_ref, [*self._path, 2])
             self._handlers_created = True
 
     async def create_view(self, command_registry, view_opener=None):

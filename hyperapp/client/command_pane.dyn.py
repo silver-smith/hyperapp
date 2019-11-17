@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class CommandPaneHandler(ViewHandler):
 
-    def __init__(self, state, resource_resolver):
+    def __init__(self, state, path, resource_resolver):
         self._resource_resolver = resource_resolver
 
     async def create_view(self, command_registry, view_opener=None):

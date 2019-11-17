@@ -50,7 +50,7 @@ class _CurrentItemObserver:
 
 class NavigatorHandler(ViewHandler):
 
-    def __init__(self, state, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
+    def __init__(self, state, path, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
         super().__init__()
         self._state = state
         self._object_registry = object_registry

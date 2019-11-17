@@ -44,7 +44,7 @@ class LayoutViewer(TreeObject):
 
     @classmethod
     async def from_state(cls, state, view_resolver):
-        handler = await view_resolver.resolve(state.root_ref)
+        handler = await view_resolver.resolve(state.root_ref, [0])
         path2item_list = await cls._load_items(handler)
         return cls(handler, path2item_list, view_resolver)
 

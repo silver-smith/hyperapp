@@ -15,17 +15,18 @@ log = logging.getLogger(__name__)
 
 class TabViewHandler(ViewHandler):
 
-    def __init__(self, state, view_resolver):
+    def __init__(self, state, path, view_resolver):
         super().__init__()
         self._state = state
+        self._path = path
         self._view_resolver = view_resolver
         self._tab_handler_list = None
 
     async def _ensure_handlers_created(self):
         if self._tab_handler_list is None:
             self._tab_handler_list = []
-            for tab_ref in self._state.tabs:
-                handler = await self._view_resolver.resolve(tab_ref)
+            for idx, tab_ref in enumerate(self._tab_list):
+                handler = await self._view_resolver.resolve(tab_ref, [*self._path, idx])
                 self._tab_handler_list.append(handler)
 
     async def create_view(self, command_registry, view_opener=None):
