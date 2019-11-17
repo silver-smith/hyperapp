@@ -64,11 +64,11 @@ class BoundCommand(Command):
     async def run(self, *args, **kw):
         inst = self._inst_wr()
         if not inst: return  # inst is deleteddeleted
-        log.info('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, self._kw, args, kw)
+        log.info('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, args, self._kw, kw)
         if asyncio.iscoroutinefunction(self._class_method):
-            return (await self._class_method(inst, *(*self._args, *args), **{**self._kw, **kw}))
+            return (await self._class_method(inst, *self._args, *args, **self._kw, **kw))
         else:
-            return self._class_method(inst, *(*self._args, *args), **{**self._kw, **kw})
+            return self._class_method(inst, *self._args, *args, **self._kw, **kw)
 
     def wrap(self, wrapper):
         async def fn(*args, **kw):
@@ -86,16 +86,18 @@ class FreeFnCommand(Command):
     def from_command(cls, command, fn):
         return cls(command.id, command.kind, command.resource_key, command.enabled, fn)
 
-    def __init__(self, id, kind, resource_key, enabled, fn):
+    def __init__(self, id, kind, resource_key, enabled, fn, args=None, kw=None):
         Command.__init__(self, id, kind, resource_key, enabled)
         self._fn = fn
+        self._args = args or ()
+        self._kw = kw or {}
 
     def __repr__(self):
-        return 'FreeFnCommand(%r/%r -> %r)' % (self.id, self.kind, self._fn)
+        return 'FreeFnCommand(%r/%r -> %r (%r, %r))' % (self.id, self.kind, self._fn, self._args, self._kw)
 
     async def run(self, *args, **kw):
-        log.info('FreefnCommand.run: %s, %r/%r, (%s, %s)', self, self.id, self.kind, args, kw)
-        return (await self._fn(*args, **kw))
+        log.info('FreefnCommand.run: %s, %r/%r, (%s+%s, %s+%s)', self, self.id, self.kind, self._args, args, self._kw, kw)
+        return (await self._fn(*self._args, *args, **self._kw, **kw))
 
 
 class UnboundCommand(object):
