@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_registry import Item, VisualTree, ViewHandler
+from .view_registry import RootVisualItem, VisualItem, ViewHandler
 
 _log = logging.getLogger(__name__)
 
@@ -68,9 +68,11 @@ class NavigatorHandler(ViewHandler):
         self._history.append(piece)
         return (await self._view_producer_registry.produce_view(piece, object))
 
-    async def visual_tree(self):
+    async def visual_item(self):
         piece = await self._async_ref_resolver.resolve_ref_to_object(self._state.current_piece_ref)
-        return VisualTree('Navigator', {(): [Item(0, 'current', str(piece))]})
+        return RootVisualItem('Navigator', children=[
+            VisualItem(0, 'current', str(piece)),
+            ])
 
     def _get_global_commands(self, command_registry, view_opener):
         for command in self._module_command_registry.get_all_commands():

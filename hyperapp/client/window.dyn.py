@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_registry import Item, VisualTree, ViewHandler
+from .view_registry import RootVisualItem, ViewHandler
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)
@@ -47,20 +47,16 @@ class WindowHandler(ViewHandler):
         central_view = await self._central_view_handler.create_view(command_registry)
         return Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
 
-    async def visual_tree(self):
+    async def visual_item(self):
         await self._ensure_handlers_created()
-        menu_bar = await self._menu_bar_handler.visual_tree()
-        command_pane = await self._command_pane_handler.visual_tree()
-        central_view = await self._central_view_handler.visual_tree()
-        menu_bar_sub_items = {(0,) + key: value for key, value in menu_bar.items.items()}
-        command_pane_sub_items = {(1,) + key: value for key, value in command_pane.items.items()}
-        central_view_sub_items = {(2,) + key: value for key, value in central_view.items.items()}
-        root_items = {(): [
-            Item(0, 'menu_bar', menu_bar.name),
-            Item(1, 'command_pane', command_pane.name),
-            Item(2, 'central_view', central_view.name),
-            ]}
-        return VisualTree('Window', {**root_items, **menu_bar_sub_items, **command_pane_sub_items, **central_view_sub_items})
+        menu_bar = await self._menu_bar_handler.visual_item()
+        command_pane = await self._command_pane_handler.visual_item()
+        central_view = await self._central_view_handler.visual_item()
+        return RootVisualItem('Window', children=[
+            menu_bar.to_item(0, 'menu_bar'),
+            command_pane.to_item(1, 'command_pane'),
+            central_view.to_item(2, 'central_view'),
+            ])
 
 
 class Window(View, QtWidgets.QMainWindow):

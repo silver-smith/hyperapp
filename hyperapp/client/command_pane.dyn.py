@@ -9,7 +9,7 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_registry import VisualTree, ViewHandler
+from .view_registry import RootVisualItem, ViewHandler
 
 log = logging.getLogger(__name__)
 
@@ -22,8 +22,8 @@ class CommandPaneHandler(ViewHandler):
     async def create_view(self, command_registry, view_opener=None):
         return CommandPane(self._resource_resolver, command_registry)
 
-    async def visual_tree(self):
-        return VisualTree('CommandPane', {})
+    async def visual_item(self):
+        return RootVisualItem('CommandPane')
 
 
 class CommandPane(QtWidgets.QDockWidget):

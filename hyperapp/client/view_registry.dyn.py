@@ -38,8 +38,16 @@ class ViewProducerRegistry:
         raise RuntimeError("No view is known to support object {}".format(object))
 
 
-Item = namedtuple('Item', 'idx name value commands', defaults=[None])
-VisualTree = namedtuple('VisualTree', 'name items')
+VisualItem = namedtuple('Item', 'idx name text children commands', defaults=[None, None])
+
+
+@dataclass
+class RootVisualItem:
+    text: str
+    children: List[VisualItem] = None
+
+    def to_item(self, idx, name, commands=None):
+        return VisualItem(idx, name, self.text, self.children, commands)
 
 
 class VisualItemDiff:
@@ -49,7 +57,7 @@ class VisualItemDiff:
 @dataclass
 class InsertVisualItemDiff(VisualItemDiff):
     path: List[int]
-    item: Item
+    item: VisualItem
 
 
 class LayoutViewer(TreeObject):
@@ -72,7 +80,7 @@ class LayoutViewer(TreeObject):
     def get_columns(self):
         return [
             Column('name'),
-            Column('value'),
+            Column('text'),
             ]
 
     @property
@@ -100,9 +108,17 @@ class LayoutViewer(TreeObject):
 
     @staticmethod
     async def _load_items(handler):
-        tree = await handler.visual_tree()
-        sub_items = {(0,) + key: value for key, value in tree.items.items()}
-        return {(): [Item(0, 'root', tree.name)], **sub_items}
+        item_dict = {}
+
+        def add_item(path, item):
+            item_list = item_dict.setdefault(path, [])
+            item_list.append(item)
+            for kid in item.children or []:
+                add_item((*path, item.idx), kid)
+
+        root = await handler.visual_item()
+        add_item((), root.to_item(0, 'root'))
+        return item_dict
 
     async def _process_diff(self, vdiff):
         if isinstance(vdiff, InsertVisualItemDiff):
@@ -122,7 +138,7 @@ class ViewHandler(Commander, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    async def visual_tree(self) -> VisualTree:
+    async def visual_item(self) -> VisualItem:
         pass
 
 

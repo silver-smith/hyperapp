@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_registry import Item, InsertVisualItemDiff, VisualTree, ViewHandler
+from .view_registry import InsertVisualItemDiff, RootVisualItem, ViewHandler
 
 log = logging.getLogger(__name__)
 
@@ -44,22 +44,19 @@ class TabViewHandler(ViewHandler):
             opener.set_tab_view(tab_view)
         return tab_view
 
-    async def visual_tree(self):
+    async def visual_item(self):
         await self._ensure_handlers_created()
-        items = []
-        sub_items = {}
+        children = []
         for idx, tab_handler in enumerate(self._tab_handler_list):
-            child = await tab_handler.visual_tree()
             item = await self._visual_item(idx)
-            items.append(item)
-            sub_items = {(idx,) + key: value for key, value in child.items.items()}
-        return VisualTree('TabView', {(): items, **sub_items})
+            children.append(item)
+        return RootVisualItem('TabView', children)
 
     async def _visual_item(self, idx):
         tab_handler = self._tab_handler_list[idx]
-        child = await tab_handler.visual_tree()
+        child = await tab_handler.visual_item()
         commands = [self._duplicate_tab.partial(idx)]
-        return Item(idx, f'tab#{idx}', child.name, commands)
+        return child.to_item(idx, f'tab#{idx}', commands)
 
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx, item_path):
