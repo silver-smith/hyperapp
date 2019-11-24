@@ -134,6 +134,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             return
         prev_item_count = len(current_item_list)
         current_item_list += item_list
+        index = self.path2index(path) or QtCore.QModelIndex()
+        self.beginInsertRows(index, prev_item_count, len(current_item_list) - 1)
         for item in item_list:
             id = self._get_next_id()
             key = getattr(item, self._key_attr)
@@ -141,7 +143,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             self._path2item[item_path] = item
             self._path2id[item_path] = id
             self._id2path[id] = item_path
-        self.rowsInserted.emit(QtCore.QModelIndex(), prev_item_count + 1, len(current_item_list) - 1)
+        self.endInsertRows()
         view = self._view_wr()
         if view:
             view._on_data_changed()
@@ -152,10 +154,12 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         id = self._get_next_id()
         key = getattr(item, self._key_attr)
         item_path = path + (key,)
+        index = self.path2index(path) or QtCore.QModelIndex()
+        self.beginInsertRows(index, idx, idx)
         self._path2item[item_path] = item
         self._path2id[item_path] = id
         self._id2path[id] = item_path
-        self.rowsInserted.emit(QtCore.QModelIndex(), idx + 1, idx + 1)
+        self.endInsertRows()
         view = self._view_wr()
         if view:
             view._on_data_changed()

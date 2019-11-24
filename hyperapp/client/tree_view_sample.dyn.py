@@ -34,6 +34,8 @@ class SampleObject(TreeObject):
 
     async def fetch_items(self, path):
         log.info('SampleObject.fetch_items(%s)', path)
+        if path and path[-1] == self._key(8):
+            return
         self._distribute_fetch_results(path, [
             self._item(path, idx) for idx in range(5)])
         # signal there are no children for these paths
