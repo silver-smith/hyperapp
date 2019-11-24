@@ -15,6 +15,12 @@ log = logging.getLogger(__name__)
 
 class TabViewHandler(ViewHandler):
 
+    @classmethod
+    async def from_data(cls, state, path, view_resolver):
+        self = cls(state, path, view_resolver)
+        await self._async_init()
+        return self
+
     def __init__(self, state, path, view_resolver):
         super().__init__()
         self._tab_list = state.tabs
@@ -23,15 +29,12 @@ class TabViewHandler(ViewHandler):
         self._view_resolver = view_resolver
         self._tab_handler_list = None
 
-    async def _ensure_handlers_created(self):
-        if self._tab_handler_list is None:
-            self._tab_handler_list = []
-            for idx, tab_ref in enumerate(self._tab_list):
-                handler = await self._view_resolver.resolve(tab_ref, [*self._path, idx])
-                self._tab_handler_list.append(handler)
+    async def _async_init(self):
+        self._tab_handler_list = [
+            await self._view_resolver.resolve(tab_ref, [*self._path, idx])
+            for idx, tab_ref in enumerate(self._tab_list)]
 
     async def create_view(self, command_registry, view_opener=None):
-        await self._ensure_handlers_created()
         children = []
         opener_list = []
         for idx, tab_handler in enumerate(self._tab_handler_list):
@@ -45,7 +48,6 @@ class TabViewHandler(ViewHandler):
         return tab_view
 
     async def visual_item(self):
-        await self._ensure_handlers_created()
         children = [await self._visual_item(idx)
                     for idx in range(len(self._tab_handler_list))]
         return RootVisualItem('TabView', children)
@@ -106,4 +108,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.tab_view.tab_view, TabViewHandler, services.view_resolver)
+        services.view_registry.register_type(htypes.tab_view.tab_view, TabViewHandler.from_data, services.view_resolver)

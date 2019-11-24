@@ -22,33 +22,29 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
     
 class WindowHandler(ViewHandler):
 
-    def __init__(self, state, path, view_resolver):
+    @classmethod
+    async def from_data(cls, state, path, view_resolver):
+        self = cls(state, path)
+        await self._async_init(view_resolver)
+        return self
+
+    def __init__(self, state, path):
         super().__init__()
         self._state = state
         self._path = path
-        self._view_resolver = view_resolver
-        self._menu_bar_handler = None
-        self._handlers_created = False
-        self._command_pane_handler = None
-        self._central_view_handler = None
-        self._menu_bar_handler = None
 
-    async def _ensure_handlers_created(self):
-        if not self._handlers_created:
-            self._menu_bar_handler = await self._view_resolver.resolve(self._state.menu_bar_ref, [*self._path, 0])
-            self._command_pane_handler = await self._view_resolver.resolve(self._state.command_pane_ref, [*self._path, 1])
-            self._central_view_handler = await self._view_resolver.resolve(self._state.central_view_ref, [*self._path, 2])
-            self._handlers_created = True
+    async def _async_init(self, view_resolver):
+        self._menu_bar_handler = await view_resolver.resolve(self._state.menu_bar_ref, [*self._path, 0])
+        self._command_pane_handler = await view_resolver.resolve(self._state.command_pane_ref, [*self._path, 1])
+        self._central_view_handler = await view_resolver.resolve(self._state.central_view_ref, [*self._path, 2])
 
     async def create_view(self, command_registry, view_opener=None):
-        await self._ensure_handlers_created()
         menu_bar = await self._menu_bar_handler.create_view(command_registry)
         command_pane = await self._command_pane_handler.create_view(command_registry)
         central_view = await self._central_view_handler.create_view(command_registry)
         return Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
 
     async def visual_item(self):
-        await self._ensure_handlers_created()
         menu_bar = await self._menu_bar_handler.visual_item()
         command_pane = await self._command_pane_handler.visual_item()
         central_view = await self._central_view_handler.visual_item()
@@ -133,4 +129,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.window.window, WindowHandler, services.view_resolver)
+        services.view_registry.register_type(htypes.window.window, WindowHandler.from_data, services.view_resolver)
