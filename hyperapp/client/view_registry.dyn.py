@@ -66,13 +66,12 @@ class LayoutViewer(TreeObject):
     async def from_state(cls, state, view_resolver):
         handler = await view_resolver.resolve(state.root_ref, [0])
         path2item_list = await cls._load_items(handler)
-        return cls(handler, path2item_list, view_resolver)
+        return cls(handler, path2item_list)
 
-    def __init__(self, handler, path2item_list, view_resolver):
+    def __init__(self, handler, path2item_list):
         super().__init__()
         self._handler = handler
         self._path2item_list = path2item_list
-        self._view_resolver = view_resolver
 
     def get_title(self):
         return "Layout"
