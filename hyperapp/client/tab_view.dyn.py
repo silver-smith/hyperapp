@@ -46,10 +46,8 @@ class TabViewHandler(ViewHandler):
 
     async def visual_item(self):
         await self._ensure_handlers_created()
-        children = []
-        for idx, tab_handler in enumerate(self._tab_handler_list):
-            item = await self._visual_item(idx)
-            children.append(item)
+        children = [await self._visual_item(idx)
+                    for idx in range(len(self._tab_handler_list))]
         return RootVisualItem('TabView', children)
 
     async def _visual_item(self, idx):
