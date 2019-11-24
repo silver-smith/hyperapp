@@ -122,13 +122,15 @@ class LayoutViewer(TreeObject):
     async def _process_diff(self, vdiff):
         if isinstance(vdiff, InsertVisualItemDiff):
 
-            def send_item_diffs(path, item):
-                diff = InsertItemDiff(path[-1], item)
-                self._distribute_diff(path[:-1], diff)
+            def add_item(path, item):
+                item_list = self._path2item_list.setdefault(tuple(path[:-1]), [])
+                item_list.insert(path[-1], item)
                 for kid in item.children or []:
-                    send_item_diffs((*path, item.idx), kid)
+                    add_item((*path, item.idx), kid)
 
-            send_item_diffs(vdiff.path, vdiff.item)
+            add_item(vdiff.path, vdiff.item)
+            diff = InsertItemDiff(vdiff.path[-1], vdiff.item)
+            self._distribute_diff(vdiff.path[:-1], diff)
         else:
             raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
 
