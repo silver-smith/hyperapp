@@ -20,7 +20,7 @@ class _ViewOpener:
         self._tab_index = tab_index
 
     def open(self, view):
-        self._handler._replace_view(self._tab_index, view)
+        self._handler._replace_tab(self._tab_index, view)
 
 
 class TabViewHandler(ViewHandler):
@@ -65,9 +65,9 @@ class TabViewHandler(ViewHandler):
         commands = [self._duplicate_tab.partial(idx)]
         return child.to_item(idx, f'tab#{idx}', commands)
 
-    def _replace_view(self, idx, view):
+    def _replace_tab(self, idx, view):
         if self._widget:
-            self._widget._replace_view(idx, view)
+            self._widget._replace_tab(idx, view)
 
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx, item_path):
@@ -93,7 +93,7 @@ class TabView(QtWidgets.QTabWidget, View):
             self.addTab(view, view.get_title())
         self.setCurrentIndex(current_tab)
 
-    def _replace_view(self, idx, view):
+    def _replace_tab(self, idx, view):
         old_widget = self.widget(idx)
         self.removeTab(idx)
         old_widget.deleteLater()
