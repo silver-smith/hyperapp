@@ -1,0 +1,46 @@
+import abc
+import logging
+from collections import namedtuple
+from dataclasses import dataclass
+from typing import List
+
+from hyperapp.client.commander import Commander
+from hyperapp.client.module import ClientModule
+
+_log = logging.getLogger(__name__)
+
+
+VisualItem = namedtuple('Item', 'idx name text children commands', defaults=[None, None])
+
+
+@dataclass
+class RootVisualItem:
+    text: str
+    children: List[VisualItem] = None
+
+    def to_item(self, idx, name, commands=None):
+        return VisualItem(idx, name, self.text, self.children, commands)
+
+
+class VisualItemDiff:
+    pass
+
+
+@dataclass
+class InsertVisualItemDiff(VisualItemDiff):
+    path: List[int]
+    item: VisualItem
+
+
+class ViewHandler(Commander, metaclass=abc.ABCMeta):
+
+    def __init__(self):
+        super().__init__(commands_kind='view')
+
+    @abc.abstractmethod
+    async def create_view(self, command_registry, view_opener=None):
+        pass
+
+    @abc.abstractmethod
+    async def visual_item(self) -> VisualItem:
+        pass

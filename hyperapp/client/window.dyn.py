@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_registry import RootVisualItem, ViewHandler
+from .view_handler import RootVisualItem, ViewHandler
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)

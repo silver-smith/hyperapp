@@ -1,5 +1,3 @@
-from hyperapp.common.ref import phony_ref
-from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
 
@@ -29,9 +27,3 @@ class ThisModule(ClientModule):
             size=htypes.window.size(1000, 800),
             pos=htypes.window.pos(500, 100))
         return [window_state]
-
-    @command('open_layout')
-    async def open_layout(self):
-        [window_state] = self._build_default_state()
-        window_ref = self._ref_registry.register_object(window_state)
-        return htypes.layout_viewer.layout_viewer(root_ref=window_ref)

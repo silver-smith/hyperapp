@@ -12,9 +12,6 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .layout_registry import LayoutViewProducer
 from .command_registry import CommandRegistry
-from .text_object import TextObject
-from .tab_view import TabView
-from .window import Window
 
 _log = logging.getLogger(__name__)
 
@@ -69,14 +66,19 @@ class LayoutManager:
         self._default_state_builder = default_state_builder
         self._window_list = []
         self._command_registry = CommandRegistry()
+        self._window_0_handler = None
 
     async def build_default_layout(self, app):
         state = self._default_state_builder()
-        for window_state in state:
-            window_handler = await self._view_registry.resolve_async(window_state, [0])
-            window = await window_handler.create_view(self._command_registry)
-            window.show()
-            self._window_list.append(window)
+        window_state = state[0]
+        self._window_0_handler = window_handler = await self._view_registry.resolve_async(window_state, [0])
+        window = await window_handler.create_view(self._command_registry)
+        window.show()
+        self._window_list.append(window)
+
+    @property
+    def window_0_handler(self):
+        return self._window_0_handler
 
     async def produce_view(self, piece, object, observer=None):
         return (await self._view_producer_registry.produce_view(piece, object, observer))

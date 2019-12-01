@@ -3,4 +3,4 @@ import:
     command_pane:
     - command_pane
   code:
-  - client.view_registry
+  - client.view_handler

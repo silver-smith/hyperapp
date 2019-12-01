@@ -8,7 +8,7 @@ from hyperapp.client.command import Command, WindowCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_registry import RootVisualItem, ViewHandler
+from .view_handler import RootVisualItem, ViewHandler
 
 log = logging.getLogger(__name__)
 

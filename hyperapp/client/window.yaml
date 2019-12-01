@@ -6,5 +6,5 @@ import:
     - size
   code:
   - client.view
-  - client.view_registry
+  - client.view_handler
   - client.tab_view

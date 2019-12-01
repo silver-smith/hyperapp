@@ -1,0 +1,7 @@
+module:client.layout_editor:ThisModule:
+  commands:
+    open_layout:
+      text: Open layout
+      description: Edit current layout
+      shortcuts:
+      - Alt+Ctrl+Y

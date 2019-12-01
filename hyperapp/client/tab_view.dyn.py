@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_registry import InsertVisualItemDiff, RootVisualItem, ViewHandler
+from .view_handler import InsertVisualItemDiff, RootVisualItem, ViewHandler
 
 log = logging.getLogger(__name__)
 
