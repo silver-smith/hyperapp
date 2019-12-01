@@ -79,6 +79,9 @@ class TabViewHandler(ViewHandler):
         self._tab_handler_list.insert(idx, tab_handler)
         item = await self._visual_item(idx)
         diff = InsertVisualItemDiff([*self._path, idx], item)
+        if self._widget:
+            view = await tab_handler.create_view()
+            self._widget._insert_tab(idx, view)
         return diff
 
 
@@ -97,6 +100,10 @@ class TabView(QtWidgets.QTabWidget, View):
         old_widget = self.widget(idx)
         self.removeTab(idx)
         old_widget.deleteLater()
+        self.insertTab(idx, view.get_widget(), view.get_title())
+        view.ensure_has_focus()
+
+    def _insert_tab(self, idx, view):
         self.insertTab(idx, view.get_widget(), view.get_title())
         view.ensure_has_focus()
 
