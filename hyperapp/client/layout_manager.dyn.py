@@ -60,35 +60,14 @@ class LayoutManager:
 
     def __init__(
             self,
-            ref_resolver,
-            type_resolver,
-            resource_resolver,
-            module_command_registry,
-            object_registry,
             view_producer_registry,
-            layout_registry,
-            layout_resolver,
             view_registry,
             default_state_builder,
             ):
-        self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
-        self._resource_resolver = resource_resolver
-        self._module_command_registry = module_command_registry
-        self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry
-        self._layout_registry = layout_registry
-        self._layout_resolver = layout_resolver
         self._view_registry = view_registry
         self._default_state_builder = default_state_builder
-        self._locale = 'en'
         self._window_list = []
-        self._cmd_pane = self._construct_cmd_pane()
-        self._dir_buttons = []
-        self._element_buttons = []
-        self._current_piece = None
-        self._current_item_observer = None
-        self._history = History()
         self._command_registry = CommandRegistry()
 
     async def build_default_layout(self, app):
@@ -98,192 +77,21 @@ class LayoutManager:
             window = await window_handler.create_view(self._command_registry)
             window.show()
             self._window_list.append(window)
-        # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
-        # # window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self._cmd_pane)
-        # window.menuBar().addMenu(self._build_global_menu(app, "&File"))
-        # window.menuBar().addMenu(self._build_navigation_menu("&Navigation"))
-        # window.show()
-        # self._window = window
-
-    def _build_global_menu(self, app, title):
-        menu = QtWidgets.QMenu(title)
-        for command in self._module_command_registry.get_all_commands():
-            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
-            if resource:
-                text = resource.text
-                shortcut_list = resource.shortcut_list
-            else:
-                text = command.id
-                shortcut_list = None
-            menu.addAction(make_async_action(menu, text, shortcut_list, self._run_command, command))
-        if not menu.isEmpty():
-            menu.addSeparator()
-        for command in app.get_global_commands():
-            menu.addAction(make_async_action(menu, command.id, [], self._run_command, command))
-        return menu
-
-    def _build_navigation_menu(self, title):
-        menu = QtWidgets.QMenu(title)
-        menu.addAction(make_async_action(menu, 'Go back', ['Escape', 'Alt+Left'], self._navigate_backward))
-        menu.addAction(make_async_action(menu, 'Go forward', ['Alt+Right'], self._navigate_forward))
-        return menu
-
-    def _construct_cmd_pane(self):
-        layout = QtWidgets.QVBoxLayout(spacing=1)
-        layout.setAlignment(QtCore.Qt.AlignTop)
-        layout.setContentsMargins(2, 2, 2, 2)
-        layout.addSpacing(10)
-        widget = QtWidgets.QWidget()
-        widget.setLayout(layout)
-        pane = QtWidgets.QDockWidget()
-        pane.setWidget(widget)
-        pane.setFeatures(pane.NoDockWidgetFeatures)
-        return pane
-
-    async def _run_command(self, command, *args, **kw):
-        _log.info('Run command %r', command.id)
-        piece = await command.run(*args, **kw)
-        if piece is None:
-            return
-        await self.open(piece)
-
-    async def _run_command_with_layout(self, command_id, layout, *args, **kw):
-        _log.info('Run command %r with layout %r', command_id, layout)
-        await self.open(self._current_piece, layout)
-
-    async def open(self, piece, layout=None):
-        if self._current_piece:
-            self._history.add_new(self._current_piece)
-        await self._open(piece, layout)
-
-    async def _open(self, piece, layout=None):
-        object = await self._object_registry.resolve_async(piece)
-        if not layout:
-            layout = self._pick_object_layout(object)
-        self._current_item_observer = observer = _CurrentItemObserver(self, object)
-        view = await self._produce_view(layout, piece, object, observer)
-        self._set_current_view(view)
-        self._current_piece = piece
-        self._clean_element_commands()
-        await self._update_dir_buttons(piece, object, layout)
-
-    def _set_current_view(self, view):
-        tab_view = self._tab_view
-        old_view = tab_view.widget(0)
-        tab_view.removeTab(0)
-        old_view.deleteLater()
-        tab_view.insertTab(0, view, view.get_title())
-        view.setFocus()
-
-    # returns None if none registered
-    def _pick_object_layout(self, object):
-        resource_key = object.resource_key(['layout'])
-        return self._resource_resolver.resolve(resource_key, LOCALE)
-
-    async def _produce_view(self, layout, piece, object, observer=None):
-        if layout and layout.view_ref:
-            view_producer = await self._layout_resolver.resolve(layout.view_ref)
-            _log.info("Producing view for %r with %s %s using %s", piece, ref_repr(layout.view_ref), layout, view_producer)
-        else:
-            view_producer = self
-            _log.info("Producing view for %r using default producer", piece)
-        return (await view_producer.produce_view(piece, object, observer))
-
-    async def pick_layout_and_produce_view(self, piece, object, observer=None):
-        layout = self._pick_object_layout(object)
-        return (await self._produce_view(layout, piece, object, observer))
 
     async def produce_view(self, piece, object, observer=None):
         return (await self._view_producer_registry.produce_view(piece, object, observer))
 
-    async def _update_dir_buttons(self, piece, object, layout):
-        for button in self._dir_buttons:
-            button.deleteLater()
-        self._dir_buttons.clear()
-        for command in object.get_command_list():
-            if command.kind != 'object':
-                continue
-            resource_key = object.resource_key(['command', command.id])
-            button = self._make_button_for_current_object(command.id, resource_key)
-            button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command)))
-            qt_layout = self._cmd_pane.widget().layout()
-            qt_layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
-            self._dir_buttons.append(button)
-        if not layout:
-            return
-        for command in layout.layout_commands:
-            if command.layout_ref:
-                layout = await self._ref_resolver.resolve_ref_to_object(command.layout_ref)
-            else:
-                layout = None
-            resource_key = object.resource_key(['command', command.command_id])
-            button = self._make_button_for_current_object(command.command_id, resource_key)
-            button.pressed.connect(partial(asyncio.ensure_future, self._run_command_with_layout(command.command_id, layout)))
-            qt_layout = self._cmd_pane.widget().layout()
-            qt_layout.insertWidget(len(self._dir_buttons), button)  # must be inserted before spacing
-            self._dir_buttons.append(button)
-
-    def update_element_commands(self, object, current_item_key):
-        _log.debug('Update element commands for item %r', current_item_key)
-        self._clean_element_commands()
-        for command in object.get_item_command_list(current_item_key):
-            resource_key = object.resource_key(['command', command.id])
-            button = self._make_button_for_current_object(command.id, resource_key)
-            button.pressed.connect(partial(asyncio.ensure_future, self._run_command(command, current_item_key)))
-            layout = self._cmd_pane.widget().layout()
-            layout.addWidget(button)
-            self._element_buttons.append(button)
-
-    def _clean_element_commands(self):
-        for button in self._element_buttons:
-            button.deleteLater()
-        self._element_buttons.clear()
-
-    def _piece_type_ref(self, piece):
-        t = deduce_value_type(piece)
-        return self._type_resolver.reverse_resolve(t)
-
-    def _make_button_for_current_object(self, command_id, resource_key):
-        resource = self._resource_resolver.resolve(resource_key, self._locale)
-        if resource:
-            text = resource.text
-            shortcut_list = resource.shortcut_list
-            if resource.is_default:
-                shortcut_list = ['Return', *shortcut_list]
-            if shortcut_list:
-                text = '%s (%s)' % (text, shortcut_list[0])
-            description = resource.description
-        else:
-            text = command_id
-            shortcut_list = None
-            description = '.'.join(resource_key.path)
-        button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
-        if shortcut_list:
-            button.setShortcut(shortcut_list[0])
-        button.setToolTip(description)
-        return button
-
-    async def _navigate_backward(self):
-        piece = self._history.pop_back(self._current_piece)
-        if piece is not None:
-            await self._open(piece)
-
-    async def _navigate_forward(self):
-        piece = self._history.pop_forward(self._current_piece)
-        if piece is not None:
-            await self._open(piece)
-
 
 class ViewProducer(LayoutViewProducer):
 
-    def __init__(self, layout_manager):
-        self._layout_manager = layout_manager
+    def __init__(self, view_producer_registry):
+        self._view_producer_registry = view_producer_registry
 
     async def produce_view(self, piece, object, observer=None):
-        return (await self._layout_manager.pick_layout_and_produce_view(piece, object, observer))
+        return (await self._view_producer_registry.produce_view(piece, object, observer))
 
     async def produce_default_view(self, piece, object, observer=None):
-        return (await self._layout_manager.produce_view(piece, object, observer))
+        return (await self._view_producer_registry.produce_view(piece, object, observer))
 
 
 class ViewOpener:
@@ -300,14 +108,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.layout_manager = layout_manager = LayoutManager(
-            services.async_ref_resolver,
-            services.type_resolver,
-            services.resource_resolver,
-            services.module_command_registry,
-            services.object_registry,
             services.view_producer_registry,
-            services.layout_registry,
-            services.layout_resolver,
             services.view_registry,
             services.default_state_builder,
             )
