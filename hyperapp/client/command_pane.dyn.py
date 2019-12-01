@@ -16,11 +16,12 @@ log = logging.getLogger(__name__)
 
 class CommandPaneHandler(ViewHandler):
 
-    def __init__(self, state, path, resource_resolver):
+    def __init__(self, state, path, command_registry, view_opener, resource_resolver):
+        self._command_registry = command_registry
         self._resource_resolver = resource_resolver
 
-    async def create_view(self, command_registry, view_opener=None):
-        return CommandPane(self._resource_resolver, command_registry)
+    async def create_view(self):
+        return CommandPane(self._resource_resolver, self._command_registry)
 
     async def visual_item(self):
         return RootVisualItem('CommandPane')

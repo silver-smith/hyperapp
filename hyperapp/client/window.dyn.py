@@ -23,26 +23,30 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowHandler(ViewHandler):
 
     @classmethod
-    async def from_data(cls, state, path, view_resolver):
-        self = cls(state, path)
+    async def from_data(cls, state, path, command_registry, view_opener, view_resolver):
+        self = cls(state, path, command_registry, view_opener)
         await self._async_init(view_resolver)
         return self
 
-    def __init__(self, state, path):
+    def __init__(self, state, path, command_registry, view_opener):
         super().__init__()
         self._state = state
         self._path = path
+        self._command_registry = command_registry
+        self._view_opener = view_opener
+        self._widget = None
 
     async def _async_init(self, view_resolver):
-        self._menu_bar_handler = await view_resolver.resolve(self._state.menu_bar_ref, [*self._path, 0])
-        self._command_pane_handler = await view_resolver.resolve(self._state.command_pane_ref, [*self._path, 1])
-        self._central_view_handler = await view_resolver.resolve(self._state.central_view_ref, [*self._path, 2])
+        self._menu_bar_handler = await view_resolver.resolve(self._state.menu_bar_ref, [*self._path, 0], self._command_registry, self._view_opener)
+        self._command_pane_handler = await view_resolver.resolve(self._state.command_pane_ref, [*self._path, 1], self._command_registry, self._view_opener)
+        self._central_view_handler = await view_resolver.resolve(self._state.central_view_ref, [*self._path, 2], self._command_registry, self._view_opener)
 
-    async def create_view(self, command_registry, view_opener=None):
-        menu_bar = await self._menu_bar_handler.create_view(command_registry)
-        command_pane = await self._command_pane_handler.create_view(command_registry)
-        central_view = await self._central_view_handler.create_view(command_registry)
-        return Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
+    async def create_view(self):
+        menu_bar = await self._menu_bar_handler.create_view()
+        command_pane = await self._command_pane_handler.create_view()
+        central_view = await self._central_view_handler.create_view()
+        self._widget = Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
+        return self._widget
 
     async def visual_item(self):
         menu_bar = await self._menu_bar_handler.visual_item()
