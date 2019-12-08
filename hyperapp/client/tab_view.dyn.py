@@ -98,7 +98,6 @@ class TabViewHandler(ViewHandler):
     def _update_commands(self, idx):
         if idx == -1:
             return
-        assert 0 <= idx < len(self._tab_list), repr((idx, len(self._tab_list)))
         self._command_registry.set_commands_from_registry(self._tab_list[idx].command_registry)
 
     def _replace_tab(self, idx, view):
