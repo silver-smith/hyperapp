@@ -24,3 +24,12 @@ class CommandRegistry:
 
     def get_commands(self, kind):
         return self._kind_to_command_list.get(kind, [])
+
+    def set_commands_from_registry(self, command_registry):
+        _log.info("Updating all command from registry")
+        self._kind_to_command_list = {**command_registry._kind_to_command_list}
+        for observer in self._observer_set:
+            for kind in ['global', 'view', 'object']:
+                command_list = self._kind_to_command_list.get(kind, [])
+                _log.info("Updating command (calling commands_changing) on %r: %r %r", observer, kind, command_list)
+                observer.commands_changed(kind, command_list)

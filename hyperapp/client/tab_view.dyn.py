@@ -1,4 +1,6 @@
 import logging
+from collections import namedtuple
+
 from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.util import is_list_inst
@@ -8,6 +10,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
+from .command_registry import CommandRegistry
 from .view_handler import InsertVisualItemDiff, RootVisualItem, ViewHandler
 
 log = logging.getLogger(__name__)
@@ -23,47 +26,80 @@ class _ViewOpener:
         self._handler._replace_tab(self._tab_index, view)
 
 
+class _CommandsObserver:
+
+    def __init__(self, handler, tab_idx):
+        self._handler = handler
+        self._tab_idx = tab_idx
+
+    def commands_changed(self, kind, command_list):
+        self._handler._tab_commands_changed(self._tab_idx, kind, command_list)
+
+
 class TabViewHandler(ViewHandler):
+
+    _Tab = namedtuple('_Tab', 'ref commands_observer command_registry handler')
 
     @classmethod
     async def from_data(cls, state, path, command_registry, view_opener, view_resolver):
-        self = cls(state, path, command_registry, view_opener, view_resolver)
-        await self._async_init()
+        self = cls(state.current_tab, path, command_registry, view_opener, view_resolver)
+        await self._async_init(state.tabs)
         return self
 
-    def __init__(self, state, path, command_registry, view_opener, view_resolver):
+    def __init__(self, current_tab_idx, path, command_registry, view_opener, view_resolver):
         super().__init__()
-        self._tab_list = state.tabs
-        self._current_tab = state.current_tab
+        self._current_tab_idx = current_tab_idx  # valid only during construction
         self._path = path
         self._command_registry = command_registry
         self._view_opener = view_opener
         self._view_resolver = view_resolver
-        self._tab_handler_list = None
         self._widget = None
 
-    async def _async_init(self):
-        self._tab_handler_list = [
-            await self._view_resolver.resolve(
-                tab_ref, [*self._path, idx], self._command_registry, _ViewOpener(self, idx))
-            for idx, tab_ref in enumerate(self._tab_list)]
+    async def _async_init(self, tab_ref_list):
+        self._tab_list = [
+            await self._create_tab(tab_idx, tab_ref)
+            for tab_idx, tab_ref in enumerate(tab_ref_list)
+            ]
 
     async def create_view(self):
-        children = [await handler.create_view() for handler in self._tab_handler_list]
-        tab_view = TabView(children, self._current_tab)
+        children = [await tab.handler.create_view() for tab in self._tab_list]
+        tab_view = TabView(children, self._current_tab_idx, on_current_tab_changed=self._update_commands)
         self._widget = tab_view
+        self._update_commands(self._current_tab_idx)
         return tab_view
 
     async def visual_item(self):
         children = [await self._visual_item(idx)
-                    for idx in range(len(self._tab_handler_list))]
+                    for idx in range(len(self._tab_list))]
         return RootVisualItem('TabView', children)
 
     async def _visual_item(self, idx):
-        tab_handler = self._tab_handler_list[idx]
-        child = await tab_handler.visual_item()
+        tab = self._tab_list[idx]
+        child = await tab.handler.visual_item()
         commands = [self._duplicate_tab.partial(idx)]
         return child.to_item(idx, f'tab#{idx}', commands)
+
+    async def _create_tab(self, tab_idx, tab_ref):
+        command_registry = CommandRegistry()
+        opener = _ViewOpener(self, tab_idx)
+        handler = await self._view_resolver.resolve(tab_ref, [*self._path, tab_idx], command_registry, opener)
+        observer = _CommandsObserver(self, tab_idx)
+        command_registry.subscribe(observer)
+        return self._Tab(tab_ref, observer, command_registry, handler)
+
+    def _tab_commands_changed(self, tab_idx, kind, command_list):
+        if not self._widget:
+            return
+        if self._widget.currentIndex() != tab_idx:
+            return
+        command_list = self._tab_list[tab_idx].command_registry.get_commands(kind)
+        self._command_registry.set_commands(kind, command_list)
+
+    def _update_commands(self, idx):
+        if idx == -1:
+            return
+        assert 0 <= idx < len(self._tab_list), repr((idx, len(self._tab_list)))
+        self._command_registry.set_commands_from_registry(self._tab_list[idx].command_registry)
 
     def _replace_tab(self, idx, view):
         if self._widget:
@@ -71,44 +107,45 @@ class TabViewHandler(ViewHandler):
 
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx, item_path):
-        tab_ref = self._tab_list[tab_idx]
         idx = tab_idx + 1
-        tab_handler = await self._view_resolver.resolve(
-            tab_ref, [*self._path, idx], self._command_registry, _ViewOpener(self, idx))
-        self._tab_list.insert(idx, tab_ref)
-        self._tab_handler_list.insert(idx, tab_handler)
+        tab_ref = self._tab_list[tab_idx].ref
+        tab = await self._create_tab(idx, tab_ref)
+        self._tab_list.insert(idx, tab)
         item = await self._visual_item(idx)
         diff = InsertVisualItemDiff([*self._path, idx], item)
         if self._widget:
-            view = await tab_handler.create_view()
+            view = await tab.handler.create_view()
             self._widget._insert_tab(idx, view)
         return diff
 
 
 class TabView(QtWidgets.QTabWidget, View):
 
-    def __init__(self, children, current_tab):
+    def __init__(self, children, current_tab, on_current_tab_changed):
         QtWidgets.QTabWidget.__init__(self)
         View.__init__(self)
+        self._on_current_tab_changed = on_current_tab_changed
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
         self.setElideMode(QtCore.Qt.ElideMiddle)
         for view in children:
             self.addTab(view, view.get_title())
         self.setCurrentIndex(current_tab)
+        self.currentChanged.connect(self._on_current_tab_changed)
+
+    def setVisible(self, visible):
+        QtWidgets.QTabWidget.setVisible(self, visible)
 
     def _replace_tab(self, idx, view):
         old_widget = self.widget(idx)
         self.removeTab(idx)
         old_widget.deleteLater()
         self.insertTab(idx, view.get_widget(), view.get_title())
+        self.setCurrentIndex(idx)  # lost when old tab removed
         view.ensure_has_focus()
 
     def _insert_tab(self, idx, view):
         self.insertTab(idx, view.get_widget(), view.get_title())
         view.ensure_has_focus()
-
-    def setVisible(self, visible):
-        QtWidgets.QTabWidget.setVisible(self, visible)
 
 
 class ThisModule(ClientModule):
