@@ -92,8 +92,8 @@ class TabViewHandler(ViewHandler):
             return
         if self._widget.currentIndex() != tab_idx:
             return
-        command_list = self._tab_list[tab_idx].command_registry.get_commands(kind)
-        self._command_registry.set_commands(kind, command_list)
+        command_list = self._tab_list[tab_idx].command_registry.get_kind_commands(kind)
+        self._command_registry.set_kind_commands(kind, command_list)
 
     def _update_commands(self, idx):
         if idx == -1:

@@ -16,13 +16,13 @@ class CommandRegistry:
     def unsubscribe(self, observer):
         self._observer_set.remove(observer)
 
-    def set_commands(self, kind, command_list):
+    def set_kind_commands(self, kind, command_list):
         self._kind_to_command_list[kind] = command_list
         for observer in self._observer_set:
             _log.info("Updating command (calling commands_changing) on %r: %r %r", observer, kind, command_list)
             observer.commands_changed(kind, command_list)
 
-    def get_commands(self, kind):
+    def get_kind_commands(self, kind):
         return self._kind_to_command_list.get(kind, [])
 
     def set_commands_from_registry(self, command_registry):
