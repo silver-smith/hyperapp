@@ -15,43 +15,6 @@ from .command_registry import CommandRegistry
 
 _log = logging.getLogger(__name__)
 
-LOCALE = 'en'
-
-
-class _CurrentItemObserver:
-
-    def __init__(self, layout_manager, object):
-        self._layout_manager = layout_manager
-        self._object = object
-
-    def current_changed(self, current_item_key):
-        self._layout_manager.update_element_commands(self._object, current_item_key)
-
-
-class History:
-
-    def __init__(self):
-        self._backward = []
-        self._forward = []
-
-    def add_new(self, piece):
-        self._backward.append(piece)
-        self._forward.clear()
-
-    def pop_back(self, current_piece):
-        if not self._backward:
-            return None
-        if current_piece is not None:
-            self._forward.append(current_piece)
-        return self._backward.pop(-1)
-
-    def pop_forward(self, current_piece):
-        if not self._forward:
-            return None
-        if current_piece is not None:
-            self._backward.append(current_piece)
-        return self._forward.pop(-1)
-
 
 class LayoutManager:
 
