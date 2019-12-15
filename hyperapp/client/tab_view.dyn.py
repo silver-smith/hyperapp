@@ -76,7 +76,7 @@ class TabViewHandler(ViewHandler):
     async def _visual_item(self, idx):
         tab = self._tab_list[idx]
         child = await tab.handler.visual_item()
-        commands = [self._duplicate_tab.partial(idx)]
+        commands = [self._visual_duplicate_tab.partial(idx)]
         return child.to_item(idx, f'tab#{idx}', commands)
 
     async def _create_tab(self, tab_idx, tab_ref):
@@ -95,27 +95,40 @@ class TabViewHandler(ViewHandler):
         command_list = self._tab_list[tab_idx].command_registry.get_kind_commands(kind)
         self._command_registry.set_kind_commands(kind, command_list)
 
-    def _update_commands(self, idx):
-        if idx == -1:
+    def _update_commands(self, tab_idx):
+        if tab_idx == -1:
             return
-        self._command_registry.set_commands_from_registry(self._tab_list[idx].command_registry)
+        tab_commands = self._tab_list[tab_idx].command_registry.get_commands()
+        view_command_list = [
+            *tab_commands.get('view', []),
+            self._duplicate_tab.partial(tab_idx),
+            ]
+        commands = {**tab_commands, 'view': view_command_list}
+        self._command_registry.set_commands(commands)
 
-    def _replace_tab(self, idx, view):
+    def _replace_tab(self, tab_idx, view):
         if self._widget:
-            self._widget._replace_tab(idx, view)
+            self._widget._replace_tab(tab_idx, view)
+
+    @command('visual_duplicate_tab')
+    async def _visual_duplicate_tab(self, tab_idx, item_path):
+        new_idx = await self._duplicate_tab_impl(tab_idx)
+        item = await self._visual_item(new_idx)
+        return InsertVisualItemDiff([*self._path, new_idx], item)
 
     @command('duplicate_tab')
-    async def _duplicate_tab(self, tab_idx, item_path):
-        idx = tab_idx + 1
+    async def _duplicate_tab(self, tab_idx):
+        await self._duplicate_tab_impl(tab_idx)
+
+    async def _duplicate_tab_impl(self, tab_idx):
+        new_idx = tab_idx + 1
         tab_ref = self._tab_list[tab_idx].ref
-        tab = await self._create_tab(idx, tab_ref)
-        self._tab_list.insert(idx, tab)
-        item = await self._visual_item(idx)
-        diff = InsertVisualItemDiff([*self._path, idx], item)
+        tab = await self._create_tab(new_idx, tab_ref)
+        self._tab_list.insert(new_idx, tab)
         if self._widget:
             view = await tab.handler.create_view()
-            self._widget._insert_tab(idx, view)
-        return diff
+            self._widget._insert_tab(new_idx, view)
+        return new_idx
 
 
 class TabView(QtWidgets.QTabWidget, View):
@@ -134,16 +147,17 @@ class TabView(QtWidgets.QTabWidget, View):
     def setVisible(self, visible):
         QtWidgets.QTabWidget.setVisible(self, visible)
 
-    def _replace_tab(self, idx, view):
-        old_widget = self.widget(idx)
-        self.removeTab(idx)
+    def _replace_tab(self, tab_idx, view):
+        old_widget = self.widget(tab_idx)
+        self.removeTab(tab_idx)
         old_widget.deleteLater()
-        self.insertTab(idx, view.get_widget(), view.get_title())
-        self.setCurrentIndex(idx)  # lost when old tab removed
+        self.insertTab(tab_idx, view.get_widget(), view.get_title())
+        self.setCurrentIndex(tab_idx)  # lost when old tab removed
         view.ensure_has_focus()
 
-    def _insert_tab(self, idx, view):
-        self.insertTab(idx, view.get_widget(), view.get_title())
+    def _insert_tab(self, tab_idx, view):
+        self.insertTab(tab_idx, view.get_widget(), view.get_title())
+        self.setCurrentIndex(tab_idx)
         view.ensure_has_focus()
 
 

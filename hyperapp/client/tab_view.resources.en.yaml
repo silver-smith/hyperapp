@@ -1,10 +1,15 @@
 module:client.tab_view:TabViewHandler:
   commands:
-    duplicate_tab:
+    visual_duplicate_tab:
       text: Duplicate
       description: Duplicate selected tab
       shortcuts:
       - Ctrl+T
+    duplicate_tab:
+      text: Duplicate
+      description: Duplicate current tab
+      shortcuts:
+      - Alt+T
 
 module:client.tab_view:TabView:
   commands:
