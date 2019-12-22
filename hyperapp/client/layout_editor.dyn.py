@@ -15,7 +15,7 @@ class LayoutEditor(TreeObject):
 
     @classmethod
     async def from_state(cls, state, layout_manager):
-        handler = layout_manager.window_0_handler
+        handler = layout_manager.root_handler
         path2item_list = await cls._load_items(handler)
         return cls(handler, path2item_list)
 

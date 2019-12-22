@@ -1,7 +1,8 @@
 import:
   types:
-    text:
-    - text
+    root_layout:
+    - root_layout
   code:
   - client.layout_registry
+  - client.view_handler
   - client.command_registry

@@ -32,6 +32,7 @@ type_module_list = [
     'menu_bar',
     'command_pane',
     'window',
+    'root_layout',
     # 'server_management',
     # 'code_repository',
     'text',

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from collections import namedtuple
 from functools import partial
 
 from PySide2 import QtCore, QtWidgets
@@ -9,11 +10,60 @@ from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import ref_repr
 from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
+
 from . import htypes
+from .view_handler import RootVisualItem, ViewHandler
 from .layout_registry import LayoutViewProducer
 from .command_registry import CommandRegistry
 
 _log = logging.getLogger(__name__)
+
+
+class RootHandler(ViewHandler):
+
+    _WindowRec = namedtuple('_WindowRec', 'ref command_registry handler')
+
+    @classmethod
+    async def from_data(cls, state, path, command_registry, view_opener, view_resolver):
+        self = cls(path, view_resolver)
+        await self._async_init(state.window_ref_list)
+        return self
+
+    def __init__(self, path, view_resolver):
+        super().__init__()
+        self._path = path
+        self._view_resolver = view_resolver
+        self._window_list = None
+
+    async def _async_init(self, window_ref_list):
+        self._window_rec_list = [
+            await self._create_window_rec(idx, ref)
+            for idx, ref in enumerate(window_ref_list)
+            ]
+
+    async def create_view(self):
+        self._window_list = window_list = [
+            await rec.handler.create_view()
+            for rec in self._window_rec_list
+            ]
+        for window in window_list:
+            window.show()
+        return window_list
+
+    async def visual_item(self):
+        children = [
+            await rec.handler.visual_item()
+            for rec in self._window_rec_list
+            ]
+        return RootVisualItem('Root', children=[
+            child.to_item(idx, f'window#{idx}')
+            for idx, child in enumerate(children)
+            ])
+
+    async def _create_window_rec(self, idx, ref):
+        command_registry = CommandRegistry()
+        handler = await self._view_resolver.resolve(ref, [*self._path, idx], command_registry, None)
+        return self._WindowRec(ref, command_registry, handler)
 
 
 class LayoutManager:
@@ -27,21 +77,18 @@ class LayoutManager:
         self._view_producer_registry = view_producer_registry
         self._view_registry = view_registry
         self._default_state_builder = default_state_builder
-        self._window_list = []
-        self._command_registry = CommandRegistry()
-        self._window_0_handler = None
+        self._root_handler = None
+        self._window_list = None
 
     async def build_default_layout(self, app):
-        state = self._default_state_builder()
-        window_state = state[0]
-        self._window_0_handler = window_handler = await self._view_registry.resolve_async(window_state, [0], self._command_registry, None)
-        window = await window_handler.create_view()
-        window.show()
-        self._window_list.append(window)
+        root_state = self._default_state_builder()
+        # root path is expected by layout editor to be [0]
+        self._root_handler = handler = await self._view_registry.resolve_async(root_state, [0], None, None)
+        self._window_list = await handler.create_view()
 
     @property
-    def window_0_handler(self):
-        return self._window_0_handler
+    def root_handler(self):
+        return self._root_handler
 
     async def produce_view(self, piece, object, observer=None):
         return (await self._view_producer_registry.produce_view(piece, object, observer))
@@ -77,5 +124,6 @@ class ThisModule(ClientModule):
             services.view_registry,
             services.default_state_builder,
             )
+        services.view_registry.register_type(htypes.root_layout.root_layout, RootHandler.from_data, services.view_resolver)
         services.view_producer = ViewProducer(layout_manager)
         services.view_opener = ViewOpener(layout_manager)
