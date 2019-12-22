@@ -11,30 +11,30 @@ module:client.tab_view:TabViewHandler:
       shortcuts:
       - Alt+T
 
-module:client.tab_view:TabView:
-  commands:
-    duplicate_tab:
-      text: Duplicate tab
-      description: Duplicate current tab
-      shortcuts:
-      - Ctrl+T
-    close_tab:
-      text: Close tab
-      description: Close current tab
-      shortcuts:
-      - Ctrl+F4
-    split_horizontally:
-      text: '&Split horizontally'
-      description: Split horizontally
-      shortcuts:
-      - Alt+S
-    split_vertically:
-      text: Split &vertically
-      description: Split vertically
-      shortcuts:
-      - Shift+Alt+S
-    unsplit:
-      text: '&Unsplit'
-      desc: Unsplit
-      shortcuts:
-      - Alt+U
+# module:client.tab_view:TabView:
+#   commands:
+#     duplicate_tab:
+#       text: Duplicate tab
+#       description: Duplicate current tab
+#       shortcuts:
+#       - Ctrl+T
+#     close_tab:
+#       text: Close tab
+#       description: Close current tab
+#       shortcuts:
+#       - Ctrl+F4
+#     split_horizontally:
+#       text: '&Split horizontally'
+#       description: Split horizontally
+#       shortcuts:
+#       - Alt+S
+#     split_vertically:
+#       text: Split &vertically
+#       description: Split vertically
+#       shortcuts:
+#       - Shift+Alt+S
+#     unsplit:
+#       text: '&Unsplit'
+#       desc: Unsplit
+#       shortcuts:
+#       - Alt+U
