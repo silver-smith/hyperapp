@@ -118,7 +118,8 @@ class TabViewHandler(ViewHandler):
 
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx):
-        await self._duplicate_tab_impl(tab_idx)
+        new_idx = await self._duplicate_tab_impl(tab_idx)
+        self._widget.setCurrentIndex(new_idx)
 
     async def _duplicate_tab_impl(self, tab_idx):
         new_idx = tab_idx + 1
@@ -157,7 +158,6 @@ class TabView(QtWidgets.QTabWidget, View):
 
     def _insert_tab(self, tab_idx, view):
         self.insertTab(tab_idx, view.get_widget(), view.get_title())
-        self.setCurrentIndex(tab_idx)
         view.ensure_has_focus()
 
 
