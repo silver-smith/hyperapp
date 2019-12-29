@@ -41,18 +41,19 @@ class TabViewHandler(ViewHandler):
     _Tab = namedtuple('_Tab', 'ref commands_observer command_registry handler')
 
     @classmethod
-    async def from_data(cls, state, path, command_registry, view_opener, view_resolver):
-        self = cls(state.current_tab, path, command_registry, view_opener, view_resolver)
+    async def from_data(cls, state, path, command_registry, view_opener, ref_registry, view_resolver):
+        self = cls(ref_registry, view_resolver, state.current_tab, path, command_registry, view_opener)
         await self._async_init(state.tabs)
         return self
 
-    def __init__(self, current_tab_idx, path, command_registry, view_opener, view_resolver):
+    def __init__(self, ref_registry, view_resolver, current_tab_idx, path, command_registry, view_opener):
         super().__init__()
+        self._ref_registry = ref_registry
+        self._view_resolver = view_resolver
         self._current_tab_idx = current_tab_idx  # valid only during construction
         self._path = path
         self._command_registry = command_registry
         self._view_opener = view_opener
-        self._view_resolver = view_resolver
         self._widget = None
 
     async def _async_init(self, tab_ref_list):
@@ -60,6 +61,18 @@ class TabViewHandler(ViewHandler):
             await self._create_tab(tab_idx, tab_ref)
             for tab_idx, tab_ref in enumerate(tab_ref_list)
             ]
+
+    def get_view_ref(self):
+        tab_refs = [tab.handler.get_view_ref() for tab in self._tab_list]
+        if self._widget:
+            if self._widget.currentIndex() != -1:
+                current_tab = self._widget.currentIndex()
+            else:
+                current_tab = 0
+        else:
+            current_tab = self._current_tab_idx
+        view = htypes.tab_view.tab_view(tab_refs, current_tab)
+        return self._ref_registry.register_object(view)
 
     async def create_view(self):
         children = [await tab.handler.create_view() for tab in self._tab_list]
@@ -165,4 +178,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.tab_view.tab_view, TabViewHandler.from_data, services.view_resolver)
+        services.view_registry.register_type(
+            htypes.tab_view.tab_view, TabViewHandler.from_data, services.ref_registry, services.view_resolver)

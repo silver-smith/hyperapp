@@ -32,9 +32,13 @@ class Application(AsyncApplication, Commander):
     def run_event_loop(self):
         self.event_loop.run_until_complete(self._async_init())
         AsyncApplication.run_event_loop(self)
+        self._save_state()
 
     def get_state(self):
-        return [view.get_state() for view in self._windows]
+        root_layout_ref = self._layout_manager.root_handler.get_view_ref()
+        return self._state_storage.state_t(
+            root_layout_ref=root_layout_ref,
+            )
 
     # async def open_windows(self, state):
     #     for s in state or []:
@@ -46,23 +50,17 @@ class Application(AsyncApplication, Commander):
     def get_global_commands(self):
         return self._commands
 
-    def window_created(self, view):
-        self._windows.append(view)
+    # def stop(self):
+    #     # self._state_storage.save_state(state)
+    #     self.stop_loop()
 
-    def window_closed(self, view):
-        state = self.get_state()
-        self._windows.remove(view)
-        if not self._windows:  # Was it the last window? Then it is time to exit
-            self._state_storage.save_state(state)
-            self.stop_loop()
+    # @command('quit')
+    # def quit(self):
+    #     ## module.set_shutdown_flag()
+    #     state = self.get_state()
+    #     self._state_storage.save_state(state)
+    #     self.stop_loop()
 
-    def stop(self):
-        # self._state_storage.save_state(state)
-        self.stop_loop()
-
-    @command('quit')
-    def quit(self):
-        ## module.set_shutdown_flag()
+    def _save_state(self):
         state = self.get_state()
         self._state_storage.save_state(state)
-        self.stop_loop()

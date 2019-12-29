@@ -33,6 +33,7 @@ type_module_list = [
     'command_pane',
     'window',
     'root_layout',
+    'application_state',
     # 'server_management',
     # 'code_repository',
     'text',

@@ -38,6 +38,10 @@ class ViewHandler(Commander, metaclass=abc.ABCMeta):
         super().__init__(commands_kind='view')
 
     @abc.abstractmethod
+    def get_view_ref(self):
+        pass
+
+    @abc.abstractmethod
     async def create_view(self):
         pass
 

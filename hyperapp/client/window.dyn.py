@@ -23,29 +23,48 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowHandler(ViewHandler):
 
     @classmethod
-    async def from_data(cls, state, path, command_registry, view_opener, view_resolver):
-        self = cls(state, path, command_registry, view_opener)
-        await self._async_init(view_resolver)
+    async def from_data(cls, state, path, command_registry, view_opener, ref_registry, view_resolver):
+        self = cls(ref_registry, command_registry, view_opener, path, state.pos, state.size)
+        await self._async_init(view_resolver, state)
         return self
 
-    def __init__(self, state, path, command_registry, view_opener):
+    def __init__(self, ref_registry, command_registry, view_opener, path, pos, size):
         super().__init__()
-        self._state = state
-        self._path = path
+        self._ref_registry = ref_registry
         self._command_registry = command_registry
         self._view_opener = view_opener
+        self._path = path
+        self._pos = pos
+        self._size = size
         self._widget = None
 
-    async def _async_init(self, view_resolver):
-        self._menu_bar_handler = await view_resolver.resolve(self._state.menu_bar_ref, [*self._path, 0], self._command_registry, self._view_opener)
-        self._command_pane_handler = await view_resolver.resolve(self._state.command_pane_ref, [*self._path, 1], self._command_registry, self._view_opener)
-        self._central_view_handler = await view_resolver.resolve(self._state.central_view_ref, [*self._path, 2], self._command_registry, self._view_opener)
+    async def _async_init(self, view_resolver, state):
+        self._menu_bar_handler = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 0], self._command_registry, self._view_opener)
+        self._command_pane_handler = await view_resolver.resolve(state.command_pane_ref, [*self._path, 1], self._command_registry, self._view_opener)
+        self._central_view_handler = await view_resolver.resolve(state.central_view_ref, [*self._path, 2], self._command_registry, self._view_opener)
+
+    def get_view_ref(self):
+        if self._widget:
+            qsize = self._widget.size()
+            size = htypes.window.size(qsize.width(), qsize.height())
+            qpos = self._widget.pos()
+            pos = htypes.window.pos(qpos.x(), qpos.y())
+        else:
+            size, pos = self._size, self._pos
+        window = htypes.window.window(
+            menu_bar_ref=self._menu_bar_handler.get_view_ref(),
+            command_pane_ref=self._command_pane_handler.get_view_ref(),
+            central_view_ref=self._central_view_handler.get_view_ref(),
+            size=size,
+            pos=pos,
+            )
+        return self._ref_registry.register_object(window)
 
     async def create_view(self):
         menu_bar = await self._menu_bar_handler.create_view()
         command_pane = await self._command_pane_handler.create_view()
         central_view = await self._central_view_handler.create_view()
-        self._widget = Window(menu_bar, command_pane, central_view, self._state.size, self._state.pos)
+        self._widget = Window(menu_bar, command_pane, central_view, self._size, self._pos)
         return self._widget
 
     async def visual_item(self):
@@ -133,4 +152,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.window.window, WindowHandler.from_data, services.view_resolver)
+        services.view_registry.register_type(htypes.window.window, WindowHandler.from_data, services.ref_registry, services.view_resolver)

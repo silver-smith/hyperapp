@@ -24,15 +24,16 @@ class RootHandler(ViewHandler):
     _WindowRec = namedtuple('_WindowRec', 'ref command_registry handler')
 
     @classmethod
-    async def from_data(cls, state, path, command_registry, view_opener, view_resolver):
-        self = cls(path, view_resolver)
+    async def from_data(cls, state, path, command_registry, view_opener, ref_registry, view_resolver):
+        self = cls(ref_registry, view_resolver, path)
         await self._async_init(state.window_ref_list)
         return self
 
-    def __init__(self, path, view_resolver):
+    def __init__(self, ref_registry, view_resolver, path):
         super().__init__()
-        self._path = path
+        self._ref_registry = ref_registry
         self._view_resolver = view_resolver
+        self._path = path
         self._window_list = None
 
     async def _async_init(self, window_ref_list):
@@ -40,6 +41,11 @@ class RootHandler(ViewHandler):
             await self._create_window_rec(idx, ref)
             for idx, ref in enumerate(window_ref_list)
             ]
+
+    def get_view_ref(self):
+        window_ref_list = [rec.handler.get_view_ref() for rec in self._window_rec_list]
+        root_layout = htypes.root_layout.root_layout(window_ref_list)
+        return self._ref_registry.register_object(root_layout)
 
     async def create_view(self):
         self._window_list = window_list = [
@@ -124,6 +130,7 @@ class ThisModule(ClientModule):
             services.view_registry,
             services.default_state_builder,
             )
-        services.view_registry.register_type(htypes.root_layout.root_layout, RootHandler.from_data, services.view_resolver)
+        services.view_registry.register_type(
+            htypes.root_layout.root_layout, RootHandler.from_data, services.ref_registry, services.view_resolver)
         services.view_producer = ViewProducer(layout_manager)
         services.view_opener = ViewOpener(layout_manager)

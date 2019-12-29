@@ -86,7 +86,6 @@ class LayoutEditor(TreeObject):
             raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
 
 
-
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):

@@ -1,0 +1,3 @@
+
+application_state = record:
+  root_layout_ref: ref
