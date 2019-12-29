@@ -29,6 +29,10 @@ class Application(AsyncApplication, Commander):
         await self.services.async_init()
         await self._layout_manager.build_default_layout(self)
 
+    def run_event_loop(self):
+        self.event_loop.run_until_complete(self._async_init())
+        AsyncApplication.run_event_loop(self)
+
     def get_state(self):
         return [view.get_state() for view in self._windows]
 
@@ -62,7 +66,3 @@ class Application(AsyncApplication, Commander):
         state = self.get_state()
         self._state_storage.save_state(state)
         self.stop_loop()
-
-    def run_event_loop(self):
-        self.event_loop.run_until_complete(self._async_init())
-        AsyncApplication.run_event_loop(self)
