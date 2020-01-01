@@ -52,18 +52,31 @@ class _CurrentItemObserver:
 
 class NavigatorHandler(ViewHandler):
 
-    def __init__(self, state, path, command_registry, view_opener,
-                 ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
+    @classmethod
+    async def from_data(cls,
+                        state, path, command_registry, view_opener,
+                        ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
+        self = cls(ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver,
+                   path, command_registry, view_opener)
+        await self._async_init(state.current_piece_ref)
+        return self
+
+    def __init__(self,
+                 ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver,
+                 path, command_registry, view_opener):
         super().__init__()
         self._ref_registry = ref_registry
         self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry
         self._module_command_registry = module_command_registry
         self._async_ref_resolver = async_ref_resolver
-        self._initial_piece_ref = state.current_piece_ref
         self._command_registry = command_registry
         self._view_opener = view_opener
         self._history = _History()
+
+    async def _async_init(self, initial_piece_ref):
+        self._initial_piece = piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
+        self._history.append(piece)
 
     def get_view_ref(self):
         current_piece_ref = self._ref_registry.register_object(self._history.current_piece)
@@ -71,12 +84,11 @@ class NavigatorHandler(ViewHandler):
         return self._ref_registry.register_object(view)
 
     async def create_view(self):
-        piece = await self._async_ref_resolver.resolve_ref_to_object(self._initial_piece_ref)
+        piece = self._initial_piece
         object = await self._object_registry.resolve_async(piece)
         self._command_registry.set_kind_commands('view', list(self._get_view_commands()))
         self._command_registry.set_kind_commands('global', list(self._get_global_commands()))
         self._command_registry.set_kind_commands('object', list(self._get_object_commands(object)))
-        self._history.append(piece)
         return (await self._view_producer_registry.produce_view(piece, object))
 
     async def visual_item(self):
@@ -144,7 +156,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.view_registry.register_type(
             htypes.navigator.navigator,
-            NavigatorHandler,
+            NavigatorHandler.from_data,
             services.ref_registry,
             services.object_registry,
             services.view_producer_registry,
