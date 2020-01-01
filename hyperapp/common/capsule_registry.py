@@ -1,3 +1,4 @@
+import inspect
 import logging
 
 from .htypes import Type, ref_t, capsule_t
@@ -53,6 +54,7 @@ class CapsuleRegistry(RegistryBase):
         log.info('Producing %s for %s of type %s using %s(%s/%s, %s/%s) for object %r',
                  self._produce_name, object, ref_repr(type_ref),
                  rec.factory, rec.args, args, rec.kw, kw, object)
+        assert not inspect.iscoroutinefunction(rec.factory), f"Use resolve_async to resolve async factories: {rec.factory!r}"
         return rec.factory(object, *(*args, *rec.args), **{**kw, **rec.kw})
 
 
