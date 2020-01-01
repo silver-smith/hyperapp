@@ -72,7 +72,7 @@ class NavigatorHandler(ViewHandler):
 
     async def create_view(self):
         piece = await self._async_ref_resolver.resolve_ref_to_object(self._initial_piece_ref)
-        object = self._object_registry.resolve(piece)
+        object = await self._object_registry.resolve_async(piece)
         self._command_registry.set_kind_commands('view', list(self._get_view_commands()))
         self._command_registry.set_kind_commands('global', list(self._get_global_commands()))
         self._command_registry.set_kind_commands('object', list(self._get_object_commands(object)))
