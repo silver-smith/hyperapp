@@ -17,7 +17,9 @@ class Application(AsyncApplication, Commander):
         AsyncApplication.__init__(self, sys_argv)
         Commander.__init__(self, commands_kind='view')
         self.services = Services(self.event_loop)
+        self._async_ref_resolver = self.services.async_ref_resolver
         self._layout_manager = self.services.layout_manager
+        self._default_state_builder = self.services.default_state_builder
         self._module_command_registry = self.services.module_command_registry
         self._remoting = self.services.remoting
         self._resource_resolver = self.services.resource_resolver
@@ -27,14 +29,19 @@ class Application(AsyncApplication, Commander):
 
     async def _async_init(self):
         await self.services.async_init()
-        await self._layout_manager.build_default_layout(self)
+        app_state = self._state_storage.load_state()
+        if app_state:
+            root_view_state = await self._async_ref_resolver.resolve_ref_to_object(app_state.root_layout_ref)
+        else:
+            root_view_state = self._default_state_builder()
+        await self._layout_manager.create_layout_views(root_view_state)
 
     def run_event_loop(self):
         self.event_loop.run_until_complete(self._async_init())
         AsyncApplication.run_event_loop(self)
         self._save_state()
 
-    def get_state(self):
+    def get_current_state(self):
         root_layout_ref = self._layout_manager.root_handler.get_view_ref()
         return self._state_storage.state_t(
             root_layout_ref=root_layout_ref,
@@ -62,5 +69,5 @@ class Application(AsyncApplication, Commander):
     #     self.stop_loop()
 
     def _save_state(self):
-        state = self.get_state()
+        state = self.get_current_state()
         self._state_storage.save_state(state)

@@ -78,18 +78,15 @@ class LayoutManager:
             self,
             view_producer_registry,
             view_registry,
-            default_state_builder,
             ):
         self._view_producer_registry = view_producer_registry
         self._view_registry = view_registry
-        self._default_state_builder = default_state_builder
         self._root_handler = None
         self._window_list = None
 
-    async def build_default_layout(self, app):
-        root_state = self._default_state_builder()
+    async def create_layout_views(self, root_view):
         # root path is expected by layout editor to be [0]
-        self._root_handler = handler = await self._view_registry.resolve_async(root_state, [0], None, None)
+        self._root_handler = handler = await self._view_registry.resolve_async(root_view, [0], None, None)
         self._window_list = await handler.create_view()
 
     @property
@@ -128,7 +125,6 @@ class ThisModule(ClientModule):
         services.layout_manager = layout_manager = LayoutManager(
             services.view_producer_registry,
             services.view_registry,
-            services.default_state_builder,
             )
         services.view_registry.register_type(
             htypes.root_layout.root_layout, RootHandler.from_data, services.ref_registry, services.view_resolver)

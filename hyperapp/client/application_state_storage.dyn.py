@@ -32,16 +32,16 @@ class ApplicationStateStorage(object):
         bundle = ref_collector.make_bundle([state_ref])
         save_bundle_to_file(bundle, STATE_FILE_PATH)
 
-    # def load_state(self):
-    #     try:
-    #         bundle = load_bundle_from_file(STATE_FILE_PATH)
-    #         self._unbundler.register_bundle(bundle)
-    #         assert len(bundle.roots) == 1
-    #         state_ref = bundle.roots[0]
-    #         return self._type_resolver.resolve_ref(state_ref).value
-    #     except (FileNotFoundError, DecodeError) as x:
-    #         log.info('Error loading %s: %r', STATE_FILE_PATH, x)
-    #         return None
+    def load_state(self):
+        try:
+            bundle = load_bundle_from_file(STATE_FILE_PATH)
+            self._unbundler.register_bundle(bundle)
+            assert len(bundle.roots) == 1
+            state_ref = bundle.roots[0]
+            return self._type_resolver.resolve_ref(state_ref).value
+        except (FileNotFoundError, DecodeError) as x:
+            log.info('Error loading %s: %r', STATE_FILE_PATH, x)
+            return None
         
 
 class ThisModule(ClientModule):
