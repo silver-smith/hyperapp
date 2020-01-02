@@ -32,6 +32,11 @@ class InsertVisualItemDiff(VisualItemDiff):
     item: VisualItem
 
 
+@dataclass
+class RemoveVisualItemDiff(VisualItemDiff):
+    path: List[int]
+
+
 class ViewHandler(Commander, metaclass=abc.ABCMeta):
 
     def __init__(self):

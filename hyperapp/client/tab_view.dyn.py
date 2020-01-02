@@ -11,7 +11,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
 from .command_registry import CommandRegistry
-from .view_handler import InsertVisualItemDiff, RootVisualItem, ViewHandler
+from .view_handler import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, ViewHandler
 
 log = logging.getLogger(__name__)
 
@@ -89,7 +89,10 @@ class TabViewHandler(ViewHandler):
     async def _visual_item(self, idx):
         tab = self._tab_list[idx]
         child = await tab.handler.visual_item()
-        commands = [self._visual_duplicate_tab.partial(idx)]
+        commands = [
+            self._visual_duplicate_tab.partial(idx),
+            self._visual_close_tab.partial(idx),
+            ]
         return child.to_item(idx, f'tab#{idx}', commands)
 
     async def _create_tab(self, tab_idx, tab_ref):
@@ -115,6 +118,7 @@ class TabViewHandler(ViewHandler):
         view_command_list = [
             *tab_commands.get('view', []),
             self._duplicate_tab.partial(tab_idx),
+            self._close_tab.partial(tab_idx),
             ]
         commands = {**tab_commands, 'view': view_command_list}
         self._command_registry.set_commands(commands)
@@ -141,8 +145,20 @@ class TabViewHandler(ViewHandler):
         self._tab_list.insert(new_idx, tab)
         if self._widget:
             view = await tab.handler.create_view()
-            self._widget._insert_tab(new_idx, view)
+            self._widget.insert_tab(new_idx, view)
         return new_idx
+
+    @command('visual_close_tab')
+    def _visual_close_tab(self, tab_idx, item_path):
+        del self._tab_list[tab_idx]
+        if self._widget:
+            self._widget.remove_tab(tab_idx)
+        return RemoveVisualItemDiff([*self._path, tab_idx])
+
+    @command('close_tab')
+    def _close_tab(self, tab_idx):
+        del self._tab_list[tab_idx]
+        self._widget.remove_tab(tab_idx)
 
 
 class TabView(QtWidgets.QTabWidget, View):
@@ -169,9 +185,14 @@ class TabView(QtWidgets.QTabWidget, View):
         self.setCurrentIndex(tab_idx)  # lost when old tab removed
         view.ensure_has_focus()
 
-    def _insert_tab(self, tab_idx, view):
+    def insert_tab(self, tab_idx, view):
         self.insertTab(tab_idx, view.get_widget(), view.get_title())
         view.ensure_has_focus()
+
+    def remove_tab(self, tab_idx):
+        old_widget = self.widget(tab_idx)
+        self.removeTab(tab_idx)
+        old_widget.deleteLater()
 
 
 class ThisModule(ClientModule):

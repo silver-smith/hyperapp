@@ -4,9 +4,9 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_handler import InsertVisualItemDiff
+from .view_handler import InsertVisualItemDiff, RemoveVisualItemDiff
 from .column import Column
-from .tree_object import InsertItemDiff, TreeObject
+from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject
 
 _log = logging.getLogger(__name__)
 
@@ -82,6 +82,8 @@ class LayoutEditor(TreeObject):
             add_item(vdiff.path, vdiff.item)
             diff = InsertItemDiff(vdiff.path[-1], vdiff.item)
             self._distribute_diff(vdiff.path[:-1], diff)
+        elif isinstance(vdiff, RemoveVisualItemDiff):
+            self._distribute_diff(vdiff.path, RemoveItemDiff())
         else:
             raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
 

@@ -4,12 +4,22 @@ module:client.tab_view:TabViewHandler:
       text: Duplicate
       description: Duplicate selected tab
       shortcuts:
-      - Ctrl+T
+      - Ctrl+D
+    visual_close_tab:
+      text: Remove
+      description: Remove selected tab
+      shortcuts:
+      - Del
     duplicate_tab:
       text: Duplicate
       description: Duplicate current tab
       shortcuts:
       - Alt+T
+    close_tab:
+      text: Close tab
+      description: Close current tab
+      shortcuts:
+      - Ctrl+F4
 
 # module:client.tab_view:TabView:
 #   commands:
