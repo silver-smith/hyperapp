@@ -86,7 +86,7 @@ code_module_list = [
     'client.list_object',
     'client.tree_object',
     # 'client.splitter',
-    'client.command_registry',
+    'client.command_hub',
     'client.view_registry',
     'client.view_handler',
     'client.default_state_builder',

@@ -23,15 +23,15 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowHandler(ViewHandler):
 
     @classmethod
-    async def from_data(cls, state, path, command_registry, view_opener, ref_registry, view_resolver):
-        self = cls(ref_registry, command_registry, view_opener, path, state.pos, state.size)
+    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver):
+        self = cls(ref_registry, command_hub, view_opener, path, state.pos, state.size)
         await self._async_init(view_resolver, state)
         return self
 
-    def __init__(self, ref_registry, command_registry, view_opener, path, pos, size):
+    def __init__(self, ref_registry, command_hub, view_opener, path, pos, size):
         super().__init__()
         self._ref_registry = ref_registry
-        self._command_registry = command_registry
+        self._command_hub = command_hub
         self._view_opener = view_opener
         self._path = path
         self._pos = pos
@@ -39,9 +39,9 @@ class WindowHandler(ViewHandler):
         self._widget = None
 
     async def _async_init(self, view_resolver, state):
-        self._menu_bar_handler = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 0], self._command_registry, self._view_opener)
-        self._command_pane_handler = await view_resolver.resolve(state.command_pane_ref, [*self._path, 1], self._command_registry, self._view_opener)
-        self._central_view_handler = await view_resolver.resolve(state.central_view_ref, [*self._path, 2], self._command_registry, self._view_opener)
+        self._menu_bar_handler = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 0], self._command_hub, self._view_opener)
+        self._command_pane_handler = await view_resolver.resolve(state.command_pane_ref, [*self._path, 1], self._command_hub, self._view_opener)
+        self._central_view_handler = await view_resolver.resolve(state.central_view_ref, [*self._path, 2], self._command_hub, self._view_opener)
 
     def get_view_ref(self):
         if self._widget:

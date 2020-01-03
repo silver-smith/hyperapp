@@ -4,5 +4,5 @@ import:
     - tab_view
   code:
   - client.view
-  - client.command_registry
+  - client.command_hub
   - client.view_handler

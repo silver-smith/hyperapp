@@ -14,17 +14,17 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view_handler import RootVisualItem, ViewHandler
 from .layout_registry import LayoutViewProducer
-from .command_registry import CommandRegistry
+from .command_hub import CommandHub
 
 _log = logging.getLogger(__name__)
 
 
 class RootHandler(ViewHandler):
 
-    _WindowRec = namedtuple('_WindowRec', 'ref command_registry handler')
+    _WindowRec = namedtuple('_WindowRec', 'ref command_hub handler')
 
     @classmethod
-    async def from_data(cls, state, path, command_registry, view_opener, ref_registry, view_resolver):
+    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver):
         self = cls(ref_registry, view_resolver, path)
         await self._async_init(state.window_ref_list)
         return self
@@ -67,9 +67,9 @@ class RootHandler(ViewHandler):
             ])
 
     async def _create_window_rec(self, idx, ref):
-        command_registry = CommandRegistry()
-        handler = await self._view_resolver.resolve(ref, [*self._path, idx], command_registry, None)
-        return self._WindowRec(ref, command_registry, handler)
+        command_hub = CommandHub()
+        handler = await self._view_resolver.resolve(ref, [*self._path, idx], command_hub, None)
+        return self._WindowRec(ref, command_hub, handler)
 
 
 class LayoutManager:

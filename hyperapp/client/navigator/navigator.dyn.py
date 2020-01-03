@@ -54,23 +54,23 @@ class NavigatorHandler(ViewHandler):
 
     @classmethod
     async def from_data(cls,
-                        state, path, command_registry, view_opener,
+                        state, path, command_hub, view_opener,
                         ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
         self = cls(ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver,
-                   path, command_registry, view_opener)
+                   path, command_hub, view_opener)
         await self._async_init(state.current_piece_ref)
         return self
 
     def __init__(self,
                  ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver,
-                 path, command_registry, view_opener):
+                 path, command_hub, view_opener):
         super().__init__()
         self._ref_registry = ref_registry
         self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry
         self._module_command_registry = module_command_registry
         self._async_ref_resolver = async_ref_resolver
-        self._command_registry = command_registry
+        self._command_hub = command_hub
         self._view_opener = view_opener
         self._history = _History()
 
@@ -86,9 +86,9 @@ class NavigatorHandler(ViewHandler):
     async def create_view(self):
         piece = self._initial_piece
         object = await self._object_registry.resolve_async(piece)
-        self._command_registry.set_kind_commands('view', list(self._get_view_commands()))
-        self._command_registry.set_kind_commands('global', list(self._get_global_commands()))
-        self._command_registry.set_kind_commands('object', list(self._get_object_commands(object)))
+        self._command_hub.set_kind_commands('view', list(self._get_view_commands()))
+        self._command_hub.set_kind_commands('global', list(self._get_global_commands()))
+        self._command_hub.set_kind_commands('object', list(self._get_object_commands(object)))
         return (await self._view_producer_registry.produce_view(piece, object))
 
     async def visual_item(self):
@@ -127,11 +127,11 @@ class NavigatorHandler(ViewHandler):
         self._current_item_observer = observer = _CurrentItemObserver(self, object)
         view = await self._view_producer_registry.produce_view(piece, object, observer)
         self._view_opener.open(view)
-        self._command_registry.set_kind_commands('object', list(self._get_object_commands(object)))
-        self._command_registry.set_kind_commands('element', [])
+        self._command_hub.set_kind_commands('object', list(self._get_object_commands(object)))
+        self._command_hub.set_kind_commands('element', [])
 
     def _update_element_commands(self, object, current_item_key):
-        self._command_registry.set_kind_commands('element', list(self._get_element_commands(object, current_item_key)))
+        self._command_hub.set_kind_commands('element', list(self._get_element_commands(object, current_item_key)))
 
     @command('go_backward')
     async def _go_backward(self):

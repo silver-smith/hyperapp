@@ -10,7 +10,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .command_registry import CommandRegistry
+from .command_hub import CommandHub
 from .view_handler import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, ViewHandler
 
 log = logging.getLogger(__name__)
@@ -38,21 +38,21 @@ class _CommandsObserver:
 
 class TabViewHandler(ViewHandler):
 
-    _Tab = namedtuple('_Tab', 'ref commands_observer command_registry handler')
+    _Tab = namedtuple('_Tab', 'ref commands_observer command_hub handler')
 
     @classmethod
-    async def from_data(cls, state, path, command_registry, view_opener, ref_registry, view_resolver):
-        self = cls(ref_registry, view_resolver, state.current_tab, path, command_registry, view_opener)
+    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver):
+        self = cls(ref_registry, view_resolver, state.current_tab, path, command_hub, view_opener)
         await self._async_init(state.tabs)
         return self
 
-    def __init__(self, ref_registry, view_resolver, current_tab_idx, path, command_registry, view_opener):
+    def __init__(self, ref_registry, view_resolver, current_tab_idx, path, command_hub, view_opener):
         super().__init__()
         self._ref_registry = ref_registry
         self._view_resolver = view_resolver
         self._current_tab_idx = current_tab_idx  # valid only during construction
         self._path = path
-        self._command_registry = command_registry
+        self._command_hub = command_hub
         self._view_opener = view_opener
         self._widget = None
 
@@ -96,32 +96,32 @@ class TabViewHandler(ViewHandler):
         return child.to_item(idx, f'tab#{idx}', commands)
 
     async def _create_tab(self, tab_idx, tab_ref):
-        command_registry = CommandRegistry()
+        command_hub = CommandHub()
         opener = _ViewOpener(self, tab_idx)
-        handler = await self._view_resolver.resolve(tab_ref, [*self._path, tab_idx], command_registry, opener)
+        handler = await self._view_resolver.resolve(tab_ref, [*self._path, tab_idx], command_hub, opener)
         observer = _CommandsObserver(self, tab_idx)
-        command_registry.subscribe(observer)
-        return self._Tab(tab_ref, observer, command_registry, handler)
+        command_hub.subscribe(observer)
+        return self._Tab(tab_ref, observer, command_hub, handler)
 
     def _tab_commands_changed(self, tab_idx, kind, command_list):
         if not self._widget:
             return
         if self._widget.currentIndex() != tab_idx:
             return
-        command_list = self._tab_list[tab_idx].command_registry.get_kind_commands(kind)
-        self._command_registry.set_kind_commands(kind, command_list)
+        command_list = self._tab_list[tab_idx].command_hub.get_kind_commands(kind)
+        self._command_hub.set_kind_commands(kind, command_list)
 
     def _update_commands(self, tab_idx):
         if tab_idx == -1:
             return
-        tab_commands = self._tab_list[tab_idx].command_registry.get_commands()
+        tab_commands = self._tab_list[tab_idx].command_hub.get_commands()
         view_command_list = [
             *tab_commands.get('view', []),
             self._duplicate_tab.partial(tab_idx),
             self._close_tab.partial(tab_idx),
             ]
         commands = {**tab_commands, 'view': view_command_list}
-        self._command_registry.set_commands(commands)
+        self._command_hub.set_commands(commands)
 
     def _replace_tab(self, tab_idx, view):
         if self._widget:

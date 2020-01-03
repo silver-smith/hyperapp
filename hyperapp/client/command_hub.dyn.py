@@ -4,7 +4,7 @@ import weakref
 _log = logging.getLogger(__name__)
 
 
-class CommandRegistry:
+class CommandHub:
 
     KIND_LIST = ['global', 'view', 'object']
 

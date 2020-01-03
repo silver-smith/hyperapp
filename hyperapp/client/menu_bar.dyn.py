@@ -15,16 +15,16 @@ log = logging.getLogger(__name__)
 
 class MenuBarHandler(ViewHandler):
 
-    def __init__(self, state, path, command_registry, view_opener, ref_registry, resource_resolver):
+    def __init__(self, state, path, command_hub, view_opener, ref_registry, resource_resolver):
         self._ref_registry = ref_registry
         self._resource_resolver = resource_resolver
-        self._command_registry = command_registry
+        self._command_hub = command_hub
 
     def get_view_ref(self):
         return self._ref_registry.register_object(htypes.menu_bar.menu_bar())
 
     async def create_view(self):
-        return MenuBar(self._resource_resolver, self._command_registry)
+        return MenuBar(self._resource_resolver, self._command_hub)
 
     async def visual_item(self):
         return RootVisualItem('MenuBar')
@@ -32,14 +32,14 @@ class MenuBarHandler(ViewHandler):
 
 class MenuBar(QtWidgets.QMenuBar):
 
-    def __init__(self, resource_resolver, command_registry):
+    def __init__(self, resource_resolver, command_hub):
         super().__init__()
         self._resource_resolver = resource_resolver
         self._build()
         self._locale = 'en'
-        command_registry.subscribe(self)
+        command_hub.subscribe(self)
 
-    # command registry observer method
+    # command hub observer method
     def commands_changed(self, kind, command_list):
         if kind == 'global':
             self._update_menu(self._file_menu, command_list)

@@ -16,16 +16,16 @@ log = logging.getLogger(__name__)
 
 class CommandPaneHandler(ViewHandler):
 
-    def __init__(self, state, path, command_registry, view_opener, ref_registry, resource_resolver):
+    def __init__(self, state, path, command_hub, view_opener, ref_registry, resource_resolver):
         self._ref_registry = ref_registry
         self._resource_resolver = resource_resolver
-        self._command_registry = command_registry
+        self._command_hub = command_hub
 
     def get_view_ref(self):
         return self._ref_registry.register_object(htypes.command_pane.command_pane())
 
     async def create_view(self):
-        return CommandPane(self._resource_resolver, self._command_registry)
+        return CommandPane(self._resource_resolver, self._command_hub)
 
     async def visual_item(self):
         return RootVisualItem('CommandPane')
@@ -33,7 +33,7 @@ class CommandPaneHandler(ViewHandler):
 
 class CommandPane(QtWidgets.QDockWidget):
 
-    def __init__(self, resource_resolver, command_registry):
+    def __init__(self, resource_resolver, command_hub):
         QtWidgets.QDockWidget.__init__(self, 'Commands')
         self.setFeatures(self.NoDockWidgetFeatures)
         self._resource_resolver = resource_resolver
@@ -46,9 +46,9 @@ class CommandPane(QtWidgets.QDockWidget):
         self.widget().setLayout(self._layout)
         self._dir_buttons = []
         self._element_buttons = []
-        command_registry.subscribe(self)
+        command_hub.subscribe(self)
 
-    # command registry observer method
+    # command hum observer method
     def commands_changed(self, kind, command_list):
         if kind == 'object':
             self._update_dir_commands(command_list)
