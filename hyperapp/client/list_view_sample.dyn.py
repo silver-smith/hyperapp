@@ -5,6 +5,7 @@ import logging
 from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
+
 from . import htypes
 from .column import Column
 from .list_object import ListObject
