@@ -1,0 +1,22 @@
+module:client.params_editor_sample:ThisModule:
+  commands:
+    open_params_editor_sample:
+      text: Params editor sample
+      description: Open params editor samples list
+      shortcuts:
+      - Alt+P
+
+type:params_editor_sample.params_editor_sample:
+  columns:
+    id:
+      text: Id
+      description: Id, key field
+    name:
+      text: Name
+
+module:client.params_editor_sample:SampleList:
+  commands:
+    test_param:
+      text: Test it
+      description: Test selected parameter type
+      is_default: yes

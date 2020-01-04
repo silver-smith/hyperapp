@@ -51,6 +51,7 @@ type_module_list = [
     'log_viewer',
     'list_view_sample',
     'tree_view_sample',
+    'params_editor_sample',
     ]
 
 code_module_list = [
@@ -125,6 +126,8 @@ code_module_list = [
     'client.tree_view_sample',
     'client.tree_to_list_adapter',
     'client.tree_to_list_adapter_sample',
+    'client.simple_list_object',
+    'client.params_editor_sample',
     'client.fs',
     'client.fs_local_service',
     'client.fs_remote_service',

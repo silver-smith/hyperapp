@@ -1,0 +1,7 @@
+import:
+  types:
+    params_editor_sample:
+    - params_editor_sample
+  code:
+  - client.column
+  - client.simple_list_object
