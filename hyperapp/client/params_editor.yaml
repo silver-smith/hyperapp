@@ -5,3 +5,5 @@ import:
     - params_editor
     line:
     - line
+  code:
+  - client.record_object

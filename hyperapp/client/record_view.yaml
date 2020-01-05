@@ -3,5 +3,6 @@ import:
     record_view:
     - record_view_layout
   code:
+  - client.view_registry
   - client.record_object
   - client.layout_registry

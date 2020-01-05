@@ -2,6 +2,7 @@ from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.module import ClientModule
 from . import htypes
+from .view_registry import NotApplicable
 from .record_object import RecordObject
 from .layout_registry import LayoutViewProducer
 

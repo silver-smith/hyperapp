@@ -99,6 +99,8 @@ code_module_list = [
     'client.command_pane',
     'client.window',
     # 'client.navigator.history_list',
+    'client.record_object',
+    'client.record_view',
     'client.params_editor',
     'client.navigator.navigator',
     # 'client.navigator.module',
@@ -136,8 +138,6 @@ code_module_list = [
     'client.ref_list',
     'client.local_server_ref_list',
     'client.wiki_text_sample',
-    'client.record_object',
-    'client.record_view',
     'client.blog',
     ]
 
