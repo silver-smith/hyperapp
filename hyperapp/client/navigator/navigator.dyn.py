@@ -56,14 +56,14 @@ class NavigatorHandler(ViewHandler):
     @classmethod
     async def from_data(cls,
                         state, path, command_hub, view_opener,
-                        ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver):
-        self = cls(ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver,
+                        ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver, params_editor):
+        self = cls(ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver, params_editor,
                    path, command_hub, view_opener)
         await self._async_init(state.current_piece_ref)
         return self
 
     def __init__(self,
-                 ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver,
+                 ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver, params_editor,
                  path, command_hub, view_opener):
         super().__init__()
         self._ref_registry = ref_registry
@@ -71,6 +71,7 @@ class NavigatorHandler(ViewHandler):
         self._view_producer_registry = view_producer_registry
         self._module_command_registry = module_command_registry
         self._async_ref_resolver = async_ref_resolver
+        self._params_editor = params_editor
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._history = _History()
@@ -117,7 +118,10 @@ class NavigatorHandler(ViewHandler):
         yield self._go_forward
 
     async def _run_command(self, piece, command, *args, **kw):
-        piece = await command.run(*args, **kw)
+        if command.more_params_are_required(*args, *kw):
+            piece = self._params_editor(piece, command, args, kw)
+        else:
+            piece = await command.run(*args, **kw)
         if piece is None:
             return
         await self._open_piece(piece)
@@ -163,4 +167,5 @@ class ThisModule(ClientModule):
             services.view_producer_registry,
             services.module_command_registry,
             services.async_ref_resolver,
+            services.params_editor,
             )

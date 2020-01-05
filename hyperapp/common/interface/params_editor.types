@@ -1,0 +1,9 @@
+
+field = record:
+    name: string
+    piece_ref: ref
+
+params_editor = record:
+    target_piece_ref: ref
+    target_command_id: string
+    fields: field list

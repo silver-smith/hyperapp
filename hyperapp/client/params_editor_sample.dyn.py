@@ -39,7 +39,7 @@ class SampleList(SimpleListObject):
             return []
 
     @command('test_param', kind='element')
-    def _test_single_simple_str(self, item_key):
+    def _test_single_simple_str(self, item_key, str_param: str):
         assert 0  # todo
 
 

@@ -1,12 +1,12 @@
 import logging
-import asyncio
+import inspect
 import weakref
 import abc
 
 from ..common.util import is_list_inst
 from ..common.htypes import resource_key_t
 
-log = logging.getLogger(__name__)
+_log = logging.getLogger(__name__)
 
 
 # returned from Object.get_commands
@@ -31,7 +31,7 @@ class Command(metaclass=abc.ABCMeta):
         if enabled == self.enabled: return
         self.enabled = enabled
         object = self.get_view()
-        log.debug('-- Command.set_enabled %r object=%r', self.id, object)
+        _log.debug('-- Command.set_enabled %r object=%r', self.id, object)
         if object:
             object._notify_object_changed()
 
@@ -65,8 +65,8 @@ class BoundCommand(Command):
         inst = self._inst_wr()
         if not inst:
             return  # instance we bound to is already deleted
-        log.info('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, args, self._kw, kw)
-        if asyncio.iscoroutinefunction(self._class_method):
+        _log.info('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, args, self._kw, kw)
+        if inspect.iscoroutinefunction(self._class_method):
             return (await self._class_method(inst, *self._args, *args, **self._kw, **kw))
         else:
             return self._class_method(inst, *self._args, *args, **self._kw, **kw)
@@ -80,6 +80,25 @@ class BoundCommand(Command):
     def partial(self, *args, **kw):
         return BoundCommand(self.id, self.kind, self.resource_key, self.enabled, self._class_method, self._inst_wr,
                             (*self._args, *args), {**self._kw, **kw})
+
+    def bound_arguments(self, *args, **kw):
+        signature = inspect.signature(self._class_method)
+        inst = self._inst_wr()
+        assert inst  # instance we bound to is already deleted
+        return signature.bind_partial(self, *args, **kw)
+
+    def more_params_are_required(self, *args, **kw):
+        signature = inspect.signature(self._class_method)
+        try:
+            self = None
+            signature.bind(self, *args, **kw)
+            return False
+        except TypeError as x:
+            if str(x).startswith('missing a required argument: '):
+                _log.info("More params are required: %s", x)
+                return True
+            else:
+                raise
 
 
 class FreeFnCommand(Command):
@@ -98,7 +117,7 @@ class FreeFnCommand(Command):
         return 'FreeFnCommand(%r/%r -> %r (%r, %r))' % (self.id, self.kind, self._fn, self._args, self._kw)
 
     async def run(self, *args, **kw):
-        log.info('FreefnCommand.run: %s, %r/%r, (%s+%s, %s+%s)', self, self.id, self.kind, self._args, args, self._kw, kw)
+        _log.info('FreefnCommand.run: %s, %r/%r, (%s+%s, %s+%s)', self, self.id, self.kind, self._args, args, self._kw, kw)
         return (await self._fn(*self._args, *args, **self._kw, **kw))
 
 
