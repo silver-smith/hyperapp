@@ -42,12 +42,13 @@ class _History:
 
 class _CurrentItemObserver:
 
-    def __init__(self, handler, object):
+    def __init__(self, handler, piece, object):
         self._handler = handler
+        self._piece = piece
         self._object = object
 
     def current_changed(self, current_item_key):
-        self._handler._update_element_commands(self._object, current_item_key)
+        self._handler._update_element_commands(self._piece, self._object, current_item_key)
 
 
 class NavigatorHandler(ViewHandler):
@@ -87,8 +88,8 @@ class NavigatorHandler(ViewHandler):
         piece = self._initial_piece
         object = await self._object_registry.resolve_async(piece)
         self._command_hub.set_kind_commands('view', list(self._get_view_commands()))
-        self._command_hub.set_kind_commands('global', list(self._get_global_commands()))
-        self._command_hub.set_kind_commands('object', list(self._get_object_commands(object)))
+        self._command_hub.set_kind_commands('global', list(self._get_global_commands(piece)))
+        self._command_hub.set_kind_commands('object', list(self._get_object_commands(piece, object)))
         return (await self._view_producer_registry.produce_view(piece, object))
 
     async def visual_item(self):
@@ -97,25 +98,25 @@ class NavigatorHandler(ViewHandler):
             VisualItem(0, 'current', str(piece)),
             ])
 
-    def _get_global_commands(self):
+    def _get_global_commands(self, piece):
         for command in self._module_command_registry.get_all_commands():
-            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
+            yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command))
 
-    def _get_object_commands(self, object):
+    def _get_object_commands(self, piece, object):
         for command in object.get_command_list():
             if command.kind != 'object':
                 continue
-            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
+            yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command))
 
-    def _get_element_commands(self, object, current_item_key):
+    def _get_element_commands(self, piece, object, current_item_key):
         for command in object.get_item_command_list(current_item_key):
-            yield FreeFnCommand.from_command(command, partial(self._run_command, command, current_item_key))
+            yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command, current_item_key))
 
     def _get_view_commands(self):
         yield self._go_backward
         yield self._go_forward
 
-    async def _run_command(self, command, *args, **kw):
+    async def _run_command(self, piece, command, *args, **kw):
         piece = await command.run(*args, **kw)
         if piece is None:
             return
@@ -124,14 +125,14 @@ class NavigatorHandler(ViewHandler):
 
     async def _open_piece(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        self._current_item_observer = observer = _CurrentItemObserver(self, object)
+        self._current_item_observer = observer = _CurrentItemObserver(self, piece, object)
         view = await self._view_producer_registry.produce_view(piece, object, observer)
         self._view_opener.open(view)
-        self._command_hub.set_kind_commands('object', list(self._get_object_commands(object)))
+        self._command_hub.set_kind_commands('object', list(self._get_object_commands(piece, object)))
         self._command_hub.set_kind_commands('element', [])
 
-    def _update_element_commands(self, object, current_item_key):
-        self._command_hub.set_kind_commands('element', list(self._get_element_commands(object, current_item_key)))
+    def _update_element_commands(self, piece, object, current_item_key):
+        self._command_hub.set_kind_commands('element', list(self._get_element_commands(piece, object, current_item_key)))
 
     @command('go_backward')
     async def _go_backward(self):
