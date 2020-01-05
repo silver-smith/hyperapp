@@ -29,17 +29,23 @@ class SampleList(SimpleListObject):
     async def get_all_items(self):
         return [
             Item('single_simple_str', 'Single simple str'),
-            Item('single_simple_int', 'Single simple int'),
+            Item('two_simple_strings', 'Two simple strings'),
             ]
 
     def get_item_command_list(self, item_key):
         if item_key == 'single_simple_str':
             return [self._test_single_simple_str]
+        elif item_key == 'two_simple_strings':
+            return [self._test_two_simple_str]
         else:
             return []
 
     @command('test_param', kind='element')
     def _test_single_simple_str(self, item_key, str_param: str):
+        assert 0  # todo
+
+    @command('test_param', kind='element')
+    def _test_two_simple_str(self, item_key, str_param_1: str, str_param_2: str):
         assert 0  # todo
 
 
