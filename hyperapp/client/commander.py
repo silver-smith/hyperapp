@@ -63,7 +63,8 @@ class BoundCommand(Command):
 
     async def run(self, *args, **kw):
         inst = self._inst_wr()
-        if not inst: return  # inst is deleteddeleted
+        if not inst:
+            return  # instance we bound to is already deleted
         log.info('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, args, self._kw, kw)
         if asyncio.iscoroutinefunction(self._class_method):
             return (await self._class_method(inst, *self._args, *args, **self._kw, **kw))
