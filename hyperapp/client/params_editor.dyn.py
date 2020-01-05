@@ -16,6 +16,7 @@ class ParamsEditor(RecordObject):
         return cls(target_piece, state.target_command_id, fields)
 
     def __init__(self, target_piece, target_command_id, fields):
+        super().__init__()
         self._target_piece = target_piece
         self._target_command_id = target_command_id
         self._fields = fields
