@@ -151,6 +151,9 @@ class Commander(object):
         self._commands_kind = commands_kind
         self._commands = []  # BoundCommand list
         for name in dir(self):
+            cls = type(self)
+            if hasattr(cls, name) and type(getattr(cls, name)) is property:
+                continue  # avoid to call properties as we are not yet fully constructed
             attr = getattr(self, name)
             if not isinstance(attr, UnboundCommand): continue
             bound_cmd = attr.bind(self, commands_kind)
