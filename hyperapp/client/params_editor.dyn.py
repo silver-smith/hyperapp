@@ -33,6 +33,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
+        self._async_ref_resolver = services.async_ref_resolver
         self._field_types = services.field_types = {
             str: htypes.line.line(''),
             }
@@ -40,7 +41,7 @@ class ThisModule(ClientModule):
         services.object_registry.register_type(
             htypes.params_editor.params_editor, ParamsEditor.from_data, services.async_ref_resolver)
 
-    def _open_params_editor(self, piece, command, args, kw):
+    async def _open_params_editor(self, piece, command, args, kw):
         bound_arguments = command.bound_arguments(*args, **kw)
         wanted_arguments = [
             (name, p.annotation) for name, p in bound_arguments.signature.parameters.items()
@@ -53,6 +54,10 @@ class ThisModule(ClientModule):
                     self._annotation_to_field(annotation)),
                 )
             for name, annotation in wanted_arguments]
+        # todo: may be remove this:
+        if len(fields) == 1:
+            [(name, piece_ref)] = fields
+            return (await self._async_ref_resolver.resolve_ref_to_object(piece_ref))
         return htypes.params_editor.params_editor(
             target_piece_ref=self._ref_registry.register_object(piece),
             target_command_id=command.id,

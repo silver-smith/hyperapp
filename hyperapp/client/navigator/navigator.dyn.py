@@ -119,7 +119,7 @@ class NavigatorHandler(ViewHandler):
 
     async def _run_command(self, piece, command, *args, **kw):
         if command.more_params_are_required(*args, *kw):
-            piece = self._params_editor(piece, command, args, kw)
+            piece = await self._params_editor(piece, command, args, kw)
         else:
             piece = await command.run(*args, **kw)
         if piece is None:
