@@ -92,6 +92,7 @@ class TabViewHandler(ViewHandler):
         commands = [
             self._visual_duplicate_tab.partial(idx),
             self._visual_close_tab.partial(idx),
+            self._visual_add_nested_tabs.partial(idx),
             ]
         return child.to_item(idx, f'tab#{idx}', commands)
 
@@ -141,12 +142,15 @@ class TabViewHandler(ViewHandler):
     async def _duplicate_tab_impl(self, tab_idx):
         new_idx = tab_idx + 1
         tab_ref = self._tab_list[tab_idx].ref
-        tab = await self._create_tab(new_idx, tab_ref)
-        self._tab_list.insert(new_idx, tab)
+        await self._create_and_insert_tab(tab_idx, tab_ref)
+        return new_idx
+
+    async def _create_and_insert_tab(self, tab_idx, tab_ref):
+        tab = await self._create_tab(tab_idx, tab_ref)
+        self._tab_list.insert(tab_idx, tab)
         if self._widget:
             view = await tab.handler.create_view()
-            self._widget.insert_tab(new_idx, view)
-        return new_idx
+            self._widget.insert_tab(tab_idx, view)
 
     @command('visual_close_tab')
     def _visual_close_tab(self, tab_idx, item_path):
@@ -159,6 +163,14 @@ class TabViewHandler(ViewHandler):
     def _close_tab(self, tab_idx):
         del self._tab_list[tab_idx]
         self._widget.remove_tab(tab_idx)
+
+    @command('visual_add_nested_tabs')
+    async def _visual_add_nested_tabs(self, tab_idx, item_path):
+        new_idx = len(self._tab_list)
+        tab_ref = this_module._new_tab_ref
+        await self._create_and_insert_tab(tab_idx, tab_ref)
+        item = await self._visual_item(new_idx)
+        return InsertVisualItemDiff([*self._path, new_idx], item)
 
 
 class TabView(QtWidgets.QTabWidget, View):

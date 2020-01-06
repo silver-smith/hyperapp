@@ -20,6 +20,11 @@ module:client.tab_view:TabViewHandler:
       description: Close current tab
       shortcuts:
       - Ctrl+F4
+    visual_add_nested_tabs:
+      text: Add nested
+      description: Append nested tab view to current one
+      shortcuts:
+      - Ctrl+N
 
 # module:client.tab_view:TabView:
 #   commands:
