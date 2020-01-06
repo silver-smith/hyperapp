@@ -120,6 +120,9 @@ class FreeFnCommand(Command):
         _log.info('FreefnCommand.run: %s, %r/%r, (%s+%s, %s+%s)', self, self.id, self.kind, self._args, args, self._kw, kw)
         return (await self._fn(*self._args, *args, **self._kw, **kw))
 
+    def more_params_are_required(self, *args, **kw):
+        return False
+
 
 class UnboundCommand(object):
 
