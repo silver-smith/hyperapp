@@ -1,0 +1,13 @@
+
+type:view_chooser.view_chooser:
+  columns:
+    id:
+      text: View
+      description: View id
+
+module:client.view_chooser:ViewChooser:
+  commands:
+    choose:
+      text: Choose
+      description: Choose selected view
+      is_default: yes
