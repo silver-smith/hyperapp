@@ -44,7 +44,11 @@ class ThisModule(ClientModule):
             if name not in bound_arguments.arguments
             ]
         fields = [
-            htypes.params_editor.field(name, self._ref_registry.register_object(self._annotation_to_field(annotation)))
+            htypes.params_editor.field(
+                name,
+                self._ref_registry.register_object(
+                    self._annotation_to_field(annotation)),
+                )
             for name, annotation in wanted_arguments]
         return htypes.params_editor.params_editor(
             target_piece_ref=self._ref_registry.register_object(piece),
