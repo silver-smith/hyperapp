@@ -33,6 +33,9 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
+        self._field_types = services.field_types = {
+            str: htypes.line.line(''),
+            }
         services.params_editor = self._open_params_editor
         services.object_registry.register_type(
             htypes.params_editor.params_editor, ParamsEditor.from_data, services.async_ref_resolver)
@@ -57,6 +60,4 @@ class ThisModule(ClientModule):
             )
 
     def _annotation_to_field(self, annotation):
-        if annotation is str:
-            return htypes.line.line('')
-        assert False, f"Unknown annotation: {annotation!r}"
+        return self._field_types[annotation]

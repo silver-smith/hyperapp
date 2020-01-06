@@ -6,6 +6,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .column import Column
 from .simple_list_object import SimpleListObject
+from .view_chooser import ViewFieldRef
 
 
 Item = namedtuple('Item', 'id name')
@@ -30,14 +31,18 @@ class SampleList(SimpleListObject):
         return [
             Item('single_simple_str', 'Single simple str'),
             Item('two_simple_strings', 'Two simple strings'),
+            Item('view_chooser', 'View chooser'),
             ]
 
     def get_item_command_list(self, item_key):
-        if item_key == 'single_simple_str':
-            return [self._test_single_simple_str]
-        elif item_key == 'two_simple_strings':
-            return [self._test_two_simple_str]
-        else:
+        command_map = dict(
+            single_simple_str=self._test_single_simple_str,
+            two_simple_strings=self._test_two_simple_str,
+            view_chooser=self._test_view_chooser,
+            )
+        try:
+            return [command_map[item_key]]
+        except KeyError:
             return []
 
     @command('test_param', kind='element')
@@ -46,6 +51,10 @@ class SampleList(SimpleListObject):
 
     @command('test_param', kind='element')
     def _test_two_simple_str(self, item_key, str_param_1: str, str_param_2: str):
+        assert 0  # todo
+
+    @command('test_param', kind='element')
+    def _test_view_chooser(self, item_key, view: ViewFieldRef):
         assert 0  # todo
 
 

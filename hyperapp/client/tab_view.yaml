@@ -2,6 +2,10 @@ import:
   types:
     tab_view:
     - tab_view
+    text:
+    - text
+    navigator:
+    - navigator
   code:
   - client.view
   - client.command_hub

@@ -30,11 +30,11 @@ class ViewProducerRegistry:
         raise RuntimeError("No view is known to support object {}".format(object))
 
 
-
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.view_producer_registry = ViewProducerRegistry()
+        services.available_view_registry = {}  # id -> view ref, views available to add to layout
         services.view_registry = view_registry = AsyncCapsuleRegistry('view', services.type_resolver)
         services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)

@@ -5,3 +5,4 @@ import:
   code:
   - client.column
   - client.simple_list_object
+  - client.view_chooser

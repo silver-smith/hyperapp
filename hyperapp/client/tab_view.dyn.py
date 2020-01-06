@@ -199,5 +199,16 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
         services.view_registry.register_type(
             htypes.tab_view.tab_view, TabViewHandler.from_data, services.ref_registry, services.view_resolver)
+        services.available_view_registry['tab_view'] = self._new_tab_ref
+
+    @property
+    def _new_tab_ref(self):
+        piece = htypes.text.text("New tab")
+        piece_ref = self._ref_registry.register_object(piece)
+        navigator = htypes.navigator.navigator(piece_ref)
+        navigator_ref = self._ref_registry.register_object(navigator)
+        tab_view = htypes.tab_view.tab_view([navigator_ref], 0)
+        return self._ref_registry.register_object(tab_view)
