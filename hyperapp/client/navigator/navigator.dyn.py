@@ -117,9 +117,9 @@ class NavigatorHandler(ViewHandler):
         yield self._go_backward
         yield self._go_forward
 
-    async def _run_command(self, piece, command, *args, **kw):
+    async def _run_command(self, current_piece, command, *args, **kw):
         if command.more_params_are_required(*args, *kw):
-            piece = await self._params_editor(piece, command, args, kw)
+            piece = await self._params_editor(current_piece, command, args, kw)
         else:
             piece = await command.run(*args, **kw)
         if piece is None:
