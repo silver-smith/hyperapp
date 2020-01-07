@@ -29,6 +29,7 @@ class VisualItemDiff:
 @dataclass
 class InsertVisualItemDiff(VisualItemDiff):
     path: List[int]
+    idx: int
     item: VisualItem
 
 

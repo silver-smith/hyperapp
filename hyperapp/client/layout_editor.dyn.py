@@ -81,8 +81,8 @@ class LayoutEditor(TreeObject):
                         add_item((*path, item.idx), kid)
 
                 add_item(vdiff.path, vdiff.item)
-                diff = InsertItemDiff(vdiff.path[-1], vdiff.item)
-                self._distribute_diff(vdiff.path[:-1], diff)
+                diff = InsertItemDiff(vdiff.idx, vdiff.item)
+                self._distribute_diff(vdiff.path, diff)
             elif isinstance(vdiff, RemoveVisualItemDiff):
                 self._distribute_diff(vdiff.path, RemoveItemDiff())
             else:
