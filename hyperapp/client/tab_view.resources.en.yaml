@@ -25,6 +25,11 @@ module:client.tab_view:TabViewHandler:
       description: Append nested tab view to current one
       shortcuts:
       - Ctrl+N
+    visual_wrap_with_tabs:
+      text: Wrap with tabs
+      description: Wrap current tab view with another one
+      shortcuts:
+      - Ctrl+W
 
 # module:client.tab_view:TabView:
 #   commands:

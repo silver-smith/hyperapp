@@ -93,6 +93,7 @@ class TabViewHandler(ViewHandler):
             self._visual_duplicate_tab.partial(idx),
             self._visual_close_tab.partial(idx),
             self._visual_add_nested_tabs.partial(idx),
+            self._visual_wrap_with_tabs.partial(idx),
             ]
         return child.to_item(idx, f'tab#{idx}', commands)
 
@@ -126,13 +127,13 @@ class TabViewHandler(ViewHandler):
 
     def _replace_tab(self, tab_idx, view):
         if self._widget:
-            self._widget._replace_tab(tab_idx, view)
+            self._widget.replace_tab(tab_idx, view)
 
     @command('visual_duplicate_tab')
     async def _visual_duplicate_tab(self, tab_idx, item_path):
         new_idx = await self._duplicate_tab_impl(tab_idx)
         item = await self._visual_item(new_idx)
-        return InsertVisualItemDiff([*self._path, new_idx], item)
+        return [InsertVisualItemDiff([*self._path, new_idx], item)]
 
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx):
@@ -141,7 +142,7 @@ class TabViewHandler(ViewHandler):
 
     async def _duplicate_tab_impl(self, tab_idx):
         new_idx = tab_idx + 1
-        tab_ref = self._tab_list[tab_idx].ref
+        tab_ref = self._tab_list[tab_idx].handler.get_view_ref()
         await self._create_and_insert_tab(tab_idx, tab_ref)
         return new_idx
 
@@ -157,7 +158,7 @@ class TabViewHandler(ViewHandler):
         del self._tab_list[tab_idx]
         if self._widget:
             self._widget.remove_tab(tab_idx)
-        return RemoveVisualItemDiff([*self._path, tab_idx])
+        return [RemoveVisualItemDiff([*self._path, tab_idx])]
 
     @command('close_tab')
     def _close_tab(self, tab_idx):
@@ -170,7 +171,23 @@ class TabViewHandler(ViewHandler):
         tab_ref = this_module._new_tab_ref
         await self._create_and_insert_tab(tab_idx, tab_ref)
         item = await self._visual_item(new_idx)
-        return InsertVisualItemDiff([*self._path, new_idx], item)
+        return [InsertVisualItemDiff([*self._path, new_idx], item)]
+
+    @command('visual_wrap_with_tabs')
+    async def _visual_wrap_with_tabs(self, tab_idx, item_path):
+        old_count = len(self._tab_list)
+        new_tab = await self._create_tab(0, self.get_view_ref())
+        self._tab_list = [new_tab]
+        if self._widget:
+            while self._widget.count() > 1:
+                self._widget.remove_tab(1)
+            view = await new_tab.handler.create_view()
+        remove_old_items = [
+            RemoveVisualItemDiff([*self._path, idx])
+            for idx in range(old_count)]
+        item = await self._visual_item(0)
+        return [*remove_old_items,
+                InsertVisualItemDiff([*self._path, 0], item)]
 
 
 class TabView(QtWidgets.QTabWidget, View):
@@ -192,7 +209,7 @@ class TabView(QtWidgets.QTabWidget, View):
     def get_current_child(self):
         return self.currentWidget()
 
-    def _replace_tab(self, tab_idx, view):
+    def replace_tab(self, tab_idx, view):
         old_widget = self.widget(tab_idx)
         self.removeTab(tab_idx)
         old_widget.deleteLater()

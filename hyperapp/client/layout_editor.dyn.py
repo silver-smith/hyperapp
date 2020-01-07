@@ -45,7 +45,7 @@ class LayoutEditor(TreeObject):
             item = next(i for i in item_list if i.idx == item_path[-1])
         except StopIteration:
             return []
-        return [command.wrap(self._process_diff) for command in item.commands or []]
+        return [command.wrap(self._process_diff_list) for command in item.commands or []]
 
     async def fetch_items(self, path):
         path = tuple(path)
@@ -70,22 +70,23 @@ class LayoutEditor(TreeObject):
         add_item((), root.to_item(0, 'root'))
         return item_dict
 
-    async def _process_diff(self, vdiff):
-        if isinstance(vdiff, InsertVisualItemDiff):
+    async def _process_diff_list(self, vdiff_list):
+        for vdiff in vdiff_list:
+            if isinstance(vdiff, InsertVisualItemDiff):
 
-            def add_item(path, item):
-                item_list = self._path2item_list.setdefault(tuple(path[:-1]), [])
-                item_list.insert(path[-1], item)
-                for kid in item.children or []:
-                    add_item((*path, item.idx), kid)
+                def add_item(path, item):
+                    item_list = self._path2item_list.setdefault(tuple(path[:-1]), [])
+                    item_list.insert(path[-1], item)
+                    for kid in item.children or []:
+                        add_item((*path, item.idx), kid)
 
-            add_item(vdiff.path, vdiff.item)
-            diff = InsertItemDiff(vdiff.path[-1], vdiff.item)
-            self._distribute_diff(vdiff.path[:-1], diff)
-        elif isinstance(vdiff, RemoveVisualItemDiff):
-            self._distribute_diff(vdiff.path, RemoveItemDiff())
-        else:
-            raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
+                add_item(vdiff.path, vdiff.item)
+                diff = InsertItemDiff(vdiff.path[-1], vdiff.item)
+                self._distribute_diff(vdiff.path[:-1], diff)
+            elif isinstance(vdiff, RemoveVisualItemDiff):
+                self._distribute_diff(vdiff.path, RemoveItemDiff())
+            else:
+                raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
 
 
 class ThisModule(ClientModule):
