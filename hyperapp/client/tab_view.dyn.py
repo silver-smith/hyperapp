@@ -215,7 +215,7 @@ class TabView(QtWidgets.QTabWidget, View):
         QtWidgets.QTabWidget.__init__(self)
         View.__init__(self)
         self._on_current_tab_changed = on_current_tab_changed
-        self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)
+        self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)  # does not work...
         self.setElideMode(QtCore.Qt.ElideMiddle)
         for view in children:
             self.addTab(view, view.get_title())
