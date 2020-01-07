@@ -150,6 +150,7 @@ class TabViewHandler(ViewHandler):
     async def _duplicate_tab(self, tab_id):
         new_idx, _ = await self._duplicate_tab_impl(tab_id)
         self._widget.setCurrentIndex(new_idx)
+        self._update_commands(new_idx)
 
     async def _duplicate_tab_impl(self, tab_id):
         tab_idx, tab = self._find_tab(tab_id)
