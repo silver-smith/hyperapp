@@ -189,6 +189,13 @@ class TabView(QtWidgets.QTabWidget, View):
     def setVisible(self, visible):
         QtWidgets.QTabWidget.setVisible(self, visible)
 
+    def get_current_child(self):
+        tab_idx = self.currentIndex()
+        if tab_idx == -1:
+            return None
+        else:
+            return self.widget(tab_idx)
+
     def _replace_tab(self, tab_idx, view):
         old_widget = self.widget(tab_idx)
         self.removeTab(tab_idx)

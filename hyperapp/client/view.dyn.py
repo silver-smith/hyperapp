@@ -167,7 +167,7 @@ class View(ObjectObserver, Commander):
     def acquire_focus(self):
         w = self.get_widget_to_focus()
         if DEBUG_FOCUS: log.info('*** view.acquire_focus %r w=%r', self, w)
-        assert w.focusPolicy() & QtCore.Qt.StrongFocus == QtCore.Qt.StrongFocus, (self, w, w.focusPolicy())  # implement your own get_widget_to_focus otherwise
+        assert w.focusPolicy() & QtCore.Qt.StrongFocus == QtCore.Qt.StrongFocus, (self, w, w.focusPolicy())  # implement get_current_child or your own get_widget_to_focus otherwise
         w.setFocus()
 
     def get_widget_to_focus(self):
