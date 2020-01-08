@@ -21,7 +21,7 @@ _log = logging.getLogger(__name__)
 
 class RootHandler(ViewHandler):
 
-    _WindowRec = namedtuple('_WindowRec', 'ref command_hub handler')
+    _WindowRec = namedtuple('_WindowRec', 'command_hub handler')
 
     @classmethod
     async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver):
@@ -72,7 +72,7 @@ class RootHandler(ViewHandler):
     async def _create_window_rec(self, idx, ref):
         command_hub = CommandHub()
         handler = await self._view_resolver.resolve(ref, [*self._path, idx], command_hub, None)
-        return self._WindowRec(ref, command_hub, handler)
+        return self._WindowRec(command_hub, handler)
 
 
 class LayoutManager:
