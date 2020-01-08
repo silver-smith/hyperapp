@@ -76,6 +76,10 @@ class WindowHandler(ViewHandler):
             central_view.to_item(2, 'central_view'),
             ])
 
+    def collect_view_commands(self):
+        return self._collect_view_commands_with_children(
+            [self._menu_bar_handler, self._command_pane_handler, self._central_view_handler])
+
 
 class Window(View, QtWidgets.QMainWindow):
 

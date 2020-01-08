@@ -55,3 +55,17 @@ class ViewHandler(Commander, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     async def visual_item(self) -> VisualItem:
         pass
+
+    def collect_view_commands(self):
+        return {self._path: self.get_command_list({'view'})}
+
+    def _collect_view_commands_with_children(self, child_handler_it):
+        children_commands = {
+            path: commands
+            for handler in child_handler_it
+            for path, commands in handler.collect_view_commands().items()
+            }
+        return {
+            **children_commands,
+            **ViewHandler.collect_view_commands(self),
+            }

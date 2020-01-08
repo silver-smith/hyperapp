@@ -87,6 +87,10 @@ class TabViewHandler(ViewHandler):
                     for tab in self._tab_list]
         return RootVisualItem('TabView', children)
 
+    def collect_view_commands(self):
+        return self._collect_view_commands_with_children(
+            tab.handler for tab in self._tab_list)
+
     async def _visual_item(self, tab):
         child = await tab.handler.visual_item()
         commands = [

@@ -65,6 +65,10 @@ class RootHandler(ViewHandler):
             for idx, child in enumerate(children)
             ])
 
+    def collect_view_commands(self):
+        return self._collect_view_commands_with_children(
+            rec.handler for rec in self._window_list)
+
     async def _create_window_rec(self, idx, ref):
         command_hub = CommandHub()
         handler = await self._view_resolver.resolve(ref, [*self._path, idx], command_hub, None)
