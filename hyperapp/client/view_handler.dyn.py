@@ -56,8 +56,19 @@ class ViewHandler(Commander, metaclass=abc.ABCMeta):
     async def visual_item(self) -> VisualItem:
         pass
 
+    def get_current_commands(self):
+        return self.get_command_list({'view', 'global', 'object', 'element'})
+
     def collect_view_commands(self):
         return {self._path: self.get_command_list({'view'})}
+
+    def _get_current_commands_with_child(self, child):
+        child_commands = child.get_current_commands()
+        child_command_ids = set(command.id for command in child_commands)
+        # child commands should override and hide same commands from parents
+        my_commands = [command for command in ViewHandler.get_current_commands(self)
+                       if command.id not in child_command_ids]
+        return [*child_commands, *my_commands]
 
     def _collect_view_commands_with_children(self, child_handler_it):
         children_commands = {

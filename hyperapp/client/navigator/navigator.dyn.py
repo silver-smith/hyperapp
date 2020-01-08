@@ -75,29 +75,37 @@ class NavigatorHandler(ViewHandler):
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._history = _History()
+        self._current_piece = None
+        self._current_object = None
 
     async def _async_init(self, initial_piece_ref):
         self._initial_piece = piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
         self._history.append(piece)
 
     def get_view_ref(self):
-        current_piece_ref = self._ref_registry.register_object(self._history.current_piece)
+        current_piece_ref = self._ref_registry.register_object(self._current_piece)
         view = htypes.navigator.navigator(current_piece_ref)
         return self._ref_registry.register_object(view)
 
     async def create_view(self):
-        piece = self._initial_piece
-        object = await self._object_registry.resolve_async(piece)
-        self._command_hub.set_kind_commands('view', list(self._get_view_commands()))
-        self._command_hub.set_kind_commands('global', list(self._get_global_commands(piece)))
-        self._command_hub.set_kind_commands('object', list(self._get_object_commands(piece, object)))
+        self._current_piece = piece = self._initial_piece
+        self._current_object = object = await self._object_registry.resolve_async(piece)
         return (await self._view_producer_registry.produce_view(piece, object))
 
     async def visual_item(self):
-        piece = self._history.current_piece
+        piece = self._current_piece
         return RootVisualItem('Navigator', children=[
             VisualItem(0, 'current', str(piece)),
             ])
+
+    def get_current_commands(self):
+        piece = self._current_piece
+        object = self._current_object
+        return [
+            *self._get_view_commands(),
+            *self._get_global_commands(piece),
+            *self._get_object_commands(piece, object),
+            ]
 
     def _get_view_commands(self):
         yield self._go_backward
@@ -118,7 +126,7 @@ class NavigatorHandler(ViewHandler):
             yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command, current_item_key))
 
     def _update_element_commands(self, piece, object, current_item_key):
-        self._command_hub.set_kind_commands('element', list(self._get_element_commands(piece, object, current_item_key)))
+        self._command_hub.push_kind_commands('element', list(self._get_element_commands(piece, object, current_item_key)))
 
     async def _run_command(self, current_piece, command, *args, **kw):
         if command.more_params_are_required(*args, *kw):
@@ -135,8 +143,9 @@ class NavigatorHandler(ViewHandler):
         self._current_item_observer = observer = _CurrentItemObserver(self, piece, object)
         view = await self._view_producer_registry.produce_view(piece, object, observer)
         self._view_opener.open(view)
-        self._command_hub.set_kind_commands('object', list(self._get_object_commands(piece, object)))
-        self._command_hub.set_kind_commands('element', [])
+        self._current_piece = piece
+        self._current_object = object
+        self._command_hub.update()
 
     @command('go_backward')
     async def _go_backward(self):

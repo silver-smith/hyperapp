@@ -8,5 +8,4 @@ import:
     - navigator
   code:
   - client.view
-  - client.command_hub
   - client.view_handler

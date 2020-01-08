@@ -5,4 +5,3 @@ import:
   code:
   - client.layout_registry
   - client.view_handler
-  - client.command_hub

@@ -14,17 +14,16 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view_handler import RootVisualItem, ViewHandler
 from .layout_registry import LayoutViewProducer
-from .command_hub import CommandHub
 
 _log = logging.getLogger(__name__)
 
 
 class RootHandler(ViewHandler):
 
-    _WindowRec = namedtuple('_WindowRec', 'command_hub handler')
+    _WindowRec = namedtuple('_WindowRec', 'handler')
 
     @classmethod
-    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver):
+    async def from_data(cls, state, path, ref_registry, view_resolver):
         self = cls(ref_registry, view_resolver, path)
         await self._async_init(state.window_ref_list)
         return self
@@ -65,14 +64,25 @@ class RootHandler(ViewHandler):
             for idx, child in enumerate(children)
             ])
 
+    # def get_current_commands(self):
+    #     try:
+    #         active_window_handler = next(
+    #             rec.handler for rec, window
+    #                 in zip(self._window_rec_list, self._window_list)
+    #                 if window.isActiveWindow()
+    #             )
+    #     except StopIteration:
+    #         return super().get_current_commands()
+    #     else:
+    #         return self._get_current_commands_with_child(active_window_handler)
+
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
             rec.handler for rec in self._window_list)
 
     async def _create_window_rec(self, idx, ref):
-        command_hub = CommandHub()
-        handler = await self._view_resolver.resolve(ref, [*self._path, idx], command_hub, None)
-        return self._WindowRec(command_hub, handler)
+        handler = await self._view_resolver.resolve(ref, [*self._path, idx])
+        return self._WindowRec(handler)
 
 
 class LayoutManager:
@@ -89,7 +99,7 @@ class LayoutManager:
 
     async def create_layout_views(self, root_view):
         # root path is expected by layout editor to be [0]
-        self._root_handler = handler = await self._view_registry.resolve_async(root_view, [0], None, None)
+        self._root_handler = handler = await self._view_registry.resolve_async(root_view, [0])
         self._window_list = await handler.create_view()
 
     @property

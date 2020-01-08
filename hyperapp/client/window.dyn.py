@@ -10,6 +10,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
 from .view_handler import RootVisualItem, ViewHandler
+from .command_hub import CommandHub
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)
@@ -23,16 +24,16 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowHandler(ViewHandler):
 
     @classmethod
-    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver):
-        self = cls(ref_registry, command_hub, view_opener, path, state.pos, state.size)
+    async def from_data(cls, state, path, ref_registry, view_resolver):
+        self = cls(ref_registry, path, state.pos, state.size)
         await self._async_init(view_resolver, state)
         return self
 
-    def __init__(self, ref_registry, command_hub, view_opener, path, pos, size):
+    def __init__(self, ref_registry, path, pos, size):
         super().__init__(path)
         self._ref_registry = ref_registry
-        self._command_hub = command_hub
-        self._view_opener = view_opener
+        self._command_hub = CommandHub(get_commands=self.get_current_commands)
+        self._view_opener = None
         self._pos = pos
         self._size = size
         self._widget = None
@@ -64,6 +65,7 @@ class WindowHandler(ViewHandler):
         command_pane = await self._command_pane_handler.create_view()
         central_view = await self._central_view_handler.create_view()
         self._widget = Window(menu_bar, command_pane, central_view, self._size, self._pos)
+        self._command_hub.update()
         return self._widget
 
     async def visual_item(self):
@@ -75,6 +77,9 @@ class WindowHandler(ViewHandler):
             command_pane.to_item(1, 'command_pane'),
             central_view.to_item(2, 'central_view'),
             ])
+
+    def get_current_commands(self):
+        return self._get_current_commands_with_child(self._central_view_handler)
 
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
