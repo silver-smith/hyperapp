@@ -30,10 +30,9 @@ class RootHandler(ViewHandler):
         return self
 
     def __init__(self, ref_registry, view_resolver, path):
-        super().__init__()
+        super().__init__(path)
         self._ref_registry = ref_registry
         self._view_resolver = view_resolver
-        self._path = path
         self._window_list = None
 
     async def _async_init(self, window_ref_list):

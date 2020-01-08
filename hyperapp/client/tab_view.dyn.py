@@ -48,11 +48,10 @@ class TabViewHandler(ViewHandler):
         return self
 
     def __init__(self, ref_registry, view_resolver, current_tab_idx, path, command_hub, view_opener):
-        super().__init__()
+        super().__init__(path)
         self._ref_registry = ref_registry
         self._view_resolver = view_resolver
         self._initial_tab_idx = current_tab_idx  # valid only during construction
-        self._path = path
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._tab_id_counter = itertools.count()

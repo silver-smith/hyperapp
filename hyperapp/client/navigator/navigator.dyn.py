@@ -65,7 +65,7 @@ class NavigatorHandler(ViewHandler):
     def __init__(self,
                  ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver, params_editor,
                  path, command_hub, view_opener):
-        super().__init__()
+        super().__init__(path)
         self._ref_registry = ref_registry
         self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry

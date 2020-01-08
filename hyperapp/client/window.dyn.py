@@ -29,11 +29,10 @@ class WindowHandler(ViewHandler):
         return self
 
     def __init__(self, ref_registry, command_hub, view_opener, path, pos, size):
-        super().__init__()
+        super().__init__(path)
         self._ref_registry = ref_registry
         self._command_hub = command_hub
         self._view_opener = view_opener
-        self._path = path
         self._pos = pos
         self._size = size
         self._widget = None

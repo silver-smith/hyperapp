@@ -40,8 +40,9 @@ class RemoveVisualItemDiff(VisualItemDiff):
 
 class ViewHandler(Commander, metaclass=abc.ABCMeta):
 
-    def __init__(self):
+    def __init__(self, path):
         super().__init__(commands_kind='view')
+        self._path = path
 
     @abc.abstractmethod
     def get_view_ref(self):
