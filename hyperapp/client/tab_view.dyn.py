@@ -94,10 +94,10 @@ class TabViewHandler(ViewHandler):
     async def _visual_item(self, tab):
         child = await tab.handler.visual_item()
         commands = [
-            self._visual_duplicate_tab.partial(tab.id),
-            self._visual_close_tab.partial(tab.id),
-            self._visual_add_nested_tabs.partial(tab.id),
-            self._visual_wrap_with_tabs.partial(tab.id),
+            self._visual_duplicate_tab,
+            self._visual_close_tab,
+            self._visual_add_nested_tabs,
+            self._visual_wrap_with_tabs,
             ]
         return child.to_item(tab.id, f'tab#{tab.id}', commands)
 
@@ -144,8 +144,8 @@ class TabViewHandler(ViewHandler):
             self._widget.replace_tab(tab_idx, view)
 
     @command('visual_duplicate_tab')
-    async def _visual_duplicate_tab(self, tab_id, item_path):
-        new_idx, new_tab = await self._duplicate_tab_impl(tab_id)
+    async def _visual_duplicate_tab(self, item_path):
+        new_idx, new_tab = await self._duplicate_tab_impl(item_path[-1])
         item = await self._visual_item(new_tab)
         return [InsertVisualItemDiff(self._path, new_idx, item)]
 
@@ -171,8 +171,8 @@ class TabViewHandler(ViewHandler):
         return tab
 
     @command('visual_close_tab')
-    def _visual_close_tab(self, tab_id, item_path):
-        tab_idx, tab = self._find_tab(tab_id)
+    def _visual_close_tab(self, item_path):
+        tab_idx, tab = self._find_tab(item_path[-1])
         del self._tab_list[tab_idx]
         if self._widget:
             self._widget.remove_tab(tab_idx)
@@ -185,8 +185,8 @@ class TabViewHandler(ViewHandler):
         self._widget.remove_tab(tab_idx)
 
     @command('visual_add_nested_tabs')
-    async def _visual_add_nested_tabs(self, tab_id, item_path):
-        tab_idx, tab = self._find_tab(tab_id)
+    async def _visual_add_nested_tabs(self, item_path):
+        tab_idx, tab = self._find_tab(item_path[-1])
         new_idx = len(self._tab_list)
         tab_ref = this_module._new_tab_ref
         new_tab = await self._create_and_insert_tab(tab_idx, tab_ref)
@@ -194,8 +194,8 @@ class TabViewHandler(ViewHandler):
         return [InsertVisualItemDiff(self._path, new_idx, item)]
 
     @command('visual_wrap_with_tabs')
-    async def _visual_wrap_with_tabs(self, tab_id, item_path):
-        tab_idx, tab = self._find_tab(tab_id)
+    async def _visual_wrap_with_tabs(self, item_path):
+        tab_idx, tab = self._find_tab(item_path[-1])
         remove_diff_list = [
             RemoveVisualItemDiff([*self._path, tab.id])
             for tab in self._tab_list]
