@@ -99,6 +99,10 @@ class NavigatorHandler(ViewHandler):
             VisualItem(0, 'current', str(piece)),
             ])
 
+    def _get_view_commands(self):
+        yield self._go_backward
+        yield self._go_forward
+
     def _get_global_commands(self, piece):
         for command in self._module_command_registry.get_all_commands():
             yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command))
@@ -113,9 +117,8 @@ class NavigatorHandler(ViewHandler):
         for command in object.get_item_command_list(current_item_key):
             yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command, current_item_key))
 
-    def _get_view_commands(self):
-        yield self._go_backward
-        yield self._go_forward
+    def _update_element_commands(self, piece, object, current_item_key):
+        self._command_hub.set_kind_commands('element', list(self._get_element_commands(piece, object, current_item_key)))
 
     async def _run_command(self, current_piece, command, *args, **kw):
         if command.more_params_are_required(*args, *kw):
@@ -134,9 +137,6 @@ class NavigatorHandler(ViewHandler):
         self._view_opener.open(view)
         self._command_hub.set_kind_commands('object', list(self._get_object_commands(piece, object)))
         self._command_hub.set_kind_commands('element', [])
-
-    def _update_element_commands(self, piece, object, current_item_key):
-        self._command_hub.set_kind_commands('element', list(self._get_element_commands(piece, object, current_item_key)))
 
     @command('go_backward')
     async def _go_backward(self):
