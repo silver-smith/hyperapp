@@ -172,7 +172,7 @@ class Commander(object):
 
     def get_command_list(self, kinds=None):
         if kinds is None:
-            kinds = set([self._commands_kind])
+            kinds = {self._commands_kind}
         return [cmd for cmd in self.get_all_command_list() if cmd.kind in kinds]
 
     def get_all_command_list(self):
