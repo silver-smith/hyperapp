@@ -111,7 +111,7 @@ class TabViewHandler(ViewHandler):
         for idx, tab in enumerate(self._tab_list):
             if tab.id == tab_id:
                 return (idx, tab)
-        assert False, f"Wront tab id: {tab_id}"
+        assert False, f"Wrong tab id: {tab_id}"
 
     def _replace_tab(self, tab_id, view):
         tab_idx, _ = self._find_tab(tab_id)
