@@ -118,7 +118,7 @@ class TabViewHandler(ViewHandler):
         if self._widget:
             self._widget.replace_tab(tab_idx, view)
 
-    @command('visual_duplicate_tab')
+    @command('visual_duplicate_tab', kind='element')
     async def _visual_duplicate_tab(self, item_path):
         tab_idx, tab = self._find_tab(item_path[-1])
         new_idx, new_tab = await self._duplicate_tab_impl(tab_idx, tab)
@@ -146,7 +146,7 @@ class TabViewHandler(ViewHandler):
             self._widget.insert_tab(tab_idx, view)
         return tab
 
-    @command('visual_close_tab')
+    @command('visual_close_tab', kind='element')
     def _visual_close_tab(self, item_path):
         tab_idx, tab = self._find_tab(item_path[-1])
         del self._tab_list[tab_idx]
@@ -160,7 +160,7 @@ class TabViewHandler(ViewHandler):
         del self._tab_list[tab_idx]
         self._widget.remove_tab(tab_idx)
 
-    @command('visual_add_nested_tabs')
+    @command('visual_add_nested_tabs', kind='element')
     async def _visual_add_nested_tabs(self, item_path):
         tab_idx, tab = self._find_tab(item_path[-1])
         new_idx = len(self._tab_list)
@@ -169,7 +169,7 @@ class TabViewHandler(ViewHandler):
         item = await self._visual_item(new_tab)
         return [InsertVisualItemDiff(self._path, new_idx, item)]
 
-    @command('visual_wrap_with_tabs')
+    @command('visual_wrap_with_tabs', kind='element')
     async def _visual_wrap_with_tabs(self, item_path):
         tab_idx, tab = self._find_tab(item_path[-1])
         remove_diff_list = [
