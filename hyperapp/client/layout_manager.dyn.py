@@ -64,18 +64,6 @@ class RootHandler(ViewHandler):
             for idx, child in enumerate(children)
             ])
 
-    # def get_current_commands(self):
-    #     try:
-    #         active_window_handler = next(
-    #             rec.handler for rec, window
-    #                 in zip(self._window_rec_list, self._window_list)
-    #                 if window.isActiveWindow()
-    #             )
-    #     except StopIteration:
-    #         return super().get_current_commands()
-    #     else:
-    #         return self._get_current_commands_with_child(active_window_handler)
-
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
             rec.handler for rec in self._window_list)
