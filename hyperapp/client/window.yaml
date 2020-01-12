@@ -7,5 +7,4 @@ import:
   code:
   - client.view
   - client.view_handler
-  - client.command_hub
   - client.tab_view

@@ -10,7 +10,6 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view import View
 from .view_handler import RootVisualItem, ViewHandler
-from .command_hub import CommandHub
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)
@@ -24,15 +23,15 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowHandler(ViewHandler):
 
     @classmethod
-    async def from_data(cls, state, path, ref_registry, view_resolver):
-        self = cls(ref_registry, path, state.pos, state.size)
+    async def from_data(cls, state, path, command_hub, ref_registry, view_resolver):
+        self = cls(ref_registry, path, command_hub, state.pos, state.size)
         await self._async_init(view_resolver, state)
         return self
 
-    def __init__(self, ref_registry, path, pos, size):
+    def __init__(self, ref_registry, path, command_hub, pos, size):
         super().__init__(path)
         self._ref_registry = ref_registry
-        self._command_hub = CommandHub(get_commands=self.get_current_commands)
+        self._command_hub = command_hub
         self._view_opener = None
         self._pos = pos
         self._size = size

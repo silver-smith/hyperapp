@@ -1,4 +1,5 @@
 import asyncio
+import itertools
 import logging
 from collections import namedtuple
 from functools import partial
@@ -9,18 +10,32 @@ from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.ref import ref_repr
 from hyperapp.client.util import make_async_action
+from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view_handler import RootVisualItem, ViewHandler
 from .layout_registry import LayoutViewProducer
+from .command_hub import CommandHub
 
 _log = logging.getLogger(__name__)
 
 
 class RootHandler(ViewHandler):
 
-    _WindowRec = namedtuple('_WindowRec', 'handler')
+    class _WindowRec:
+
+        def __init__(self, id, window_commands):
+            self.id = id
+            self._window_commands = window_commands
+            self._command_hub = CommandHub(get_commands=self.get_current_commands)
+
+        async def _async_init(self, view_resolver, path, ref):
+            self.handler = await view_resolver.resolve(ref, [*path, self.id], self._command_hub)
+
+        def get_current_commands(self):
+            root_commands = [command.partial(self.id) for command in self._window_commands]
+            return [*self.handler.get_current_commands(), *root_commands]
 
     @classmethod
     async def from_data(cls, state, path, ref_registry, view_resolver):
@@ -33,10 +48,11 @@ class RootHandler(ViewHandler):
         self._ref_registry = ref_registry
         self._view_resolver = view_resolver
         self._window_list = None
+        self._rec_id_counter = itertools.count()
 
     async def _async_init(self, window_ref_list):
         self._window_rec_list = [
-            await self._create_window_rec(idx, ref)
+            await self._create_window_rec(ref)
             for idx, ref in enumerate(window_ref_list)
             ]
 
@@ -66,11 +82,41 @@ class RootHandler(ViewHandler):
 
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
-            rec.handler for rec in self._window_list)
+            rec.handler for rec in self._window_rec_list)
 
-    async def _create_window_rec(self, idx, ref):
-        handler = await self._view_resolver.resolve(ref, [*self._path, idx])
-        return self._WindowRec(handler)
+    async def _create_window_rec(self, ref):
+        commands = [
+            self._duplicate_window,
+            ]
+        rec = self._WindowRec(next(self._rec_id_counter), commands)
+        await rec._async_init(self._view_resolver, self._path, ref)
+        return rec
+
+    @command('duplicate_window')
+    async def _duplicate_window(self, rec_id):
+        idx, rec = self._find_rec(rec_id)
+        new_idx, _ = await self._duplicate_window_impl(idx, rec)
+        #self._widget.setCurrentIndex(new_idx)
+
+    async def _duplicate_window_impl(self, idx, rec):
+        new_idx = idx + 1
+        ref = rec.handler.get_view_ref()
+        new_rec = await self._create_and_insert_rec(idx, ref)
+        return (new_idx, new_rec)
+
+    async def _create_and_insert_rec(self, idx, ref):
+        rec = await self._create_window_rec(ref)
+        window = await rec.handler.create_view()
+        window.show()
+        self._window_rec_list.insert(idx, rec)
+        self._window_list.insert(idx, window)
+        return rec
+
+    def _find_rec(self, rec_id):
+        for idx, rec in enumerate(self._window_rec_list):
+            if rec.id == rec_id:
+                return (idx, rec)
+        assert False, f"Wrong window record id: {rec_id}"
 
 
 class LayoutManager:
