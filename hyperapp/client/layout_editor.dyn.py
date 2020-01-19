@@ -38,14 +38,20 @@ class LayoutEditor(TreeObject):
         return 'idx'
 
     def get_item_command_list(self, item_path):
-        if not item_path:
-            return []
-        item_list = self._path2item_list.get(tuple(item_path[:-1]), [])
         try:
-            item = next(i for i in item_list if i.idx == item_path[-1])
-        except StopIteration:
+            item = self._find_item(item_path)
+        except KeyError:
             return []
         return [command.wrap(self._process_diff_list) for command in item.commands or []]
+
+    def _find_item(self, item_path):
+        if not item_path:
+            raise KeyError(f"Empty item path {item_path}")
+        item_list = self._path2item_list.get(tuple(item_path[:-1]), [])
+        try:
+            return next(i for i in item_list if i.idx == item_path[-1])
+        except StopIteration:
+            raise KeyError(f"Item is missing at path {item_path}")
 
     async def fetch_items(self, path):
         path = tuple(path)
