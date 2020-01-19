@@ -1,6 +1,7 @@
 import asyncio
 import itertools
 import logging
+import weakref
 from collections import namedtuple
 from functools import partial
 
@@ -19,6 +20,19 @@ from .layout_registry import LayoutViewProducer
 from .command_hub import CommandHub
 
 _log = logging.getLogger(__name__)
+
+
+class LayoutWatcher:
+
+    def __init__(self):
+        self._observers = weakref.WeakSet()
+
+    def subscribe(self, observer):
+        self._observers.add(observer)
+
+    def distribute_diffs(self, diff_list):
+        for observer in self._observers:
+            observer.process_layout_diffs(diff_list)
 
 
 class RootHandler(ViewHandler):
@@ -121,11 +135,7 @@ class RootHandler(ViewHandler):
 
 class LayoutManager:
 
-    def __init__(
-            self,
-            view_producer_registry,
-            view_registry,
-            ):
+    def __init__(self, view_producer_registry, view_registry):
         self._view_producer_registry = view_producer_registry
         self._view_registry = view_registry
         self._root_handler = None
@@ -169,6 +179,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        services.layout_watcher = LayoutWatcher()
         services.layout_manager = layout_manager = LayoutManager(
             services.view_producer_registry,
             services.view_registry,

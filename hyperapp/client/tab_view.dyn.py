@@ -31,16 +31,17 @@ class TabViewHandler(ViewHandler):
     _Tab = namedtuple('_Tab', 'id handler')
 
     @classmethod
-    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver):
-        self = cls(ref_registry, view_resolver, state.current_tab, path, command_hub, view_opener)
+    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver, layout_watcher):
+        self = cls(ref_registry, view_resolver, layout_watcher, state.current_tab, path, command_hub, view_opener)
         await self._async_init(state.tabs)
         return self
 
-    def __init__(self, ref_registry, view_resolver, current_tab_idx, path, command_hub, view_opener):
+    def __init__(self, ref_registry, view_resolver, layout_watcher, current_tab_idx, path, command_hub, view_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._view_resolver = view_resolver
         self._initial_tab_idx = current_tab_idx  # valid only during construction
+        self._layout_watcher = layout_watcher
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._tab_id_counter = itertools.count()
@@ -147,7 +148,7 @@ class TabViewHandler(ViewHandler):
             self._widget.setCurrentIndex(new_idx)
             self._command_hub.update()
         item = await self._visual_item(new_tab)
-        return [InsertVisualItemDiff(self._path, new_idx, item)]
+        self._layout_watcher.distribute_diffs([InsertVisualItemDiff(self._path, new_idx, item)])
 
     async def _create_and_insert_tab(self, tab_idx, tab_ref):
         tab = await self._create_tab(tab_ref)
@@ -162,7 +163,7 @@ class TabViewHandler(ViewHandler):
         del self._tab_list[tab_idx]
         if self._widget:
             self._widget.remove_tab(tab_idx)
-        return [RemoveVisualItemDiff([*self._path, tab.id])]
+        self._layout_watcher.distribute_diffs([RemoveVisualItemDiff([*self._path, tab.id])])
 
     # @command('visual_add_nested_tabs', kind='element')
     # async def _visual_add_nested_tabs(self, item_path):
@@ -187,8 +188,10 @@ class TabViewHandler(ViewHandler):
             view = await new_tab.handler.create_view()
             self._widget.replace_tab(0, view)
         item = await self._visual_item(new_tab)
-        return [*remove_diff_list,
-                InsertVisualItemDiff(self._path, 0, item)]
+        self._layout_watcher.distribute_diffs([
+            *remove_diff_list,
+            InsertVisualItemDiff(self._path, 0, item),
+            ])
 
 
 class TabView(QtWidgets.QTabWidget, View):
@@ -234,7 +237,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         services.view_registry.register_type(
-            htypes.tab_view.tab_view, TabViewHandler.from_data, services.ref_registry, services.view_resolver)
+            htypes.tab_view.tab_view, TabViewHandler.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
         services.available_view_registry['tab_view'] = self._new_tab_ref
 
     @property

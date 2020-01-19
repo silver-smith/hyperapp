@@ -14,13 +14,14 @@ _log = logging.getLogger(__name__)
 class LayoutEditor(TreeObject):
 
     @classmethod
-    async def from_state(cls, state, layout_manager):
-        self = cls()
+    async def from_state(cls, state, layout_manager, layout_watcher):
+        self = cls(layout_watcher)
         await self._async_init(layout_manager.root_handler)
         return self
 
-    def __init__(self):
+    def __init__(self, layout_watcher):
         super().__init__()
+        layout_watcher.subscribe(self)
 
     async def _async_init(self, handler):
         item_dict = {}
@@ -73,7 +74,8 @@ class LayoutEditor(TreeObject):
                 self._distribute_fetch_results(p, [])
         self._distribute_fetch_results(path, item_list)
 
-    async def _process_diff_list(self, vdiff_list):
+    # from LayoutWatcher
+    def process_layout_diffs(self, vdiff_list):
         for vdiff in vdiff_list:
             if isinstance(vdiff, InsertVisualItemDiff):
 
@@ -96,7 +98,8 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(htypes.layout_editor.layout_editor, LayoutEditor.from_state, services.layout_manager)
+        services.object_registry.register_type(
+            htypes.layout_editor.layout_editor, LayoutEditor.from_state, services.layout_manager, services.layout_watcher)
 
     @command('open_layout')
     async def open_layout(self):
