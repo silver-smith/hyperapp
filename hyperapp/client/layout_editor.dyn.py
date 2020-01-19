@@ -15,14 +15,25 @@ class LayoutEditor(TreeObject):
 
     @classmethod
     async def from_state(cls, state, layout_manager):
-        handler = layout_manager.root_handler
-        path2item_list = await cls._load_items(handler)
-        return cls(handler, path2item_list)
+        self = cls()
+        await self._async_init(layout_manager.root_handler)
+        return self
 
-    def __init__(self, handler, path2item_list):
+    def __init__(self):
         super().__init__()
-        self._handler = handler
-        self._path2item_list = path2item_list
+
+    async def _async_init(self, handler):
+        item_dict = {}
+
+        def add_item(path, item):
+            item_list = item_dict.setdefault(path, [])
+            item_list.append(item)
+            for kid in item.children or []:
+                add_item((*path, item.idx), kid)
+
+        root = await handler.visual_item()
+        add_item((), root.to_item(0, 'root'))
+        self._path2item_list = item_dict
 
     def get_title(self):
         return "Layout"
@@ -61,20 +72,6 @@ class LayoutEditor(TreeObject):
             if p not in self._path2item_list:
                 self._distribute_fetch_results(p, [])
         self._distribute_fetch_results(path, item_list)
-
-    @staticmethod
-    async def _load_items(handler):
-        item_dict = {}
-
-        def add_item(path, item):
-            item_list = item_dict.setdefault(path, [])
-            item_list.append(item)
-            for kid in item.children or []:
-                add_item((*path, item.idx), kid)
-
-        root = await handler.visual_item()
-        add_item((), root.to_item(0, 'root'))
-        return item_dict
 
     async def _process_diff_list(self, vdiff_list):
         for vdiff in vdiff_list:
