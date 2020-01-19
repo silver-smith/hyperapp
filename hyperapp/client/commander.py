@@ -73,8 +73,8 @@ class BoundCommand(Command):
 
     def wrap(self, wrapper):
         async def fn(*args, **kw):
-            result = await self.run(*args, **kw)
-            return (await wrapper(result))
+            result = await wrapper(self, *args, **kw)
+            return result
         return FreeFnCommand(self.id, self.kind, self.resource_key, self.enabled, fn, self._args, self._kw)
 
     def partial(self, *args, **kw):
@@ -122,6 +122,9 @@ class FreeFnCommand(Command):
 
     def more_params_are_required(self, *args, **kw):
         return False
+
+    def with_resource_key(self, resource_key):
+        return FreeFnCommand(self.id, self.kind, resource_key, self.enabled, self._fn, self._args, self._kw)
 
 
 class UnboundCommand(object):

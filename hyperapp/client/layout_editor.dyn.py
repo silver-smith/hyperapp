@@ -42,7 +42,7 @@ class LayoutEditor(TreeObject):
             item = self._find_item(item_path)
         except KeyError:
             return []
-        return [command.wrap(self._process_diff_list) for command in item.commands or []]
+        return item.commands or []
 
     def _find_item(self, item_path):
         if not item_path:
