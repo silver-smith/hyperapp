@@ -81,6 +81,9 @@ class BoundCommand(Command):
         return BoundCommand(self.id, self.kind, self.resource_key, self.enabled, self._class_method, self._inst_wr,
                             (*self._args, *args), {**self._kw, **kw})
 
+    def with_resource_key(self, resource_key):
+        return BoundCommand(self.id, self.kind, resource_key, self.enabled, self._class_method, self._inst_wr, self._args, self._kw)
+
     def bound_arguments(self, *args, **kw):
         signature = inspect.signature(self._class_method)
         inst = self._inst_wr()

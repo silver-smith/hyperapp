@@ -15,7 +15,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_handler import RootVisualItem, ViewHandler
+from .view_handler import InsertVisualItemDiff, RootVisualItem, ViewHandler
 from .layout_registry import LayoutViewProducer
 from .command_hub import CommandHub
 
@@ -52,15 +52,16 @@ class RootHandler(ViewHandler):
             return [*self.handler.get_current_commands(), *root_commands]
 
     @classmethod
-    async def from_data(cls, state, path, ref_registry, view_resolver):
-        self = cls(ref_registry, view_resolver, path)
+    async def from_data(cls, state, path, ref_registry, view_resolver, layout_watcher):
+        self = cls(ref_registry, view_resolver, layout_watcher, path)
         await self._async_init(state.window_ref_list)
         return self
 
-    def __init__(self, ref_registry, view_resolver, path):
+    def __init__(self, ref_registry, view_resolver, layout_watcher, path):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._view_resolver = view_resolver
+        self._layout_watcher = layout_watcher
         self._window_list = None
         self._rec_id_counter = itertools.count()
 
@@ -90,7 +91,7 @@ class RootHandler(ViewHandler):
             for rec in self._window_rec_list
             ]
         return RootVisualItem('Root', children=[
-            child.to_item(idx, f'window#{idx}')
+            child.to_item(idx, f'window#{idx}', list(self._window_visual_commands(idx)))
             for idx, child in enumerate(children)
             ])
 
@@ -99,18 +100,34 @@ class RootHandler(ViewHandler):
             rec.handler for rec in self._window_rec_list)
 
     async def _create_window_rec(self, ref):
-        commands = [
-            self._duplicate_window,
-            ]
-        rec = self._WindowRec(next(self._rec_id_counter), commands)
+        window_commands = self.get_command_list()
+        rec = self._WindowRec(next(self._rec_id_counter), window_commands)
         await rec._async_init(self._view_resolver, self._path, ref)
         return rec
+
+    def _window_visual_commands(self, idx):
+        rec = self._window_rec_list[idx]
+        for command in self.get_command_list():
+            resource_key = command.resource_key
+            path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
+            resource_key = resource_key_t(resource_key.base_ref, path)
+            yield (command
+                   .wrap(self._run_command_for_item)
+                   .with_resource_key(resource_key)
+                   )
+
+    async def _run_command_for_item(self, command, item_path):
+        idx, rec = self._find_rec(item_path[-1])
+        return (await command.run(rec.id))
 
     @command('duplicate_window')
     async def _duplicate_window(self, rec_id):
         idx, rec = self._find_rec(rec_id)
-        new_idx, _ = await self._duplicate_window_impl(idx, rec)
+        new_idx, new_rec = await self._duplicate_window_impl(idx, rec)
         #self._widget.setCurrentIndex(new_idx)
+        item = await new_rec.handler.visual_item()
+        self._layout_watcher.distribute_diffs([
+            InsertVisualItemDiff(self._path, new_idx, item)])
 
     async def _duplicate_window_impl(self, idx, rec):
         new_idx = idx + 1
@@ -185,6 +202,6 @@ class ThisModule(ClientModule):
             services.view_registry,
             )
         services.view_registry.register_type(
-            htypes.root_layout.root_layout, RootHandler.from_data, services.ref_registry, services.view_resolver)
+            htypes.root_layout.root_layout, RootHandler.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
         services.view_producer = ViewProducer(layout_manager)
         services.view_opener = ViewOpener(layout_manager)

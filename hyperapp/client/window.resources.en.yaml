@@ -1,7 +1,13 @@
-Window:
+module:client.layout_manager:RootHandler:
   commands:
     duplicate_window:
       text: Duplicate window
       description: Duplicate window including it's contents
       shortcuts:
       - Alt+Shift+W
+    visual_duplicate_window:
+      text: Duplicate window
+      description: Duplicate selected window
+      shortcuts:
+      - Ctrl+D
+
