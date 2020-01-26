@@ -1,5 +1,10 @@
 module:client.layout_manager:RootHandler:
   commands:
+    quit:
+      text: Quit
+      description: Close application
+      shortcuts:
+      - Alt+Q
     duplicate_window:
       text: Duplicate window
       description: Duplicate window including it's contents

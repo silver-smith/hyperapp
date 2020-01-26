@@ -112,6 +112,8 @@ class RootHandler(ViewHandler):
     def _window_visual_commands(self, idx):
         rec = self._window_rec_list[idx]
         for command in self.get_command_list():
+            if command.id == 'quit':
+                continue
             resource_key = command.resource_key
             path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
             resource_key = resource_key_t(resource_key.base_ref, path)
@@ -132,6 +134,10 @@ class RootHandler(ViewHandler):
         del self._window_rec_list[idx]
         self._layout_watcher.distribute_diffs([
             RemoveVisualItemDiff([*self._path, rec_id])])
+
+    @command('quit')
+    def _quit(self, rec_id):
+        QtWidgets.QApplication.quit()
 
     @command('duplicate_window')
     async def _duplicate_window(self, rec_id):
