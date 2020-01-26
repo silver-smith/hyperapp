@@ -23,15 +23,16 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowHandler(ViewHandler):
 
     @classmethod
-    async def from_data(cls, state, path, command_hub, ref_registry, view_resolver):
-        self = cls(ref_registry, path, command_hub, state.pos, state.size)
+    async def from_data(cls, state, path, on_close, command_hub, ref_registry, view_resolver):
+        self = cls(ref_registry, path, on_close, command_hub, state.pos, state.size)
         await self._async_init(view_resolver, state)
         return self
 
-    def __init__(self, ref_registry, path, command_hub, pos, size):
+    def __init__(self, ref_registry, path, on_close, command_hub, pos, size):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._command_hub = command_hub
+        self._on_close = on_close
         self._view_opener = None
         self._pos = pos
         self._size = size
@@ -63,7 +64,7 @@ class WindowHandler(ViewHandler):
         menu_bar = await self._menu_bar_handler.create_view()
         command_pane = await self._command_pane_handler.create_view()
         central_view = await self._central_view_handler.create_view()
-        self._widget = Window(menu_bar, command_pane, central_view, self._size, self._pos)
+        self._widget = Window(menu_bar, command_pane, central_view, self._on_close, self._size, self._pos)
         self._command_hub.update()
         return self._widget
 
@@ -87,9 +88,10 @@ class WindowHandler(ViewHandler):
 
 class Window(View, QtWidgets.QMainWindow):
 
-    def __init__(self, menu_bar, command_pane, central_view, size=None, pos=None):
+    def __init__(self, menu_bar, command_pane, central_view, on_close, size=None, pos=None):
         QtWidgets.QMainWindow.__init__(self)
         View.__init__(self)
+        self._on_close = on_close
         self._child_widget = None
         if size:
             self.resize(size.w, size.h)
@@ -102,6 +104,10 @@ class Window(View, QtWidgets.QMainWindow):
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, command_pane)
         self.setMenuWidget(menu_bar)
         self.setCentralWidget(central_view)
+
+    def closeEvent(self, event):
+        super().closeEvent(event)
+        self._on_close()
 
     def get_state(self):
         return htypes.window.window(

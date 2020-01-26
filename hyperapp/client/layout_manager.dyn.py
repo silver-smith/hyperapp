@@ -15,7 +15,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_handler import InsertVisualItemDiff, RootVisualItem, ViewHandler
+from .view_handler import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, ViewHandler
 from .layout_registry import LayoutViewProducer
 from .command_hub import CommandHub
 
@@ -39,17 +39,21 @@ class RootHandler(ViewHandler):
 
     class _WindowRec:
 
-        def __init__(self, id, window_commands):
+        def __init__(self, id, on_close, window_commands):
             self.id = id
+            self._on_close = on_close
             self._window_commands = window_commands
             self._command_hub = CommandHub(get_commands=self.get_current_commands)
 
         async def _async_init(self, view_resolver, path, ref):
-            self.handler = await view_resolver.resolve(ref, [*path, self.id], self._command_hub)
+            self.handler = await view_resolver.resolve(ref, [*path, self.id], self._window_closed, self._command_hub)
 
         def get_current_commands(self):
             root_commands = [command.partial(self.id) for command in self._window_commands]
             return [*self.handler.get_current_commands(), *root_commands]
+
+        def _window_closed(self):
+            self._on_close(self.id)
 
     @classmethod
     async def from_data(cls, state, path, ref_registry, view_resolver, layout_watcher):
@@ -101,7 +105,7 @@ class RootHandler(ViewHandler):
 
     async def _create_window_rec(self, ref):
         window_commands = self.get_command_list()
-        rec = self._WindowRec(next(self._rec_id_counter), window_commands)
+        rec = self._WindowRec(next(self._rec_id_counter), self._on_window_closed, window_commands)
         await rec._async_init(self._view_resolver, self._path, ref)
         return rec
 
@@ -119,6 +123,15 @@ class RootHandler(ViewHandler):
     async def _run_command_for_item(self, command, item_path):
         idx, rec = self._find_rec(item_path[-1])
         return (await command.run(rec.id))
+
+    def _on_window_closed(self, rec_id):
+        if len(self._window_rec_list) == 1:
+            return  # closing last window means exit
+        idx, rec = self._find_rec(rec_id)
+        del self._window_list[idx]
+        del self._window_rec_list[idx]
+        self._layout_watcher.distribute_diffs([
+            RemoveVisualItemDiff([*self._path, rec_id])])
 
     @command('duplicate_window')
     async def _duplicate_window(self, rec_id):
