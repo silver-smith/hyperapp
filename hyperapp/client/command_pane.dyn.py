@@ -9,12 +9,12 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_handler import RootVisualItem, ViewHandler
+from .layout import RootVisualItem, Layout
 
 log = logging.getLogger(__name__)
 
 
-class CommandPaneHandler(ViewHandler):
+class CommandPaneLayout(Layout):
 
     def __init__(self, state, path, command_hub, view_opener, ref_registry, resource_resolver):
         super().__init__(path)
@@ -109,4 +109,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.view_registry.register_type(
-            htypes.command_pane.command_pane, CommandPaneHandler, services.ref_registry, services.resource_resolver)
+            htypes.command_pane.command_pane, CommandPaneLayout, services.ref_registry, services.resource_resolver)

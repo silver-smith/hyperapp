@@ -1,4 +1,4 @@
-module:client.tab_view:TabViewHandler:
+module:client.tab_view:TabViewLayout:
   commands:
     visual_duplicate_tab:
       text: Duplicate

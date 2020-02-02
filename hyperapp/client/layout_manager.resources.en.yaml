@@ -1,4 +1,4 @@
-module:client.layout_manager:RootHandler:
+module:client.layout_manager:RootLayout:
   commands:
     duplicate_window:
       text: Duplicate window

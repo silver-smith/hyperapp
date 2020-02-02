@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_handler import RootVisualItem, VisualItem, ViewHandler
+from .layout import RootVisualItem, VisualItem, Layout
 
 _log = logging.getLogger(__name__)
 
@@ -42,16 +42,16 @@ class _History:
 
 class _CurrentItemObserver:
 
-    def __init__(self, handler, piece, object):
-        self._handler = handler
+    def __init__(self, layout, piece, object):
+        self._layout = layout
         self._piece = piece
         self._object = object
 
     def current_changed(self, current_item_key):
-        self._handler._update_element_commands(self._piece, self._object, current_item_key)
+        self._layout._update_element_commands(self._piece, self._object, current_item_key)
 
 
-class NavigatorHandler(ViewHandler):
+class NavigatorLayout(Layout):
 
     @classmethod
     async def from_data(cls,
@@ -170,7 +170,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.view_registry.register_type(
             htypes.navigator.navigator,
-            NavigatorHandler.from_data,
+            NavigatorLayout.from_data,
             services.ref_registry,
             services.object_registry,
             services.view_producer_registry,

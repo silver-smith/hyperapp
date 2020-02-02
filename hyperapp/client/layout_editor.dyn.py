@@ -4,7 +4,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_handler import InsertVisualItemDiff, RemoveVisualItemDiff
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject
 
@@ -16,14 +16,14 @@ class LayoutEditor(TreeObject):
     @classmethod
     async def from_state(cls, state, layout_manager, layout_watcher):
         self = cls(layout_watcher)
-        await self._async_init(layout_manager.root_handler)
+        await self._async_init(layout_manager.root_layout)
         return self
 
     def __init__(self, layout_watcher):
         super().__init__()
         layout_watcher.subscribe(self)
 
-    async def _async_init(self, handler):
+    async def _async_init(self, layout):
         item_dict = {}
 
         def add_item(path, item):
@@ -32,7 +32,7 @@ class LayoutEditor(TreeObject):
             for kid in item.children or []:
                 add_item((*path, item.idx), kid)
 
-        root = await handler.visual_item()
+        root = await layout.visual_item()
         add_item((), root.to_item(0, 'root'))
         self._path2item_list = item_dict
 

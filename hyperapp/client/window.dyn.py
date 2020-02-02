@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_handler import RootVisualItem, ViewHandler
+from .layout import RootVisualItem, Layout
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
     
-class WindowHandler(ViewHandler):
+class WindowLayout(Layout):
 
     @classmethod
     async def from_data(cls, state, path, on_close, command_hub, ref_registry, view_resolver):
@@ -39,9 +39,9 @@ class WindowHandler(ViewHandler):
         self._widget = None
 
     async def _async_init(self, view_resolver, state):
-        self._menu_bar_handler = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 0], self._command_hub, self._view_opener)
-        self._command_pane_handler = await view_resolver.resolve(state.command_pane_ref, [*self._path, 1], self._command_hub, self._view_opener)
-        self._central_view_handler = await view_resolver.resolve(state.central_view_ref, [*self._path, 2], self._command_hub, self._view_opener)
+        self._menu_bar_layout = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 0], self._command_hub, self._view_opener)
+        self._command_pane_layout = await view_resolver.resolve(state.command_pane_ref, [*self._path, 1], self._command_hub, self._view_opener)
+        self._central_view_layout = await view_resolver.resolve(state.central_view_ref, [*self._path, 2], self._command_hub, self._view_opener)
 
     def get_view_ref(self):
         if self._widget:
@@ -52,26 +52,26 @@ class WindowHandler(ViewHandler):
         else:
             size, pos = self._size, self._pos
         window = htypes.window.window(
-            menu_bar_ref=self._menu_bar_handler.get_view_ref(),
-            command_pane_ref=self._command_pane_handler.get_view_ref(),
-            central_view_ref=self._central_view_handler.get_view_ref(),
+            menu_bar_ref=self._menu_bar_layout.get_view_ref(),
+            command_pane_ref=self._command_pane_layout.get_view_ref(),
+            central_view_ref=self._central_view_layout.get_view_ref(),
             size=size,
             pos=pos,
             )
         return self._ref_registry.register_object(window)
 
     async def create_view(self):
-        menu_bar = await self._menu_bar_handler.create_view()
-        command_pane = await self._command_pane_handler.create_view()
-        central_view = await self._central_view_handler.create_view()
+        menu_bar = await self._menu_bar_layout.create_view()
+        command_pane = await self._command_pane_layout.create_view()
+        central_view = await self._central_view_layout.create_view()
         self._widget = Window(menu_bar, command_pane, central_view, self._on_close, self._size, self._pos)
         self._command_hub.update()
         return self._widget
 
     async def visual_item(self):
-        menu_bar = await self._menu_bar_handler.visual_item()
-        command_pane = await self._command_pane_handler.visual_item()
-        central_view = await self._central_view_handler.visual_item()
+        menu_bar = await self._menu_bar_layout.visual_item()
+        command_pane = await self._command_pane_layout.visual_item()
+        central_view = await self._central_view_layout.visual_item()
         return RootVisualItem('Window', children=[
             menu_bar.to_item(0, 'menu_bar'),
             command_pane.to_item(1, 'command_pane'),
@@ -79,11 +79,11 @@ class WindowHandler(ViewHandler):
             ])
 
     def get_current_commands(self):
-        return self._get_current_commands_with_child(self._central_view_handler)
+        return self._get_current_commands_with_child(self._central_view_layout)
 
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
-            [self._menu_bar_handler, self._command_pane_handler, self._central_view_handler])
+            [self._menu_bar_layout, self._command_pane_layout, self._central_view_layout])
 
 
 class Window(View, QtWidgets.QMainWindow):
@@ -165,4 +165,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.window.window, WindowHandler.from_data, services.ref_registry, services.view_resolver)
+        services.view_registry.register_type(htypes.window.window, WindowLayout.from_data, services.ref_registry, services.view_resolver)

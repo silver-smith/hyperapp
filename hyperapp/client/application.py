@@ -42,7 +42,7 @@ class Application(AsyncApplication, Commander):
         self._save_state()
 
     def get_current_state(self):
-        root_layout_ref = self._layout_manager.root_handler.get_view_ref()
+        root_layout_ref = self._layout_manager.root_layout.get_view_ref()
         return self._state_storage.state_t(
             root_layout_ref=root_layout_ref,
             )

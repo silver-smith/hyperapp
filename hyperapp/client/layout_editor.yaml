@@ -3,6 +3,6 @@ import:
     layout_editor:
     - layout_editor
   code:
-  - client.view_handler
+  - client.layout
   - client.column
   - client.tree_object

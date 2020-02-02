@@ -11,24 +11,24 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .view_handler import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, ViewHandler
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, Layout
 
 log = logging.getLogger(__name__)
 
 
 class _ViewOpener:
 
-    def __init__(self, handler, tab_id):
-        self._handler = handler
+    def __init__(self, layout, tab_id):
+        self._layout = layout
         self._tab_id = tab_id
 
     def open(self, view):
-        self._handler._replace_tab(self._tab_id, view)
+        self._layout._replace_tab(self._tab_id, view)
 
 
-class TabViewHandler(ViewHandler):
+class TabLayout(Layout):
 
-    _Tab = namedtuple('_Tab', 'id handler')
+    _Tab = namedtuple('_Tab', 'id layout')
 
     @classmethod
     async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver, layout_watcher):
@@ -54,7 +54,7 @@ class TabViewHandler(ViewHandler):
             ]
 
     def get_view_ref(self):
-        tab_refs = [tab.handler.get_view_ref() for tab in self._tab_list]
+        tab_refs = [tab.layout.get_view_ref() for tab in self._tab_list]
         if self._widget:
             if self._widget.currentIndex() != -1:
                 current_tab = self._widget.currentIndex()
@@ -66,7 +66,7 @@ class TabViewHandler(ViewHandler):
         return self._ref_registry.register_object(view)
 
     async def create_view(self):
-        children = [await tab.handler.create_view() for tab in self._tab_list]
+        children = [await tab.layout.create_view() for tab in self._tab_list]
         tab_view = TabView(children, self._initial_tab_idx, on_current_tab_changed=self._on_current_tab_changed)
         self._widget = tab_view
         return tab_view
@@ -82,22 +82,22 @@ class TabViewHandler(ViewHandler):
         tab_idx = self._widget.currentIndex()
         if tab_idx == -1:
             return []
-        current_handler = self._tab_list[tab_idx].handler
+        current_layout = self._tab_list[tab_idx].layout
         my_commands = [
             command.wrap(self._run_command_for_current_tab)
             for command in self.get_command_list()
             ]
         return self._merge_commands(
-            current_handler.get_current_commands(),
+            current_layout.get_current_commands(),
             my_commands,
             )
 
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
-            tab.handler for tab in self._tab_list)
+            tab.layout for tab in self._tab_list)
 
     async def _visual_item(self, tab):
-        child = await tab.handler.visual_item()
+        child = await tab.layout.visual_item()
         commands = [
             command
               .wrap(self._run_command_for_item)
@@ -112,8 +112,8 @@ class TabViewHandler(ViewHandler):
     async def _create_tab(self, tab_ref):
         tab_id = next(self._tab_id_counter)
         opener = _ViewOpener(self, tab_id)
-        handler = await self._view_resolver.resolve(tab_ref, [*self._path, tab_id], self._command_hub, opener)
-        return self._Tab(tab_id, handler)
+        layout = await self._view_resolver.resolve(tab_ref, [*self._path, tab_id], self._command_hub, opener)
+        return self._Tab(tab_id, layout)
 
     def _on_current_tab_changed(self, tab_idx):
         if tab_idx != -1:
@@ -142,7 +142,7 @@ class TabViewHandler(ViewHandler):
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx, tab):
         new_idx = tab_idx + 1
-        tab_ref = tab.handler.get_view_ref()
+        tab_ref = tab.layout.get_view_ref()
         new_tab = await self._create_and_insert_tab(tab_idx, tab_ref)
         if self._widget:
             self._widget.setCurrentIndex(new_idx)
@@ -154,7 +154,7 @@ class TabViewHandler(ViewHandler):
         tab = await self._create_tab(tab_ref)
         self._tab_list.insert(tab_idx, tab)
         if self._widget:
-            view = await tab.handler.create_view()
+            view = await tab.layout.create_view()
             self._widget.insert_tab(tab_idx, view)
         return tab
 
@@ -185,7 +185,7 @@ class TabViewHandler(ViewHandler):
         if self._widget:
             while self._widget.count() > 1:
                 self._widget.remove_tab(1)
-            view = await new_tab.handler.create_view()
+            view = await new_tab.layout.create_view()
             self._widget.replace_tab(0, view)
         item = await self._visual_item(new_tab)
         self._layout_watcher.distribute_diffs([
@@ -237,7 +237,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         services.view_registry.register_type(
-            htypes.tab_view.tab_view, TabViewHandler.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
+            htypes.tab_view.tab_view, TabLayout.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
         services.available_view_registry['tab_view'] = self._new_tab_ref
 
     @property

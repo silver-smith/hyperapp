@@ -4,5 +4,5 @@ import:
     - root_layout
   code:
   - client.layout_registry
-  - client.view_handler
+  - client.layout
   - client.command_hub

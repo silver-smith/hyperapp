@@ -92,7 +92,7 @@ code_module_list = [
     # 'client.splitter',
     'client.command_hub',
     'client.view_registry',
-    'client.view_handler',
+    'client.layout',
     'client.record_object',
     'client.params_editor',
     'client.view_chooser',

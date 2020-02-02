@@ -1,4 +1,4 @@
-module:client.navigator.navigator:NavigatorHandler:
+module:client.navigator.navigator:NavigatorLayout:
   commands:
     go_backward:
       text: Go back

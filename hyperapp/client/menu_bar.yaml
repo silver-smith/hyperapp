@@ -3,4 +3,4 @@ import:
     menu_bar:
     - menu_bar
   code:
-  - client.view_handler
+  - client.layout

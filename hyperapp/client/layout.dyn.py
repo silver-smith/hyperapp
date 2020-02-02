@@ -38,7 +38,7 @@ class RemoveVisualItemDiff(VisualItemDiff):
     path: List[int]
 
 
-class ViewHandler(Commander, metaclass=abc.ABCMeta):
+class Layout(Commander, metaclass=abc.ABCMeta):
 
     def __init__(self, path):
         super().__init__(commands_kind='view')
@@ -66,7 +66,7 @@ class ViewHandler(Commander, metaclass=abc.ABCMeta):
         # child commands should override and hide same commands from parents
         return self._merge_commands(
             child.get_current_commands(),
-            ViewHandler.get_current_commands(self),
+            Layout.get_current_commands(self),
             )
 
     def _merge_commands(self, primary_commands, secondary_commands):
@@ -75,13 +75,13 @@ class ViewHandler(Commander, metaclass=abc.ABCMeta):
                               if command.id not in primary_command_ids]
         return [*primary_commands, *secondary_commands]
 
-    def _collect_view_commands_with_children(self, child_handler_it):
+    def _collect_view_commands_with_children(self, child_layout_it):
         children_commands = {
             path: commands
-            for handler in child_handler_it
-            for path, commands in handler.collect_view_commands().items()
+            for layout in child_layout_it
+            for path, commands in layout.collect_view_commands().items()
             }
         return {
             **children_commands,
-            **ViewHandler.collect_view_commands(self),
+            **Layout.collect_view_commands(self),
             }

@@ -15,7 +15,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_handler import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, ViewHandler
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, Layout
 from .layout_registry import LayoutViewProducer
 from .command_hub import CommandHub
 
@@ -35,7 +35,7 @@ class LayoutWatcher:
             observer.process_layout_diffs(diff_list)
 
 
-class RootHandler(ViewHandler):
+class RootLayout(Layout):
 
     class _WindowRec:
 
@@ -46,11 +46,11 @@ class RootHandler(ViewHandler):
             self._command_hub = CommandHub(get_commands=self.get_current_commands)
 
         async def _async_init(self, view_resolver, path, ref):
-            self.handler = await view_resolver.resolve(ref, [*path, self.id], self._window_closed, self._command_hub)
+            self.layout = await view_resolver.resolve(ref, [*path, self.id], self._window_closed, self._command_hub)
 
         def get_current_commands(self):
             root_commands = [command.partial(self.id) for command in self._window_commands]
-            return [*self.handler.get_current_commands(), *root_commands]
+            return [*self.layout.get_current_commands(), *root_commands]
 
         def _window_closed(self):
             self._on_close(self.id)
@@ -76,13 +76,13 @@ class RootHandler(ViewHandler):
             ]
 
     def get_view_ref(self):
-        window_ref_list = [rec.handler.get_view_ref() for rec in self._window_rec_list]
+        window_ref_list = [rec.layout.get_view_ref() for rec in self._window_rec_list]
         root_layout = htypes.root_layout.root_layout(window_ref_list)
         return self._ref_registry.register_object(root_layout)
 
     async def create_view(self):
         self._window_list = window_list = [
-            await rec.handler.create_view()
+            await rec.layout.create_view()
             for rec in self._window_rec_list
             ]
         for window in window_list:
@@ -91,7 +91,7 @@ class RootHandler(ViewHandler):
 
     async def visual_item(self):
         children = [
-            await rec.handler.visual_item()
+            await rec.layout.visual_item()
             for rec in self._window_rec_list
             ]
         return RootVisualItem('Root', children=[
@@ -101,7 +101,7 @@ class RootHandler(ViewHandler):
 
     def collect_view_commands(self):
         return self._collect_view_commands_with_children(
-            rec.handler for rec in self._window_rec_list)
+            rec.layout for rec in self._window_rec_list)
 
     async def _create_window_rec(self, ref):
         window_commands = self.get_command_list()
@@ -144,19 +144,19 @@ class RootHandler(ViewHandler):
         idx, rec = self._find_rec(rec_id)
         new_idx, new_rec = await self._duplicate_window_impl(idx, rec)
         #self._widget.setCurrentIndex(new_idx)
-        item = await new_rec.handler.visual_item()
+        item = await new_rec.layout.visual_item()
         self._layout_watcher.distribute_diffs([
             InsertVisualItemDiff(self._path, new_idx, item)])
 
     async def _duplicate_window_impl(self, idx, rec):
         new_idx = idx + 1
-        ref = rec.handler.get_view_ref()
+        ref = rec.layout.get_view_ref()
         new_rec = await self._create_and_insert_rec(idx, ref)
         return (new_idx, new_rec)
 
     async def _create_and_insert_rec(self, idx, ref):
         rec = await self._create_window_rec(ref)
-        window = await rec.handler.create_view()
+        window = await rec.layout.create_view()
         window.show()
         self._window_rec_list.insert(idx, rec)
         self._window_list.insert(idx, window)
@@ -174,17 +174,17 @@ class LayoutManager:
     def __init__(self, view_producer_registry, view_registry):
         self._view_producer_registry = view_producer_registry
         self._view_registry = view_registry
-        self._root_handler = None
+        self._root_layout = None
         self._window_list = None
 
     async def create_layout_views(self, root_view):
         # root path is expected by layout editor to be [0]
-        self._root_handler = handler = await self._view_registry.resolve_async(root_view, [0])
-        self._window_list = await handler.create_view()
+        self._root_layout = layout = await self._view_registry.resolve_async(root_view, [0])
+        self._window_list = await layout.create_view()
 
     @property
-    def root_handler(self):
-        return self._root_handler
+    def root_layout(self):
+        return self._root_layout
 
     async def produce_view(self, piece, object, observer=None):
         return (await self._view_producer_registry.produce_view(piece, object, observer))
@@ -221,6 +221,6 @@ class ThisModule(ClientModule):
             services.view_registry,
             )
         services.view_registry.register_type(
-            htypes.root_layout.root_layout, RootHandler.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
+            htypes.root_layout.root_layout, RootLayout.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
         services.view_producer = ViewProducer(layout_manager)
         services.view_opener = ViewOpener(layout_manager)

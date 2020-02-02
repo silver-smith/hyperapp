@@ -8,12 +8,12 @@ from hyperapp.client.command import Command, WindowCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_handler import RootVisualItem, ViewHandler
+from .layout import RootVisualItem, Layout
 
 log = logging.getLogger(__name__)
 
 
-class MenuBarHandler(ViewHandler):
+class MenuBarLayout(Layout):
 
     def __init__(self, state, path, command_hub, view_opener, ref_registry, resource_resolver):
         super().__init__(path)
@@ -89,4 +89,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.view_registry.register_type(
-            htypes.menu_bar.menu_bar, MenuBarHandler, services.ref_registry, services.resource_resolver)
+            htypes.menu_bar.menu_bar, MenuBarLayout, services.ref_registry, services.resource_resolver)
