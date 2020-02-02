@@ -194,6 +194,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._fetch_requested_for_path.add(path or None)
         log.info('  request fetch for %s', path)
         asyncio.ensure_future(self._object.fetch_items(path or []))
+
     def index2path(self, index):
         if index.isValid():
             return self._id2path[index.internalId()]
