@@ -58,6 +58,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             id = self._get_next_id()
             self._path2id[path] = id
             self._id2path[id] = path
+            log.debug("_Model.index: made new id %s for path %s", id, path)
         return self.createIndex(row, column, id)
 
     def parent(self, index):
@@ -116,6 +117,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._append_items(path, item_list)
 
     def process_diff(self, path, diff):
+        log.debug("Process diff at %s: %s", path, diff)
         path = tuple(path)
         if isinstance(diff, AppendItemDiff):
             self._append_items(path, [diff.item])
@@ -129,6 +131,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
     # own methods  ------------------------------------------------------------------------------------------------------
 
     def _append_items(self, path, item_list):
+        log.debug("Append items at %s: %s", path, item_list)
         current_item_list = self._path2children.setdefault(path, [])
         if not item_list:
             return
@@ -143,6 +146,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             self._path2item[item_path] = item
             self._path2id[item_path] = id
             self._id2path[id] = item_path
+            log.debug("Append item: id=%s for path %s", id, item_path)
         self.endInsertRows()
         view = self._view_wr()
         if view:
@@ -154,6 +158,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         id = self._get_next_id()
         key = getattr(item, self._key_attr)
         item_path = path + (key,)
+        log.debug("Insert item at #%s: id=%s for path %s", idx, id, item_path)
         index = self.path2index(path) or QtCore.QModelIndex()
         self.beginInsertRows(index, idx, idx)
         self._path2item[item_path] = item
@@ -177,6 +182,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             raise RuntimeError(f"No item at path: {path}")
         index = self.path2index(parent_path) or QtCore.QModelIndex()
         id = self._path2id[path]
+        log.debug("Remove item #%s id=%s at %s", idx, id, path)
         self.beginRemoveRows(index, idx, idx)
         del item_list[idx]
         del self._path2item[path]
