@@ -21,10 +21,10 @@ class ViewProducerRegistry:
     def register_view_producer(self, producer):
         self._producer_list.append(producer)
 
-    async def produce_view(self, piece, object, observer=None):
+    async def produce_layout(self, piece, object, command_hub):
         for producer in self._producer_list:
             try:
-                return (await producer(piece, object, observer))
+                return (await producer(piece, object, command_hub))
             except NotApplicable:
                 pass
         raise RuntimeError("No view is known to support object {}".format(object))

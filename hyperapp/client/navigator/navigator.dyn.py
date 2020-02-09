@@ -77,6 +77,7 @@ class NavigatorLayout(Layout):
         self._history = _History()
         self._current_piece = None
         self._current_object = None
+        self._current_layout = None
 
     async def _async_init(self, initial_piece_ref):
         self._initial_piece = piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
@@ -90,7 +91,9 @@ class NavigatorLayout(Layout):
     async def create_view(self):
         self._current_piece = piece = self._initial_piece
         self._current_object = object = await self._object_registry.resolve_async(piece)
-        return (await self._view_producer_registry.produce_view(piece, object))
+        layout = await self._view_producer_registry.produce_layout(piece, object, command_hub=None)
+        self._current_layout = layout
+        return (await layout.create_view())
 
     async def visual_item(self):
         piece = self._current_piece
@@ -141,10 +144,12 @@ class NavigatorLayout(Layout):
     async def _open_piece(self, piece):
         object = await self._object_registry.resolve_async(piece)
         self._current_item_observer = observer = _CurrentItemObserver(self, piece, object)
-        view = await self._view_producer_registry.produce_view(piece, object, observer)
+        layout = await self._view_producer_registry.produce_layout(piece, object, command_hub=None)
+        view = await layout.create_view()
         self._view_opener.open(view)
         self._current_piece = piece
         self._current_object = object
+        self._current_layout = layout
         self._command_hub.update()
 
     @command('go_backward')

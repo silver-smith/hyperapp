@@ -12,7 +12,9 @@ from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_a
 from hyperapp.client.command import Command
 from hyperapp.common.logger import log, create_context_task
 from hyperapp.client.module import ClientModule
+
 from . import htypes
+from .layout import Layout
 from .view import View
 from .list_object import ListObserver, ListObject
 from .view_registry import NotApplicable
@@ -200,24 +202,40 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         _log.debug('~list_view.ListView self=%r', id(self))
 
 
+class ListViewLayout(Layout):
+
+    # @classmethod
+    # async def from_data(cls, piece, object, state, path, command_hub, type_resolver, resource_resolver):
+    #     return cls(type_resolver, resource_resolver, piece, object, path, command_hub)
+
+    def __init__(self, type_resolver, resource_resolver, piece, object, path, command_hub):
+        self._type_resolver = type_resolver
+        self._resource_resolver = resource_resolver
+        self._piece = piece
+        self._object = object
+
+    def get_view_ref(self):
+        assert 0  # todo
+
+    async def create_view(self):
+        t = deduce_value_type(self._piece)
+        type_ref = self._type_resolver.reverse_resolve(t)
+        columns = list(map_columns_to_view(self._resource_resolver, type_ref, self._object.get_columns()))
+        return ListView(columns, self._object)
+
+    async def visual_item(self):
+        assert 0  # todo
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
-        services.view_producer_registry.register_view_producer(self._produce_view)
+        services.view_producer_registry.register_view_producer(self._produce_layout)
 
-    async def _produce_view(self, piece, object, observer):
+    async def _produce_layout(self, piece, object, command_hub):
         if not isinstance(object, ListObject):
             raise NotApplicable(object)
-        type_ref = self._piece_type_ref(piece)
-        columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))
-        list_view = ListView(columns, object)
-        if observer:
-            list_view.add_observer(observer)
-        return list_view
-
-    def _piece_type_ref(self, piece):
-        t = deduce_value_type(piece)
-        return self._type_resolver.reverse_resolve(t)
+        return ListViewLayout(self._type_resolver, self._resource_resolver, piece, object, [], command_hub)

@@ -3,6 +3,7 @@ import:
     core:
       - obj_handle
   code:
+    - client.layout
     - client.view
     - client.text_object
     - client.view_registry
