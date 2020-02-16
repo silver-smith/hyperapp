@@ -206,6 +206,14 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
 class ListViewLayout(Layout):
 
+    class _CurrentItemObserver:
+
+        def __init__(self, layout):
+            self._layout = layout
+
+        def current_changed(self, current_item_key):
+            self._layout._update_element_commands(current_item_key)
+
     # @classmethod
     # async def from_data(cls, piece, object, state, path, command_hub, type_resolver, resource_resolver):
     #     return cls(type_resolver, resource_resolver, piece, object, path, command_hub)
@@ -214,9 +222,11 @@ class ListViewLayout(Layout):
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
+        self._command_hub = command_hub
         self._piece_opener = piece_opener
         self._piece = piece
         self._object = object
+        self._current_item_observer = None
 
     def get_view_ref(self):
         assert 0  # todo
@@ -225,7 +235,10 @@ class ListViewLayout(Layout):
         t = deduce_value_type(self._piece)
         type_ref = self._type_resolver.reverse_resolve(t)
         columns = list(map_columns_to_view(self._resource_resolver, type_ref, self._object.get_columns()))
-        return ListView(columns, self._object)
+        list_view = ListView(columns, self._object)
+        self._current_item_observer = observer = self._CurrentItemObserver(self)
+        list_view.add_observer(observer)
+        return list_view
 
     async def visual_item(self):
         assert 0  # todo
@@ -236,6 +249,13 @@ class ListViewLayout(Layout):
     def _get_object_commands(self):
         for command in self._object.get_command_list():
             yield FreeFnCommand.from_command(command, partial(self._run_command, command))
+
+    def _update_element_commands(self, current_item_key):
+        self._command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
+
+    def _get_element_commands(self, current_item_key):
+        for command in self._object.get_item_command_list(current_item_key):
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command, current_item_key))
 
     async def _run_command(self, command, *args, **kw):
         if command.more_params_are_required(*args, *kw):
