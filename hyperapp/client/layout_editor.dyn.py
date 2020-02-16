@@ -101,6 +101,6 @@ class ThisModule(ClientModule):
         services.object_registry.register_type(
             htypes.layout_editor.layout_editor, LayoutEditor.from_state, services.layout_manager, services.layout_watcher)
 
-    @command('open_layout')
-    async def open_layout(self):
+    @command('open_view_layout')
+    async def open_view_layout(self):
         return htypes.layout_editor.layout_editor()
