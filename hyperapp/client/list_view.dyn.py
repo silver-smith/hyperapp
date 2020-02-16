@@ -16,9 +16,9 @@ from hyperapp.common.logger import log, create_context_task
 from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .list_object import ListObserver, ListObject
 from .layout import Layout
 from .view import View
-from .list_object import ListObserver, ListObject
 from .view_registry import NotApplicable
 from .items_view import map_columns_to_view
 
@@ -213,10 +213,6 @@ class ListViewLayout(Layout):
 
         def current_changed(self, current_item_key):
             self._layout._update_element_commands(current_item_key)
-
-    # @classmethod
-    # async def from_data(cls, piece, object, state, path, command_hub, type_resolver, resource_resolver):
-    #     return cls(type_resolver, resource_resolver, piece, object, path, command_hub)
 
     def __init__(self, type_resolver, resource_resolver, params_editor, piece, object, path, command_hub, piece_opener):
         self._type_resolver = type_resolver

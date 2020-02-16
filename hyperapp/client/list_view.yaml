@@ -3,8 +3,8 @@ import:
     core:
       - handle
   code:
+    - client.list_object
     - client.layout
     - client.view
-    - client.list_object
     - client.view_registry
     - client.items_view

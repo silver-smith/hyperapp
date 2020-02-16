@@ -3,16 +3,19 @@ import asyncio
 from contextlib import suppress
 import logging
 import weakref
+from functools import partial
 
 from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import make_async_action
+from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, TreeObserver, TreeObject
+from .layout import Layout
 from .view import View
 from .view_registry import NotApplicable
 from .items_view import map_columns_to_view
@@ -327,12 +330,72 @@ class TreeView(View, QtWidgets.QTreeView):
         log.debug('~tree_view.TreeView self=%r', id(self))
 
 
+class TreeViewLayout(Layout):
+
+    class _CurrentItemObserver:
+
+        def __init__(self, layout):
+            self._layout = layout
+
+        def current_changed(self, current_item_key):
+            self._layout._update_element_commands(current_item_key)
+
+    def __init__(self, type_resolver, resource_resolver, params_editor, piece, object, path, command_hub, piece_opener):
+        self._type_resolver = type_resolver
+        self._resource_resolver = resource_resolver
+        self._params_editor = params_editor
+        self._command_hub = command_hub
+        self._piece_opener = piece_opener
+        self._piece = piece
+        self._object = object
+        self._current_item_observer = None
+
+    def get_view_ref(self):
+        assert 0  # todo
+
+    async def create_view(self):
+        t = deduce_value_type(self._piece)
+        type_ref = self._type_resolver.reverse_resolve(t)
+        columns = list(map_columns_to_view(self._resource_resolver, type_ref, self._object.get_columns()))
+        tree_view = TreeView(columns, self._object)
+        self._current_item_observer = observer = self._CurrentItemObserver(self)
+        tree_view.add_observer(observer)
+        return tree_view
+
+    async def visual_item(self):
+        assert 0  # todo
+
+    def get_current_commands(self):
+        return list(self._get_object_commands())
+
+    def _get_object_commands(self):
+        for command in self._object.get_command_list():
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
+
+    def _update_element_commands(self, current_item_key):
+        self._command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
+
+    def _get_element_commands(self, current_item_key):
+        for command in self._object.get_item_command_list(current_item_key):
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command, current_item_key))
+
+    async def _run_command(self, command, *args, **kw):
+        if command.more_params_are_required(*args, *kw):
+            piece = await self._params_editor(self._piece, command, args, kw)
+        else:
+            piece = await command.run(*args, **kw)
+        if piece is None:
+            return
+        await self._piece_opener(piece)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
+        self._params_editor = services.params_editor
         services.tree_view_factory = self._tree_view_factory
         services.view_producer_registry.register_view_producer(self._produce_view)
 
@@ -342,13 +405,5 @@ class ThisModule(ClientModule):
     async def _produce_view(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, TreeObject):
             raise NotApplicable(object)
-        type_ref = self._piece_type_ref(piece)
-        columns = list(map_columns_to_view(self._resource_resolver, type_ref, object.get_columns()))
-        tree_view = TreeView(columns, object)
-        if observer:
-            tree_view.add_observer(observer)
-        return tree_view
-
-    def _piece_type_ref(self, piece):
-        t = deduce_value_type(piece)
-        return self._type_resolver.reverse_resolve(t)
+        return TreeViewLayout(self._type_resolver, self._resource_resolver, self._params_editor,
+                              piece, object, [], command_hub, piece_opener)
