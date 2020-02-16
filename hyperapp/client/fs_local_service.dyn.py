@@ -42,7 +42,7 @@ class ThisModule(ClientModule):
         fs_service_ref = ref_registry.register_object(fs_service)
         services.local_fs_service_ref = fs_service_ref
         # home_path = os.path.expanduser('~').split('/')[1:]
-        home_path = ['usr', 'share', 'doc']
+        home_path = ['usr', 'share']
         self._local_fs = local_fs = htypes.fs.fs(fs_service_ref, LOCAL_HOST_NAME, home_path, current_file_name=None)
         self._local_fs_ref = ref_registry.register_object(local_fs)
 

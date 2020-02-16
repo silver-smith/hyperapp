@@ -339,7 +339,7 @@ class ThisModule(ClientModule):
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
 
-    async def _produce_view(self, piece, object, observer):
+    async def _produce_view(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, TreeObject):
             raise NotApplicable(object)
         type_ref = self._piece_type_ref(piece)

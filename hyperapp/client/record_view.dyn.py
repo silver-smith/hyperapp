@@ -90,7 +90,7 @@ class ThisModule(ClientModule):
         services.layout_registry.register_type(
             htypes.record_view.record_view_layout, RecordViewProducer, services.object_registry, services.view_producer, services.layout_resolver)
 
-    async def _produce_view(self, piece, object, observer):
+    async def _produce_view(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, RecordObject):
             raise NotApplicable(object)
         return (await RecordView.make(self._object_registry, self._view_producer, self._layout_resolver, object, observer))

@@ -17,7 +17,8 @@ log = logging.getLogger(__name__)
 
 class TextViewLayout(Layout):
 
-    def __init__(self, piece, object, path, command_hub):
+    def __init__(self, piece, object, path, command_hub, piece_opener):
+        super().__init__(path)
         self._object = object
 
     def get_view_ref(self):
@@ -77,7 +78,7 @@ class ThisModule(ClientModule):
         self._view_opener = services.view_opener
         services.view_producer_registry.register_view_producer(self._produce_layout)
 
-    async def _produce_layout(self, piece, object, command_hub):
+    async def _produce_layout(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, TextObject):
             raise NotApplicable(object)
-        return TextViewLayout(piece, object, [], command_hub)
+        return TextViewLayout(piece, object, [], command_hub, piece_opener)

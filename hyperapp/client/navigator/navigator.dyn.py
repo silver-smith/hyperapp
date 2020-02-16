@@ -40,17 +40,6 @@ class _History:
         return piece
 
 
-class _CurrentItemObserver:
-
-    def __init__(self, layout, piece, object):
-        self._layout = layout
-        self._piece = piece
-        self._object = object
-
-    def current_changed(self, current_item_key):
-        self._layout._update_element_commands(self._piece, self._object, current_item_key)
-
-
 class NavigatorLayout(Layout):
 
     @classmethod
@@ -91,7 +80,7 @@ class NavigatorLayout(Layout):
     async def create_view(self):
         self._current_piece = piece = self._initial_piece
         self._current_object = object = await self._object_registry.resolve_async(piece)
-        layout = await self._view_producer_registry.produce_layout(piece, object, command_hub=None)
+        layout = await self._view_producer_registry.produce_layout(piece, object, self._command_hub, self._open_piece)
         self._current_layout = layout
         return (await layout.create_view())
 
@@ -102,34 +91,15 @@ class NavigatorLayout(Layout):
             ])
 
     def get_current_commands(self):
-        piece = self._current_piece
-        object = self._current_object
         return [
-            *self._get_view_commands(),
-            *self._get_global_commands(piece),
-            *self._get_object_commands(piece, object),
+            *super().get_current_commands(),
+            *self._get_global_commands(),
+            *self._current_layout.get_current_commands(),
             ]
 
-    def _get_view_commands(self):
-        yield self._go_backward
-        yield self._go_forward
-
-    def _get_global_commands(self, piece):
+    def _get_global_commands(self):
         for command in self._module_command_registry.get_all_commands():
-            yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command))
-
-    def _get_object_commands(self, piece, object):
-        for command in object.get_command_list():
-            if command.kind != 'object':
-                continue
-            yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command))
-
-    def _get_element_commands(self, piece, object, current_item_key):
-        for command in object.get_item_command_list(current_item_key):
-            yield FreeFnCommand.from_command(command, partial(self._run_command, piece, command, current_item_key))
-
-    def _update_element_commands(self, piece, object, current_item_key):
-        self._command_hub.push_kind_commands('element', list(self._get_element_commands(piece, object, current_item_key)))
+            yield FreeFnCommand.from_command(command, partial(self._run_command, self._current_piece, command))
 
     async def _run_command(self, current_piece, command, *args, **kw):
         if command.more_params_are_required(*args, *kw):
@@ -139,12 +109,14 @@ class NavigatorLayout(Layout):
         if piece is None:
             return
         await self._open_piece(piece)
-        self._history.append(piece)
 
     async def _open_piece(self, piece):
+        await self._open_piece_impl(piece)
+        self._history.append(piece)
+
+    async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        self._current_item_observer = observer = _CurrentItemObserver(self, piece, object)
-        layout = await self._view_producer_registry.produce_layout(piece, object, command_hub=None)
+        layout = await self._view_producer_registry.produce_layout(piece, object, self._command_hub, self._open_piece)
         view = await layout.create_view()
         self._view_opener.open(view)
         self._current_piece = piece
@@ -158,7 +130,7 @@ class NavigatorLayout(Layout):
             piece = self._history.move_backward()
         except IndexError:
             return
-        await self._open_piece(piece)
+        await self._open_piece_impl(piece)
 
     @command('go_forward')
     async def _go_forward(self):
@@ -166,7 +138,7 @@ class NavigatorLayout(Layout):
             piece = self._history.move_forward()
         except IndexError:
             return
-        await self._open_piece(piece)
+        await self._open_piece_impl(piece)
 
 
 class ThisModule(ClientModule):

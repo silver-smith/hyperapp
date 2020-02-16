@@ -3,12 +3,14 @@ import sys
 import logging
 import bisect
 import weakref
+from functools import partial
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.util import single
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
+from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.command import Command
 from hyperapp.common.logger import log, create_context_task
 from hyperapp.client.module import ClientModule
@@ -208,9 +210,11 @@ class ListViewLayout(Layout):
     # async def from_data(cls, piece, object, state, path, command_hub, type_resolver, resource_resolver):
     #     return cls(type_resolver, resource_resolver, piece, object, path, command_hub)
 
-    def __init__(self, type_resolver, resource_resolver, piece, object, path, command_hub):
+    def __init__(self, type_resolver, resource_resolver, params_editor, piece, object, path, command_hub, piece_opener):
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
+        self._params_editor = params_editor
+        self._piece_opener = piece_opener
         self._piece = piece
         self._object = object
 
@@ -226,6 +230,22 @@ class ListViewLayout(Layout):
     async def visual_item(self):
         assert 0  # todo
 
+    def get_current_commands(self):
+        return list(self._get_object_commands())
+
+    def _get_object_commands(self):
+        for command in self._object.get_command_list():
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
+
+    async def _run_command(self, command, *args, **kw):
+        if command.more_params_are_required(*args, *kw):
+            piece = await self._params_editor(self._piece, command, args, kw)
+        else:
+            piece = await command.run(*args, **kw)
+        if piece is None:
+            return
+        await self._piece_opener(piece)
+
 
 class ThisModule(ClientModule):
 
@@ -233,9 +253,11 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
+        self._params_editor = services.params_editor
         services.view_producer_registry.register_view_producer(self._produce_layout)
 
-    async def _produce_layout(self, piece, object, command_hub):
+    async def _produce_layout(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, ListObject):
             raise NotApplicable(object)
-        return ListViewLayout(self._type_resolver, self._resource_resolver, piece, object, [], command_hub)
+        return ListViewLayout(self._type_resolver, self._resource_resolver, self._params_editor,
+                              piece, object, [], command_hub, piece_opener)

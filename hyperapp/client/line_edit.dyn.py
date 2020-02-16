@@ -98,7 +98,7 @@ class ThisModule(ClientModule):
         services.view_producer_registry.register_view_producer(self._produce_view)
         services.layout_registry.register_type(htypes.line.line_edit_layout, LineEditProducer)
 
-    async def _produce_view(self, type_ref, object, observer):
+    async def _produce_view(self, type_ref, object, command_hub, piece_opener):
         if not isinstance(object, LineObject):
             raise NotApplicable(object)
         return LineEditView(object, LineEditView.Mode.VIEW)
