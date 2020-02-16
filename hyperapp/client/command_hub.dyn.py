@@ -1,5 +1,4 @@
 import logging
-import itertools
 import operator
 import weakref
 
@@ -27,11 +26,8 @@ class CommandHub:
     def update(self):
         _log.info("Update commands")
         all_command_list = self._get_commands()
-        command_kind = operator.attrgetter('kind')
-        for kind, command_it in itertools.groupby(
-                sorted(all_command_list, key=command_kind),
-                key=command_kind):
-            command_list = list(command_it)
+        for kind in ['view', 'global', 'object', 'element']:
+            command_list = [command for command in all_command_list if command.kind == kind]
             for observer in self._observer_set:
                 _log.info("Updating command (calling commands_changing) on %r: %r %r", observer, kind, [command.id for command in command_list])
                 observer.commands_changed(kind, command_list)
