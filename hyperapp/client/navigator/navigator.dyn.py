@@ -146,9 +146,10 @@ class NavigatorLayout(Layout):
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):
-        piece_t = deduce_value_type(self._current_piece)
-        type_ref = self._type_resolver.reverse_resolve(piece_t)
-        piece = htypes.layout_editor.object_layout_editor(type_ref)
+        # piece_t = deduce_value_type(self._current_piece)
+        # type_ref = self._type_resolver.reverse_resolve(piece_t)
+        current_piece_ref = self._ref_registry.register_object(self._current_piece)
+        piece = htypes.layout_editor.object_layout_editor(current_piece_ref)
         await self._open_piece(piece)
 
 

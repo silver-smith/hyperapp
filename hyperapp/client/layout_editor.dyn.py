@@ -5,18 +5,36 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff
+from .command_hub import CommandHub
+from .layout_manager import LayoutWatcher
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject
 
 _log = logging.getLogger(__name__)
 
 
+async def _open_piece_do_nothing(piece):
+    pass
+
+
 class LayoutEditor(TreeObject):
 
     @classmethod
-    async def from_state(cls, state, layout_manager, layout_watcher):
+    async def from_view_state(cls, state, layout_manager, layout_watcher):
         self = cls(layout_watcher)
         await self._async_init(layout_manager.root_layout)
+        return self
+
+    @classmethod
+    async def from_object_state(cls, state, async_ref_resolver, object_registry, view_producer_registry):
+        piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
+        object = await object_registry.resolve_async(piece)
+        command_hub = CommandHub()
+        layout = await view_producer_registry.produce_layout(piece, object, command_hub, _open_piece_do_nothing)
+        command_hub.init_get_commands(layout.get_current_commands)
+        layout_watcher = LayoutWatcher()  # todo: save object layout on change
+        self = cls(layout_watcher)
+        await self._async_init(layout)
         return self
 
     def __init__(self, layout_watcher):
@@ -99,7 +117,10 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(
-            htypes.layout_editor.view_layout_editor, LayoutEditor.from_state, services.layout_manager, services.layout_watcher)
+            htypes.layout_editor.view_layout_editor, LayoutEditor.from_view_state, services.layout_manager, services.layout_watcher)
+        services.object_registry.register_type(
+            htypes.layout_editor.object_layout_editor, LayoutEditor.from_object_state,
+            services.async_ref_resolver, services.object_registry, services.view_producer_registry)
 
     @command('open_view_layout')
     async def open_view_layout(self):

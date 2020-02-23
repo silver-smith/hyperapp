@@ -17,7 +17,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .list_object import ListObserver, ListObject
-from .layout import Layout
+from .layout import RootVisualItem, Layout
 from .view import View
 from .view_registry import NotApplicable
 from .items_view import map_columns_to_view
@@ -237,7 +237,7 @@ class ListViewLayout(Layout):
         return list_view
 
     async def visual_item(self):
-        assert 0  # todo
+        return RootVisualItem('ListView')
 
     def get_current_commands(self):
         return list(self._get_object_commands())
