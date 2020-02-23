@@ -3,6 +3,7 @@
 import logging
 from functools import partial
 
+from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
@@ -45,21 +46,24 @@ class NavigatorLayout(Layout):
     @classmethod
     async def from_data(cls,
                         state, path, command_hub, view_opener,
-                        ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver, params_editor):
-        self = cls(ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver, params_editor,
+                        ref_registry, async_ref_resolver, type_resolver,
+                        object_registry, view_producer_registry, module_command_registry, params_editor):
+        self = cls(ref_registry, async_ref_resolver, type_resolver,
+                   object_registry, view_producer_registry, module_command_registry, params_editor,
                    path, command_hub, view_opener)
         await self._async_init(state.current_piece_ref)
         return self
 
-    def __init__(self,
-                 ref_registry, object_registry, view_producer_registry, module_command_registry, async_ref_resolver, params_editor,
+    def __init__(self, ref_registry, async_ref_resolver, type_resolver,
+                 object_registry, view_producer_registry, module_command_registry, params_editor,
                  path, command_hub, view_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
+        self._async_ref_resolver = async_ref_resolver
+        self._type_resolver = type_resolver
         self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry
         self._module_command_registry = module_command_registry
-        self._async_ref_resolver = async_ref_resolver
         self._params_editor = params_editor
         self._command_hub = command_hub
         self._view_opener = view_opener
@@ -140,6 +144,13 @@ class NavigatorLayout(Layout):
             return
         await self._open_piece_impl(piece)
 
+    @command('open_layout_editor')
+    async def _open_layout_editor(self):
+        piece_t = deduce_value_type(self._current_piece)
+        type_ref = self._type_resolver.reverse_resolve(piece_t)
+        piece = htypes.layout_editor.object_layout_editor(type_ref)
+        await self._open_piece(piece)
+
 
 class ThisModule(ClientModule):
 
@@ -149,9 +160,10 @@ class ThisModule(ClientModule):
             htypes.navigator.navigator,
             NavigatorLayout.from_data,
             services.ref_registry,
+            services.async_ref_resolver,
+            services.type_resolver,
             services.object_registry,
             services.view_producer_registry,
             services.module_command_registry,
-            services.async_ref_resolver,
             services.params_editor,
             )

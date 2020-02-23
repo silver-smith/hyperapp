@@ -2,6 +2,7 @@ import:
   types:
     layout_editor:
     - view_layout_editor
+    - object_layout_editor
   code:
   - client.layout
   - client.column

@@ -16,3 +16,8 @@ module:client.navigator.navigator:NavigatorLayout:
       description: Open history
       shortcuts:
       - Ctrl+H
+    open_layout_editor:
+      text: Layout editor
+      description: Open layout editor for current object
+      shortcuts:
+        - Ctrl+Y

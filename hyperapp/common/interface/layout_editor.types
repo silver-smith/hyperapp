@@ -1,2 +1,5 @@
 
 view_layout_editor = record
+
+object_layout_editor = record:
+  piece_ref: ref

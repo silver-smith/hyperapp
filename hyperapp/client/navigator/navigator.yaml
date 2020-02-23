@@ -1,5 +1,7 @@
 import:
   types:
+    layout_editor:
+    - object_layout_editor
     navigator:
     - navigator
   code:
