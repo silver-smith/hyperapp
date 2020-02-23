@@ -99,8 +99,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(
-            htypes.layout_editor.layout_editor, LayoutEditor.from_state, services.layout_manager, services.layout_watcher)
+            htypes.layout_editor.view_layout_editor, LayoutEditor.from_state, services.layout_manager, services.layout_watcher)
 
     @command('open_view_layout')
     async def open_view_layout(self):
-        return htypes.layout_editor.layout_editor()
+        return htypes.layout_editor.view_layout_editor()
