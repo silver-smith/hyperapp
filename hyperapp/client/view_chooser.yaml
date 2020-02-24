@@ -3,5 +3,6 @@ import:
     view_chooser:
     - view_chooser
   code:
-  - client.column
-  - client.simple_list_object
+    - client.chooser_observer
+    - client.column
+    - client.simple_list_object
