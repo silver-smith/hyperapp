@@ -49,22 +49,22 @@ module:client.blog:BlogArticle:
       description: Open references list
       shortcuts:
       - Ctrl+R
-  layout:
-    commands:
-    - command_id: edit
-      layout:
-        view:
-          type: record_view.record_view_layout
-          value:
-            fields:
-            - field_id: title
-              layout:
-                type: line.line_edit_layout
-            - field_id: contents
-              layout:
-                type: text.text_edit_layout
-        commands:
-        - command_id: view
+  # layout:
+  #   commands:
+  #   - command_id: edit
+  #     layout:
+  #       view:
+  #         type: record_view.record_view_layout
+  #         value:
+  #           fields:
+  #           - field_id: title
+  #             layout:
+  #               type: line.line_edit_layout
+  #           - field_id: contents
+  #             layout:
+  #               type: text.text_edit_layout
+  #       commands:
+  #       - command_id: view
 
 module:client.blog:ArticleRefListObject:
   commands:

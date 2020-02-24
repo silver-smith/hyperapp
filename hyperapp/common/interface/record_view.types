@@ -1,7 +1,7 @@
 
-field_layout = record:
+record_field = record:
     field_id: string
-    layout_ref: ref
+    field_ref: ref
 
-record_view_layout = record:
-    fields: field_layout list
+record_view = record:
+    fields: record_field list
