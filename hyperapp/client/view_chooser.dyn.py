@@ -40,8 +40,9 @@ class ViewChooser(SimpleListObject, ChooserSubject):
 
     @command('choose', kind='element')
     async def _choose(self, item_key):
+        view_ref = self._available_view_registry[item_key]
         for observer in self._chooser_observer_set:
-            await observer.element_chosen(item_key)
+            await observer.element_chosen(view_ref)
 
 
 class ThisModule(ClientModule):
