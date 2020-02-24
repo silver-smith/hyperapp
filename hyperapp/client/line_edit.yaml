@@ -7,4 +7,3 @@ import:
     - client.layout
     - client.view
     - client.view_registry
-    - client.layout_registry
