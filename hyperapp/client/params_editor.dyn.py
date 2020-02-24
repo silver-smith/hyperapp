@@ -13,8 +13,8 @@ class _ParamChooserObserver(ChooserObserver):
         self._params_editor = params_editor
         self._field_id = field_id
 
-    def element_chosen(self, key):
-        self._params_editor.field_element_chosen(self._field_id, key)
+    async def element_chosen(self, key):
+        await self._params_editor.field_element_chosen(self._field_id, key)
 
 
 class ParamsEditor(RecordObject):
@@ -22,9 +22,10 @@ class ParamsEditor(RecordObject):
     @classmethod
     async def from_data(cls, state, async_ref_resolver, object_registry):
         target_piece = await async_ref_resolver.resolve_ref_to_object(state.target_piece_ref)
+        target_object = await object_registry.resolve_async(target_piece)
         fields = OrderedDict([(name, await cls._make_field(piece_ref, async_ref_resolver, object_registry))
                               for name, piece_ref in state.fields])
-        return cls(target_piece, state.target_command_id, fields)
+        return cls(object_registry, target_piece, target_object, state.target_command_id, fields)
 
     @staticmethod
     async def _make_field(piece_ref, async_ref_resolver, object_registry):
@@ -32,9 +33,11 @@ class ParamsEditor(RecordObject):
         object = await object_registry.resolve_async(piece)
         return Field(piece, object)
 
-    def __init__(self, target_piece, target_command_id, field_odict):
+    def __init__(self, object_registry, target_piece, target_object, target_command_id, field_odict):
         super().__init__()
+        self._object_registry = object_registry
         self._target_piece = target_piece
+        self._target_object = target_object
         self._target_command_id = target_command_id
         self._field_odict = field_odict  # OrderedDict id -> Field
         self._observers = []
@@ -50,8 +53,12 @@ class ParamsEditor(RecordObject):
     def get_fields(self):
         return self._field_odict
 
-    def field_element_chosen(self, field_id, key):
-        assert 0  # todo
+    async def field_element_chosen(self, field_id, key):
+        # todo: add other field's values
+        # todo: add other, predefined, values (element key)
+        values = {field_id: key}
+        command = self._target_object.get_command(self._target_command_id)
+        return (await command.run(**values))
 
 
 class ThisModule(ClientModule):

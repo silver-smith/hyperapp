@@ -5,7 +5,7 @@ import weakref
 class ChooserObserver(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def element_chosen(self, key):
+    async def element_chosen(self, key):
         pass
 
 

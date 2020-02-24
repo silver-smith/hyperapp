@@ -16,7 +16,9 @@ type:params_editor_sample.params_editor_sample:
 
 module:client.params_editor_sample:SampleList:
   commands:
-    test_param:
+    test_single_simple_str: &test_command
       text: Test it
       description: Test selected parameter type
       is_default: yes
+    test_two_simple_str: *test_command
+    test_view_chooser: *test_command

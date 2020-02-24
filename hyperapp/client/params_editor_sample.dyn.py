@@ -45,17 +45,18 @@ class SampleList(SimpleListObject):
         except KeyError:
             return []
 
-    @command('test_param', kind='element')
+    @command('test_single_simple_str', kind='element')
     def _test_single_simple_str(self, item_key, str_param: str):
         assert 0  # todo
 
-    @command('test_param', kind='element')
+    @command('test_two_simple_str', kind='element')
     def _test_two_simple_str(self, item_key, str_param_1: str, str_param_2: str):
         assert 0  # todo
 
-    @command('test_param', kind='element')
-    def _test_view_chooser(self, item_key, view: ViewFieldRef):
-        assert 0  # todo
+    # todo: remove optionality when predefined params are supported by param editor
+    @command('test_view_chooser', kind='element')
+    def _test_view_chooser(self, item_key=None, view: ViewFieldRef = None):
+        assert 0, repr(view)  # todo
 
 
 class ThisModule(ClientModule):
