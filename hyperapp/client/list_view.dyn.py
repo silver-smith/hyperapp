@@ -215,6 +215,7 @@ class ListViewLayout(Layout):
             self._layout._update_element_commands(current_item_key)
 
     def __init__(self, type_resolver, resource_resolver, params_editor, piece, object, path, command_hub, piece_opener):
+        super().__init__(path)
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
