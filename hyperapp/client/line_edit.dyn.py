@@ -100,15 +100,6 @@ class LineEditLayout(Layout):
         return RootVisualItem('LineEdit')
 
 
-class LineEditProducer(LayoutViewProducer):
-
-    def __init__(self, layout):
-        pass
-
-    async def produce_view(self, piece, object, observer=None):
-        return LineEditView(object, LineEditView.Mode.EDIT)
-
-
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
