@@ -11,7 +11,6 @@ from . import htypes
 from .layout import RootVisualItem, Layout
 from .view import View
 from .view_registry import NotApplicable
-from .layout_registry import LayoutViewProducer
 
 log = logging.getLogger(__name__)
 
