@@ -6,4 +6,5 @@ import:
     line:
     - line
   code:
-  - client.record_object
+    - client.record_object
+    - client.chooser_observer

@@ -4,6 +4,17 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .record_object import Field, RecordObject
+from .chooser_observer import ChooserObserver, ChooserSubject
+
+
+class _ParamChooserObserver(ChooserObserver):
+
+    def __init__(self, params_editor, field_id):
+        self._params_editor = params_editor
+        self._field_id = field_id
+
+    def element_chosen(self, key):
+        self._params_editor.field_element_chosen(self._field_id, key)
 
 
 class ParamsEditor(RecordObject):
@@ -21,17 +32,26 @@ class ParamsEditor(RecordObject):
         object = await object_registry.resolve_async(piece)
         return Field(piece, object)
 
-    def __init__(self, target_piece, target_command_id, fields):
+    def __init__(self, target_piece, target_command_id, field_odict):
         super().__init__()
         self._target_piece = target_piece
         self._target_command_id = target_command_id
-        self._fields = fields  # OrderedDict id -> Field
+        self._field_odict = field_odict  # OrderedDict id -> Field
+        self._observers = []
+        for field_id, field in field_odict.items():
+            if isinstance(field.object, ChooserSubject):
+                observer = _ParamChooserObserver(self, field_id)
+                field.object.chooser_subscribe(observer)
+                self._observers.append(observer)
 
     def get_title(self):
         return f"Parameters for {self._target_command_id}"
 
     def get_fields(self):
-        return self._fields
+        return self._field_odict
+
+    def field_element_chosen(self, field_id, key):
+        assert 0  # todo
 
 
 class ThisModule(ClientModule):
