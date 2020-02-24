@@ -6,7 +6,9 @@ from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.object import Object
 from hyperapp.client.module import ClientModule
+
 from . import htypes
+from .layout import RootVisualItem, Layout
 from .view import View
 from .view_registry import NotApplicable
 from .layout_registry import LayoutViewProducer
@@ -81,6 +83,23 @@ class LineEditView(View, QtWidgets.QLineEdit):
         log.info('~line_edit')
 
 
+class LineEditLayout(Layout):
+
+    def __init__(self, object, path, command_hub, piece_opener, mode):
+        super().__init__(path)
+        self._object = object
+        self._mode = mode
+
+    def get_view_ref(self):
+        assert 0  # todo
+
+    async def create_view(self):
+        return LineEditView(self._object, self._mode)
+
+    async def visual_item(self):
+        return RootVisualItem('LineEdit')
+
+
 class LineEditProducer(LayoutViewProducer):
 
     def __init__(self, layout):
@@ -96,9 +115,8 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
         services.view_producer_registry.register_view_producer(self._produce_view)
-        services.layout_registry.register_type(htypes.line.line_edit_layout, LineEditProducer)
 
-    async def _produce_view(self, type_ref, object, command_hub, piece_opener):
+    async def _produce_view(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, LineObject):
             raise NotApplicable(object)
-        return LineEditView(object, LineEditView.Mode.VIEW)
+        return LineEditLayout(object, [], command_hub, piece_opener, LineEditView.Mode.VIEW)
