@@ -54,10 +54,6 @@ class ThisModule(ClientModule):
                     self._annotation_to_field(annotation)),
                 )
             for name, annotation in wanted_arguments]
-        # todo: may be remove this:
-        if len(fields) == 1:
-            [(name, piece_ref)] = fields
-            return (await self._async_ref_resolver.resolve_ref_to_object(piece_ref))
         return htypes.params_editor.params_editor(
             target_piece_ref=self._ref_registry.register_object(piece),
             target_command_id=command.id,
