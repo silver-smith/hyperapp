@@ -5,17 +5,17 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .record_object import Field, RecordObject
-from .chooser_observer import ChooserObserver, ChooserSubject
+from .chooser import ChooserCallback, Chooser
 
 
-class _ParamChooserObserver(ChooserObserver):
+class _ParamChooserCallback(ChooserCallback):
 
     def __init__(self, params_editor, field_id):
         self._params_editor = params_editor
         self._field_id = field_id
 
     async def element_chosen(self, key):
-        await self._params_editor.field_element_chosen(self._field_id, key)
+        return (await self._params_editor.field_element_chosen(self._field_id, key))
 
 
 class ParamsEditor(RecordObject):
@@ -48,12 +48,14 @@ class ParamsEditor(RecordObject):
         self._target_command_id = target_command_id
         self._bound_arguments = bound_arguments
         self._field_odict = field_odict  # OrderedDict id -> Field
-        self._observers = []
+        self._chooser_callback_list = []
         for field_id, field in field_odict.items():
-            if isinstance(field.object, ChooserSubject):
-                observer = _ParamChooserObserver(self, field_id)
-                field.object.chooser_subscribe(observer)
-                self._observers.append(observer)
+            if isinstance(field.object, Chooser):
+                callback = _ParamChooserCallback(self, field_id)
+                field.object.chooser_set_callback(callback)
+                self._chooser_callback_list.append(callback)
+        if self._chooser_callback_list:
+            self._submit.disable()
 
     def get_title(self):
         return f"Parameters for {self._target_command_id}"
@@ -63,11 +65,11 @@ class ParamsEditor(RecordObject):
 
     async def field_element_chosen(self, field_id, key):
         values = self._collect_values()
-        await self._run_command(values={**values, field_id: key})
+        return (await self._run_command(values={**values, field_id: key}))
 
     @command('submit')
     async def _submit(self):
-        await self._run_command(self._collect_values())
+        return (await self._run_command(self._collect_values()))
 
     # todo: add other, predefined, values (element key)
     def _collect_values(self):

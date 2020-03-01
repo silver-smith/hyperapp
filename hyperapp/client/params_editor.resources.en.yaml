@@ -4,3 +4,5 @@ module:client.params_editor:ParamsEditor:
       text: Submit
       description: Run command with provided parameters
       is_default: yes
+      shortcuts:
+        - Return

@@ -8,4 +8,4 @@ import:
     - line
   code:
     - client.record_object
-    - client.chooser_observer
+    - client.chooser

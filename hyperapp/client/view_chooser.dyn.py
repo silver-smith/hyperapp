@@ -4,7 +4,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .chooser_observer import ChooserObserver, ChooserSubject
+from .chooser import Chooser
 from .column import Column
 from .simple_list_object import SimpleListObject
 
@@ -16,7 +16,7 @@ class ViewFieldRef:
     pass
 
 
-class ViewChooser(SimpleListObject, ChooserSubject):
+class ViewChooser(SimpleListObject, Chooser):
 
     @classmethod
     def from_state(cls, state, available_view_registry):
@@ -24,7 +24,7 @@ class ViewChooser(SimpleListObject, ChooserSubject):
 
     def __init__(self, available_view_registry):
         SimpleListObject.__init__(self)
-        ChooserSubject.__init__(self)
+        Chooser.__init__(self)
         self._available_view_registry = available_view_registry
 
     def get_title(self):
@@ -44,8 +44,7 @@ class ViewChooser(SimpleListObject, ChooserSubject):
     @command('choose', kind='element')
     async def _choose(self, item_key):
         view_ref = self._available_view_registry[item_key]
-        for observer in self._chooser_observer_set:
-            await observer.element_chosen(view_ref)
+        return (await self.chooser_call_callback(view_ref))
 
 
 class ThisModule(ClientModule):
