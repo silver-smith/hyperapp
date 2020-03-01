@@ -1,4 +1,8 @@
 
+bound_argument = record:
+    name: string
+    value_ref: ref
+
 field = record:
     name: string
     piece_ref: ref
@@ -6,4 +10,5 @@ field = record:
 params_editor = record:
     target_piece_ref: ref
     target_command_id: string
+    bound_arguments: bound_argument list
     fields: field list

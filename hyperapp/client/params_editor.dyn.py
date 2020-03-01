@@ -24,9 +24,15 @@ class ParamsEditor(RecordObject):
     async def from_data(cls, state, async_ref_resolver, object_registry):
         target_piece = await async_ref_resolver.resolve_ref_to_object(state.target_piece_ref)
         target_object = await object_registry.resolve_async(target_piece)
-        fields = OrderedDict([(name, await cls._make_field(piece_ref, async_ref_resolver, object_registry))
-                              for name, piece_ref in state.fields])
-        return cls(object_registry, target_piece, target_object, state.target_command_id, fields)
+        bound_arguments = {
+            name: await async_ref_resolver.resolve_ref_to_object(value_ref)
+            for name, value_ref in state.bound_arguments
+            }
+        fields = OrderedDict([
+            (name, await cls._make_field(piece_ref, async_ref_resolver, object_registry))
+            for name, piece_ref in state.fields
+            ])
+        return cls(object_registry, target_piece, target_object, state.target_command_id, bound_arguments, fields)
 
     @staticmethod
     async def _make_field(piece_ref, async_ref_resolver, object_registry):
@@ -34,12 +40,13 @@ class ParamsEditor(RecordObject):
         object = await object_registry.resolve_async(piece)
         return Field(piece, object)
 
-    def __init__(self, object_registry, target_piece, target_object, target_command_id, field_odict):
+    def __init__(self, object_registry, target_piece, target_object, target_command_id, bound_arguments, field_odict):
         super().__init__()
         self._object_registry = object_registry
         self._target_piece = target_piece
         self._target_object = target_object
         self._target_command_id = target_command_id
+        self._bound_arguments = bound_arguments
         self._field_odict = field_odict  # OrderedDict id -> Field
         self._observers = []
         for field_id, field in field_odict.items():
@@ -55,18 +62,23 @@ class ParamsEditor(RecordObject):
         return self._field_odict
 
     async def field_element_chosen(self, field_id, key):
-        values = dict(self._iter_values())
+        values = self._collect_values()
         await self._run_command(values={**values, field_id: key})
 
     @command('submit')
     async def _submit(self):
-        await self._run_command(dict(self._iter_values()))
+        await self._run_command(self._collect_values())
 
     # todo: add other, predefined, values (element key)
-    def _iter_values(self):
-        for id, field in self._field_odict.items():
-            value = field.object.get_value()
-            yield (id, value)
+    def _collect_values(self):
+        field_values = {
+            id: field.object.get_value()
+            for id, field in self._field_odict.items()
+            }
+        return {
+            **self._bound_arguments,
+            **field_values,
+            }
 
     async def _run_command(self, values):
         command = self._target_object.get_command(self._target_command_id)
@@ -87,10 +99,15 @@ class ThisModule(ClientModule):
             htypes.params_editor.params_editor, ParamsEditor.from_data, services.async_ref_resolver, services.object_registry)
 
     async def _open_params_editor(self, piece, command, args, kw):
-        bound_arguments = command.bound_arguments(*args, **kw)
+        bound_arguments_sig = command.bound_arguments(*args, **kw)
+        bound_arguments = [
+            htypes.params_editor.bound_argument(name, self._ref_registry.register_object(value))
+            for name, value in bound_arguments_sig.arguments.items()
+            if name != 'self'
+            ]
         wanted_arguments = [
-            (name, p.annotation) for name, p in bound_arguments.signature.parameters.items()
-            if name not in bound_arguments.arguments
+            (name, p.annotation) for name, p in bound_arguments_sig.signature.parameters.items()
+            if name not in bound_arguments_sig.arguments
             ]
         fields = [
             htypes.params_editor.field(
@@ -102,6 +119,7 @@ class ThisModule(ClientModule):
         return htypes.params_editor.params_editor(
             target_piece_ref=self._ref_registry.register_object(piece),
             target_command_id=command.id,
+            bound_arguments=bound_arguments,
             fields=fields,
             )
 

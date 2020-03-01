@@ -1,6 +1,7 @@
 import:
   types:
     params_editor:
+    - bound_argument
     - field
     - params_editor
     line:
