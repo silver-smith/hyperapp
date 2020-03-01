@@ -1,8 +1,10 @@
 import:
   types:
     params_editor_sample:
-    - params_editor_sample
+      - params_editor_sample
+    text:
+      - text
   code:
-  - client.column
-  - client.simple_list_object
-  - client.view_chooser
+    - client.column
+    - client.simple_list_object
+    - client.view_chooser

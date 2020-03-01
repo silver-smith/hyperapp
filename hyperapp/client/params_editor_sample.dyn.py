@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+from hyperapp.common.ref import ref_repr
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
@@ -47,16 +48,20 @@ class SampleList(SimpleListObject):
 
     @command('test_single_simple_str', kind='element')
     def _test_single_simple_str(self, item_key, str_param: str):
-        assert 0  # todo
+        text = f"Opened item {item_key}: {str_param!r}"
+        return htypes.text.text(text)
 
     @command('test_two_simple_str', kind='element')
     def _test_two_simple_str(self, item_key, str_param_1: str, str_param_2: str):
-        assert 0  # todo
+        text = f"Opened item {item_key}: {str_param_1!r},  {str_param_2!r}"
+        return htypes.text.text(text)
 
     # todo: remove optionality when predefined params are supported by param editor
     @command('test_view_chooser', kind='element')
     def _test_view_chooser(self, item_key=None, view: ViewFieldRef = None):
-        assert 0, repr(view)  # todo
+        text = f"Opened item {item_key}: {ref_repr(view)}"
+        return htypes.text.text(text)
+
 
 
 class ThisModule(ClientModule):
