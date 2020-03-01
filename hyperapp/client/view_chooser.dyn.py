@@ -38,6 +38,9 @@ class ViewChooser(SimpleListObject, ChooserSubject):
     async def get_all_items(self):
         return [Item(id) for id in self._available_view_registry]
 
+    def get_value(self):
+        return None
+
     @command('choose', kind='element')
     async def _choose(self, item_key):
         view_ref = self._available_view_registry[item_key]
