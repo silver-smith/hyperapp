@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -56,7 +57,13 @@ class ParamsEditor(RecordObject):
     async def field_element_chosen(self, field_id, key):
         # todo: add other field's values
         # todo: add other, predefined, values (element key)
-        values = {field_id: key}
+        await self._run_command(values={field_id: key})
+
+    @command('submit')
+    async def _submit(self):
+        await self._run_command({})
+
+    async def _run_command(self, values):
         command = self._target_object.get_command(self._target_command_id)
         return (await command.run(**values))
 

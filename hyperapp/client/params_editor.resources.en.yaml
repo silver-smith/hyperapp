@@ -1,0 +1,6 @@
+module:client.params_editor:ParamsEditor:
+  commands:
+    submit:
+      text: Submit
+      description: Run command with provided parameters
+      is_default: yes
