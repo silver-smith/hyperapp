@@ -29,4 +29,4 @@ def deduce_value_type(value):
         return t
     if isinstance(value, list):
         return TList(deduce_value_type(value[0]))
-    raise DeduceTypeError("Unable to deduce type for {!r} ({!r}). Use explicit type parameter.".format(value, t))
+    raise DeduceTypeError(f"Unable to deduce type for {value!r} (t: {t!r}). Use explicit type parameter.")
