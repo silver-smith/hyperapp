@@ -58,7 +58,7 @@ class SampleList(SimpleListObject):
 
     # todo: remove optionality when predefined params are supported by param editor
     @command('test_view_chooser', kind='element')
-    def _test_view_chooser(self, item_key=None, view: ViewFieldRef = None):
+    def _test_view_chooser(self, item_key, view: ViewFieldRef):
         text = f"Opened item {item_key}: {ref_repr(view)}"
         return htypes.text.text(text)
 
