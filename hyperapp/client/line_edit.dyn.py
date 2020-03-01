@@ -28,6 +28,9 @@ class LineObject(Object):
     def get_title(self):
         return 'Line'
 
+    def get_value(self):
+        return self._line
+
     @property
     def line(self):
         return self._line

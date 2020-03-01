@@ -55,13 +55,18 @@ class ParamsEditor(RecordObject):
         return self._field_odict
 
     async def field_element_chosen(self, field_id, key):
-        # todo: add other field's values
-        # todo: add other, predefined, values (element key)
-        await self._run_command(values={field_id: key})
+        values = dict(self._iter_values())
+        await self._run_command(values={**values, field_id: key})
 
     @command('submit')
     async def _submit(self):
-        await self._run_command({})
+        await self._run_command(dict(self._iter_values()))
+
+    # todo: add other, predefined, values (element key)
+    def _iter_values(self):
+        for id, field in self._field_odict.items():
+            value = field.object.get_value()
+            yield (id, value)
 
     async def _run_command(self, values):
         command = self._target_object.get_command(self._target_command_id)
