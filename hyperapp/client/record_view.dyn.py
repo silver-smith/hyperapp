@@ -1,5 +1,8 @@
+from functools import partial
+
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -68,10 +71,11 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(Layout):
 
-    def __init__(self, view_producer_registry, object, path, command_hub, piece_opener, fields=None):
+    def __init__(self, view_producer_registry, params_editor, object, path, command_hub, piece_opener, fields=None):
         super().__init__(path)
-        self._object = object
         self._view_producer_registry = view_producer_registry
+        self._params_editor = params_editor
+        self._object = object
         self._command_hub = command_hub
         self._piece_opener = piece_opener
         self._fields = fields  # htypes.record_view.record_field list
@@ -85,15 +89,32 @@ class RecordViewLayout(Layout):
     async def visual_item(self):
         return RootVisualItem('RecordView')  # todo: add fields children
 
+    def get_current_commands(self):
+        return list(self._get_object_commands())
+
+    def _get_object_commands(self):
+        for command in self._object.get_command_list():
+            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
+
+    async def _run_command(self, command, *args, **kw):
+        if command.more_params_are_required(*args, *kw):
+            piece = await self._params_editor(self._piece, command, args, kw)
+        else:
+            piece = await command.run(*args, **kw)
+        if piece is None:
+            return
+        await self._piece_opener(piece)
+
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._view_producer_registry = services.view_producer_registry
+        self._params_editor = services.params_editor
         services.view_producer_registry.register_view_producer(self._produce_view)
 
     async def _produce_view(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, RecordObject):
             raise NotApplicable(object)
-        return RecordViewLayout(self._view_producer_registry, object, [], command_hub, piece_opener)
+        return RecordViewLayout(self._view_producer_registry, self._params_editor, object, [], command_hub, piece_opener)
