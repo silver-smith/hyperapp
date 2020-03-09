@@ -10,7 +10,6 @@ from PySide2 import QtCore, QtGui, QtWidgets
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.common.util import single
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
-from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.command import Command
 from hyperapp.common.logger import log, create_context_task
 from hyperapp.client.module import ClientModule
@@ -245,23 +244,21 @@ class ListViewLayout(Layout):
 
     def _get_object_commands(self):
         for command in self._object.get_command_list():
-            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
+            yield (command
+                   .with_wrapper(self._piece_opener)
+                   .with_params_editor(self._piece, self._params_editor)
+                   )
 
     def _update_element_commands(self, current_item_key):
         self._command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
 
     def _get_element_commands(self, current_item_key):
         for command in self._object.get_item_command_list(current_item_key):
-            yield FreeFnCommand.from_command(command, partial(self._run_command, command, current_item_key))
-
-    async def _run_command(self, command, *args, **kw):
-        if command.more_params_are_required(*args, *kw):
-            piece = await self._params_editor(self._piece, command, args, kw)
-        else:
-            piece = await command.run(*args, **kw)
-        if piece is None:
-            return
-        await self._piece_opener(piece)
+            yield (command
+                   .partial(current_item_key)
+                   .with_wrapper(self._piece_opener)
+                   .with_params_editor(self._piece, self._params_editor)
+                   )
 
 
 class ThisModule(ClientModule):

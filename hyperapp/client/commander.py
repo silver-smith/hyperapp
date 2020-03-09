@@ -48,15 +48,19 @@ class Command(metaclass=abc.ABCMeta):
 
 class BoundCommand(Command):
 
-    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None, kw=None):
+    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None, kw=None, wrapper=None, piece=None, param_editor=None):
         Command.__init__(self, id, kind, resource_key, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
         self._args = args or ()
         self._kw = kw or {}
+        self._wrapper = wrapper
+        self._piece = piece  # piece this instance created from
+        self._params_editor = param_editor
 
     def __repr__(self):
-        return 'BoundCommand(%r/%r -> %r, (%r, %r))' % (self.id, self.kind, self._inst_wr, self._args, self._kw)
+        return (f"BoundCommand(id={self.id} kind={self.kind} inst={self._inst_wr}"
+                f" args={self._args} kw={self._kw} wrapper={self._wrapper} pe={self._params_editor})")
 
     def get_view(self):
         return self._inst_wr()
@@ -65,36 +69,94 @@ class BoundCommand(Command):
         inst = self._inst_wr()
         if not inst:
             return  # instance we bound to is already deleted
-        _log.info('BoundCommand.run: %s, %r/%r, %r, (%s+%s, %s+%s)', self, self.id, self.kind, inst, self._args, args, self._kw, kw)
-        if inspect.iscoroutinefunction(self._class_method):
-            return (await self._class_method(inst, *self._args, *args, **self._kw, **kw))
+        if self._more_params_are_required(*args, *kw):
+            _log.info("Command: run param editor: (%r) args=%r kw=%r", self, args, kw)
+            assert self._params_editor  # More parameters are required, but param editor is not set
+            result = await self._params_editor(self._piece, self, args, kw)
         else:
-            return self._class_method(inst, *self._args, *args, **self._kw, **kw)
-
-    def wrap(self, wrapper):
-        async def fn(*args, **kw):
-            result = await wrapper(self, *args, **kw)
-            return result
-        return FreeFnCommand(self.id, self.kind, self.resource_key, self.enabled, fn, self._args, self._kw)
+            _log.info("Command: run: (%r) args=%r kw=%r", self, args, kw)
+            if inspect.iscoroutinefunction(self._class_method):
+                result = await self._class_method(inst, *self._args, *args, **self._kw, **kw)
+            else:
+                result = self._class_method(inst, *self._args, *args, **self._kw, **kw)
+        if result is None:
+            return
+        if self._wrapper:
+            result = await self._wrapper(result)
+        return result
 
     def partial(self, *args, **kw):
-        return BoundCommand(self.id, self.kind, self.resource_key, self.enabled, self._class_method, self._inst_wr,
-                            (*self._args, *args), {**self._kw, **kw})
+        return BoundCommand(
+            id=self.id,
+            kind=self.kind,
+            resource_key=self.resource_key,
+            enabled=self.enabled,
+            class_method=self._class_method,
+            inst_wr=self._inst_wr,
+            args=(*self._args, *args),
+            kw={**self._kw, **kw},
+            wrapper=self._wrapper,
+            piece=self._piece,
+            param_editor=self._params_editor,
+            )
+
+    def with_wrapper(self, wrapper):
+        assert not self._wrapper  # already wrapped
+        return BoundCommand(
+            id=self.id,
+            kind=self.kind,
+            resource_key=self.resource_key,
+            enabled=self.enabled,
+            class_method=self._class_method,
+            inst_wr=self._inst_wr,
+            args=self._args,
+            kw=self._kw,
+            wrapper=wrapper,
+            piece=self._piece,
+            param_editor=self._params_editor,
+            )
+
+    def with_params_editor(self, piece, param_editor):
+        assert not self._params_editor  # already set
+        return BoundCommand(
+            id=self.id,
+            kind=self.kind,
+            resource_key=self.resource_key,
+            enabled=self.enabled,
+            class_method=self._class_method,
+            inst_wr=self._inst_wr,
+            args=self._args,
+            kw=self._kw,
+            wrapper=self._wrapper,
+            piece=piece,
+            param_editor=param_editor,
+            )
 
     def with_resource_key(self, resource_key):
-        return BoundCommand(self.id, self.kind, resource_key, self.enabled, self._class_method, self._inst_wr, self._args, self._kw)
+        return BoundCommand(
+            id=self.id,
+            kind=self.kind,
+            resource_key=resource_key,
+            enabled=self.enabled,
+            class_method=self._class_method,
+            inst_wr=self._inst_wr,
+            args=self._args,
+            kw=self._kw,
+            wrapper=self._wrapper,
+            param_editor=self._params_editor,
+            )
 
     def bound_arguments(self, *args, **kw):
         signature = inspect.signature(self._class_method)
         inst = self._inst_wr()
         assert inst  # instance we bound to is already deleted
-        return signature.bind_partial(self, *args, **kw)
+        return signature.bind_partial(inst, *self._args, *args, **self._kw, **kw)
 
-    def more_params_are_required(self, *args, **kw):
+    def _more_params_are_required(self, *args, **kw):
         signature = inspect.signature(self._class_method)
         try:
-            self = None
-            signature.bind(self, *args, **kw)
+            inst = None
+            signature.bind(inst, *self._args, *args, **self._kw, **kw)
             return False
         except TypeError as x:
             if str(x).startswith('missing a required argument: '):
@@ -102,32 +164,6 @@ class BoundCommand(Command):
                 return True
             else:
                 raise
-
-
-class FreeFnCommand(Command):
-
-    @classmethod
-    def from_command(cls, command, fn):
-        return cls(command.id, command.kind, command.resource_key, command.enabled, fn)
-
-    def __init__(self, id, kind, resource_key, enabled, fn, args=None, kw=None):
-        Command.__init__(self, id, kind, resource_key, enabled)
-        self._fn = fn
-        self._args = args or ()
-        self._kw = kw or {}
-
-    def __repr__(self):
-        return 'FreeFnCommand(%r/%r -> %r (%r, %r))' % (self.id, self.kind, self._fn, self._args, self._kw)
-
-    async def run(self, *args, **kw):
-        _log.info('FreefnCommand.run: %s, %r/%r, (%s+%s, %s+%s)', self, self.id, self.kind, self._args, args, self._kw, kw)
-        return (await self._fn(*self._args, *args, **self._kw, **kw))
-
-    def more_params_are_required(self, *args, **kw):
-        return False
-
-    def with_resource_key(self, resource_key):
-        return FreeFnCommand(self.id, self.kind, resource_key, self.enabled, self._fn, self._args, self._kw)
 
 
 class UnboundCommand(object):

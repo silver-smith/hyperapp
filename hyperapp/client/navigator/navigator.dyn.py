@@ -4,7 +4,6 @@ import logging
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
@@ -103,16 +102,10 @@ class NavigatorLayout(Layout):
 
     def _get_global_commands(self):
         for command in self._module_command_registry.get_all_commands():
-            yield FreeFnCommand.from_command(command, partial(self._run_command, self._current_piece, command))
-
-    async def _run_command(self, current_piece, command, *args, **kw):
-        if command.more_params_are_required(*args, *kw):
-            piece = await self._params_editor(current_piece, command, args, kw)
-        else:
-            piece = await command.run(*args, **kw)
-        if piece is None:
-            return
-        await self._open_piece(piece)
+            yield (command
+                   .with_wrapper(self._open_piece)
+                   .with_params_editor(self._current_piece, self._params_editor)
+                   )
 
     async def _open_piece(self, piece):
         await self._open_piece_impl(piece)

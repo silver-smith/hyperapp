@@ -118,7 +118,7 @@ class RootLayout(Layout):
             path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
             resource_key = resource_key_t(resource_key.base_ref, path)
             yield (command
-                   .wrap(self._run_command_for_item)
+                   .with_wrapper(self._run_command_for_item)
                    .with_resource_key(resource_key)
                    )
 

@@ -2,7 +2,6 @@ from functools import partial
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.commander import FreeFnCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -71,10 +70,11 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(Layout):
 
-    def __init__(self, view_producer_registry, params_editor, object, path, command_hub, piece_opener, fields=None):
+    def __init__(self, view_producer_registry, params_editor, piece, object, path, command_hub, piece_opener, fields=None):
         super().__init__(path)
         self._view_producer_registry = view_producer_registry
         self._params_editor = params_editor
+        self._piece = piece
         self._object = object
         self._command_hub = command_hub
         self._piece_opener = piece_opener
@@ -94,16 +94,10 @@ class RecordViewLayout(Layout):
 
     def _get_object_commands(self):
         for command in self._object.get_command_list():
-            yield FreeFnCommand.from_command(command, partial(self._run_command, command))
-
-    async def _run_command(self, command, *args, **kw):
-        if command.more_params_are_required(*args, *kw):
-            piece = await self._params_editor(self._piece, command, args, kw)
-        else:
-            piece = await command.run(*args, **kw)
-        if piece is None:
-            return
-        await self._piece_opener(piece)
+            yield (command
+                   .with_wrapper(self._piece_opener)
+                   .with_params_editor(self._piece, self._params_editor)
+                   )
 
 
 class ThisModule(ClientModule):
@@ -117,4 +111,4 @@ class ThisModule(ClientModule):
     async def _produce_view(self, piece, object, command_hub, piece_opener):
         if not isinstance(object, RecordObject):
             raise NotApplicable(object)
-        return RecordViewLayout(self._view_producer_registry, self._params_editor, object, [], command_hub, piece_opener)
+        return RecordViewLayout(self._view_producer_registry, self._params_editor, piece, object, [], command_hub, piece_opener)
