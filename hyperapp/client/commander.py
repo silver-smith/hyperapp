@@ -75,7 +75,7 @@ class BoundCommand(Command):
 
     def __repr__(self):
         return (f"BoundCommand(id={self.id} kind={self.kind} inst={self._inst_wr}"
-                f" args={self._args} kw={self._kw} wrapper={self._wrapper} pe={self._params_editor})")
+                f" args={self._args} kw={self._kw} wrapper={self._wrapper} pe={self._piece}/{self._params_editor})")
 
     def get_view(self):
         return self._inst_wr()
@@ -191,7 +191,7 @@ class Commander(object):
             assert isinstance(command, BoundCommand), repr(command)
             if command.id == command_id:
                 return command
-        raise KeyError("Unknown command: {!r}".format(command_id))
+        raise KeyError(f"{self!r}: Unknown command: {command_id}")
 
     def get_command_list(self, kinds=None):
         if kinds is None:
