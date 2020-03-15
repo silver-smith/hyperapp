@@ -118,13 +118,13 @@ class RootLayout(Layout):
             path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
             resource_key = resource_key_t(resource_key.base_ref, path)
             yield (command
-                   .with_(wrapper=self._run_command_for_item)
+                   .with_(params_subst=self._subst_params_for_item)
                    .with_(resource_key=resource_key)
                    )
 
-    async def _run_command_for_item(self, command, item_path):
+    def _subst_params_for_item(self, item_path, *args, **kw):
         idx, rec = self._find_rec(item_path[-1])
-        return (await command.run(rec.id))
+        return ((rec.id, *args), kw)
 
     def _on_window_closed(self, rec_id):
         if len(self._window_rec_list) == 1:

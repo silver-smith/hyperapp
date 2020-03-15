@@ -48,7 +48,21 @@ class Command(metaclass=abc.ABCMeta):
 
 class BoundCommand(Command):
 
-    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None, kw=None, wrapper=None, piece=None, params_editor=None):
+    def __init__(
+            self,
+            id,
+            kind,
+            resource_key,
+            enabled,
+            class_method,
+            inst_wr,
+            args=None,
+            kw=None,
+            wrapper=None,
+            piece=None,
+            params_editor=None,
+            params_subst=None,
+            ):
         Command.__init__(self, id, kind, resource_key, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
@@ -57,6 +71,7 @@ class BoundCommand(Command):
         self._wrapper = wrapper
         self._piece = piece  # piece this instance created from
         self._params_editor = params_editor
+        self._params_subst = params_subst
 
     def __repr__(self):
         return (f"BoundCommand(id={self.id} kind={self.kind} inst={self._inst_wr}"
@@ -69,6 +84,12 @@ class BoundCommand(Command):
         inst = self._inst_wr()
         if not inst:
             return  # instance we bound to is already deleted
+        if self._params_subst:
+            _log.info("Command: subst params: (%r) args=%r kw=%r", self, args, kw)
+            args, kw = self._params_subst(*self._args, *args, **self._kw, **kw)
+        else:
+            args = (*self._args, *args)
+            kw = {**self._kw, **kw}
         if self._more_params_are_required(*args, *kw):
             _log.info("Command: run param editor: (%r) args=%r kw=%r", self, args, kw)
             assert self._params_editor  # More parameters are required, but param editor is not set
@@ -76,9 +97,9 @@ class BoundCommand(Command):
         else:
             _log.info("Command: run: (%r) args=%r kw=%r", self, args, kw)
             if inspect.iscoroutinefunction(self._class_method):
-                result = await self._class_method(inst, *self._args, *args, **self._kw, **kw)
+                result = await self._class_method(inst, *args, **kw)
             else:
-                result = self._class_method(inst, *self._args, *args, **self._kw, **kw)
+                result = self._class_method(inst, *args, **kw)
         if result is None:
             return
         if self._wrapper:
@@ -98,6 +119,7 @@ class BoundCommand(Command):
             wrapper=self._wrapper,
             piece=self._piece,
             params_editor=self._params_editor,
+            params_subst=self._params_subst,
             )
         all_kw = {**old_kw, **kw}
         return BoundCommand(**all_kw)
@@ -105,20 +127,17 @@ class BoundCommand(Command):
     def partial(self, *args, **kw):
         return self.with_(args=args, kw=kw)
 
-    def wrap(self, fn):
-        return self  # todo
-
     def bound_arguments(self, *args, **kw):
         signature = inspect.signature(self._class_method)
         inst = self._inst_wr()
         assert inst  # instance we bound to is already deleted
-        return signature.bind_partial(inst, *self._args, *args, **self._kw, **kw)
+        return signature.bind_partial(inst, *args, **kw)
 
     def _more_params_are_required(self, *args, **kw):
         signature = inspect.signature(self._class_method)
         try:
             inst = None
-            signature.bind(inst, *self._args, *args, **self._kw, **kw)
+            signature.bind(inst, *args, **kw)
             return False
         except TypeError as x:
             if str(x).startswith('missing a required argument: '):

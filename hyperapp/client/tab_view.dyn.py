@@ -84,7 +84,7 @@ class TabLayout(Layout):
             return []
         current_layout = self._tab_list[tab_idx].layout
         my_commands = [
-            command.wrap(self._run_command_for_current_tab)
+            command.with_(params_subst=self._subst_params_for_current_tab)
             for command in self.get_command_list()
             ]
         return self._merge_commands(
@@ -100,9 +100,10 @@ class TabLayout(Layout):
         child = await tab.layout.visual_item()
         commands = [
             command
-              .wrap(self._run_command_for_item)
+              .with_(params_subst=self._subst_params_for_item)
               .with_(resource_key=self._element_command_resource_key(command.resource_key))
-            for command in self.get_command_list()]
+            for command in self.get_command_list()
+            ]
         return child.to_item(tab.id, f'tab#{tab.id}', commands)
 
     def _element_command_resource_key(self, resource_key):
@@ -125,14 +126,14 @@ class TabLayout(Layout):
                 return (idx, tab)
         assert False, f"Wrong tab id: {tab_id}"
 
-    async def _run_command_for_current_tab(self, command):
+    def _subst_params_for_current_tab(self, *args, **kw):
         tab_idx = self._widget.currentIndex()
         tab = self._tab_list[tab_idx]
-        return (await command.run(tab_idx, tab))
+        return ((tab_idx, tab, *args), kw)
 
-    async def _run_command_for_item(self, command, item_path):
+    def _subst_params_for_item(self, item_path, *args, **kw):
         tab_idx, tab = self._find_tab(item_path[-1])
-        return (await command.run(tab_idx, tab))
+        return ((tab_idx, tab, *args), kw)
 
     def _replace_tab(self, tab_id, view):
         tab_idx, _ = self._find_tab(tab_id)
