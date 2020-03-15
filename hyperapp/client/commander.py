@@ -48,7 +48,7 @@ class Command(metaclass=abc.ABCMeta):
 
 class BoundCommand(Command):
 
-    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None, kw=None, wrapper=None, piece=None, param_editor=None):
+    def __init__(self, id, kind, resource_key, enabled, class_method, inst_wr, args=None, kw=None, wrapper=None, piece=None, params_editor=None):
         Command.__init__(self, id, kind, resource_key, enabled)
         self._class_method = class_method
         self._inst_wr = inst_wr  # weak ref to class instance
@@ -56,7 +56,7 @@ class BoundCommand(Command):
         self._kw = kw or {}
         self._wrapper = wrapper
         self._piece = piece  # piece this instance created from
-        self._params_editor = param_editor
+        self._params_editor = params_editor
 
     def __repr__(self):
         return (f"BoundCommand(id={self.id} kind={self.kind} inst={self._inst_wr}"
@@ -85,66 +85,28 @@ class BoundCommand(Command):
             result = await self._wrapper(result)
         return result
 
+    def with_(self, **kw):
+        old_kw = dict(
+            id=self.id,
+            kind=self.kind,
+            resource_key=self.resource_key,
+            enabled=self.enabled,
+            class_method=self._class_method,
+            inst_wr=self._inst_wr,
+            args=self._args,
+            kw=self._kw,
+            wrapper=self._wrapper,
+            piece=self._piece,
+            params_editor=self._params_editor,
+            )
+        all_kw = {**old_kw, **kw}
+        return BoundCommand(**all_kw)
+
     def partial(self, *args, **kw):
-        return BoundCommand(
-            id=self.id,
-            kind=self.kind,
-            resource_key=self.resource_key,
-            enabled=self.enabled,
-            class_method=self._class_method,
-            inst_wr=self._inst_wr,
-            args=(*self._args, *args),
-            kw={**self._kw, **kw},
-            wrapper=self._wrapper,
-            piece=self._piece,
-            param_editor=self._params_editor,
-            )
+        return self.with_(args=args, kw=kw)
 
-    def with_wrapper(self, wrapper):
-        assert not self._wrapper  # already wrapped
-        return BoundCommand(
-            id=self.id,
-            kind=self.kind,
-            resource_key=self.resource_key,
-            enabled=self.enabled,
-            class_method=self._class_method,
-            inst_wr=self._inst_wr,
-            args=self._args,
-            kw=self._kw,
-            wrapper=wrapper,
-            piece=self._piece,
-            param_editor=self._params_editor,
-            )
-
-    def with_params_editor(self, piece, param_editor):
-        assert not self._params_editor  # already set
-        return BoundCommand(
-            id=self.id,
-            kind=self.kind,
-            resource_key=self.resource_key,
-            enabled=self.enabled,
-            class_method=self._class_method,
-            inst_wr=self._inst_wr,
-            args=self._args,
-            kw=self._kw,
-            wrapper=self._wrapper,
-            piece=piece,
-            param_editor=param_editor,
-            )
-
-    def with_resource_key(self, resource_key):
-        return BoundCommand(
-            id=self.id,
-            kind=self.kind,
-            resource_key=resource_key,
-            enabled=self.enabled,
-            class_method=self._class_method,
-            inst_wr=self._inst_wr,
-            args=self._args,
-            kw=self._kw,
-            wrapper=self._wrapper,
-            param_editor=self._params_editor,
-            )
+    def wrap(self, fn):
+        return self  # todo
 
     def bound_arguments(self, *args, **kw):
         signature = inspect.signature(self._class_method)

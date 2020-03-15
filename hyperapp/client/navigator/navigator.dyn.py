@@ -103,8 +103,8 @@ class NavigatorLayout(Layout):
     def _get_global_commands(self):
         for command in self._module_command_registry.get_all_commands():
             yield (command
-                   .with_wrapper(self._open_piece)
-                   .with_params_editor(self._current_piece, self._params_editor)
+                   .with_(wrapper=self._open_piece)
+                   .with_(piece=self._current_piece, params_editor=self._params_editor)
                    )
 
     async def _open_piece(self, piece):

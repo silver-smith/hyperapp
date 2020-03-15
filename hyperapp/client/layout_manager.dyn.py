@@ -118,8 +118,8 @@ class RootLayout(Layout):
             path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
             resource_key = resource_key_t(resource_key.base_ref, path)
             yield (command
-                   .with_wrapper(self._run_command_for_item)
-                   .with_resource_key(resource_key)
+                   .with_(wrapper=self._run_command_for_item)
+                   .with_(resource_key=resource_key)
                    )
 
     async def _run_command_for_item(self, command, item_path):

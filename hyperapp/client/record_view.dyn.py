@@ -95,8 +95,8 @@ class RecordViewLayout(Layout):
     def _get_object_commands(self):
         for command in self._object.get_command_list():
             yield (command
-                   .with_wrapper(self._piece_opener)
-                   .with_params_editor(self._piece, self._params_editor)
+                   .with_(wrapper=self._piece_opener)
+                   .with_(piece=self._piece, params_editor=self._params_editor)
                    )
 
 

@@ -101,7 +101,7 @@ class TabLayout(Layout):
         commands = [
             command
               .wrap(self._run_command_for_item)
-              .with_resource_key(self._element_command_resource_key(command.resource_key))
+              .with_(resource_key=self._element_command_resource_key(command.resource_key))
             for command in self.get_command_list()]
         return child.to_item(tab.id, f'tab#{tab.id}', commands)
 
