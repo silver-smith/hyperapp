@@ -1,11 +1,12 @@
 import:
   types:
     layout_editor:
-    - view_layout_editor
-    - object_layout_editor
+      - view_layout_editor
+      - object_layout_editor
   code:
-  - client.layout
-  - client.layout_manager
-  - client.command_hub
-  - client.column
-  - client.tree_object
+    - client.layout
+    - client.layout_manager
+    - client.command_hub
+    - client.object_layout_root
+    - client.column
+    - client.tree_object

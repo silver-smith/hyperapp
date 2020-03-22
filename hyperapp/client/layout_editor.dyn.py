@@ -7,6 +7,7 @@ from . import htypes
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff
 from .command_hub import CommandHub
 from .layout_manager import LayoutWatcher
+from .object_layout_root import ObjectLayoutRoot
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject
 
@@ -31,10 +32,11 @@ class LayoutEditor(TreeObject):
         object = await object_registry.resolve_async(piece)
         command_hub = CommandHub()
         layout = await view_producer_registry.produce_layout(piece, object, command_hub, _open_piece_do_nothing)
-        command_hub.init_get_commands(layout.get_current_commands)
+        layout_root = ObjectLayoutRoot(layout)
+        command_hub.init_get_commands(layout_root.get_current_commands)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
         self = cls(layout_watcher)
-        await self._async_init(layout)
+        await self._async_init(layout_root)
         return self
 
     def __init__(self, layout_watcher):
