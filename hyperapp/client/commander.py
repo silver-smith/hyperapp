@@ -86,20 +86,20 @@ class BoundCommand(Command):
             return  # instance we bound to is already deleted
         if self._params_subst:
             _log.info("Command: subst params: (%r) args=%r kw=%r", self, args, kw)
-            args, kw = self._params_subst(*self._args, *args, **self._kw, **kw)
+            full_args, full_kw = self._params_subst(*self._args, *args, **self._kw, **kw)
         else:
-            args = (*self._args, *args)
-            kw = {**self._kw, **kw}
-        if self._more_params_are_required(*args, **kw):
+            full_args = (*self._args, *args)
+            full_kw = {**self._kw, **kw}
+        if self._more_params_are_required(*full_args, **full_kw):
             _log.info("Command: run param editor: (%r) args=%r kw=%r", self, args, kw)
             assert self._params_editor  # More parameters are required, but param editor is not set
             result = await self._params_editor(self._piece, self, args, kw)
         else:
-            _log.info("Command: run: (%r) args=%r kw=%r", self, args, kw)
+            _log.info("Command: run: (%r) args=%r kw=%r", self, full_args, full_kw)
             if inspect.iscoroutinefunction(self._class_method):
-                result = await self._class_method(inst, *args, **kw)
+                result = await self._class_method(inst, *full_args, **full_kw)
             else:
-                result = self._class_method(inst, *args, **kw)
+                result = self._class_method(inst, *full_args, **full_kw)
         if result is None:
             return
         if self._wrapper:
