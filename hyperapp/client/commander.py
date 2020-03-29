@@ -90,7 +90,7 @@ class BoundCommand(Command):
         else:
             args = (*self._args, *args)
             kw = {**self._kw, **kw}
-        if self._more_params_are_required(*args, *kw):
+        if self._more_params_are_required(*args, **kw):
             _log.info("Command: run param editor: (%r) args=%r kw=%r", self, args, kw)
             assert self._params_editor  # More parameters are required, but param editor is not set
             result = await self._params_editor(self._piece, self, args, kw)
