@@ -41,20 +41,12 @@ class LayoutEditor(TreeObject):
 
     def __init__(self, layout_watcher):
         super().__init__()
+        self._path2item_list = {}
         layout_watcher.subscribe(self)
 
     async def _async_init(self, layout):
-        item_dict = {}
-
-        def add_item(path, item):
-            item_list = item_dict.setdefault(path, [])
-            item_list.append(item)
-            for kid in item.children or []:
-                add_item((*path, item.idx), kid)
-
         root = await layout.visual_item()
-        add_item((), root.to_item(0, 'root'))
-        self._path2item_list = item_dict
+        self._add_item([], root.to_item(0, 'root'))
 
     def get_title(self):
         return "Layout"
@@ -98,20 +90,20 @@ class LayoutEditor(TreeObject):
     def process_layout_diffs(self, vdiff_list):
         for vdiff in vdiff_list:
             if isinstance(vdiff, InsertVisualItemDiff):
-
-                def add_item(path, item):
-                    item_list = self._path2item_list.setdefault(tuple(path[:-1]), [])
-                    item_list.insert(path[-1], item)
-                    for kid in item.children or []:
-                        add_item((*path, item.idx), kid)
-
-                add_item(vdiff.path, vdiff.item)
+                self._add_item(vdiff.path, vdiff.item)
                 diff = InsertItemDiff(vdiff.idx, vdiff.item)
                 self._distribute_diff(vdiff.path, diff)
             elif isinstance(vdiff, RemoveVisualItemDiff):
+                # todo: remove item from self._path2item_list
                 self._distribute_diff(vdiff.path, RemoveItemDiff())
             else:
                 raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
+
+    def _add_item(self, path, item):
+        item_list = self._path2item_list.setdefault(tuple(path), [])
+        item_list.insert(item.idx, item)
+        for kid in item.children or []:
+            self._add_item((*path, item.idx), kid)
 
 
 class ThisModule(ClientModule):
