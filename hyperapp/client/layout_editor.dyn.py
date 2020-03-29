@@ -1,4 +1,5 @@
 import logging
+from collections import namedtuple
 
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
@@ -19,6 +20,8 @@ async def _open_piece_do_nothing(piece):
 
 
 class LayoutEditor(TreeObject):
+
+    _CommandRec = namedtuple('_CommandRec', 'command item_path')
 
     @classmethod
     async def from_view_state(cls, state, layout_manager, layout_watcher):
@@ -42,6 +45,7 @@ class LayoutEditor(TreeObject):
     def __init__(self, layout_watcher):
         super().__init__()
         self._path2item_list = {}
+        self._item_commands = {}  # id -> _CommandRec
         layout_watcher.subscribe(self)
 
     async def _async_init(self, layout):
@@ -60,6 +64,12 @@ class LayoutEditor(TreeObject):
     @property
     def key_attribute(self):
         return 'idx'
+
+    def get_command(self, command_id):
+        rec = self._item_commands.get(command_id)
+        if rec:
+            return rec.command.partial(rec.item_path)
+        return super().get_command(command_id)
 
     def get_item_command_list(self, item_path):
         try:
@@ -102,8 +112,11 @@ class LayoutEditor(TreeObject):
     def _add_item(self, path, item):
         item_list = self._path2item_list.setdefault(tuple(path), [])
         item_list.insert(item.idx, item)
+        item_path = (*path, item.idx)
+        for command in item.commands or []:
+            self._item_commands[command.id] = self._CommandRec(command, item_path)
         for kid in item.children or []:
-            self._add_item((*path, item.idx), kid)
+            self._add_item(item_path, kid)
 
 
 class ThisModule(ClientModule):
