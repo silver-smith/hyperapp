@@ -10,6 +10,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .view_chooser import ViewFieldRef
 from .view import View
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, Layout
 
@@ -123,25 +124,30 @@ class TabLayout(Layout):
     def _find_tab(self, tab_id):
         for idx, tab in enumerate(self._tab_list):
             if tab.id == tab_id:
-                return (idx, tab)
+                return idx
         assert False, f"Wrong tab id: {tab_id}"
 
     def _subst_params_for_current_tab(self, *args, **kw):
         tab_idx = self._widget.currentIndex()
-        tab = self._tab_list[tab_idx]
-        return ((tab_idx, tab, *args), kw)
+        return ((tab_idx, *args), kw)
 
     def _subst_params_for_item(self, item_path, *args, **kw):
-        tab_idx, tab = self._find_tab(item_path[-1])
-        return ((tab_idx, tab, *args), kw)
+        tab_idx = self._find_tab(item_path[-1])
+        return ((tab_idx, *args), kw)
 
     def _replace_tab(self, tab_id, view):
-        tab_idx, _ = self._find_tab(tab_id)
+        tab_idx = self._find_tab(tab_id)
         if self._widget:
             self._widget.replace_tab(tab_idx, view)
 
+    @command('add_tab')
+    async def _add_tab(self, tab_idx, view: ViewFieldRef):
+        tab = self._tab_list[tab_idx]
+        assert 0, view
+
     @command('duplicate_tab')
-    async def _duplicate_tab(self, tab_idx, tab):
+    async def _duplicate_tab(self, tab_idx):
+        tab = self._tab_list[tab_idx]
         new_idx = tab_idx + 1
         tab_ref = tab.layout.get_view_ref()
         new_tab = await self._create_and_insert_tab(tab_idx, tab_ref)
@@ -160,7 +166,8 @@ class TabLayout(Layout):
         return tab
 
     @command('close_tab')
-    def _close_tab(self, tab_idx, tab):
+    def _close_tab(self, tab_idx):
+        tab = self._tab_list[tab_idx]
         del self._tab_list[tab_idx]
         if self._widget:
             self._widget.remove_tab(tab_idx)

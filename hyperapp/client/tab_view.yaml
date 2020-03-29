@@ -7,5 +7,6 @@ import:
     navigator:
     - navigator
   code:
-  - client.view
-  - client.layout
+    - client.view
+    - client.layout
+    - client.view_chooser

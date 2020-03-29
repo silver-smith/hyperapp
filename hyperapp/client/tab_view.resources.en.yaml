@@ -30,6 +30,11 @@ module:client.tab_view:TabLayout:
       description: Wrap current tab view with another one
       shortcuts:
       - Ctrl+W
+    visual_add_tab:
+      text: Add new tab
+      description: Choose a view and add as new tab
+      shortcuts:
+      - Insert
 
 # module:client.tab_view:TabView:
 #   commands:
