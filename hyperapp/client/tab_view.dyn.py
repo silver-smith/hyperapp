@@ -141,21 +141,14 @@ class TabLayout(Layout):
             self._widget.replace_tab(tab_idx, view)
 
     @command('add_tab')
-    async def _add_tab(self, tab_idx, view: ViewFieldRef):
-        tab = self._tab_list[tab_idx]
-        assert 0, view
+    async def _add_tab(self, tab_idx, view_ref: ViewFieldRef):
+        await self._create_and_insert_tab(tab_idx, view_ref)
 
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx):
         tab = self._tab_list[tab_idx]
-        new_idx = tab_idx + 1
         tab_ref = tab.layout.get_view_ref()
-        new_tab = await self._create_and_insert_tab(tab_idx, tab_ref)
-        if self._widget:
-            self._widget.setCurrentIndex(new_idx)
-            self._command_hub.update()
-        item = await self._visual_item(new_tab)
-        self._layout_watcher.distribute_diffs([InsertVisualItemDiff(self._path, new_idx, item)])
+        await self._create_and_insert_tab(tab_idx, tab_ref)
 
     async def _create_and_insert_tab(self, tab_idx, tab_ref):
         tab = await self._create_tab(tab_ref)
@@ -163,7 +156,12 @@ class TabLayout(Layout):
         if self._widget:
             view = await tab.layout.create_view()
             self._widget.insert_tab(tab_idx, view)
-        return tab
+        new_idx = tab_idx + 1
+        if self._widget:
+            self._widget.setCurrentIndex(new_idx)
+            self._command_hub.update()
+        item = await self._visual_item(tab)
+        self._layout_watcher.distribute_diffs([InsertVisualItemDiff(self._path, new_idx, item)])
 
     @command('close_tab')
     def _close_tab(self, tab_idx):
