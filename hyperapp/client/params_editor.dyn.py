@@ -84,7 +84,7 @@ class ParamsEditor(RecordObject):
 
     async def _run_command(self, values):
         command = self._target_object.get_command(self._target_command_id)
-        return (await command.run(**values))
+        return (await command.run_with_full_params(**values))
 
 
 class ThisModule(ClientModule):
@@ -100,8 +100,7 @@ class ThisModule(ClientModule):
         services.object_registry.register_type(
             htypes.params_editor.params_editor, ParamsEditor.from_data, services.async_ref_resolver, services.object_registry)
 
-    async def _open_params_editor(self, piece, command, args, kw):
-        bound_arguments_sig = command.bound_arguments(*args, **kw)
+    async def _open_params_editor(self, piece, command, bound_arguments_sig, args, kw):
         bound_arguments = [
             htypes.params_editor.bound_argument(name, self._ref_registry.register_object(value))
             for name, value in bound_arguments_sig.arguments.items()

@@ -91,15 +91,30 @@ class BoundCommand(Command):
             full_args = (*self._args, *args)
             full_kw = {**self._kw, **kw}
         if self._more_params_are_required(*full_args, **full_kw):
-            _log.info("Command: run param editor: (%r) args=%r kw=%r", self, args, kw)
+            signature = inspect.signature(self._class_method)
+            bound_arguments = signature.bind_partial(inst, *full_args, **full_kw)
+            _log.info("Command: run param editor: (%r) args=%r kw=%r", self, full_args, full_kw)
             assert self._params_editor  # More parameters are required, but param editor is not set
-            result = await self._params_editor(self._piece, self, args, kw)
+            result = await self._params_editor(self._piece, self, bound_arguments, full_args, full_kw)
         else:
-            _log.info("Command: run: (%r) args=%r kw=%r", self, full_args, full_kw)
-            if inspect.iscoroutinefunction(self._class_method):
-                result = await self._class_method(inst, *full_args, **full_kw)
-            else:
-                result = self._class_method(inst, *full_args, **full_kw)
+            result = await self._run_impl(inst, full_args, full_kw)
+        return (await self._wrap_result(result))
+
+    async def run_with_full_params(self, *args, **kw):
+        inst = self._inst_wr()
+        if not inst:
+            return  # instance we bound to is already deleted
+        result = await self._run_impl(inst, args, kw)
+        return (await self._wrap_result(result))
+
+    async def _run_impl(self, inst, args, kw):
+        _log.info("Command: run: (%r) args=%r kw=%r", self, args, kw)
+        if inspect.iscoroutinefunction(self._class_method):
+            return (await self._class_method(inst, *args, **kw))
+        else:
+            return self._class_method(inst, *args, **kw)
+
+    async def _wrap_result(self, result):
         if result is None:
             return
         if self._wrapper:
@@ -126,12 +141,6 @@ class BoundCommand(Command):
 
     def partial(self, *args, **kw):
         return self.with_(args=args, kw=kw)
-
-    def bound_arguments(self, *args, **kw):
-        signature = inspect.signature(self._class_method)
-        inst = self._inst_wr()
-        assert inst  # instance we bound to is already deleted
-        return signature.bind_partial(inst, *args, **kw)
 
     def _more_params_are_required(self, *args, **kw):
         signature = inspect.signature(self._class_method)
