@@ -62,10 +62,6 @@ def make_ref(capsule):
     hash = digest.finalize()
     return ref_t(DEFAULT_HASH_ALGORITHM, hash)
 
-def make_object_ref(object, t):
-    capsule = make_capsule(object, t)
-    return make_ref(capsule)
-
 def encode_bundle(bundle):
     return packet_coders.encode(BUNDLE_ENCODING, bundle)
 
