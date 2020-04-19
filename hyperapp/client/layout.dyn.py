@@ -4,7 +4,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from typing import List
 
-from hyperapp.client.commander import Commander
+from hyperapp.client.commander import BoundCommand, Commander
 from hyperapp.client.module import ClientModule
 
 _log = logging.getLogger(__name__)
@@ -17,9 +17,15 @@ VisualItem = namedtuple('Item', 'idx name text children commands', defaults=[Non
 class RootVisualItem:
     text: str
     children: List[VisualItem] = None
+    commands: List[BoundCommand] = None
 
     def to_item(self, idx, name, commands=None):
-        return VisualItem(idx, name, self.text, self.children, commands)
+        all_commands = (self.commands or []) + (commands or [])
+        return VisualItem(idx, name, self.text, self.children, all_commands)
+
+    def with_commands(self, commands):
+        all_commands = (self.commands or []) + (commands or [])
+        return RootVisualItem(self.text, self.children, all_commands)
 
 
 class VisualItemDiff:

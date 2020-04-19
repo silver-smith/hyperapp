@@ -7,6 +7,7 @@ from .view_chooser import ViewFieldRef
 class ObjectLayoutRoot(Layout):
 
     def __init__(self, layout):
+        super().__init__(path=[])
         self._layout = layout
 
     def get_view_ref(self):
@@ -16,14 +17,15 @@ class ObjectLayoutRoot(Layout):
         assert 0  # todo?
 
     async def visual_item(self):
-        return (await self._layout.visual_item())
+        item = await self._layout.visual_item()
+        return item.with_commands(super().get_current_commands())
 
     def get_current_commands(self):
         return self.__merge_commands(
-            layout.get_current_commands(),
+            self._layout.get_current_commands(),
             super().get_current_commands(),
             )
 
     @command('replace')
-    async def _replace_view(self, view: ViewFieldRef):
+    async def _replace_view(self, path, view: ViewFieldRef):
         assert 0, view
