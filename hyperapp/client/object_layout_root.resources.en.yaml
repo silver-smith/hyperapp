@@ -1,0 +1,7 @@
+module:client.object_layout_root:ObjectLayoutRoot:
+  commands:
+    replace:
+      text: Replace
+      description: Replace this layout with another one
+      shortcuts:
+      - Ctrl+R
