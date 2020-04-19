@@ -21,7 +21,9 @@ HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
 type_module_list = [
     'resource',
     'core',
+    'line',
     'tree_view',
+    'params_editor',
     ]
 
 code_module_list = [
@@ -30,8 +32,13 @@ code_module_list = [
     'client.module_command_registry',
     'client.async_ref_resolver',
     'client.async_capsule_registry',
+    'client.object_registry',
     'client.view_registry',
     'client.view',
+    'client.layout',
+    'client.record_object',
+    'client.chooser',
+    'client.params_editor',
     'client.items_view',
     'client.column',
     'client.tree_object',
