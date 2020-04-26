@@ -49,6 +49,7 @@ class LayoutEditor(TreeObject):
         layout_watcher.subscribe(self)
 
     async def _async_init(self, layout):
+        self._layout = layout  # or ObjectLayoutRoot would be garbage-collected, and it's commands gone.
         root = await layout.visual_item()
         self._add_item([], root.to_item(0, 'root'))
 
