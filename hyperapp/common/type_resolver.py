@@ -114,11 +114,13 @@ class TypeResolver(object):
         type_ref = ref_registry.register_object(type_rec)
         self._register_type(type_ref, t)
         self._builtin_name_to_type[t.name] = t
+        _log.debug("Registered builtin type %s: %s", t, ref_repr(type_ref))
 
     def register_type(self, ref_registry, type_rec):
         type_ref = ref_registry.register_object(type_rec)
         t = self.resolve(type_ref)
         self._register_type(type_ref, t)
+        _log.debug("Registered type: %s -> %s", ref_repr(type_ref), t)
         return _RegisteredType(t, type_ref)
 
     def _register_type(self, type_ref, t):
