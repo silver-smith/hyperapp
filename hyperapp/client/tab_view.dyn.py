@@ -244,10 +244,9 @@ class ThisModule(ClientModule):
         self._ref_registry = services.ref_registry
         services.view_registry.register_type(
             htypes.tab_view.tab_view, TabLayout.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
-        services.available_view_registry['tab_view'] = self._new_tab_ref
+        services.available_view_registry['tab_view'] = self._make_new_tab_ref()
 
-    @property
-    def _new_tab_ref(self):
+    def _make_new_tab_ref(self):
         piece = htypes.text.text("New tab")
         piece_ref = self._ref_registry.register_object(piece)
         navigator = htypes.navigator.navigator(piece_ref)
