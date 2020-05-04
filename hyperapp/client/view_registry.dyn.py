@@ -38,3 +38,6 @@ class ThisModule(ClientModule):
         services.available_view_registry = {}  # id -> view ref, views available to add to layout
         services.view_registry = view_registry = AsyncCapsuleRegistry('view', services.type_resolver)
         services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)
+        services.object_layout_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
+        services.object_layout_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)
+        services.object_layout_list = []

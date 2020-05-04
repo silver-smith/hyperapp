@@ -19,13 +19,13 @@ class ViewFieldRef:
 class ViewChooser(SimpleListObject, Chooser):
 
     @classmethod
-    def from_state(cls, state, available_view_registry):
-        return cls(available_view_registry)
+    def from_state(cls, state, object_layout_list):
+        return cls(object_layout_list)
 
-    def __init__(self, available_view_registry):
+    def __init__(self, object_layout_list):
         SimpleListObject.__init__(self)
         Chooser.__init__(self)
-        self._available_view_registry = available_view_registry
+        self._object_layout_list = object_layout_list
 
     def get_title(self):
         return 'Choose view'
@@ -36,15 +36,16 @@ class ViewChooser(SimpleListObject, Chooser):
             ]
 
     async def get_all_items(self):
-        return [Item(id) for id in self._available_view_registry]
+        return [Item('some item') for id in self._object_layout_list]
 
     def get_value(self):
         return None
 
     @command('choose', kind='element')
     async def _choose(self, item_key):
-        view_ref = self._available_view_registry[item_key]
-        return (await self.chooser_call_callback(view_ref))
+        assert len(self._object_layout_list) == 1  # todo: proper get_all_items method
+        [ref] = self._object_layout_list
+        return (await self.chooser_call_callback(ref))
 
 
 class ThisModule(ClientModule):
@@ -52,4 +53,5 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.field_types[ViewFieldRef] = htypes.view_chooser.view_chooser()
-        services.object_registry.register_type(htypes.view_chooser.view_chooser, ViewChooser.from_state, services.available_view_registry)
+        services.object_registry.register_type(
+            htypes.view_chooser.view_chooser, ViewChooser.from_state, services.object_layout_list)

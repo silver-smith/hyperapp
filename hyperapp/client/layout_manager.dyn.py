@@ -31,6 +31,7 @@ class LayoutWatcher:
         self._observers.add(observer)
 
     def distribute_diffs(self, diff_list):
+        _log.info("Distribute layout diffs %s to %s", diff_list, list(self._observers))
         for observer in self._observers:
             observer.process_layout_diffs(diff_list)
 
