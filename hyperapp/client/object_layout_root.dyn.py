@@ -1,19 +1,18 @@
 from hyperapp.client.command import command
 
+from . import htypes
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, Layout
 from .view_chooser import ViewFieldRef
 
 
 class ObjectLayoutRoot(Layout):
 
-    def __init__(self, object_layout_resolver, layout_watcher, layout, object, command_hub, piece_opener):
+    def __init__(self, object_layout_overrides, layout, piece_ref, object):
         super().__init__(path=[])
-        self._object_layout_resolver = object_layout_resolver
-        self._layout_watcher = layout_watcher
+        self._object_layout_overrides = object_layout_overrides
         self._layout = layout
+        self._piece_ref = piece_ref
         self._object = object
-        self._command_hub = command_hub
-        self._piece_opener = piece_opener
 
     def get_view_ref(self):
         assert 0  # todo
@@ -33,9 +32,6 @@ class ObjectLayoutRoot(Layout):
 
     @command('replace')
     async def _replace_view(self, path, view: ViewFieldRef):
-        layout = await self._object_layout_resolver.resolve(view, self._object, self._command_hub, self._piece_opener)
-        self._layout = layout
-        root_item = await self.visual_item()
-        item = root_item.to_item(0, 'root')
-        self._layout_watcher.distribute_diffs([RemoveVisualItemDiff([*self._path, 0])])
-        self._layout_watcher.distribute_diffs([InsertVisualItemDiff(self._path, 0, item)])
+        resource_key = self._object.hashable_resource_key
+        self._object_layout_overrides[resource_key] = view
+        return htypes.layout_editor.object_layout_editor(self._piece_ref)

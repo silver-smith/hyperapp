@@ -10,6 +10,7 @@ from . import htypes
 from .composite import Composite
 from .layout import RootVisualItem, Layout
 from .list_object import ListObject
+from .tree_object import TreeObject
 
 _log = logging.getLogger(__name__)
 
@@ -87,7 +88,7 @@ class ThisModule(ClientModule):
                 htypes.master_details.master_details_layout(command_id='details')))
 
     async def _produce_master_detail_layout(self, piece, object, command_hub, piece_opener):
-        if not isinstance(object, ListObject):
+        if not isinstance(object, (ListObject, TreeObject)):
             raise NotApplicable(object)
         return MasterDetailsLayout(piece, object, [], command_hub, piece_opener)
 

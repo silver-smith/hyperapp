@@ -6,3 +6,4 @@ import:
     - client.composite
     - client.layout
     - client.list_object
+    - client.tree_object
