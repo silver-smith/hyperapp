@@ -17,17 +17,19 @@ _log = logging.getLogger(__name__)
 
 class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
-    def __init__(self, object_registry, view_producer, master, details_command, sizes=None):
+    def __init__(self, object_registry, view_producer_registry, command_hub, piece_opener, master_view, details_command_id, sizes=None):
         QtWidgets.QSplitter.__init__(self, QtCore.Qt.Vertical)
-        Composite.__init__(self, children=[master])
+        Composite.__init__(self, children=[master_view])
         self._object_registry = object_registry
-        self._view_producer = view_producer
-        self._master = master
-        self._details_command = details_command
+        self._view_producer_registry = view_producer_registry
+        self._command_hub = command_hub
+        self._piece_opener = piece_opener
+        self._master_view = master_view
+        self._details_command_id = details_command_id
         self._want_sizes = sizes
-        master.set_parent(self)
-        self.insertWidget(0, master)
-        master.add_observer(self)
+        master_view.set_parent(self)
+        self.insertWidget(0, master_view)
+        master_view.add_observer(self)
 
     def setVisible(self, visible):
         QtWidgets.QSplitter.setVisible(self, visible)
@@ -35,7 +37,7 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
             self.widget(0).setFocus()
 
     def get_current_child(self):
-        return self._master
+        return self._master_view
 
     def current_changed(self, current_key):
         asyncio.ensure_future(self._update_details(current_key))
@@ -45,12 +47,19 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
             w = self.widget(1)
             w.setParent(None)
             w.deleteLater()
-        _log.info('Run command to open details: %r', self._details_command.id)
-        piece = await self._details_command.run(current_key)
+        master_object = self._master_view.get_object()
+        try:
+            details_command = master_object.get_command(self._details_command_id)
+        except KeyError:
+            _log.warning("Master %s does not has command %r", master_object, self._details_command_id)
+            return
+        _log.info('Run command to open details: %r', details_command.id)
+        piece = await details_command.run(current_key)
         if not piece:
             return
         object = await self._object_registry.resolve_async(piece)
-        view = await self._view_producer.produce_view(piece, object)
+        layout = await self._view_producer_registry.produce_layout(piece, object, self._command_hub, self._piece_opener)
+        view = await layout.create_view()
         self.insertWidget(1, view)
         if self._want_sizes:
             self.setSizes(self._want_sizes)
@@ -59,8 +68,12 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
 class MasterDetailsLayout(Layout):
 
-    def __init__(self, piece, object, path, command_hub, piece_opener):
+    def __init__(self, object_registry, view_producer_registry, command_id, piece, object, path, command_hub, piece_opener):
         super().__init__(path)
+        self._object_registry = object_registry
+        self._view_producer_registry = view_producer_registry
+        self._details_command_id = command_id
+        self._command_id = command_id
         self._command_hub = command_hub
         self._piece_opener = piece_opener
         self._piece = piece
@@ -70,7 +83,12 @@ class MasterDetailsLayout(Layout):
         assert 0  # todo
 
     async def create_view(self):
-        assert 0  # todo
+        master_layout = await self._view_producer_registry.produce_default_layout(
+            self._piece, self._object, self._command_hub, self._piece_opener)
+        master_view = await master_layout.create_view()
+        return MasterDetailsView(
+            self._object_registry, self._view_producer_registry,
+            self._command_hub, self._piece_opener, master_view, self._details_command_id)
 
     async def visual_item(self):
         return RootVisualItem('MasterDetails')
@@ -80,19 +98,17 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._object_registry = services.object_registry
         self._view_producer_registry = services.view_producer_registry
         services.object_layout_registry.register_type(
             htypes.master_details.master_details_layout, self._produce_master_detail_layout)
         services.object_layout_list.append(
             services.ref_registry.register_object(
-                htypes.master_details.master_details_layout(command_id='details')))
+                htypes.master_details.master_details_layout(command_id='open')))
 
-    async def _produce_master_detail_layout(self, piece, object, command_hub, piece_opener):
+    async def _produce_master_detail_layout(self, state, piece, object, command_hub, piece_opener):
         if not isinstance(object, (ListObject, TreeObject)):
             raise NotApplicable(object)
-        return MasterDetailsLayout(piece, object, [], command_hub, piece_opener)
-
-        # layout = await self._view_producer_registry.produce_layout(piece, object, [], command_hub, piece_opener)
-        # details_command = object.get_command(piece.command_id)
-        # master = await self._view_producer.produce_default_view(piece, object, observer)
-        # return MasterDetailsView(self._object_registry, self._view_producer, master, details_command)
+        return MasterDetailsLayout(
+            self._object_registry, self._view_producer_registry,
+            state.command_id, piece, object, [], command_hub, piece_opener)

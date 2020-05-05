@@ -27,11 +27,11 @@ class ViewProducerRegistry:
         try:
             layout_ref = self._object_layout_overrides[object.hashable_resource_key]
         except KeyError:
-            return (await self._produce_default_layout(piece, object, command_hub, piece_opener))
+            return (await self.produce_default_layout(piece, object, command_hub, piece_opener))
         else:
             return (await self._object_layout_resolver.resolve(layout_ref, piece, object, command_hub, piece_opener))
 
-    async def _produce_default_layout(piece, object, command_hub, piece_opener):
+    async def produce_default_layout(self, piece, object, command_hub, piece_opener):
         for producer in self._producer_list:
             try:
                 return (await producer(piece, object, command_hub, piece_opener))
