@@ -35,3 +35,7 @@ resource_key_t = TRecord('resource_key', OrderedDict([
     ('base_ref', ref_t),
     ('path', resource_path_t),
     ]))
+
+
+def hashable_resource_key(key):
+    return (key.base_ref, tuple(key.path))

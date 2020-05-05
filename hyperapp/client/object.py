@@ -3,7 +3,7 @@ import sys
 import weakref
 from collections import namedtuple
 
-from ..common.htypes import resource_key_t
+from ..common.htypes import resource_key_t, hashable_resource_key
 from ..common.ref import phony_ref
 from .weak_key_dictionary_with_callback import WeakKeyDictionaryWithCallback
 from .commander import Commander
@@ -35,7 +35,11 @@ class Object(Commander):
         module = sys.modules[module_name]
         module_ref = module.__dict__.get('__module_ref__') or phony_ref(module_name.split('.')[-1])
         return resource_key_t(module_ref, [class_name, *path])
-        
+
+    @property
+    def hashable_resource_key(self):
+        return hashable_resource_key(self.resource_key())
+
     async def run_command(self, command_id, *args, **kw):
         command = self.get_command(command_id)
         assert command, 'Unknown command: %r; known are: %r' % (command_id, [cmd.id for cmd in self._commands])  # Unknown command
