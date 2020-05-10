@@ -1,3 +1,4 @@
 
 master_details_layout = record:
-    command_id: string
+  master_layout_ref: ref opt
+  command_id: string

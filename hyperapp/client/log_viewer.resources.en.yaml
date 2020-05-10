@@ -24,6 +24,7 @@ module:client.log_viewer:SessionLogs:
     view:
       type: master_details.master_details_layout
       value:
+        master_layout_ref: null
         command_id: open
 
 module:client.log_viewer:LogRecord:

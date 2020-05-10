@@ -4,6 +4,7 @@ import logging
 
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -11,6 +12,7 @@ from .composite import Composite
 from .layout import RootVisualItem, VisualItem, Layout
 from .list_object import ListObject
 from .tree_object import TreeObject
+from .view_chooser import ViewFieldRef
 
 _log = logging.getLogger(__name__)
 
@@ -68,10 +70,13 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
 class MasterDetailsLayout(Layout):
 
-    def __init__(self, object_registry, view_producer_registry, command_id, piece, object, path, command_hub, piece_opener):
+    def __init__(self, ref_registry, object_registry, view_producer_registry, object_layout_overrides,
+                 command_id, piece, object, path, command_hub, piece_opener):
         super().__init__(path)
+        self._ref_registry = ref_registry
         self._object_registry = object_registry
         self._view_producer_registry = view_producer_registry
+        self._object_layout_overrides = object_layout_overrides
         self._details_command_id = command_id
         self._command_id = command_id
         self._command_hub = command_hub
@@ -80,7 +85,13 @@ class MasterDetailsLayout(Layout):
         self._object = object
 
     def get_view_ref(self):
-        assert 0  # todo
+        master_layout = await self._create_master_layout()
+        master_layout_ref = master_layout.get_view_ref()
+        layout_rec = htypes.master_details.master_details_layout(
+            master_layout_ref=master_layout_ref,
+            command_id=self._details_command_id,
+            )
+        return self._ref_registry.register_object(layout_rec)
 
     async def create_view(self):
         master_layout = await self._create_master_layout()
@@ -93,7 +104,7 @@ class MasterDetailsLayout(Layout):
         master_layout = await self._create_master_layout()
         master_item = await master_layout.visual_item()
         return RootVisualItem('MasterDetails', children=[
-            master_item.to_item(0, 'master'),
+            master_item.to_item(0, 'master', commands=[self._replace_view]),
             VisualItem(1, 'command', str(self._details_command_id)),
             ])
 
@@ -101,22 +112,31 @@ class MasterDetailsLayout(Layout):
         return (await self._view_producer_registry.produce_default_layout(
             self._piece, self._object, self._command_hub, self._piece_opener))
 
+    @command('replace')
+    async def _replace_view(self, path, view: ViewFieldRef):
+        resource_key = self._object.hashable_resource_key
+        self._object_layout_overrides[resource_key] = self.get_view_ref()
+        piece_ref = self._ref_registry.register_object(self._piece)
+        return htypes.layout_editor.object_layout_editor(piece_ref)
+
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
         self._object_registry = services.object_registry
         self._view_producer_registry = services.view_producer_registry
+        self._object_layout_overrides = services.object_layout_overrides
         services.object_layout_registry.register_type(
             htypes.master_details.master_details_layout, self._produce_master_detail_layout)
         services.object_layout_list.append(
             services.ref_registry.register_object(
-                htypes.master_details.master_details_layout(command_id='open')))
+                htypes.master_details.master_details_layout(master_layout_ref=None, command_id='open')))
 
     async def _produce_master_detail_layout(self, state, piece, object, command_hub, piece_opener):
         if not isinstance(object, (ListObject, TreeObject)):
             raise NotApplicable(object)
         return MasterDetailsLayout(
-            self._object_registry, self._view_producer_registry,
+            self._ref_registry, self._object_registry, self._view_producer_registry, self._object_layout_overrides,
             state.command_id, piece, object, [], command_hub, piece_opener)
