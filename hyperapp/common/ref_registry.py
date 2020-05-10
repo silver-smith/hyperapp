@@ -22,8 +22,8 @@ class RefRegistry(object):
         log.info('Registering ref %s for capsule of type %s', ref_repr(ref), ref_repr(capsule.type_ref))
         existing_capsule = self._registry.get(ref)
         if existing_capsule:
+            log.debug('  (already exists)')
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
-        log.debug('  (already exists)')
         self._registry[ref] = capsule
         pprint(self._type_resolver.decode_capsule(capsule).value, indent=1, logger=log.debug)
         return ref
