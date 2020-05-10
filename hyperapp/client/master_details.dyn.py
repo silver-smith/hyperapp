@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .composite import Composite
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, VisualItem, Layout
 from .list_object import ListObject
 from .tree_object import TreeObject
 
@@ -83,15 +83,23 @@ class MasterDetailsLayout(Layout):
         assert 0  # todo
 
     async def create_view(self):
-        master_layout = await self._view_producer_registry.produce_default_layout(
-            self._piece, self._object, self._command_hub, self._piece_opener)
+        master_layout = await self._create_master_layout()
         master_view = await master_layout.create_view()
         return MasterDetailsView(
             self._object_registry, self._view_producer_registry,
             self._command_hub, self._piece_opener, master_view, self._details_command_id)
 
     async def visual_item(self):
-        return RootVisualItem('MasterDetails')
+        master_layout = await self._create_master_layout()
+        master_item = await master_layout.visual_item()
+        return RootVisualItem('MasterDetails', children=[
+            master_item.to_item(0, 'master'),
+            VisualItem(1, 'command', str(self._details_command_id)),
+            ])
+
+    async def _create_master_layout(self):
+        return (await self._view_producer_registry.produce_default_layout(
+            self._piece, self._object, self._command_hub, self._piece_opener))
 
 
 class ThisModule(ClientModule):
