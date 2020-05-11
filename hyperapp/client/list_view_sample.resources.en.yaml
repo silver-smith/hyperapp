@@ -6,15 +6,13 @@ module:client.list_view_sample:ThisModule:
       shortcuts:
       - Alt+Ctrl+L
 
-type:list_view_sample.list_view_sample_object:
+module:client.list_view_sample:SampleObject:
   columns:
     idx:
       text: Index
       description: Index, key field
     column_1:
       text: Column 1
-
-module:client.list_view_sample:SampleObject:
   commands:
     open:
       text: Open

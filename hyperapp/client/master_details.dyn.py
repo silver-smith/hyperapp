@@ -85,7 +85,7 @@ class MasterDetailsLayout(Layout):
         self._object = object
 
     def get_view_ref(self):
-        master_layout = await self._create_master_layout()
+        # master_layout = await self._create_master_layout()
         master_layout_ref = master_layout.get_view_ref()
         layout_rec = htypes.master_details.master_details_layout(
             master_layout_ref=master_layout_ref,

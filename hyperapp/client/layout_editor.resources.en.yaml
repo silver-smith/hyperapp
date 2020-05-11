@@ -1,3 +1,10 @@
+module:client.layout_editor:LayoutEditor:
+  columns:
+    name:
+      text: Name
+    text:
+      text: Text
+
 module:client.layout_editor:ThisModule:
   commands:
     open_view_layout:

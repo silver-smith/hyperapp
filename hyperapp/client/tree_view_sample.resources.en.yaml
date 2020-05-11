@@ -6,15 +6,13 @@ module:client.tree_view_sample:ThisModule:
       shortcuts:
       - Alt+Ctrl+T
 
-type:tree_view_sample.tree_view_sample_object:
+module:client.tree_view_sample:SampleObject:
   columns:
     name:
       text: Name
       description: Some name
     column_1:
       text: Column 1
-
-module:client.tree_view_sample:SampleObject:
   commands:
     open:
       text: Open

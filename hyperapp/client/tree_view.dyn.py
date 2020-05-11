@@ -354,9 +354,7 @@ class TreeViewLayout(Layout):
         assert 0  # todo
 
     async def create_view(self):
-        t = deduce_value_type(self._piece)
-        type_ref = self._type_resolver.reverse_resolve(t)
-        columns = list(map_columns_to_view(self._resource_resolver, type_ref, self._object.get_columns()))
+        columns = list(map_columns_to_view(self._resource_resolver, self._object))
         tree_view = TreeView(columns, self._object)
         self._current_item_observer = observer = self._CurrentItemObserver(self)
         tree_view.add_observer(observer)
