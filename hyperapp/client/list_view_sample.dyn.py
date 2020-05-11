@@ -25,6 +25,10 @@ class SampleObject(ListObject):
     def get_title(self):
         return 'List test'
 
+    @property
+    def data(self):
+        return htypes.list_view_sample.list_view_sample_object()
+
     def get_columns(self):
         return [
             Column('idx', type=tInt, is_key=True),

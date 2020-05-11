@@ -10,12 +10,13 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .layout import RootVisualItem, Layout
 from .view import View
-from .view_registry import NotApplicable
 
 log = logging.getLogger(__name__)
 
 
 class LineObject(Object):
+
+    category_list = ['line']
 
     @classmethod
     def from_state(cls, state):
@@ -107,9 +108,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
-        services.view_producer_registry.register_view_producer(self._produce_view)
+        services.object_layout_registry.register(LineObject.category_list, 'line', self._produce_view)
 
-    async def _produce_view(self, piece, object, command_hub, piece_opener):
-        if not isinstance(object, LineObject):
-            raise NotApplicable(object)
+    async def _produce_view(self, object, command_hub, piece_opener):
         return LineEditLayout(object, [], command_hub, piece_opener, LineEditView.Mode.VIEW)

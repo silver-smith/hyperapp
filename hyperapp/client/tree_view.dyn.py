@@ -16,7 +16,6 @@ from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, TreeObserver, TreeObject
 from .layout import RootVisualItem, Layout
 from .view import View
-from .view_registry import NotApplicable
 from .items_view import map_columns_to_view
 
 log = logging.getLogger(__name__)
@@ -339,14 +338,13 @@ class TreeViewLayout(Layout):
         def current_changed(self, current_item_key):
             self._layout._update_element_commands(current_item_key)
 
-    def __init__(self, type_resolver, resource_resolver, params_editor, piece, object, path, command_hub, piece_opener):
+    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, command_hub, piece_opener):
         super().__init__(path)
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
         self._command_hub = command_hub
         self._piece_opener = piece_opener
-        self._piece = piece
         self._object = object
         self._current_item_observer = None
 
@@ -370,7 +368,7 @@ class TreeViewLayout(Layout):
         for command in self._object.get_command_list():
             yield (command
                    .with_(wrapper=self._piece_opener)
-                   .with_(piece=self._piece, params_editor=self._params_editor)
+                   .with_(piece=self._object.data, params_editor=self._params_editor)
                    )
 
     def _update_element_commands(self, current_item_key):
@@ -381,7 +379,7 @@ class TreeViewLayout(Layout):
             yield (command
                    .partial(current_item_key)
                    .with_(wrapper=self._piece_opener)
-                   .with_(piece=self._piece, params_editor=self._params_editor)
+                   .with_(piece=self._object.data, params_editor=self._params_editor)
                    )
 
 
@@ -393,13 +391,11 @@ class ThisModule(ClientModule):
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
         services.tree_view_factory = self._tree_view_factory
-        services.view_producer_registry.register_view_producer(self._produce_view)
+        services.object_layout_registry.register(TreeObject.category_list, 'tree', self._produce_view)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
 
-    async def _produce_view(self, piece, object, command_hub, piece_opener):
-        if not isinstance(object, TreeObject):
-            raise NotApplicable(object)
+    async def _produce_view(self, object, command_hub, piece_opener):
         return TreeViewLayout(self._type_resolver, self._resource_resolver, self._params_editor,
-                              piece, object, [], command_hub, piece_opener)
+                              object, [], command_hub, piece_opener)

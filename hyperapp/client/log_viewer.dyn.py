@@ -101,6 +101,13 @@ class SessionLogs(TreeObject):
     def get_title(self):
         return "log: {}".format(self._session.session_id)
 
+    @property
+    def category_list(self):
+        return [
+            *super().category_list,
+            'session-logs',
+            ]
+
     def get_columns(self):
         return [
             Column('idx', type=tInt, is_key=True),

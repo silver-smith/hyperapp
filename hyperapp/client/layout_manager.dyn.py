@@ -172,8 +172,7 @@ class RootLayout(Layout):
 
 class LayoutManager:
 
-    def __init__(self, view_producer_registry, view_registry):
-        self._view_producer_registry = view_producer_registry
+    def __init__(self, view_registry):
         self._view_registry = view_registry
         self._root_layout = None
         self._window_list = None
@@ -187,30 +186,6 @@ class LayoutManager:
     def root_layout(self):
         return self._root_layout
 
-    async def produce_view(self, piece, object, observer=None):
-        return (await self._view_producer_registry.produce_view(piece, object, observer))
-
-
-class ViewProducer(LayoutViewProducer):
-
-    def __init__(self, view_producer_registry):
-        self._view_producer_registry = view_producer_registry
-
-    async def produce_view(self, piece, object, observer=None):
-        return (await self._view_producer_registry.produce_view(piece, object, observer))
-
-    async def produce_default_view(self, piece, object, observer=None):
-        return (await self._view_producer_registry.produce_view(piece, object, observer))
-
-
-class ViewOpener:
-
-    def __init__(self, layout_manager):
-        self._layout_manager = layout_manager
-
-    async def open_rec(self, rec):
-        await self._layout_manager.open(rec)
-
 
 class ThisModule(ClientModule):
 
@@ -218,10 +193,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.layout_watcher = LayoutWatcher()
         services.layout_manager = layout_manager = LayoutManager(
-            services.view_producer_registry,
             services.view_registry,
             )
         services.view_registry.register_type(
             htypes.root_layout.root_layout, RootLayout.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
-        services.view_producer = ViewProducer(layout_manager)
-        services.view_opener = ViewOpener(layout_manager)

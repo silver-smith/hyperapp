@@ -62,6 +62,8 @@ class ListObserver(ObjectObserver):
 
 class ListObject(Object, metaclass=abc.ABCMeta):
 
+    category_list = ['list']
+
     # return Column list
     @abc.abstractmethod
     def get_columns(self):

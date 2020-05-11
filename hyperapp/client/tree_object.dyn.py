@@ -42,6 +42,8 @@ class RemoveItemDiff(Diff):
 
 class TreeObject(Object, metaclass=abc.ABCMeta):
 
+    category_list = ['tree']
+
     # return Column list
     @abc.abstractmethod
     def get_columns(self):

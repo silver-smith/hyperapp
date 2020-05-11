@@ -4,5 +4,4 @@ import:
     - record_view
   code:
     - client.layout
-    - client.view_registry
     - client.record_object

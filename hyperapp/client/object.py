@@ -28,6 +28,15 @@ class Object(Commander):
     def get_title(self):
         raise NotImplementedError(self.__class__)
 
+    # todo: use abstractproperty
+    @property
+    def data(self):
+        raise NotImplementedError()
+
+    @property
+    def category_list(self):
+        return []
+
     @classmethod
     def resource_key(cls, path=()):
         class_name = cls.__name__

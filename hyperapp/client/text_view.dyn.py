@@ -10,14 +10,13 @@ from . import htypes
 from .layout import Layout
 from .view import View
 from .text_object import TextObject
-from .view_registry import NotApplicable
 
 log = logging.getLogger(__name__)
 
 
 class TextViewLayout(Layout):
 
-    def __init__(self, piece, object, path, command_hub, piece_opener):
+    def __init__(self, object, path, command_hub, piece_opener):
         super().__init__(path)
         self._object = object
 
@@ -75,10 +74,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self._view_opener = services.view_opener
-        services.view_producer_registry.register_view_producer(self._produce_layout)
+        services.object_layout_registry.register(TextObject.category_list, 'text', self._produce_layout)
 
-    async def _produce_layout(self, piece, object, command_hub, piece_opener):
-        if not isinstance(object, TextObject):
-            raise NotApplicable(object)
-        return TextViewLayout(piece, object, [], command_hub, piece_opener)
+    async def _produce_layout(self, object, command_hub, piece_opener):
+        return TextViewLayout(object, [], command_hub, piece_opener)

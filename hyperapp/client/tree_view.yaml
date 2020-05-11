@@ -6,5 +6,4 @@ import:
     - client.tree_object
     - client.layout
     - client.view
-    - client.view_registry
     - client.items_view

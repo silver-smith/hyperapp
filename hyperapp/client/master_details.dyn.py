@@ -19,11 +19,11 @@ _log = logging.getLogger(__name__)
 
 class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
-    def __init__(self, object_registry, view_producer_registry, command_hub, piece_opener, master_view, details_command_id, sizes=None):
+    def __init__(self, object_registry, object_layout_registry, command_hub, piece_opener, master_view, details_command_id, sizes=None):
         QtWidgets.QSplitter.__init__(self, QtCore.Qt.Vertical)
         Composite.__init__(self, children=[master_view])
         self._object_registry = object_registry
-        self._view_producer_registry = view_producer_registry
+        self._object_layout_registry = object_layout_registry
         self._command_hub = command_hub
         self._piece_opener = piece_opener
         self._master_view = master_view
@@ -60,7 +60,7 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
         if not piece:
             return
         object = await self._object_registry.resolve_async(piece)
-        layout = await self._view_producer_registry.produce_layout(piece, object, self._command_hub, self._piece_opener)
+        layout = await self._object_layout_registry.produce_layout(piece, object, self._command_hub, self._piece_opener)
         view = await layout.create_view()
         self.insertWidget(1, view)
         if self._want_sizes:
@@ -70,18 +70,16 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
 class MasterDetailsLayout(Layout):
 
-    def __init__(self, ref_registry, object_registry, view_producer_registry, object_layout_overrides,
-                 command_id, piece, object, path, command_hub, piece_opener):
+    def __init__(self, ref_registry, object_registry, object_layout_registry,
+                 command_id, object, path, command_hub, piece_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._object_registry = object_registry
-        self._view_producer_registry = view_producer_registry
-        self._object_layout_overrides = object_layout_overrides
+        self._object_layout_registry = object_layout_registry
         self._details_command_id = command_id
         self._command_id = command_id
         self._command_hub = command_hub
         self._piece_opener = piece_opener
-        self._piece = piece
         self._object = object
 
     def get_view_ref(self):
@@ -97,7 +95,7 @@ class MasterDetailsLayout(Layout):
         master_layout = await self._create_master_layout()
         master_view = await master_layout.create_view()
         return MasterDetailsView(
-            self._object_registry, self._view_producer_registry,
+            self._object_registry, self._object_layout_registry,
             self._command_hub, self._piece_opener, master_view, self._details_command_id)
 
     async def visual_item(self):
@@ -109,13 +107,13 @@ class MasterDetailsLayout(Layout):
             ])
 
     async def _create_master_layout(self):
-        return (await self._view_producer_registry.produce_default_layout(
+        return (await self._object_layout_registry.produce_default_layout(
             self._piece, self._object, self._command_hub, self._piece_opener))
 
     @command('replace')
     async def _replace_view(self, path, view: ViewFieldRef):
         resource_key = self._object.hashable_resource_key
-        self._object_layout_overrides[resource_key] = self.get_view_ref()
+        self._object_layout_overrides[resource_key] = self.get_view_ref()  # todo
         piece_ref = self._ref_registry.register_object(self._piece)
         return htypes.layout_editor.object_layout_editor(piece_ref)
 
@@ -126,17 +124,11 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         self._object_registry = services.object_registry
-        self._view_producer_registry = services.view_producer_registry
-        self._object_layout_overrides = services.object_layout_overrides
-        services.object_layout_registry.register_type(
-            htypes.master_details.master_details_layout, self._produce_master_detail_layout)
-        services.object_layout_list.append(
-            services.ref_registry.register_object(
-                htypes.master_details.master_details_layout(master_layout_ref=None, command_id='open')))
+        self._object_layout_registry = services.object_layout_registry
+        services.object_layout_registry.register(
+            [*ListObject.category_list, *TreeObject.category_list], 'master_details', self._produce_master_detail_layout)
 
-    async def _produce_master_detail_layout(self, state, piece, object, command_hub, piece_opener):
-        if not isinstance(object, (ListObject, TreeObject)):
-            raise NotApplicable(object)
+    async def _produce_master_detail_layout(self, object, command_hub, piece_opener):
         return MasterDetailsLayout(
-            self._ref_registry, self._object_registry, self._view_producer_registry, self._object_layout_overrides,
-            state.command_id, piece, object, [], command_hub, piece_opener)
+            self._ref_registry, self._object_registry, self._object_layout_registry,
+            state.command_id, object, [], command_hub, piece_opener)

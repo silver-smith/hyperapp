@@ -1,5 +1,7 @@
 import logging
+from collections import defaultdict, namedtuple
 
+from hyperapp.client.async_registry import run_awaitable_factory
 from hyperapp.client.module import ClientModule
 
 from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
@@ -7,48 +9,40 @@ from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 _log = logging.getLogger(__name__)
 
 
-class NotApplicable(Exception):
+class ObjectLayoutRegistry:
 
-    def __init__(self, object):
-        super().__init__("This view producer is not applicable for object {}".format(object))
+    _Rec = namedtuple('_Rec', 'name factory args kw')
 
+    def __init__(self):
+        self._category_to_rec_list = defaultdict(list)
 
-class ViewProducerRegistry:
+    def register(self, category_list, name, factory, *args, **kw):
+        rec = self._Rec(name, factory, args, kw)
+        for category in category_list:
+            self._category_to_rec_list[category].append(rec)
 
-    def __init__(self, object_layout_overrides, object_layout_resolver):
-        self._object_layout_overrides = object_layout_overrides
-        self._object_layout_resolver = object_layout_resolver
-        self._producer_list = []
+    def category_name_list(self, category):
+        return [rec.name for rec in self._category_to_rec_list[category]]
 
-    def register_view_producer(self, producer):
-        self._producer_list.append(producer)
-
-    async def produce_layout(self, piece, object, command_hub, piece_opener):
-        try:
-            layout_ref = self._object_layout_overrides[object.hashable_resource_key]
-        except KeyError:
-            return (await self.produce_default_layout(piece, object, command_hub, piece_opener))
-        else:
-            return (await self._object_layout_resolver.resolve(layout_ref, piece, object, command_hub, piece_opener))
-
-    async def produce_default_layout(self, piece, object, command_hub, piece_opener):
-        for producer in self._producer_list:
+    async def produce_layout(self, object, command_hub, piece_opener):
+        for category in reversed(object.category_list):
             try:
-                return (await producer(piece, object, command_hub, piece_opener))
-            except NotApplicable:
-                pass
-        raise RuntimeError("No view is known to support object {}".format(object))
-
+                rec = self._category_to_rec_list[category][0]
+            except IndexError:
+                continue
+            _log.info('Producing object layout for object %s using %s(%s, %s)',
+                      object, rec.factory, rec.args, rec.kw)
+            return (await run_awaitable_factory(rec.factory, object, command_hub, piece_opener, *rec.args, **rec.kw))
+        raise RuntimeError(f"No producers are registered for categories {object.category_list}")
+            
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_layout_overrides = {}  # resource key -> layout ref
+        # todo: rename view to layout
         services.available_view_registry = {}  # id -> view ref, views available to add to layout
         services.view_registry = view_registry = AsyncCapsuleRegistry('view', services.type_resolver)
         services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)
-        services.object_layout_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
-        services.object_layout_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)
-        services.object_layout_list = []
-        services.view_producer_registry = ViewProducerRegistry(services.object_layout_overrides, services.object_layout_resolver)
+        services.object_layout_registry = ObjectLayoutRegistry()

@@ -6,4 +6,3 @@ import:
   code:
     - client.layout
     - client.view
-    - client.view_registry

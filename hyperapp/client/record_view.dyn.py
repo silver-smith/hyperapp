@@ -6,23 +6,22 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .layout import RootVisualItem, Layout
-from .view_registry import NotApplicable
 from .record_object import RecordObject
 
 
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def make(cls, view_producer_registry, object, command_hub, piece_opener, fields=None):
+    async def make(cls, object_layout_registry, object, command_hub, piece_opener, fields=None):
         view = cls(object)
-        await view._async_init(view_producer_registry, command_hub, piece_opener, fields)
+        await view._async_init(object_layout_registry, command_hub, piece_opener, fields)
         return view
 
     def __init__(self, object):
         super().__init__()
         self._object = object
 
-    async def _async_init(self, view_producer_registry, command_hub, piece_opener, fields):
+    async def _async_init(self, object_layout_registry, command_hub, piece_opener, fields):
         # if fields:
         #     field_to_layout_ref = {field.field_id: field.layout_ref for field in fields}
         # else:
@@ -34,7 +33,7 @@ class RecordView(QtWidgets.QWidget):
             # layout_ref = field_to_layout_ref.get(field_id)
             layout = None  # todo
             field_view = await self._construct_field_view(
-                view_producer_registry, qt_layout, field_id, field, command_hub, piece_opener, layout)
+                object_layout_registry, qt_layout, field_id, field, command_hub, piece_opener, layout)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_views.append(field_view)
@@ -43,8 +42,8 @@ class RecordView(QtWidgets.QWidget):
         self.setLayout(qt_layout)
 
     async def _construct_field_view(
-            self, view_producer_registry, qt_layout, field_id, field, command_hub, piece_opener, layout):
-        layout = await view_producer_registry.produce_layout(field.piece, field.object, command_hub, piece_opener)
+            self, object_layout_registry, qt_layout, field_id, field, command_hub, piece_opener, layout):
+        layout = await object_layout_registry.produce_layout(field.object, command_hub, piece_opener)
         view = await layout.create_view()
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
@@ -70,11 +69,10 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(Layout):
 
-    def __init__(self, view_producer_registry, params_editor, piece, object, path, command_hub, piece_opener, fields=None):
+    def __init__(self, object_layout_registry, params_editor, object, path, command_hub, piece_opener, fields=None):
         super().__init__(path)
-        self._view_producer_registry = view_producer_registry
+        self._object_layout_registry = object_layout_registry
         self._params_editor = params_editor
-        self._piece = piece
         self._object = object
         self._command_hub = command_hub
         self._piece_opener = piece_opener
@@ -84,7 +82,7 @@ class RecordViewLayout(Layout):
         assert 0  # todo
 
     async def create_view(self):
-        return (await RecordView.make(self._view_producer_registry, self._object, self._command_hub, self._piece_opener, self._fields))
+        return (await RecordView.make(self._object_layout_registry, self._object, self._command_hub, self._piece_opener, self._fields))
 
     async def visual_item(self):
         return RootVisualItem('RecordView')  # todo: add fields children
@@ -96,7 +94,7 @@ class RecordViewLayout(Layout):
         for command in self._object.get_command_list():
             yield (command
                    .with_(wrapper=self._piece_opener)
-                   .with_(piece=self._piece, params_editor=self._params_editor)
+                   .with_(piece=self._object.data, params_editor=self._params_editor)
                    )
 
 
@@ -104,11 +102,9 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self._view_producer_registry = services.view_producer_registry
+        self._object_layout_registry = services.object_layout_registry
         self._params_editor = services.params_editor
-        services.view_producer_registry.register_view_producer(self._produce_view)
+        services.object_layout_registry.register(RecordObject.category_list, 'record', self._produce_view)
 
-    async def _produce_view(self, piece, object, command_hub, piece_opener):
-        if not isinstance(object, RecordObject):
-            raise NotApplicable(object)
-        return RecordViewLayout(self._view_producer_registry, self._params_editor, piece, object, [], command_hub, piece_opener)
+    async def _produce_view(self, object, command_hub, piece_opener):
+        return RecordViewLayout(self._object_layout_registry, self._params_editor, object, [], command_hub, piece_opener)

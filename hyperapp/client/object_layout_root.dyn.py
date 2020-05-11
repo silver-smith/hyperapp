@@ -7,9 +7,9 @@ from .view_chooser import ViewFieldRef
 
 class ObjectLayoutRoot(Layout):
 
-    def __init__(self, object_layout_overrides, layout, piece_ref, object):
+    def __init__(self, object_layout_registry, layout, piece_ref, object):
         super().__init__(path=[])
-        self._object_layout_overrides = object_layout_overrides
+        self._object_layout_registry = object_layout_registry
         self._layout = layout
         self._piece_ref = piece_ref
         self._object = object
@@ -33,5 +33,5 @@ class ObjectLayoutRoot(Layout):
     @command('replace')
     async def _replace_view(self, path, view: ViewFieldRef):
         resource_key = self._object.hashable_resource_key
-        self._object_layout_overrides[resource_key] = view
+        self._object_layout_registry.register(self._object.category_list[1:], todo)  # todo
         return htypes.layout_editor.object_layout_editor(self._piece_ref)

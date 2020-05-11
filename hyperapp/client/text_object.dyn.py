@@ -9,6 +9,8 @@ _log = logging.getLogger(__name__)
 
 class TextObject(Object):
 
+    category_list = ['text']
+
     @classmethod
     def from_state(cls, state):
         return cls(state.text)
