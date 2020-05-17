@@ -26,6 +26,7 @@ class ViewChooser(SimpleListObject, Chooser):
         SimpleListObject.__init__(self)
         Chooser.__init__(self)
         self._available_object_layouts = available_object_layouts
+        self._category = 'list'  # todo: do not use params editor to choose layout
 
     def get_title(self):
         return 'Choose view'
@@ -40,14 +41,14 @@ class ViewChooser(SimpleListObject, Chooser):
             ]
 
     async def get_all_items(self):
-        return [Item(name) for name in self._available_object_layouts.category_name_list(category)]  # todo: category
+        return [Item(name) for name in self._available_object_layouts.category_name_list(self._category)]
 
     def get_value(self):
         return None
 
     @command('choose', kind='element')
     async def _choose(self, item_key):
-        assert len(self._available_object_layouts) == 1  # todo: proper get_all_items method
+        assert 0, repr(item_key)
         [ref] = self._available_object_layouts
         return (await self.chooser_call_callback(ref))
 

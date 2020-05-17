@@ -2,6 +2,8 @@ import:
   types:
     core:
       - handle
+    list_view:
+      - list_view
   code:
     - client.list_object
     - client.layout

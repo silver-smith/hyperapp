@@ -106,6 +106,7 @@ class ThisModule(ClientModule):
         self._params_editor = services.params_editor
         services.default_object_layouts.register(RecordObject.category_list, 'record', self._produce_view)
         services.available_object_layouts.register(RecordObject.category_list, 'record', self._produce_view)
+        services.object_layout_registry.register_type(htypes.tree_view.tree_view, self._produce_layout)
 
-    async def _produce_view(self, object, command_hub, piece_opener):
+    async def _produce_layout(self, object, command_hub, piece_opener):
         return RecordViewLayout(self._object_layout_producer, self._params_editor, object, [], command_hub, piece_opener)

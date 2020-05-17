@@ -45,6 +45,7 @@ type_module_list = [
     'master_details',
     'fs',
     'blog',
+    'list_view',
     'tree_view',
     'tree_to_list_adapter',
     'data_viewer',
