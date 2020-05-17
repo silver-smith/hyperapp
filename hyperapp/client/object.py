@@ -31,7 +31,7 @@ class Object(Commander):
     # todo: use abstractproperty
     @property
     def data(self):
-        raise NotImplementedError()
+        raise NotImplementedError(self.__class__)
 
     @property
     def category_list(self):

@@ -9,7 +9,11 @@ from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 _log = logging.getLogger(__name__)
 
 
-class ObjectLayoutRegistry:
+class NoSuitableProducer(Exception):
+    pass
+
+
+class AvailableObjectLayouts:
 
     _Rec = namedtuple('_Rec', 'name factory args kw')
 
@@ -33,8 +37,17 @@ class ObjectLayoutRegistry:
             _log.info('Producing object layout for object %s using %s(%s, %s)',
                       object, rec.factory, rec.args, rec.kw)
             return (await run_awaitable_factory(rec.factory, object, command_hub, piece_opener, *rec.args, **rec.kw))
-        raise RuntimeError(f"No producers are registered for categories {object.category_list}")
-            
+        raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
+
+
+class ObjectLayoutProducer:
+
+    def __init__(self, default_object_layouts):
+        self._default_object_layouts = default_object_layouts
+
+    async def produce_layout(self, object, command_hub, piece_opener):
+        return (await self._default_object_layouts.produce_layout(object, command_hub, piece_opener))
+
 
 class ThisModule(ClientModule):
 
@@ -45,4 +58,6 @@ class ThisModule(ClientModule):
         services.available_view_registry = {}  # id -> view ref, views available to add to layout
         services.view_registry = view_registry = AsyncCapsuleRegistry('view', services.type_resolver)
         services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)
-        services.object_layout_registry = ObjectLayoutRegistry()
+        services.default_object_layouts = AvailableObjectLayouts()
+        services.available_object_layouts = AvailableObjectLayouts()
+        services.object_layout_producer = ObjectLayoutProducer(services.default_object_layouts)

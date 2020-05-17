@@ -46,22 +46,22 @@ class NavigatorLayout(Layout):
     async def from_data(cls,
                         state, path, command_hub, view_opener,
                         ref_registry, async_ref_resolver, type_resolver,
-                        object_registry, object_layout_registry, module_command_registry, params_editor):
+                        object_registry, object_layout_producer, module_command_registry, params_editor):
         self = cls(ref_registry, async_ref_resolver, type_resolver,
-                   object_registry, object_layout_registry, module_command_registry, params_editor,
+                   object_registry, object_layout_producer, module_command_registry, params_editor,
                    path, command_hub, view_opener)
         await self._async_init(state.current_piece_ref)
         return self
 
     def __init__(self, ref_registry, async_ref_resolver, type_resolver,
-                 object_registry, object_layout_registry, module_command_registry, params_editor,
+                 object_registry, object_layout_producer, module_command_registry, params_editor,
                  path, command_hub, view_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._async_ref_resolver = async_ref_resolver
         self._type_resolver = type_resolver
         self._object_registry = object_registry
-        self._object_layout_registry = object_layout_registry
+        self._object_layout_producer = object_layout_producer
         self._module_command_registry = module_command_registry
         self._params_editor = params_editor
         self._command_hub = command_hub
@@ -83,7 +83,7 @@ class NavigatorLayout(Layout):
     async def create_view(self):
         self._current_piece = piece = self._initial_piece
         self._current_object = object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_registry.produce_layout(object, self._command_hub, self._open_piece)
+        layout = await self._object_layout_producer.produce_layout(object, self._command_hub, self._open_piece)
         self._current_layout = layout
         return (await layout.create_view())
 
@@ -113,7 +113,7 @@ class NavigatorLayout(Layout):
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_registry.produce_layout(object, self._command_hub, self._open_piece)
+        layout = await self._object_layout_producer.produce_layout(object, self._command_hub, self._open_piece)
         view = await layout.create_view()
         self._view_opener.open(view)
         self._current_piece = piece
@@ -157,7 +157,7 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.type_resolver,
             services.object_registry,
-            services.object_layout_registry,
+            services.object_layout_producer,
             services.module_command_registry,
             services.params_editor,
             )

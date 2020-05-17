@@ -264,7 +264,8 @@ class ThisModule(ClientModule):
         self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
-        services.object_layout_registry.register(ListObject.category_list, 'list', self._produce_layout)
+        services.default_object_layouts.register(ListObject.category_list, 'list', self._produce_layout)
+        services.available_object_layouts.register(ListObject.category_list, 'list', self._produce_layout)
 
     async def _produce_layout(self, object, command_hub, piece_opener):
         return ListViewLayout(self._type_resolver, self._resource_resolver, self._params_editor,

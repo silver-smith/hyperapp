@@ -74,7 +74,8 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_layout_registry.register(TextObject.category_list, 'text', self._produce_layout)
+        services.default_object_layouts.register(TextObject.category_list, 'text', self._produce_layout)
+        services.available_object_layouts.register(TextObject.category_list, 'text', self._produce_layout)
 
     async def _produce_layout(self, object, command_hub, piece_opener):
         return TextViewLayout(object, [], command_hub, piece_opener)

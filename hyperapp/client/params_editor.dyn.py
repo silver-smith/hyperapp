@@ -21,7 +21,7 @@ class _ParamChooserCallback(ChooserCallback):
 class ParamsEditor(RecordObject):
 
     @classmethod
-    async def from_data(cls, state, async_ref_resolver, object_registry):
+    async def from_data(cls, state, ref_registry, async_ref_resolver, object_registry):
         target_piece = await async_ref_resolver.resolve_ref_to_object(state.target_piece_ref)
         target_object = await object_registry.resolve_async(target_piece)
         bound_arguments = {
@@ -32,7 +32,7 @@ class ParamsEditor(RecordObject):
             (name, await cls._make_field(piece_ref, async_ref_resolver, object_registry))
             for name, piece_ref in state.fields
             ])
-        return cls(object_registry, target_piece, target_object, state.target_command_id, bound_arguments, fields)
+        return cls(ref_registry, object_registry, target_piece, target_object, state.target_command_id, bound_arguments, fields)
 
     @staticmethod
     async def _make_field(piece_ref, async_ref_resolver, object_registry):
@@ -40,8 +40,9 @@ class ParamsEditor(RecordObject):
         object = await object_registry.resolve_async(piece)
         return Field(piece, object)
 
-    def __init__(self, object_registry, target_piece, target_object, target_command_id, bound_arguments, field_odict):
+    def __init__(self, ref_registry, object_registry, target_piece, target_object, target_command_id, bound_arguments, field_odict):
         super().__init__()
+        self._ref_registry = ref_registry
         self._object_registry = object_registry
         self._target_piece = target_piece
         self._target_object = target_object
@@ -59,6 +60,23 @@ class ParamsEditor(RecordObject):
 
     def get_title(self):
         return f"Parameters for {self._target_command_id}"
+
+    @property
+    def data(self):
+        return htypes.params_editor.params_editor(
+            target_piece_ref=self._ref_registry.register_object(self._target_piece),
+            target_command_id=self._target_command_id,
+            bound_arguments=[
+                htypes.params_editor.bound_argument(
+                    name, self._ref_registry.register_object(value))
+                for name, value in self._bound_arguments.items()
+                ],
+            fields=[
+                htypes.params_editor.field(
+                    name, self._ref_registry.register_object(field.object.data))
+                for name, field in self._field_odict.items()
+                ],
+            )
 
     def get_fields(self):
         return self._field_odict
@@ -98,7 +116,8 @@ class ThisModule(ClientModule):
             }
         services.params_editor = self._open_params_editor
         services.object_registry.register_type(
-            htypes.params_editor.params_editor, ParamsEditor.from_data, services.async_ref_resolver, services.object_registry)
+            htypes.params_editor.params_editor, ParamsEditor.from_data,
+            services.ref_registry, services.async_ref_resolver, services.object_registry)
 
     async def _open_params_editor(self, piece, command, bound_arguments_sig, args, kw):
         bound_arguments = [

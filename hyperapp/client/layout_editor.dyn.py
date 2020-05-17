@@ -25,25 +25,26 @@ class LayoutEditor(TreeObject):
 
     @classmethod
     async def from_view_state(cls, state, layout_manager, layout_watcher):
-        self = cls(layout_watcher)
+        self = cls(layout_watcher, piece_ref=None)
         await self._async_init(layout_manager.root_layout)
         return self
 
     @classmethod
-    async def from_object_state(cls, state, async_ref_resolver, object_registry, object_layout_registry):
+    async def from_object_state(cls, state, async_ref_resolver, object_registry, object_layout_producer):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         command_hub = CommandHub()
-        layout = await object_layout_registry.produce_layout(object, command_hub, _open_piece_do_nothing)
+        layout = await object_layout_producer.produce_layout(object, command_hub, _open_piece_do_nothing)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        layout_root = ObjectLayoutRoot(object_layout_registry, layout, state.piece_ref, object)
+        layout_root = ObjectLayoutRoot(object_layout_producer, layout, state.piece_ref, object)
         command_hub.init_get_commands(layout_root.get_current_commands)
-        self = cls(layout_watcher)
+        self = cls(layout_watcher, state.piece_ref)
         await self._async_init(layout_root)
         return self
 
-    def __init__(self, layout_watcher):
+    def __init__(self, layout_watcher, piece_ref):
         super().__init__()
+        self._piece_ref = piece_ref  # None when opened for view (non-object) layout
         self._path2item_list = {}
         self._item_commands = {}  # id -> _CommandRec
         layout_watcher.subscribe(self)
@@ -55,6 +56,13 @@ class LayoutEditor(TreeObject):
 
     def get_title(self):
         return "Layout"
+
+    @property
+    def data(self):
+        if self._piece_ref:
+            return htypes.layout_editor.object_layout_editor(self._piece_ref)
+        else:
+            return htypes.layout_editor.view_layout_editor()
 
     def get_columns(self):
         return [
@@ -128,7 +136,7 @@ class ThisModule(ClientModule):
             htypes.layout_editor.view_layout_editor, LayoutEditor.from_view_state, services.layout_manager, services.layout_watcher)
         services.object_registry.register_type(
             htypes.layout_editor.object_layout_editor, LayoutEditor.from_object_state,
-            services.async_ref_resolver, services.object_registry, services.object_layout_registry),
+            services.async_ref_resolver, services.object_registry, services.object_layout_producer),
 
     @command('open_view_layout')
     async def open_view_layout(self):

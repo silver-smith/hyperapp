@@ -108,7 +108,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
-        services.object_layout_registry.register(LineObject.category_list, 'line', self._produce_view)
+        services.default_object_layouts.register(LineObject.category_list, 'line', self._produce_view)
+        services.available_object_layouts.register(LineObject.category_list, 'line', self._produce_view)
 
     async def _produce_view(self, object, command_hub, piece_opener):
         return LineEditLayout(object, [], command_hub, piece_opener, LineEditView.Mode.VIEW)
