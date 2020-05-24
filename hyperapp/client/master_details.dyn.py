@@ -12,7 +12,7 @@ from .composite import Composite
 from .layout import RootVisualItem, VisualItem, Layout
 from .list_object import ListObject
 from .tree_object import TreeObject
-from .view_chooser import LayoutRefField
+from .view_chooser import LayoutRefMakerField
 
 _log = logging.getLogger(__name__)
 
@@ -111,7 +111,7 @@ class MasterDetailsLayout(Layout):
             self._piece, self._object, self._command_hub, self._piece_opener))
 
     @command('replace')
-    async def _replace_view(self, path, view: LayoutRefField):
+    async def _replace_view(self, path, view: LayoutRefMakerField):
         resource_key = self._object.hashable_resource_key
         self._object_layout_overrides[resource_key] = self.get_view_ref()  # todo
         piece_ref = self._ref_registry.register_object(self._piece)
@@ -125,10 +125,17 @@ class ThisModule(ClientModule):
         self._ref_registry = services.ref_registry
         self._object_registry = services.object_registry
         self._object_layout_producer = services.object_layout_producer
-        services.available_object_layouts.register(
-            [*ListObject.category_list, *TreeObject.category_list], 'master_details', self._produce_master_detail_layout)
+        category_list = [*ListObject.category_list, *TreeObject.category_list]
+        services.available_object_layouts.register(category_list, 'master_details', self._make_master_detail_layout_rec)
+        services.object_layout_registry.register_type(htypes.master_details.master_details_layout, self._produce_master_detail_layout)
 
-    async def _produce_master_detail_layout(self, object, command_hub, piece_opener):
+    async def _make_master_detail_layout_rec(self, object):
+        return htypes.master_details.master_details_layout(
+            master_layout_ref=None,
+            command_id='open',
+            )
+
+    async def _produce_master_detail_layout(self, state, object, command_hub, piece_opener):
         return MasterDetailsLayout(
             self._ref_registry, self._object_registry, self._object_layout_producer,
             state.command_id, object, [], command_hub, piece_opener)

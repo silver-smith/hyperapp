@@ -391,13 +391,15 @@ class ThisModule(ClientModule):
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
         services.tree_view_factory = self._tree_view_factory
-        tree_layout_ref = services.ref_registry.register_object(htypes.tree_view.tree_layout())
-        services.default_object_layouts.register(TreeObject.category_list, 'tree', tree_layout_ref)
-        services.available_object_layouts.register(TreeObject.category_list, 'tree', tree_layout_ref)
+        services.default_object_layouts.register(TreeObject.category_list, 'tree', self._make_tree_layout_rec)
+        services.available_object_layouts.register(TreeObject.category_list, 'tree', self._make_tree_layout_rec)
         services.object_layout_registry.register_type(htypes.tree_view.tree_layout, self._produce_layout)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
+
+    async def _make_tree_layout_rec(self, object):
+        return htypes.tree_view.tree_layout()
 
     async def _produce_layout(self, state, object, command_hub, piece_opener):
         return TreeViewLayout(self._type_resolver, self._resource_resolver, self._params_editor,

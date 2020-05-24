@@ -2,13 +2,14 @@ from hyperapp.client.command import command
 
 from . import htypes
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, Layout
-from .view_chooser import LayoutRefField
+from .view_chooser import LayoutRefMakerField
 
 
 class ObjectLayoutRoot(Layout):
 
-    def __init__(self, object_layout_association, layout, piece_ref, object):
+    def __init__(self, ref_registry, object_layout_association, layout, piece_ref, object):
         super().__init__(path=[])
+        self._ref_registry = ref_registry
         self._object_layout_association = object_layout_association
         self._layout = layout
         self._piece_ref = piece_ref
@@ -31,8 +32,10 @@ class ObjectLayoutRoot(Layout):
             )
 
     @command('replace')
-    async def _replace_view(self, path, layout_ref: LayoutRefField):
+    async def _replace_view(self, path, layout_ref_maker: LayoutRefMakerField):
         resource_key = self._object.hashable_resource_key
-        assert 0, repr(layout_ref)
+        assert 0, repr(layout_ref_maker)
+        layout_rec = layout_ref_maker(self._object)
+        layout_ref = self._ref_registry.register_object(layout_rec)
         self._object_layout_association[self._object.category_list[-1]] = layout_ref
         return htypes.layout_editor.object_layout_editor(self._piece_ref)
