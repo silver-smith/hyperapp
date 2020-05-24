@@ -12,7 +12,7 @@ from .composite import Composite
 from .layout import RootVisualItem, VisualItem, Layout
 from .list_object import ListObject
 from .tree_object import TreeObject
-from .view_chooser import ViewFieldRef
+from .view_chooser import LayoutRefField
 
 _log = logging.getLogger(__name__)
 
@@ -111,7 +111,7 @@ class MasterDetailsLayout(Layout):
             self._piece, self._object, self._command_hub, self._piece_opener))
 
     @command('replace')
-    async def _replace_view(self, path, view: ViewFieldRef):
+    async def _replace_view(self, path, view: LayoutRefField):
         resource_key = self._object.hashable_resource_key
         self._object_layout_overrides[resource_key] = self.get_view_ref()  # todo
         piece_ref = self._ref_registry.register_object(self._piece)

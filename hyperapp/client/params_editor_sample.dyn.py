@@ -7,7 +7,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .column import Column
 from .simple_list_object import SimpleListObject
-from .view_chooser import ViewFieldRef
+from .view_chooser import LayoutRefField
 
 
 Item = namedtuple('Item', 'id name')
@@ -58,7 +58,7 @@ class SampleList(SimpleListObject):
 
     # todo: remove optionality when predefined params are supported by param editor
     @command('test_view_chooser', kind='element')
-    def _test_view_chooser(self, item_key, view: ViewFieldRef):
+    def _test_view_chooser(self, item_key, view: LayoutRefField):
         text = f"Opened item {item_key}: {ref_repr(view)}"
         return htypes.text.text(text)
 

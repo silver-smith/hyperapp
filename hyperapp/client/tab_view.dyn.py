@@ -10,7 +10,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .view_chooser import ViewFieldRef
+from .view_chooser import LayoutRefField
 from .view import View
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, Layout
 
@@ -141,7 +141,7 @@ class TabLayout(Layout):
             self._widget.replace_tab(tab_idx, view)
 
     @command('add_tab')
-    async def _add_tab(self, tab_idx, view_ref: ViewFieldRef):
+    async def _add_tab(self, tab_idx, view_ref: LayoutRefField):
         await self._create_and_insert_tab(tab_idx, view_ref)
 
     @command('duplicate_tab')
