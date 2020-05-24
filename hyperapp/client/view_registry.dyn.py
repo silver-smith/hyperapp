@@ -37,18 +37,26 @@ class AvailableObjectLayouts:
 
 class ObjectLayoutProducer:
 
-    def __init__(self, object_layout_resolver, default_object_layouts):
-        self._object_layout_resolver = object_layout_resolver
+    def __init__(self, default_object_layouts, object_layout_association, object_layout_resolver):
         self._default_object_layouts = default_object_layouts
+        self._object_layout_association = object_layout_association
+        self._object_layout_resolver = object_layout_resolver
 
     async def produce_layout(self, object, command_hub, piece_opener):
+        layout_ref = None
         for category in reversed(object.category_list):
-            name_list = self._default_object_layouts.category_name_list(category)
-            if name_list:
-                layout_ref = self._default_object_layouts.get_layout_ref(category, name_list[0])
-                break
-        else:
-            raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
+            try:
+                layout_ref = self._object_layout_association[category]
+            except KeyError:
+                pass
+        if not layout_ref:
+            for category in reversed(object.category_list):
+                name_list = self._default_object_layouts.category_name_list(category)
+                if name_list:
+                    layout_ref = self._default_object_layouts.get_layout_ref(category, name_list[0])
+                    break
+            else:
+                raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
         return (await self._object_layout_resolver.resolve(layout_ref, object, command_hub, piece_opener))
 
 
@@ -66,4 +74,5 @@ class ThisModule(ClientModule):
         services.object_layout_association = {}  # category -> layout ref
         services.object_layout_registry = view_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
         services.object_layout_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)
-        services.object_layout_producer = ObjectLayoutProducer(services.object_layout_resolver, services.default_object_layouts)
+        services.object_layout_producer = ObjectLayoutProducer(
+            services.default_object_layouts, services.object_layout_association, services.object_layout_resolver)

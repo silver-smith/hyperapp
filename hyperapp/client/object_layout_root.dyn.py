@@ -33,5 +33,6 @@ class ObjectLayoutRoot(Layout):
     @command('replace')
     async def _replace_view(self, path, layout_ref: LayoutRefField):
         resource_key = self._object.hashable_resource_key
+        assert 0, repr(layout_ref)
         self._object_layout_association[self._object.category_list[-1]] = layout_ref
         return htypes.layout_editor.object_layout_editor(self._piece_ref)
