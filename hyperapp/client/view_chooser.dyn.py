@@ -48,9 +48,8 @@ class ViewChooser(SimpleListObject, Chooser):
 
     @command('choose', kind='element')
     async def _choose(self, item_key):
-        assert 0, repr(item_key)
-        [ref] = self._available_object_layouts
-        return (await self.chooser_call_callback(ref))
+        layout_ref = self._available_object_layouts.get_layout_ref(self._category, name=item_key)
+        return (await self.chooser_call_callback(layout_ref))
 
 
 class ThisModule(ClientModule):

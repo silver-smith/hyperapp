@@ -30,13 +30,13 @@ class LayoutEditor(TreeObject):
         return self
 
     @classmethod
-    async def from_object_state(cls, state, async_ref_resolver, object_registry, object_layout_producer):
+    async def from_object_state(cls, state, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         command_hub = CommandHub()
         layout = await object_layout_producer.produce_layout(object, command_hub, _open_piece_do_nothing)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        layout_root = ObjectLayoutRoot(object_layout_producer, layout, state.piece_ref, object)
+        layout_root = ObjectLayoutRoot(object_layout_association, layout, state.piece_ref, object)
         command_hub.init_get_commands(layout_root.get_current_commands)
         self = cls(layout_watcher, state.piece_ref)
         await self._async_init(layout_root)
@@ -136,7 +136,7 @@ class ThisModule(ClientModule):
             htypes.layout_editor.view_layout_editor, LayoutEditor.from_view_state, services.layout_manager, services.layout_watcher)
         services.object_registry.register_type(
             htypes.layout_editor.object_layout_editor, LayoutEditor.from_object_state,
-            services.async_ref_resolver, services.object_registry, services.object_layout_producer),
+            services.async_ref_resolver, services.object_registry, services.object_layout_association, services.object_layout_producer),
 
     @command('open_view_layout')
     async def open_view_layout(self):
