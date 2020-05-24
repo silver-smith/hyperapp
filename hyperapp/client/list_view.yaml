@@ -3,7 +3,7 @@ import:
     core:
       - handle
     list_view:
-      - list_view
+      - list_layout
   code:
     - client.list_object
     - client.layout

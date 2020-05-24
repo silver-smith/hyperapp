@@ -1,7 +1,7 @@
 import:
   types:
     record_view:
-    - record_view
+    - record_layout
   code:
     - client.layout
     - client.record_object

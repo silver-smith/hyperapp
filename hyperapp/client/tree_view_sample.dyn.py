@@ -25,6 +25,10 @@ class SampleObject(TreeObject):
     def get_title(self):
         return 'Tree test'
 
+    @property
+    def data(self):
+        return htypes.tree_view_sample.tree_view_sample_object()
+
     def get_columns(self):
         return [
             Column('name', is_key=True),

@@ -264,10 +264,10 @@ class ThisModule(ClientModule):
         self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
-        list_view_ref = services.ref_registry.register_object(htypes.list_view.list_view())
-        services.default_object_layouts.register(ListObject.category_list, 'list', list_view_ref)
-        services.available_object_layouts.register(ListObject.category_list, 'list', list_view_ref)
-        services.object_layout_registry.register_type(htypes.list_view.list_view, self._produce_layout)
+        list_layout_ref = services.ref_registry.register_object(htypes.list_view.list_layout())
+        services.default_object_layouts.register(ListObject.category_list, 'list', list_layout_ref)
+        services.available_object_layouts.register(ListObject.category_list, 'list', list_layout_ref)
+        services.object_layout_registry.register_type(htypes.list_view.list_layout, self._produce_layout)
 
     async def _produce_layout(self, state, object, command_hub, piece_opener):
         return ListViewLayout(self._type_resolver, self._resource_resolver, self._params_editor,

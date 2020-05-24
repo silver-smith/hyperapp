@@ -3,7 +3,7 @@ import:
     core:
       - handle
     tree_view:
-      - tree_view
+      - tree_layout
   code:
     - client.tree_object
     - client.layout
