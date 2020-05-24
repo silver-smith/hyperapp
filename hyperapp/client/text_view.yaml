@@ -1,7 +1,7 @@
 import:
   types:
-    core:
-      - obj_handle
+    text:
+      - text_edit_layout
   code:
     - client.layout
     - client.view

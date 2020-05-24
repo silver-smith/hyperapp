@@ -74,8 +74,12 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.default_object_layouts.register(TextObject.category_list, 'text', self._produce_layout)
-        services.available_object_layouts.register(TextObject.category_list, 'text', self._produce_layout)
+        services.default_object_layouts.register(TextObject.category_list, 'text', self._make_text_layout_rec)
+        services.available_object_layouts.register(TextObject.category_list, 'text', self._make_text_layout_rec)
+        services.object_layout_registry.register_type(htypes.text.text_edit_layout, self._produce_text_layout)
 
-    async def _produce_layout(self, object, command_hub, piece_opener):
+    async def _make_text_layout_rec(self, object):
+        return htypes.text.text_edit_layout()
+
+    async def _produce_text_layout(self, state, object, command_hub, piece_opener):
         return TextViewLayout(object, [], command_hub, piece_opener)
