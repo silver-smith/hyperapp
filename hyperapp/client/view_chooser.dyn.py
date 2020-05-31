@@ -12,7 +12,7 @@ from .simple_list_object import SimpleListObject
 Item = namedtuple('Item', 'id')
 
 
-class LayoutRefMakerField:
+class LayoutRecMakerField:
     pass
 
 
@@ -56,6 +56,6 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.field_types[LayoutRefMakerField] = htypes.view_chooser.view_chooser()
+        services.field_types[LayoutRecMakerField] = htypes.view_chooser.view_chooser()
         services.object_registry.register_type(
             htypes.view_chooser.view_chooser, ViewChooser.from_state, services.available_object_layouts)

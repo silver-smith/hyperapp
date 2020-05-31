@@ -2,7 +2,7 @@ from hyperapp.client.command import command
 
 from . import htypes
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, Layout
-from .view_chooser import LayoutRefMakerField
+from .view_chooser import LayoutRecMakerField
 
 
 class ObjectLayoutRoot(Layout):
@@ -32,7 +32,7 @@ class ObjectLayoutRoot(Layout):
             )
 
     @command('replace')
-    async def _replace_view(self, path, layout_rec_maker: LayoutRefMakerField):
+    async def _replace_view(self, path, layout_rec_maker: LayoutRecMakerField):
         resource_key = self._object.hashable_resource_key
         layout_rec = await layout_rec_maker(self._object)
         layout_ref = self._ref_registry.register_object(layout_rec)
