@@ -102,6 +102,10 @@ class SessionLogs(TreeObject):
         return "log: {}".format(self._session.session_id)
 
     @property
+    def data(self):
+        return htypes.log_viewer.log_viewer(self._session.session_id)
+
+    @property
     def category_list(self):
         return [
             *super().category_list,
@@ -149,6 +153,10 @@ class LogRecord(ListObject):
 
     def get_title(self):
         return "{} {}".format(self._session_id, '/'.join(map(str, self._item_path)))
+
+    @property
+    def data(self):
+        return htypes.log_viewer.log_record(self._session_id, self._item_path)
 
     def get_columns(self):
         return [
