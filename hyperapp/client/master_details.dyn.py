@@ -70,13 +70,15 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
 class MasterDetailsLayout(Layout):
 
-    def __init__(self, ref_registry, object_registry, object_layout_producer,
-                 command_id, object, path, command_hub, piece_opener):
+    def __init__(self, ref_registry, object_registry, object_layout_resolver, object_layout_producer,
+                 master_layout_ref, command_id, object, path, command_hub, piece_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._object_registry = object_registry
+        self._object_layout_resolver = object_layout_resolver
         self._object_layout_producer = object_layout_producer
         self._details_command_id = command_id
+        self._master_layout_ref = master_layout_ref
         self._command_id = command_id
         self._command_hub = command_hub
         self._piece_opener = piece_opener
@@ -107,8 +109,8 @@ class MasterDetailsLayout(Layout):
             ])
 
     async def _create_master_layout(self):
-        return (await self._object_layout_producer.produce_default_layout(
-            self._piece, self._object, self._command_hub, self._piece_opener))
+        return (await self._object_layout_resolver.resolve(
+            self._master_layout_ref, self._object, self._command_hub, self._piece_opener))
 
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):
@@ -124,18 +126,26 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         self._object_registry = services.object_registry
+        self._default_object_layouts = services.default_object_layouts
+        self._object_layout_resolver = services.object_layout_resolver
         self._object_layout_producer = services.object_layout_producer
         category_list = [*ListObject.category_list, *TreeObject.category_list]
         services.available_object_layouts.register(category_list, 'master_details', self._make_master_detail_layout_rec)
         services.object_layout_registry.register_type(htypes.master_details.master_details_layout, self._produce_master_detail_layout)
 
     async def _make_master_detail_layout_rec(self, object):
+        category = object.category_list[-1]
+        name_list = self._default_object_layouts.category_name_list(category)
+        assert name_list, f"At least one default category is expected for {category} category of {object}."
+        maker = self._default_object_layouts.get_layout_rec_maker(category, name_list[0])
+        master_layout_rec = await maker(object)
+        master_layout_ref = self._ref_registry.register_object(master_layout_rec)
         return htypes.master_details.master_details_layout(
-            master_layout_ref=None,
+            master_layout_ref=master_layout_ref,
             command_id='open',
             )
 
     async def _produce_master_detail_layout(self, state, object, command_hub, piece_opener):
         return MasterDetailsLayout(
-            self._ref_registry, self._object_registry, self._object_layout_producer,
-            state.command_id, object, [], command_hub, piece_opener)
+            self._ref_registry, self._object_registry, self._object_layout_resolver, self._object_layout_producer,
+            state.master_layout_ref, state.command_id, object, [], command_hub, piece_opener)
