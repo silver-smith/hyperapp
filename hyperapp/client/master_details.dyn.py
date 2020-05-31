@@ -134,7 +134,7 @@ class ThisModule(ClientModule):
         services.object_layout_registry.register_type(htypes.master_details.master_details_layout, self._produce_master_detail_layout)
 
     async def _make_master_detail_layout_rec(self, object):
-        category = object.category_list[-1]
+        category = object.category_list[0]
         name_list = self._default_object_layouts.category_name_list(category)
         assert name_list, f"At least one default category is expected for {category} category of {object}."
         maker = self._default_object_layouts.get_layout_rec_maker(category, name_list[0])
