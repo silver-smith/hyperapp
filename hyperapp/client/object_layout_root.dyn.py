@@ -32,10 +32,9 @@ class ObjectLayoutRoot(Layout):
             )
 
     @command('replace')
-    async def _replace_view(self, path, layout_ref_maker: LayoutRefMakerField):
+    async def _replace_view(self, path, layout_rec_maker: LayoutRefMakerField):
         resource_key = self._object.hashable_resource_key
-        assert 0, repr(layout_ref_maker)
-        layout_rec = layout_ref_maker(self._object)
+        layout_rec = await layout_rec_maker(self._object)
         layout_ref = self._ref_registry.register_object(layout_rec)
         self._object_layout_association[self._object.category_list[-1]] = layout_ref
         return htypes.layout_editor.object_layout_editor(self._piece_ref)
