@@ -60,7 +60,7 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
         if not piece:
             return
         object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(piece, object, self._command_hub, self._piece_opener)
+        layout = await self._object_layout_producer.produce_layout(object, self._command_hub, self._piece_opener)
         view = await layout.create_view()
         self.insertWidget(1, view)
         if self._want_sizes:
