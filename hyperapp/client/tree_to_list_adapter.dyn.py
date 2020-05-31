@@ -34,6 +34,10 @@ class TreeToListAdapter(ListObject):
     def get_title(self):
         return '%s:/%s' % (self._tree_object.get_title(), '/'.join(self._path))
 
+    @property
+    def data(self):
+        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path)
+
     def get_columns(self):
         return self._tree_object.get_columns()
 
