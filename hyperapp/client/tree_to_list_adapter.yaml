@@ -2,6 +2,7 @@ import:
   types:
     tree_to_list_adapter:
     - tree_to_list_adapter
+    - tree_to_list_adapter_layout
   code:
   - client.tree_object
   - client.list_object

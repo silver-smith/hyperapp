@@ -4,7 +4,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .list_object import ListObject
-from .tree_object import TreeObserver
+from .tree_object import TreeObserver, TreeObject
 
 
 class _Observer(TreeObserver):
@@ -67,5 +67,17 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
+        self._object_layout_producer = services.object_layout_producer
         services.object_registry.register_type(
             htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.object_resolver)
+        services.available_object_layouts.register(TreeObject.category_list, 'as_list', self._make_layout_rec)
+        services.object_layout_registry.register_type(htypes.tree_to_list_adapter.tree_to_list_adapter_layout, self._produce_layout)
+
+    async def _make_layout_rec(self, object):
+        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
+
+    async def _produce_layout(self, state, object, command_hub, piece_opener):
+        base_object_ref = self._ref_registry.register_object(object.data)
+        adapter = TreeToListAdapter(base_object_ref, object, path=[])
+        return (await self._object_layout_producer.produce_layout(adapter, command_hub, piece_opener))
