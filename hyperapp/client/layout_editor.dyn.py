@@ -36,7 +36,7 @@ class LayoutEditor(TreeObject):
         command_hub = CommandHub()
         layout = await object_layout_producer.produce_layout(object, command_hub, _open_piece_do_nothing)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        layout_root = ObjectLayoutRoot(ref_registry, object_layout_association, layout, state.piece_ref, object)
+        layout_root = ObjectLayoutRoot(ref_registry, object_layout_association, layout, object)
         command_hub.init_get_commands(layout_root.get_current_commands)
         self = cls(layout_watcher, state.piece_ref)
         await self._async_init(layout_root)

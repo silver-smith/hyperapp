@@ -7,12 +7,11 @@ from .view_chooser import LayoutRecMakerField
 
 class ObjectLayoutRoot(Layout):
 
-    def __init__(self, ref_registry, object_layout_association, layout, piece_ref, object):
+    def __init__(self, ref_registry, object_layout_association, layout, object):
         super().__init__(path=[])
         self._ref_registry = ref_registry
         self._object_layout_association = object_layout_association
         self._layout = layout
-        self._piece_ref = piece_ref
         self._object = object
 
     def get_view_ref(self):
@@ -32,7 +31,8 @@ class ObjectLayoutRoot(Layout):
             )
 
     def _object_layout_editor(self):
-        return htypes.layout_editor.object_layout_editor(self._piece_ref)
+        piece_ref = self._ref_registry.register_object(self._object.data)
+        return htypes.layout_editor.object_layout_editor(piece_ref)
 
     @command('replace')
     async def _replace_view(self, path):
