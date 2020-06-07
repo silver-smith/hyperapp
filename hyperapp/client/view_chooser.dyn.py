@@ -20,20 +20,20 @@ class ViewChooser(SimpleListObject, Chooser):
 
     @classmethod
     def from_state(cls, state, available_object_layouts):
-        return cls(available_object_layouts)
+        return cls(available_object_layouts, state.category)
 
-    def __init__(self, available_object_layouts):
+    def __init__(self, available_object_layouts, category):
         SimpleListObject.__init__(self)
         Chooser.__init__(self)
         self._available_object_layouts = available_object_layouts
-        self._category = 'list'  # todo: do not use params editor to choose layout
+        self._category = category
 
     def get_title(self):
         return 'Choose view'
 
     @property
     def data(self):
-        return htypes.view_chooser.view_chooser()
+        return htypes.view_chooser.view_chooser(self._category)
 
     def get_columns(self):
         return [
@@ -56,6 +56,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.field_types[LayoutRecMakerField] = htypes.view_chooser.view_chooser()
         services.object_registry.register_type(
             htypes.view_chooser.view_chooser, ViewChooser.from_state, services.available_object_layouts)

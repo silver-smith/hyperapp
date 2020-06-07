@@ -126,7 +126,8 @@ class ThisModule(ClientModule):
             if name != 'self'
             ]
         wanted_arguments = [
-            (name, p.annotation) for name, p in bound_arguments_sig.signature.parameters.items()
+            (name, p.annotation)
+            for name, p in bound_arguments_sig.signature.parameters.items()
             if name not in bound_arguments_sig.arguments
             ]
         fields = [

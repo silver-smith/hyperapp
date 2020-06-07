@@ -1,2 +1,3 @@
 
-view_chooser = record
+view_chooser = record:
+  category: string
