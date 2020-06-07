@@ -31,23 +31,27 @@ class ObjectLayoutRoot(Layout):
             super().get_current_commands(),
             )
 
+    def _object_layout_editor(self):
+        return htypes.layout_editor.object_layout_editor(self._piece_ref)
+
     @command('replace')
     async def _replace_view(self, path):
         category = self._object.category_list[0]
         chooser = htypes.view_chooser.view_chooser(category)
         chooser_ref = self._ref_registry.register_object(chooser)
         layout_rec_maker_field = htypes.params_editor.field('layout_rec_maker', chooser_ref)
+        editor = self._object_layout_editor()
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.register_object(self._object.data),  # todo: use layout editor here
+            target_piece_ref=self._ref_registry.register_object(editor),
             target_command_id=self._replace_impl.id,
             bound_arguments=[],
             fields=[layout_rec_maker_field],
             )
 
     @command('_replace_impl')
-    async def _replace_impl(self, path, layout_rec_maker: LayoutRecMakerField):
+    async def _replace_impl(self, layout_rec_maker: LayoutRecMakerField):
         resource_key = self._object.hashable_resource_key
         layout_rec = await layout_rec_maker(self._object)
         layout_ref = self._ref_registry.register_object(layout_rec)
         self._object_layout_association[self._object.category_list[-1]] = layout_ref
-        return htypes.layout_editor.object_layout_editor(self._piece_ref)
+        return self._object_layout_editor()
