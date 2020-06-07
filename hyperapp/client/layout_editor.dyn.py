@@ -66,7 +66,7 @@ class LayoutEditor(TreeObject):
 
     def get_columns(self):
         return [
-            Column('name'),
+            Column('name', is_key=True),
             Column('text'),
             ]
 
