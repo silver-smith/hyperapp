@@ -2,7 +2,9 @@
 
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
+
 from . import htypes
+from .layout import RootVisualItem, VisualItem, Layout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject
 
@@ -26,13 +28,13 @@ class TreeToListAdapter(ListObject):
     def __init__(self, base_ref, tree_object, path):
         self._base_ref = base_ref
         self._tree_object = tree_object
-        self._path = path
+        self._path = list(path)  # accept tuples as well
         super().__init__()
         self._observer = _Observer(self)
         self._tree_object.subscribe(self._observer)
 
     def get_title(self):
-        return '%s:/%s' % (self._tree_object.get_title(), '/'.join(self._path))
+        return '%s:/%s' % (self._tree_object.get_title(), '/'.join(str(item) for item in self._path))
 
     @property
     def data(self):
@@ -50,7 +52,7 @@ class TreeToListAdapter(ListObject):
         await self._tree_object.fetch_items(self._path)
 
     def _process_tree_fetch_results(self, path, item_list):
-        if path != self._path:
+        if list(path) != self._path:  # path may also be tuple
             return  # Not our path, not our request
         self._distribute_fetch_results(item_list, fetch_finished=True)
         self._distribute_eof()
@@ -65,6 +67,25 @@ class TreeToListAdapter(ListObject):
         if not self._path:
             return
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path[:-1])
+
+
+class TreeToListLayout(Layout):
+
+    def __init__(self, base_list_layout, path):
+        super().__init__(path)
+        self._base_list_layout = base_list_layout
+
+    def get_view_ref(self):
+        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
+
+    async def create_view(self):
+        return (await self._base_list_layout.create_view())
+
+    async def visual_item(self):
+        base_item = await self._base_list_layout.visual_item()
+        return RootVisualItem('TreeToListAdapter', children=[
+            base_item.to_item(0, 'base'),
+            ])
 
 
 class ThisModule(ClientModule):
@@ -84,4 +105,5 @@ class ThisModule(ClientModule):
     async def _produce_layout(self, state, object, command_hub, piece_opener):
         base_object_ref = self._ref_registry.register_object(object.data)
         adapter = TreeToListAdapter(base_object_ref, object, path=[])
-        return (await self._object_layout_producer.produce_layout(adapter, command_hub, piece_opener))
+        base_list_layout = await self._object_layout_producer.produce_layout(adapter, command_hub, piece_opener)
+        return TreeToListLayout(base_list_layout, path=[])
