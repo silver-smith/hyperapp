@@ -70,11 +70,11 @@ class ListObject(Object, metaclass=abc.ABCMeta):
         pass
 
     @property
-    def key_column(self):
+    def key_attribute(self):
         for column in self.get_columns():
             if column.is_key:
-                return column
-        raise RuntimeError("No key column is defined by class {}".format(self.__class__.__name__))
+                return column.id
+        raise RuntimeError("No key column or key_attribute is defined by class {}".format(self.__class__.__name__))
 
     @abc.abstractmethod
     async def fetch_items(self, from_key):

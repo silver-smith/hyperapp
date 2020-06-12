@@ -12,7 +12,7 @@ class SimpleListObject(ListObject):
     async def fetch_items(self, from_key):
         items = await self.get_all_items()
         if from_key is not None:
-            key_attr = self.key_column.id
+            key_attr = self.key_attribute
             idx = 0
             while idx < len(items):
                 if getattr(item[idx], key_attr) == from_key:

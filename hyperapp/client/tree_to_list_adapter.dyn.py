@@ -41,6 +41,10 @@ class TreeToListAdapter(ListObject):
     def get_columns(self):
         return self._tree_object.get_columns()
 
+    @property
+    def key_attribute(self):
+        return self._tree_object.key_attribute
+
     async def fetch_items(self, from_key):
         assert from_key is None  # We always return full list
         await self._tree_object.fetch_items(self._path)

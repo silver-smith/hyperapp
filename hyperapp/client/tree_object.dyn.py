@@ -51,7 +51,10 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
 
     @property
     def key_attribute(self):
-        return single(column.id for column in self.get_columns() if column.is_key)
+        for column in self.get_columns():
+            if column.is_key:
+                return column.id
+        raise RuntimeError("No key column or key_attribute is defined by class {}".format(self.__class__.__name__))
 
     @abc.abstractmethod
     async def fetch_items(self, path):

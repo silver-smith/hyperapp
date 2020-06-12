@@ -8,7 +8,6 @@ from functools import partial
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
-from hyperapp.common.util import single
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
 from hyperapp.client.command import Command
 from hyperapp.common.logger import log, create_context_task
@@ -33,7 +32,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         self._view_wr = weakref.ref(view)
         self._object = object
         self._columns = columns
-        self._item_id_attr = single(column.id for column in self._columns if column.is_key)
+        self._key_attr = object.key_attribute
         self._fetch_pending = False  # has pending fetch request; do not issue more than one request at a time
         self._item_list = []
         self._eof = False
@@ -82,7 +81,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         if self._fetch_pending:
             return
         if self._item_list:
-            from_key = getattr(self._item_list[-1], self._item_id_attr)
+            from_key = getattr(self._item_list[-1], self._key_attr)
         else:
             from_key = None
         _log.info('  requesting fetch from %r', from_key)
@@ -95,7 +94,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), prev_items_len + len(item_list) - 1)
         self._item_list += item_list
         self._id2index.update({
-            getattr(item, self._item_id_attr): self.createIndex(prev_items_len + i, 0)
+            getattr(item, self._key_attr): self.createIndex(prev_items_len + i, 0)
             for i, item in enumerate(item_list)})
         self.endInsertRows()
         view = self._view_wr()
@@ -115,7 +114,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         if not index.isValid():
             return None
         item = self._item_list[index.row()]
-        return getattr(item, self._item_id_attr)
+        return getattr(item, self._key_attr)
 
     def id2index(self, item_id):
         return self._id2index.get(item_id)
