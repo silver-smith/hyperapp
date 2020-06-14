@@ -29,6 +29,10 @@ class LineObject(Object):
     def get_title(self):
         return 'Line'
 
+    @property
+    def data(self):
+        return htypes.line.line(self.line)
+
     def get_value(self):
         return self._line
 
@@ -108,8 +112,12 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
-        services.default_object_layouts.register(LineObject.category_list, 'line', self._produce_view)
-        services.available_object_layouts.register(LineObject.category_list, 'line', self._produce_view)
+        services.default_object_layouts.register(LineObject.category_list, 'line', self._make_line_layout_rec)
+        services.available_object_layouts.register(LineObject.category_list, 'line', self._make_line_layout_rec)
+        services.object_layout_registry.register_type(htypes.line.line_edit_layout, self._produce_line_layout)
 
-    async def _produce_view(self, object, command_hub, piece_opener):
+    async def _make_line_layout_rec(self, object):
+        return htypes.line.line_edit_layout()
+
+    async def _produce_line_layout(self, state, object, command_hub, piece_opener):
         return LineEditLayout(object, [], command_hub, piece_opener, LineEditView.Mode.VIEW)
