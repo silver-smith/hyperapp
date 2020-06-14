@@ -54,6 +54,14 @@ class BlogObject(ListObject, BlogObserver):
     def get_title(self):
         return self._blog_id
 
+    @property
+    def data(self):
+        return htypes.blog.blog(
+            blog_service_ref=self._blog_service.ref,
+            blog_id=self._blog_id,
+            current_article_id=None,
+            )
+
     def observers_arrived(self):
         asyncio.ensure_future(self._blog_service.add_observer(self._blog_id, self))
 

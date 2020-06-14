@@ -34,6 +34,13 @@ class RefListObject(ListObject):
     def get_title(self):
         return 'Ref List %s' % self._ref_list_id
 
+    @property
+    def data(self):
+        return htypes.ref_list.dynamic_ref_list(
+            ref_list_service=self._ref_list_service.to_ref(),
+            ref_list_id=self._ref_list_id,
+            )
+
     def get_columns(self):
         return [
             Column('id', is_key=True),
