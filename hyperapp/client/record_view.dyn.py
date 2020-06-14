@@ -104,8 +104,8 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._object_layout_producer = services.object_layout_producer
         self._params_editor = services.params_editor
-        services.default_object_layouts.register(RecordObject.category_list, 'record', self._make_record_layout_rec)
-        services.available_object_layouts.register(RecordObject.category_list, 'record', self._make_record_layout_rec)
+        services.default_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
+        services.available_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
         services.object_layout_registry.register_type(htypes.record_view.record_layout, self._produce_layout)
 
     async def _make_record_layout_rec(self, object):

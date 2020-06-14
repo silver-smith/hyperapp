@@ -18,6 +18,8 @@ Item = namedtuple('Item', 'name column_1 column_2')
 
 class SampleObject(TreeObject):
 
+    category_list = TreeObject.category_list + ['tree-view-sample']
+
     @classmethod
     def from_state(cls, state):
         return cls()

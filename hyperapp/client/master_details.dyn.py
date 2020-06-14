@@ -130,7 +130,7 @@ class ThisModule(ClientModule):
         self._object_layout_resolver = services.object_layout_resolver
         self._object_layout_producer = services.object_layout_producer
         category_list = [*ListObject.category_list, *TreeObject.category_list]
-        services.available_object_layouts.register(category_list, 'master_details', self._make_master_detail_layout_rec)
+        services.available_object_layouts.register('master_details', category_list, self._make_master_detail_layout_rec)
         services.object_layout_registry.register_type(htypes.master_details.master_details_layout, self._produce_master_detail_layout)
 
     async def _make_master_detail_layout_rec(self, object):

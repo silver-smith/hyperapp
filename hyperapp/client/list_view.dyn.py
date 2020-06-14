@@ -263,8 +263,8 @@ class ThisModule(ClientModule):
         self._type_resolver = services.type_resolver
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
-        services.default_object_layouts.register(ListObject.category_list, 'list', self._make_list_layout_rec)
-        services.available_object_layouts.register(ListObject.category_list, 'list', self._make_list_layout_rec)
+        services.default_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
+        services.available_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
         services.object_layout_registry.register_type(htypes.list_view.list_layout, self._produce_layout)
 
     async def _make_list_layout_rec(self, object):

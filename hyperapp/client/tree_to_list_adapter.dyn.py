@@ -96,7 +96,7 @@ class ThisModule(ClientModule):
         self._object_layout_producer = services.object_layout_producer
         services.object_registry.register_type(
             htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.object_resolver)
-        services.available_object_layouts.register(TreeObject.category_list, 'as_list', self._make_layout_rec)
+        services.available_object_layouts.register('as_list', TreeObject.category_list, self._make_layout_rec)
         services.object_layout_registry.register_type(htypes.tree_to_list_adapter.tree_to_list_adapter_layout, self._produce_layout)
 
     async def _make_layout_rec(self, object):

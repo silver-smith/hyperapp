@@ -9,7 +9,7 @@ from .column import Column
 from .simple_list_object import SimpleListObject
 
 
-Item = namedtuple('Item', 'id')
+Item = namedtuple('Item', 'id categories layout_rec_maker')
 
 
 class LayoutRecMakerField:
@@ -20,36 +20,42 @@ class ViewChooser(SimpleListObject, Chooser):
 
     @classmethod
     def from_state(cls, state, available_object_layouts):
-        return cls(available_object_layouts, state.category)
+        return cls(available_object_layouts, state.category_list)
 
-    def __init__(self, available_object_layouts, category):
+    def __init__(self, available_object_layouts, category_list):
         SimpleListObject.__init__(self)
         Chooser.__init__(self)
         self._available_object_layouts = available_object_layouts
-        self._category = category
+        self._category_list = category_list
+        self._items = [
+            Item(rec.name, rec.category_set, rec.layout_rec_maker)
+            for rec in self._available_object_layouts.resolve(category_list)
+            ]
+        self._id_to_item = {item.id: item for item in self._items}
 
     def get_title(self):
         return 'Choose view'
 
     @property
     def data(self):
-        return htypes.view_chooser.view_chooser(self._category)
+        return htypes.view_chooser.view_chooser(self._category_list)
 
     def get_columns(self):
         return [
             Column('id', is_key=True),
+            Column('categories'),
             ]
 
     async def get_all_items(self):
-        return [Item(name) for name in self._available_object_layouts.category_to_layout_name_list(self._category)]
+        return self._items
 
     def get_value(self):
         return None
 
     @command('choose', kind='element')
     async def _choose(self, item_key):
-        layout_rec_maker = self._available_object_layouts.get_layout_rec_maker(self._category, name=item_key)
-        return (await self.chooser_call_callback(layout_rec_maker))
+        item = self._id_to_item[item_key]
+        return (await self.chooser_call_callback(item.layout_rec_maker))
 
 
 class ThisModule(ClientModule):

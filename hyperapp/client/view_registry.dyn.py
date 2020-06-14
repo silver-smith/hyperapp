@@ -15,24 +15,20 @@ class NoSuitableProducer(Exception):
 
 class AvailableObjectLayouts:
 
-    _Rec = namedtuple('_Rec', 'name layout_rec_maker')
+    _Rec = namedtuple('_Rec', 'name, category_set layout_rec_maker')
 
     def __init__(self):
-        self._category_to_rec_list = defaultdict(list)
+        self._rec_list = []
 
-    def register(self, category_list, name, layout_rec_maker):
-        rec = self._Rec(name, layout_rec_maker)
-        for category in category_list:
-            self._category_to_rec_list[category].append(rec)
+    def register(self, name, category_list, layout_rec_maker):
+        rec = self._Rec(name, set(category_list), layout_rec_maker)
+        self._rec_list.append(rec)
 
-    def category_to_layout_name_list(self, category):
-        return [rec.name for rec in self._category_to_rec_list[category]]
-
-    def get_layout_rec_maker(self, category, name):
-        for rec in self._category_to_rec_list[category]:
-            if rec.name == name:
-                return rec.layout_rec_maker
-        raise RuntimeError(f"Unknown producer: {category}.{name}")
+    def resolve(self, category_list):
+        category_set = set(category_list)
+        for rec in self._rec_list:
+            if category_set & rec.category_set:
+                yield rec
 
 
 class ObjectLayoutProducer:
@@ -53,14 +49,12 @@ class ObjectLayoutProducer:
             layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
             break
         if not layout_rec:
-            for category in reversed(object.category_list):
-                name_list = self._default_object_layouts.category_to_layout_name_list(category)
-                if name_list:
-                    layout_rec_maker = self._default_object_layouts.get_layout_rec_maker(category, name_list[0])
-                    layout_rec = await layout_rec_maker(object)
-                    break
-            else:
+            rec_it = self._default_object_layouts.resolve(object.category_list)
+            try:
+                rec = next(rec_it)
+            except StopIteration:
                 raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
+            layout_rec = await rec.layout_rec_maker(object)
         return (await self._object_layout_registry.resolve_async(layout_rec, object, command_hub, piece_opener))
 
 
