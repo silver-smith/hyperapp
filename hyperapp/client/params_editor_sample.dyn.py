@@ -22,6 +22,10 @@ class SampleList(SimpleListObject):
     def get_title(self):
         return 'Param editor samples'
 
+    @property
+    def data(self):
+        return htypes.params_editor_sample.params_editor_sample()
+
     def get_columns(self):
         return [
             Column('id', is_key=True),
