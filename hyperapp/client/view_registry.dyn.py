@@ -25,7 +25,7 @@ class AvailableObjectLayouts:
         for category in category_list:
             self._category_to_rec_list[category].append(rec)
 
-    def category_name_list(self, category):
+    def category_to_layout_name_list(self, category):
         return [rec.name for rec in self._category_to_rec_list[category]]
 
     def get_layout_rec_maker(self, category, name):
@@ -54,7 +54,7 @@ class ObjectLayoutProducer:
             break
         if not layout_rec:
             for category in reversed(object.category_list):
-                name_list = self._default_object_layouts.category_name_list(category)
+                name_list = self._default_object_layouts.category_to_layout_name_list(category)
                 if name_list:
                     layout_rec_maker = self._default_object_layouts.get_layout_rec_maker(category, name_list[0])
                     layout_rec = await layout_rec_maker(object)

@@ -41,7 +41,7 @@ class ViewChooser(SimpleListObject, Chooser):
             ]
 
     async def get_all_items(self):
-        return [Item(name) for name in self._available_object_layouts.category_name_list(self._category)]
+        return [Item(name) for name in self._available_object_layouts.category_to_layout_name_list(self._category)]
 
     def get_value(self):
         return None
