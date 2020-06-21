@@ -6,12 +6,13 @@ from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, Layout
 
 class ObjectLayoutRoot(Layout):
 
-    def __init__(self, ref_registry, object_layout_association, layout, object):
+    def __init__(self, ref_registry, object_layout_association, layout, object, target_category):
         super().__init__(path=[])
         self._ref_registry = ref_registry
         self._object_layout_association = object_layout_association
         self._layout = layout
         self._object = object
+        self._target_category = target_category
 
     def get_view_ref(self):
         assert 0  # todo
@@ -31,7 +32,7 @@ class ObjectLayoutRoot(Layout):
 
     def _object_layout_editor(self):
         piece_ref = self._ref_registry.register_object(self._object.data)
-        return htypes.layout_editor.object_layout_editor(piece_ref)
+        return htypes.layout_editor.object_layout_editor(piece_ref, self._target_category)
 
     @command('replace')
     async def _replace_view(self, path):
@@ -51,5 +52,5 @@ class ObjectLayoutRoot(Layout):
         resource_key = self._object.hashable_resource_key
         layout_rec = await layout_rec_maker(self._object)
         layout_ref = self._ref_registry.register_object(layout_rec)
-        self._object_layout_association[self._object.category_list[-1]] = layout_ref
+        self._object_layout_association[self._target_category] = layout_ref
         return self._object_layout_editor()
