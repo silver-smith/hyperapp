@@ -1,7 +1,7 @@
 import:
   types:
-    layout_editor:
-    - object_layout_editor
+    category_list:
+    - category_list
     navigator:
     - navigator
   code:

@@ -1,0 +1,7 @@
+import:
+  types:
+    category_list:
+      - category_list
+  code:
+    - client.column
+    - client.simple_list_object

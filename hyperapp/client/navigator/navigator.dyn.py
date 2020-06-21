@@ -142,7 +142,7 @@ class NavigatorLayout(Layout):
         # piece_t = deduce_value_type(self._current_piece)
         # type_ref = self._type_resolver.reverse_resolve(piece_t)
         current_piece_ref = self._ref_registry.register_object(self._current_piece)
-        piece = htypes.layout_editor.object_layout_editor(current_piece_ref)
+        piece = htypes.category_list.category_list(current_piece_ref)
         await self._open_piece(piece)
 
 
