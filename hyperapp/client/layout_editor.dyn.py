@@ -23,29 +23,8 @@ class LayoutEditor(TreeObject):
 
     _CommandRec = namedtuple('_CommandRec', 'command item_path')
 
-    @classmethod
-    async def from_view_state(cls, state, layout_manager, layout_watcher):
-        self = cls(layout_watcher, piece_ref=None, category=None)
-        await self._async_init(layout_manager.root_layout)
-        return self
-
-    @classmethod
-    async def from_object_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
-        piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
-        object = await object_registry.resolve_async(piece)
-        command_hub = CommandHub()
-        layout = await object_layout_producer.produce_layout(object, command_hub, _open_piece_do_nothing)
-        layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        layout_root = ObjectLayoutRoot(ref_registry, object_layout_association, layout, object)
-        command_hub.init_get_commands(layout_root.get_current_commands)
-        self = cls(layout_watcher, state.piece_ref, state.category)
-        await self._async_init(layout_root)
-        return self
-
-    def __init__(self, layout_watcher, piece_ref, category):
+    def __init__(self, layout_watcher):
         super().__init__()
-        self._piece_ref = piece_ref  # None when opened for view (non-object) layout
-        self._target_category = category
         self._path2item_list = {}
         self._item_commands = {}  # id -> _CommandRec
         layout_watcher.subscribe(self)
@@ -54,16 +33,6 @@ class LayoutEditor(TreeObject):
         self._layout = layout  # or ObjectLayoutRoot would be garbage-collected, and it's commands gone.
         root = await layout.visual_item()
         self._add_item([], root.to_item(0, 'root'))
-
-    def get_title(self):
-        return "Layout"
-
-    @property
-    def data(self):
-        if self._piece_ref:
-            return htypes.layout_editor.object_layout_editor(self._piece_ref, self._target_category)
-        else:
-            return htypes.layout_editor.view_layout_editor()
 
     def get_columns(self):
         return [
@@ -129,15 +98,59 @@ class LayoutEditor(TreeObject):
             self._add_item(item_path, kid)
 
 
+class GlobalLayoutEditor(LayoutEditor):
+
+    @classmethod
+    async def from_state(cls, state, layout_manager, layout_watcher):
+        self = cls(layout_watcher)
+        await self._async_init(layout_manager.root_layout)
+        return self
+
+    def get_title(self):
+        return "Global view layout"
+
+    @property
+    def data(self):
+        return htypes.layout_editor.view_layout_editor()
+
+
+class ObjectLayoutEditor(LayoutEditor):
+
+    @classmethod
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
+        piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
+        object = await object_registry.resolve_async(piece)
+        command_hub = CommandHub()
+        layout = await object_layout_producer.produce_layout(object, command_hub, _open_piece_do_nothing)
+        layout_watcher = LayoutWatcher()  # todo: save object layout on change
+        layout_root = ObjectLayoutRoot(ref_registry, object_layout_association, layout, object)
+        command_hub.init_get_commands(layout_root.get_current_commands)
+        self = cls(layout_watcher, state.piece_ref, state.category)
+        await self._async_init(layout_root)
+        return self
+
+    def __init__(self, layout_watcher, piece_ref, category):
+        super().__init__(layout_watcher)
+        self._piece_ref = piece_ref
+        self._target_category = category
+
+    def get_title(self):
+        return f"Layout for category: {self._target_category}"
+
+    @property
+    def data(self):
+        return htypes.layout_editor.object_layout_editor(self._piece_ref, self._target_category)
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(
-            htypes.layout_editor.view_layout_editor, LayoutEditor.from_view_state, services.layout_manager, services.layout_watcher)
+            htypes.layout_editor.view_layout_editor, GlobalLayoutEditor.from_state, services.layout_manager, services.layout_watcher)
         services.object_registry.register_type(
             htypes.layout_editor.object_layout_editor,
-            LayoutEditor.from_object_state,
+            ObjectLayoutEditor.from_state,
             services.ref_registry,
             services.async_ref_resolver,
             services.object_registry,
