@@ -25,7 +25,7 @@ class LayoutEditor(TreeObject):
 
     @classmethod
     async def from_view_state(cls, state, layout_manager, layout_watcher):
-        self = cls(layout_watcher, piece_ref=None)
+        self = cls(layout_watcher, piece_ref=None, category=None)
         await self._async_init(layout_manager.root_layout)
         return self
 
@@ -38,13 +38,14 @@ class LayoutEditor(TreeObject):
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
         layout_root = ObjectLayoutRoot(ref_registry, object_layout_association, layout, object)
         command_hub.init_get_commands(layout_root.get_current_commands)
-        self = cls(layout_watcher, state.piece_ref)
+        self = cls(layout_watcher, state.piece_ref, state.category)
         await self._async_init(layout_root)
         return self
 
-    def __init__(self, layout_watcher, piece_ref):
+    def __init__(self, layout_watcher, piece_ref, category):
         super().__init__()
         self._piece_ref = piece_ref  # None when opened for view (non-object) layout
+        self._target_category = category
         self._path2item_list = {}
         self._item_commands = {}  # id -> _CommandRec
         layout_watcher.subscribe(self)
@@ -60,7 +61,7 @@ class LayoutEditor(TreeObject):
     @property
     def data(self):
         if self._piece_ref:
-            return htypes.layout_editor.object_layout_editor(self._piece_ref)
+            return htypes.layout_editor.object_layout_editor(self._piece_ref, self._target_category)
         else:
             return htypes.layout_editor.view_layout_editor()
 

@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -28,8 +29,7 @@ class CategoryList(SimpleListObject):
 
     @property
     def data(self):
-        piece_ref = self._ref_registry.register_object(self._object.data)
-        return htypes.category_list.category_list(piece_ref)
+        return htypes.category_list.category_list(self._piece_ref)
 
     def get_columns(self):
         return [
@@ -39,6 +39,13 @@ class CategoryList(SimpleListObject):
     async def get_all_items(self):
         return [Item(category) for category in self._object.category_list]
 
+    @property
+    def _piece_ref(self):
+        return self._ref_registry.register_object(self._object.data)
+
+    @command('open', kind='element')
+    def open(self, item_key):
+        return htypes.layout_editor.object_layout_editor(self._piece_ref, category=item_key)
 
 
 class ThisModule(ClientModule):
