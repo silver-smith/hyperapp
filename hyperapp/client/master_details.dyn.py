@@ -134,11 +134,13 @@ class ThisModule(ClientModule):
         services.object_layout_registry.register_type(htypes.master_details.master_details_layout, self._produce_master_detail_layout)
 
     async def _make_master_detail_layout_rec(self, object):
+        rec_it = self._default_object_layouts.resolve(object.category_list)
+        try:
+            rec = next(rec_it)
+        except StopIteration:
+            raise RuntimeError(f"At least one default category is expected for {object} categoriees: {object.category_list}.")
         category = object.category_list[0]
-        name_list = self._default_object_layouts.category_to_layout_name_list(category)
-        assert name_list, f"At least one default category is expected for {category} category of {object}."
-        maker = self._default_object_layouts.get_layout_rec_maker(category, name_list[0])
-        master_layout_rec = await maker(object)
+        master_layout_rec = await rec.layout_rec_maker(object)
         master_layout_ref = self._ref_registry.register_object(master_layout_rec)
         return htypes.master_details.master_details_layout(
             master_layout_ref=master_layout_ref,
