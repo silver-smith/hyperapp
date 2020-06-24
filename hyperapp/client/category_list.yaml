@@ -6,4 +6,5 @@ import:
       - object_layout_editor
   code:
     - client.column
+    - client.command_hub
     - client.simple_list_object

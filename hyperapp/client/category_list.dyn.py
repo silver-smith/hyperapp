@@ -5,25 +5,31 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .column import Column
+from .command_hub import CommandHub
 from .simple_list_object import SimpleListObject
 
 
 Item = namedtuple('Item', 'category layout')
 
 
+async def _open_piece_do_nothing(piece):
+    pass
+
+
 class CategoryList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        return cls(ref_registry, async_ref_resolver, object_layout_association, object)
+        return cls(ref_registry, async_ref_resolver, object_layout_association, object_layout_producer, object)
 
-    def __init__(self, ref_registry, async_ref_resolver, object_layout_association, object):
+    def __init__(self, ref_registry, async_ref_resolver, object_layout_association, object_layout_producer, object):
         super().__init__()
         self._ref_registry = ref_registry
         self._async_ref_resolver = async_ref_resolver
         self._object_layout_association = object_layout_association
+        self._object_layout_producer = object_layout_producer
         self._object = object
 
     def get_title(self):
@@ -57,8 +63,14 @@ class CategoryList(SimpleListObject):
         return await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
 
     @command('open', kind='element')
-    def open(self, item_key):
-        return htypes.layout_editor.object_layout_editor(self._piece_ref, category=item_key)
+    async def open(self, item_key):
+        category = item_key
+        layout_ref = self._object_layout_association.get(category)
+        if not layout_ref:
+            command_hub = CommandHub()
+            layout = await self._object_layout_producer.produce_layout(self._object, command_hub, _open_piece_do_nothing)
+            layout_ref = self._ref_registry.register_object(layout.data)
+        return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, category)
 
 
 class ThisModule(ClientModule):
@@ -66,5 +78,11 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(
-            htypes.category_list.category_list, CategoryList.from_state,
-            services.ref_registry, services.async_ref_resolver, services.object_registry, services.object_layout_association)
+            htypes.category_list.category_list,
+            CategoryList.from_state,
+            services.ref_registry,
+            services.async_ref_resolver,
+            services.object_registry,
+            services.object_layout_association,
+            services.object_layout_producer,
+            )

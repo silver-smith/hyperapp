@@ -50,6 +50,11 @@ class Layout(Commander, metaclass=abc.ABCMeta):
         super().__init__(commands_kind='view')
         self._path = path
 
+    # todo: use abstractproperty
+    @property
+    def data(self):
+        raise NotImplementedError(self.__class__)
+    
     @abc.abstractmethod
     def get_view_ref(self):
         pass

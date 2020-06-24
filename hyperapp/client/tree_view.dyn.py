@@ -348,6 +348,10 @@ class TreeViewLayout(Layout):
         self._object = object
         self._current_item_observer = None
 
+    @property
+    def data(self):
+        return htypes.tree_view.tree_layout()
+
     def get_view_ref(self):
         assert 0  # todo
 

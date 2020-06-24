@@ -30,16 +30,17 @@ class ObjectLayoutRoot(Layout):
             super().get_current_commands(),
             )
 
-    def _object_layout_editor(self):
+    def _object_layout_editor(self, layout_ref):
         piece_ref = self._ref_registry.register_object(self._object.data)
-        return htypes.layout_editor.object_layout_editor(piece_ref, self._target_category)
+        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category)
 
     @command('replace')
     async def _replace_view(self, path):
         chooser = htypes.view_chooser.view_chooser(self._object.category_list)
         chooser_ref = self._ref_registry.register_object(chooser)
         layout_rec_maker_field = htypes.params_editor.field('layout_rec_maker', chooser_ref)
-        editor = self._object_layout_editor()
+        layout_ref = self._ref_registry.register_object(self._layout.data)
+        editor = self._object_layout_editor(layout_ref)
         return htypes.params_editor.params_editor(
             target_piece_ref=self._ref_registry.register_object(editor),
             target_command_id=self._replace_impl.id,
@@ -53,4 +54,4 @@ class ObjectLayoutRoot(Layout):
         layout_rec = await layout_rec_maker(self._object)
         layout_ref = self._ref_registry.register_object(layout_rec)
         self._object_layout_association[self._target_category] = layout_ref
-        return self._object_layout_editor()
+        return self._object_layout_editor(layout_ref)
