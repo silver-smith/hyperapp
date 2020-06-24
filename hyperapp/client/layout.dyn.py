@@ -1,5 +1,6 @@
 import abc
 import logging
+import weakref
 from collections import namedtuple
 from dataclasses import dataclass
 from typing import List
@@ -42,6 +43,20 @@ class InsertVisualItemDiff(VisualItemDiff):
 @dataclass
 class RemoveVisualItemDiff(VisualItemDiff):
     path: List[int]
+
+
+class LayoutWatcher:
+
+    def __init__(self):
+        self._observers = weakref.WeakSet()
+
+    def subscribe(self, observer):
+        self._observers.add(observer)
+
+    def distribute_diffs(self, diff_list):
+        _log.info("Distribute layout diffs %s to %s", diff_list, list(self._observers))
+        for observer in self._observers:
+            observer.process_layout_diffs(diff_list)
 
 
 class Layout(Commander, metaclass=abc.ABCMeta):

@@ -5,9 +5,8 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
-from .layout_manager import LayoutWatcher
 from .object_layout_root import ObjectLayoutRoot
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject

@@ -1,7 +1,6 @@
 import asyncio
 import itertools
 import logging
-import weakref
 from collections import namedtuple
 from functools import partial
 
@@ -15,25 +14,11 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, Layout
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, LayoutWatcher, Layout
 from .layout_registry import LayoutViewProducer
 from .command_hub import CommandHub
 
 _log = logging.getLogger(__name__)
-
-
-class LayoutWatcher:
-
-    def __init__(self):
-        self._observers = weakref.WeakSet()
-
-    def subscribe(self, observer):
-        self._observers.add(observer)
-
-    def distribute_diffs(self, diff_list):
-        _log.info("Distribute layout diffs %s to %s", diff_list, list(self._observers))
-        for observer in self._observers:
-            observer.process_layout_diffs(diff_list)
 
 
 class RootLayout(Layout):

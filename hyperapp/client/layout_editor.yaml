@@ -5,7 +5,6 @@ import:
       - object_layout_editor
   code:
     - client.layout
-    - client.layout_manager
     - client.command_hub
     - client.object_layout_root
     - client.column
