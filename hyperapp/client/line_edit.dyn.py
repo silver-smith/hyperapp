@@ -97,9 +97,6 @@ class LineEditLayout(Layout):
         self._object = object
         self._mode = mode
 
-    def get_view_ref(self):
-        assert 0  # todo
-
     async def create_view(self):
         return LineEditView(self._object, self._mode)
 

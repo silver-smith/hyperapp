@@ -84,14 +84,14 @@ class MasterDetailsLayout(Layout):
         self._piece_opener = piece_opener
         self._object = object
 
-    def get_view_ref(self):
+    @property
+    def data(self):
         # master_layout = await self._create_master_layout()
-        master_layout_ref = master_layout.get_view_ref()
-        layout_rec = htypes.master_details.master_details_layout(
+        master_layout_ref = self._ref_registry.register_object(master_layout.data)
+        return htypes.master_details.master_details_layout(
             master_layout_ref=master_layout_ref,
             command_id=self._details_command_id,
             )
-        return self._ref_registry.register_object(layout_rec)
 
     async def create_view(self):
         master_layout = await self._create_master_layout()
@@ -115,7 +115,7 @@ class MasterDetailsLayout(Layout):
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):
         resource_key = self._object.hashable_resource_key
-        self._object_layout_overrides[resource_key] = self.get_view_ref()  # todo
+        self._object_layout_overrides[resource_key] = self._reg_registry.register_object(self.data)  # todo
         piece_ref = self._ref_registry.register_object(self._piece)
         return htypes.layout_editor.object_layout_editor(piece_ref)
 

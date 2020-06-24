@@ -79,9 +79,6 @@ class TreeToListLayout(Layout):
     def data(self):
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
 
-    def get_view_ref(self):
-        assert 0  # todo: remove
-
     async def create_view(self):
         return (await self._base_list_layout.create_view())
 

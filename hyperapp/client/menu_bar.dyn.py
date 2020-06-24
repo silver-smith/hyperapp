@@ -15,14 +15,14 @@ log = logging.getLogger(__name__)
 
 class MenuBarLayout(Layout):
 
-    def __init__(self, state, path, command_hub, view_opener, ref_registry, resource_resolver):
+    def __init__(self, state, path, command_hub, view_opener, resource_resolver):
         super().__init__(path)
-        self._ref_registry = ref_registry
         self._resource_resolver = resource_resolver
         self._command_hub = command_hub
 
-    def get_view_ref(self):
-        return self._ref_registry.register_object(htypes.menu_bar.menu_bar())
+    @property
+    def data(self):
+        return htypes.menu_bar.menu_bar()
 
     async def create_view(self):
         return MenuBar(self._resource_resolver, self._command_hub)
@@ -89,4 +89,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.view_registry.register_type(
-            htypes.menu_bar.menu_bar, MenuBarLayout, services.ref_registry, services.resource_resolver)
+            htypes.menu_bar.menu_bar, MenuBarLayout, services.resource_resolver)

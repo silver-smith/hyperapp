@@ -75,10 +75,10 @@ class NavigatorLayout(Layout):
         self._initial_piece = piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
         self._history.append(piece)
 
-    def get_view_ref(self):
+    @property
+    def data(self):
         current_piece_ref = self._ref_registry.register_object(self._current_piece)
-        view = htypes.navigator.navigator(current_piece_ref)
-        return self._ref_registry.register_object(view)
+        return htypes.navigator.navigator(current_piece_ref)
 
     async def create_view(self):
         self._current_piece = piece = self._initial_piece

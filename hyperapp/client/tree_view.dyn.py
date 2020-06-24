@@ -352,9 +352,6 @@ class TreeViewLayout(Layout):
     def data(self):
         return htypes.tree_view.tree_layout()
 
-    def get_view_ref(self):
-        assert 0  # todo
-
     async def create_view(self):
         columns = list(map_columns_to_view(self._resource_resolver, self._object))
         tree_view = TreeView(columns, self._object)

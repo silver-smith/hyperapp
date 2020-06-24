@@ -20,9 +20,6 @@ class TextViewLayout(Layout):
         super().__init__(path)
         self._object = object
 
-    def get_view_ref(self):
-        assert 0  # todo
-
     async def create_view(self):
         return TextView(self._object)
 

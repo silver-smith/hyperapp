@@ -61,10 +61,13 @@ class RootLayout(Layout):
             for idx, ref in enumerate(window_ref_list)
             ]
 
-    def get_view_ref(self):
-        window_ref_list = [rec.layout.get_view_ref() for rec in self._window_rec_list]
-        root_layout = htypes.root_layout.root_layout(window_ref_list)
-        return self._ref_registry.register_object(root_layout)
+    @property
+    def data(self):
+        window_ref_list = [
+            self._ref_registry.register_object(rec.layout.data)
+            for rec in self._window_rec_list
+            ]
+        return htypes.root_layout.root_layout(window_ref_list)
 
     async def create_view(self):
         self._window_list = window_list = [
@@ -136,7 +139,7 @@ class RootLayout(Layout):
 
     async def _duplicate_window_impl(self, idx, rec):
         new_idx = idx + 1
-        ref = rec.layout.get_view_ref()
+        ref = self._ref_registry.register_object(rec.layout.data)
         new_rec = await self._create_and_insert_rec(idx, ref)
         return (new_idx, new_rec)
 

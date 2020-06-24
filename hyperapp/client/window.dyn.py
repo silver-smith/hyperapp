@@ -43,7 +43,8 @@ class WindowLayout(Layout):
         self._command_pane_layout = await view_resolver.resolve(state.command_pane_ref, [*self._path, 1], self._command_hub, self._view_opener)
         self._central_view_layout = await view_resolver.resolve(state.central_view_ref, [*self._path, 2], self._command_hub, self._view_opener)
 
-    def get_view_ref(self):
+    @property
+    def data(self):
         if self._widget:
             qsize = self._widget.size()
             size = htypes.window.size(qsize.width(), qsize.height())
@@ -52,9 +53,9 @@ class WindowLayout(Layout):
         else:
             size, pos = self._size, self._pos
         window = htypes.window.window(
-            menu_bar_ref=self._menu_bar_layout.get_view_ref(),
-            command_pane_ref=self._command_pane_layout.get_view_ref(),
-            central_view_ref=self._central_view_layout.get_view_ref(),
+            menu_bar_ref=self._ref_registry.register_object(self._menu_bar_layout.data),
+            command_pane_ref=self._ref_registry.register_object(self._command_pane_layout.data),
+            central_view_ref=self._ref_registry.register_object(self._central_view_layout.data),
             size=size,
             pos=pos,
             )

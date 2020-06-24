@@ -17,6 +17,7 @@ class Application(AsyncApplication, Commander):
         AsyncApplication.__init__(self, sys_argv)
         Commander.__init__(self, commands_kind='view')
         self.services = Services(self.event_loop)
+        self._ref_registry = self.services.ref_registry
         self._async_ref_resolver = self.services.async_ref_resolver
         self._layout_manager = self.services.layout_manager
         self._default_state_builder = self.services.default_state_builder
@@ -42,7 +43,8 @@ class Application(AsyncApplication, Commander):
         self._save_state()
 
     def get_current_state(self):
-        root_layout_ref = self._layout_manager.root_layout.get_view_ref()
+        root_layout = self._layout_manager.root_layout.data
+        root_layout_ref = self._ref_registry.register_object(root_layout)
         return self._state_storage.state_t(
             root_layout_ref=root_layout_ref,
             )

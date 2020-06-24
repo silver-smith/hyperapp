@@ -54,8 +54,12 @@ class TabLayout(Layout):
             for tab_ref in tab_ref_list
             ]
 
-    def get_view_ref(self):
-        tab_refs = [tab.layout.get_view_ref() for tab in self._tab_list]
+    @property
+    def data(self):
+        tab_ref_list = [
+            self._ref_registry.register_object(tab.layout.data)
+            for tab in self._tab_list
+            ]
         if self._widget:
             if self._widget.currentIndex() != -1:
                 current_tab = self._widget.currentIndex()
@@ -63,8 +67,7 @@ class TabLayout(Layout):
                 current_tab = 0
         else:
             current_tab = self._initial_tab_idx
-        view = htypes.tab_view.tab_view(tab_refs, current_tab)
-        return self._ref_registry.register_object(view)
+        return htypes.tab_view.tab_view(tab_ref_list, current_tab)
 
     async def create_view(self):
         children = [await tab.layout.create_view() for tab in self._tab_list]
@@ -147,7 +150,7 @@ class TabLayout(Layout):
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx):
         tab = self._tab_list[tab_idx]
-        tab_ref = tab.layout.get_view_ref()
+        tab_ref = self._ref_registry.register_object(tab.layout.data)
         await self._create_and_insert_tab(tab_idx, tab_ref)
 
     async def _create_and_insert_tab(self, tab_idx, tab_ref):
@@ -186,7 +189,7 @@ class TabLayout(Layout):
             RemoveVisualItemDiff([*self._path, tab.id])
             for tab in self._tab_list]
         old_count = len(self._tab_list)
-        new_tab = await self._create_tab(self.get_view_ref())
+        new_tab = await self._create_tab(self._ref_registry.register_object(self.data))
         self._tab_list = [new_tab]
         if self._widget:
             while self._widget.count() > 1:

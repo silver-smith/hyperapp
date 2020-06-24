@@ -14,8 +14,9 @@ class ObjectLayoutRoot(Layout):
         self._object = object
         self._target_category = target_category
 
-    def get_view_ref(self):
-        assert 0  # todo
+    @property
+    def data(self):
+        assert 0  # todo?
 
     async def create_view(self):
         assert 0  # todo?

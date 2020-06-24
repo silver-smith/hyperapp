@@ -78,9 +78,6 @@ class RecordViewLayout(Layout):
         self._piece_opener = piece_opener
         self._fields = fields  # htypes.record_view.record_field list
 
-    def get_view_ref(self):
-        assert 0  # todo
-
     async def create_view(self):
         return (await RecordView.make(self._object_layout_producer, self._object, self._command_hub, self._piece_opener, self._fields))
 

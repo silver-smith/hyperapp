@@ -69,10 +69,6 @@ class Layout(Commander, metaclass=abc.ABCMeta):
     @property
     def data(self):
         raise NotImplementedError(self.__class__)
-    
-    @abc.abstractmethod
-    def get_view_ref(self):
-        pass
 
     @abc.abstractmethod
     async def create_view(self):
