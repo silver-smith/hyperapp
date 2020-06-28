@@ -52,14 +52,13 @@ class WindowLayout(Layout):
             pos = htypes.window.pos(qpos.x(), qpos.y())
         else:
             size, pos = self._size, self._pos
-        window = htypes.window.window(
+        return htypes.window.window(
             menu_bar_ref=self._ref_registry.register_object(self._menu_bar_layout.data),
             command_pane_ref=self._ref_registry.register_object(self._command_pane_layout.data),
             central_view_ref=self._ref_registry.register_object(self._central_view_layout.data),
             size=size,
             pos=pos,
             )
-        return self._ref_registry.register_object(window)
 
     async def create_view(self):
         menu_bar = await self._menu_bar_layout.create_view()
