@@ -221,6 +221,10 @@ class ListViewLayout(Layout):
         self._object = object
         self._current_item_observer = None
 
+    @property
+    def data(self):
+        return htypes.list_view.list_layout()
+
     async def create_view(self):
         columns = list(map_columns_to_view(self._resource_resolver, self._object))
         list_view = ListView(columns, self._object)
