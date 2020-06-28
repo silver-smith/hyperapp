@@ -238,6 +238,12 @@ class ListViewLayout(Layout):
     def get_current_commands(self):
         return list(self._get_object_commands())
 
+    def collect_view_commands(self):
+        return {
+            **super().collect_view_commands(),
+            **{tuple(self._path): self._get_object_commands()},
+            }
+
     def _get_object_commands(self):
         for command in self._object.get_command_list():
             yield (command

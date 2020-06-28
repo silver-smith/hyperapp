@@ -82,7 +82,7 @@ class Layout(Commander, metaclass=abc.ABCMeta):
         return self.get_command_list({'view', 'global', 'object', 'element'})
 
     def collect_view_commands(self):
-        return {self._path: self.get_command_list({'view'})}
+        return {tuple(self._path): self.get_command_list({'view'})}
 
     def _get_current_commands_with_child(self, child):
         # child commands should override and hide same commands from parents

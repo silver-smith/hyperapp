@@ -9,7 +9,7 @@ from .command_hub import CommandHub
 from .simple_list_object import SimpleListObject
 
 
-Item = namedtuple('Item', 'id')
+Item = namedtuple('Item', 'path id')
 
 
 async def _open_piece_do_nothing(piece):
@@ -43,13 +43,15 @@ class CommandList(SimpleListObject):
 
     def get_columns(self):
         return [
+            Column('path'),
             Column('id', is_key=True),
             ]
 
     async def get_all_items(self):
         return [
-            Item(command.id) for command
-            in self._layout.collect_view_commands()
+            Item(path, command.id)
+            for path, command_list in self._layout.collect_view_commands().items()
+            for command in command_list
             ]
 
 
