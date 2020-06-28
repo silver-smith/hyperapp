@@ -99,7 +99,6 @@ code_module_list = [
     'client.chooser',
     'client.params_editor',
     'client.view_chooser',
-    'client.object_layout_root',
     'client.default_state_builder',
     'client.layout_manager',
     'client.category_list',

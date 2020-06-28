@@ -7,7 +7,6 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
-from .object_layout_root import ObjectLayoutRoot
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject
 
@@ -29,7 +28,7 @@ class LayoutEditor(TreeObject):
         layout_watcher.subscribe(self)
 
     async def _async_init(self, layout):
-        root = await layout.visual_item()
+        root = await self.get_root_item(layout)
         self._add_item([], root.to_item(0, 'root'))
 
     def get_columns(self):
@@ -72,6 +71,9 @@ class LayoutEditor(TreeObject):
             if p not in self._path2item_list:
                 self._distribute_fetch_results(p, [])
         self._distribute_fetch_results(path, item_list)
+
+    async def get_root_item(self, layout):
+        return (await layout.visual_item())
 
     # from LayoutWatcher
     def process_layout_diffs(self, vdiff_list):
@@ -121,18 +123,17 @@ class ObjectLayoutEditor(LayoutEditor):
         command_hub = CommandHub()
         layout = await object_layout_resolver.resolve(state.layout_ref, object, command_hub, _open_piece_do_nothing)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        layout_root = ObjectLayoutRoot(ref_registry, object_layout_association, layout, object, state.category)
-        command_hub.init_get_commands(layout_root.get_current_commands)
-        self = cls(ref_registry, layout_watcher, state.piece_ref, layout, layout_root, state.category)
-        await self._async_init(layout_root)
+        self = cls(ref_registry, object_layout_association, layout_watcher, state.piece_ref, layout, object, state.category)
+        await self._async_init(layout)
         return self
 
-    def __init__(self, ref_registry, layout_watcher, piece_ref, layout, layout_root, category):
+    def __init__(self, ref_registry, object_layout_association, layout_watcher, piece_ref, layout, object, category):
         super().__init__(layout_watcher)
         self._ref_registry = ref_registry
+        self._object_layout_association = object_layout_association
         self._piece_ref = piece_ref
         self._layout = layout
-        self._layout_root = layout_root  # prevent ObjectLayoutRoot be garbage-collected, and it's commands gone.
+        self._object = object
         self._target_category = category
 
     def get_title(self):
@@ -142,6 +143,43 @@ class ObjectLayoutEditor(LayoutEditor):
     def data(self):
         layout_ref = self._ref_registry.register_object(self._layout.data)
         return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, self._target_category)
+
+    def get_command_list(self):
+        return [command for command in super().get_command_list()
+                if command.id not in {'replace', '_replace_impl'}]
+
+    async def get_root_item(self, layout):
+        item = await self._layout.visual_item()
+        return item.with_commands([
+            self._replace_view,
+            *self._layout.get_current_commands(),
+            ])
+
+    def _object_layout_editor(self, layout_ref):
+        piece_ref = self._ref_registry.register_object(self._object.data)
+        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category)
+
+    @command('replace')
+    async def _replace_view(self, path):
+        chooser = htypes.view_chooser.view_chooser(self._object.category_list)
+        chooser_ref = self._ref_registry.register_object(chooser)
+        layout_rec_maker_field = htypes.params_editor.field('layout_rec_maker', chooser_ref)
+        layout_ref = self._ref_registry.register_object(self._layout.data)
+        editor = self._object_layout_editor(layout_ref)
+        return htypes.params_editor.params_editor(
+            target_piece_ref=self._ref_registry.register_object(editor),
+            target_command_id=self._replace_impl.id,
+            bound_arguments=[],
+            fields=[layout_rec_maker_field],
+            )
+
+    @command('_replace_impl')
+    async def _replace_impl(self, layout_rec_maker):
+        resource_key = self._object.hashable_resource_key
+        layout_rec = await layout_rec_maker(self._object)
+        layout_ref = self._ref_registry.register_object(layout_rec)
+        self._object_layout_association[self._target_category] = layout_ref
+        return self._object_layout_editor(layout_ref)
 
 
 class ThisModule(ClientModule):

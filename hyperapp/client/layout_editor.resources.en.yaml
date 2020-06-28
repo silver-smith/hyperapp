@@ -5,6 +5,14 @@ module:client.layout_editor:LayoutEditor:
     text:
       text: Text
 
+module:client.layout_editor:ObjectLayoutEditor:
+  commands:
+    replace:
+      text: Replace
+      description: Replace this layout with another one
+      shortcuts:
+      - Ctrl+R
+
 module:client.layout_editor:ThisModule:
   commands:
     open_view_layout:

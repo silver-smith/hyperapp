@@ -1,11 +1,16 @@
 import:
   types:
+    params_editor:
+      - bound_argument
+      - field
+      - params_editor
+    view_chooser:
+      - view_chooser
     layout_editor:
       - view_layout_editor
       - object_layout_editor
   code:
     - client.layout
     - client.command_hub
-    - client.object_layout_root
     - client.column
     - client.tree_object
