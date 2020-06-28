@@ -62,15 +62,25 @@ class CategoryList(SimpleListObject):
             return None
         return await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
 
+    async def _get_layout_ref(self, category):
+        layout_ref = self._object_layout_association.get(category)
+        if layout_ref:
+            return layout_ref
+        command_hub = CommandHub()
+        layout = await self._object_layout_producer.produce_layout(self._object, command_hub, _open_piece_do_nothing)
+        return self._ref_registry.register_object(layout.data)
+
     @command('open', kind='element')
     async def open(self, item_key):
         category = item_key
-        layout_ref = self._object_layout_association.get(category)
-        if not layout_ref:
-            command_hub = CommandHub()
-            layout = await self._object_layout_producer.produce_layout(self._object, command_hub, _open_piece_do_nothing)
-            layout_ref = self._ref_registry.register_object(layout.data)
+        layout_ref = await self._get_layout_ref(category)
         return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, category)
+
+    @command('commands', kind='element')
+    async def commands(self, item_key):
+        category = item_key
+        layout_ref = await self._get_layout_ref(category)
+        return htypes.command_list.command_list(self._piece_ref, layout_ref)
 
 
 class ThisModule(ClientModule):

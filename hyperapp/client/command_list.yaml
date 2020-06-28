@@ -1,9 +1,5 @@
 import:
   types:
-    category_list:
-      - category_list
-    layout_editor:
-      - object_layout_editor
     command_list:
       - command_list
   code:

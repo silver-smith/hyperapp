@@ -7,3 +7,8 @@ module:client.category_list:CategoryList:
       text: Open
       description: Open Layout editor for selected category
       is_default: true
+    commands:
+      text: Commands
+      description: Open command list for selected category
+      shortcuts:
+        - K
