@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import logging
 
-from ..util import is_list_inst, is_ordered_dict_inst, cached_property
+from ..util import is_list_inst, is_ordered_dict_inst
 from .htypes import (
     join_path,
     list_all_match,
