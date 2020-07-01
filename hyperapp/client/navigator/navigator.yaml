@@ -1,7 +1,7 @@
 import:
   types:
-    category_list:
-    - category_list
+    layout_key_list:
+    - layout_key_list
     navigator:
     - navigator
   code:
