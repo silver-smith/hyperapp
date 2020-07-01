@@ -208,6 +208,15 @@ class ArticleRefListObject(ListObject):
     def get_title(self):
         return 'refs for %s:%d' % (self._blog_id, self._article_id)
 
+    @property
+    def data(self):
+        return htypes.blog.blog_article_ref_list(
+            blog_service_ref=self._blog_service.ref,
+            blog_id=self._blog_id,
+            article_id=self._article_id,
+            selected_ref_id=None,
+            )
+
     def get_columns(self):
         return [
             Column('id', type=tInt, is_key=True),
