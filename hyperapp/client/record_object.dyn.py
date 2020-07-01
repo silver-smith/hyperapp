@@ -8,7 +8,8 @@ class RecordObject(Object, metaclass=abc.ABCMeta):
 
     category_list = ['record']
 
-    # Returns (ordered) dict name -> object
-    @abc.abstractproperty
-    def fields(self):
-        pass
+    async def async_init(self, object_registry, fields_pieces):
+        self.fields = {
+            name: await object_registry.resolve_async(piece)
+            for name, piece in fields_pieces.items()
+            }
