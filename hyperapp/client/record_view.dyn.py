@@ -29,11 +29,11 @@ class RecordView(QtWidgets.QWidget):
         qt_layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
         self._field_views = []
-        for field_id, field in self._object.get_fields().items():
+        for field_id, field_object in self._object.fields.items():
             # layout_ref = field_to_layout_ref.get(field_id)
             layout = None  # todo
             field_view = await self._construct_field_view(
-                object_layout_producer, qt_layout, field_id, field, command_hub, piece_opener, layout)
+                object_layout_producer, qt_layout, field_id, field_object, command_hub, piece_opener, layout)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_views.append(field_view)
@@ -42,8 +42,8 @@ class RecordView(QtWidgets.QWidget):
         self.setLayout(qt_layout)
 
     async def _construct_field_view(
-            self, object_layout_producer, qt_layout, field_id, field, command_hub, piece_opener, layout):
-        layout = await object_layout_producer.produce_layout(field.object, command_hub, piece_opener)
+            self, object_layout_producer, qt_layout, field_id, field_object, command_hub, piece_opener, layout):
+        layout = await object_layout_producer.produce_layout(field_object, command_hub, piece_opener)
         view = await layout.create_view()
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)

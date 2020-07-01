@@ -4,7 +4,7 @@ from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .record_object import Field, RecordObject
+from .record_object import RecordObject
 from .chooser import ChooserCallback, Chooser
 
 
@@ -29,16 +29,16 @@ class ParamsEditor(RecordObject):
             for name, value_ref in state.bound_arguments
             }
         fields = OrderedDict([
-            (name, await cls._make_field(piece_ref, async_ref_resolver, object_registry))
+            (name, await cls._resolve_field(piece_ref, async_ref_resolver, object_registry))
             for name, piece_ref in state.fields
             ])
         return cls(ref_registry, object_registry, target_piece, target_object, state.target_command_id, bound_arguments, fields)
 
     @staticmethod
-    async def _make_field(piece_ref, async_ref_resolver, object_registry):
+    async def _resolve_field(piece_ref, async_ref_resolver, object_registry):
         piece = await async_ref_resolver.resolve_ref_to_object(piece_ref)
         object = await object_registry.resolve_async(piece)
-        return Field(piece, object)
+        return object
 
     def __init__(self, ref_registry, object_registry, target_piece, target_object, target_command_id, bound_arguments, field_odict):
         super().__init__()
@@ -50,10 +50,10 @@ class ParamsEditor(RecordObject):
         self._bound_arguments = bound_arguments
         self._field_odict = field_odict  # OrderedDict id -> Field
         self._chooser_callback_list = []
-        for field_id, field in field_odict.items():
-            if isinstance(field.object, Chooser):
+        for field_id, field_object in field_odict.items():
+            if isinstance(field_object, Chooser):
                 callback = _ParamChooserCallback(self, field_id)
-                field.object.chooser_set_callback(callback)
+                field_object.chooser_set_callback(callback)
                 self._chooser_callback_list.append(callback)
         if self._chooser_callback_list:
             self._submit.disable()
@@ -73,12 +73,13 @@ class ParamsEditor(RecordObject):
                 ],
             fields=[
                 htypes.params_editor.field(
-                    name, self._ref_registry.register_object(field.object.data))
-                for name, field in self._field_odict.items()
+                    name, self._ref_registry.register_object(field_object.data))
+                for name, field_object in self._field_odict.items()
                 ],
             )
 
-    def get_fields(self):
+    @property
+    def fields(self):
         return self._field_odict
 
     async def field_element_chosen(self, field_id, key):
@@ -92,8 +93,8 @@ class ParamsEditor(RecordObject):
     # todo: add other, predefined, values (element key)
     def _collect_values(self):
         field_values = {
-            id: field.object.get_value()
-            for id, field in self._field_odict.items()
+            id: field_object.get_value()
+            for id, field_object in self._field_odict.items()
             }
         return {
             **self._bound_arguments,
