@@ -117,10 +117,16 @@ class BlogObject(ListObject, BlogObserver):
 class BlogArticle(RecordObject):
 
     @classmethod
-    async def from_piece(cls, state, blog_service_factory):
+    async def from_piece(cls, state, object_registry, blog_service_factory):
         blog_service = await blog_service_factory(state.blog_service_ref)
         item = await blog_service.get_blog_item(state.blog_id, state.article_id)
-        return cls(blog_service, state.blog_id, item)
+        fields_pieces = {
+            'title': htypes.line.line(item.title),
+            'contents': htypes.text.wiki_text(item.text, item.ref_list),
+            }
+        self = cls(blog_service, state.blog_id, item)
+        await self.async_init(object_registry, fields_pieces)
+        return self
 
     def __init__(self, blog_service, blog_id, item):
         super().__init__()
@@ -131,11 +137,13 @@ class BlogArticle(RecordObject):
     def get_title(self):
         return self._item.title
 
-    def get_fields(self):
-        return OrderedDict([
-            ('title', htypes.line.line(self._item.title)),
-            ('contents', htypes.text.wiki_text(self._item.text, self._item.ref_list)),
-            ])
+    @property
+    def data(self):
+        return htypes.blog.blog_article(
+            blog_service_ref=self._blog_service.ref,
+            blog_id=self._blog_id,
+            article_id=self._item.id,
+            )
 
     @command('parent')
     async def command_parent(self):
@@ -447,7 +455,7 @@ class ThisModule(ClientModule):
         services.object_registry.register_type(
             htypes.blog.blog, BlogObject.from_piece, services.ref_registry, self._blog_service_factory)
         services.object_registry.register_type(
-            htypes.blog.blog_article, BlogArticle.from_piece, self._blog_service_factory)
+            htypes.blog.blog_article, BlogArticle.from_piece, services.object_registry, self._blog_service_factory)
         services.object_registry.register_type(
             htypes.blog.blog_article_ref_list,
             ArticleRefListObject.from_piece,
