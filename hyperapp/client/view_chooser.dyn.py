@@ -1,9 +1,9 @@
 from collections import namedtuple
 
-from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .object_command import command
 from .chooser import Chooser
 from .column import Column
 from .simple_list_object import SimpleListObject

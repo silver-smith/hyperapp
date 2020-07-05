@@ -4,6 +4,7 @@ import:
       - tree_to_list_adapter
       - tree_to_list_adapter_layout
   code:
+    - client.object_command
     - client.layout
     - client.tree_object
     - client.list_object

@@ -1,10 +1,10 @@
 import logging
 from collections import namedtuple
 
-from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .object_command import command
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
 from .column import Column

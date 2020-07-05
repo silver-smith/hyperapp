@@ -7,6 +7,7 @@ import:
     command_list:
       - command_list
   code:
+    - client.object_command
     - client.column
     - client.command_hub
     - client.simple_list_object

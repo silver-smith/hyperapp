@@ -10,6 +10,7 @@ import:
       - view_layout_editor
       - object_layout_editor
   code:
+    - client.object_command
     - client.layout
     - client.command_hub
     - client.column

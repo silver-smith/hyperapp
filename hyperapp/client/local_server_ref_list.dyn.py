@@ -1,7 +1,8 @@
 import os.path
 
-from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
+
+from .object_command import command
 from .local_server_paths import LOCAL_SERVER_DYNAMIC_REF_LIST_REF_PATH, load_bundle_from_file
 
 

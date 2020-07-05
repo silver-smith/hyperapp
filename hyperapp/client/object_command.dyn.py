@@ -37,7 +37,7 @@ class UnboundObjectCommand(UnboundCommand):
 
 class BoundObjectCommand:
 
-    def __init__(self, id, kind, resource_key, class_method, object_wr, args=None, kw=None, wrapper=None):
+    def __init__(self, id, kind, resource_key, class_method, object_wr, args=None, kw=None, wrapper=None, params_subst=None):
         self.id = id
         self.kind = kind
         self.resource_key = resource_key
@@ -46,6 +46,7 @@ class BoundObjectCommand:
         self._args = args or ()
         self._kw = kw or {}
         self._wrapper = wrapper
+        self._params_subst = params_subst
 
     def __repr__(self):
         return (f"BoundObjectCommand(id={self.id} kind={self.kind} object={self._object_wr}"
@@ -61,6 +62,7 @@ class BoundObjectCommand:
             args=self._args,
             kw=self._kw,
             wrapper=self._wrapper,
+            params_subst=self._params_subst,
             )
         all_kw = {**old_kw, **kw}
         return BoundObjectCommand(**all_kw)
@@ -75,8 +77,12 @@ class BoundObjectCommand:
         object = self._object_wr()
         if not object:
             return  # object we bound to is already deleted
-        full_args = (*self._args, *args)
-        full_kw = {**self._kw, **kw}
+        if self._params_subst:
+            _log.info("BoundObjectCommand: subst params: (%r) args=%r kw=%r", self, args, kw)
+            full_args, full_kw = self._params_subst(*self._args, *args, **self._kw, **kw)
+        else:
+            full_args = (*self._args, *args)
+            full_kw = {**self._kw, **kw}
         if self._more_params_are_required(*full_args, **full_kw):
             signature = inspect.signature(self._class_method)
             bound_arguments = signature.bind_partial(object, *full_args, **full_kw)

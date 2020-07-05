@@ -1,8 +1,9 @@
 import:
   types:
     root_layout:
-    - root_layout
+      - root_layout
   code:
-  - client.layout_registry
-  - client.layout
-  - client.command_hub
+    - client.object_command
+    - client.layout_registry
+    - client.layout
+    - client.command_hub

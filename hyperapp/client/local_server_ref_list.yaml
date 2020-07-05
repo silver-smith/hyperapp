@@ -1,3 +1,4 @@
 import:
   code:
+    - client.object_command
     - common.local_server_paths

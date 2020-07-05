@@ -1,9 +1,9 @@
 # Provide list view interface to tree view object
 
-from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .object_command import command
 from .layout import RootVisualItem, VisualItem, Layout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject
