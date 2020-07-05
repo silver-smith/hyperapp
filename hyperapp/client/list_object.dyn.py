@@ -5,7 +5,6 @@ from functools import total_ordering
 
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import Type, tString
-from hyperapp.client.commander import Command
 from hyperapp.client.object import ObjectObserver, Object
 
 log = logging.getLogger(__name__)

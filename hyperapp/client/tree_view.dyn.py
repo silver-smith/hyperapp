@@ -9,7 +9,6 @@ from PySide2 import QtCore, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import make_async_action
-from hyperapp.client.command import Command
 from hyperapp.client.module import ClientModule
 
 from . import htypes

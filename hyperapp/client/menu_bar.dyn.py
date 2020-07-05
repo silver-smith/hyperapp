@@ -4,7 +4,6 @@ import weakref
 from PySide2 import QtCore, QtWidgets
 
 from hyperapp.client.util import make_action, make_async_action
-from hyperapp.client.command import Command, WindowCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes

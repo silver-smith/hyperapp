@@ -9,7 +9,6 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
-from hyperapp.client.command import Command
 from hyperapp.common.logger import log, create_context_task
 from hyperapp.client.module import ClientModule
 
