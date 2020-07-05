@@ -204,19 +204,18 @@ class ListViewLayout(Layout):
 
     class _CurrentItemObserver:
 
-        def __init__(self, layout):
+        def __init__(self, layout, command_hub):
             self._layout = layout
+            self._command_hub = command_hub
 
         def current_changed(self, current_item_key):
-            self._layout._update_element_commands(current_item_key)
+            self._layout._update_element_commands(self._command_hub, current_item_key)
 
-    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, command_hub, piece_opener):
+    def __init__(self, type_resolver, resource_resolver, params_editor, object, path):
         super().__init__(path)
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
-        self._command_hub = command_hub
-        self._piece_opener = piece_opener
         self._object = object
         self._current_item_observer = None
 
@@ -224,10 +223,10 @@ class ListViewLayout(Layout):
     def data(self):
         return htypes.list_view.list_layout()
 
-    async def create_view(self):
+    async def create_view(self, command_hub):
         columns = list(map_columns_to_view(self._resource_resolver, self._object))
         list_view = ListView(columns, self._object)
-        self._current_item_observer = observer = self._CurrentItemObserver(self)
+        self._current_item_observer = observer = self._CurrentItemObserver(self, command_hub)
         list_view.add_observer(observer)
         return list_view
 
@@ -244,20 +243,14 @@ class ListViewLayout(Layout):
             }
 
     def _get_object_commands(self):
-        for command in self._object.get_command_list():
-            yield (command
-                   .with_(wrapper=self._piece_opener)
-                   )
+        return self._object.get_command_list():
 
-    def _update_element_commands(self, current_item_key):
-        self._command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
+    def _update_element_commands(self, command_hub, current_item_key):
+        command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
 
     def _get_element_commands(self, current_item_key):
         for command in self._object.get_item_command_list(current_item_key):
-            yield (command
-                   .partial(current_item_key)
-                   .with_(wrapper=self._piece_opener)
-                   )
+            yield command.partial(current_item_key)
 
 
 class ThisModule(ClientModule):

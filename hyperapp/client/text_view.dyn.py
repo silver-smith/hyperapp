@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class TextViewLayout(Layout):
 
-    def __init__(self, object, path, command_hub, piece_opener):
+    def __init__(self, object, path):
         super().__init__(path)
         self._object = object
 

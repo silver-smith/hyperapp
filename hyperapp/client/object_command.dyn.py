@@ -109,6 +109,9 @@ class BoundObjectCommand:
     async def _wrap_result(self, result):
         if result is None:
             return
+        piece = result
+        object = await this_module.object_registry.resolve_async(piece)
+        layout = await this_module.object_layout_producer.produce_layout(object)
         if self._wrapper:
             result = await self._wrapper(result)
         return result
@@ -131,4 +134,6 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self.object_registry = services.object_registry
+        self.object_layout_producer = services.object_layout_producer
         self.params_editor = services.params_editor

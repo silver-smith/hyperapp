@@ -83,7 +83,7 @@ class NavigatorLayout(Layout):
     async def create_view(self):
         self._current_piece = piece = self._initial_piece
         self._current_object = object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(object, self._command_hub, self._open_piece)
+        layout = await self._object_layout_producer.produce_layout(object, self._command_hub)
         self._current_layout = layout
         return (await layout.create_view())
 
@@ -112,7 +112,7 @@ class NavigatorLayout(Layout):
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(object, self._command_hub, self._open_piece)
+        layout = await self._object_layout_producer.produce_layout(object, self._command_hub)
         view = await layout.create_view()
         self._view_opener.open(view)
         self._current_piece = piece

@@ -39,7 +39,7 @@ class ObjectLayoutProducer:
         self._object_layout_association = object_layout_association
         self._object_layout_registry = object_layout_registry
 
-    async def produce_layout(self, object, command_hub, piece_opener):
+    async def produce_layout(self, object):
         layout_rec = None
         for category in reversed(object.category_list):
             try:
@@ -55,7 +55,7 @@ class ObjectLayoutProducer:
             except StopIteration:
                 raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
             layout_rec = await rec.layout_rec_maker(object)
-        return (await self._object_layout_registry.resolve_async(layout_rec, object, command_hub, piece_opener))
+        return (await self._object_layout_registry.resolve_async(layout_rec, object))
 
 
 class ThisModule(ClientModule):
