@@ -100,6 +100,7 @@ code_module_list = [
     'client.record_object',
     'client.chooser',
     'client.params_editor',
+    'client.object_command',
     'client.view_chooser',
     'client.default_state_builder',
     'client.layout_manager',

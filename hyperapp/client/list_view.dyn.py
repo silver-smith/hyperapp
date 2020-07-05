@@ -247,7 +247,6 @@ class ListViewLayout(Layout):
         for command in self._object.get_command_list():
             yield (command
                    .with_(wrapper=self._piece_opener)
-                   .with_(piece=self._object.data, params_editor=self._params_editor)
                    )
 
     def _update_element_commands(self, current_item_key):
@@ -258,7 +257,6 @@ class ListViewLayout(Layout):
             yield (command
                    .partial(current_item_key)
                    .with_(wrapper=self._piece_opener)
-                   .with_(piece=self._object.data, params_editor=self._params_editor)
                    )
 
 

@@ -2,11 +2,21 @@ import logging
 import inspect
 import weakref
 import abc
+import sys
 
 from ..common.util import is_list_inst
 from ..common.htypes import resource_key_t
+from ..common.ref import phony_ref
 
 _log = logging.getLogger(__name__)
+
+
+def resource_key_of_class_method(class_method, *resource_path):
+    module_name = class_method.__module__
+    module = sys.modules[module_name]
+    module_ref = module.__dict__.get('__module_ref__') or phony_ref(module_name.split('.')[-1])
+    class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
+    return resource_key_t(module_ref, [class_name, *resource_path])
 
 
 # returned from Object.get_commands
@@ -59,8 +69,6 @@ class BoundCommand(Command):
             args=None,
             kw=None,
             wrapper=None,
-            piece=None,
-            params_editor=None,
             params_subst=None,
             ):
         Command.__init__(self, id, kind, resource_key, enabled)
@@ -69,13 +77,11 @@ class BoundCommand(Command):
         self._args = args or ()
         self._kw = kw or {}
         self._wrapper = wrapper
-        self._piece = piece  # piece this instance created from
-        self._params_editor = params_editor
         self._params_subst = params_subst
 
     def __repr__(self):
         return (f"BoundCommand(id={self.id} kind={self.kind} inst={self._inst_wr}"
-                f" args={self._args} kw={self._kw} wrapper={self._wrapper} pe={self._piece}/{self._params_editor})")
+                f" args={self._args} kw={self._kw} wrapper={self._wrapper})")
 
     def get_view(self):
         return self._inst_wr()
@@ -90,21 +96,7 @@ class BoundCommand(Command):
         else:
             full_args = (*self._args, *args)
             full_kw = {**self._kw, **kw}
-        if self._more_params_are_required(*full_args, **full_kw):
-            signature = inspect.signature(self._class_method)
-            bound_arguments = signature.bind_partial(inst, *full_args, **full_kw)
-            _log.info("Command: run param editor: (%r) args=%r kw=%r", self, full_args, full_kw)
-            assert self._params_editor  # More parameters are required, but param editor is not set
-            result = await self._params_editor(self._piece, self, bound_arguments, full_args, full_kw)
-        else:
-            result = await self._run_impl(inst, full_args, full_kw)
-        return (await self._wrap_result(result))
-
-    async def run_with_full_params(self, *args, **kw):
-        inst = self._inst_wr()
-        if not inst:
-            return  # instance we bound to is already deleted
-        result = await self._run_impl(inst, args, kw)
+        result = await self._run_impl(inst, full_args, full_kw)
         return (await self._wrap_result(result))
 
     async def _run_impl(self, inst, args, kw):
@@ -132,8 +124,6 @@ class BoundCommand(Command):
             args=self._args,
             kw=self._kw,
             wrapper=self._wrapper,
-            piece=self._piece,
-            params_editor=self._params_editor,
             params_subst=self._params_subst,
             )
         all_kw = {**old_kw, **kw}
@@ -142,40 +132,12 @@ class BoundCommand(Command):
     def partial(self, *args, **kw):
         return self.with_(args=args, kw=kw)
 
-    def _more_params_are_required(self, *args, **kw):
-        signature = inspect.signature(self._class_method)
-        try:
-            inst = None
-            signature.bind(inst, *args, **kw)
-            return False
-        except TypeError as x:
-            if str(x).startswith('missing a required argument: '):
-                _log.info("More params are required: %s", x)
-                return True
-            else:
-                raise
 
+class UnboundCommand(metaclass=abc.ABCMeta):
 
-class UnboundCommand(object):
-
-    def __init__(self, id, kind, resource_key, enabled, class_method):
-        assert isinstance(id, str), repr(id)
-        assert kind is None or isinstance(kind, str), repr(kind)
-        assert isinstance(resource_key, resource_key_t), repr(resource_key)
-        assert isinstance(enabled, bool), repr(enabled)
-        self.id = id
-        self.kind = kind
-        self._resource_key = resource_key
-        self.enabled = enabled
-        self._class_method = class_method
-
+    @abc.abstractmethod
     def bind(self, inst, kind):
-        if self.kind is not None:
-            kind = self.kind
-        return self._bind(weakref.ref(inst), kind)
-
-    def _bind(self, inst_wr, kind):
-        return BoundCommand(self.id, kind, self._resource_key, self.enabled, self._class_method, inst_wr)
+        pass
 
 
 class Commander(object):
@@ -197,7 +159,6 @@ class Commander(object):
 
     def get_command(self, command_id):
         for command in self._commands:
-            assert isinstance(command, BoundCommand), repr(command)
             if command.id == command_id:
                 return command
         raise KeyError(f"{self!r}: Unknown command: {command_id}")

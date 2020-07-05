@@ -3,9 +3,7 @@ import sys
 import weakref
 
 from ..common.htypes import resource_key_t
-from ..common.ref import phony_ref
-from .commander import Command, UnboundCommand
-from .error_handler_hook import get_handle_for_error
+from .commander import resource_key_of_class_method, BoundCommand, UnboundCommand
 
 log = logging.getLogger(__name__)
 
@@ -22,15 +20,23 @@ class command(object):
         self.enabled = enabled
 
     def __call__(self, class_method):
-        module_name = class_method.__module__
-        module = sys.modules[module_name]
-        module_ref = module.__dict__.get('__module_ref__') or phony_ref(module_name.split('.')[-1])
-        class_name = class_method.__qualname__.split('.')[0]  # __qualname__ is 'Class.function'
-        resource_key = resource_key_t(module_ref, [class_name, 'command', self.id])
-        return self.instantiate(self.wrap_method(class_method), resource_key)
+        resource_key = resource_key_of_class_method(class_method, 'command', self.id)
+        return UnboundViewCommand(self.id, self.kind, resource_key, self.enabled, class_method)
 
-    def instantiate(self, wrapped_class_method, resource_key):
-        return UnboundCommand(self.id, self.kind, resource_key, self.enabled, wrapped_class_method)
 
-    def wrap_method(self, method):
-        return method
+class UnboundViewCommand(UnboundCommand):
+
+    def __init__(self, id, kind, resource_key, enabled, class_method):
+        self.id = id
+        self.kind = kind
+        self._resource_key = resource_key
+        self.enabled = enabled
+        self._class_method = class_method
+
+    def bind(self, inst, kind):
+        if self.kind is not None:
+            kind = self.kind
+        inst_wr = weakref.ref(inst)
+        return BoundCommand(self.id, kind, self._resource_key, self.enabled, self._class_method, inst_wr)
+
+

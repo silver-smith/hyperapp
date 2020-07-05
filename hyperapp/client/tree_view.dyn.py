@@ -385,7 +385,6 @@ class TreeViewLayout(Layout):
             yield (command
                    .partial(current_item_key)
                    .with_(wrapper=self._piece_opener)
-                   .with_(piece=self._object.data, params_editor=self._params_editor)
                    )
 
 

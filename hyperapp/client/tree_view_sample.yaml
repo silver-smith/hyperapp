@@ -5,6 +5,7 @@ import:
     text:
       - text
   code:
+    - client.object_command
     - client.column
     - client.tree_object
     - client.tree_view

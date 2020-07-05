@@ -1,6 +1,8 @@
 import:
   types:
     text:
-    - text
-    - wiki_ref
-    - wiki_text
+      - text
+      - wiki_ref
+      - wiki_text
+  code:
+    - client.object_command

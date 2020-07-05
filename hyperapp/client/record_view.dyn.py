@@ -91,7 +91,6 @@ class RecordViewLayout(Layout):
         for command in self._object.get_command_list():
             yield (command
                    .with_(wrapper=self._piece_opener)
-                   .with_(piece=self._object.data, params_editor=self._params_editor)
                    )
 
 
