@@ -10,33 +10,6 @@ from .error_handler_hook import get_handle_for_error
 log = logging.getLogger(__name__)
 
 
-class WindowCommand(Command):
-
-    @classmethod
-    def from_command(cls, cmd, window):
-        return cls(cmd.id, cmd.kind, cmd.resource_key, cmd.enabled, cmd, weakref.ref(window))
-
-    def __init__(self, id, kind, resource_key, enabled, base_cmd, window_wr):
-        Command.__init__(self, id, kind, resource_key, enabled)
-        self._base_cmd = base_cmd
-        self._window_wr = window_wr  # weak ref to class instance
-
-    def __repr__(self):
-        return 'WindowCommand(%r -> %r)' % (self.id, self._base_cmd)
-
-    def get_view(self):
-        return self._window_wr()
-
-    async def run(self, *args, **kw):
-        window = self._window_wr()
-        if not window: return
-        log.debug('WindowCommand.run: %r/%r, %r, (%s, %s)', self.id, self.kind, self._base_cmd, args, kw)
-        handle = await self._base_cmd.run(*args, **kw)
-        ## assert handle is None or isinstance(handle, tHandle), repr(handle)  # command can return only handle
-        if handle:
-            window.get_current_view().open(handle)
-
-
 # decorator for view methods
 class command(object):
 
