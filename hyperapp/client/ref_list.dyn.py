@@ -4,9 +4,10 @@ from collections import namedtuple
 
 from hyperapp.common.htypes import resource_key_t
 from hyperapp.common.ref import ref_repr
-from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
+
 from . import htypes
+from .object_command import command
 from .column import Column
 from .list_object import ListObject
 

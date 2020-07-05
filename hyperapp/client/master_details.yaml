@@ -5,6 +5,7 @@ import:
     master_details:
       - master_details_layout
   code:
+    - client.object_command
     - client.composite
     - client.layout
     - client.list_object

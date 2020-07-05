@@ -1,21 +1,22 @@
 import:
   types:
     hyper_ref:
-    - service
+      - service
     line:
-    - line
+      - line
     text:
-    - text
-    - wiki_ref
-    - wiki_text
+      - text
+      - wiki_ref
+      - wiki_text
     blog:
-    - blog
-    - blog_article
-    - blog_article_ref_list
-    - blog_article_ref_selector
-    - blog_notification_iface
+      - blog
+      - blog_article
+      - blog_article_ref_list
+      - blog_article_ref_selector
+      - blog_notification_iface
   code:
-  - client.column
-  - client.list_object
-  - client.text_object
-  - client.record_object
+    - client.object_command
+    - client.column
+    - client.list_object
+    - client.text_object
+    - client.record_object

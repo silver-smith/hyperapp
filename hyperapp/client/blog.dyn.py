@@ -6,8 +6,9 @@ import abc
 
 from hyperapp.common.htypes import tInt, tDateTime, resource_key_t
 from hyperapp.client.module import ClientModule
-from hyperapp.client.command import command
+
 from . import htypes
+from .object_command import command
 from .column import Column
 from .list_object import ListObject
 from .text_object import TextObject

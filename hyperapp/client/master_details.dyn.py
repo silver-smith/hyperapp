@@ -4,10 +4,10 @@ import logging
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
+from .object_command import command
 from .composite import Composite
 from .layout import RootVisualItem, VisualItem, Layout
 from .list_object import ListObject
