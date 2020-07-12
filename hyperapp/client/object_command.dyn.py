@@ -113,7 +113,7 @@ class BoundObjectCommand:
         object = await this_module.object_registry.resolve_async(piece)
         layout = await this_module.object_layout_producer.produce_layout(object)
         if self._wrapper:
-            result = await self._wrapper(result)
+            result = await self._wrapper(layout)
         return result
 
     def _more_params_are_required(self, *args, **kw):

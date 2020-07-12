@@ -68,8 +68,6 @@ class NavigatorLayout(Layout):
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._history = _History()
-        self._current_piece = None
-        self._current_object = None
         self._current_layout = None
 
     async def _async_init(self, initial_piece_ref, initial_layout_ref):
@@ -79,7 +77,7 @@ class NavigatorLayout(Layout):
             self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, object)
         else:
             self._current_layout = await self._object_layout_producer.produce_layout(object)
-        self._history.append(piece)
+        self._history.append(self._current_layout)
 
     @property
     def data(self):
@@ -100,26 +98,39 @@ class NavigatorLayout(Layout):
         return [
             *super().get_current_commands(),
             *self._get_global_commands(),
-            *self._current_layout.get_current_commands(),
+            *self._get_current_layout_commands(),
             ]
 
     def _get_global_commands(self):
         for command in self._module_command_registry.get_all_commands():
             yield (command
-                   .with_(wrapper=self._open_piece)
+                   .with_(wrapper=self._open_layout)
                    )
+
+    def _get_current_layout_commands(self):
+        for command in self._current_layout.get_current_commands():
+            yield (command
+                   .with_(wrapper=self._open_layout)
+                   )
+
+    async def _open_layout(self, layout):
+        await self._open_layout_impl(layout)
+        self._history.append(layout)
 
     async def _open_piece(self, piece):
         await self._open_piece_impl(piece)
-        self._history.append(piece)
+        # self._history.append(piece)  # todo
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
         layout = await self._object_layout_producer.produce_layout(object)
-        view = await layout.create_view(self._command_hub)
-        self._view_opener.open(view)
         self._current_piece = piece
         self._current_object = object
+        await self._open_layout_impl(layout)
+
+    async def _open_layout_impl(self, layout):
+        view = await layout.create_view(self._command_hub)
+        self._view_opener.open(view)
         self._current_layout = layout
         self._command_hub.update()
 
