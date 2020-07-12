@@ -20,7 +20,11 @@ class TextViewLayout(Layout):
         super().__init__(path)
         self._object = object
 
-    async def create_view(self):
+    @property
+    def data(self):
+        return htypes.text.text_edit_layout()
+
+    async def create_view(self, command_hub):
         return TextView(self._object)
 
     async def visual_item(self):
@@ -78,5 +82,5 @@ class ThisModule(ClientModule):
     async def _make_text_layout_rec(self, object):
         return htypes.text.text_edit_layout()
 
-    async def _produce_text_layout(self, state, object, command_hub, piece_opener):
-        return TextViewLayout(object, [], command_hub, piece_opener)
+    async def _produce_text_layout(self, state, object):
+        return TextViewLayout(object, [])

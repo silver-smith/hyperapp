@@ -243,7 +243,7 @@ class ListViewLayout(Layout):
             }
 
     def _get_object_commands(self):
-        return self._object.get_command_list():
+        return self._object.get_command_list()
 
     def _update_element_commands(self, command_hub, current_item_key):
         command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
@@ -267,6 +267,5 @@ class ThisModule(ClientModule):
     async def _make_list_layout_rec(self, object):
         return htypes.list_view.list_layout()
 
-    async def _produce_layout(self, state, object, command_hub, piece_opener):
-        return ListViewLayout(self._type_resolver, self._resource_resolver, self._params_editor,
-                              object, [], command_hub, piece_opener)
+    async def _produce_layout(self, state, object):
+        return ListViewLayout(self._type_resolver, self._resource_resolver, self._params_editor, object, [])

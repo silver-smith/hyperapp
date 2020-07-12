@@ -46,21 +46,22 @@ class NavigatorLayout(Layout):
     async def from_data(cls,
                         state, path, command_hub, view_opener,
                         ref_registry, async_ref_resolver, type_resolver,
-                        object_registry, object_layout_producer, module_command_registry, params_editor):
+                        object_registry, object_layout_resolver, object_layout_producer, module_command_registry, params_editor):
         self = cls(ref_registry, async_ref_resolver, type_resolver,
-                   object_registry, object_layout_producer, module_command_registry, params_editor,
+                   object_registry, object_layout_resolver, object_layout_producer, module_command_registry, params_editor,
                    path, command_hub, view_opener)
-        await self._async_init(state.current_piece_ref)
+        await self._async_init(state.current_piece_ref, state.current_layout_ref)
         return self
 
     def __init__(self, ref_registry, async_ref_resolver, type_resolver,
-                 object_registry, object_layout_producer, module_command_registry, params_editor,
+                 object_registry, object_layout_resolver, object_layout_producer, module_command_registry, params_editor,
                  path, command_hub, view_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._async_ref_resolver = async_ref_resolver
         self._type_resolver = type_resolver
         self._object_registry = object_registry
+        self._object_layout_resolver = object_layout_resolver
         self._object_layout_producer = object_layout_producer
         self._module_command_registry = module_command_registry
         self._params_editor = params_editor
@@ -71,21 +72,23 @@ class NavigatorLayout(Layout):
         self._current_object = None
         self._current_layout = None
 
-    async def _async_init(self, initial_piece_ref):
-        self._initial_piece = piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
+    async def _async_init(self, initial_piece_ref, initial_layout_ref):
+        self._current_piece = piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
+        self._current_object = object = await self._object_registry.resolve_async(piece)
+        if initial_layout_ref:
+            self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, object)
+        else:
+            self._current_layout = await self._object_layout_producer.produce_layout(object)
         self._history.append(piece)
 
     @property
     def data(self):
         current_piece_ref = self._ref_registry.register_object(self._current_piece)
-        return htypes.navigator.navigator(current_piece_ref)
+        current_layout_ref = self._ref_registry.register_object(self._current_layout.data)
+        return htypes.navigator.navigator(current_piece_ref, current_layout_ref)
 
     async def create_view(self):
-        self._current_piece = piece = self._initial_piece
-        self._current_object = object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(object, self._command_hub)
-        self._current_layout = layout
-        return (await layout.create_view())
+        return (await self._current_layout.create_view(self._command_hub))
 
     async def visual_item(self):
         piece = self._current_piece
@@ -112,8 +115,8 @@ class NavigatorLayout(Layout):
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(object, self._command_hub)
-        view = await layout.create_view()
+        layout = await self._object_layout_producer.produce_layout(object)
+        view = await layout.create_view(self._command_hub)
         self._view_opener.open(view)
         self._current_piece = piece
         self._current_object = object
@@ -156,6 +159,7 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.type_resolver,
             services.object_registry,
+            services.object_layout_resolver,
             services.object_layout_producer,
             services.module_command_registry,
             services.params_editor,
