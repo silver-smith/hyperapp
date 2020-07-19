@@ -4,5 +4,7 @@ import:
     - bound_argument
     - field
     - params_editor
-    line:
-    - line
+  code:
+    - client.object_command
+    - client.record_object
+    - client.chooser
