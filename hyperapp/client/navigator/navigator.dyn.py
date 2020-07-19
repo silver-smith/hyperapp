@@ -118,7 +118,7 @@ class NavigatorLayout(Layout):
                    )
 
     async def _open_layout(self, object, layout):
-        await self._open_layout_impl(layout)
+        await self._open_layout_impl(object, layout)
         self._history.append(_HistoryItem(object, layout))
 
     async def _open_piece(self, piece):
@@ -131,9 +131,10 @@ class NavigatorLayout(Layout):
         self._current_object = object
         await self._open_layout_impl(layout)
 
-    async def _open_layout_impl(self, layout):
+    async def _open_layout_impl(self, object, layout):
         view = await layout.create_view(self._command_hub)
         self._view_opener.open(view)
+        self._current_object = object
         self._current_layout = layout
         self._command_hub.update()
 
