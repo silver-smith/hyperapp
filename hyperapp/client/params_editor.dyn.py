@@ -126,7 +126,7 @@ class ThisModule(ClientModule):
             htypes.params_editor.field(
                 name,
                 self._ref_registry.register_object(
-                    self._annotation_to_field(annotation)),
+                    self._annotation_to_field(name, annotation)),
                 )
             for name, annotation in wanted_arguments]
         return htypes.params_editor.params_editor(
@@ -136,5 +136,8 @@ class ThisModule(ClientModule):
             fields=fields,
             )
 
-    def _annotation_to_field(self, annotation):
-        return self._field_types[annotation]
+    def _annotation_to_field(self, name, annotation):
+        try:
+            return self._field_types[annotation]
+        except KeyError as x:
+            raise RuntimeError(f"No annotation is defined for field {name!r}: {x}")
