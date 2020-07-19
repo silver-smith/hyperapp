@@ -30,6 +30,15 @@ class FsTree(TreeObject):
     def get_title(self):
         return '%s' % self._host
 
+    @property
+    def data(self):
+        return htypes.fs.fs(
+            fs_service_ref=self._fs_service.to_ref(),
+            host=self._host,
+            path=[],
+            current_file_name=None,
+            )
+
     def get_columns(self):
         return [
             Column('key', is_key=True),
