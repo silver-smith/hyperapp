@@ -145,18 +145,18 @@ class NavigatorLayout(GlobalLayout):
     @command('go_backward')
     async def _go_backward(self):
         try:
-            piece = self._history.move_backward()
+            item = self._history.move_backward()
         except IndexError:
             return
-        await self._open_piece_impl(piece)
+        await self._open_layout_impl(item.object, item.layout)
 
     @command('go_forward')
     async def _go_forward(self):
         try:
-            piece = self._history.move_forward()
+            item = self._history.move_forward()
         except IndexError:
             return
-        await self._open_piece_impl(piece)
+        await self._open_layout_impl(item.object, item.layout)
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):
