@@ -112,9 +112,9 @@ class BoundObjectCommand:
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
         layout = await this_module.object_layout_producer.produce_layout(object)
-        if self._wrapper:
-            result = await self._wrapper(layout)
-        return result
+        if not self._wrapper:
+            return (object, layout)
+        await self._wrapper(object, layout)
 
     def _more_params_are_required(self, *args, **kw):
         signature = inspect.signature(self._class_method)

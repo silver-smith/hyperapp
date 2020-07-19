@@ -1,3 +1,4 @@
 
 navigator = record:
-    current_layout_ref: ref
+  current_piece_ref: ref
+  current_layout_ref: ref opt

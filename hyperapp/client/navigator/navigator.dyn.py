@@ -1,6 +1,7 @@
 # navigator component - container keeping navigation history and allowing go backward and forward
 
 import logging
+from collections import namedtuple
 from functools import partial
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
@@ -12,6 +13,9 @@ from .view import View
 from .layout import RootVisualItem, VisualItem, Layout
 
 _log = logging.getLogger(__name__)
+
+
+_HistoryItem = namedtuple('_HistoryItem', 'object layout')
 
 
 class _History:
@@ -71,17 +75,17 @@ class NavigatorLayout(Layout):
         self._current_layout = None
 
     async def _async_init(self, initial_piece_ref, initial_layout_ref):
-        self._current_piece = piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
+        piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
         self._current_object = object = await self._object_registry.resolve_async(piece)
         if initial_layout_ref:
             self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, object)
         else:
             self._current_layout = await self._object_layout_producer.produce_layout(object)
-        self._history.append(self._current_layout)
+        self._history.append(_HistoryItem(object, self._current_layout))
 
     @property
     def data(self):
-        current_piece_ref = self._ref_registry.register_object(self._current_piece)
+        current_piece_ref = self._ref_registry.register_object(self._current_object.data)
         current_layout_ref = self._ref_registry.register_object(self._current_layout.data)
         return htypes.navigator.navigator(current_piece_ref, current_layout_ref)
 
@@ -89,7 +93,7 @@ class NavigatorLayout(Layout):
         return (await self._current_layout.create_view(self._command_hub))
 
     async def visual_item(self):
-        piece = self._current_piece
+        piece = self._current_object.data
         return RootVisualItem('Navigator', children=[
             VisualItem(0, 'current', str(piece)),
             ])
@@ -113,9 +117,9 @@ class NavigatorLayout(Layout):
                    .with_(wrapper=self._open_layout)
                    )
 
-    async def _open_layout(self, layout):
+    async def _open_layout(self, object, layout):
         await self._open_layout_impl(layout)
-        self._history.append(layout)
+        self._history.append(_HistoryItem(object, layout))
 
     async def _open_piece(self, piece):
         await self._open_piece_impl(piece)
@@ -124,7 +128,6 @@ class NavigatorLayout(Layout):
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
         layout = await self._object_layout_producer.produce_layout(object)
-        self._current_piece = piece
         self._current_object = object
         await self._open_layout_impl(layout)
 
@@ -152,9 +155,7 @@ class NavigatorLayout(Layout):
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):
-        # piece_t = deduce_value_type(self._current_piece)
-        # type_ref = self._type_resolver.reverse_resolve(piece_t)
-        current_piece_ref = self._ref_registry.register_object(self._current_piece)
+        current_piece_ref = self._ref_registry.register_object(self._current_object.data)
         piece = htypes.layout_key_list.layout_key_list(current_piece_ref)
         await self._open_piece(piece)
 
