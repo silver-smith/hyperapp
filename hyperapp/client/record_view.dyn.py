@@ -12,16 +12,16 @@ from .record_object import RecordObject
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def make(cls, object_layout_producer, object, command_hub, piece_opener, fields=None):
+    async def make(cls, object_layout_producer, object, command_hub, fields=None):
         view = cls(object)
-        await view._async_init(object_layout_producer, command_hub, piece_opener, fields)
+        await view._async_init(object_layout_producer, command_hub, fields)
         return view
 
     def __init__(self, object):
         super().__init__()
         self._object = object
 
-    async def _async_init(self, object_layout_producer, command_hub, piece_opener, fields):
+    async def _async_init(self, object_layout_producer, command_hub, fields):
         # if fields:
         #     field_to_layout_ref = {field.field_id: field.layout_ref for field in fields}
         # else:
@@ -33,7 +33,7 @@ class RecordView(QtWidgets.QWidget):
             # layout_ref = field_to_layout_ref.get(field_id)
             layout = None  # todo
             field_view = await self._construct_field_view(
-                object_layout_producer, qt_layout, field_id, field_object, command_hub, piece_opener, layout)
+                object_layout_producer, qt_layout, field_id, field_object, command_hub, layout)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_views.append(field_view)
@@ -42,9 +42,9 @@ class RecordView(QtWidgets.QWidget):
         self.setLayout(qt_layout)
 
     async def _construct_field_view(
-            self, object_layout_producer, qt_layout, field_id, field_object, command_hub, piece_opener, layout):
-        layout = await object_layout_producer.produce_layout(field_object, command_hub, piece_opener)
-        view = await layout.create_view()
+            self, object_layout_producer, qt_layout, field_id, field_object, command_hub, layout):
+        layout = await object_layout_producer.produce_layout(field_object)
+        view = await layout.create_view(command_hub)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
         qt_layout.addWidget(label)
@@ -69,29 +69,24 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(ObjectLayout):
 
-    def __init__(self, object_layout_producer, params_editor, object, path, command_hub, piece_opener, fields=None):
+    def __init__(self, object_layout_producer, params_editor, object, path, fields=None):
         super().__init__(path)
         self._object_layout_producer = object_layout_producer
         self._params_editor = params_editor
         self._object = object
-        self._command_hub = command_hub
-        self._piece_opener = piece_opener
         self._fields = fields  # htypes.record_view.record_field list
 
-    async def create_view(self):
-        return (await RecordView.make(self._object_layout_producer, self._object, self._command_hub, self._piece_opener, self._fields))
+    async def create_view(self, command_hub):
+        return (await RecordView.make(self._object_layout_producer, self._object, command_hub, self._fields))
 
     async def visual_item(self):
         return RootVisualItem('RecordView')  # todo: add fields children
 
-    def get_current_commands(self):
+    def get_current_commands(self, view):
         return list(self._get_object_commands())
 
     def _get_object_commands(self):
-        for command in self._object.get_command_list():
-            yield (command
-                   .with_(wrapper=self._piece_opener)
-                   )
+        return self._object.get_command_list()
 
 
 class ThisModule(ClientModule):
@@ -107,5 +102,5 @@ class ThisModule(ClientModule):
     async def _make_record_layout_rec(self, object):
         return htypes.record_view.record_layout()
 
-    async def _produce_layout(self, state, object, command_hub, piece_opener):
-        return RecordViewLayout(self._object_layout_producer, self._params_editor, object, [], command_hub, piece_opener)
+    async def _produce_layout(self, state, object):
+        return RecordViewLayout(self._object_layout_producer, self._params_editor, object, [])
