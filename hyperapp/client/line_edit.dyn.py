@@ -92,12 +92,12 @@ class LineEditView(View, QtWidgets.QLineEdit):
 
 class LineEditLayout(ObjectLayout):
 
-    def __init__(self, object, path, command_hub, piece_opener, mode):
+    def __init__(self, object, path, mode):
         super().__init__(path)
         self._object = object
         self._mode = mode
 
-    async def create_view(self):
+    async def create_view(self, command_hub):
         return LineEditView(self._object, self._mode)
 
     async def visual_item(self):
@@ -116,5 +116,5 @@ class ThisModule(ClientModule):
     async def _make_line_layout_rec(self, object):
         return htypes.line.line_edit_layout()
 
-    async def _produce_line_layout(self, state, object, command_hub, piece_opener):
-        return LineEditLayout(object, [], command_hub, piece_opener, LineEditView.Mode.VIEW)
+    async def _produce_line_layout(self, state, object):
+        return LineEditLayout(object, [], LineEditView.Mode.VIEW)
