@@ -12,7 +12,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view_chooser import LayoutRecMakerField
 from .view import View
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, Layout
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, GlobalLayout
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class _ViewOpener:
         self._layout._replace_tab(self._tab_id, view)
 
 
-class TabLayout(Layout):
+class TabLayout(GlobalLayout):
 
     _Tab = namedtuple('_Tab', 'id layout')
 

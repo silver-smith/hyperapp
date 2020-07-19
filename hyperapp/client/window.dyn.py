@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, GlobalLayout
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ DEFAULT_SIZE = QtCore.QSize(800, 800)
 DUP_OFFSET = QtCore.QPoint(150, 50)
 
     
-class WindowLayout(Layout):
+class WindowLayout(GlobalLayout):
 
     @classmethod
     async def from_data(cls, state, path, on_close, command_hub, ref_registry, view_resolver):

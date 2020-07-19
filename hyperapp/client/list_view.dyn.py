@@ -14,7 +14,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .list_object import ListObserver, ListObject
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, ObjectLayout
 from .view import View
 from .items_view import map_columns_to_view
 
@@ -151,7 +151,7 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
     # obsolete
     def get_state(self):
-        return self._data_type('list', self._object.get_state(), self._resource_key, self._current_item_id)
+        return self._data_type('list', self._object.get_state(), self._resource_key, self.current_item_key)
 
     def get_object(self):
         return self._object
@@ -168,12 +168,12 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
     def currentChanged(self, idx, prev_idx):
         log.current_changed(row=idx.row())
         QtWidgets.QTableView.currentChanged(self, idx, prev_idx)
-        current_key = self._current_item_id
+        current_key = self.current_item_key
         for observer in self._observers:
             observer.current_changed(current_key)
 
     @property
-    def _current_item_id(self):
+    def current_item_key(self):
         return self.model().index2id(self.currentIndex())
 
     def _on_data_changed(self):
@@ -200,7 +200,7 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         _log.debug('~list_view.ListView self=%r', id(self))
 
 
-class ListViewLayout(Layout):
+class ListViewLayout(ObjectLayout):
 
     class _CurrentItemObserver:
 
@@ -233,8 +233,13 @@ class ListViewLayout(Layout):
     async def visual_item(self):
         return RootVisualItem('ListView')
 
-    def get_current_commands(self):
-        return list(self._get_object_commands())
+    def get_current_commands(self, view):
+        object_command_it = self._get_object_commands()
+        current_key = view.current_item_key
+        if current_key is not None:
+            return [*object_command_it, *self._get_element_commands(current_key)]
+        else:
+            return list(object_command_it)
 
     def collect_view_commands(self):
         return {
@@ -246,7 +251,7 @@ class ListViewLayout(Layout):
         return self._object.get_command_list()
 
     def _update_element_commands(self, command_hub, current_item_key):
-        command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
+        command_hub.update(only_kind='element')
 
     def _get_element_commands(self, current_item_key):
         for command in self._object.get_item_command_list(current_item_key):

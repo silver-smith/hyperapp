@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .object_command import command
 from .composite import Composite
-from .layout import RootVisualItem, VisualItem, Layout
+from .layout import RootVisualItem, VisualItem, ObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObject
 from .view_chooser import LayoutRecMakerField
@@ -68,7 +68,7 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
             self._want_sizes = None
 
 
-class MasterDetailsLayout(Layout):
+class MasterDetailsLayout(ObjectLayout):
 
     def __init__(self, ref_registry, object_registry, object_layout_resolver, object_layout_producer,
                  master_layout_ref, command_id, object, path, command_hub, piece_opener):

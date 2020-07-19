@@ -4,7 +4,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
-from .layout import RootVisualItem, VisualItem, Layout
+from .layout import RootVisualItem, VisualItem, ObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject
 
@@ -69,7 +69,7 @@ class TreeToListAdapter(ListObject):
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path[:-1])
 
 
-class TreeToListLayout(Layout):
+class TreeToListLayout(ObjectLayout):
 
     def __init__(self, base_list_layout, path):
         super().__init__(path)

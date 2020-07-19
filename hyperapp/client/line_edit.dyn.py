@@ -8,7 +8,7 @@ from hyperapp.client.object import Object
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, ObjectLayout
 from .view import View
 
 log = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ class LineEditView(View, QtWidgets.QLineEdit):
         log.info('~line_edit')
 
 
-class LineEditLayout(Layout):
+class LineEditLayout(ObjectLayout):
 
     def __init__(self, object, path, command_hub, piece_opener, mode):
         super().__init__(path)

@@ -7,14 +7,14 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import Layout
+from .layout import ObjectLayout
 from .view import View
 from .text_object import TextObject
 
 log = logging.getLogger(__name__)
 
 
-class TextViewLayout(Layout):
+class TextViewLayout(ObjectLayout):
 
     def __init__(self, object, path):
         super().__init__(path)

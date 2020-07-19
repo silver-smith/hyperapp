@@ -7,12 +7,12 @@ from hyperapp.client.util import make_action, make_async_action
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, GlobalLayout
 
 log = logging.getLogger(__name__)
 
 
-class MenuBarLayout(Layout):
+class MenuBarLayout(GlobalLayout):
 
     def __init__(self, state, path, command_hub, view_opener, resource_resolver):
         super().__init__(path)

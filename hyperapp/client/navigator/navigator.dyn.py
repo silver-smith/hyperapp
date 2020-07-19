@@ -10,7 +10,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .layout import RootVisualItem, VisualItem, Layout
+from .layout import RootVisualItem, VisualItem, GlobalLayout
 
 _log = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class _History:
         return piece
 
 
-class NavigatorLayout(Layout):
+class NavigatorLayout(GlobalLayout):
 
     @classmethod
     async def from_data(cls,
@@ -72,7 +72,9 @@ class NavigatorLayout(Layout):
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._history = _History()
+        self._current_object = None
         self._current_layout = None
+        self._current_view = None
 
     async def _async_init(self, initial_piece_ref, initial_layout_ref):
         piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
@@ -90,7 +92,8 @@ class NavigatorLayout(Layout):
         return htypes.navigator.navigator(current_piece_ref, current_layout_ref)
 
     async def create_view(self):
-        return (await self._current_layout.create_view(self._command_hub))
+        self._current_view = await self._current_layout.create_view(self._command_hub)
+        return self._current_view
 
     async def visual_item(self):
         piece = self._current_object.data
@@ -112,7 +115,7 @@ class NavigatorLayout(Layout):
                    )
 
     def _get_current_layout_commands(self):
-        for command in self._current_layout.get_current_commands():
+        for command in self._current_layout.get_current_commands(self._current_view):
             yield (command
                    .with_(wrapper=self._open_layout)
                    )
@@ -136,6 +139,7 @@ class NavigatorLayout(Layout):
         self._view_opener.open(view)
         self._current_object = object
         self._current_layout = layout
+        self._current_view = view
         self._command_hub.update()
 
     @command('go_backward')

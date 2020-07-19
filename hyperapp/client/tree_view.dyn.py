@@ -13,7 +13,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, TreeObserver, TreeObject
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, ObjectLayout
 from .view import View
 from .items_view import map_columns_to_view
 
@@ -327,7 +327,7 @@ class TreeView(View, QtWidgets.QTreeView):
         log.debug('~tree_view.TreeView self=%r', id(self))
 
 
-class TreeViewLayout(Layout):
+class TreeViewLayout(ObjectLayout):
 
     class _CurrentItemObserver:
 
@@ -335,8 +335,8 @@ class TreeViewLayout(Layout):
             self._layout = layout
             self._command_hub = command_hub
 
-        def current_changed(self, current_item_key):
-            self._layout._update_element_commands(self._command_hub, current_item_key)
+        def current_changed(self, current_item_path):
+            self._layout._update_element_commands(self._command_hub, current_item_path)
 
     def __init__(self, type_resolver, resource_resolver, params_editor, object, path):
         super().__init__(path)
@@ -360,8 +360,13 @@ class TreeViewLayout(Layout):
     async def visual_item(self):
         return RootVisualItem('TreeView')
 
-    def get_current_commands(self):
-        return list(self._get_object_commands())
+    def get_current_commands(self, view):
+        object_command_it = self._get_object_commands()
+        current_path = view.current_item_path
+        if current_path is not None:
+            return [*object_command_it, *self._get_element_commands(current_path)]
+        else:
+            return list(object_command_it)
 
     def collect_view_commands(self):
         return {
@@ -372,12 +377,12 @@ class TreeViewLayout(Layout):
     def _get_object_commands(self):
         return self._object.get_command_list()
 
-    def _update_element_commands(self, command_hub, current_item_key):
-        command_hub.push_kind_commands('element', list(self._get_element_commands(current_item_key)))
+    def _update_element_commands(self, command_hub, current_item_path):
+        command_hub.update(only_kind='element')
 
-    def _get_element_commands(self, current_item_key):
-        for command in self._object.get_item_command_list(current_item_key):
-            yield command.partial(current_item_key)
+    def _get_element_commands(self, current_item_path):
+        for command in self._object.get_item_command_list(current_item_path):
+            yield command.partial(current_item_path)
 
 
 class ThisModule(ClientModule):

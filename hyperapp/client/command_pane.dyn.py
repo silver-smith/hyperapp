@@ -9,12 +9,12 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, GlobalLayout
 
 log = logging.getLogger(__name__)
 
 
-class CommandPaneLayout(Layout):
+class CommandPaneLayout(GlobalLayout):
 
     def __init__(self, state, path, command_hub, view_opener, resource_resolver):
         super().__init__(path)

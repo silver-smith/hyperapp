@@ -5,7 +5,7 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, Layout
+from .layout import RootVisualItem, ObjectLayout
 from .record_object import RecordObject
 
 
@@ -67,7 +67,7 @@ class RecordView(QtWidgets.QWidget):
             self._field_views[0].setFocus()
 
 
-class RecordViewLayout(Layout):
+class RecordViewLayout(ObjectLayout):
 
     def __init__(self, object_layout_producer, params_editor, object, path, command_hub, piece_opener, fields=None):
         super().__init__(path)

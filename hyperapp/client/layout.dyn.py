@@ -78,18 +78,8 @@ class Layout(Commander, metaclass=abc.ABCMeta):
     async def visual_item(self) -> VisualItem:
         pass
 
-    def get_current_commands(self):
-        return self.get_command_list({'view', 'global', 'object', 'element'})
-
     def collect_view_commands(self):
         return {tuple(self._path): self.get_command_list({'view'})}
-
-    def _get_current_commands_with_child(self, child):
-        # child commands should override and hide same commands from parents
-        return self._merge_commands(
-            child.get_current_commands(),
-            Layout.get_current_commands(self),
-            )
 
     def _merge_commands(self, primary_commands, secondary_commands):
         primary_command_ids = set(command.id for command in primary_commands)
@@ -107,3 +97,22 @@ class Layout(Commander, metaclass=abc.ABCMeta):
             **children_commands,
             **Layout.collect_view_commands(self),
             }
+
+
+class GlobalLayout(Layout):
+
+    def get_current_commands(self):
+        return self.get_command_list({'view', 'global', 'object', 'element'})
+
+    def _get_current_commands_with_child(self, child):
+        # child commands should override and hide same commands from parents
+        return self._merge_commands(
+            child.get_current_commands(),
+            GlobalLayout.get_current_commands(self),
+            )
+
+
+class ObjectLayout(Layout):
+
+    def get_current_commands(self, view):
+        return self.get_command_list({'view', 'global', 'object', 'element'})
