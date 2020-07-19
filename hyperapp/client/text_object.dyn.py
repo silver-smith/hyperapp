@@ -23,6 +23,10 @@ class TextObject(Object):
         return 'Local text object'
 
     @property
+    def data(self):
+        return htypes.text.text(self._text)
+
+    @property
     def text(self):
         return self._text
 
@@ -55,6 +59,10 @@ class WikiTextObject(TextObject):
 
     def get_title(self):
         return None
+
+    @property
+    def data(self):
+        return htypes.text.wiki_text()
 
     async def open_ref(self, id):
         _log.info('Opening ref: %r', id)
