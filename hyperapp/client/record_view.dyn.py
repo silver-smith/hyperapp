@@ -76,6 +76,10 @@ class RecordViewLayout(ObjectLayout):
         self._object = object
         self._fields = fields  # htypes.record_view.record_field list
 
+    @property
+    def data(self):
+        return htypes.record_view.record_layout()
+
     async def create_view(self, command_hub):
         return (await RecordView.make(self._object_layout_producer, self._object, command_hub, self._fields))
 
