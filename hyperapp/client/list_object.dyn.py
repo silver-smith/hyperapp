@@ -92,5 +92,5 @@ class ListObject(Object, metaclass=abc.ABCMeta):
             log.debug('  Calling eof on %s/%s', id(observer), observer)
             observer.process_eof()
 
-    def __del__(self):
-        log.debug('~list_object self=%s', id(self))
+    # def __del__(self):
+    #     log.debug('~list_object self=%s', id(self))

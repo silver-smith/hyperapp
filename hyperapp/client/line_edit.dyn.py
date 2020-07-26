@@ -50,8 +50,8 @@ class LineObject(Object):
         self._line = new_line
         self._notify_object_changed(emitter_view)
 
-    def __del__(self):
-        log.info('~line_object %r', self)
+    # def __del__(self):
+    #     log.info('~line_object %r', self)
 
 
 class LineEditView(View, QtWidgets.QLineEdit):
@@ -86,8 +86,8 @@ class LineEditView(View, QtWidgets.QLineEdit):
             self._notify_on_line_changed = True
         View.object_changed(self)
 
-    def __del__(self):
-        log.info('~line_edit')
+    # def __del__(self):
+    #     log.info('~line_edit')
 
 
 class LineEditLayout(ObjectLayout):
