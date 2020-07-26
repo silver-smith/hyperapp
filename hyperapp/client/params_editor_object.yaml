@@ -5,6 +5,5 @@ import:
     - field
     - params_editor
   code:
-    - client.object_command
     - client.record_object
     - client.chooser
