@@ -42,8 +42,8 @@ class TextObject(Object):
     async def open_ref(self, ref_id):
         pass  # not implemented for local text
 
-    def __del__(self):
-        _log.info('~text_object %r', self)
+    # def __del__(self):
+    #     _log.info('~text_object %r', self)
 
 
 class WikiTextObject(TextObject):

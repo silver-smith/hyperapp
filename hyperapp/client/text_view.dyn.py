@@ -67,8 +67,8 @@ class TextView(View, QtWidgets.QTextBrowser):
         self.setHtml(self.text2html(self.object.text))
         View.object_changed(self)
 
-    def __del__(self):
-        log.info('~text_view %r', self)
+    # def __del__(self):
+    #     log.info('~text_view %r', self)
 
 
 class ThisModule(ClientModule):
