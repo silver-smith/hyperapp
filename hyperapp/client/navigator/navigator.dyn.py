@@ -120,9 +120,9 @@ class NavigatorLayout(GlobalLayout):
                    .with_(wrapper=self._open_layout)
                    )
 
-    async def _open_layout(self, object, layout):
-        await self._open_layout_impl(object, layout)
-        self._history.append(_HistoryItem(object, layout))
+    async def _open_layout(self, resolved_piece):
+        await self._open_layout_impl(resolved_piece.object, resolved_piece.layout)
+        self._history.append(_HistoryItem(resolved_piece.object, resolved_piece.layout))
 
     async def _open_piece(self, piece):
         await self._open_piece_impl(piece)

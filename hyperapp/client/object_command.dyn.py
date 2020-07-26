@@ -1,11 +1,15 @@
 import inspect
 import logging
 import weakref
+from collections import namedtuple
 
 from hyperapp.client.commander import resource_key_of_class_method, UnboundCommand
 from hyperapp.client.module import ClientModule
 
 _log = logging.getLogger(__name__)
+
+
+_ResolvedPiece = namedtuple('_ResolvedPiece', 'object layout')
 
 
 # decorator for object and module methods
@@ -115,11 +119,12 @@ class BoundObjectCommand:
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
         layout = await this_module.object_layout_producer.produce_layout(object)
-        _log.info("BoundObjectCommand: piece resolved to: object %r, layout %r", object, layout)
+        resolved_piece = _ResolvedPiece(object, layout)
+        _log.info("BoundObjectCommand: piece resolved to: object %r", resolved_piece)
         if not self._wrapper:
-            return (object, layout)
+            return resolved_piece
         _log.info("BoundObjectCommand: wrap result with: %r", self._wrapper)
-        await self._wrapper(object, layout)
+        await self._wrapper(resolved_piece)
 
     def _more_params_are_required(self, *args, **kw):
         signature = inspect.signature(self._class_method)
