@@ -131,8 +131,7 @@ class NavigatorLayout(GlobalLayout):
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
         layout = await self._object_layout_producer.produce_layout(object)
-        self._current_object = object
-        await self._open_layout_impl(layout)
+        await self._open_layout_impl(object, layout)
 
     async def _open_layout_impl(self, object, layout):
         view = await layout.create_view(self._command_hub)
