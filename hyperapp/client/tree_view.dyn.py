@@ -323,8 +323,8 @@ class TreeView(View, QtWidgets.QTreeView):
         # Some items may be inserted by now, but not still visible.
         self._resize_columns_to_contents()
 
-    def __del__(self):
-        log.debug('~tree_view.TreeView self=%r', id(self))
+    # def __del__(self):
+    #     log.debug('~tree_view.TreeView self=%r', id(self))
 
 
 class TreeViewLayout(ObjectLayout):
