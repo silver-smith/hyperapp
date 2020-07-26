@@ -90,13 +90,16 @@ class BoundObjectCommand:
             result = await this_module.params_editor(object.data, self, bound_arguments, full_args, full_kw)
         else:
             result = await self._run_impl(object, full_args, full_kw)
+        _log.info("BoundObjectCommand: run result: %r", result)
         return (await self._wrap_result(result))
 
     async def run_with_full_params(self, *args, **kw):
         object = self._object_wr()
         if not object:
             return  # object we bound to is already deleted
+        _log.info("BoundObjectCommand: run with full params")
         result = await self._run_impl(object, args, kw)
+        _log.info("BoundObjectCommand: run result: %r", result)
         return (await self._wrap_result(result))
 
     async def _run_impl(self, object, args, kw):
@@ -112,8 +115,10 @@ class BoundObjectCommand:
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
         layout = await this_module.object_layout_producer.produce_layout(object)
+        _log.info("BoundObjectCommand: piece resolved to: object %r, layout %r", object, layout)
         if not self._wrapper:
             return (object, layout)
+        _log.info("BoundObjectCommand: wrap result with: %r", self._wrapper)
         await self._wrapper(object, layout)
 
     def _more_params_are_required(self, *args, **kw):

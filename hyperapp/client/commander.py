@@ -97,6 +97,7 @@ class BoundCommand(Command):
             full_args = (*self._args, *args)
             full_kw = {**self._kw, **kw}
         result = await self._run_impl(inst, full_args, full_kw)
+        _log.info("Command: run result: %r", result)
         return (await self._wrap_result(result))
 
     async def _run_impl(self, inst, args, kw):
@@ -110,6 +111,7 @@ class BoundCommand(Command):
         if result is None:
             return
         if self._wrapper:
+            _log.info("Command: wrap result with %r", self._wrapper)
             result = await self._wrapper(result)
         return result
 
