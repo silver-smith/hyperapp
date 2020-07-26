@@ -5,15 +5,10 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .column import Column
-from .command_hub import CommandHub
 from .simple_list_object import SimpleListObject
 
 
 Item = namedtuple('Item', 'path id')
-
-
-async def _open_piece_do_nothing(piece):
-    pass
 
 
 class CommandList(SimpleListObject):
@@ -22,8 +17,7 @@ class CommandList(SimpleListObject):
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        command_hub = CommandHub()
-        layout = await object_layout_resolver.resolve(state.layout_ref, object, command_hub, _open_piece_do_nothing)
+        layout = await object_layout_resolver.resolve(state.layout_ref, object)
         return cls(ref_registry, object, layout)
 
     def __init__(self, ref_registry, object, layout):
