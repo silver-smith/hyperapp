@@ -12,10 +12,6 @@ from .simple_list_object import SimpleListObject
 Item = namedtuple('Item', 'category layout')
 
 
-async def _open_piece_do_nothing(piece):
-    pass
-
-
 class CategoryList(SimpleListObject):
 
     @classmethod
@@ -66,8 +62,7 @@ class CategoryList(SimpleListObject):
         layout_ref = self._object_layout_association.get(category)
         if layout_ref:
             return layout_ref
-        command_hub = CommandHub()
-        layout = await self._object_layout_producer.produce_layout(self._object, command_hub, _open_piece_do_nothing)
+        layout = await self._object_layout_producer.produce_layout(self._object)
         return self._ref_registry.register_object(layout.data)
 
     @command('open', kind='element')

@@ -13,10 +13,6 @@ from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject
 _log = logging.getLogger(__name__)
 
 
-async def _open_piece_do_nothing(piece):
-    pass
-
-
 class LayoutEditor(TreeObject):
 
     _CommandRec = namedtuple('_CommandRec', 'command item_path')
@@ -120,8 +116,7 @@ class ObjectLayoutEditor(LayoutEditor):
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, object_layout_resolver):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        command_hub = CommandHub()
-        layout = await object_layout_resolver.resolve(state.layout_ref, object, command_hub, _open_piece_do_nothing)
+        layout = await object_layout_resolver.resolve(state.layout_ref, object)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
         self = cls(ref_registry, object_layout_association, layout_watcher, state.piece_ref, layout, object, state.category)
         await self._async_init(layout)
