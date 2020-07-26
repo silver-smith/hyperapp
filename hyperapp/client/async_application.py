@@ -16,7 +16,7 @@ class AsyncApplication(QtWidgets.QApplication):
         super().__init__(sys_argv or [])
         self.event_loop = QEventLoop(self)
         self.event_loop.set_debug(True)
-        self.event_loop.set_exception_handler(self._async_exception_handler)
+        # self.event_loop.set_exception_handler(self._async_exception_handler)
         asyncio.set_event_loop(self.event_loop)
 
     def stop_loop(self):
