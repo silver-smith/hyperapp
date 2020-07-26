@@ -100,8 +100,8 @@ class CommandPane(QtWidgets.QDockWidget):
                 button.setShortcut('Return')
         return button
 
-    def __del__(self):
-        log.info('~command_pane')
+    # def __del__(self):
+    #     log.info('~command_pane')
 
 
 class ThisModule(ClientModule):

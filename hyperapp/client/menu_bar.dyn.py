@@ -79,8 +79,8 @@ class MenuBar(QtWidgets.QMenuBar):
         action.setEnabled(command.is_enabled())
         return action
 
-    def __del__(self):
-        log.info('~menu_bar')
+    # def __del__(self):
+    #     log.info('~menu_bar')
 
 
 class ThisModule(ClientModule):

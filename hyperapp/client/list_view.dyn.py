@@ -196,8 +196,8 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         if self._default_command:
             create_context_task(self._default_command.run(), log.activated)
 
-    def __del__(self):
-        _log.debug('~list_view.ListView self=%r', id(self))
+    # def __del__(self):
+    #     _log.debug('~list_view.ListView self=%r', id(self))
 
 
 class ListViewLayout(ObjectLayout):
