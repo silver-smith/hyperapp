@@ -99,7 +99,7 @@ class GlobalLayoutEditor(LayoutEditor):
 
     @classmethod
     async def from_state(cls, state, layout_manager, layout_watcher):
-        # Postpone async_init because layout_manager may not have root_layout yet if this is first view on startup.
+        # Postpone async_init because layout_manager does not have root_layout yet if we are first view on startup.
         return cls(layout_watcher, layout_manager)
 
     def __init__(self, layout_watcher, layout_manager):
