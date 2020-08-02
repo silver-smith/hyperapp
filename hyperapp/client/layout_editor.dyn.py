@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from collections import namedtuple
 
@@ -98,9 +99,12 @@ class GlobalLayoutEditor(LayoutEditor):
 
     @classmethod
     async def from_state(cls, state, layout_manager, layout_watcher):
-        self = cls(layout_watcher)
-        await self._async_init(layout_manager.root_layout)
-        return self
+        # Postpone async_init because layout_manager may not have root_layout yet if this is first view on startup.
+        return cls(layout_watcher, layout_manager)
+
+    def __init__(self, layout_watcher, layout_manager):
+        super().__init__(layout_watcher)
+        self._layout_manager = layout_manager
 
     def get_title(self):
         return "Global view layout"
@@ -108,6 +112,12 @@ class GlobalLayoutEditor(LayoutEditor):
     @property
     def data(self):
         return htypes.layout_editor.view_layout_editor()
+
+    async def fetch_items(self, path):
+        if not self._path2item_list:
+            # Not yet async-inited.
+            await self._async_init(self._layout_manager.root_layout)
+        await super().fetch_items(path)
 
 
 class ObjectLayoutEditor(LayoutEditor):
