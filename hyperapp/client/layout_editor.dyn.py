@@ -145,9 +145,8 @@ class ObjectLayoutEditor(LayoutEditor):
 
     async def get_root_item(self, layout):
         item = await self._layout.visual_item()
-        return item.with_commands([
+        return item.with_added_commands([
             self._replace_view,
-            *(item.commands or []),
             ])
 
     def _object_layout_editor(self, layout_ref):

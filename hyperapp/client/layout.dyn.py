@@ -24,7 +24,7 @@ class RootVisualItem:
         all_commands = (self.commands or []) + (commands or [])
         return VisualItem(idx, name, self.text, self.children, all_commands)
 
-    def with_commands(self, commands):
+    def with_added_commands(self, commands):
         all_commands = (self.commands or []) + (commands or [])
         return RootVisualItem(self.text, self.children, all_commands)
 
