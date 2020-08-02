@@ -105,7 +105,7 @@ class Layout(Commander, metaclass=abc.ABCMeta):
 class GlobalLayout(Layout):
 
     def get_current_commands(self):
-        return self.get_command_list({'view', 'global', 'object', 'element'})
+        return self.get_all_command_list()
 
     def _get_current_commands_with_child(self, child):
         # child commands should override and hide same commands from parents
@@ -118,4 +118,4 @@ class GlobalLayout(Layout):
 class ObjectLayout(Layout):
 
     def get_current_commands(self, view):
-        return self.get_command_list({'view', 'global', 'object', 'element'})
+        return self.get_all_command_list()

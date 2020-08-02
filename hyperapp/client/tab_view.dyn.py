@@ -106,7 +106,7 @@ class TabLayout(GlobalLayout):
             command
               .with_(params_subst=self._subst_params_for_item)
               .with_(resource_key=self._element_command_resource_key(command.resource_key))
-            for command in self.get_command_list()
+            for command in self.get_all_command_list()
             ]
         return child.to_item(tab.id, f'tab#{tab.id}', commands)
 

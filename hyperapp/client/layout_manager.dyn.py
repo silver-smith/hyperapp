@@ -100,7 +100,7 @@ class RootLayout(GlobalLayout):
 
     def _window_visual_commands(self, idx):
         rec = self._window_rec_list[idx]
-        for command in self.get_command_list():
+        for command in self.get_all_command_list():
             if command.id == 'quit':
                 continue
             resource_key = command.resource_key
