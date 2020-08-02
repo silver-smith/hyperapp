@@ -165,9 +165,9 @@ class LayoutManager:
         self._root_layout = None
         self._window_list = None
 
-    async def create_layout_views(self, root_view):
+    async def create_layout_views(self, root_layout_state):
         # root path is expected by layout editor to be [0]
-        self._root_layout = layout = await self._view_registry.resolve_async(root_view, [0])
+        self._root_layout = layout = await self._view_registry.resolve_async(root_layout_state, [0])
         self._window_list = await layout.create_view()
 
     @property
