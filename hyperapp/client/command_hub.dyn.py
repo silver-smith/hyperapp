@@ -30,5 +30,5 @@ class CommandHub:
         for kind in kind_list:
             command_list = [command for command in all_command_list if command.kind == kind]
             for observer in self._observer_set:
-                _log.info("Updating command (calling commands_changing) on %r: %r %r", observer, kind, [command.id for command in command_list])
+                _log.info("Updating commands (calling commands_changing) on %r: %r %r", observer, kind, [command.id for command in command_list])
                 observer.commands_changed(kind, command_list)
