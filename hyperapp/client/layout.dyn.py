@@ -21,7 +21,10 @@ class RootVisualItem:
     commands: List[BoundCommand] = None
 
     def to_item(self, idx, name, commands=None):
-        all_commands = (self.commands or []) + (commands or [])
+        all_commands = [
+            command.with_(kind='element') for command
+            in (self.commands or []) + (commands or [])
+            ]
         return VisualItem(idx, name, self.text, self.children, all_commands)
 
     def with_added_commands(self, commands):
