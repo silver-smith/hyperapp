@@ -12,25 +12,25 @@ from .record_object import RecordObject
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def make(cls, object_layout_producer, object, command_hub, field_layout_list):
+    async def make(cls, object_layout_producer, object, command_hub, field_layout_dict):
         view = cls(object)
-        await view._async_init(object_layout_producer, command_hub, field_layout_list)
+        await view._async_init(object_layout_producer, command_hub, field_layout_dict)
         return view
 
     def __init__(self, object):
         super().__init__()
         self._object = object
 
-    async def _async_init(self, object_layout_producer, command_hub, field_layout_list):
+    async def _async_init(self, object_layout_producer, command_hub, field_layout_dict):
         qt_layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
-        self._field_views = []
-        for field_id, field_layout in zip(self._object.fields, field_layout_list):
+        self._field_view_dict = {}
+        for field_id, field_layout in field_layout_dict.items():
             field_view = await self._construct_field_view(
                 object_layout_producer, command_hub, qt_layout, field_id, field_layout)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
-            self._field_views.append(field_view)
+            self._field_view_dict[field_id] = field_view
         if not has_expandable_field:
             qt_layout.addStretch()
         self.setLayout(qt_layout)
@@ -57,7 +57,15 @@ class RecordView(QtWidgets.QWidget):
     def setVisible(self, visible):
         super().setVisible(visible)
         if visible:
-            self._field_views[0].setFocus()
+            first_view = list(self._field_view_dict.values())[0]
+            first_view.setFocus()
+
+    @property
+    def focused_field_id(self):
+        return list(self._object.fields)[0]  # todo
+
+    def get_field_view(self, field_id):
+        return self._field_view_dict[field_id]
 
 
 class RecordViewLayout(ObjectLayout):
@@ -72,25 +80,30 @@ class RecordViewLayout(ObjectLayout):
         self._object_layout_producer = object_layout_producer
         self._params_editor = params_editor
         self._object = object
-        self._field_layout_list = []
+        self._field_layout_dict = {}
 
     async def _async_init(self, object_layout_producer):
         for field_id, field_object in self._object.fields.items():
             layout = await object_layout_producer.produce_layout(field_object)
-            self._field_layout_list.append(layout)
+            self._field_layout_dict[field_id] = layout
 
     @property
     def data(self):
         return htypes.record_view.record_layout()
 
     async def create_view(self, command_hub):
-        return (await RecordView.make(self._object_layout_producer, self._object, command_hub, self._field_layout_list))
+        return (await RecordView.make(self._object_layout_producer, self._object, command_hub, self._field_layout_dict))
 
     async def visual_item(self):
         return RootVisualItem('RecordView')  # todo: add fields children
 
     def get_current_commands(self, view):
-        return list(self._get_object_commands())
+        focused_layout = self._field_layout_dict[view.focused_field_id]
+        focused_view = view.get_field_view(view.focused_field_id)
+        return [
+            *self._get_object_commands(),
+            *focused_layout.get_current_commands(focused_view),
+            ]
 
     def _get_object_commands(self):
         return self._object.get_all_command_list()
