@@ -49,8 +49,8 @@ class BlogObject(ListObject, BlogObserver):
     def __repr__(self):
         return '<BlogObject#%d>' % id(self)
 
-    def __del__(self):
-        log.debug('Deleted %r', self)
+    # def __del__(self):
+    #     log.debug('Deleted %r', self)
 
     def get_title(self):
         return self._blog_id
