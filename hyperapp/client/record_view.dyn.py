@@ -69,12 +69,15 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(ObjectLayout):
 
+    async def from_data(state, object, object_layout_producer, params_editor):
+        return RecordViewLayout(object_layout_producer, params_editor, object, [])
+
     def __init__(self, object_layout_producer, params_editor, object, path, fields=None):
         super().__init__(path)
         self._object_layout_producer = object_layout_producer
         self._params_editor = params_editor
         self._object = object
-        self._fields = fields  # htypes.record_view.record_field list
+        self._fields = fields  # htypes.record_view.record_field list; currently unused (todo).
 
     @property
     def data(self):
@@ -90,21 +93,17 @@ class RecordViewLayout(ObjectLayout):
         return list(self._get_object_commands())
 
     def _get_object_commands(self):
-        return self._object.get_command_list()
+        return self._object.get_all_command_list()
 
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self._object_layout_producer = services.object_layout_producer
-        self._params_editor = services.params_editor
         services.default_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
         services.available_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
-        services.object_layout_registry.register_type(htypes.record_view.record_layout, self._produce_layout)
+        services.object_layout_registry.register_type(
+            htypes.record_view.record_layout, RecordViewLayout.from_data, services.object_layout_producer, services.params_editor)
 
     async def _make_record_layout_rec(self, object):
         return htypes.record_view.record_layout()
-
-    async def _produce_layout(self, state, object):
-        return RecordViewLayout(self._object_layout_producer, self._params_editor, object, [])
