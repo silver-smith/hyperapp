@@ -79,8 +79,8 @@ class TreeToListLayout(ObjectLayout):
     def data(self):
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
 
-    async def create_view(self):
-        return (await self._base_list_layout.create_view())
+    async def create_view(self, command_hub):
+        return (await self._base_list_layout.create_view(command_hub))
 
     async def visual_item(self):
         base_item = await self._base_list_layout.visual_item()
@@ -103,8 +103,8 @@ class ThisModule(ClientModule):
     async def _make_layout_rec(self, object):
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
 
-    async def _produce_layout(self, state, object, command_hub, piece_opener):
+    async def _produce_layout(self, state, object):
         base_object_ref = self._ref_registry.register_object(object.data)
         adapter = TreeToListAdapter(base_object_ref, object, path=[])
-        base_list_layout = await self._object_layout_producer.produce_layout(adapter, command_hub, piece_opener)
+        base_list_layout = await self._object_layout_producer.produce_layout(adapter)
         return TreeToListLayout(base_list_layout, path=[])
