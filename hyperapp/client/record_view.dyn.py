@@ -12,28 +12,22 @@ from .record_object import RecordObject
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def make(cls, object_layout_producer, object, command_hub, fields=None):
+    async def make(cls, object_layout_producer, object, command_hub, field_layout_list):
         view = cls(object)
-        await view._async_init(object_layout_producer, command_hub, fields)
+        await view._async_init(object_layout_producer, command_hub, field_layout_list)
         return view
 
     def __init__(self, object):
         super().__init__()
         self._object = object
 
-    async def _async_init(self, object_layout_producer, command_hub, fields):
-        # if fields:
-        #     field_to_layout_ref = {field.field_id: field.layout_ref for field in fields}
-        # else:
-        #     field_to_layout_ref = {}
+    async def _async_init(self, object_layout_producer, command_hub, field_layout_list):
         qt_layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
         self._field_views = []
-        for field_id, field_object in self._object.fields.items():
-            # layout_ref = field_to_layout_ref.get(field_id)
-            layout = None  # todo
+        for field_id, field_layout in zip(self._object.fields, field_layout_list):
             field_view = await self._construct_field_view(
-                object_layout_producer, qt_layout, field_id, field_object, command_hub, layout)
+                object_layout_producer, command_hub, qt_layout, field_id, field_layout)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_views.append(field_view)
@@ -42,9 +36,8 @@ class RecordView(QtWidgets.QWidget):
         self.setLayout(qt_layout)
 
     async def _construct_field_view(
-            self, object_layout_producer, qt_layout, field_id, field_object, command_hub, layout):
-        layout = await object_layout_producer.produce_layout(field_object)
-        view = await layout.create_view(command_hub)
+            self, object_layout_producer, command_hub, qt_layout, field_id, field_layout):
+        view = await field_layout.create_view(command_hub)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
         qt_layout.addWidget(label)
@@ -70,21 +63,28 @@ class RecordView(QtWidgets.QWidget):
 class RecordViewLayout(ObjectLayout):
 
     async def from_data(state, object, object_layout_producer, params_editor):
-        return RecordViewLayout(object_layout_producer, params_editor, object, [])
+        self = RecordViewLayout(object_layout_producer, params_editor, object, [])
+        await self._async_init(object_layout_producer)
+        return self
 
     def __init__(self, object_layout_producer, params_editor, object, path, fields=None):
         super().__init__(path)
         self._object_layout_producer = object_layout_producer
         self._params_editor = params_editor
         self._object = object
-        self._fields = fields  # htypes.record_view.record_field list; currently unused (todo).
+        self._field_layout_list = []
+
+    async def _async_init(self, object_layout_producer):
+        for field_id, field_object in self._object.fields.items():
+            layout = await object_layout_producer.produce_layout(field_object)
+            self._field_layout_list.append(layout)
 
     @property
     def data(self):
         return htypes.record_view.record_layout()
 
     async def create_view(self, command_hub):
-        return (await RecordView.make(self._object_layout_producer, self._object, command_hub, self._fields))
+        return (await RecordView.make(self._object_layout_producer, self._object, command_hub, self._field_layout_list))
 
     async def visual_item(self):
         return RootVisualItem('RecordView')  # todo: add fields children
