@@ -19,13 +19,12 @@ _log = logging.getLogger(__name__)
 
 class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
-    def __init__(self, object_registry, object_layout_producer, command_hub, piece_opener, master_view, details_command_id, sizes=None):
+    def __init__(self, object_registry, object_layout_producer, command_hub, master_view, details_command_id, sizes=None):
         QtWidgets.QSplitter.__init__(self, QtCore.Qt.Vertical)
         Composite.__init__(self, children=[master_view])
         self._object_registry = object_registry
         self._object_layout_producer = object_layout_producer
         self._command_hub = command_hub
-        self._piece_opener = piece_opener
         self._master_view = master_view
         self._details_command_id = details_command_id
         self._want_sizes = sizes
@@ -60,7 +59,7 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
         if not piece:
             return
         object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(object, self._command_hub, self._piece_opener)
+        layout = await self._object_layout_producer.produce_layout(object)
         view = await layout.create_view()
         self.insertWidget(1, view)
         if self._want_sizes:
@@ -71,7 +70,7 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 class MasterDetailsLayout(ObjectLayout):
 
     def __init__(self, ref_registry, object_registry, object_layout_resolver, object_layout_producer,
-                 master_layout_ref, command_id, object, path, command_hub, piece_opener):
+                 master_layout_ref, command_id, object, path):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._object_registry = object_registry
@@ -80,8 +79,6 @@ class MasterDetailsLayout(ObjectLayout):
         self._details_command_id = command_id
         self._master_layout_ref = master_layout_ref
         self._command_id = command_id
-        self._command_hub = command_hub
-        self._piece_opener = piece_opener
         self._object = object
 
     @property
@@ -93,12 +90,12 @@ class MasterDetailsLayout(ObjectLayout):
             command_id=self._details_command_id,
             )
 
-    async def create_view(self):
+    async def create_view(self, command_hub):
         master_layout = await self._create_master_layout()
         master_view = await master_layout.create_view()
         return MasterDetailsView(
             self._object_registry, self._object_layout_producer,
-            self._command_hub, self._piece_opener, master_view, self._details_command_id)
+            command_hub, master_view, self._details_command_id)
 
     async def visual_item(self):
         master_layout = await self._create_master_layout()
@@ -109,8 +106,7 @@ class MasterDetailsLayout(ObjectLayout):
             ])
 
     async def _create_master_layout(self):
-        return (await self._object_layout_resolver.resolve(
-            self._master_layout_ref, self._object, self._command_hub, self._piece_opener))
+        return (await self._object_layout_resolver.resolve(self._master_layout_ref, self._object))
 
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):
@@ -147,7 +143,7 @@ class ThisModule(ClientModule):
             command_id='open',
             )
 
-    async def _produce_master_detail_layout(self, state, object, command_hub, piece_opener):
+    async def _produce_master_detail_layout(self, state, object):
         return MasterDetailsLayout(
             self._ref_registry, self._object_registry, self._object_layout_resolver, self._object_layout_producer,
-            state.master_layout_ref, state.command_id, object, [], command_hub, piece_opener)
+            state.master_layout_ref, state.command_id, object, [])
