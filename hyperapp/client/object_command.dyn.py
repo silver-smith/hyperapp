@@ -101,7 +101,7 @@ class BoundObjectCommand:
         object = self._object_wr()
         if not object:
             return  # object we bound to is already deleted
-        _log.info("BoundObjectCommand: run with full params")
+        _log.info("BoundObjectCommand: run with full params:")
         result = await self._run_impl(object, args, kw)
         _log.info("BoundObjectCommand: run result: %r", result)
         return (await self._wrap_result(result))
