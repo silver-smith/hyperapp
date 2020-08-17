@@ -145,7 +145,6 @@ class ThisModule(ClientModule):
             rec = next(rec_it)
         except StopIteration:
             raise RuntimeError(f"At least one default category is expected for {object} categoriees: {object.category_list}.")
-        category = object.category_list[0]
         master_layout_rec = await rec.layout_rec_maker(object)
         master_layout_ref = self._ref_registry.register_object(master_layout_rec)
         return htypes.master_details.master_details_layout(
