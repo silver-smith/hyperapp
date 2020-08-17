@@ -46,7 +46,6 @@ class ListDiff(object):
         return iface.Diff(self.remove_keys, [element.to_data(iface) for element in self.elements])
 
 
-
 class ListObserver(ObjectObserver):
 
     def process_fetch_results(self, item_list):
