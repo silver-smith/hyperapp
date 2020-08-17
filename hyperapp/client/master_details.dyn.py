@@ -55,12 +55,10 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
             _log.warning("Master %s does not has command %r", master_object, self._details_command_id)
             return
         _log.info('Run command to open details: %r', details_command.id)
-        piece = await details_command.run(current_key)
-        if not piece:
+        resolved_piece = await details_command.run(current_key)
+        if not resolved_piece:
             return
-        object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(object)
-        view = await layout.create_view()
+        view = await resolved_piece.layout.create_view(self._command_hub)
         self.insertWidget(1, view)
         if self._want_sizes:
             self.setSizes(self._want_sizes)
@@ -89,16 +87,14 @@ class MasterDetailsLayout(ObjectLayout):
 
     @property
     def data(self):
-        # master_layout = await self._create_master_layout()
-        master_layout_ref = self._ref_registry.register_object(master_layout.data)
         return htypes.master_details.master_details_layout(
-            master_layout_ref=master_layout_ref,
+            master_layout_ref=self._master_layout_ref,
             command_id=self._details_command_id,
             )
 
     async def create_view(self, command_hub):
         master_layout = await self._create_master_layout()
-        master_view = await master_layout.create_view()
+        master_view = await master_layout.create_view(command_hub)
         return MasterDetailsView(
             self._object_registry, self._object_layout_producer,
             command_hub, master_view, self._details_command_id)
