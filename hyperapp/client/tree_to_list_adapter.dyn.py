@@ -71,6 +71,13 @@ class TreeToListAdapter(ListObject):
 
 class TreeToListLayout(ObjectLayout):
 
+    @classmethod
+    async def from_data(cls, state, object, ref_registry, object_layout_producer):
+        base_object_ref = ref_registry.register_object(object.data)
+        adapter = TreeToListAdapter(base_object_ref, object, path=[])
+        base_list_layout = await object_layout_producer.produce_layout(adapter)
+        return cls(base_list_layout, path=[])
+
     def __init__(self, base_list_layout, path):
         super().__init__(path)
         self._base_list_layout = base_list_layout
@@ -93,18 +100,12 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self._ref_registry = services.ref_registry
-        self._object_layout_producer = services.object_layout_producer
         services.object_registry.register_type(
             htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.object_resolver)
         services.available_object_layouts.register('as_list', TreeObject.category_list, self._make_layout_rec)
-        services.object_layout_registry.register_type(htypes.tree_to_list_adapter.tree_to_list_adapter_layout, self._produce_layout)
+        services.object_layout_registry.register_type(
+            htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
+            services.ref_registry, services.object_layout_producer)
 
     async def _make_layout_rec(self, object):
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
-
-    async def _produce_layout(self, state, object):
-        base_object_ref = self._ref_registry.register_object(object.data)
-        adapter = TreeToListAdapter(base_object_ref, object, path=[])
-        base_list_layout = await self._object_layout_producer.produce_layout(adapter)
-        return TreeToListLayout(base_list_layout, path=[])
