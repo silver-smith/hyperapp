@@ -69,6 +69,12 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 
 class MasterDetailsLayout(ObjectLayout):
 
+    @classmethod
+    async def from_data(cls, state, object, ref_registry, object_registry, object_layout_resolver, object_layout_producer):
+        return cls(
+            ref_registry, object_registry, object_layout_resolver, object_layout_producer,
+            state.master_layout_ref, state.command_id, object, [])
+
     def __init__(self, ref_registry, object_registry, object_layout_resolver, object_layout_producer,
                  master_layout_ref, command_id, object, path):
         super().__init__(path)
@@ -121,13 +127,17 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
-        self._object_registry = services.object_registry
         self._default_object_layouts = services.default_object_layouts
-        self._object_layout_resolver = services.object_layout_resolver
-        self._object_layout_producer = services.object_layout_producer
         category_list = [*ListObject.category_list, *TreeObject.category_list]
         services.available_object_layouts.register('master_details', category_list, self._make_master_detail_layout_rec)
-        services.object_layout_registry.register_type(htypes.master_details.master_details_layout, self._produce_master_detail_layout)
+        services.object_layout_registry.register_type(
+            htypes.master_details.master_details_layout,
+            MasterDetailsLayout.from_data,
+            services.ref_registry,
+            services.object_registry,
+            services.object_layout_resolver,
+            services.object_layout_producer,
+            )
 
     async def _make_master_detail_layout_rec(self, object):
         rec_it = self._default_object_layouts.resolve(object.category_list)
@@ -142,8 +152,3 @@ class ThisModule(ClientModule):
             master_layout_ref=master_layout_ref,
             command_id='open',
             )
-
-    async def _produce_master_detail_layout(self, state, object):
-        return MasterDetailsLayout(
-            self._ref_registry, self._object_registry, self._object_layout_resolver, self._object_layout_producer,
-            state.master_layout_ref, state.command_id, object, [])
