@@ -2,10 +2,11 @@ import asyncio
 import logging
 from collections import namedtuple
 
+from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .object_command import command
+from .object_command import command as object_command
 from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
 from .column import Column
@@ -163,7 +164,7 @@ class ObjectLayoutEditor(LayoutEditor):
         piece_ref = self._ref_registry.register_object(self._object.data)
         return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category)
 
-    @command('replace')
+    @object_command('replace')
     async def _replace_view(self, path):
         chooser = htypes.view_chooser.view_chooser(self._object.category_list)
         chooser_ref = self._ref_registry.register_object(chooser)

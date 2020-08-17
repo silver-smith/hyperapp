@@ -91,13 +91,22 @@ class BoundCommand(Command):
         if not inst:
             return  # instance we bound to is already deleted
         if self._params_subst:
-            _log.info("Command: subst params: (%r) args=%r kw=%r", self, args, kw)
+            _log.info("BoundCommand: subst params: (%r) args=%r kw=%r", self, args, kw)
             full_args, full_kw = self._params_subst(*self._args, *args, **self._kw, **kw)
         else:
             full_args = (*self._args, *args)
             full_kw = {**self._kw, **kw}
         result = await self._run_impl(inst, full_args, full_kw)
-        _log.info("Command: run result: %r", result)
+        _log.info("BoundCommand: run result: %r", result)
+        return (await self._wrap_result(result))
+
+    async def run_with_full_params(self, *args, **kw):
+        inst = self._inst_wr()
+        if not inst:
+            return  # instance we bound to is already deleted
+        _log.info("BoundCommand: run with full params:")
+        result = await self._run_impl(inst, args, kw)
+        _log.info("BoundCommand: run result: %r", result)
         return (await self._wrap_result(result))
 
     async def _run_impl(self, inst, args, kw):
