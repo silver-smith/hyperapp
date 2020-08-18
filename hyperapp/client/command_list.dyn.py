@@ -9,21 +9,23 @@ from .object_command import command
 from .simple_list_object import SimpleListObject
 
 
-Item = namedtuple('Item', 'path id kind')
+Item = namedtuple('Item', 'path id kind layout')
 
 
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver, object_layout_producer):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         layout = await object_layout_resolver.resolve(state.layout_ref, object)
-        return cls(ref_registry, object, layout)
+        return cls(ref_registry, object_registry, object_layout_producer, object, layout)
 
-    def __init__(self, ref_registry, object, layout):
+    def __init__(self, ref_registry, object_registry, object_layout_producer, object, layout):
         super().__init__()
         self._ref_registry = ref_registry
+        self._object_registry = object_registry
+        self._object_layout_producer = object_layout_producer
         self._object = object
         self._layout = layout
 
@@ -41,14 +43,31 @@ class CommandList(SimpleListObject):
             Column('path'),
             Column('id', is_key=True),
             Column('kind'),
+            Column('layout'),
             ]
 
     async def get_all_items(self):
         return [
-            Item('/' + '/'.join(path), command.id, command.kind)
+            await self._make_item(path, command)
             for path, command_list in self._layout.collect_view_commands().items()
             for command in command_list
             ]
+
+    async def _make_item(self, path, command):
+        layout = await self._command_layout(command)
+        if layout is not None:
+            layout_str = str(layout)
+        else:
+            layout_str = ''
+        return Item('/' + '/'.join(path), command.id, command.kind, layout_str)
+
+    async def _command_layout(self, command):
+        if command.kind == 'element':
+            return None  # todo
+        resolved_piece = await command.run()
+        if resolved_piece is None:
+            return None
+        return resolved_piece.layout
 
     @command('layout', kind='element')
     async def _open_layout(self, item_key):
@@ -75,4 +94,5 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_resolver,
+            services.object_layout_producer,
             )
