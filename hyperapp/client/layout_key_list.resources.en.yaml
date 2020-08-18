@@ -1,9 +1,0 @@
-module:client.layout_key_list:LayoutKeyList:
-  columns:
-    name:
-      text: Name
-  commands:
-    open:
-      text: Open
-      description: Open selected item
-      is_default: true

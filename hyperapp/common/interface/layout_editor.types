@@ -5,3 +5,4 @@ object_layout_editor = record:
   piece_ref: ref
   layout_ref: ref
   category: string
+  command: string opt

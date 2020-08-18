@@ -2,8 +2,6 @@ import:
   types:
     category_list:
       - category_list
-    layout_editor:
-      - object_layout_editor
   code:
     - client.object_command
     - client.column

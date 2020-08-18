@@ -65,12 +65,6 @@ class CategoryList(SimpleListObject):
         layout = await self._object_layout_producer.produce_layout(self._object)
         return self._ref_registry.register_object(layout.data)
 
-    @command('open', kind='element')
-    async def open(self, item_key):
-        category = item_key
-        layout_ref = await self._get_layout_ref(category)
-        return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, category)
-
 
 class ThisModule(ClientModule):
 

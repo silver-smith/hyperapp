@@ -148,7 +148,7 @@ class ObjectLayoutEditor(LayoutEditor):
     @property
     def data(self):
         layout_ref = self._ref_registry.register_object(self._layout.data)
-        return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, self._target_category)
+        return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, self._target_category, command=None)
 
     def get_command_list(self):
         return [command for command in super().get_command_list()
@@ -162,7 +162,7 @@ class ObjectLayoutEditor(LayoutEditor):
 
     def _object_layout_editor(self, layout_ref):
         piece_ref = self._ref_registry.register_object(self._object.data)
-        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category)
+        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category, command=None)
 
     @object_command('replace')
     async def _replace_view(self, path):

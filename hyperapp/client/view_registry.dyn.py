@@ -70,6 +70,7 @@ class ThisModule(ClientModule):
         services.default_object_layouts = AvailableObjectLayouts()
         services.available_object_layouts = AvailableObjectLayouts()
         services.object_layout_association = {}  # category -> layout ref
+        services.object_command_layout_association = {}  # category, command id -> layout ref
         services.object_layout_registry = view_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
         services.object_layout_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)
         services.object_layout_producer = ObjectLayoutProducer(

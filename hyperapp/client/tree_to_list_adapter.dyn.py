@@ -71,15 +71,6 @@ class TreeToListAdapter(ListObject):
 
 class TreeToListLayout(ObjectLayout):
 
-    class _CurrentItemObserver:
-
-        def __init__(self, layout, command_hub):
-            self._layout = layout
-            self._command_hub = command_hub
-
-        def current_changed(self, current_item_key):
-            self._layout._update_element_commands(self._command_hub, current_item_key)
-
     @classmethod
     async def from_data(cls, state, object, ref_registry, object_layout_producer):
         base_object_ref = ref_registry.register_object(object.data)
@@ -91,17 +82,13 @@ class TreeToListLayout(ObjectLayout):
         super().__init__(path)
         self._adapter = adapter
         self._base_list_layout = base_list_layout
-        self._current_item_observer = None
 
     @property
     def data(self):
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
 
     async def create_view(self, command_hub):
-        list_view = await self._base_list_layout.create_view(command_hub)
-        self._current_item_observer = observer = self._CurrentItemObserver(self, command_hub)
-        list_view.add_observer(observer)
-        return list_view
+        return (await self._base_list_layout.create_view(command_hub))
 
     async def visual_item(self):
         base_item = await self._base_list_layout.visual_item()
@@ -110,19 +97,7 @@ class TreeToListLayout(ObjectLayout):
             ])
 
     def get_current_commands(self, view):
-        object_commands = self._adapter.get_command_list()
-        current_key = view.current_item_key
-        if current_key is not None:
-            return [*object_commands, *self._get_element_commands(current_key)]
-        else:
-            return object_commands
-
-    def _update_element_commands(self, command_hub, current_item_key):
-        command_hub.update(only_kind='element')
-
-    def _get_element_commands(self, current_item_key):
-        for command in self._adapter.get_item_command_list(current_item_key):
-            yield command.partial(current_item_key)
+        return self._base_list_layout.get_current_commands(view)
 
 
 class ThisModule(ClientModule):
