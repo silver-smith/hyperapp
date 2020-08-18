@@ -116,9 +116,7 @@ class NavigatorLayout(GlobalLayout):
 
     def _get_current_layout_commands(self):
         for command in self._current_layout.get_current_commands(self._current_view):
-            yield (command
-                   .with_(wrapper=self._open_layout)
-                   )
+            yield command.with_(wrapper=self._open_layout)
 
     async def _open_layout(self, resolved_piece):
         await self._open_layout_impl(resolved_piece.object, resolved_piece.layout)
