@@ -234,7 +234,7 @@ class ListViewLayout(ObjectLayout):
         return RootVisualItem('ListView')
 
     def get_current_commands(self, view):
-        object_command_it = self._get_object_commands()
+        object_command_it = self._object.get_command_list()
         current_key = view.current_item_key
         if current_key is not None:
             return [*object_command_it, *self._get_element_commands(current_key)]
@@ -244,11 +244,8 @@ class ListViewLayout(ObjectLayout):
     def collect_view_commands(self):
         return {
             **super().collect_view_commands(),
-            **{tuple(self._path): self._get_object_commands()},
+            **{tuple(self._path): self._object.get_all_command_list()},
             }
-
-    def _get_object_commands(self):
-        return self._object.get_command_list()
 
     def _update_element_commands(self, command_hub, current_item_key):
         command_hub.update(only_kind='element')
