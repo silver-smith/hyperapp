@@ -56,7 +56,8 @@ class CommandList(SimpleListObject):
     async def _make_item(self, path, command):
         layout = await self._command_layout(command)
         if layout is not None:
-            layout_str = str(layout)
+            item = await layout.visual_item()
+            layout_str = item.text
         else:
             layout_str = ''
         return Item('/' + '/'.join(path), command.id, command.kind, layout_str)
