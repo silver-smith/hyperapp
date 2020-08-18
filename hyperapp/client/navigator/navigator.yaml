@@ -4,6 +4,8 @@ import:
     - layout_key_list
     navigator:
     - navigator
+    command_list:
+      - command_list
   code:
   - client.view
   - client.layout

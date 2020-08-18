@@ -71,12 +71,6 @@ class CategoryList(SimpleListObject):
         layout_ref = await self._get_layout_ref(category)
         return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, category)
 
-    @command('commands', kind='element')
-    async def commands(self, item_key):
-        category = item_key
-        layout_ref = await self._get_layout_ref(category)
-        return htypes.command_list.command_list(self._piece_ref, layout_ref)
-
 
 class ThisModule(ClientModule):
 

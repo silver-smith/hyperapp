@@ -21,3 +21,8 @@ module:client.navigator.navigator:NavigatorLayout:
       description: Open layout editor for current object
       shortcuts:
         - Ctrl+Y
+    commands:
+      text: Commands
+      description: Open command list
+      shortcuts:
+        - F1

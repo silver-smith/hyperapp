@@ -163,6 +163,13 @@ class NavigatorLayout(GlobalLayout):
         piece = htypes.layout_key_list.layout_key_list(current_piece_ref)
         await self._open_piece(piece)
 
+    @command('commands')
+    async def _open_commands(self):
+        piece_ref = self._ref_registry.register_object(self._current_object.data)
+        layout_ref = self._ref_registry.register_object(self._current_layout.data)
+        piece = htypes.command_list.command_list(piece_ref, layout_ref)
+        await self._open_piece(piece)
+
 
 class ThisModule(ClientModule):
 
