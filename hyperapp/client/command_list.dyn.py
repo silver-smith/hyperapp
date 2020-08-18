@@ -8,7 +8,7 @@ from .column import Column
 from .simple_list_object import SimpleListObject
 
 
-Item = namedtuple('Item', 'path id')
+Item = namedtuple('Item', 'path id kind')
 
 
 class CommandList(SimpleListObject):
@@ -39,11 +39,12 @@ class CommandList(SimpleListObject):
         return [
             Column('path'),
             Column('id', is_key=True),
+            Column('kind'),
             ]
 
     async def get_all_items(self):
         return [
-            Item(path, command.id)
+            Item('/' + '/'.join(path), command.id, command.kind)
             for path, command_list in self._layout.collect_view_commands().items()
             for command in command_list
             ]
