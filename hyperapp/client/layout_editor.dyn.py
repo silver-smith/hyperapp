@@ -243,6 +243,6 @@ class ThisModule(ClientModule):
             services.object_layout_resolver,
             )
 
-    @command('open_view_layout')
+    @object_command('open_view_layout')
     async def open_view_layout(self):
         return htypes.layout_editor.view_layout_editor()
