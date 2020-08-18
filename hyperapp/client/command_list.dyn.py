@@ -1,10 +1,11 @@
 from collections import namedtuple
 
-from hyperapp.client.command import command
+from hyperapp.common.util import single
 from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .column import Column
+from .object_command import command
 from .simple_list_object import SimpleListObject
 
 
@@ -48,6 +49,19 @@ class CommandList(SimpleListObject):
             for path, command_list in self._layout.collect_view_commands().items()
             for command in command_list
             ]
+
+    @command('layout', kind='element')
+    async def _open_layout(self, item_key):
+        command = single(
+            command
+            for command_list in self._layout.collect_view_commands().values()
+            for command in command_list
+            if command.id == item_key
+            )
+        category = self._object.category_list[-1]
+        piece_ref = self._ref_registry.register_object(self._object.data)
+        layout_ref = self._ref_registry.register_object(self._layout.data)
+        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, category, command.id)
 
 
 class ThisModule(ClientModule):

@@ -129,11 +129,11 @@ class ObjectLayoutEditor(LayoutEditor):
         object = await object_registry.resolve_async(piece)
         layout = await object_layout_resolver.resolve(state.layout_ref, object)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        self = cls(ref_registry, object_layout_association, layout_watcher, state.piece_ref, layout, object, state.category)
+        self = cls(ref_registry, object_layout_association, layout_watcher, state.piece_ref, layout, object, state.category, state.command)
         await self._async_init(layout)
         return self
 
-    def __init__(self, ref_registry, object_layout_association, layout_watcher, piece_ref, layout, object, category):
+    def __init__(self, ref_registry, object_layout_association, layout_watcher, piece_ref, layout, object, category, command):
         super().__init__(layout_watcher)
         self._ref_registry = ref_registry
         self._object_layout_association = object_layout_association
@@ -141,14 +141,19 @@ class ObjectLayoutEditor(LayoutEditor):
         self._layout = layout
         self._object = object
         self._target_category = category
+        self._target_command = command  # None for non-command layouts
 
     def get_title(self):
-        return f"Layout for category: {self._target_category}"
+        title = f"Layout for category: {self._target_category}"
+        if self._target_command:
+            return f"{title}/{self._target_command}"
+        else:
+            return title
 
     @property
     def data(self):
         layout_ref = self._ref_registry.register_object(self._layout.data)
-        return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, self._target_category, command=None)
+        return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, self._target_category, self._target_command)
 
     def get_command_list(self):
         return [command for command in super().get_command_list()

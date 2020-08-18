@@ -1,0 +1,14 @@
+module:client.command_list:CommandList:
+  columns:
+    path:
+      text: Path
+    id:
+      text: Command id
+    kind:
+      text: Kind
+  commands:
+    layout:
+      text: Edit layout
+      description: Open Layout editor for selected command
+      shortcuts:
+        - Y
