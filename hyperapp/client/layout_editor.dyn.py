@@ -124,19 +124,50 @@ class GlobalLayoutEditor(LayoutEditor):
 class ObjectLayoutEditor(LayoutEditor):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, object_layout_resolver):
+    async def from_state(
+            cls,
+            state,
+            ref_registry,
+            async_ref_resolver,
+            object_registry,
+            object_layout_association,
+            object_command_layout_association,
+            object_layout_resolver,
+            ):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         layout = await object_layout_resolver.resolve(state.layout_ref, object)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        self = cls(ref_registry, object_layout_association, layout_watcher, state.piece_ref, layout, object, state.category, state.command)
+        self = cls(
+            ref_registry,
+            object_layout_association,
+            object_command_layout_association,
+            layout_watcher,
+            state.piece_ref,
+            layout,
+            object,
+            state.category,
+            state.command,
+            )
         await self._async_init(layout)
         return self
 
-    def __init__(self, ref_registry, object_layout_association, layout_watcher, piece_ref, layout, object, category, command):
+    def __init__(
+            self,
+            ref_registry,
+            object_layout_association,
+            object_command_layout_association,
+            layout_watcher,
+            piece_ref,
+            layout,
+            object,
+            category,
+            command,
+            ):
         super().__init__(layout_watcher)
         self._ref_registry = ref_registry
         self._object_layout_association = object_layout_association
+        self._object_command_layout_association = object_command_layout_association
         self._piece_ref = piece_ref
         self._layout = layout
         self._object = object
@@ -167,7 +198,7 @@ class ObjectLayoutEditor(LayoutEditor):
 
     def _object_layout_editor(self, layout_ref):
         piece_ref = self._ref_registry.register_object(self._object.data)
-        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category, command=None)
+        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category, command=self._target_command)
 
     @object_command('replace')
     async def _replace_view(self, path):
@@ -188,7 +219,10 @@ class ObjectLayoutEditor(LayoutEditor):
         resource_key = self._object.hashable_resource_key
         layout_rec = await layout_rec_maker(self._object)
         layout_ref = self._ref_registry.register_object(layout_rec)
-        self._object_layout_association[self._target_category] = layout_ref
+        if self._target_command:
+            self._object_command_layout_association[self._target_category, self._target_command] = layout_ref
+        else:
+            self._object_layout_association[self._target_category] = layout_ref
         return self._object_layout_editor(layout_ref)
 
 
@@ -205,6 +239,7 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_association,
+            services.object_command_layout_association,
             services.object_layout_resolver,
             )
 
