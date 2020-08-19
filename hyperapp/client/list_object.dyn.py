@@ -48,7 +48,7 @@ class ListDiff(object):
 
 class ListObserver(ObjectObserver):
 
-    def process_fetch_results(self, item_list):
+    def process_fetch_results(self, item_list, fetch_finished):
         pass
 
     def process_eof(self):
@@ -73,6 +73,30 @@ class ListObject(Object, metaclass=abc.ABCMeta):
             if column.is_key:
                 return column.id
         raise RuntimeError("No key column or key_attribute is defined by class {}".format(self.__class__.__name__))
+
+    class _Observer(ListObserver):
+
+        def __init__(self, object, item_future):
+            self._object = object
+            self._item_future = item_future
+
+        def process_fetch_results(self, item_list, fetch_finished):
+            if item_list:
+                self._item_future.set_result(item_list[0])
+            elif not fetch_finished:
+                asyncio.ensure_future(self._object.fetch_items(None))
+            else:
+                self._item_future.set_result(None)
+
+        def process_eof(self):
+            self._item_future.set_result(None)
+
+    async def load_first_item(self):
+        item_future = asyncio.Future()
+        observer = self._Observer(self, item_future)
+        self.subscribe(observer)
+        asyncio.ensure_future(self.fetch_items(None))
+        return await item_future
 
     @abc.abstractmethod
     async def fetch_items(self, from_key):

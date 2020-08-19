@@ -64,8 +64,11 @@ class CommandList(SimpleListObject):
 
     async def _command_layout(self, command):
         if command.kind == 'element':
-            return None  # todo
-        resolved_piece = await command.run()
+            item = await self._object.load_first_item()
+            args = [getattr(item, self._object.key_attribute)]
+        else:
+            args = []
+        resolved_piece = await command.run(*args)
         if resolved_piece is None:
             return None
         return resolved_piece.layout
