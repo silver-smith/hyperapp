@@ -7,6 +7,10 @@ module:client.command_list:CommandList:
     kind:
       text: Kind
   commands:
+    run:
+      text: Run
+      description: Run selected command
+      is_default: yes
     layout:
       text: Edit layout
       description: Open Layout editor for selected command
