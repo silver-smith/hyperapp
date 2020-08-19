@@ -1,4 +1,5 @@
 import abc
+import asyncio
 import logging
 from dataclasses import dataclass
 
@@ -55,6 +56,26 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
             if column.is_key:
                 return column.id
         raise RuntimeError("No key column or key_attribute is defined by class {}".format(self.__class__.__name__))
+
+    class _Observer(TreeObserver):
+
+        def __init__(self, item_future):
+            self._item_future = item_future
+
+        def process_fetch_results(self, path, item_list):
+            if path:
+                return  # Not our fetch - ours is from root.
+            if item_list:
+                self._item_future.set_result(item_list[0])
+            else:
+                self._item_future.set_result(None)
+
+    async def load_first_item(self):
+        item_future = asyncio.Future()
+        observer = self._Observer(item_future)
+        self.subscribe(observer)
+        asyncio.ensure_future(self.fetch_items([]))
+        return await item_future
 
     @abc.abstractmethod
     async def fetch_items(self, path):
