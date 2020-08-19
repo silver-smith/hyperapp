@@ -55,24 +55,22 @@ class CommandList(SimpleListObject):
             ]
 
     async def _make_item(self, path, command):
-        layout = await self._command_layout(command)
-        if layout is not None:
-            item = await layout.visual_item()
+        resolved_piece = await self._run_command(command)
+        if resolved_piece is not None:
+            item = await resolved_piece.layout.visual_item()
             layout_str = item.text
         else:
             layout_str = ''
         return Item('/' + '/'.join(path), command.id, command.kind, layout_str)
 
-    async def _command_layout(self, command):
+    async def _run_command(self, command):
         if command.kind == 'element':
             item = await self._object.load_first_item()
             args = [getattr(item, self._object.key_attribute)]
         else:
             args = []
         resolved_piece = await command.run(*args)
-        if resolved_piece is None:
-            return None
-        return resolved_piece.layout
+        return resolved_piece
 
     def _command_by_id(self, command_id):
         return single(
@@ -86,14 +84,15 @@ class CommandList(SimpleListObject):
     async def _run(self, item_key):
         # todo: pass current item to command list, use it here for element commands.
         command = self._command_by_id(item_key)
-        return (await command.run())
+        return (await self._run_command(command))
 
     @object_command('layout', kind='element')
     async def _open_layout(self, item_key):
         command = self._command_by_id(item_key)
+        resolved_piece = await self._run_command(command)
+        piece_ref = self._ref_registry.register_object(resolved_piece.object.data)
+        layout_ref = self._ref_registry.register_object(resolved_piece.layout.data)
         category = self._object.category_list[-1]
-        piece_ref = self._ref_registry.register_object(self._object.data)
-        layout_ref = self._ref_registry.register_object(self._layout.data)
         return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, category, command.id)
 
 
