@@ -7,7 +7,7 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import ObjectLayout
+from .layout import RootVisualItem, ObjectLayout
 from .view import View
 from .text_object import TextObject
 
@@ -28,7 +28,7 @@ class TextViewLayout(ObjectLayout):
         return TextView(self._object)
 
     async def visual_item(self):
-        assert 0  # todo
+        return RootVisualItem('TextView')
 
 
 class TextView(View, QtWidgets.QTextBrowser):
