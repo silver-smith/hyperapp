@@ -90,6 +90,8 @@ class CommandList(SimpleListObject):
     async def _open_layout(self, item_key):
         command = self._command_by_id(item_key)
         resolved_piece = await self._run_command(command)
+        if resolved_piece is None:
+            return None
         piece_ref = self._ref_registry.register_object(resolved_piece.object.data)
         layout_ref = self._ref_registry.register_object(resolved_piece.layout.data)
         category = self._object.category_list[-1]
