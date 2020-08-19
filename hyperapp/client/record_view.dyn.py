@@ -71,30 +71,35 @@ class RecordView(QtWidgets.QWidget):
 class RecordViewLayout(ObjectLayout):
 
     async def from_data(state, object, object_layout_resolver):
-        self = RecordViewLayout(object, [])
-        await self._async_init(state.field_layout_list, object_layout_resolver)
+        self = RecordViewLayout(object, [], state.field_layout_list)
+        await self._async_init(object_layout_resolver)
         return self
 
-    def __init__(self, object, path):
+    def __init__(self, object, path, field_layout_list):
         super().__init__(path)
         self._object = object
+        self._field_layout_list = field_layout_list
         self._field_layout_dict = {}
 
-    async def _async_init(self, field_layout_list, object_layout_resolver):
-        for field in field_layout_list:
+    async def _async_init(self, object_layout_resolver):
+        for field in self._field_layout_list:
             field_object = self._object.fields[field.id]
             layout = await object_layout_resolver.resolve(field.layout_ref, field_object)
             self._field_layout_dict[field.id] = layout
 
     @property
     def data(self):
-        return htypes.record_view.record_layout()
+        return htypes.record_view.record_layout(self._field_layout_list)
 
     async def create_view(self, command_hub):
         return (await RecordView.make(self._object, command_hub, self._field_layout_dict))
 
     async def visual_item(self):
-        return RootVisualItem('RecordView')  # todo: add fields children
+        children = []
+        for idx, (field_id, layout) in enumerate(self._field_layout_dict.items()):
+            item = await layout.visual_item()
+            children.append(item.to_item(idx, field_id))
+        return RootVisualItem('RecordView', children)
 
     def get_current_commands(self, view):
         focused_layout = self._field_layout_dict[view.focused_field_id]
