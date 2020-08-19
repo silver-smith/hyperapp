@@ -97,6 +97,10 @@ class LineEditLayout(ObjectLayout):
         self._object = object
         self._mode = mode
 
+    @property
+    def data(self):
+        return htypes.line.line_edit_layout()
+
     async def create_view(self, command_hub):
         return LineEditView(self._object, self._mode)
 
