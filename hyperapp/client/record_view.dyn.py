@@ -12,22 +12,22 @@ from .record_object import RecordObject
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def make(cls, object_layout_producer, object, command_hub, field_layout_dict):
+    async def make(cls, object, command_hub, field_layout_dict):
         view = cls(object)
-        await view._async_init(object_layout_producer, command_hub, field_layout_dict)
+        await view._async_init(command_hub, field_layout_dict)
         return view
 
     def __init__(self, object):
         super().__init__()
         self._object = object
 
-    async def _async_init(self, object_layout_producer, command_hub, field_layout_dict):
+    async def _async_init(self, command_hub, field_layout_dict):
         qt_layout = QtWidgets.QVBoxLayout()
         has_expandable_field = False
         self._field_view_dict = {}
         for field_id, field_layout in field_layout_dict.items():
             field_view = await self._construct_field_view(
-                object_layout_producer, command_hub, qt_layout, field_id, field_layout)
+                command_hub, qt_layout, field_id, field_layout)
             if field_view.sizePolicy().verticalPolicy() & QtWidgets.QSizePolicy.ExpandFlag:
                 has_expandable_field = True
             self._field_view_dict[field_id] = field_view
@@ -36,7 +36,7 @@ class RecordView(QtWidgets.QWidget):
         self.setLayout(qt_layout)
 
     async def _construct_field_view(
-            self, object_layout_producer, command_hub, qt_layout, field_id, field_layout):
+            self, command_hub, qt_layout, field_id, field_layout):
         view = await field_layout.create_view(command_hub)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
@@ -70,29 +70,28 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(ObjectLayout):
 
-    async def from_data(state, object, object_layout_producer, params_editor):
-        self = RecordViewLayout(object_layout_producer, params_editor, object, [])
-        await self._async_init(object_layout_producer)
+    async def from_data(state, object, object_layout_resolver):
+        self = RecordViewLayout(object, [])
+        await self._async_init(state.field_layout_list, object_layout_resolver)
         return self
 
-    def __init__(self, object_layout_producer, params_editor, object, path, fields=None):
+    def __init__(self, object, path):
         super().__init__(path)
-        self._object_layout_producer = object_layout_producer
-        self._params_editor = params_editor
         self._object = object
         self._field_layout_dict = {}
 
-    async def _async_init(self, object_layout_producer):
-        for field_id, field_object in self._object.fields.items():
-            layout = await object_layout_producer.produce_layout(field_object)
-            self._field_layout_dict[field_id] = layout
+    async def _async_init(self, field_layout_list, object_layout_resolver):
+        for field in field_layout_list:
+            field_object = self._object.fields[field.id]
+            layout = await object_layout_resolver.resolve(field.layout_ref, field_object)
+            self._field_layout_dict[field.id] = layout
 
     @property
     def data(self):
         return htypes.record_view.record_layout()
 
     async def create_view(self, command_hub):
-        return (await RecordView.make(self._object_layout_producer, self._object, command_hub, self._field_layout_dict))
+        return (await RecordView.make(self._object, command_hub, self._field_layout_dict))
 
     async def visual_item(self):
         return RootVisualItem('RecordView')  # todo: add fields children
@@ -113,10 +112,17 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
+        self._object_layout_producer = services.object_layout_producer
         services.default_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
         services.available_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
         services.object_layout_registry.register_type(
-            htypes.record_view.record_layout, RecordViewLayout.from_data, services.object_layout_producer, services.params_editor)
+            htypes.record_view.record_layout, RecordViewLayout.from_data, services.object_layout_resolver)
 
     async def _make_record_layout_rec(self, object):
-        return htypes.record_view.record_layout()
+        field_layout_list = []
+        for field_id, field_object in object.fields.items():
+            layout = await self._object_layout_producer.produce_layout(field_object)
+            layout_ref = self._ref_registry.register_object(layout.data)
+            field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
+        return htypes.record_view.record_layout(field_layout_list)
