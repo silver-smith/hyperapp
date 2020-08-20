@@ -14,23 +14,6 @@ from .text_object import TextObject
 log = logging.getLogger(__name__)
 
 
-class TextViewLayout(ObjectLayout):
-
-    def __init__(self, object, path):
-        super().__init__(path)
-        self._object = object
-
-    @property
-    def data(self):
-        return htypes.text.text_edit_layout()
-
-    async def create_view(self, command_hub):
-        return TextView(self._object)
-
-    async def visual_item(self):
-        return RootVisualItem('TextView')
-
-
 class TextView(View, QtWidgets.QTextBrowser):
 
     def __init__(self, object):
@@ -69,6 +52,23 @@ class TextView(View, QtWidgets.QTextBrowser):
 
     # def __del__(self):
     #     log.info('~text_view %r', self)
+
+
+class TextViewLayout(ObjectLayout):
+
+    def __init__(self, object, path):
+        super().__init__(path)
+        self._object = object
+
+    @property
+    def data(self):
+        return htypes.text.text_edit_layout()
+
+    async def create_view(self, command_hub):
+        return TextView(self._object)
+
+    async def visual_item(self):
+        return RootVisualItem('TextView')
 
 
 class ThisModule(ClientModule):
