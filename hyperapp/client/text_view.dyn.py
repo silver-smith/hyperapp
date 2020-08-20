@@ -104,7 +104,11 @@ class TextViewLayout(ObjectLayout):
         return TextView(self._object)
 
     async def visual_item(self):
-        return RootVisualItem('TextView')
+        if self._editable:
+            tag = 'editable'
+        else:
+            tag = 'read-only'
+        return RootVisualItem(f'TextView/{tag}')
 
 
 class ThisModule(ClientModule):
