@@ -62,7 +62,7 @@ class WikiTextObject(TextObject):
 
     @property
     def data(self):
-        return htypes.text.wiki_text()
+        return htypes.text.wiki_text(self._text, self._ref_list)
 
     async def open_ref(self, id):
         _log.info('Opening ref: %r', id)
