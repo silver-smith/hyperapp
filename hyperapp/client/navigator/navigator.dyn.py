@@ -10,7 +10,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .layout import RootVisualItem, VisualItem, GlobalLayout
+from .layout import RootVisualItem, VisualItem, GlobalLayout, LayoutWatcher
 
 _log = logging.getLogger(__name__)
 
@@ -79,10 +79,11 @@ class NavigatorLayout(GlobalLayout):
     async def _async_init(self, initial_piece_ref, initial_layout_ref):
         piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
         self._current_object = object = await self._object_registry.resolve_async(piece)
+        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
         if initial_layout_ref:
-            self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, object)
+            self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, object, layout_watcher)
         else:
-            self._current_layout = await self._object_layout_producer.produce_layout(object)
+            self._current_layout = await self._object_layout_producer.produce_layout(object, layout_watcher)
         self._history.append(_HistoryItem(object, self._current_layout))
 
     @property
@@ -128,7 +129,8 @@ class NavigatorLayout(GlobalLayout):
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        layout = await self._object_layout_producer.produce_layout(object)
+        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
+        layout = await self._object_layout_producer.produce_layout(object, layout_watcher)
         await self._open_layout_impl(object, layout)
 
     async def _open_layout_impl(self, object, layout):

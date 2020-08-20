@@ -142,8 +142,8 @@ class ObjectLayoutEditor(LayoutEditor):
             ):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        layout = await object_layout_resolver.resolve(state.layout_ref, object)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
+        layout = await object_layout_resolver.resolve(state.layout_ref, object, layout_watcher)
         self = cls(
             ref_registry,
             object_layout_association,

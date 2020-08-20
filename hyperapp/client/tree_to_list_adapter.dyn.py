@@ -72,10 +72,10 @@ class TreeToListAdapter(ListObject):
 class TreeToListLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, object, ref_registry, object_layout_producer):
+    async def from_data(cls, state, object, layout_watcher, ref_registry, object_layout_producer):
         base_object_ref = ref_registry.register_object(object.data)
         adapter = TreeToListAdapter(base_object_ref, object, path=[])
-        base_list_layout = await object_layout_producer.produce_layout(adapter)
+        base_list_layout = await object_layout_producer.produce_layout(adapter, layout_watcher)
         return cls(adapter, base_list_layout, path=[])
 
     def __init__(self, adapter, base_list_layout, path):

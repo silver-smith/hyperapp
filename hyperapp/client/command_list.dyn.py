@@ -7,6 +7,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .column import Column
 from .object_command import command as object_command
+from .layout import LayoutWatcher
 from .simple_list_object import SimpleListObject
 
 
@@ -19,7 +20,8 @@ class CommandList(SimpleListObject):
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver, object_layout_producer):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        layout = await object_layout_resolver.resolve(state.layout_ref, object)
+        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
+        layout = await object_layout_resolver.resolve(state.layout_ref, object, layout_watcher)
         return cls(ref_registry, object_registry, object_layout_producer, object, layout)
 
     def __init__(self, ref_registry, object_registry, object_layout_producer, object, layout):

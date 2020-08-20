@@ -62,7 +62,7 @@ class CategoryList(SimpleListObject):
         layout_ref = self._object_layout_association.get(category)
         if layout_ref:
             return layout_ref
-        layout = await self._object_layout_producer.produce_layout(self._object)
+        layout = await self._object_layout_producer.produce_layout(self._object, layout_watcher=None)
         return self._ref_registry.register_object(layout.data)
 
 

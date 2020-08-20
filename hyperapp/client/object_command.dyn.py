@@ -6,6 +6,8 @@ from collections import namedtuple
 from hyperapp.client.commander import resource_key_of_class_method, UnboundCommand
 from hyperapp.client.module import ClientModule
 
+from .layout import LayoutWatcher
+
 _log = logging.getLogger(__name__)
 
 
@@ -118,7 +120,8 @@ class BoundObjectCommand:
             return
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
-        layout = await this_module.object_layout_producer.produce_layout(object)
+        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
+        layout = await this_module.object_layout_producer.produce_layout(object, layout_watcher)
         resolved_piece = _ResolvedPiece(object, layout)
         _log.info("BoundObjectCommand: piece resolved to: object %r", resolved_piece)
         if not self._wrapper:

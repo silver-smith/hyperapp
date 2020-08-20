@@ -68,13 +68,13 @@ class MasterDetailsView(QtWidgets.QSplitter, Composite):
 class MasterDetailsLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, object, ref_registry, object_registry, object_layout_resolver, object_layout_producer):
+    async def from_data(cls, state, object, layout_watcher, ref_registry, object_registry, object_layout_resolver, object_layout_producer):
         return cls(
             ref_registry, object_registry, object_layout_resolver, object_layout_producer,
-            state.master_layout_ref, state.command_id, object, [])
+            state.master_layout_ref, state.command_id, object, [], layout_watcher)
 
     def __init__(self, ref_registry, object_registry, object_layout_resolver, object_layout_producer,
-                 master_layout_ref, command_id, object, path):
+                 master_layout_ref, command_id, object, path, layout_watcher):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._object_registry = object_registry
@@ -84,6 +84,7 @@ class MasterDetailsLayout(ObjectLayout):
         self._master_layout_ref = master_layout_ref
         self._command_id = command_id
         self._object = object
+        self._layout_watcher = layout_watcher
 
     @property
     def data(self):
@@ -108,7 +109,7 @@ class MasterDetailsLayout(ObjectLayout):
             ])
 
     async def _create_master_layout(self):
-        return (await self._object_layout_resolver.resolve(self._master_layout_ref, self._object))
+        return (await self._object_layout_resolver.resolve(self._master_layout_ref, self._object, self._layout_watcher))
 
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):

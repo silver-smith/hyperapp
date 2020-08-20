@@ -269,5 +269,5 @@ class ThisModule(ClientModule):
     async def _make_list_layout_rec(self, object):
         return htypes.list_view.list_layout()
 
-    async def _produce_layout(self, state, object):
+    async def _produce_layout(self, state, object, layout_watcher):
         return ListViewLayout(self._type_resolver, self._resource_resolver, self._params_editor, object, [])

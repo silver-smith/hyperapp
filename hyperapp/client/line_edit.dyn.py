@@ -88,7 +88,7 @@ class LineEditView(View, QtWidgets.QLineEdit):
 class LineEditLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, object):
+    async def from_data(cls, state, object, layout_watcher):
         return cls(object, [], state.editable)
 
     def __init__(self, object, path, editable):
