@@ -7,7 +7,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command as object_command
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, TreeObject
