@@ -12,7 +12,7 @@ from hyperapp.client.util import make_async_action
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, TreeObserver, TreeObject
+from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
 from .layout import RootVisualItem, ObjectLayout
 from .view import View
 from .items_view import map_columns_to_view
@@ -125,6 +125,8 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
             self._insert_item(path, diff.idx, diff.item)
         elif isinstance(diff, RemoveItemDiff):
             self._remove_item(path)
+        elif isinstance(diff, UpdateItemDiff):
+            self._update_item(path, diff.item)
         else:
             raise RuntimeError(f"Unknown Diff class: {diff}")
 
@@ -190,6 +192,18 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         del self._id2path[id]
         self.endRemoveRows()
 
+    def _update_item(self, path, item):
+        if path not in self._path2item:
+            log.warning("Item is missing at path %s; nothing to update", path)
+            return
+        self._path2item[path] = item
+        lindex = self.path2index(path)
+        rindex = self.path2index(path, column=len(self.columns) - 1)
+        self.dataChanged.emit(lindex, lindex)
+        view = self._view_wr()
+        if view:
+            view._on_data_changed()
+
     def request_fetch(self, path):
         if path:
             path = tuple(path)
@@ -207,7 +221,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         else:
             return None
 
-    def path2index(self, path):
+    def path2index(self, path, column=0):
         if not path:
             return None
         path = tuple(path)
@@ -217,7 +231,7 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         item_list = self._path2children.get(path[:-1])
         key_list = [getattr(item, self._key_attr) for item in item_list]
         row = key_list.index(path[-1])
-        return self.createIndex(row, 0, id)
+        return self.createIndex(row, column, id)
 
     def first_row_index(self):
         item_list = self._path2children.get(())

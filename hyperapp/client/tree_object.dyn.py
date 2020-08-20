@@ -41,6 +41,11 @@ class RemoveItemDiff(Diff):
     pass
 
 
+@dataclass
+class UpdateItemDiff(Diff):
+    item: object
+
+
 class TreeObject(Object, metaclass=abc.ABCMeta):
 
     category_list = ['tree']
