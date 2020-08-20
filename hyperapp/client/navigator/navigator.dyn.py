@@ -124,7 +124,7 @@ class NavigatorLayout(GlobalLayout):
 
     async def _open_piece(self, piece):
         await self._open_piece_impl(piece)
-        # self._history.append(piece)  # todo
+        self._history.append(_HistoryItem(self._current_object, self._current_layout))
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
