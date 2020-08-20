@@ -1,0 +1,8 @@
+module:client.line_edit:LineEditLayout:
+  commands:
+    set_editable:
+      text: Set editable
+      description: Switch line edit to editable mode
+    set_read_only:
+      text: Set read-only
+      description: Switch line edit to read-only mode

@@ -4,6 +4,7 @@ import logging
 from enum import Enum
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.client.command import command
 from hyperapp.client.object import Object
 from hyperapp.client.module import ClientModule
 
@@ -105,9 +106,19 @@ class LineEditLayout(ObjectLayout):
     async def visual_item(self):
         if self._editable:
             tag = 'editable'
+            command = self._set_read_only
         else:
             tag = 'read-only'
-        return RootVisualItem(f'LineEdit/{tag}')
+            command = self._set_editable
+        return RootVisualItem(f'LineEdit/{tag}', commands=[command])
+
+    @command('set_editable')
+    def _set_editable(self, item_key):
+        assert 0
+
+    @command('set_read_only')
+    def _set_read_only(self, item_key):
+        assert 0
 
 
 class ThisModule(ClientModule):
