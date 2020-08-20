@@ -1,13 +1,14 @@
 
 text = record:
-    text: string
+  text: string
 
 wiki_ref = record:
-    id: int
-    title: string
-    ref: ref
+  id: int
+  title: string
+  ref: ref
 
 wiki_text = record(text):
-    ref_list: wiki_ref list
+  ref_list: wiki_ref list
 
-text_edit_layout = record
+text_edit_layout = record:
+  editable: bool

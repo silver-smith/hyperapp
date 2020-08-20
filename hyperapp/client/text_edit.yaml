@@ -1,6 +1,0 @@
-import:
-  types:
-    text:
-      - text_edit_layout
-  code:
-    - client.text_object

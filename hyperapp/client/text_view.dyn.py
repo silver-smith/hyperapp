@@ -4,6 +4,7 @@ import re
 
 from PySide2 import QtCore, QtWidgets
 
+from hyperapp.client.object import ObjectObserver
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -54,15 +55,50 @@ class TextView(View, QtWidgets.QTextBrowser):
     #     log.info('~text_view %r', self)
 
 
+class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
+
+    def __init__(self, object):
+        super().__init__()
+        self.object = object
+        self.notify_on_text_changed = True
+        self.setPlainText(object.text)
+        self.textChanged.connect(self._on_text_changed)
+        self.object.subscribe(self)
+
+    def get_title(self):
+        return self.object.get_title()
+
+    def _on_text_changed(self):
+        if self.notify_on_text_changed:
+            self.object.text_changed(self.toPlainText(), emitter_view=self)
+
+    # todo: preserve cursor position
+    def object_changed(self):
+        self.notify_on_text_changed = False
+        try:
+            self.setPlainText(self.object.text)
+        finally:
+            self.notify_on_text_changed = True
+        View.object_changed(self)
+
+    # def __del__(self):
+    #     _log.info('~text_edit %r', self)
+
+
 class TextViewLayout(ObjectLayout):
 
-    def __init__(self, object, path):
+    @classmethod
+    def from_data(cls, state, object):
+        return TextViewLayout(object, [], state.editable)
+
+    def __init__(self, object, path, editable):
         super().__init__(path)
         self._object = object
+        self._editable = editable
 
     @property
     def data(self):
-        return htypes.text.text_edit_layout()
+        return htypes.text.text_edit_layout(self._editable)
 
     async def create_view(self, command_hub):
         return TextView(self._object)
@@ -77,10 +113,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.default_object_layouts.register('text', TextObject.category_list, self._make_text_layout_rec)
         services.available_object_layouts.register('text', TextObject.category_list, self._make_text_layout_rec)
-        services.object_layout_registry.register_type(htypes.text.text_edit_layout, self._produce_text_layout)
+        services.object_layout_registry.register_type(htypes.text.text_edit_layout, TextViewLayout.from_data)
 
     async def _make_text_layout_rec(self, object):
-        return htypes.text.text_edit_layout()
-
-    async def _produce_text_layout(self, state, object):
-        return TextViewLayout(object, [])
+        return htypes.text.text_edit_layout(editable=False)

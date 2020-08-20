@@ -132,7 +132,6 @@ code_module_list = [
     'client.master_details',
     'client.line_edit',
     'client.text_view',
-    'client.text_edit',
     'client.items_view',
     'client.list_view',
     'client.list_view_sample',
