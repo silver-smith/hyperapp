@@ -9,7 +9,7 @@ from hyperapp.client.object import Object
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, ObjectLayout
+from .layout import RootVisualItem, ObjectLayout, UpdateVisualItemDiff
 from .view import View
 
 log = logging.getLogger(__name__)
@@ -89,10 +89,11 @@ class LineEditLayout(ObjectLayout):
 
     @classmethod
     async def from_data(cls, state, object, layout_watcher):
-        return cls(object, [], state.editable)
+        return cls(layout_watcher, object, [], state.editable)
 
-    def __init__(self, object, path, editable):
+    def __init__(self, layout_watcher, object, path, editable):
         super().__init__(path)
+        self._layout_watcher = layout_watcher
         self._object = object
         self._editable = editable
 
@@ -113,11 +114,13 @@ class LineEditLayout(ObjectLayout):
         return RootVisualItem(f'LineEdit/{tag}', commands=[command])
 
     @command('set_editable')
-    def _set_editable(self, item_key):
-        assert 0
+    async def _set_editable(self, item_key):
+        self._editable = True
+        item = await self.visual_item()
+        self._layout_watcher.distribute_diffs([UpdateVisualItemDiff(self._path, item)])
 
     @command('set_read_only')
-    def _set_read_only(self, item_key):
+    async def _set_read_only(self, item_key):
         assert 0
 
 
