@@ -6,7 +6,6 @@ from hyperapp.client.object import ObjectObserver
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .text_object import TextObject
-from .layout_registry import LayoutViewProducer
 
 _log = logging.getLogger(__name__)
 
@@ -41,17 +40,7 @@ class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
         _log.info('~text_edit %r', self)
 
 
-class TextEditProducer(LayoutViewProducer):
-
-    def __init__(self, layout):
-        pass
-
-    async def produce_view(self, piece, object, observer=None):
-        return TextEditView(object)
-
-
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.layout_registry.register_type(htypes.text.text_edit_layout, TextEditProducer)

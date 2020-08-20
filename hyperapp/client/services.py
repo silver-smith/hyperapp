@@ -85,7 +85,6 @@ code_module_list = [
     'client.remote_route_resolver',
     'client.objimpl_registry',
     'client.object_registry',
-    'client.layout_registry',
     'client.view',
     'client.composite',
     'client.column',

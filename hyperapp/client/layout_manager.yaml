@@ -4,6 +4,5 @@ import:
       - root_layout
   code:
     - client.object_command
-    - client.layout_registry
     - client.layout
     - client.command_hub

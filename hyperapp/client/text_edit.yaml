@@ -4,4 +4,3 @@ import:
       - text_edit_layout
   code:
     - client.text_object
-    - client.layout_registry
