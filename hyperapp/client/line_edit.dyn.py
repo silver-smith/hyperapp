@@ -56,19 +56,13 @@ class LineObject(Object):
 
 class LineEditView(View, QtWidgets.QLineEdit):
 
-    impl_id = 'line_edit'
-
-    class Mode(Enum):
-        VIEW = 'view'
-        EDIT = 'edit'
-
-    def __init__(self, object, mode):
+    def __init__(self, object, editable):
         QtWidgets.QLineEdit.__init__(self, object.line)
         View.__init__(self)
         self._object = object
-        self._mode = mode
+        self._editable = editable
         self._notify_on_line_changed = True
-        self.setReadOnly(self._mode == self.Mode.VIEW)
+        self.setReadOnly(not self._editable)
         self.textChanged.connect(self._on_line_changed)
         self._object.subscribe(self)
 
@@ -92,20 +86,28 @@ class LineEditView(View, QtWidgets.QLineEdit):
 
 class LineEditLayout(ObjectLayout):
 
-    def __init__(self, object, path, mode):
+    @classmethod
+    async def from_data(cls, state, object):
+        return cls(object, [], state.editable)
+
+    def __init__(self, object, path, editable):
         super().__init__(path)
         self._object = object
-        self._mode = mode
+        self._editable = editable
 
     @property
     def data(self):
-        return htypes.line.line_edit_layout()
+        return htypes.line.line_edit_layout(self._editable)
 
     async def create_view(self, command_hub):
-        return LineEditView(self._object, self._mode)
+        return LineEditView(self._object, self._editable)
 
     async def visual_item(self):
-        return RootVisualItem('LineEdit')
+        if self._editable:
+            tag = 'editable'
+        else:
+            tag = 'read-only'
+        return RootVisualItem(f'LineEdit/{tag}')
 
 
 class ThisModule(ClientModule):
@@ -115,10 +117,7 @@ class ThisModule(ClientModule):
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
         services.default_object_layouts.register('line', LineObject.category_list, self._make_line_layout_rec)
         services.available_object_layouts.register('line', LineObject.category_list, self._make_line_layout_rec)
-        services.object_layout_registry.register_type(htypes.line.line_edit_layout, self._produce_line_layout)
+        services.object_layout_registry.register_type(htypes.line.line_edit_layout, LineEditLayout.from_data)
 
     async def _make_line_layout_rec(self, object):
-        return htypes.line.line_edit_layout()
-
-    async def _produce_line_layout(self, state, object):
-        return LineEditLayout(object, [], LineEditView.Mode.VIEW)
+        return htypes.line.line_edit_layout(editable=False)

@@ -1,5 +1,6 @@
 
 line = record:
-    line: string
+  line: string
 
-line_edit_layout = record
+line_edit_layout = record:
+  editable: bool
