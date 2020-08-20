@@ -83,6 +83,12 @@ class LayoutEditor(TreeObject):
             elif isinstance(vdiff, RemoveVisualItemDiff):
                 # todo: remove item from self._path2item_list
                 self._distribute_diff(vdiff.path, RemoveItemDiff())
+            elif isinstance(vdiff, UpdateVisualItemDiff):
+                parent_path = tuple(vdiff.path[:-1])
+                item_list = self._path2item_list[parent_path]
+                item_list[vdiff.path[-1]] = vdiff.item
+                diff = UpdateItemDiff(vdiff.item)
+                self._distribute_diff(vdiff.path, diff)
             else:
                 raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
 

@@ -48,6 +48,12 @@ class RemoveVisualItemDiff(VisualItemDiff):
     path: List[int]
 
 
+@dataclass
+class UpdateVisualItemDiff(VisualItemDiff):
+    path: List[int]
+    item: VisualItem
+
+
 class LayoutWatcher:
 
     def __init__(self):
