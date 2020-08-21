@@ -116,12 +116,16 @@ class LineEditLayout(ObjectLayout):
     @command('set_editable')
     async def _set_editable(self, item_key):
         self._editable = True
-        item = await self.visual_item()
-        self._layout_watcher.distribute_diffs([UpdateVisualItemDiff(self._path, item)])
+        await self._distribute_update()
 
     @command('set_read_only')
     async def _set_read_only(self, item_key):
-        assert 0
+        self._editable = False
+        await self._distribute_update()
+
+    async def _distribute_update(self):
+        item = await self.visual_item()
+        self._layout_watcher.distribute_diffs([UpdateVisualItemDiff(self._path, item)])
 
 
 class ThisModule(ClientModule):
