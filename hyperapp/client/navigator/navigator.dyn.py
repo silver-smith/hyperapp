@@ -81,7 +81,7 @@ class NavigatorLayout(GlobalLayout):
         self._current_object = object = await self._object_registry.resolve_async(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
         if initial_layout_ref:
-            self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, object, layout_watcher)
+            self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, [0], object, layout_watcher)
         else:
             self._current_layout = await self._object_layout_producer.produce_layout(object, layout_watcher)
         self._history.append(_HistoryItem(object, self._current_layout))

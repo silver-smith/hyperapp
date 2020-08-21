@@ -55,7 +55,7 @@ class ObjectLayoutProducer:
             except StopIteration:
                 raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
             layout_rec = await rec.layout_rec_maker(object)
-        return (await self._object_layout_registry.resolve_async(layout_rec, object, layout_watcher))
+        return (await self._object_layout_registry.resolve_async(layout_rec, [0], object, layout_watcher))
 
 
 class ThisModule(ClientModule):

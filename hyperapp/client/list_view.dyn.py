@@ -211,6 +211,10 @@ class ListViewLayout(ObjectLayout):
         def current_changed(self, current_item_key):
             self._layout._update_element_commands(self._command_hub, current_item_key)
 
+    @classmethod
+    async def from_data(cls, state, path, object, layout_watcher, type_resolver, resource_resolver, params_editor):
+        return cls(type_resolver, resource_resolver, params_editor, object, path)
+
     def __init__(self, type_resolver, resource_resolver, params_editor, object, path):
         super().__init__(path)
         self._type_resolver = type_resolver
@@ -259,15 +263,10 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self._type_resolver = services.type_resolver
-        self._resource_resolver = services.resource_resolver
-        self._params_editor = services.params_editor
         services.default_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
         services.available_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
-        services.object_layout_registry.register_type(htypes.list_view.list_layout, self._produce_layout)
+        services.object_layout_registry.register_type(
+            htypes.list_view.list_layout, ListViewLayout.from_data, services.type_resolver, services.resource_resolver, services.params_editor)
 
     async def _make_list_layout_rec(self, object):
         return htypes.list_view.list_layout()
-
-    async def _produce_layout(self, state, object, layout_watcher):
-        return ListViewLayout(self._type_resolver, self._resource_resolver, self._params_editor, object, [])

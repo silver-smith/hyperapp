@@ -88,8 +88,8 @@ class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
 class TextViewLayout(ObjectLayout):
 
     @classmethod
-    def from_data(cls, state, object, layout_watcher):
-        return TextViewLayout(object, [], state.editable)
+    def from_data(cls, state, path, object, layout_watcher):
+        return TextViewLayout(object, path, state.editable)
 
     def __init__(self, object, path, editable):
         super().__init__(path)
