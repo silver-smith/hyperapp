@@ -20,11 +20,10 @@ from .items_view import map_columns_to_view
 log = logging.getLogger(__name__)
 
 
-class _Model(QtCore.QAbstractItemModel, TreeObserver):
+class _Model(QtCore.QAbstractItemModel):
 
     def __init__(self, view, columns, object):
         QtCore.QAbstractItemModel.__init__(self)
-        TreeObserver.__init__(self)
         self._view_wr = weakref.ref(view)
         self._object = object
         self.columns = columns
@@ -35,7 +34,6 @@ class _Model(QtCore.QAbstractItemModel, TreeObserver):
         self._id2path = {}
         self._path2id = {}
         self._id_counter = 0
-        self._object.subscribe(self)
 
     # qt methods  -------------------------------------------------------------------------------------------------------
 
@@ -253,7 +251,7 @@ class TreeViewObserver(metaclass=abc.ABCMeta):
         pass
 
 
-class TreeView(View, QtWidgets.QTreeView):
+class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
     def __init__(self, columns, object, current_path=None):
         self._observers = weakref.WeakSet()
@@ -261,12 +259,14 @@ class TreeView(View, QtWidgets.QTreeView):
         QtWidgets.QTreeView.__init__(self)
         self.setModel(_Model(self, columns, object))
         View.__init__(self)
+        TreeObserver.__init__(self)
         self.setSelectionMode(self.ContiguousSelection)
         self._object = object
         self._wanted_current_path = current_path  # will set it to current when rows are loaded
         self._default_command = None
         self.activated.connect(self._on_activated)
         self.expanded.connect(self._on_expanded)
+        self._object.subscribe(self)
 
     # obsolete
     def get_state(self):
@@ -280,6 +280,20 @@ class TreeView(View, QtWidgets.QTreeView):
 
     def currentChanged(self, idx, prev_idx):
         QtWidgets.QTreeView.currentChanged(self, idx, prev_idx)
+        self._notify_observers()
+
+    # TreeObserver methods  ---------------------------------------------------------------------------------------------
+
+    def process_fetch_results(self, path, item_list):
+        self.model().process_fetch_results(path, item_list)
+
+    def process_diff(self, path, diff):
+        self.model().process_diff(path, diff)
+        self._notify_observers()  # command hub should be notified because commands may change
+
+    # -------------------------------------------------------------------------------------------------------------------
+
+    def _notify_observers(self):
         current_path = self.current_item_path
         for observer in self._observers:
             observer.current_changed(current_path)

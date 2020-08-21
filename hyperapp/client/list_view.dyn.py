@@ -24,7 +24,7 @@ _log = logging.getLogger(__name__)
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
 
 
-class _Model(QtCore.QAbstractTableModel, ListObserver):
+class _Model(QtCore.QAbstractTableModel):
 
     def __init__(self, view, columns, object):
         QtCore.QAbstractTableModel.__init__(self)
@@ -36,7 +36,6 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         self._item_list = []
         self._eof = False
         self._id2index = {}
-        self._object.subscribe(self)
 
     # qt methods  -------------------------------------------------------------------------------------------------------
 
@@ -70,22 +69,7 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
         _log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
         self._fetch_more()
 
-    # own methods  ------------------------------------------------------------------------------------------------------
-
-    def has_rows(self):
-        return bool(self._item_list)
-
-    def _fetch_more(self):
-        assert not self._eof
-        if self._fetch_pending:
-            return
-        if self._item_list:
-            from_key = getattr(self._item_list[-1], self._key_attr)
-        else:
-            from_key = None
-        _log.info('  requesting fetch from %r', from_key)
-        create_context_task(self._object.fetch_items(from_key), log.fetch_more)
-        self._fetch_pending = True
+    # ListObserver methods ----------------------------------------------------------------------------------------------
 
     def process_fetch_results(self, item_list, fetch_finished):
         _log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
@@ -108,6 +92,23 @@ class _Model(QtCore.QAbstractTableModel, ListObserver):
     def process_eof(self):
         _log.debug('reached eof')
         self._eof = True
+
+    # own methods  ------------------------------------------------------------------------------------------------------
+
+    def has_rows(self):
+        return bool(self._item_list)
+
+    def _fetch_more(self):
+        assert not self._eof
+        if self._fetch_pending:
+            return
+        if self._item_list:
+            from_key = getattr(self._item_list[-1], self._key_attr)
+        else:
+            from_key = None
+        _log.info('  requesting fetch from %r', from_key)
+        create_context_task(self._object.fetch_items(from_key), log.fetch_more)
+        self._fetch_pending = True
 
     def index2id(self, index):
         if not index.isValid():
@@ -148,6 +149,7 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         self.setSelectionBehavior(self.SelectRows)
         self.setSelectionMode(self.SingleSelection)
         self.activated.connect(self._on_activated)
+        self._object.subscribe(self)
 
     # obsolete
     def get_state(self):
@@ -171,6 +173,16 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         current_key = self.current_item_key
         for observer in self._observers:
             observer.current_changed(current_key)
+
+    # ListObserver methods ----------------------------------------------------------------------------------------------
+
+    def process_fetch_results(self, item_list, fetch_finished):
+        self.model().process_fetch_results(item_list, fetch_finished)
+
+    def process_eof(self):
+        self.model().process_eof()
+
+    # -------------------------------------------------------------------------------------------------------------------
 
     @property
     def current_item_key(self):
