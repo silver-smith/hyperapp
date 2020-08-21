@@ -8,7 +8,7 @@ from hyperapp.client.object import ObjectObserver
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, ObjectLayout
+from .layout import ObjectLayout
 from .view import View
 from .text_object import TextObject
 
@@ -108,7 +108,7 @@ class TextViewLayout(ObjectLayout):
             tag = 'editable'
         else:
             tag = 'read-only'
-        return RootVisualItem(f'TextView/{tag}')
+        return self.make_visual_item(f'TextView/{tag}')
 
 
 class ThisModule(ClientModule):

@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .layout import RootVisualItem, GlobalLayout
+from .layout import GlobalLayout
 from .tab_view import TabView
 
 log = logging.getLogger(__name__)
@@ -39,9 +39,9 @@ class WindowLayout(GlobalLayout):
         self._widget = None
 
     async def _async_init(self, view_resolver, state):
-        self._menu_bar_layout = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 0], self._command_hub, self._view_opener)
-        self._command_pane_layout = await view_resolver.resolve(state.command_pane_ref, [*self._path, 1], self._command_hub, self._view_opener)
-        self._central_view_layout = await view_resolver.resolve(state.central_view_ref, [*self._path, 2], self._command_hub, self._view_opener)
+        self._menu_bar_layout = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 'menu_bar'], self._command_hub, self._view_opener)
+        self._command_pane_layout = await view_resolver.resolve(state.command_pane_ref, [*self._path, 'command_pane'], self._command_hub, self._view_opener)
+        self._central_view_layout = await view_resolver.resolve(state.central_view_ref, [*self._path, 'central_view'], self._command_hub, self._view_opener)
 
     @property
     def data(self):
@@ -72,11 +72,7 @@ class WindowLayout(GlobalLayout):
         menu_bar = await self._menu_bar_layout.visual_item()
         command_pane = await self._command_pane_layout.visual_item()
         central_view = await self._central_view_layout.visual_item()
-        return RootVisualItem('Window', children=[
-            menu_bar.to_item(0, 'menu_bar'),
-            command_pane.to_item(1, 'command_pane'),
-            central_view.to_item(2, 'central_view'),
-            ])
+        return self.make_visual_item('Window', children=[menu_bar, command_pane, central_view])
 
     def get_current_commands(self):
         return self._get_current_commands_with_child(self._central_view_layout)

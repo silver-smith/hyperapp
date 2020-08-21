@@ -11,25 +11,16 @@ from hyperapp.client.module import ClientModule
 _log = logging.getLogger(__name__)
 
 
-VisualItem = namedtuple('Item', 'idx name text children commands', defaults=[None, None])
-
-
 @dataclass
-class RootVisualItem:
+class VisualItem:
+    name: str
     text: str
-    children: List[VisualItem] = None
+    children: List['VisualItem'] = None
     commands: List[BoundCommand] = None
 
-    def to_item(self, idx, name, commands=None):
-        all_commands = [
-            command.with_(kind='element') for command
-            in (self.commands or []) + (commands or [])
-            ]
-        return VisualItem(idx, name, self.text, self.children, all_commands)
-
-    def with_added_commands(self, commands):
-        all_commands = (self.commands or []) + (commands or [])
-        return RootVisualItem(self.text, self.children, all_commands)
+    def with_added_commands(self, commands_it):
+        all_commands = [*self.commands, *commands_it]
+        return VisualItem(self.name, self.text, self.children, all_commands)
 
 
 class VisualItemDiff:
@@ -89,6 +80,11 @@ class Layout(Commander, metaclass=abc.ABCMeta):
 
     def collect_view_commands(self):
         return {tuple(self._path): self.get_command_list({'view'})}
+
+    def make_visual_item(self, text, name=None, children=None, commands=None):
+        if not name:
+            name = self._path[-1]
+        return VisualItem(name, text, children or [], commands or [])
 
     def _merge_commands(self, primary_commands, secondary_commands):
         primary_command_ids = set(command.id for command in primary_commands)

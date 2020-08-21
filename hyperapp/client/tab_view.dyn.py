@@ -12,24 +12,24 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view_chooser import LayoutRecMakerField
 from .view import View
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, GlobalLayout
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, GlobalLayout
 
 log = logging.getLogger(__name__)
 
 
 class _ViewOpener:
 
-    def __init__(self, layout, tab_id):
+    def __init__(self, layout, tab_name):
         self._layout = layout
-        self._tab_id = tab_id
+        self._tab_name = tab_name
 
     def open(self, view):
-        self._layout._replace_tab(self._tab_id, view)
+        self._layout._replace_tab(self._tab_name, view)
 
 
 class TabLayout(GlobalLayout):
 
-    _Tab = namedtuple('_Tab', 'id layout')
+    _Tab = namedtuple('_Tab', 'name layout')
 
     @classmethod
     async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver, layout_watcher):
@@ -78,7 +78,7 @@ class TabLayout(GlobalLayout):
     async def visual_item(self):
         children = [await self._visual_item(tab)
                     for tab in self._tab_list]
-        return RootVisualItem('TabView', children)
+        return self.make_visual_item('TabView', children=children)
 
     def get_current_commands(self):
         if not self._widget:
@@ -104,11 +104,12 @@ class TabLayout(GlobalLayout):
         child = await tab.layout.visual_item()
         commands = [
             command
+              .with_(kind='element')
               .with_(params_subst=self._subst_params_for_item)
               .with_(resource_key=self._element_command_resource_key(command.resource_key))
             for command in self.get_all_command_list()
             ]
-        return child.to_item(tab.id, f'tab#{tab.id}', commands)
+        return child.with_added_commands(commands)
 
     def _element_command_resource_key(self, resource_key):
         path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
@@ -116,19 +117,20 @@ class TabLayout(GlobalLayout):
 
     async def _create_tab(self, tab_ref):
         tab_id = next(self._tab_id_counter)
-        opener = _ViewOpener(self, tab_id)
-        layout = await self._view_resolver.resolve(tab_ref, [*self._path, tab_id], self._command_hub, opener)
-        return self._Tab(tab_id, layout)
+        tab_name = f'tab#{tab_id}'
+        opener = _ViewOpener(self, tab_name)
+        layout = await self._view_resolver.resolve(tab_ref, [*self._path, tab_name], self._command_hub, opener)
+        return self._Tab(tab_name, layout)
 
     def _on_current_tab_changed(self, tab_idx):
         if tab_idx != -1:
             self._command_hub.update()
 
-    def _find_tab(self, tab_id):
+    def _find_tab(self, tab_name):
         for idx, tab in enumerate(self._tab_list):
-            if tab.id == tab_id:
+            if tab.name == tab_name:
                 return idx
-        assert False, f"Wrong tab id: {tab_id}"
+        assert False, f"Wrong tab id: {tab_name}"
 
     def _subst_params_for_current_tab(self, *args, **kw):
         tab_idx = self._widget.currentIndex()
@@ -138,8 +140,8 @@ class TabLayout(GlobalLayout):
         tab_idx = self._find_tab(item_path[-1])
         return ((tab_idx, *args), kw)
 
-    def _replace_tab(self, tab_id, view):
-        tab_idx = self._find_tab(tab_id)
+    def _replace_tab(self, tab_name, view):
+        tab_idx = self._find_tab(tab_name)
         if self._widget:
             self._widget.replace_tab(tab_idx, view)
 
@@ -172,7 +174,7 @@ class TabLayout(GlobalLayout):
         del self._tab_list[tab_idx]
         if self._widget:
             self._widget.remove_tab(tab_idx)
-        self._layout_watcher.distribute_diffs([RemoveVisualItemDiff([*self._path, tab.id])])
+        self._layout_watcher.distribute_diffs([RemoveVisualItemDiff([*self._path, tab.name])])
 
     # @command('visual_add_nested_tabs', kind='element')
     # async def _visual_add_nested_tabs(self, item_path):
@@ -186,7 +188,7 @@ class TabLayout(GlobalLayout):
     @command('wrap_with_tabs')
     async def _wrap_with_tabs(self, tab_idx, tab):
         remove_diff_list = [
-            RemoveVisualItemDiff([*self._path, tab.id])
+            RemoveVisualItemDiff([*self._path, tab.name])
             for tab in self._tab_list]
         old_count = len(self._tab_list)
         new_tab = await self._create_tab(self._ref_registry.register_object(self.data))

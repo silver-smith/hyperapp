@@ -7,7 +7,7 @@ from hyperapp.client.util import make_action, make_async_action
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, GlobalLayout
+from .layout import GlobalLayout
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class MenuBarLayout(GlobalLayout):
         return MenuBar(self._resource_resolver, self._command_hub)
 
     async def visual_item(self):
-        return RootVisualItem('MenuBar')
+        return self.make_visual_item('MenuBar')
 
 
 class MenuBar(QtWidgets.QMenuBar):

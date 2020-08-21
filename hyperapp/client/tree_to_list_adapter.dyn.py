@@ -4,7 +4,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
-from .layout import RootVisualItem, VisualItem, ObjectLayout
+from .layout import ObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject
 
@@ -74,9 +74,9 @@ class TreeToListLayout(ObjectLayout):
     @classmethod
     async def from_data(cls, state, path, object, layout_watcher, ref_registry, object_layout_producer):
         base_object_ref = ref_registry.register_object(object.data)
-        adapter = TreeToListAdapter(base_object_ref, object, path)
-        base_list_layout = await object_layout_producer.produce_layout(adapter, layout_watcher)
-        return cls(adapter, base_list_layout, path=[])
+        adapter = TreeToListAdapter(base_object_ref, object, path=[])
+        base_list_layout = await object_layout_producer.produce_layout(adapter, layout_watcher, path=[*path, 'base'])
+        return cls(adapter, base_list_layout, path)
 
     def __init__(self, adapter, base_list_layout, path):
         super().__init__(path)
@@ -92,9 +92,7 @@ class TreeToListLayout(ObjectLayout):
 
     async def visual_item(self):
         base_item = await self._base_list_layout.visual_item()
-        return RootVisualItem('TreeToListAdapter', children=[
-            base_item.to_item(0, 'base'),
-            ])
+        return self.make_visual_item('TreeToListAdapter', children=[base_item])
 
     def get_current_commands(self, view):
         return self._base_list_layout.get_current_commands(view)

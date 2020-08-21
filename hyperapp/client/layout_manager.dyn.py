@@ -14,7 +14,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, RootVisualItem, LayoutWatcher, GlobalLayout
+from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher, GlobalLayout
 from .command_hub import CommandHub
 
 _log = logging.getLogger(__name__)
@@ -82,8 +82,8 @@ class RootLayout(GlobalLayout):
             await rec.layout.visual_item()
             for rec in self._window_rec_list
             ]
-        return RootVisualItem('Root', children=[
-            child.to_item(idx, f'window#{idx}', list(self._window_visual_commands(idx)))
+        return self.make_visual_item('Root', children=[
+            child.with_added_commands(self._window_visual_commands(idx))
             for idx, child in enumerate(children)
             ])
 
@@ -93,7 +93,7 @@ class RootLayout(GlobalLayout):
 
     async def _create_window_rec(self, ref):
         window_commands = self.get_command_list()
-        rec = self._WindowRec(next(self._rec_id_counter), self._on_window_closed, window_commands)
+        rec = self._WindowRec(f'window#{next(self._rec_id_counter)}', self._on_window_closed, window_commands)
         await rec._async_init(self._view_resolver, self._path, ref)
         return rec
 
@@ -106,6 +106,7 @@ class RootLayout(GlobalLayout):
             path = [*resource_key.path[:-1], 'visual_' + resource_key.path[-1]]
             resource_key = resource_key_t(resource_key.base_ref, path)
             yield (command
+                   .with_(kind='element')
                    .with_(params_subst=self._subst_params_for_item)
                    .with_(resource_key=resource_key)
                    )
@@ -165,8 +166,8 @@ class LayoutManager:
         self._window_list = None
 
     async def create_layout_views(self, root_layout_state):
-        # root path is expected by layout editor to be [0]
-        self._root_layout = layout = await self._view_registry.resolve_async(root_layout_state, [0])
+        # root path is expected by layout editor to be ['root']
+        self._root_layout = layout = await self._view_registry.resolve_async(root_layout_state, ['root'])
         self._window_list = await layout.create_view()
 
     @property

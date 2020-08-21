@@ -27,17 +27,13 @@ class LayoutEditor(TreeObject):
 
     async def _async_init(self, layout):
         root = await self.get_root_item(layout)
-        self._add_item([], root.to_item(0, 'root'))
+        self._append_item([], root)
 
     def get_columns(self):
         return [
-            Column('name'),
+            Column('name', is_key=True),
             Column('text'),
             ]
-
-    @property
-    def key_attribute(self):
-        return 'idx'
 
     def get_command(self, command_id):
         rec = self._item_commands.get(command_id)
@@ -57,7 +53,7 @@ class LayoutEditor(TreeObject):
             raise KeyError(f"Empty item path {item_path}")
         item_list = self._path2item_list.get(tuple(item_path[:-1]), [])
         try:
-            return next(i for i in item_list if i.idx == item_path[-1])
+            return next(i for i in item_list if i.name == item_path[-1])
         except StopIteration:
             raise KeyError(f"Item is missing at path {item_path}")
 
@@ -65,7 +61,7 @@ class LayoutEditor(TreeObject):
         path = tuple(path)
         item_list = self._path2item_list.get(path, [])
         for item in item_list:
-            p = path + (item.idx,)
+            p = (*path, item.name)
             if p not in self._path2item_list:
                 self._distribute_fetch_results(p, [])
         self._distribute_fetch_results(path, item_list)
@@ -77,7 +73,7 @@ class LayoutEditor(TreeObject):
     def process_layout_diffs(self, vdiff_list):
         for vdiff in vdiff_list:
             if isinstance(vdiff, InsertVisualItemDiff):
-                self._add_item(vdiff.path, vdiff.item)
+                self._insert_item(vdiff.idx, vdiff.path, vdiff.item)
                 diff = InsertItemDiff(vdiff.idx, vdiff.item)
                 self._distribute_diff(vdiff.path, diff)
             elif isinstance(vdiff, RemoveVisualItemDiff):
@@ -92,14 +88,22 @@ class LayoutEditor(TreeObject):
             else:
                 raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
 
-    def _add_item(self, path, item):
+    def _insert_item(self, idx, path, item):
         item_list = self._path2item_list.setdefault(tuple(path), [])
-        item_list.insert(item.idx, item)
-        item_path = (*path, item.idx)
-        for command in item.commands or []:
+        item_list.insert(idx, item)
+        self._add_item_commands_and_children(path, item)
+
+    def _append_item(self, path, item):
+        item_list = self._path2item_list.setdefault(tuple(path), [])
+        item_list.append(item)
+        self._add_item_commands_and_children(path, item)
+
+    def _add_item_commands_and_children(self, path, item):
+        item_path = (*path, item.name)
+        for command in item.commands:
             self._item_commands[command.id] = self._CommandRec(command, item_path)
-        for kid in item.children or []:
-            self._add_item(item_path, kid)
+        for kid in item.children:
+            self._append_item(item_path, kid)
 
 
 class GlobalLayoutEditor(LayoutEditor):
@@ -143,7 +147,7 @@ class ObjectLayoutEditor(LayoutEditor):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        layout = await object_layout_resolver.resolve(state.layout_ref, [0], object, layout_watcher)
+        layout = await object_layout_resolver.resolve(state.layout_ref, ['root'], object, layout_watcher)
         self = cls(
             ref_registry,
             object_layout_association,
@@ -206,7 +210,7 @@ class ObjectLayoutEditor(LayoutEditor):
         piece_ref = self._ref_registry.register_object(self._object.data)
         return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category, command=self._target_command)
 
-    @object_command('replace')
+    @object_command('replace', kind='element')
     async def _replace_view(self, path):
         chooser = htypes.view_chooser.view_chooser(self._object.category_list)
         chooser_ref = self._ref_registry.register_object(chooser)

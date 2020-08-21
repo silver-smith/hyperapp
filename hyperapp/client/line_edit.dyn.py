@@ -9,7 +9,7 @@ from hyperapp.client.object import Object
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, ObjectLayout, UpdateVisualItemDiff
+from .layout import ObjectLayout, UpdateVisualItemDiff
 from .view import View
 
 log = logging.getLogger(__name__)
@@ -111,14 +111,14 @@ class LineEditLayout(ObjectLayout):
         else:
             tag = 'read-only'
             command = self._set_editable
-        return RootVisualItem(f'LineEdit/{tag}', commands=[command])
+        return self.make_visual_item(f'LineEdit/{tag}', commands=[command])
 
-    @command('set_editable')
+    @command('set_editable', kind='element')
     async def _set_editable(self, item_key):
         self._editable = True
         await self._distribute_update()
 
-    @command('set_read_only')
+    @command('set_read_only', kind='element')
     async def _set_read_only(self, item_key):
         self._editable = False
         await self._distribute_update()

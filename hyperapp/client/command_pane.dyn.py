@@ -9,7 +9,7 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, GlobalLayout
+from .layout import GlobalLayout
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class CommandPaneLayout(GlobalLayout):
         return CommandPane(self._resource_resolver, self._command_hub)
 
     async def visual_item(self):
-        return RootVisualItem('CommandPane')
+        return self.make_visual_item('CommandPane')
 
 
 class CommandPane(QtWidgets.QDockWidget):

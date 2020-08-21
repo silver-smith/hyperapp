@@ -9,7 +9,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .object_command import command
 from .composite import Composite
-from .layout import RootVisualItem, VisualItem, ObjectLayout
+from .layout import ObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObject
 from .view_chooser import LayoutRecMakerField
@@ -71,7 +71,7 @@ class MasterDetailsLayout(ObjectLayout):
     async def from_data(cls, state, path, object, layout_watcher, ref_registry, object_registry, object_layout_resolver, object_layout_producer):
         return cls(
             ref_registry, object_registry, object_layout_resolver, object_layout_producer,
-            state.master_layout_ref, state.command_id, object, [], layout_watcher)
+            state.master_layout_ref, state.command_id, object, path, layout_watcher)
 
     def __init__(self, ref_registry, object_registry, object_layout_resolver, object_layout_producer,
                  master_layout_ref, command_id, object, path, layout_watcher):
@@ -103,13 +103,13 @@ class MasterDetailsLayout(ObjectLayout):
     async def visual_item(self):
         master_layout = await self._create_master_layout()
         master_item = await master_layout.visual_item()
-        return RootVisualItem('MasterDetails', children=[
-            master_item.to_item(0, 'master', commands=[self._replace_view]),
-            VisualItem(1, 'command', str(self._details_command_id)),
+        return self.make_visual_item('MasterDetails', children=[
+            master_item.with_added_commands([self._replace_view]),
+            self.make_visual_item(str(self._details_command_id), name='command'),
             ])
 
     async def _create_master_layout(self):
-        path = [*self._path, 0]
+        path = [*self._path, 'master']
         return (await self._object_layout_resolver.resolve(self._master_layout_ref, path, self._object, self._layout_watcher))
 
     @command('replace')

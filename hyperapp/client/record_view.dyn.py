@@ -5,7 +5,7 @@ from PySide2 import QtCore, QtWidgets
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .layout import RootVisualItem, ObjectLayout
+from .layout import ObjectLayout
 from .record_object import RecordObject
 
 
@@ -96,11 +96,11 @@ class RecordViewLayout(ObjectLayout):
         return (await RecordView.make(self._object, command_hub, self._field_layout_dict))
 
     async def visual_item(self):
-        children = []
-        for idx, (field_id, layout) in enumerate(self._field_layout_dict.items()):
-            item = await layout.visual_item()
-            children.append(item.to_item(idx, field_id))
-        return RootVisualItem('RecordView', children)
+        children = [
+            await layout.visual_item()
+            for layout in self._field_layout_dict.values()
+            ]
+        return self.make_visual_item('RecordView', children=children)
 
     def get_current_commands(self, view):
         focused_layout = self._field_layout_dict[view.focused_field_id]

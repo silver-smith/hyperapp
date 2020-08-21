@@ -13,7 +13,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
-from .layout import RootVisualItem, ObjectLayout
+from .layout import ObjectLayout
 from .view import View
 from .items_view import map_columns_to_view
 
@@ -376,7 +376,7 @@ class TreeViewLayout(ObjectLayout):
         return tree_view
 
     async def visual_item(self):
-        return RootVisualItem('TreeView')
+        return self.make_visual_item('TreeView')
 
     def get_current_commands(self, view):
         object_command_it = self._object.get_command_list()

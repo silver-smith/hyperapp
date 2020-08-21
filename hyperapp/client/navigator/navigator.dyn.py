@@ -10,7 +10,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .layout import RootVisualItem, VisualItem, GlobalLayout, LayoutWatcher
+from .layout import GlobalLayout, LayoutWatcher
 
 _log = logging.getLogger(__name__)
 
@@ -98,8 +98,8 @@ class NavigatorLayout(GlobalLayout):
 
     async def visual_item(self):
         piece = self._current_object.data
-        return RootVisualItem('Navigator', children=[
-            VisualItem(0, 'current', str(piece)),
+        return self.make_visual_item('Navigator', children=[
+            self.make_visual_item(str(piece), name='current'),
             ])
 
     def get_current_commands(self):
