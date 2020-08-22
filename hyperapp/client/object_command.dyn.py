@@ -7,6 +7,7 @@ from hyperapp.client.commander import resource_key_of_class_method, UnboundComma
 from hyperapp.client.module import ClientModule
 
 from .layout import LayoutWatcher
+from .view_registry import CommandOrigin
 
 _log = logging.getLogger(__name__)
 
@@ -97,7 +98,7 @@ class BoundObjectCommand:
         else:
             result = await self._run_impl(object, full_args, full_kw)
         _log.info("BoundObjectCommand: run result: %r", result)
-        return (await self._wrap_result(result))
+        return (await self._wrap_result(object, result))
 
     async def run_with_full_params(self, *args, **kw):
         object = self._object_wr()
@@ -106,7 +107,7 @@ class BoundObjectCommand:
         _log.info("BoundObjectCommand: run with full params:")
         result = await self._run_impl(object, args, kw)
         _log.info("BoundObjectCommand: run result: %r", result)
-        return (await self._wrap_result(result))
+        return (await self._wrap_result(object, result))
 
     async def _run_impl(self, object, args, kw):
         _log.info("BoundObjectCommand: run: (%r) args=%r kw=%r", self, args, kw)
@@ -115,13 +116,14 @@ class BoundObjectCommand:
         else:
             return self._class_method(object, *args, **kw)
 
-    async def _wrap_result(self, result):
+    async def _wrap_result(self, origin_object, result):
         if result is None:
             return
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        layout = await this_module.object_layout_producer.produce_layout(object, layout_watcher)
+        origin = CommandOrigin(origin_object, command_id=self.id)
+        layout = await this_module.object_layout_producer.produce_layout(object, layout_watcher, origin=origin)
         resolved_piece = _ResolvedPiece(object, layout)
         _log.info("BoundObjectCommand: piece resolved to: object %r", resolved_piece)
         if not self._wrapper:

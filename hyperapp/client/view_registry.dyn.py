@@ -13,6 +13,9 @@ class NoSuitableProducer(Exception):
     pass
 
 
+CommandOrigin = namedtuple('CommandOrigin', 'object command_id')
+
+
 class AvailableObjectLayouts:
 
     _Rec = namedtuple('_Rec', 'name, category_set layout_rec_maker')
@@ -33,22 +36,39 @@ class AvailableObjectLayouts:
 
 class ObjectLayoutProducer:
 
-    def __init__(self, async_ref_resolver, default_object_layouts, object_layout_association, object_layout_registry):
+    def __init__(
+            self,
+            async_ref_resolver,
+            default_object_layouts,
+            object_layout_association,
+            object_command_layout_association,
+            object_layout_registry,
+            ):
         self._async_ref_resolver = async_ref_resolver
         self._default_object_layouts = default_object_layouts
         self._object_layout_association = object_layout_association
+        self._object_command_layout_association = object_command_layout_association
         self._object_layout_registry = object_layout_registry
 
-    async def produce_layout(self, object, layout_watcher, path=('root',)):
-        layout_rec = None
-        for category in reversed(object.category_list):
-            try:
-                layout_ref = self._object_layout_association[category]
-            except KeyError:
-                continue
+    async def produce_layout(self, object, layout_watcher, origin=None, path=('root',)):
+        layout_ref = None
+        if origin:
+            for category in reversed(origin.object.category_list):
+                try:
+                    layout_ref = self._object_command_layout_association[category, origin.command_id]
+                    break
+                except KeyError:
+                    pass
+        if layout_ref is None:
+            for category in reversed(object.category_list):
+                try:
+                    layout_ref = self._object_layout_association[category]
+                    break
+                except KeyError:
+                    pass
+        if layout_ref is not None:
             layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
-            break
-        if not layout_rec:
+        else:
             rec_it = self._default_object_layouts.resolve(object.category_list)
             try:
                 rec = next(rec_it)
@@ -74,4 +94,9 @@ class ThisModule(ClientModule):
         services.object_layout_registry = view_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
         services.object_layout_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)
         services.object_layout_producer = ObjectLayoutProducer(
-            services.async_ref_resolver, services.default_object_layouts, services.object_layout_association, services.object_layout_registry)
+            services.async_ref_resolver,
+            services.default_object_layouts,
+            services.object_layout_association,
+            services.object_command_layout_association,
+            services.object_layout_registry,
+            )
