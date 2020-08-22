@@ -143,7 +143,8 @@ class IdentityList(ListObject):
     def command_new(self):
         return make_identity_form()
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('name'),
             ]

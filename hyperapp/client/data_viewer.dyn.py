@@ -42,7 +42,8 @@ class DataViewer(TreeObject):
     def title(self):
         return "{} ({})".format(ref_repr(self._data_ref), self._t.name)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('name'),
             Column('t'),

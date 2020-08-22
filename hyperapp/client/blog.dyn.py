@@ -70,7 +70,8 @@ class BlogObject(ListObject, BlogObserver):
     def observers_gone(self):
         self._blog_service.remove_observer(self._blog_id, self)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('id', type=tInt, is_key=True),
             Column('created_at', type=tDateTime),
@@ -222,7 +223,8 @@ class ArticleRefListObject(ListObject):
             selected_ref_id=None,
             )
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('id', type=tInt, is_key=True),
             Column('title'),

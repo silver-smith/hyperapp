@@ -43,7 +43,8 @@ class RefListObject(ListObject):
             ref_list_id=self._ref_list_id,
             )
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('id', is_key=True),
             Column('ref'),

@@ -36,7 +36,8 @@ class CategoryList(SimpleListObject):
     def data(self):
         return htypes.category_list.category_list(self._piece_ref)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('category', is_key=True),
             Column('layout')

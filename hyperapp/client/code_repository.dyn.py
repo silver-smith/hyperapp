@@ -158,7 +158,8 @@ class CodeRepositoryList(ListObject):
         url_str = QtWidgets.QApplication.clipboard().text()
         return make_code_repository_form(url_str)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [Column('name')]
 
     def get_key_column_id(self):

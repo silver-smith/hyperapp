@@ -30,7 +30,8 @@ class SampleObject(ListObject):
     def data(self):
         return htypes.list_view_sample.list_view_sample_object()
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('idx', type=tInt, is_key=True),
             Column('column_1'),

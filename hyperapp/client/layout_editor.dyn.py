@@ -29,7 +29,8 @@ class LayoutEditor(TreeObject):
         root = await self.get_root_item(layout)
         self._append_item([], root)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('name', is_key=True),
             Column('text'),

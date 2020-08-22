@@ -41,7 +41,8 @@ class ViewChooser(SimpleListObject, Chooser):
     def data(self):
         return htypes.view_chooser.view_chooser(self._category_list)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('id', is_key=True),
             Column('categories'),

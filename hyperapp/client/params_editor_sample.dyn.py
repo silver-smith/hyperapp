@@ -28,7 +28,8 @@ class ParamsEditorSample(SimpleListObject):
     def data(self):
         return htypes.params_editor_sample.params_editor_sample()
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('id', is_key=True),
             Column('name'),

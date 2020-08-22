@@ -75,7 +75,8 @@ def object(services):
 
     class StubObject(services.TreeObject):
 
-        def get_columns(self):
+        @property
+        def columns(self):
             return [
                 services.Column('name', is_key=True),
                 services.Column('column_1', type=tInt),
@@ -94,7 +95,7 @@ def object(services):
 @pytest.mark.asyncio
 async def test_instantiate(event_loop, services, object):
     view = services.tree_view_factory(
-        columns=[column.to_view_column(column.id) for column in object.get_columns()],
+        columns=[column.to_view_column(column.id) for column in object.columns],
         object=object,
         current_path=None,
         )

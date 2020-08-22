@@ -114,7 +114,8 @@ class SessionLogs(TreeObject):
             'session-logs',
             ]
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('idx', type=tInt, is_key=True),
             Column('context'),
@@ -161,7 +162,8 @@ class LogRecord(ListObject):
     def data(self):
         return htypes.log_viewer.log_record(self._session_id, self._item_path)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('name', is_key=True),
             Column('value'),

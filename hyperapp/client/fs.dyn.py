@@ -40,7 +40,8 @@ class FsTree(TreeObject):
             current_file_name=None,
             )
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('key', is_key=True),
             Column('ftype'),

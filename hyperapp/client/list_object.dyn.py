@@ -63,13 +63,13 @@ class ListObject(Object, metaclass=abc.ABCMeta):
     category_list = ['list']
 
     # return Column list
-    @abc.abstractmethod
-    def get_columns(self):
+    @abc.abstractproperty
+    def columns(self):
         pass
 
     @property
     def key_attribute(self):
-        for column in self.get_columns():
+        for column in self.columns:
             if column.is_key:
                 return column.id
         raise RuntimeError("No key column or key_attribute is defined by class {}".format(self.__class__.__name__))

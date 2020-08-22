@@ -84,7 +84,8 @@ class BookmarkList(ListObject):
         item = self._bookmarks.add(name, url)
         return make_bookmark_list(item.id)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('id'),
             Column('name'),

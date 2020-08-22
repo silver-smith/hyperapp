@@ -42,7 +42,8 @@ class CommandList(SimpleListObject):
         layout_ref = self._ref_registry.register_object(self._layout.data)
         return htypes.command_list.command_list(piece_ref, layout_ref)
 
-    def get_columns(self):
+    @property
+    def columns(self):
         return [
             Column('path'),
             Column('id', is_key=True),
