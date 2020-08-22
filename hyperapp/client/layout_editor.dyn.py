@@ -87,6 +87,10 @@ class LayoutEditor(TreeObject):
                 self._distribute_diff(vdiff.path, diff)
             else:
                 raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
+        self.save_changes()
+
+    def save_changes(self):
+        pass
 
     def _insert_item(self, idx, path, item):
         item_list = self._path2item_list.setdefault(tuple(path), [])
@@ -206,6 +210,17 @@ class ObjectLayoutEditor(LayoutEditor):
             self._replace_view,
             ])
 
+    def save_changes(self):
+        self._save_layout(self._layout.data)
+
+    def _save_layout(self, layout_rec):
+        layout_ref = self._ref_registry.register_object(layout_rec)
+        if self._target_command:
+            self._object_command_layout_association[self._target_category, self._target_command] = layout_ref
+        else:
+            self._object_layout_association[self._target_category] = layout_ref
+        return layout_ref
+
     def _object_layout_editor(self, layout_ref):
         piece_ref = self._ref_registry.register_object(self._object.data)
         return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category, command=self._target_command)
@@ -228,11 +243,7 @@ class ObjectLayoutEditor(LayoutEditor):
     async def _replace_impl(self, layout_rec_maker):
         resource_key = self._object.hashable_resource_key
         layout_rec = await layout_rec_maker(self._object)
-        layout_ref = self._ref_registry.register_object(layout_rec)
-        if self._target_command:
-            self._object_command_layout_association[self._target_category, self._target_command] = layout_ref
-        else:
-            self._object_layout_association[self._target_category] = layout_ref
+        layout_ref = self._save_layout(layout_rec)
         return self._object_layout_editor(layout_ref)
 
 
