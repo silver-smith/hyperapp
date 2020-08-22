@@ -28,8 +28,9 @@ class CategoryList(SimpleListObject):
         self._object_layout_producer = object_layout_producer
         self._object = object
 
-    def get_title(self):
-        return f"Categories for: {self._object.get_title()}"
+    @property
+    def title(self):
+        return f"Categories for: {self._object.title}"
 
     @property
     def data(self):

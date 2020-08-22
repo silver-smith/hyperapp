@@ -32,7 +32,8 @@ class RefListObject(ListObject):
         self._id2ref = None
         self._item_list = None
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Ref List %s' % self._ref_list_id
 
     @property

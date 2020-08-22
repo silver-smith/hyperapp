@@ -22,7 +22,8 @@ class SampleObject(ListObject):
     def from_state(cls, state):
         return cls()
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'List test'
 
     @property

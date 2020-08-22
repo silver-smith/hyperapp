@@ -67,7 +67,8 @@ class BookmarkList(ListObject):
     def get_state(cls):
         return bookmark_list_type(cls.impl_id)
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Bookmarks'
 
     @command('open', kind='element')
@@ -130,5 +131,5 @@ class ThisModule(ClientModule):
     def object_command_bookmark(self, object):
         url = object.get_url()
         assert url is not None
-        item = self.bookmarks.add(object.get_title(), url)
+        item = self.bookmarks.add(object.title, url)
         return make_bookmark_list(item.id)

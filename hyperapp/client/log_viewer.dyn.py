@@ -99,7 +99,8 @@ class SessionLogs(TreeObject):
         self._ref_registry = ref_registry
         self._session = session
 
-    def get_title(self):
+    @property
+    def title(self):
         return "log: {}".format(self._session.session_id)
 
     @property
@@ -152,7 +153,8 @@ class LogRecord(ListObject):
         self._item_path = item_path
         self._record = record
 
-    def get_title(self):
+    @property
+    def title(self):
         return "{} {}".format(self._session_id, '/'.join(map(str, self._item_path)))
 
     @property

@@ -40,8 +40,9 @@ class NarrowerObject(Object):
         self._list_object.set_filter(self._list_filter)
         self.cancel_narrowing.set_enabled(self._filter_line.line != '')
 
-    def get_title(self):
-        return 'Narrowed: %s' % self._list_object.get_title()
+    @property
+    def title(self):
+        return 'Narrowed: %s' % self._list_object.title
 
     def get_state(self):
         return htypes.narrower.narrower_object(self.impl_id, self._filtered_field)
@@ -126,7 +127,7 @@ class NarrowerView(LineListPanel):
 ##        self._line_edit.setText(common_prefix)
 
     def __del__(self):
-        log.debug('~NarrowerView self=%s list_view=%s title=%r', id(self), id(self._list_view), self._object.get_title())
+        log.debug('~NarrowerView self=%s list_view=%s title=%r', id(self), id(self._list_view), self._object.title)
 
 
 class ThisModule(ClientModule):

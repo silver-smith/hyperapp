@@ -26,7 +26,8 @@ class FormObject(Object):
         super().__init__()
         self._fields = field_object_map
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'form'
 
     def get_state(self):

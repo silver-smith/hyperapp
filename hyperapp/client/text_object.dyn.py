@@ -19,7 +19,8 @@ class TextObject(Object):
         self._text = text
         Object.__init__(self)
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Local text object'
 
     @property
@@ -57,8 +58,9 @@ class WikiTextObject(TextObject):
         self._async_ref_resolver = async_ref_resolver
         self._ref_list = ref_list
 
-    def get_title(self):
-        return None
+    @property
+    def title(self):
+        return 'wiki text'
 
     @property
     def data(self):

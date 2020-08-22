@@ -33,8 +33,9 @@ class TreeToListAdapter(ListObject):
         self._observer = _Observer(self)
         self._tree_object.subscribe(self._observer)
 
-    def get_title(self):
-        return '%s:/%s' % (self._tree_object.get_title(), '/'.join(str(item) for item in self._path))
+    @property
+    def title(self):
+        return '%s:/%s' % (self._tree_object.title, '/'.join(str(item) for item in self._path))
 
     @property
     def data(self):

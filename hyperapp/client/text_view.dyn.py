@@ -27,8 +27,9 @@ class TextView(View, QtWidgets.QTextBrowser):
         self.anchorClicked.connect(self.on_anchor_clicked)
         self.object.subscribe(self)
 
-    def get_title(self):
-        return self.object.get_title()
+    @property
+    def title(self):
+        return self.object.title
 
     def get_object(self):
         return self.object
@@ -65,8 +66,9 @@ class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
         self.textChanged.connect(self._on_text_changed)
         self.object.subscribe(self)
 
-    def get_title(self):
-        return self.object.get_title()
+    @property
+    def title(self):
+        return self.object.title
 
     def _on_text_changed(self):
         if self.notify_on_text_changed:

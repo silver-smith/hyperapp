@@ -53,7 +53,8 @@ class ParamsEditor(RecordObject):
         if self._chooser_callback_list:
             self._submit.disable()
 
-    def get_title(self):
+    @property
+    def title(self):
         return f"Parameters for {self._target_command_id}"
 
     @property

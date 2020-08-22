@@ -33,7 +33,8 @@ class ViewChooser(SimpleListObject, Chooser):
             ]
         self._id_to_item = {item.id: item for item in self._items}
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Choose view'
 
     @property

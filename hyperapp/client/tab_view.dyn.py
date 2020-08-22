@@ -214,7 +214,7 @@ class TabView(QtWidgets.QTabWidget, View):
         self.tabBar().setFocusPolicy(QtCore.Qt.NoFocus)  # does not work...
         self.setElideMode(QtCore.Qt.ElideMiddle)
         for view in children:
-            self.addTab(view, view.get_title())
+            self.addTab(view, view.title)
         self.setCurrentIndex(current_tab)
         self.currentChanged.connect(self._on_current_tab_changed)
 
@@ -228,12 +228,12 @@ class TabView(QtWidgets.QTabWidget, View):
         old_widget = self.widget(tab_idx)
         self.removeTab(tab_idx)
         old_widget.deleteLater()
-        self.insertTab(tab_idx, view.get_widget(), view.get_title())
+        self.insertTab(tab_idx, view.get_widget(), view.title)
         self.setCurrentIndex(tab_idx)  # lost when old tab removed
         view.ensure_has_focus()
 
     def insert_tab(self, tab_idx, view):
-        self.insertTab(tab_idx, view.get_widget(), view.get_title())
+        self.insertTab(tab_idx, view.get_widget(), view.title)
         view.ensure_has_focus()
 
     def remove_tab(self, tab_idx):

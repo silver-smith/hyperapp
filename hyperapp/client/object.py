@@ -25,7 +25,8 @@ class Object(Commander):
         Commander.__init__(self, commands_kind='object')
         self._init_observers()
 
-    def get_title(self):
+    @property
+    def title(self):
         raise NotImplementedError(self.__class__)
 
     # todo: use abstractproperty

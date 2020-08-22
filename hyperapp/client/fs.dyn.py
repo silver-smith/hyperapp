@@ -27,7 +27,8 @@ class FsTree(TreeObject):
         self._fs_service = fs_service
         self._host = host
 
-    def get_title(self):
+    @property
+    def title(self):
         return '%s' % self._host
 
     @property

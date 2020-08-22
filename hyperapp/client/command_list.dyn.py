@@ -32,8 +32,9 @@ class CommandList(SimpleListObject):
         self._object = object
         self._layout = layout
 
-    def get_title(self):
-        return f"Commands for: {self._object.get_title()}"
+    @property
+    def title(self):
+        return f"Commands for: {self._object.title}"
 
     @property
     def data(self):

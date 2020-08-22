@@ -121,7 +121,8 @@ class GlobalLayoutEditor(LayoutEditor):
         super().__init__(layout_watcher)
         self._layout_manager = layout_manager
 
-    def get_title(self):
+    @property
+    def title(self):
         return "Global view layout"
 
     @property
@@ -188,7 +189,8 @@ class ObjectLayoutEditor(LayoutEditor):
         self._target_category = category
         self._target_command = command  # None for non-command layouts
 
-    def get_title(self):
+    @property
+    def title(self):
         title = f"Layout for category: {self._target_category}"
         if self._target_command:
             return f"{title}/{self._target_command}"

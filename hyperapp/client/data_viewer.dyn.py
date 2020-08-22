@@ -38,7 +38,8 @@ class DataViewer(TreeObject):
         self._t = t
         self._path2item_list = _load_visual_rep(t, value)
 
-    def get_title(self):
+    @property
+    def title(self):
         return "{} ({})".format(ref_repr(self._data_ref), self._t.name)
 
     def get_columns(self):

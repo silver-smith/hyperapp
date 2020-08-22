@@ -33,7 +33,8 @@ class HistoryList(ListObject):
     def get_state(self):
         return htypes.navigator.history_list(self.impl_id, self._history)
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Navigation history'
 
     def get_commands(self):

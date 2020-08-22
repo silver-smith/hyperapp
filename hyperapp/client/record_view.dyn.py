@@ -45,8 +45,9 @@ class RecordView(QtWidgets.QWidget):
         qt_layout.addSpacing(10)
         return view
 
-    def get_title(self):
-        return self._object.get_title()
+    @property
+    def title(self):
+        return self._object.title
 
     def get_widget(self):
         return self

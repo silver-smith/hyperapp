@@ -109,7 +109,8 @@ class CodeRepositoryFormObject(Object):
     def get_state():
         return tFormObject('code_repository_form')
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Add code repository'
 
     @command('submit')
@@ -148,7 +149,8 @@ class CodeRepositoryList(ListObject):
     def get_state():
         return code_repository_list_type('code_repository_list')
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Code repository list'
 
     @command('add')

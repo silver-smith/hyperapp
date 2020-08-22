@@ -96,7 +96,8 @@ class IdentityFormObject(Object):
         Object.__init__(self)
         self.identity_controller = identity_controller
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Create identity'
 
     @command('submit')
@@ -134,7 +135,8 @@ class IdentityList(ListObject):
     def get_state(cls):
         return identity_list_type(cls.impl_id)
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Identity list'
 
     @command('create')

@@ -27,7 +27,8 @@ class LineObject(Object):
         self._line = line
         super().__init__()
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'Line'
 
     @property

@@ -101,13 +101,14 @@ class View(ObjectObserver, Commander):
     def get_shortcut_ctx_widget(self, view):
         return view.get_widget()
 
-    def get_title(self):
+    @property
+    def title(self):
         view = self.get_current_child()
         if view:
-            return view.get_title()
+            return view.title
         object = self.get_object()
         if object:
-            return object.get_title()
+            return object.title
         return 'Untitled'
 
     def pick_current_refs(self):

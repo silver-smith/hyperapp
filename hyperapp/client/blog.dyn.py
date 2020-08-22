@@ -52,7 +52,8 @@ class BlogObject(ListObject, BlogObserver):
     # def __del__(self):
     #     log.debug('Deleted %r', self)
 
-    def get_title(self):
+    @property
+    def title(self):
         return self._blog_id
 
     @property
@@ -135,7 +136,8 @@ class BlogArticle(RecordObject):
         self._blog_id = blog_id
         self._item = item
 
-    def get_title(self):
+    @property
+    def title(self):
         return self._item.title
 
     @property
@@ -174,7 +176,8 @@ class BlogArticle(RecordObject):
 #         self._handle_resolver = handle_resolver
 #         self._ref_list = ref_list
 
-#     def get_title(self):
+#     @property
+#     def title(self):
 #         return None
 
 #     def get_state(self):
@@ -206,7 +209,8 @@ class ArticleRefListObject(ListObject):
         self._article_id = article_id
         self._id2ref = {}
 
-    def get_title(self):
+    @property
+    def title(self):
         return 'refs for %s:%d' % (self._blog_id, self._article_id)
 
     @property
@@ -290,9 +294,10 @@ class RefSelector(RecordObject):
         self._current_piece_ref = current_piece_ref
         self._current_piece = current_piece
         self._current_object = current_object
-        self._current_title = current_object.get_title()
+        self._current_title = current_object.title
 
-    def get_title(self):
+    @property
+    def title(self):
         return self._current_title
 
     def get_fields(self):

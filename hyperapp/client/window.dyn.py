@@ -140,7 +140,7 @@ class Window(View, QtWidgets.QMainWindow):
                 self._child_widget.deleteLater()
             self.setCentralWidget(w)
             self._child_widget = w
-        self.setWindowTitle(view.get_title())
+        self.setWindowTitle(view.title)
         self._menu_bar.view_changed(self)
         self._command_pane.view_changed(self)
         #self._filter_pane.view_changed(self)
