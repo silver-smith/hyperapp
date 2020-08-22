@@ -70,19 +70,19 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(ObjectLayout):
 
-    async def from_data(state, path, object, layout_watcher, object_layout_resolver):
-        self = RecordViewLayout(object, path, state.field_layout_list)
-        await self._async_init(layout_watcher, object_layout_resolver)
+    async def from_data(state, path, object, layout_watcher, ref_registry, object_layout_resolver):
+        self = RecordViewLayout(ref_registry, object, path)
+        await self._async_init(layout_watcher, object_layout_resolver, state.field_layout_list)
         return self
 
-    def __init__(self, object, path, field_layout_list):
+    def __init__(self, ref_registry, object, path):
         super().__init__(path)
+        self._ref_registry = ref_registry
         self._object = object
-        self._field_layout_list = field_layout_list
         self._field_layout_dict = {}
 
-    async def _async_init(self, layout_watcher, object_layout_resolver):
-        for idx, field in enumerate(self._field_layout_list):
+    async def _async_init(self, layout_watcher, object_layout_resolver, field_layout_list):
+        for idx, field in enumerate(field_layout_list):
             path = [*self._path, idx]
             field_object = self._object.fields[field.id]
             layout = await object_layout_resolver.resolve(field.layout_ref, path, field_object, layout_watcher)
@@ -90,7 +90,11 @@ class RecordViewLayout(ObjectLayout):
 
     @property
     def data(self):
-        return htypes.record_view.record_layout(self._field_layout_list)
+        field_layout_list = []
+        for field_id, layout in self._field_layout_dict.items():
+            layout_ref = self._ref_registry.register_object(layout.data)
+            field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
+        return htypes.record_view.record_layout(field_layout_list)
 
     async def create_view(self, command_hub):
         return (await RecordView.make(self._object, command_hub, self._field_layout_dict))
@@ -123,7 +127,7 @@ class ThisModule(ClientModule):
         services.default_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
         services.available_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
         services.object_layout_registry.register_type(
-            htypes.record_view.record_layout, RecordViewLayout.from_data, services.object_layout_resolver)
+            htypes.record_view.record_layout, RecordViewLayout.from_data, services.ref_registry, services.object_layout_resolver)
 
     async def _make_record_layout_rec(self, object):
         field_layout_list = []
