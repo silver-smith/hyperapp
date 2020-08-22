@@ -51,6 +51,7 @@ class ObjectLayoutProducer:
         self._object_layout_registry = object_layout_registry
 
     async def produce_layout(self, object, layout_watcher, origin=None, path=('root',)):
+        _log.info("Produce layout with origin %s for object %s", origin, object)
         layout_ref = None
         if origin:
             for category in reversed(origin.object.category_list):
