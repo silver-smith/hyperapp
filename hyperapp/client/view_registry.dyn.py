@@ -56,6 +56,7 @@ class ObjectLayoutProducer:
             for category in reversed(origin.object.category_list):
                 try:
                     layout_ref = self._object_command_layout_association[category, origin.command_id]
+                    _log.info("Using layout registered for %s/%s.", category, origin.command_id)
                     break
                 except KeyError:
                     pass
@@ -63,6 +64,7 @@ class ObjectLayoutProducer:
             for category in reversed(object.category_list):
                 try:
                     layout_ref = self._object_layout_association[category]
+                    _log.info("Using layout registered for %s.", category)
                     break
                 except KeyError:
                     pass
