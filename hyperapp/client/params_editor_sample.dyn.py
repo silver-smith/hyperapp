@@ -12,7 +12,9 @@ from .simple_list_object import SimpleListObject
 Item = namedtuple('Item', 'id name')
 
 
-class SampleList(SimpleListObject):
+class ParamsEditorSample(SimpleListObject):
+
+    category_list = [*SimpleListObject.category_list, 'params-editor-sample']
 
     @classmethod
     def from_state(cls, state):
@@ -63,7 +65,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(htypes.params_editor_sample.params_editor_sample, SampleList.from_state)
+        services.object_registry.register_type(htypes.params_editor_sample.params_editor_sample, ParamsEditorSample.from_state)
 
     @command('open_params_editor_sample')
     async def open_params_editor_sample(self):

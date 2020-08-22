@@ -14,7 +14,7 @@ type:params_editor_sample.params_editor_sample:
     name:
       text: Name
 
-module:client.params_editor_sample:SampleList:
+module:client.params_editor_sample:ParamsEditorSample:
   commands:
     test_single_simple_str: &test_command
       text: Test it
