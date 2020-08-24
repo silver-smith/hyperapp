@@ -77,7 +77,7 @@ class CommandList(SimpleListObject):
 
     def _command_by_id(self, command_id):
         return single(
-            command for path, command in self._layout.collect_view_commands()
+            command for command in self._layout.command_list
             if command.id == command_id
             )
 
