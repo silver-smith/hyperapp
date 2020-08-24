@@ -1,8 +1,9 @@
 import abc
 import asyncio
-from contextlib import suppress
 import logging
 import weakref
+from collections import namedtuple
+from contextlib import suppress
 from functools import partial
 
 from PySide2 import QtCore, QtWidgets
@@ -357,6 +358,8 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
 class TreeViewLayout(ObjectLayout):
 
+    _Command = namedtuple('ListViewLayout_Command', 'id code_command layout_ref')
+
     class _CurrentItemObserver:
 
         def __init__(self, layout, command_hub):
@@ -368,19 +371,31 @@ class TreeViewLayout(ObjectLayout):
 
     @classmethod
     async def from_data(cls, state, path, object, layout_watcher, type_resolver, resource_resolver, params_editor):
-        return cls(type_resolver, resource_resolver, params_editor, object, path)
+        return cls(type_resolver, resource_resolver, params_editor, object, path, state.command_list)
 
-    def __init__(self, type_resolver, resource_resolver, params_editor, object, path):
+    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, state_command_list):
         super().__init__(path)
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
         self._object = object
+        id_to_code_command = {
+            command.id: command
+            for path, command in self.collect_view_commands()
+            }
+        self.command_list = [
+            self._Command(command.id, id_to_code_command[command.code_id], command.layout_ref)
+            for command in state_command_list
+            ]
         self._current_item_observer = None
 
     @property
     def data(self):
-        return htypes.tree_view.tree_layout()
+        command_list = [
+            htypes.layout.command(command.id, command.code_command.id, command.layout_ref)
+            for command in self.command_list
+            ]
+        return htypes.tree_view.tree_layout(command_list)
 
     async def create_view(self, command_hub):
         columns = list(map_columns_to_view(self._resource_resolver, self._object))
@@ -431,4 +446,8 @@ class ThisModule(ClientModule):
         return TreeView(columns, object, current_path)
 
     async def _make_tree_layout_rec(self, object):
-        return htypes.tree_view.tree_layout()
+        command_list = [
+            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
+            for command in object.get_all_command_list()
+            ]
+        return htypes.tree_view.tree_layout(command_list)

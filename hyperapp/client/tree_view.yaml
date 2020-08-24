@@ -1,7 +1,7 @@
 import:
   types:
-    core:
-      - handle
+    layout:
+      - command
     tree_view:
       - tree_layout
   code:
