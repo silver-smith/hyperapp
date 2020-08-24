@@ -21,6 +21,7 @@ HYPERAPP_DIR = Path(__file__).parent.parent.parent.resolve()
 type_module_list = [
     'resource',
     'core',
+    'layout',
     'line',
     'tree_view',
     'params_editor',
