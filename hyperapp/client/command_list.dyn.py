@@ -53,9 +53,8 @@ class CommandList(SimpleListObject):
 
     async def get_all_items(self):
         return [
-            await self._make_item(path, command)
-            for path, command_list in self._layout.collect_view_commands().items()
-            for command in command_list
+            await self._make_item([], command)
+            for command in self._layout.command_list
             ]
 
     async def _make_item(self, path, command):
@@ -65,22 +64,20 @@ class CommandList(SimpleListObject):
             layout_str = item.text
         else:
             layout_str = ''
-        return Item('/' + '/'.join(path), command.id, command.kind, layout_str)
+        return Item('/' + '/'.join(path), command.id, command.code_command.kind, layout_str)
 
     async def _run_command(self, command):
-        if command.kind == 'element':
+        if command.code_command.kind == 'element':
             item = await self._object.load_first_item()
             args = [getattr(item, self._object.key_attribute)]
         else:
             args = []
-        resolved_piece = await command.run(*args)
+        resolved_piece = await command.code_command.run(*args)
         return resolved_piece
 
     def _command_by_id(self, command_id):
         return single(
-            command
-            for command_list in self._layout.collect_view_commands().values()
-            for command in command_list
+            command for path, command in self._layout.collect_view_commands()
             if command.id == command_id
             )
 

@@ -3,6 +3,7 @@ import sys
 import logging
 import bisect
 import weakref
+from collections import namedtuple
 from functools import partial
 
 from PySide2 import QtCore, QtGui, QtWidgets
@@ -214,6 +215,8 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
 class ListViewLayout(ObjectLayout):
 
+    _Command = namedtuple('ListViewLayout_Command', 'id code_command layout_ref')
+
     class _CurrentItemObserver:
 
         def __init__(self, layout, command_hub):
@@ -227,18 +230,29 @@ class ListViewLayout(ObjectLayout):
     async def from_data(cls, state, path, object, layout_watcher, type_resolver, resource_resolver, params_editor):
         return cls(type_resolver, resource_resolver, params_editor, object, path, state.command_list)
 
-    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, command_list):
+    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, state_command_list):
         super().__init__(path)
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
         self._object = object
-        self._command_list = command_list
+        id_to_code_command = {
+            command.id: command
+            for path, command in self.collect_view_commands()
+            }
+        self.command_list = [
+            self._Command(command.id, id_to_code_command[command.code_id], command.layout_ref)
+            for command in state_command_list
+            ]
         self._current_item_observer = None
 
     @property
     def data(self):
-        return htypes.list_view.list_layout(self._command_list)
+        command_list = [
+            htypes.layout.command(command.id, command.code_command.id, command.layout_ref)
+            for command in self.command_list
+            ]
+        return htypes.list_view.list_layout(command_list)
 
     async def create_view(self, command_hub):
         columns = list(map_columns_to_view(self._resource_resolver, self._object))
