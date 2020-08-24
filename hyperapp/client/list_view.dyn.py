@@ -259,10 +259,10 @@ class ListViewLayout(ObjectLayout):
             return list(object_command_it)
 
     def collect_view_commands(self):
-        return {
-            **super().collect_view_commands(),
-            **{tuple(self._path): self._object.get_all_command_list()},
-            }
+        return [
+            *super().collect_view_commands(),
+            *[(tuple(self._path), command) for command in self._object.get_all_command_list()],
+            ]
 
     def _update_element_commands(self, command_hub, current_item_key):
         command_hub.update(only_kind='element')

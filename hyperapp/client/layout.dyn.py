@@ -79,7 +79,9 @@ class Layout(Commander, metaclass=abc.ABCMeta):
         pass
 
     def collect_view_commands(self):
-        return {tuple(self._path): self.get_command_list({'view'})}
+        return [(tuple(self._path), command)
+                for command in self.get_command_list({'view'})
+                ]
 
     def make_visual_item(self, text, name=None, children=None, commands=None):
         if not name:
@@ -93,15 +95,15 @@ class Layout(Commander, metaclass=abc.ABCMeta):
         return [*primary_commands, *secondary_commands]
 
     def _collect_view_commands_with_children(self, child_layout_it):
-        children_commands = {
-            path: commands
+        children_commands = [
+            (path, command)
             for layout in child_layout_it
-            for path, commands in layout.collect_view_commands().items()
-            }
-        return {
-            **children_commands,
-            **Layout.collect_view_commands(self),
-            }
+            for path, command in layout.collect_view_commands()
+            ]
+        return [
+            *children_commands,
+            *Layout.collect_view_commands(self),
+            ]
 
 
 class GlobalLayout(Layout):

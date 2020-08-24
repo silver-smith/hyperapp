@@ -100,11 +100,11 @@ class TreeToListLayout(ObjectLayout):
         return self._base_list_layout.get_current_commands(view)
 
     def collect_view_commands(self):
-        return {
-            **super().collect_view_commands(),
-            **self._base_list_layout.collect_view_commands(),
-            **{tuple(self._path): self._adapter.get_all_command_list()},
-            }
+        return [
+            *super().collect_view_commands(),
+            *self._base_list_layout.collect_view_commands(),
+            *[(tuple(self._path), command) for command in self._adapter.get_all_command_list()],
+            ]
 
 
 class ThisModule(ClientModule):
