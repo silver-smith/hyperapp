@@ -358,7 +358,7 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
 class TreeViewLayout(ObjectLayout):
 
-    _Command = namedtuple('ListViewLayout_Command', 'id code_command layout_ref')
+    _Command = namedtuple('ListViewLayout_Command', 'id code_command path layout_ref')
 
     class _CurrentItemObserver:
 
@@ -379,15 +379,15 @@ class TreeViewLayout(ObjectLayout):
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
         self._object = object
+        self.command_list = []
+        self._current_item_observer = None
         id_to_code_command = {
-            command.id: command
+            command.id: (path, command)
             for path, command in self.collect_view_commands()
             }
-        self.command_list = [
-            self._Command(command.id, id_to_code_command[command.code_id], command.layout_ref)
-            for command in state_command_list
-            ]
-        self._current_item_observer = None
+        for command in state_command_list:
+            path, code_command = id_to_code_command[command.code_id]
+            self.command_list.append(self._Command(command.id, code_command, path, command.layout_ref))
 
     @property
     def data(self):

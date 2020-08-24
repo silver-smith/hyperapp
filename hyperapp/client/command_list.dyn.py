@@ -11,7 +11,7 @@ from .layout import LayoutWatcher
 from .simple_list_object import SimpleListObject
 
 
-Item = namedtuple('Item', 'path id kind layout')
+Item = namedtuple('Item', 'path id code_id kind layout')
 
 
 class CommandList(SimpleListObject):
@@ -47,24 +47,31 @@ class CommandList(SimpleListObject):
         return [
             Column('path'),
             Column('id', is_key=True),
+            Column('code_id'),
             Column('kind'),
             Column('layout'),
             ]
 
     async def get_all_items(self):
         return [
-            await self._make_item([], command)
+            await self._make_item(command)
             for command in self._layout.command_list
             ]
 
-    async def _make_item(self, path, command):
+    async def _make_item(self, command):
         resolved_piece = await self._run_command(command)
         if resolved_piece is not None:
             item = await resolved_piece.layout.visual_item()
             layout_str = item.text
         else:
             layout_str = ''
-        return Item('/' + '/'.join(path), command.id, command.code_command.kind, layout_str)
+        return Item(
+            path='/' + '/'.join(command.path),
+            id=command.id,
+            code_id=command.code_command.id,
+            kind=command.code_command.kind,
+            layout=layout_str,
+            )
 
     async def _run_command(self, command):
         if command.code_command.kind == 'element':
