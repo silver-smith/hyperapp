@@ -182,7 +182,12 @@ def p_typedef_rhs_5(p):
 
 def p_record_def_1(p):
     'record_def : RECORD record_base_name_def'
-    p[0] = t_record_meta([])
+    base_name = p[2]
+    if base_name:
+        base = t_named(base_name)
+    else:
+        base = None
+    p[0] = t_record_meta([], base)
 
 def p_record_def_2(p):
     'record_def : RECORD record_base_name_def COLON BLOCK_BEGIN field_list BLOCK_END'
