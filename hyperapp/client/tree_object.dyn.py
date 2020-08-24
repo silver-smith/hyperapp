@@ -75,12 +75,16 @@ class TreeObject(Object, metaclass=abc.ABCMeta):
             else:
                 self._item_future.set_result(None)
 
-    async def load_first_item(self):
+    async def _load_first_item(self):
         item_future = asyncio.Future()
         observer = self._Observer(item_future)
         self.subscribe(observer)
         asyncio.ensure_future(self.fetch_items([]))
         return await item_future
+
+    async def first_item_key(self):
+        item = await self._load_first_item()
+        return [getattr(item, self.key_attribute)]
 
     @abc.abstractmethod
     async def fetch_items(self, path):

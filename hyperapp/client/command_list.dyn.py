@@ -68,8 +68,8 @@ class CommandList(SimpleListObject):
 
     async def _run_command(self, command):
         if command.code_command.kind == 'element':
-            item = await self._object.load_first_item()
-            args = [getattr(item, self._object.key_attribute)]
+            key = await self._object.first_item_key()
+            args = [key]
         else:
             args = []
         resolved_piece = await command.code_command.run(*args)
