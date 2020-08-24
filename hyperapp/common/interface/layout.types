@@ -1,0 +1,9 @@
+
+command = record:
+  id: string
+  code_id: string
+  layout_ref: ref opt
+
+
+layout = record:
+  command_list: command list

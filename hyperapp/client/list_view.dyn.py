@@ -225,19 +225,20 @@ class ListViewLayout(ObjectLayout):
 
     @classmethod
     async def from_data(cls, state, path, object, layout_watcher, type_resolver, resource_resolver, params_editor):
-        return cls(type_resolver, resource_resolver, params_editor, object, path)
+        return cls(type_resolver, resource_resolver, params_editor, object, path, state.command_list)
 
-    def __init__(self, type_resolver, resource_resolver, params_editor, object, path):
+    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, command_list):
         super().__init__(path)
         self._type_resolver = type_resolver
         self._resource_resolver = resource_resolver
         self._params_editor = params_editor
         self._object = object
+        self._command_list = command_list
         self._current_item_observer = None
 
     @property
     def data(self):
-        return htypes.list_view.list_layout()
+        return htypes.list_view.list_layout(self._command_list)
 
     async def create_view(self, command_hub):
         columns = list(map_columns_to_view(self._resource_resolver, self._object))
@@ -281,4 +282,8 @@ class ThisModule(ClientModule):
             htypes.list_view.list_layout, ListViewLayout.from_data, services.type_resolver, services.resource_resolver, services.params_editor)
 
     async def _make_list_layout_rec(self, object):
-        return htypes.list_view.list_layout()
+        command_list = [
+            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
+            for command in object.get_all_command_list()
+            ]
+        return htypes.list_view.list_layout(command_list)

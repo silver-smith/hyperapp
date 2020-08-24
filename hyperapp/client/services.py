@@ -25,6 +25,7 @@ type_module_list = [
     'module',
     'packet',
     'tcp_transport',
+    'layout',
     'category_list',
     'command_list',
     'layout_editor',

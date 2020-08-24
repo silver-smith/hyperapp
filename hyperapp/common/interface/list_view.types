@@ -1,2 +1,4 @@
+from layout import layout
 
-list_layout = record
+
+list_layout = record(layout)
