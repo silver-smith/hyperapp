@@ -1,0 +1,13 @@
+module:client.code_command_chooser:CodeCommandChooser:
+  columns:
+    path:
+      text: Path
+    id:
+      text: Command id
+    kind:
+      text: Kind
+  commands:
+    choose:
+      text: Choose
+      description: Choose selected view
+      is_default: yes

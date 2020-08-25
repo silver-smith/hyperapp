@@ -4,6 +4,11 @@ import:
       - command_list
     layout_editor:
       - object_layout_editor
+    code_command_chooser:
+      - code_command_chooser
+    params_editor:
+      - field
+      - params_editor
   code:
     - client.column
     - client.command_hub

@@ -1,0 +1,4 @@
+
+code_command_chooser = record:
+  piece_ref: ref
+  layout_ref: ref

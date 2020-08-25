@@ -103,6 +103,25 @@ class CommandList(SimpleListObject):
         category = self._object.category_list[-1]
         return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, category, command.id)
 
+    @object_command('add', kind='element')
+    async def _add_command(self, path):
+        piece_ref = self._ref_registry.register_object(self._object.data)
+        layout_ref = self._ref_registry.register_object(self._layout.data)
+        chooser = htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
+        chooser_ref = self._ref_registry.register_object(chooser)
+        code_command_id_field = htypes.params_editor.field('code_command_id', chooser_ref)
+        return htypes.params_editor.params_editor(
+            target_piece_ref=self._ref_registry.register_object(self.data),
+            target_command_id=self._add_command_impl.id,
+            bound_arguments=[],
+            fields=[code_command_id_field],
+            )
+
+    @command('_add_command_impl')
+    async def _add_command_impl(self, code_command_id):
+        assert 0, repr(code_command_id)
+        return self.data
+
 
 class ThisModule(ClientModule):
 
