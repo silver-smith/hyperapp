@@ -17,18 +17,17 @@ Item = namedtuple('Item', 'path id code_id kind layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver, object_layout_producer):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
         layout = await object_layout_resolver.resolve(state.layout_ref, ['root'], object, layout_watcher)
-        return cls(ref_registry, object_registry, object_layout_producer, object, layout)
+        return cls(ref_registry, object_registry, object, layout)
 
-    def __init__(self, ref_registry, object_registry, object_layout_producer, object, layout):
+    def __init__(self, ref_registry, object_registry, object, layout):
         super().__init__()
         self._ref_registry = ref_registry
         self._object_registry = object_registry
-        self._object_layout_producer = object_layout_producer
         self._object = object
         self._layout = layout
 
@@ -117,5 +116,4 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_resolver,
-            services.object_layout_producer,
             )
