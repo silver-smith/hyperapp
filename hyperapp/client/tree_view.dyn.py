@@ -406,12 +406,21 @@ class TreeViewLayout(ObjectLayout):
         return self.make_visual_item('TreeView')
 
     def get_current_commands(self, view):
-        object_command_it = self._object.get_command_list()
-        current_path = view.current_item_path
-        if current_path is not None:
-            return [*object_command_it, *self._get_element_commands(current_path)]
-        else:
-            return list(object_command_it)
+        command_list = [command for command in self.command_list
+                        if command.kind != 'element']
+        current_item_path = view.current_item_path
+        if current_item_path is None:
+            return command_list
+        element_command_ids = {
+            command.id for command in
+            self._object.get_item_command_list(current_item_path)
+            }
+        element_command_list = [
+            command.partial(current_item_path)
+            for command in self.command_list
+            if command.kind == 'element' and command.id in element_command_ids
+            ]
+        return [*command_list, *element_command_list]
 
     def collect_view_commands(self):
         return [
@@ -426,10 +435,6 @@ class TreeViewLayout(ObjectLayout):
 
     def _update_element_commands(self, command_hub, current_item_path):
         command_hub.update(only_kind='element')
-
-    def _get_element_commands(self, current_item_path):
-        for command in self._object.get_item_command_list(current_item_path):
-            yield command.partial(current_item_path)
 
 
 class ThisModule(ClientModule):
