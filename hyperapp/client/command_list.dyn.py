@@ -1,3 +1,4 @@
+import itertools
 from collections import namedtuple
 
 from hyperapp.common.util import single
@@ -119,8 +120,23 @@ class CommandList(SimpleListObject):
 
     @command('_add_command_impl')
     async def _add_command_impl(self, code_command_id):
-        assert 0, repr(code_command_id)
+        new_code_command_id = self._make_command_id_unique(code_command_id)
+        command = self._layout.add_command(new_code_command_id, code_command_id)
         return self.data
+
+    def _make_command_id_unique(self, command_id):
+        if not self._command_id_exists(command_id):
+            return command_id
+        for idx in itertools.count():
+            unique_id = f'{command_id}_{idx}'
+            if not self._command_id_exists(unique_id):
+                return unique_id
+
+    def _command_id_exists(self, command_id):
+        for command in self._layout.command_list:
+            if command.id == command_id:
+                return True
+        return False
 
 
 class ThisModule(ClientModule):

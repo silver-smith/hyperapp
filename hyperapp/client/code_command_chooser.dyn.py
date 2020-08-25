@@ -53,6 +53,8 @@ class CodeCommandChooser(SimpleListObject, Chooser):
 
     async def get_all_items(self):
         return [
+            Item('', 'self', ''),
+            ] +[
             await self._make_item(path, command)
             for path, command in self._layout.collect_view_commands()
             ]

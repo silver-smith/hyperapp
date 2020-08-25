@@ -381,12 +381,12 @@ class TreeViewLayout(ObjectLayout):
         self._object = object
         self.command_list = []
         self._current_item_observer = None
-        id_to_code_command = {
+        self._id_to_code_command = {
             command.id: (path, command)
             for path, command in self.collect_view_commands()
             }
         for command in state_command_list:
-            path, code_command = id_to_code_command[command.code_id]
+            path, code_command = self._id_to_code_command[command.code_id]
             self.command_list.append(self._Command(command.id, code_command, path, command.layout_ref))
 
     @property
@@ -420,6 +420,11 @@ class TreeViewLayout(ObjectLayout):
             *super().collect_view_commands(),
             *[(tuple(self._path), command) for command in self._object.get_all_command_list()],
             ]
+
+    def add_command(self, id, code_id):
+        path, code_command = self._id_to_code_command[code_id]
+        command = self._Command(id, code_command, path, layout_ref=None)
+        self.command_list.append(command)
 
     def _update_element_commands(self, command_hub, current_item_path):
         command_hub.update(only_kind='element')
