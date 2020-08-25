@@ -358,7 +358,7 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
 class TreeViewLayout(ObjectLayout):
 
-    _Command = namedtuple('ListViewLayout_Command', 'id code_command path layout_ref')
+    _Command = namedtuple('TreeViewLayout_Command', 'id code_command path layout_ref')
 
     class _CurrentItemObserver:
 
