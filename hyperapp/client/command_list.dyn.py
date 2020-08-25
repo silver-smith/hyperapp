@@ -22,12 +22,11 @@ class CommandList(SimpleListObject):
         object = await object_registry.resolve_async(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
         layout = await object_layout_resolver.resolve(state.layout_ref, ['root'], object, layout_watcher)
-        return cls(ref_registry, object_registry, object, layout)
+        return cls(ref_registry, object, layout)
 
-    def __init__(self, ref_registry, object_registry, object, layout):
+    def __init__(self, ref_registry, object, layout):
         super().__init__()
         self._ref_registry = ref_registry
-        self._object_registry = object_registry
         self._object = object
         self._layout = layout
 
