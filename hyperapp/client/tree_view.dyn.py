@@ -2,7 +2,6 @@ import abc
 import asyncio
 import logging
 import weakref
-from collections import namedtuple
 from contextlib import suppress
 from functools import partial
 
@@ -15,6 +14,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
 from .layout import ObjectLayout
+from .layout_command import LayoutCommand
 from .view import View
 from .items_view import map_columns_to_view
 
@@ -358,8 +358,6 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
 class TreeViewLayout(ObjectLayout):
 
-    _Command = namedtuple('TreeViewLayout_Command', 'id code_command path layout_ref')
-
     class _CurrentItemObserver:
 
         def __init__(self, layout, command_hub):
@@ -387,7 +385,7 @@ class TreeViewLayout(ObjectLayout):
             }
         for command in state_command_list:
             path, code_command = self._id_to_code_command[command.code_id]
-            self.command_list.append(self._Command(command.id, code_command, path, command.layout_ref))
+            self.command_list.append(LayoutCommand(command.id, code_command, path, command.layout_ref))
 
     @property
     def data(self):
@@ -423,7 +421,7 @@ class TreeViewLayout(ObjectLayout):
 
     def add_command(self, id, code_id):
         path, code_command = self._id_to_code_command[code_id]
-        command = self._Command(id, code_command, path, layout_ref=None)
+        command = LayoutCommand(id, code_command, path, layout_ref=None)
         self.command_list.append(command)
 
     def _update_element_commands(self, command_hub, current_item_path):

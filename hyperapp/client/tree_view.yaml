@@ -7,5 +7,6 @@ import:
   code:
     - client.tree_object
     - client.layout
+    - client.layout_command
     - client.view
     - client.items_view
