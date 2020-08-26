@@ -1,4 +1,5 @@
 import logging
+import weakref
 from collections import defaultdict, namedtuple
 
 from hyperapp.client.async_registry import run_awaitable_factory
@@ -95,7 +96,7 @@ class LayoutHandleRegistry:
         self._default_object_layouts = default_object_layouts
         self._object_layout_association = object_layout_association
         self._object_layout_registry = object_layout_registry
-        self._handle_registry = {}  # (category, command path) -> LayoutHandle
+        self._handle_registry = weakref.WeakValueDictionary()  # (category, command path) -> LayoutHandle
 
     async def produce_handle(self, object, path=('root',)):
         category = object.category_list[-1]
