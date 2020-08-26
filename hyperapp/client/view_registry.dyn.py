@@ -5,6 +5,7 @@ from hyperapp.client.async_registry import run_awaitable_factory
 from hyperapp.client.module import ClientModule
 
 from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
+from .layout import LayoutWatcher, LayoutHandle
 
 _log = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ CommandOrigin = namedtuple('CommandOrigin', 'object command_id')
 
 class AvailableObjectLayouts:
 
-    _Rec = namedtuple('_Rec', 'name, category_set layout_rec_maker')
+    _Rec = namedtuple('_Rec', 'name category_set layout_rec_maker')
 
     def __init__(self):
         self._rec_list = []
@@ -81,6 +82,48 @@ class ObjectLayoutProducer:
         return (await self._object_layout_registry.resolve_async(layout_rec, list(path), object, layout_watcher))
 
 
+class LayoutHandleRegistry:
+
+    def __init__(
+            self,
+            async_ref_resolver,
+            default_object_layouts,
+            object_layout_association,
+            object_layout_registry,
+            ):
+        self._async_ref_resolver = async_ref_resolver
+        self._default_object_layouts = default_object_layouts
+        self._object_layout_association = object_layout_association
+        self._object_layout_registry = object_layout_registry
+        self._handle_registry = {}  # (category, command path) -> LayoutHandle
+
+    async def produce_handle(self, object, path=('root',)):
+        category = object.category_list[-1]
+        try:
+            return self._handle_registry[category, ()]
+        except KeyError:
+            pass
+        _log.info("Produce layout handle for category %r of object %s", category, object)
+        try:
+            layout_ref = self._object_layout_association[category]
+        except KeyError:
+            rec_it = self._default_object_layouts.resolve(object.category_list)
+            try:
+                rec = next(rec_it)
+            except StopIteration:
+                raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
+            _log.info("Use default layout %r.", rec.name)
+            layout_rec = await rec.layout_rec_maker(object)
+        else:
+            _log.info("Use layout associated to %r.", category)
+            layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
+        watcher = LayoutWatcher()
+        layout = await self._object_layout_registry.resolve_async(layout_rec, list(path), object, watcher)
+        handle = LayoutHandle(layout, watcher)
+        self._handle_registry[category, ()] = handle
+        return handle
+
+
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
@@ -101,5 +144,11 @@ class ThisModule(ClientModule):
             services.default_object_layouts,
             services.object_layout_association,
             services.object_command_layout_association,
+            services.object_layout_registry,
+            )
+        services.layout_handle_registry = LayoutHandleRegistry(
+            services.async_ref_resolver,
+            services.default_object_layouts,
+            services.object_layout_association,
             services.object_layout_registry,
             )

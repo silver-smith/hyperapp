@@ -1,18 +1,11 @@
 import inspect
 import logging
 import weakref
-from collections import namedtuple
 
 from hyperapp.client.commander import resource_key_of_class_method, UnboundCommand
 from hyperapp.client.module import ClientModule
 
-from .layout import LayoutWatcher
-from .view_registry import CommandOrigin
-
 _log = logging.getLogger(__name__)
-
-
-_ResolvedPiece = namedtuple('_ResolvedPiece', 'object layout')
 
 
 # decorator for object and module methods
@@ -44,7 +37,7 @@ class UnboundObjectCommand(UnboundCommand):
 
 class BoundObjectCommand:
 
-    def __init__(self, id, kind, resource_key, class_method, object_wr, args=None, kw=None, wrapper=None, params_subst=None):
+    def __init__(self, id, kind, resource_key, class_method, object_wr, args=None, kw=None, params_subst=None):
         self.id = id
         self.kind = kind
         self.resource_key = resource_key
@@ -52,12 +45,11 @@ class BoundObjectCommand:
         self._object_wr = object_wr  # weak ref to object
         self._args = args or ()
         self._kw = kw or {}
-        self._wrapper = wrapper
         self._params_subst = params_subst
 
     def __repr__(self):
         return (f"BoundObjectCommand(id={self.id} kind={self.kind} object={self._object_wr}"
-                f" args={self._args} kw={self._kw} wrapper={self._wrapper})")
+                f" args={self._args} kw={self._kw})")
 
     def with_(self, **kw):
         old_kw = dict(
@@ -68,7 +60,6 @@ class BoundObjectCommand:
             object_wr=self._object_wr,
             args=self._args,
             kw=self._kw,
-            wrapper=self._wrapper,
             params_subst=self._params_subst,
             )
         all_kw = {**old_kw, **kw}
@@ -98,7 +89,7 @@ class BoundObjectCommand:
         else:
             result = await self._run_impl(object, full_args, full_kw)
         _log.info("BoundObjectCommand: run result: %r", result)
-        return (await self._wrap_result(object, result))
+        return result
 
     async def run_with_full_params(self, *args, **kw):
         object = self._object_wr()
@@ -107,7 +98,7 @@ class BoundObjectCommand:
         _log.info("BoundObjectCommand: run with full params:")
         result = await self._run_impl(object, args, kw)
         _log.info("BoundObjectCommand: run result: %r", result)
-        return (await self._wrap_result(object, result))
+        return result
 
     async def _run_impl(self, object, args, kw):
         _log.info("BoundObjectCommand: run: (%r) args=%r kw=%r", self, args, kw)
@@ -115,21 +106,6 @@ class BoundObjectCommand:
             return (await self._class_method(object, *args, **kw))
         else:
             return self._class_method(object, *args, **kw)
-
-    async def _wrap_result(self, origin_object, result):
-        if result is None:
-            return
-        piece = result
-        object = await this_module.object_registry.resolve_async(piece)
-        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        origin = CommandOrigin(origin_object, command_id=self.id)
-        layout = await this_module.object_layout_producer.produce_layout(object, layout_watcher, origin=origin)
-        resolved_piece = _ResolvedPiece(object, layout)
-        _log.info("BoundObjectCommand: piece resolved to: object %r", resolved_piece)
-        if not self._wrapper:
-            return resolved_piece
-        _log.info("BoundObjectCommand: wrap result with: %r", self._wrapper)
-        await self._wrapper(resolved_piece)
 
     def _more_params_are_required(self, *args, **kw):
         signature = inspect.signature(self._class_method)
@@ -149,6 +125,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self.object_registry = services.object_registry
-        self.object_layout_producer = services.object_layout_producer
         self.params_editor = services.params_editor

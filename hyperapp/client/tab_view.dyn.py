@@ -254,7 +254,7 @@ class ThisModule(ClientModule):
     def _make_new_tab_ref(self):
         piece = htypes.text.text("New tab")
         piece_ref = self._ref_registry.register_object(piece)
-        navigator = htypes.navigator.navigator(piece_ref, current_layout_ref=None)
+        navigator = htypes.navigator.navigator(piece_ref)
         navigator_ref = self._ref_registry.register_object(navigator)
         tab_view = htypes.tab_view.tab_view([navigator_ref], 0)
         return self._ref_registry.register_object(tab_view)

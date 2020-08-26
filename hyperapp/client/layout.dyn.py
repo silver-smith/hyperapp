@@ -123,3 +123,35 @@ class ObjectLayout(Layout):
 
     def get_current_commands(self, view):
         return self.get_all_command_list()
+
+
+class LayoutHandle:
+
+    @classmethod
+    def from_data(cls, state):
+        pass
+
+    def __init__(self, layout, watcher):
+        self._layout = layout
+        self._watcher = watcher
+        self._observers = weakref.WeakSet()
+
+    @property
+    def data(self):
+        pass
+
+    @property
+    def layout(self):
+        return self._layout
+
+    @property
+    def watcher(self) -> LayoutWatcher:
+        return self._watcher
+
+    def subscribe(self, observer):
+        self._observers.add(observer)
+
+    def distribute_diffs(self, diff_list):
+        _log.info("Layout handle: distribute layout diffs %s to %s", diff_list, list(self._observers))
+        for observer in self._observers:
+            observer.process_layout_diffs(diff_list)

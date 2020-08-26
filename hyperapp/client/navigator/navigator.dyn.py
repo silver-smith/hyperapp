@@ -10,12 +10,13 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .view import View
-from .layout import GlobalLayout, LayoutWatcher
+from .layout import GlobalLayout
+from .layout_command import LayoutCommand
 
 _log = logging.getLogger(__name__)
 
 
-_HistoryItem = namedtuple('_HistoryItem', 'object layout')
+_HistoryItem = namedtuple('_HistoryItem', 'object')
 
 
 class _History:
@@ -50,15 +51,15 @@ class NavigatorLayout(GlobalLayout):
     async def from_data(cls,
                         state, path, command_hub, view_opener,
                         ref_registry, async_ref_resolver, type_resolver,
-                        object_registry, object_layout_resolver, object_layout_producer, module_command_registry, params_editor):
+                        object_registry, object_layout_resolver, layout_handle_registry, module_command_registry, params_editor):
         self = cls(ref_registry, async_ref_resolver, type_resolver,
-                   object_registry, object_layout_resolver, object_layout_producer, module_command_registry, params_editor,
+                   object_registry, object_layout_resolver, layout_handle_registry, module_command_registry, params_editor,
                    path, command_hub, view_opener)
-        await self._async_init(state.current_piece_ref, state.current_layout_ref)
+        await self._async_init(state.current_piece_ref)
         return self
 
     def __init__(self, ref_registry, async_ref_resolver, type_resolver,
-                 object_registry, object_layout_resolver, object_layout_producer, module_command_registry, params_editor,
+                 object_registry, object_layout_resolver, layout_handle_registry, module_command_registry, params_editor,
                  path, command_hub, view_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
@@ -66,34 +67,29 @@ class NavigatorLayout(GlobalLayout):
         self._type_resolver = type_resolver
         self._object_registry = object_registry
         self._object_layout_resolver = object_layout_resolver
-        self._object_layout_producer = object_layout_producer
+        self._layout_handle_registry = layout_handle_registry
         self._module_command_registry = module_command_registry
         self._params_editor = params_editor
         self._command_hub = command_hub
         self._view_opener = view_opener
         self._history = _History()
         self._current_object = None
-        self._current_layout = None
+        self._current_layout_handle = None
         self._current_view = None
 
-    async def _async_init(self, initial_piece_ref, initial_layout_ref):
+    async def _async_init(self, initial_piece_ref):
         piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
         self._current_object = object = await self._object_registry.resolve_async(piece)
-        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        if initial_layout_ref:
-            self._current_layout = await self._object_layout_resolver.resolve(initial_layout_ref, [0], object, layout_watcher)
-        else:
-            self._current_layout = await self._object_layout_producer.produce_layout(object, layout_watcher)
-        self._history.append(_HistoryItem(object, self._current_layout))
+        self._current_layout_handle = await self._layout_handle_registry.produce_handle(object)
+        self._history.append(_HistoryItem(object))
 
     @property
     def data(self):
-        current_piece_ref = self._ref_registry.register_object(self._current_object.data)
-        current_layout_ref = self._ref_registry.register_object(self._current_layout.data)
-        return htypes.navigator.navigator(current_piece_ref, current_layout_ref)
+        piece_ref = self._ref_registry.register_object(self._current_object.data)
+        return htypes.navigator.navigator(piece_ref)
 
     async def create_view(self):
-        self._current_view = await self._current_layout.create_view(self._command_hub)
+        self._current_view = await self._current_layout_handle.layout.create_view(self._command_hub)
         return self._current_view
 
     async def visual_item(self):
@@ -111,33 +107,35 @@ class NavigatorLayout(GlobalLayout):
 
     def _get_global_commands(self):
         for command in self._module_command_registry.get_all_commands():
-            yield (command
+            yield (LayoutCommand(command.id, command, ['root'])
                    .with_(wrapper=self._open_layout)
                    )
 
     def _get_current_layout_commands(self):
-        for command in self._current_layout.get_current_commands(self._current_view):
+        for command in self._current_layout_handle.layout.get_current_commands(self._current_view):
             yield command.with_(wrapper=self._open_layout)
 
     async def _open_layout(self, resolved_piece):
-        await self._open_layout_impl(resolved_piece.object, resolved_piece.layout)
-        self._history.append(_HistoryItem(resolved_piece.object, resolved_piece.layout))
+        await self._open_layout_impl(resolved_piece.object, resolved_piece.layout_handle)
+        self._history.append(_HistoryItem(resolved_piece.object))
 
     async def _open_piece(self, piece):
         await self._open_piece_impl(piece)
-        self._history.append(_HistoryItem(self._current_object, self._current_layout))
+        self._history.append(_HistoryItem(self._current_object))
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        layout = await self._object_layout_producer.produce_layout(object, layout_watcher)
-        await self._open_layout_impl(object, layout)
+        await self._open_object(object)
 
-    async def _open_layout_impl(self, object, layout):
-        view = await layout.create_view(self._command_hub)
+    async def _open_object(self, object):
+        layout_handle = await self._layout_handle_registry.produce_handle(object)
+        await self._open_layout_impl(object, layout_handle)
+
+    async def _open_layout_impl(self, object, layout_handle):
+        view = await layout_handle.layout.create_view(self._command_hub)
         self._view_opener.open(view)
         self._current_object = object
-        self._current_layout = layout
+        self._current_layout_handle = layout_handle
         self._current_view = view
         self._command_hub.update()
 
@@ -147,7 +145,7 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_backward()
         except IndexError:
             return
-        await self._open_layout_impl(item.object, item.layout)
+        await self._open_object(item.object)
 
     @command('go_forward')
     async def _go_forward(self):
@@ -155,20 +153,20 @@ class NavigatorLayout(GlobalLayout):
             item = self._history.move_forward()
         except IndexError:
             return
-        await self._open_layout_impl(item.object, item.layout)
+        await self._open_object(item.object)
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):
         category = self._current_object.category_list[-1]
         piece_ref = self._ref_registry.register_object(self._current_object.data)
-        layout_ref = self._ref_registry.register_object(self._current_layout.data)
+        layout_ref = self._ref_registry.register_object(self._current_layout_handle.data)
         piece = htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, category, command=None)
         await self._open_piece(piece)
 
     @command('commands')
     async def _open_commands(self):
         piece_ref = self._ref_registry.register_object(self._current_object.data)
-        layout_ref = self._ref_registry.register_object(self._current_layout.data)
+        layout_ref = self._ref_registry.register_object(self._current_layout_handle.data)
         piece = htypes.command_list.command_list(piece_ref, layout_ref)
         await self._open_piece(piece)
 
@@ -185,7 +183,7 @@ class ThisModule(ClientModule):
             services.type_resolver,
             services.object_registry,
             services.object_layout_resolver,
-            services.object_layout_producer,
+            services.layout_handle_registry,
             services.module_command_registry,
             services.params_editor,
             )

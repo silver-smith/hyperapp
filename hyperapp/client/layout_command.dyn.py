@@ -1,11 +1,17 @@
 import logging
+from collections import namedtuple
+
+from hyperapp.client.module import ClientModule
 
 _log = logging.getLogger(__name__)
 
 
+_ResolvedPiece = namedtuple('_ResolvedPiece', 'object layout_handle')
+
+
 class LayoutCommand:
 
-    def __init__(self, id, code_command, path, layout_ref, args=None, kw=None, wrapper=None):
+    def __init__(self, id, code_command, path, layout_ref=None, args=None, kw=None, wrapper=None):
         self.id = id
         self.code_command = code_command
         self.path = path
@@ -14,10 +20,11 @@ class LayoutCommand:
         self._kw = kw or {}
         self._wrapper = wrapper
         self.kind = code_command.kind
-        self.resource_key = code_command.resource_key  # todo
+        self.resource_key = code_command.resource_key  # todo: use id
 
     def __repr__(self):
-        return f"LayoutCommand(id={self.id} code_command={self.code_command} path={self.path} layout_ref={self.layout_ref})"
+        return (f"LayoutCommand(id={self.id} code_command={self.code_command} path={self.path} layout_ref={self.layout_ref})"
+                f" args={self._args} kw={self._kw} wrapper={self._wrapper})")
 
     def with_(self, **kw):
         old_kw = dict(
@@ -41,5 +48,27 @@ class LayoutCommand:
         result = await self.code_command.run(*full_args, **full_kw)
         if not self._wrapper:
             return result
-        _log.info("LayoutCommand: wrap result with: %r", self._wrapper)
-        await self._wrapper(result)
+        return (await self._wrap_result(object, result))
+
+    async def _wrap_result(self, origin_object, result):
+        if result is None:
+            return
+        piece = result
+        object = await this_module.object_registry.resolve_async(piece)
+        if self.layout_ref:
+            assert 0  # todo
+        layout_handle = await this_module.layout_handle_registry.produce_handle(object)
+        resolved_piece = _ResolvedPiece(object, layout_handle)
+        _log.info("LayoutCommand: piece resolved to: %r", resolved_piece)
+        if not self._wrapper:
+            return resolved_piece
+        _log.info("LayoutCommand: wrap resolved piece with: %r", self._wrapper)
+        await self._wrapper(resolved_piece)
+
+
+class ThisModule(ClientModule):
+
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
+        self.object_registry = services.object_registry
+        self.layout_handle_registry = services.layout_handle_registry
