@@ -46,8 +46,6 @@ class LayoutCommand:
         full_kw = {**self._kw, **kw}
         _log.info("LayoutCommand: run: (%r) args=%r kw=%r", self, full_args, full_kw)
         result = await self.code_command.run(*full_args, **full_kw)
-        if not self._wrapper:
-            return result
         return (await self._wrap_result(object, result))
 
     async def _wrap_result(self, origin_object, result):
