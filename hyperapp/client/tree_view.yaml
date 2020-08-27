@@ -1,7 +1,5 @@
 import:
   types:
-    layout:
-      - command
     tree_view:
       - tree_layout
   code:

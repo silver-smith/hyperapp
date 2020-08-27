@@ -242,8 +242,5 @@ class ThisModule(ClientModule):
             htypes.list_view.list_layout, ListViewLayout.from_data, services.resource_resolver)
 
     async def _make_list_layout_rec(self, object):
-        command_list = [
-            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
-            for command in object.get_all_command_list()
-            ]
+        command_list = MultiItemObjectLayout.make_default_command_list(object)
         return htypes.list_view.list_layout(command_list)

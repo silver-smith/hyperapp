@@ -1,7 +1,5 @@
 import:
   types:
-    layout:
-      - command
     text:
       - text_edit_layout
   code:

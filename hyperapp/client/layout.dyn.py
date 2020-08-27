@@ -146,6 +146,13 @@ class ObjectLayout(Layout):
             for command in self.command_list
             ]
 
+    @staticmethod
+    def make_default_command_list(object):
+        return [
+            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
+            for command in object.get_all_command_list()
+            ]
+
 
 class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
 

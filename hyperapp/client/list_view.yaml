@@ -1,7 +1,5 @@
 import:
   types:
-    layout:
-      - command
     list_view:
       - list_layout
   code:

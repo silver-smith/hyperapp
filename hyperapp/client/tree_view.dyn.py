@@ -391,8 +391,5 @@ class ThisModule(ClientModule):
         return TreeView(columns, object, current_path)
 
     async def _make_tree_layout_rec(self, object):
-        command_list = [
-            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
-            for command in object.get_all_command_list()
-            ]
+        command_list = MultiItemObjectLayout.make_default_command_list(object)
         return htypes.tree_view.tree_layout(command_list)

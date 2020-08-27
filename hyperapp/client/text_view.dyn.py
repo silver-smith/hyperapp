@@ -121,8 +121,5 @@ class ThisModule(ClientModule):
         services.object_layout_registry.register_type(htypes.text.text_edit_layout, TextViewLayout.from_data)
 
     async def _make_text_layout_rec(self, object):
-        command_list = [
-            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
-            for command in object.get_all_command_list()
-            ]
+        command_list = ObjectLayout.make_default_command_list(object)
         return htypes.text.text_edit_layout(command_list, editable=False)
