@@ -13,5 +13,5 @@ import:
     - client.column
     - client.command_hub
     - client.object_command
-    - client.layout
+    - client.layout_handle
     - client.simple_list_object

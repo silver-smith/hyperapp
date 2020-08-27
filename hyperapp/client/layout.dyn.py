@@ -1,15 +1,14 @@
 import abc
 import logging
-import weakref
 from collections import namedtuple
 from dataclasses import dataclass
 from typing import List
 
 from hyperapp.client.commander import BoundCommand, Commander
-from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
+from .items_view import map_columns_to_view
+from .layout_command import LayoutCommand
 
 _log = logging.getLogger(__name__)
 
@@ -46,20 +45,6 @@ class RemoveVisualItemDiff(VisualItemDiff):
 class UpdateVisualItemDiff(VisualItemDiff):
     path: List[int]
     item: VisualItem
-
-
-class LayoutWatcher:
-
-    def __init__(self):
-        self._observers = weakref.WeakSet()
-
-    def subscribe(self, observer):
-        self._observers.add(observer)
-
-    def distribute_diffs(self, diff_list):
-        _log.info("Distribute layout diffs %s to %s", diff_list, list(self._observers))
-        for observer in self._observers:
-            observer.process_layout_diffs(diff_list)
 
 
 class Layout(Commander, metaclass=abc.ABCMeta):
@@ -124,105 +109,84 @@ class GlobalLayout(Layout):
 
 class ObjectLayout(Layout):
 
+    def __init__(self, path, object, command_list_data):
+        super().__init__(path)
+        self._object = object
+        self._id_to_code_command = {
+            command.id: (path, command)
+            for path, command in self.collect_view_commands()
+            }
+        self._command_list = []
+        for command in command_list_data:
+            path, code_command = self._id_to_code_command[command.code_id]
+            self.command_list.append(LayoutCommand(command.id, code_command, path, command.layout_ref))
+
     def get_current_commands(self, view):
         return self.get_all_command_list()
 
-
-class LayoutHandle:
-
-    @classmethod
-    async def from_data(cls, state, object, layout_handle_registry):
-        handle = await layout_handle_registry.produce_handle(object, category=state.category)
-        return handle
-
-    def __init__(self, category, layout, watcher, path=None):
-        self._category = category
-        self._path = path or []
-        self._layout = layout
-        self._watcher = watcher
-        self._observers = weakref.WeakSet()
+    def collect_view_commands(self):
+        return [
+            *super().collect_view_commands(),
+            *[(tuple(self._path), command) for command in self._object.get_all_command_list()],
+            ]
 
     @property
-    def data(self):
-        return htypes.layout.layout_handle(self._category, self._path)
+    def command_list(self):
+        return self._command_list
+
+    def add_command(self, id, code_id):
+        path, code_command = self._id_to_code_command[code_id]
+        command = LayoutCommand(id, code_command, path, layout_ref=None)
+        self._command_list.append(command)
 
     @property
-    def title(self):
-        if self._path:
-            return self._category + '/' + '/'.join(self._path)
-        else:
-            return self._category
-
-    @property
-    def layout(self):
-        return self._layout
-
-    @property
-    def watcher(self) -> LayoutWatcher:
-        return self._watcher
-
-    def subscribe(self, observer):
-        self._observers.add(observer)
-
-    def distribute_diffs(self, diff_list):
-        _log.info("Layout handle: distribute layout diffs %s to %s", diff_list, list(self._observers))
-        for observer in self._observers:
-            observer.process_layout_diffs(diff_list)
+    def _command_list_data(self):
+        return [
+            htypes.layout.command(command.id, command.code_command.id, command.layout_ref)
+            for command in self.command_list
+            ]
 
 
-class LayoutHandleRegistry:
+class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
 
-    def __init__(
-            self,
-            async_ref_resolver,
-            default_object_layouts,
-            object_layout_association,
-            object_layout_registry,
-            ):
-        self._async_ref_resolver = async_ref_resolver
-        self._default_object_layouts = default_object_layouts
-        self._object_layout_association = object_layout_association
-        self._object_layout_registry = object_layout_registry
-        self._handle_registry = weakref.WeakValueDictionary()  # (category, command path) -> LayoutHandle
+    class _CurrentItemObserver:
 
-    async def produce_handle(self, object, path=('root',), category=None):
-        if not category:
-            category = object.category_list[-1]
-        try:
-            return self._handle_registry[category, ()]
-        except KeyError:
-            pass
-        _log.info("Produce layout handle for category %r of object %s", category, object)
-        try:
-            layout_ref = self._object_layout_association[category]
-        except KeyError:
-            rec_it = self._default_object_layouts.resolve(object.category_list)
-            try:
-                rec = next(rec_it)
-            except StopIteration:
-                raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
-            _log.info("Use default layout %r.", rec.name)
-            layout_rec = await rec.layout_rec_maker(object)
-        else:
-            _log.info("Use layout associated to %r.", category)
-            layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
-        watcher = LayoutWatcher()
-        layout = await self._object_layout_registry.resolve_async(layout_rec, list(path), object, watcher)
-        handle = LayoutHandle(category, layout, watcher)
-        self._handle_registry[category, ()] = handle
-        return handle
+        def __init__(self, layout, command_hub):
+            self._layout = layout
+            self._command_hub = command_hub
 
+        def current_changed(self, current_item_key):
+            self._command_hub.update(only_kind='element')
 
-class ThisModule(ClientModule):
+    def __init__(self, path, object, command_list_data, resource_resolver):
+        super().__init__(path, object, command_list_data)
+        self._resource_resolver = resource_resolver
+        self._current_item_observer = None
 
-    def __init__(self, module_name, services):
-        super().__init__(module_name, services)
-        services.layout_handle_registry = LayoutHandleRegistry(
-            services.async_ref_resolver,
-            services.default_object_layouts,
-            services.object_layout_association,
-            services.object_layout_registry,
-            )
-        services.layout_handle_codereg = AsyncCapsuleRegistry('layout_handle', services.type_resolver)
-        services.layout_handle_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.layout_handle_codereg)
-        services.layout_handle_codereg.register_type(htypes.layout.layout_handle, LayoutHandle.from_data, services.layout_handle_registry)
+    async def create_view(self, command_hub):
+        columns = list(map_columns_to_view(self._resource_resolver, self._object))
+        view = self._create_view_impl(columns)
+        self._current_item_observer = observer = self._CurrentItemObserver(self, command_hub)
+        view.add_observer(observer)
+        return view
+
+    @abc.abstractmethod
+    def _create_view_impl(self, columns):
+        pass
+
+    def get_current_commands(self, view):
+        command_list = [command for command in self._command_list
+                        if command.kind != 'element']
+        current_item_key = view.current_item_key
+        if current_item_key is None:
+            return command_list
+        element_command_ids = {
+            command.id for command in
+            self._object.get_item_command_list(current_item_key)
+            }
+        element_command_list = [
+            command.partial(current_item_key)
+            for command in self._command_list
+            if command.kind == 'element' and command.id in element_command_ids
+            ]
+        return [*command_list, *element_command_list]

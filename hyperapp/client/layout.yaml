@@ -1,6 +1,7 @@
 import:
   types:
     layout:
-      - layout_handle
+      - command
   code:
-    - client.async_capsule_registry
+    - client.layout_command
+    - client.items_view

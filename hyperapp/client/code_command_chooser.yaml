@@ -6,5 +6,5 @@ import:
     - client.object_command
     - client.chooser
     - client.column
-    - client.layout
+    - client.layout_handle
     - client.simple_list_object

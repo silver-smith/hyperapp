@@ -8,7 +8,7 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .column import Column
 from .object_command import command as object_command
-from .layout import LayoutWatcher
+from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
 
 

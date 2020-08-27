@@ -13,10 +13,8 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObserver, TreeObject
-from .layout import ObjectLayout
-from .layout_command import LayoutCommand
+from .layout import MultiItemObjectLayout
 from .view import View
-from .items_view import map_columns_to_view
 
 log = logging.getLogger(__name__)
 
@@ -271,7 +269,7 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 
     # obsolete
     def get_state(self):
-        return self._data_type('tree', self._object.get_state(), self._resource_key, self.current_item_path)
+        return self._data_type('tree', self._object.get_state(), self._resource_key, self.current_item_key)
 
     def get_object(self):
         return self._object
@@ -295,12 +293,12 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
     # -------------------------------------------------------------------------------------------------------------------
 
     def _notify_observers(self):
-        current_path = self.current_item_path
+        current_path = self.current_item_key
         for observer in self._observers:
             observer.current_changed(current_path)
 
     @property
-    def current_item_path(self):
+    def current_item_key(self):
         path = self.model().index2path(self.currentIndex())
         if path is None:
             return None
@@ -356,85 +354,24 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
     #     log.debug('~tree_view.TreeView self=%r', id(self))
 
 
-class TreeViewLayout(ObjectLayout):
-
-    class _CurrentItemObserver:
-
-        def __init__(self, layout, command_hub):
-            self._layout = layout
-            self._command_hub = command_hub
-
-        def current_changed(self, current_item_path):
-            self._layout._update_element_commands(self._command_hub, current_item_path)
+class TreeViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object, layout_watcher, type_resolver, resource_resolver, params_editor):
-        return cls(type_resolver, resource_resolver, params_editor, object, path, state.command_list)
+    async def from_data(cls, state, path, object, layout_watcher, resource_resolver):
+        return cls(path, object, state.command_list, resource_resolver)
 
-    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, state_command_list):
-        super().__init__(path)
-        self._type_resolver = type_resolver
-        self._resource_resolver = resource_resolver
-        self._params_editor = params_editor
-        self._object = object
-        self.command_list = []
-        self._current_item_observer = None
-        self._id_to_code_command = {
-            command.id: (path, command)
-            for path, command in self.collect_view_commands()
-            }
-        for command in state_command_list:
-            path, code_command = self._id_to_code_command[command.code_id]
-            self.command_list.append(LayoutCommand(command.id, code_command, path, command.layout_ref))
+    def __init__(self, path, object, command_list_data, resource_resolver):
+        super().__init__(path, object, command_list_data, resource_resolver)
 
     @property
     def data(self):
-        command_list = [
-            htypes.layout.command(command.id, command.code_command.id, command.layout_ref)
-            for command in self.command_list
-            ]
-        return htypes.tree_view.tree_layout(command_list)
-
-    async def create_view(self, command_hub):
-        columns = list(map_columns_to_view(self._resource_resolver, self._object))
-        tree_view = TreeView(columns, self._object)
-        self._current_item_observer = observer = self._CurrentItemObserver(self, command_hub)
-        tree_view.add_observer(observer)
-        return tree_view
+        return htypes.tree_view.tree_layout(self._command_list_data)
 
     async def visual_item(self):
         return self.make_visual_item('TreeView')
 
-    def get_current_commands(self, view):
-        command_list = [command for command in self.command_list
-                        if command.kind != 'element']
-        current_item_path = view.current_item_path
-        if current_item_path is None:
-            return command_list
-        element_command_ids = {
-            command.id for command in
-            self._object.get_item_command_list(current_item_path)
-            }
-        element_command_list = [
-            command.partial(current_item_path)
-            for command in self.command_list
-            if command.kind == 'element' and command.id in element_command_ids
-            ]
-        return [*command_list, *element_command_list]
-
-    def collect_view_commands(self):
-        return [
-            *super().collect_view_commands(),
-            *[(tuple(self._path), command) for command in self._object.get_all_command_list()],
-            ]
-
-    def add_command(self, id, code_id):
-        path, code_command = self._id_to_code_command[code_id]
-        command = LayoutCommand(id, code_command, path, layout_ref=None)
-        self.command_list.append(command)
-
-    def _update_element_commands(self, command_hub, current_item_path):
-        command_hub.update(only_kind='element')
+    def _create_view_impl(self, columns):
+        return TreeView(columns, self._object)
 
 
 class ThisModule(ClientModule):
@@ -448,7 +385,7 @@ class ThisModule(ClientModule):
         services.default_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_rec)
         services.available_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_rec)
         services.object_layout_registry.register_type(
-            htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.type_resolver, services.resource_resolver, services.params_editor)
+            htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.resource_resolver)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)

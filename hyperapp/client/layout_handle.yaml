@@ -1,0 +1,6 @@
+import:
+  types:
+    layout:
+      - layout_handle
+  code:
+    - client.async_capsule_registry

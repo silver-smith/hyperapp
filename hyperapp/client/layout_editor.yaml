@@ -11,6 +11,7 @@ import:
       - object_layout_editor
   code:
     - client.object_command
+    - client.layout_handle
     - client.layout
     - client.command_hub
     - client.column

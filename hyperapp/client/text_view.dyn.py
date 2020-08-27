@@ -91,11 +91,10 @@ class TextViewLayout(ObjectLayout):
 
     @classmethod
     def from_data(cls, state, path, object, layout_watcher):
-        return TextViewLayout(object, path, state.editable)
+        return TextViewLayout(path, object, state.command_list, state.editable)
 
-    def __init__(self, object, path, editable):
-        super().__init__(path)
-        self._object = object
+    def __init__(self, path, object, command_list_data, editable):
+        super().__init__(path, object, command_list_data)
         self._editable = editable
 
     @property
@@ -122,4 +121,8 @@ class ThisModule(ClientModule):
         services.object_layout_registry.register_type(htypes.text.text_edit_layout, TextViewLayout.from_data)
 
     async def _make_text_layout_rec(self, object):
-        return htypes.text.text_edit_layout(editable=False)
+        command_list = [
+            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
+            for command in object.get_all_command_list()
+            ]
+        return htypes.text.text_edit_layout(command_list, editable=False)

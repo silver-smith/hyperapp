@@ -15,9 +15,8 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .list_object import ListObserver, ListObject
-from .layout import ObjectLayout
+from .layout import MultiItemObjectLayout
 from .view import View
-from .items_view import map_columns_to_view
 
 _log = logging.getLogger(__name__)
 
@@ -213,77 +212,24 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
     #     _log.debug('~list_view.ListView self=%r', id(self))
 
 
-class ListViewLayout(ObjectLayout):
-
-    _Command = namedtuple('ListViewLayout_Command', 'id code_command path layout_ref')
-
-    class _CurrentItemObserver:
-
-        def __init__(self, layout, command_hub):
-            self._layout = layout
-            self._command_hub = command_hub
-
-        def current_changed(self, current_item_key):
-            self._layout._update_element_commands(self._command_hub, current_item_key)
+class ListViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object, layout_watcher, type_resolver, resource_resolver, params_editor):
-        return cls(type_resolver, resource_resolver, params_editor, object, path, state.command_list)
+    async def from_data(cls, state, path, object, layout_watcher, resource_resolver):
+        return cls(path, object, state.command_list, resource_resolver)
 
-    def __init__(self, type_resolver, resource_resolver, params_editor, object, path, state_command_list):
-        super().__init__(path)
-        self._type_resolver = type_resolver
-        self._resource_resolver = resource_resolver
-        self._params_editor = params_editor
-        self._object = object
-        self.command_list = []
-        self._current_item_observer = None
-        id_to_code_command = {
-            command.id: (path, command)
-            for path, command in self.collect_view_commands()
-            }
-        for command in state_command_list:
-            path, code_command = id_to_code_command[command.code_id]
-            self.command_list.append(self._Command(command.id, code_command, path, command.layout_ref))
+    def __init__(self, path, object, state_command_list, resource_resolver):
+        super().__init__(path, object, state_command_list, resource_resolver)
 
     @property
     def data(self):
-        command_list = [
-            htypes.layout.command(command.id, command.code_command.id, command.layout_ref)
-            for command in self.command_list
-            ]
-        return htypes.list_view.list_layout(command_list)
-
-    async def create_view(self, command_hub):
-        columns = list(map_columns_to_view(self._resource_resolver, self._object))
-        list_view = ListView(columns, self._object)
-        self._current_item_observer = observer = self._CurrentItemObserver(self, command_hub)
-        list_view.add_observer(observer)
-        return list_view
+        return htypes.list_view.list_layout(self._command_list_data)
 
     async def visual_item(self):
         return self.make_visual_item('ListView')
 
-    def get_current_commands(self, view):
-        object_command_it = self._object.get_command_list()
-        current_key = view.current_item_key
-        if current_key is not None:
-            return [*object_command_it, *self._get_element_commands(current_key)]
-        else:
-            return list(object_command_it)
-
-    def collect_view_commands(self):
-        return [
-            *super().collect_view_commands(),
-            *[(tuple(self._path), command) for command in self._object.get_all_command_list()],
-            ]
-
-    def _update_element_commands(self, command_hub, current_item_key):
-        command_hub.update(only_kind='element')
-
-    def _get_element_commands(self, current_item_key):
-        for command in self._object.get_item_command_list(current_item_key):
-            yield command.partial(current_item_key)
+    def _create_view_impl(self, columns):
+        return ListView(columns, self._object)
 
 
 class ThisModule(ClientModule):
@@ -293,7 +239,7 @@ class ThisModule(ClientModule):
         services.default_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
         services.available_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
         services.object_layout_registry.register_type(
-            htypes.list_view.list_layout, ListViewLayout.from_data, services.type_resolver, services.resource_resolver, services.params_editor)
+            htypes.list_view.list_layout, ListViewLayout.from_data, services.resource_resolver)
 
     async def _make_list_layout_rec(self, object):
         command_list = [

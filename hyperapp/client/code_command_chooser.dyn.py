@@ -6,7 +6,7 @@ from . import htypes
 from .object_command import command
 from .chooser import Chooser
 from .column import Column
-from .layout import LayoutWatcher
+from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
 
 
