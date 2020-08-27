@@ -35,7 +35,6 @@ class LayoutHandle:
         self._path = path or []
         self._layout = layout
         self._watcher = watcher
-        self._observers = weakref.WeakSet()
 
     @property
     def data(self):
@@ -55,14 +54,6 @@ class LayoutHandle:
     @property
     def watcher(self) -> LayoutWatcher:
         return self._watcher
-
-    def subscribe(self, observer):
-        self._observers.add(observer)
-
-    def distribute_diffs(self, diff_list):
-        _log.info("Layout handle: distribute layout diffs %s to %s", diff_list, list(self._observers))
-        for observer in self._observers:
-            observer.process_layout_diffs(diff_list)
 
 
 class LayoutHandleRegistry:
