@@ -8,6 +8,9 @@ from typing import List
 from hyperapp.client.commander import BoundCommand, Commander
 from hyperapp.client.module import ClientModule
 
+from . import htypes
+from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
+
 _log = logging.getLogger(__name__)
 
 
@@ -128,17 +131,27 @@ class ObjectLayout(Layout):
 class LayoutHandle:
 
     @classmethod
-    def from_data(cls, state):
-        pass
+    async def from_data(cls, state, object, layout_handle_registry):
+        handle = await layout_handle_registry.produce_handle(object, category=state.category)
+        return handle
 
-    def __init__(self, layout, watcher):
+    def __init__(self, category, layout, watcher, path=None):
+        self._category = category
+        self._path = path or []
         self._layout = layout
         self._watcher = watcher
         self._observers = weakref.WeakSet()
 
     @property
     def data(self):
-        pass
+        return htypes.layout.layout_handle(self._category, self._path)
+
+    @property
+    def title(self):
+        if self._path:
+            return self._category + '/' + '/'.join(self._path)
+        else:
+            return self._category
 
     @property
     def layout(self):
@@ -155,3 +168,61 @@ class LayoutHandle:
         _log.info("Layout handle: distribute layout diffs %s to %s", diff_list, list(self._observers))
         for observer in self._observers:
             observer.process_layout_diffs(diff_list)
+
+
+class LayoutHandleRegistry:
+
+    def __init__(
+            self,
+            async_ref_resolver,
+            default_object_layouts,
+            object_layout_association,
+            object_layout_registry,
+            ):
+        self._async_ref_resolver = async_ref_resolver
+        self._default_object_layouts = default_object_layouts
+        self._object_layout_association = object_layout_association
+        self._object_layout_registry = object_layout_registry
+        self._handle_registry = weakref.WeakValueDictionary()  # (category, command path) -> LayoutHandle
+
+    async def produce_handle(self, object, path=('root',), category=None):
+        if not category:
+            category = object.category_list[-1]
+        try:
+            return self._handle_registry[category, ()]
+        except KeyError:
+            pass
+        _log.info("Produce layout handle for category %r of object %s", category, object)
+        try:
+            layout_ref = self._object_layout_association[category]
+        except KeyError:
+            rec_it = self._default_object_layouts.resolve(object.category_list)
+            try:
+                rec = next(rec_it)
+            except StopIteration:
+                raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
+            _log.info("Use default layout %r.", rec.name)
+            layout_rec = await rec.layout_rec_maker(object)
+        else:
+            _log.info("Use layout associated to %r.", category)
+            layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
+        watcher = LayoutWatcher()
+        layout = await self._object_layout_registry.resolve_async(layout_rec, list(path), object, watcher)
+        handle = LayoutHandle(category, layout, watcher)
+        self._handle_registry[category, ()] = handle
+        return handle
+
+
+class ThisModule(ClientModule):
+
+    def __init__(self, module_name, services):
+        super().__init__(module_name, services)
+        services.layout_handle_registry = LayoutHandleRegistry(
+            services.async_ref_resolver,
+            services.default_object_layouts,
+            services.object_layout_association,
+            services.object_layout_registry,
+            )
+        services.layout_handle_codereg = AsyncCapsuleRegistry('layout_handle', services.type_resolver)
+        services.layout_handle_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.layout_handle_codereg)
+        services.layout_handle_codereg.register_type(htypes.layout.layout_handle, LayoutHandle.from_data, services.layout_handle_registry)

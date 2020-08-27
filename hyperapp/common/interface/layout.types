@@ -7,3 +7,8 @@ command = record:
 
 layout = record:
   command_list: command list
+
+
+layout_handle = record:
+  category: string
+  path: string list

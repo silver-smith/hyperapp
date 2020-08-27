@@ -148,22 +148,17 @@ class ObjectLayoutEditor(LayoutEditor):
             object_registry,
             object_layout_association,
             object_command_layout_association,
-            object_layout_resolver,
+            layout_handle_resolver,
             ):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        layout_watcher = LayoutWatcher()  # todo: save object layout on change
-        layout = await object_layout_resolver.resolve(state.layout_ref, ['root'], object, layout_watcher)
+        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref, object)
         self = cls(
             ref_registry,
             object_layout_association,
             object_command_layout_association,
-            layout_watcher,
-            state.piece_ref,
-            layout,
             object,
-            state.category,
-            state.command,
+            layout_handle,
             )
         await self._async_init(layout)
         return self
@@ -173,42 +168,32 @@ class ObjectLayoutEditor(LayoutEditor):
             ref_registry,
             object_layout_association,
             object_command_layout_association,
-            layout_watcher,
-            piece_ref,
-            layout,
             object,
-            category,
-            command,
+            layout_handle,
             ):
-        super().__init__(layout_watcher)
+        super().__init__(layout_handle.watcher)
         self._ref_registry = ref_registry
         self._object_layout_association = object_layout_association
         self._object_command_layout_association = object_command_layout_association
-        self._piece_ref = piece_ref
-        self._layout = layout
         self._object = object
-        self._target_category = category
-        self._target_command = command  # None for non-command layouts
+        self._layout_handle = layout_handle
 
     @property
     def title(self):
-        title = f"Layout for category: {self._target_category}"
-        if self._target_command:
-            return f"{title}/{self._target_command}"
-        else:
-            return title
+        return f"Layout for category: {self._layout_handle.title}"
 
     @property
     def data(self):
-        layout_ref = self._ref_registry.register_object(self._layout.data)
-        return htypes.layout_editor.object_layout_editor(self._piece_ref, layout_ref, self._target_category, self._target_command)
+        piece_ref = self._ref_registry.register_object(self._object.data)
+        layout_handle_ref = self._ref_registry.register_object(self._layout_handle.data)
+        return htypes.layout_editor.object_layout_editor(piece_ref, layout_handle_ref)
 
     def get_command_list(self):
         return [command for command in super().get_command_list()
                 if command.id not in {'replace', '_replace_impl'}]
 
     async def get_root_item(self, layout):
-        item = await self._layout.visual_item()
+        item = await self._layout_handle.layout.visual_item()
         return item.with_added_commands([
             self._replace_view,
             ])
@@ -264,7 +249,7 @@ class ThisModule(ClientModule):
             services.object_registry,
             services.object_layout_association,
             services.object_command_layout_association,
-            services.object_layout_resolver,
+            services.layout_handle_resolver,
             )
 
     @object_command('open_view_layout')
