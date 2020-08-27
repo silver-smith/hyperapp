@@ -18,28 +18,27 @@ Item = namedtuple('Item', 'path id code_id kind layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_resolver):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        layout = await object_layout_resolver.resolve(state.layout_ref, ['root'], object, layout_watcher)
-        return cls(ref_registry, object, layout)
+        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref, object)
+        return cls(ref_registry, object, layout_handle)
 
-    def __init__(self, ref_registry, object, layout):
+    def __init__(self, ref_registry, object, layout_handle):
         super().__init__()
         self._ref_registry = ref_registry
         self._object = object
-        self._layout = layout
+        self._layout_handle = layout_handle
 
     @property
     def title(self):
-        return f"Commands for: {self._object.title}"
+        return f"Commands for: {self._layout_handle.title}"
 
     @property
     def data(self):
         piece_ref = self._ref_registry.register_object(self._object.data)
-        layout_ref = self._ref_registry.register_object(self._layout.data)
-        return htypes.command_list.command_list(piece_ref, layout_ref)
+        layout_handle_ref = self._ref_registry.register_object(self._layout_handle.data)
+        return htypes.command_list.command_list(piece_ref, layout_handle_ref)
 
     @property
     def columns(self):
@@ -57,10 +56,14 @@ class CommandList(SimpleListObject):
             for command in self._layout.command_list
             ]
 
+    @property
+    def _layout(self):
+        return self._layout_handle.layout
+
     async def _make_item(self, command):
         resolved_piece = await self._run_command(command)
         if resolved_piece is not None:
-            item = await resolved_piece.layout.visual_item()
+            item = await resolved_piece.layout_handle.layout.visual_item()
             layout_str = item.text
         else:
             layout_str = ''
@@ -73,12 +76,12 @@ class CommandList(SimpleListObject):
             )
 
     async def _run_command(self, command):
-        if command.code_command.kind == 'element':
+        if command.kind == 'element':
             key = await self._object.first_item_key()
             args = [key]
         else:
             args = []
-        resolved_piece = await command.code_command.run(*args)
+        resolved_piece = await command.run(*args)
         return resolved_piece
 
     def _command_by_id(self, command_id):
@@ -149,5 +152,5 @@ class ThisModule(ClientModule):
             services.ref_registry,
             services.async_ref_resolver,
             services.object_registry,
-            services.object_layout_resolver,
+            services.layout_handle_resolver,
             )
