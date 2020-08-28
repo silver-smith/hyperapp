@@ -99,7 +99,7 @@ class TextViewLayout(ObjectLayout):
 
     @property
     def data(self):
-        return htypes.text.text_edit_layout(self._editable)
+        return htypes.text.text_edit_layout(self._command_list_data, self._editable)
 
     async def create_view(self, command_hub):
         return TextView(self._object)
