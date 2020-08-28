@@ -91,17 +91,16 @@ class LineEditLayout(ObjectLayout):
 
     @classmethod
     async def from_data(cls, state, path, object, layout_watcher):
-        return cls(layout_watcher, object, path, state.editable)
+        return cls(layout_watcher, path, object, state.command_list, state.editable)
 
-    def __init__(self, layout_watcher, object, path, editable):
-        super().__init__(path)
+    def __init__(self, layout_watcher, path, object, command_list_data, editable):
+        super().__init__(path, object, command_list_data)
         self._layout_watcher = layout_watcher
-        self._object = object
         self._editable = editable
 
     @property
     def data(self):
-        return htypes.line.line_edit_layout(self._editable)
+        return htypes.line.line_edit_layout(self._command_list_data, self._editable)
 
     async def create_view(self, command_hub):
         return LineEditView(self._object, self._editable)
@@ -140,4 +139,5 @@ class ThisModule(ClientModule):
         services.object_layout_registry.register_type(htypes.line.line_edit_layout, LineEditLayout.from_data)
 
     async def _make_line_layout_rec(self, object):
-        return htypes.line.line_edit_layout(editable=False)
+        command_list = ObjectLayout.make_default_command_list(object)
+        return htypes.line.line_edit_layout(command_list, editable=False)
