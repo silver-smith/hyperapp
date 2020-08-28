@@ -9,6 +9,7 @@ from . import htypes
 from .object_command import command
 from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
+from .record_object import RecordObject
 
 log = logging.getLogger(__name__)
 
@@ -16,12 +17,12 @@ log = logging.getLogger(__name__)
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
-class SampleObject(TreeObject):
+class SampleTree(TreeObject):
 
     category_list = TreeObject.category_list + ['tree-view-sample']
 
     @classmethod
-    def from_state(cls, state):
+    def from_data(cls, state):
         return cls()
 
     @property
@@ -41,7 +42,7 @@ class SampleObject(TreeObject):
             ]
 
     async def fetch_items(self, path):
-        log.info('SampleObject.fetch_items(%s)', path)
+        log.info('SampleTree.fetch_items(%s)', path)
         if path and path[-1] == self._key(8):
             return
         self._distribute_fetch_results(path, [
@@ -82,12 +83,46 @@ class SampleObject(TreeObject):
         text = "Opened item {}".format('/'.join(item_path))
         return htypes.text.text(text)
 
+    @command('edit', kind='element')
+    async def _edit(self, item_path):
+        return htypes.tree_view_sample.tree_sample_article(
+            title=f"Article {item_path}",
+            text=f"Sample contents for:\n{item_path}",
+            )
+
+
+class SampleArticle(RecordObject):
+
+    @classmethod
+    async def from_data(cls, state, object_registry):
+        fields_pieces = {
+            'title': htypes.line.line(state.title),
+            'text': htypes.text.text(state.text),
+            }
+        self = cls(state.title, state.text)
+        await self.async_init(object_registry, fields_pieces)
+        return self
+
+    def __init__(self, title, text):
+        super().__init__()
+        self._title = title
+        self._text = text
+
+    @property
+    def title(self):
+        return f"Sample list view article: {self._title}"
+
+    @property
+    def data(self):
+        return htypes.tree_view_sample.tree_sample_article(self._title, self._text)
+
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(htypes.tree_view_sample.tree_view_sample_object, SampleObject.from_state)
+        services.object_registry.register_type(htypes.tree_view_sample.tree_view_sample_object, SampleTree.from_data)
+        services.object_registry.register_type(htypes.tree_view_sample.tree_sample_article, SampleArticle.from_data, services.object_registry)
 
     @command('open_tree_view_sample')
     async def open_tree_view_sample(self):

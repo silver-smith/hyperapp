@@ -2,7 +2,7 @@ import:
   types:
     list_view_sample:
       - list_view_sample_object
-      - sample_article
+      - list_sample_article
     line:
       - line
     text:

@@ -76,7 +76,7 @@ class SampleList(ListObject):
 
     @command('edit', kind='element')
     async def _edit(self, item_key):
-        return htypes.list_view_sample.sample_article(
+        return htypes.list_view_sample.list_sample_article(
             title=f"Article {item_key}",
             text=f"Sample contents for:\n{item_key}",
             )
@@ -105,7 +105,7 @@ class SampleArticle(RecordObject):
 
     @property
     def data(self):
-        return htypes.list_view_sample.sample_article(self._title, self._text)
+        return htypes.list_view_sample.list_sample_article(self._title, self._text)
 
 
 class ThisModule(ClientModule):
@@ -113,7 +113,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(htypes.list_view_sample.list_view_sample_object, SampleList.from_data)
-        services.object_registry.register_type(htypes.list_view_sample.sample_article, SampleArticle.from_data, services.object_registry)
+        services.object_registry.register_type(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_registry)
 
     @command('open_list_view_sample')
     async def open_list_view_sample(self):

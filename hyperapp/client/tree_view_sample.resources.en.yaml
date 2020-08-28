@@ -6,7 +6,7 @@ module:client.tree_view_sample:ThisModule:
       shortcuts:
       - Alt+Ctrl+T
 
-module:client.tree_view_sample:SampleObject:
+module:client.tree_view_sample:SampleTree:
   columns:
     name:
       text: Name
@@ -18,3 +18,7 @@ module:client.tree_view_sample:SampleObject:
       text: Open
       description: Open selected item
       is_default: yes
+    edit:
+      text: Edit
+      description: Open sample article for this item
+      shortcuts: [E]
