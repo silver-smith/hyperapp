@@ -9,6 +9,7 @@ from . import htypes
 from .object_command import command
 from .column import Column
 from .list_object import ListObject
+from .record_object import RecordObject
 
 log = logging.getLogger(__name__)
 
@@ -16,10 +17,10 @@ log = logging.getLogger(__name__)
 Item = namedtuple('Item', 'idx column_1 column_2')
 
 
-class SampleObject(ListObject):
+class SampleList(ListObject):
 
     @classmethod
-    def from_state(cls, state):
+    def from_data(cls, state):
         return cls()
 
     @property
@@ -73,12 +74,46 @@ class SampleObject(ListObject):
         text = "Opened item {}".format(item_key)
         return htypes.text.text(text)
 
+    @command('edit', kind='element')
+    async def _edit(self, item_key):
+        return htypes.list_view_sample.sample_article(
+            title=f"Article {item_key}",
+            text=f"Sample contents for:\n{item_key}",
+            )
+
+
+class SampleArticle(RecordObject):
+
+    @classmethod
+    async def from_data(cls, state, object_registry):
+        fields_pieces = {
+            'title': htypes.line.line(state.title),
+            'text': htypes.text.text(state.text),
+            }
+        self = cls(state.title, state.text)
+        await self.async_init(object_registry, fields_pieces)
+        return self
+
+    def __init__(self, title, text):
+        super().__init__()
+        self._title = title
+        self._text = text
+
+    @property
+    def title(self):
+        return f"Sample list view article: {self._title}"
+
+    @property
+    def data(self):
+        return htypes.list_view_sample.sample_article(self._title, self._text)
+
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(htypes.list_view_sample.list_view_sample_object, SampleObject.from_state)
+        services.object_registry.register_type(htypes.list_view_sample.list_view_sample_object, SampleList.from_data)
+        services.object_registry.register_type(htypes.list_view_sample.sample_article, SampleArticle.from_data, services.object_registry)
 
     @command('open_list_view_sample')
     async def open_list_view_sample(self):

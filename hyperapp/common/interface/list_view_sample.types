@@ -1,2 +1,6 @@
 
 list_view_sample_object = record
+
+sample_article = record:
+  title: string
+  text: string

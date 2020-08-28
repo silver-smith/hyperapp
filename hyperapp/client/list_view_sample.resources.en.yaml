@@ -6,7 +6,7 @@ module:client.list_view_sample:ThisModule:
       shortcuts:
       - Alt+Ctrl+L
 
-module:client.list_view_sample:SampleObject:
+module:client.list_view_sample:SampleList:
   columns:
     idx:
       text: Index
@@ -18,3 +18,7 @@ module:client.list_view_sample:SampleObject:
       text: Open
       description: Open selected item
       is_default: yes
+    edit:
+      text: Edit
+      description: Open sample article for this item
+      shortcuts: [E]

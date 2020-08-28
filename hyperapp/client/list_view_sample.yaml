@@ -2,9 +2,13 @@ import:
   types:
     list_view_sample:
       - list_view_sample_object
+      - sample_article
+    line:
+      - line
     text:
       - text
   code:
     - client.object_command
     - client.column
     - client.list_object
+    - client.record_object
