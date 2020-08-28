@@ -65,15 +65,15 @@ class LayoutHandle:
     @classmethod
     async def from_data(cls, state, object, layout_handle_registry):
         handle = await layout_handle_registry.produce_handle(object, category=state.category)
-        return handle
+        return handle.with_path(state.path)
 
     def __init__(self, ref_registry, object_layout_association, category, layout, watcher, path=None):
         self._ref_registry = ref_registry
         self._object_layout_association = object_layout_association
         self._category = category
-        self._path = path or []
         self._layout = layout
         self._watcher = watcher
+        self._path = path or []
         self._watcher.subscribe(self)
 
     @property
@@ -94,6 +94,19 @@ class LayoutHandle:
     @property
     def watcher(self) -> LayoutWatcher:
         return self._watcher
+
+    def with_path(self, path):
+        return LayoutHandle(
+            self._ref_registry,
+            self._object_layout_association,
+            self._category,
+            self._layout,
+            self._watcher,
+            path,
+            )
+
+    def with_command(self, command_id):
+        return self.with_path([*self._path, command_id])
 
     async def set_layout(self, layout):
         self._layout = layout
