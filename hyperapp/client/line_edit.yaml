@@ -4,5 +4,6 @@ import:
       - line
       - line_edit_layout
   code:
+    - client.layout_handle
     - client.layout
     - client.view

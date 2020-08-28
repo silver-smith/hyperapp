@@ -12,7 +12,8 @@ from hyperapp.client.module import ClientModule
 from . import htypes
 from .view_chooser import LayoutRecMakerField
 from .view import View
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, GlobalLayout
+from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff
+from .layout import GlobalLayout
 
 log = logging.getLogger(__name__)
 

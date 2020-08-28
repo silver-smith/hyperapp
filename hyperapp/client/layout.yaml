@@ -4,4 +4,5 @@ import:
       - command
   code:
     - client.layout_command
+    - client.layout_handle
     - client.items_view

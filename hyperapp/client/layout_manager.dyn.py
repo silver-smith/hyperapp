@@ -14,8 +14,8 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
-from .layout_handle import LayoutWatcher
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, GlobalLayout
+from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, LayoutWatcher
+from .layout import GlobalLayout
 from .command_hub import CommandHub
 
 _log = logging.getLogger(__name__)

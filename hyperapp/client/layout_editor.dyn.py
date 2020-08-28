@@ -7,8 +7,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command as object_command
-from .layout_handle import LayoutWatcher
-from .layout import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVisualItemDiff
+from .layout_handle import InsertVisualItemDiff, RemoveVisualItemDiff, UpdateVisualItemDiff, LayoutWatcher
 from .command_hub import CommandHub
 from .column import Column
 from .tree_object import InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
@@ -84,15 +83,19 @@ class LayoutEditor(TreeObject):
             elif isinstance(vdiff, UpdateVisualItemDiff):
                 parent_path = tuple(vdiff.path[:-1])
                 item_list = self._path2item_list[parent_path]
-                item_list[vdiff.path[-1]] = vdiff.item
+                item_idx = self._item_idx_by_name(item_list, vdiff.path[-1])
+                item_list[item_idx] = vdiff.item
                 diff = UpdateItemDiff(vdiff.item)
                 self._distribute_diff(vdiff.path, diff)
             else:
                 raise RuntimeError(u"Unknown VisualItemDiff class: {vdiff}")
-        self.save_changes()
 
-    def save_changes(self):
-        pass
+    @staticmethod
+    def _item_idx_by_name(item_list, name):
+        for idx, item in enumerate(item_list):
+            if item.name == name:
+                return idx
+        raise RuntimeError(f"Invalid visual item update: no item with name {name!r} among {item_list}")
 
     def _insert_item(self, idx, path, item):
         item_list = self._path2item_list.setdefault(tuple(path), [])
@@ -142,40 +145,19 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @classmethod
     async def from_state(
-            cls,
-            state,
-            ref_registry,
-            async_ref_resolver,
-            object_registry,
-            object_layout_association,
-            object_command_layout_association,
-            layout_handle_resolver,
-            ):
+            cls, state,
+            ref_registry, async_ref_resolver, object_registry, object_layout_registry, layout_handle_resolver):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref, object)
-        self = cls(
-            ref_registry,
-            object_layout_association,
-            object_command_layout_association,
-            object,
-            layout_handle,
-            )
-        await self._async_init(layout)
+        self = cls(ref_registry, object_layout_registry, object, layout_handle)
+        await self._async_init(layout_handle.layout)
         return self
 
-    def __init__(
-            self,
-            ref_registry,
-            object_layout_association,
-            object_command_layout_association,
-            object,
-            layout_handle,
-            ):
+    def __init__(self, ref_registry, object_layout_registry, object, layout_handle):
         super().__init__(layout_handle.watcher)
         self._ref_registry = ref_registry
-        self._object_layout_association = object_layout_association
-        self._object_command_layout_association = object_command_layout_association
+        self._object_layout_registry = object_layout_registry
         self._object = object
         self._layout_handle = layout_handle
 
@@ -199,30 +181,13 @@ class ObjectLayoutEditor(LayoutEditor):
             self._replace_view,
             ])
 
-    def save_changes(self):
-        self._save_layout(self._layout.data)
-
-    def _save_layout(self, layout_rec):
-        layout_ref = self._ref_registry.register_object(layout_rec)
-        if self._target_command:
-            self._object_command_layout_association[self._target_category, self._target_command] = layout_ref
-        else:
-            self._object_layout_association[self._target_category] = layout_ref
-        return layout_ref
-
-    def _object_layout_editor(self, layout_ref):
-        piece_ref = self._ref_registry.register_object(self._object.data)
-        return htypes.layout_editor.object_layout_editor(piece_ref, layout_ref, self._target_category, command=self._target_command)
-
     @object_command('replace', kind='element')
     async def _replace_view(self, path):
         chooser = htypes.view_chooser.view_chooser(self._object.category_list)
         chooser_ref = self._ref_registry.register_object(chooser)
         layout_rec_maker_field = htypes.params_editor.field('layout_rec_maker', chooser_ref)
-        layout_ref = self._ref_registry.register_object(self._layout.data)
-        editor = self._object_layout_editor(layout_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.register_object(editor),
+            target_piece_ref=self._ref_registry.register_object(self.data),
             target_command_id=self._replace_impl.id,
             bound_arguments=[],
             fields=[layout_rec_maker_field],
@@ -231,9 +196,10 @@ class ObjectLayoutEditor(LayoutEditor):
     @command('_replace_impl')
     async def _replace_impl(self, layout_rec_maker):
         resource_key = self._object.hashable_resource_key
-        layout_rec = await layout_rec_maker(self._object)
-        layout_ref = self._save_layout(layout_rec)
-        return self._object_layout_editor(layout_ref)
+        layout_data = await layout_rec_maker(self._object)
+        layout = await self._object_layout_registry.resolve_async(layout_data, ['root'], self._object, self._layout_handle.watcher)
+        await self._layout_handle.set_layout(layout)
+        return self.data
 
 
 class ThisModule(ClientModule):
@@ -248,8 +214,7 @@ class ThisModule(ClientModule):
             services.ref_registry,
             services.async_ref_resolver,
             services.object_registry,
-            services.object_layout_association,
-            services.object_command_layout_association,
+            services.object_layout_registry,
             services.layout_handle_resolver,
             )
 

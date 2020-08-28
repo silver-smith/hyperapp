@@ -1,12 +1,49 @@
 import logging
 import weakref
+from dataclasses import dataclass
+from typing import List
 
+from hyperapp.client.commander import BoundCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 
 _log = logging.getLogger(__name__)
+
+
+@dataclass
+class VisualItem:
+    name: str
+    text: str
+    children: List['VisualItem'] = None
+    commands: List[BoundCommand] = None
+
+    def with_added_commands(self, commands_it):
+        all_commands = [*self.commands, *commands_it]
+        return VisualItem(self.name, self.text, self.children, all_commands)
+
+
+class VisualItemDiff:
+    pass
+
+
+@dataclass
+class InsertVisualItemDiff(VisualItemDiff):
+    path: List[int]
+    idx: int
+    item: VisualItem
+
+
+@dataclass
+class RemoveVisualItemDiff(VisualItemDiff):
+    path: List[int]
+
+
+@dataclass
+class UpdateVisualItemDiff(VisualItemDiff):
+    path: List[int]
+    item: VisualItem
 
 
 class LayoutWatcher:
@@ -30,11 +67,14 @@ class LayoutHandle:
         handle = await layout_handle_registry.produce_handle(object, category=state.category)
         return handle
 
-    def __init__(self, category, layout, watcher, path=None):
+    def __init__(self, ref_registry, object_layout_association, category, layout, watcher, path=None):
+        self._ref_registry = ref_registry
+        self._object_layout_association = object_layout_association
         self._category = category
         self._path = path or []
         self._layout = layout
         self._watcher = watcher
+        self._watcher.subscribe(self)
 
     @property
     def data(self):
@@ -55,16 +95,27 @@ class LayoutHandle:
     def watcher(self) -> LayoutWatcher:
         return self._watcher
 
+    async def set_layout(self, layout):
+        self._layout = layout
+        item = await layout.visual_item()
+        self._watcher.distribute_diffs([UpdateVisualItemDiff(['root'], item)])
+
+    def process_layout_diffs(self, diff_list):
+        layout_ref = self._ref_registry.register_object(self._layout.data)
+        self._object_layout_association[self._category] = layout_ref
+
 
 class LayoutHandleRegistry:
 
     def __init__(
             self,
+            ref_registry,
             async_ref_resolver,
             default_object_layouts,
             object_layout_association,
             object_layout_registry,
             ):
+        self._ref_registry = ref_registry
         self._async_ref_resolver = async_ref_resolver
         self._default_object_layouts = default_object_layouts
         self._object_layout_association = object_layout_association
@@ -94,7 +145,7 @@ class LayoutHandleRegistry:
             layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
         watcher = LayoutWatcher()
         layout = await self._object_layout_registry.resolve_async(layout_rec, list(path), object, watcher)
-        handle = LayoutHandle(category, layout, watcher)
+        handle = LayoutHandle(self._ref_registry, self._object_layout_association, category, layout, watcher)
         self._handle_registry[category, ()] = handle
         return handle
 
@@ -104,6 +155,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.layout_handle_registry = LayoutHandleRegistry(
+            services.ref_registry,
             services.async_ref_resolver,
             services.default_object_layouts,
             services.object_layout_association,

@@ -9,4 +9,5 @@ import:
   code:
     - client.view
     - client.layout
+    - client.layout_handle
     - client.view_chooser

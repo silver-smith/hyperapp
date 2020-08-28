@@ -1,50 +1,14 @@
 import abc
 import logging
-from collections import namedtuple
-from dataclasses import dataclass
-from typing import List
 
-from hyperapp.client.commander import BoundCommand, Commander
+from hyperapp.client.commander import Commander
 
 from . import htypes
 from .items_view import map_columns_to_view
 from .layout_command import LayoutCommand
+from .layout_handle import VisualItem
 
 _log = logging.getLogger(__name__)
-
-
-@dataclass
-class VisualItem:
-    name: str
-    text: str
-    children: List['VisualItem'] = None
-    commands: List[BoundCommand] = None
-
-    def with_added_commands(self, commands_it):
-        all_commands = [*self.commands, *commands_it]
-        return VisualItem(self.name, self.text, self.children, all_commands)
-
-
-class VisualItemDiff:
-    pass
-
-
-@dataclass
-class InsertVisualItemDiff(VisualItemDiff):
-    path: List[int]
-    idx: int
-    item: VisualItem
-
-
-@dataclass
-class RemoveVisualItemDiff(VisualItemDiff):
-    path: List[int]
-
-
-@dataclass
-class UpdateVisualItemDiff(VisualItemDiff):
-    path: List[int]
-    item: VisualItem
 
 
 class Layout(Commander, metaclass=abc.ABCMeta):
