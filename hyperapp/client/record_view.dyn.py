@@ -72,14 +72,13 @@ class RecordView(QtWidgets.QWidget):
 class RecordViewLayout(ObjectLayout):
 
     async def from_data(state, path, object, layout_watcher, ref_registry, object_layout_resolver):
-        self = RecordViewLayout(ref_registry, object, path)
+        self = RecordViewLayout(ref_registry, path, object, state.command_list)
         await self._async_init(layout_watcher, object_layout_resolver, state.field_layout_list)
         return self
 
-    def __init__(self, ref_registry, object, path):
-        super().__init__(path)
+    def __init__(self, ref_registry, path, object, command_list_data):
+        super().__init__(path, object, command_list_data)
         self._ref_registry = ref_registry
-        self._object = object
         self._field_layout_dict = {}
 
     async def _async_init(self, layout_watcher, object_layout_resolver, field_layout_list):
@@ -95,7 +94,7 @@ class RecordViewLayout(ObjectLayout):
         for field_id, layout in self._field_layout_dict.items():
             layout_ref = self._ref_registry.register_object(layout.data)
             field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
-        return htypes.record_view.record_layout(field_layout_list)
+        return htypes.record_view.record_layout(self._command_list_data, field_layout_list)
 
     async def create_view(self, command_hub):
         return (await RecordView.make(self._object, command_hub, self._field_layout_dict))
@@ -131,9 +130,10 @@ class ThisModule(ClientModule):
             htypes.record_view.record_layout, RecordViewLayout.from_data, services.ref_registry, services.object_layout_resolver)
 
     async def _make_record_layout_rec(self, object):
+        command_list = ObjectLayout.make_default_command_list(object)
         field_layout_list = []
         for field_id, field_object in object.fields.items():
             layout = await self._object_layout_producer.produce_layout(field_object, layout_watcher=None)
             layout_ref = self._ref_registry.register_object(layout.data)
             field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
-        return htypes.record_view.record_layout(field_layout_list)
+        return htypes.record_view.record_layout(command_list, field_layout_list)
