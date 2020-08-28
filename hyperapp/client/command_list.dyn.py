@@ -71,7 +71,7 @@ class CommandList(SimpleListObject):
             path='/' + '/'.join(command.path),
             id=command.id,
             code_id=command.code_command.id,
-            kind=command.code_command.kind,
+            kind=command.kind,
             layout=layout_str,
             )
 
