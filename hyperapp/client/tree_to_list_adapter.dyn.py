@@ -78,16 +78,17 @@ class TreeToListLayout(ObjectLayout):
         base_object_ref = ref_registry.register_object(object.data)
         adapter = TreeToListAdapter(base_object_ref, object, path=[])
         base_list_layout = await object_layout_producer.produce_layout(adapter, layout_watcher, path=[*path, 'base'])
-        return cls(adapter, base_list_layout, path)
+        return cls(adapter, base_list_layout, path, object, state.command_list)
 
-    def __init__(self, adapter, base_list_layout, path):
-        super().__init__(path)
+    def __init__(self, adapter, base_list_layout, path, object, command_list_data):
+        # These attributes are used in collect_view_commands, which is used by super __init__
         self._adapter = adapter
         self._base_list_layout = base_list_layout
+        super().__init__(path, object, command_list_data)
 
     @property
     def data(self):
-        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
+        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(self._command_list_data)
 
     async def create_view(self, command_hub):
         return (await self._base_list_layout.create_view(command_hub))
@@ -119,4 +120,5 @@ class ThisModule(ClientModule):
             services.ref_registry, services.object_layout_producer)
 
     async def _make_layout_rec(self, object):
-        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout()
+        command_list = ObjectLayout.make_default_command_list(object)
+        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(command_list)
