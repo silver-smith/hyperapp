@@ -42,6 +42,9 @@ class LayoutEditor(TreeObject):
             return rec.command.partial(rec.item_path)
         return super().get_command(command_id)
 
+    def get_all_command_list(self):
+        return [rec.command for rec in self._item_commands.values()]
+
     def get_item_command_list(self, item_path):
         try:
             item = self._find_item(item_path)
