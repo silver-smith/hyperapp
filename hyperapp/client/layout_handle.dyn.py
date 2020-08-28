@@ -114,6 +114,7 @@ class LayoutHandle:
         self._watcher.distribute_diffs([UpdateVisualItemDiff(['root'], item)])
 
     def process_layout_diffs(self, diff_list):
+        _log.info("Save layout association for category %s/%s to %s", self._category, '/'.join(self._path), self._layout.data)
         layout_ref = self._ref_registry.register_object(self._layout.data)
         self._object_layout_association[self._category] = layout_ref
 
