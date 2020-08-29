@@ -80,7 +80,7 @@ class NavigatorLayout(GlobalLayout):
     async def _async_init(self, initial_piece_ref):
         piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
         self._current_object = object = await self._object_registry.resolve_async(piece)
-        self._current_layout_handle = await self._layout_handle_registry.produce_handle(object)
+        self._current_layout_handle = await self._layout_handle_registry.produce_handle(object.type)
         self._history.append(_HistoryItem(object))
 
     @property

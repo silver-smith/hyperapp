@@ -90,11 +90,11 @@ class TextEditView(QtWidgets.QTextEdit, ObjectObserver):
 class TextViewLayout(ObjectLayout):
 
     @classmethod
-    def from_data(cls, state, path, object, layout_watcher):
-        return TextViewLayout(path, object, state.command_list, state.editable)
+    def from_data(cls, state, path, object_type, layout_watcher):
+        return TextViewLayout(path, object_type, state.command_list, state.editable)
 
-    def __init__(self, path, object, command_list_data, editable):
-        super().__init__(path, object, command_list_data)
+    def __init__(self, path, object_type, command_list_data, editable):
+        super().__init__(path, object_type, command_list_data)
         self._editable = editable
 
     @property
@@ -116,10 +116,10 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.default_object_layouts.register('text', TextObject.category_list, self._make_text_layout_rec)
-        services.available_object_layouts.register('text', TextObject.category_list, self._make_text_layout_rec)
+        services.default_object_layouts.register('text', TextObject.category_list, self._make_text_layout_data)
+        services.available_object_layouts.register('text', TextObject.category_list, self._make_text_layout_data)
         services.object_layout_registry.register_type(htypes.text.text_edit_layout, TextViewLayout.from_data)
 
-    async def _make_text_layout_rec(self, object):
-        command_list = ObjectLayout.make_default_command_list(object)
+    async def _make_text_layout_data(self, object_type):
+        command_list = ObjectLayout.make_command_list(object_type)
         return htypes.text.text_edit_layout(command_list, editable=False)

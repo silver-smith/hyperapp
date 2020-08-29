@@ -5,7 +5,7 @@ from functools import total_ordering
 
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import Type, tString
-from hyperapp.client.object import ObjectObserver, Object
+from hyperapp.client.object import ObjectType, ObjectObserver, Object
 
 log = logging.getLogger(__name__)
 
@@ -60,6 +60,7 @@ class ListObserver(ObjectObserver):
 
 class ListObject(Object, metaclass=abc.ABCMeta):
 
+    type = ObjectType(['list'])
     category_list = ['list']
 
     # return Column list

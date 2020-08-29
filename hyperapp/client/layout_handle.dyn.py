@@ -136,32 +136,31 @@ class LayoutHandleRegistry:
         self._object_layout_registry = object_layout_registry
         self._handle_registry = weakref.WeakValueDictionary()  # (category, command path) -> LayoutHandle
 
-    async def produce_handle(self, object, path=('root',), category=None, command_path=()):
+    async def produce_handle(self, object_type, path=('root',), command_path=()):
         command_path = tuple(command_path)
-        if not category:
-            category = object.category_list[-1]
+        most_specific_id = object_type.ids[-1]  # todo: choose when overriding, use all when resolving.
         try:
-            return self._handle_registry[category, command_path]
+            return self._handle_registry[most_specific_id, command_path]
         except KeyError:
             pass
-        _log.info("Produce layout handle for category %r of object %s", category, object)
+        _log.info("Produce layout handle for object type: %r", object_type)
         try:
-            layout_ref = self._object_layout_association[category]
+            layout_ref = self._object_layout_association[most_specific_id]
         except KeyError:
-            rec_it = self._default_object_layouts.resolve(object.category_list)
+            rec_it = self._default_object_layouts.resolve(object_type)
             try:
                 rec = next(rec_it)
             except StopIteration:
-                raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
+                raise NoSuitableProducer(f"No producers are registered for: {object_type.ids}")
             _log.info("Use default layout %r.", rec.name)
-            layout_rec = await rec.layout_rec_maker(object)
+            layout_data = await rec.layout_data_maker(object_type)
         else:
-            _log.info("Use layout associated to %r.", category)
-            layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
+            _log.info("Use layout associated to: %r.", most_specific_id)
+            layout_data = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
         watcher = LayoutWatcher()
-        layout = await self._object_layout_registry.resolve_async(layout_rec, list(path), object, watcher)
-        handle = LayoutHandle(self._ref_registry, self._object_layout_association, category, layout, watcher)
-        self._handle_registry[category, command_path] = handle
+        layout = await self._object_layout_registry.resolve_async(layout_data, list(path), object_type, watcher)
+        handle = LayoutHandle(self._ref_registry, self._object_layout_association, object_type, layout, watcher)
+        self._handle_registry[most_specific_id, command_path] = handle
         return handle
 
 

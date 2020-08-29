@@ -19,19 +19,19 @@ CommandOrigin = namedtuple('CommandOrigin', 'object command_id')
 
 class AvailableObjectLayouts:
 
-    _Rec = namedtuple('_Rec', 'name category_set layout_rec_maker')
+    _Rec = namedtuple('_Rec', 'name id_set layout_data_maker')
 
     def __init__(self):
         self._rec_list = []
 
-    def register(self, name, category_list, layout_rec_maker):
-        rec = self._Rec(name, set(category_list), layout_rec_maker)
+    def register(self, name, object_type_id_list, layout_data_maker):
+        rec = self._Rec(name, set(object_type_id_list), layout_data_maker)
         self._rec_list.append(rec)
 
-    def resolve(self, category_list):
-        category_set = set(category_list)
+    def resolve(self, object_type):
+        id_set = set(object_type.ids)
         for rec in self._rec_list:
-            if category_set & rec.category_set:
+            if id_set & rec.id_set:
                 yield rec
 
 

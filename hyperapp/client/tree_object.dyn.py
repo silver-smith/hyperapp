@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from hyperapp.common.util import single
 from hyperapp.common.htypes import Type, tString
-from hyperapp.client.object import ObjectObserver, Object
+from hyperapp.client.object import ObjectType, ObjectObserver, Object
 from hyperapp.client.module import ClientModule
 from .column import Column
 
@@ -48,6 +48,7 @@ class UpdateItemDiff(Diff):
 
 class TreeObject(Object, metaclass=abc.ABCMeta):
 
+    type = ObjectType(['tree'])
     category_list = ['tree']
 
     # return Column list

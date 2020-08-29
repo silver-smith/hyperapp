@@ -124,12 +124,12 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         self._object_layout_producer = services.object_layout_producer
-        services.default_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
-        services.available_object_layouts.register('record', RecordObject.category_list, self._make_record_layout_rec)
+        services.default_object_layouts.register('record', RecordObject.type.ids, self._make_record_layout_data)
+        services.available_object_layouts.register('record', RecordObject.type.ids, self._make_record_layout_data)
         services.object_layout_registry.register_type(
             htypes.record_view.record_layout, RecordViewLayout.from_data, services.ref_registry, services.object_layout_resolver)
 
-    async def _make_record_layout_rec(self, object):
+    async def _make_record_layout_data(self, object):
         command_list = ObjectLayout.make_default_command_list(object)
         field_layout_list = []
         for field_id, field_object in object.fields.items():

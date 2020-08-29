@@ -73,9 +73,9 @@ class GlobalLayout(Layout):
 
 class ObjectLayout(Layout):
 
-    def __init__(self, path, object, command_list_data):
+    def __init__(self, path, object_type, command_list_data):
         super().__init__(path)
-        self._object = object
+        self._object_type = object_type
         self._id_to_code_command = {
             command.id: (path, command)
             for path, command in self.collect_view_commands()
@@ -111,10 +111,10 @@ class ObjectLayout(Layout):
             ]
 
     @staticmethod
-    def make_default_command_list(object):
+    def make_command_list(object_type):
         return [
             htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
-            for command in object.get_all_command_list()
+            for command_id in object_type.commands
             ]
 
 

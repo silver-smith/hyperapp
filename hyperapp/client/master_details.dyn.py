@@ -126,8 +126,8 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         self._default_object_layouts = services.default_object_layouts
-        category_list = [*ListObject.category_list, *TreeObject.category_list]
-        services.available_object_layouts.register('master_details', category_list, self._make_master_detail_layout_rec)
+        object_type_ids = [*ListObject.type.ids, *TreeObject.type.ids]
+        services.available_object_layouts.register('master_details', object_type_ids, self._make_master_detail_layout_rec)
         services.object_layout_registry.register_type(
             htypes.master_details.master_details_layout,
             MasterDetailsLayout.from_data,
