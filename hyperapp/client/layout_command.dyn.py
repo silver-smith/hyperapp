@@ -23,8 +23,17 @@ class LayoutCommand:
         self.resource_key = code_command.resource_key  # todo: use id
 
     def __repr__(self):
-        return (f"LayoutCommand(id={self.id} code_command={self.code_command} path={self.path} layout_ref={self.layout_ref})"
-                f" args={self._args} kw={self._kw} wrapper={self._wrapper})")
+        return (
+            f"LayoutCommand("
+            f" id={self.id}"
+            f" code_command={self.code_command}"
+            f" path={self.path}"
+            f" layout_ref={self.layout_ref})"
+            f" args={self._args}"
+            f" kw={self._kw}"
+            f" wrapper={self._wrapper}"
+            f")"
+            )
 
     def with_(self, **kw):
         old_kw = dict(
