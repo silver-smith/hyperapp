@@ -136,11 +136,12 @@ class LayoutHandleRegistry:
         self._object_layout_registry = object_layout_registry
         self._handle_registry = weakref.WeakValueDictionary()  # (category, command path) -> LayoutHandle
 
-    async def produce_handle(self, object, path=('root',), category=None):
+    async def produce_handle(self, object, path=('root',), category=None, command_path=()):
+        command_path = tuple(command_path)
         if not category:
             category = object.category_list[-1]
         try:
-            return self._handle_registry[category, ()]
+            return self._handle_registry[category, command_path]
         except KeyError:
             pass
         _log.info("Produce layout handle for category %r of object %s", category, object)
@@ -160,7 +161,7 @@ class LayoutHandleRegistry:
         watcher = LayoutWatcher()
         layout = await self._object_layout_registry.resolve_async(layout_rec, list(path), object, watcher)
         handle = LayoutHandle(self._ref_registry, self._object_layout_association, category, layout, watcher)
-        self._handle_registry[category, ()] = handle
+        self._handle_registry[category, command_path] = handle
         return handle
 
 
