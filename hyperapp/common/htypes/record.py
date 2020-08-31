@@ -12,9 +12,10 @@ def odict_all_match(x_fields, y_fields):
         for (x_name, x_type), (y_name, y_type)
         in zip(x_fields.items(), y_fields.items()))
 
-# We want record instances have '_t' member, excluded from _asdict() results.
-# namedtuple from collections forbits members started from underscores.
 # This is copied and adjusted namedtuple implementation from collections module.
+
+# We want record instances have '_t' member, excluded from _asdict() results.
+# namedtuple from collections forbids members started from underscores.
 
 _class_template = """\
 from builtins import property as _property, tuple as _tuple
