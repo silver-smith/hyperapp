@@ -11,12 +11,13 @@ _ResolvedPiece = namedtuple('_ResolvedPiece', 'object layout_handle')
 
 class LayoutCommand:
 
-    def __init__(self, id, code_command, layout_ref=None, args=None, kw=None, wrapper=None):
+    def __init__(self, id, code_command, layout_ref=None, args=None, kw=None, layout_handle=None, wrapper=None):
         self.id = id
         self.code_command = code_command
         self.layout_ref = layout_ref
         self._args = args or ()
         self._kw = kw or {}
+        self._layout_handle = layout_handle
         self._wrapper = wrapper
         self.kind = code_command.kind
         self.resource_key = code_command.resource_key  # todo: use id
@@ -37,6 +38,7 @@ class LayoutCommand:
         old_kw = dict(
             args=self._args,
             kw=self._kw,
+            layout_handle=self._layout_handle,
             wrapper=self._wrapper,
             )
         all_kw = {**old_kw, **kw}
@@ -53,16 +55,16 @@ class LayoutCommand:
         full_kw = {**self._kw, **kw}
         _log.info("LayoutCommand: run: (%r) args=%r kw=%r", self, full_args, full_kw)
         result = await self.code_command.run(*full_args, **full_kw)
-        return (await self._wrap_result(object, result))
+        return (await self._wrap_result(result))
 
-    async def _wrap_result(self, origin_object, result):
+    async def _wrap_result(self, result):
         if result is None:
             return
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
         if self.layout_ref:
             assert 0, self  # todo
-        layout_handle = await this_module.layout_handle_registry.produce_handle(object.type)
+        layout_handle = self._layout_handle.command_handle(self.id)
         resolved_piece = _ResolvedPiece(object, layout_handle)
         _log.info("LayoutCommand: piece resolved to: %r", resolved_piece)
         if not self._wrapper:
@@ -76,4 +78,3 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self.object_registry = services.object_registry
-        self.layout_handle_registry = services.layout_handle_registry

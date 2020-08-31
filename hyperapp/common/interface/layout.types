@@ -9,6 +9,9 @@ layout = record:
   command_list: command list
 
 
-layout_handle = record:
-  category: string
-  path: string list
+default_layout_handle = record:
+  object_type_ref: ref
+
+command_layout_handle = record:
+  base_handle_ref: ref
+  command_id: string

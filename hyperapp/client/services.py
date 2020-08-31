@@ -97,6 +97,7 @@ code_module_list = [
     'client.command_hub',
     'client.view_registry',
     'client.items_view',
+    'client.object_type',
     'client.layout_handle',
     'client.layout_command',
     'client.layout',
