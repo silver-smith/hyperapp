@@ -11,10 +11,9 @@ _ResolvedPiece = namedtuple('_ResolvedPiece', 'object layout_handle')
 
 class LayoutCommand:
 
-    def __init__(self, id, code_command, path, layout_ref=None, args=None, kw=None, wrapper=None):
+    def __init__(self, id, code_command, layout_ref=None, args=None, kw=None, wrapper=None):
         self.id = id
         self.code_command = code_command
-        self.path = path
         self.layout_ref = layout_ref
         self._args = args or ()
         self._kw = kw or {}
@@ -27,7 +26,6 @@ class LayoutCommand:
             f"LayoutCommand("
             f" id={self.id}"
             f" code_command={self.code_command}"
-            f" path={self.path}"
             f" layout_ref={self.layout_ref})"
             f" args={self._args}"
             f" kw={self._kw}"
@@ -42,7 +40,7 @@ class LayoutCommand:
             wrapper=self._wrapper,
             )
         all_kw = {**old_kw, **kw}
-        return LayoutCommand(self.id, self.code_command, self.path, self.layout_ref, **all_kw)
+        return LayoutCommand(self.id, self.code_command, self.layout_ref, **all_kw)
 
     def partial(self, *args, **kw):
         return self.with_(args=args, kw=kw)

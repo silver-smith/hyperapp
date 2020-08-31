@@ -1,5 +1,6 @@
 import abc
 import logging
+from collections import namedtuple
 
 from hyperapp.client.commander import Commander
 
@@ -73,25 +74,31 @@ class GlobalLayout(Layout):
 
 class ObjectLayout(Layout):
 
+    _Command = namedtuple('ObjectLayout_Command', 'id code_id layout_ref')
+
     def __init__(self, path, object_type, command_list_data):
         super().__init__(path)
         self._object_type = object_type
-        self._id_to_code_command = {
-            command.id: (path, command)
-            for path, command in self.collect_view_commands()
-            }
-        self._command_list = []
-        for command in command_list_data:
-            path, code_command = self._id_to_code_command[command.code_id]
-            self.command_list.append(LayoutCommand(command.id, code_command, path, command.layout_ref))
+        self._command_list = [
+            self._Command(command.id, command.code_id, command.layout_ref)
+            for command in command_list_data
+            ]
 
-    def get_current_commands(self, view):
-        return self.get_all_command_list()
+    def get_current_commands(self, object, view):
+        id_to_code_command = self._id_to_code_command(object)
+        command_list = []
+        for command in self._command_list:
+            if command.code_id:
+                code_command = _id_to_code_command[command.code_id]
+            else:
+                code_command = None
+            command_list.append(LayoutCommand(command.id, code_command, command.layout_ref))
+        return command_list
 
-    def collect_view_commands(self):
+    def available_code_commands(self, object):
         return [
             *super().collect_view_commands(),
-            *[(tuple(self._path), command) for command in self._object.get_all_command_list()],
+            *[(tuple(self._path), command) for command in object.get_all_command_list()],
             ]
 
     @property
@@ -102,6 +109,12 @@ class ObjectLayout(Layout):
         path, code_command = self._id_to_code_command[code_id]
         command = LayoutCommand(id, code_command, path, layout_ref=None)
         self._command_list.append(command)
+
+    def _id_to_code_command(self, object):
+        return {
+            command.id: command
+            for path, command in self.available_code_commands(object)
+            }
 
     @property
     def _command_list_data(self):

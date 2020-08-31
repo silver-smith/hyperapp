@@ -89,7 +89,7 @@ class NavigatorLayout(GlobalLayout):
         return htypes.navigator.navigator(piece_ref)
 
     async def create_view(self):
-        self._current_view = await self._current_layout_handle.layout.create_view(self._command_hub)
+        self._current_view = await self._current_layout_handle.layout.create_view(self._command_hub, self._current_object)
         return self._current_view
 
     async def visual_item(self):
@@ -112,7 +112,9 @@ class NavigatorLayout(GlobalLayout):
                    )
 
     def _get_current_layout_commands(self):
-        for command in self._current_layout_handle.layout.get_current_commands(self._current_view):
+        current_layout_commands = self._current_layout_handle.layout.get_current_commands(
+            self._current_object, self._current_view)
+        for command in current_layout_commands:
             yield command.with_(wrapper=self._open_layout)
 
     async def _open_layout(self, resolved_piece):
