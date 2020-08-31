@@ -17,90 +17,49 @@ class NoSuitableProducer(Exception):
 CommandOrigin = namedtuple('CommandOrigin', 'object command_id')
 
 
-class AvailableObjectLayouts:
+class ObjectLayoutConstructorRegistry:
 
-    _Rec = namedtuple('_Rec', 'name id_set layout_data_maker')
+    _Rec = namedtuple('_Rec', 'name object_type_t_set layout_data_maker')
 
     def __init__(self):
         self._rec_list = []
 
-    def register(self, name, object_type_id_list, layout_data_maker):
-        rec = self._Rec(name, set(object_type_id_list), layout_data_maker)
+    def register(self, name, object_type_t_list, layout_data_maker):
+        rec = self._Rec(name, set(object_type_t_list), layout_data_maker)
         self._rec_list.append(rec)
 
     def resolve(self, object_type):
-        id_set = set(object_type.ids)
+        t_set = set()
+        t = object_type._t
+        while t:
+            t_set.add(t)
+            t = t.base
         for rec in self._rec_list:
-            if id_set & rec.id_set:
+            if t_set & rec.object_type_t_set:
                 yield rec
 
-
-class ObjectLayoutProducer:
-
-    def __init__(
-            self,
-            async_ref_resolver,
-            default_object_layouts,
-            object_layout_association,
-            object_command_layout_association,
-            object_layout_registry,
-            ):
-        self._async_ref_resolver = async_ref_resolver
-        self._default_object_layouts = default_object_layouts
-        self._object_layout_association = object_layout_association
-        self._object_command_layout_association = object_command_layout_association
-        self._object_layout_registry = object_layout_registry
-
-    async def produce_layout(self, object, layout_watcher, origin=None, path=('root',)):
-        _log.info("Produce layout with origin %s for object %s", origin, object)
-        layout_ref = None
-        if origin:
-            for category in reversed(origin.object.category_list):
-                try:
-                    layout_ref = self._object_command_layout_association[category, origin.command_id]
-                    _log.info("Using layout registered for %s/%s.", category, origin.command_id)
-                    break
-                except KeyError:
-                    pass
-        if layout_ref is None:
-            for category in reversed(object.category_list):
-                try:
-                    layout_ref = self._object_layout_association[category]
-                    _log.info("Using layout registered for %s.", category)
-                    break
-                except KeyError:
-                    pass
-        if layout_ref is not None:
-            layout_rec = await self._async_ref_resolver.resolve_ref_to_object(layout_ref)
-        else:
-            rec_it = self._default_object_layouts.resolve(object.category_list)
-            try:
-                rec = next(rec_it)
-            except StopIteration:
-                raise NoSuitableProducer(f"No producers are registered for categories {object.category_list}")
-            layout_rec = await rec.layout_rec_maker(object)
-        return (await self._object_layout_registry.resolve_async(layout_rec, list(path), object, layout_watcher))
+    async def construct_default_layout(self, object_type, watcher, object_layout_registry):
+        rec_it = self.resolve(object_type)
+        try:
+            rec = next(rec_it)
+        except StopIteration:
+            raise NoSuitableProducer(f"No default layout makers are registered for: {object_type.ids}")
+        _log.info("Use default layout: %r.", rec.name)
+        layout_data = await rec.layout_data_maker(object_type)
+        layout = await object_layout_registry.resolve_async(layout_data, ['root'], object_type, watcher)
+        return layout
 
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_layout_overrides = {}  # resource key -> layout ref
         # todo: rename view to layout
         services.available_view_registry = {}  # id -> view ref, views available to add to layout
         services.view_registry = view_registry = AsyncCapsuleRegistry('view', services.type_resolver)
         services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)
-        services.default_object_layouts = AvailableObjectLayouts()
-        services.available_object_layouts = AvailableObjectLayouts()
-        services.object_layout_association = {}  # category -> layout ref
-        services.object_command_layout_association = {}  # category, command id -> layout ref
+        services.available_object_layouts = ObjectLayoutConstructorRegistry()
+        services.default_object_layouts = ObjectLayoutConstructorRegistry()
+        services.object_layout_association = {}  # object_type -> layout ref
         services.object_layout_registry = view_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
         services.object_layout_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)
-        services.object_layout_producer = ObjectLayoutProducer(
-            services.async_ref_resolver,
-            services.default_object_layouts,
-            services.object_layout_association,
-            services.object_command_layout_association,
-            services.object_layout_registry,
-            )

@@ -1,6 +1,9 @@
 from layout import layout
 
 
+text_object_type = record
+
+
 text = record:
   text: string
 

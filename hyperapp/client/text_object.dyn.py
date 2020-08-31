@@ -1,7 +1,7 @@
 import logging
 
 from hyperapp.client.module import ClientModule
-from hyperapp.client.object import ObjectType, Object
+from hyperapp.client.object import Object
 from . import htypes
 
 _log = logging.getLogger(__name__)
@@ -9,8 +9,7 @@ _log = logging.getLogger(__name__)
 
 class TextObject(Object):
 
-    type = ObjectType(['text'])
-    category_list = ['text']
+    type = htypes.text.text_object_type()
 
     @classmethod
     def from_state(cls, state):

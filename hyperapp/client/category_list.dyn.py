@@ -72,12 +72,12 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(
-            htypes.category_list.category_list,
-            CategoryList.from_state,
-            services.ref_registry,
-            services.async_ref_resolver,
-            services.object_registry,
-            services.object_layout_association,
-            services.object_layout_producer,
-            )
+        # services.object_registry.register_type(
+        #     htypes.category_list.category_list,
+        #     CategoryList.from_state,
+        #     services.ref_registry,
+        #     services.async_ref_resolver,
+        #     services.object_registry,
+        #     services.object_layout_association,
+        #     services.object_layout_producer,
+        #     )

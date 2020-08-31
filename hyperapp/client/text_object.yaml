@@ -1,5 +1,6 @@
 import:
   types:
     text:
+      - text_object_type
       - text
       - wiki_text

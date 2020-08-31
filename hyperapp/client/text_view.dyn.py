@@ -116,8 +116,8 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.default_object_layouts.register('text', TextObject.category_list, self._make_text_layout_data)
-        services.available_object_layouts.register('text', TextObject.category_list, self._make_text_layout_data)
+        services.available_object_layouts.register('text', [TextObject.type._t], self._make_text_layout_data)
+        services.default_object_layouts.register('text', [TextObject.type._t], self._make_text_layout_data)
         services.object_layout_registry.register_type(htypes.text.text_edit_layout, TextViewLayout.from_data)
 
     async def _make_text_layout_data(self, object_type):

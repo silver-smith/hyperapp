@@ -114,10 +114,10 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.object_registry.register_type(
             htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.object_resolver)
-        services.available_object_layouts.register('as_list', TreeObject.category_list, self._make_layout_rec)
-        services.object_layout_registry.register_type(
-            htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
-            services.ref_registry, services.object_layout_producer)
+        # services.available_object_layouts.register('as_list', TreeObject.category_list, self._make_layout_rec)
+        # services.object_layout_registry.register_type(
+        #     htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
+        #     services.ref_registry, services.object_layout_producer)
 
     async def _make_layout_rec(self, object):
         command_list = ObjectLayout.make_default_command_list(object)
