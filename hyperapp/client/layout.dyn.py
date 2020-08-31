@@ -89,7 +89,7 @@ class ObjectLayout(Layout):
         command_list = []
         for command in self._command_list:
             if command.code_id:
-                code_command = _id_to_code_command[command.code_id]
+                code_command = id_to_code_command[command.code_id]
             else:
                 code_command = None
             command_list.append(LayoutCommand(command.id, code_command, command.layout_ref))
@@ -126,7 +126,7 @@ class ObjectLayout(Layout):
     @staticmethod
     def make_default_command_list(object_type):
         return [
-            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
+            htypes.layout.command(id=command_id, code_id=command_id, layout_ref=None)
             for command_id in object_type.commands
             ]
 
@@ -142,14 +142,14 @@ class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
         def current_changed(self, current_item_key):
             self._command_hub.update(only_kind='element')
 
-    def __init__(self, path, object, command_list_data, resource_resolver):
-        super().__init__(path, object, command_list_data)
+    def __init__(self, path, object_type, command_list_data, resource_resolver):
+        super().__init__(path, object_type, command_list_data)
         self._resource_resolver = resource_resolver
         self._current_item_observer = None
 
-    async def create_view(self, command_hub):
-        columns = list(map_columns_to_view(self._resource_resolver, self._object))
-        view = self._create_view_impl(columns)
+    async def create_view(self, command_hub, object):
+        columns = list(map_columns_to_view(self._resource_resolver, object))
+        view = self._create_view_impl(object, columns)
         self._current_item_observer = observer = self._CurrentItemObserver(self, command_hub)
         view.add_observer(observer)
         return view
@@ -158,19 +158,24 @@ class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
     def _create_view_impl(self, columns):
         pass
 
-    def get_current_commands(self, view):
-        command_list = [command for command in self._command_list
-                        if command.kind != 'element']
+    def get_current_commands(self, object, view):
+        layout_command_list = super().get_current_commands(object, view)
+        object_command_list = [
+            command for command in layout_command_list
+            if command.kind != 'element'
+            ]
+
         current_item_key = view.current_item_key
         if current_item_key is None:
-            return command_list
+            return object_command_list
+
         element_command_ids = {
             command.id for command in
-            self._object.get_item_command_list(current_item_key)
+            object.get_item_command_list(current_item_key)
             }
         element_command_list = [
             command.partial(current_item_key)
-            for command in self._command_list
+            for command in layout_command_list
             if command.kind == 'element' and command.id in element_command_ids
             ]
-        return [*command_list, *element_command_list]
+        return [*object_command_list, *element_command_list]

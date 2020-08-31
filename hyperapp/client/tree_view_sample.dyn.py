@@ -3,13 +3,14 @@ from collections import namedtuple
 import logging
 
 from hyperapp.common.htypes import tInt, resource_key_t
+from hyperapp.client.object import ObjectType
 from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
 from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
-from .record_object import RecordObject
+from .record_object import RecordObjectType, RecordObject
 
 log = logging.getLogger(__name__)
 
@@ -17,8 +18,24 @@ log = logging.getLogger(__name__)
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
+sample_article_type = RecordObjectType(
+    ids=[*RecordObject.type.ids, 'sample-tree-article'],
+    fields={
+        'title': ObjectType('line'),
+        'text': ObjectType('text'),
+        },
+    )
+
+
 class SampleTree(TreeObject):
 
+    type = ObjectType(
+        ids=[*TreeObject.type.ids, 'sample-tree'],
+        commands={
+            'open': ObjectType('text'),
+            'edit': sample_article_type,
+            },
+        )
     category_list = TreeObject.category_list + ['tree-view-sample']
 
     @classmethod
@@ -92,6 +109,8 @@ class SampleTree(TreeObject):
 
 
 class SampleArticle(RecordObject):
+
+    type = sample_article_type
 
     @classmethod
     async def from_data(cls, state, object_registry):

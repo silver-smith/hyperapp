@@ -357,11 +357,11 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 class TreeViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object, layout_watcher, resource_resolver):
-        return cls(path, object, state.command_list, resource_resolver)
+    async def from_data(cls, state, path, object_type, layout_watcher, resource_resolver):
+        return cls(path, object_type, state.command_list, resource_resolver)
 
-    def __init__(self, path, object, command_list_data, resource_resolver):
-        super().__init__(path, object, command_list_data, resource_resolver)
+    def __init__(self, path, object_type, command_list_data, resource_resolver):
+        super().__init__(path, object_type, command_list_data, resource_resolver)
 
     @property
     def data(self):
@@ -370,8 +370,8 @@ class TreeViewLayout(MultiItemObjectLayout):
     async def visual_item(self):
         return self.make_visual_item('TreeView')
 
-    def _create_view_impl(self, columns):
-        return TreeView(columns, self._object)
+    def _create_view_impl(self, object, columns):
+        return TreeView(columns, object)
 
 
 class ThisModule(ClientModule):
@@ -382,14 +382,14 @@ class ThisModule(ClientModule):
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
         services.tree_view_factory = self._tree_view_factory
-        services.default_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_rec)
-        services.available_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_rec)
+        services.default_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_data)
+        services.available_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_data)
         services.object_layout_registry.register_type(
             htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.resource_resolver)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)
 
-    async def _make_tree_layout_rec(self, object):
-        command_list = MultiItemObjectLayout.make_default_command_list(object)
+    async def _make_tree_layout_data(self, object_type):
+        command_list = MultiItemObjectLayout.make_default_command_list(object_type)
         return htypes.tree_view.tree_layout(command_list)

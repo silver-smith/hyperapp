@@ -215,11 +215,11 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 class ListViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object, layout_watcher, resource_resolver):
-        return cls(path, object, state.command_list, resource_resolver)
+    async def from_data(cls, state, path, object_type, layout_watcher, resource_resolver):
+        return cls(path, object_type, state.command_list, resource_resolver)
 
-    def __init__(self, path, object, state_command_list, resource_resolver):
-        super().__init__(path, object, state_command_list, resource_resolver)
+    def __init__(self, path, object_type, state_command_list, resource_resolver):
+        super().__init__(path, object_type, state_command_list, resource_resolver)
 
     @property
     def data(self):
@@ -228,19 +228,19 @@ class ListViewLayout(MultiItemObjectLayout):
     async def visual_item(self):
         return self.make_visual_item('ListView')
 
-    def _create_view_impl(self, columns):
-        return ListView(columns, self._object)
+    def _create_view_impl(self, object, columns):
+        return ListView(columns, object)
 
 
 class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.default_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
-        services.available_object_layouts.register('list', ListObject.category_list, self._make_list_layout_rec)
+        services.default_object_layouts.register('list', ListObject.category_list, self._make_list_layout_data)
+        services.available_object_layouts.register('list', ListObject.category_list, self._make_list_layout_data)
         services.object_layout_registry.register_type(
             htypes.list_view.list_layout, ListViewLayout.from_data, services.resource_resolver)
 
-    async def _make_list_layout_rec(self, object):
-        command_list = MultiItemObjectLayout.make_default_command_list(object)
+    async def _make_list_layout_data(self, object_type):
+        command_list = MultiItemObjectLayout.make_default_command_list(object_type)
         return htypes.list_view.list_layout(command_list)

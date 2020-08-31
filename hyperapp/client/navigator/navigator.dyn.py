@@ -107,7 +107,7 @@ class NavigatorLayout(GlobalLayout):
 
     def _get_global_commands(self):
         for command in self._module_command_registry.get_all_commands():
-            yield (LayoutCommand(command.id, command, ['root'])
+            yield (LayoutCommand(command.id, command)
                    .with_(wrapper=self._open_layout)
                    )
 
@@ -130,11 +130,11 @@ class NavigatorLayout(GlobalLayout):
         await self._open_object(object)
 
     async def _open_object(self, object):
-        layout_handle = await self._layout_handle_registry.produce_handle(object)
+        layout_handle = await self._layout_handle_registry.produce_handle(object.type)
         await self._open_layout_impl(object, layout_handle)
 
     async def _open_layout_impl(self, object, layout_handle):
-        view = await layout_handle.layout.create_view(self._command_hub)
+        view = await layout_handle.layout.create_view(self._command_hub, object)
         self._view_opener.open(view)
         self._current_object = object
         self._current_layout_handle = layout_handle
