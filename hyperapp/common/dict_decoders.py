@@ -93,8 +93,8 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
     @dispatch.register(TList)
     def decode_list(self, t, value, path):
         self.expect_type(path, isinstance(value, list), value, 'list')
-        return [self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
-                for idx, elt in enumerate(value)]
+        return tuple(self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
+                     for idx, elt in enumerate(value))
 
     @dispatch.register(TIndexedList)
     def decode_indexed_list(self, t, value, path):
@@ -104,7 +104,7 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
             decoded_elt = self.dispatch(t.element_t, elt, join_path(path, '#%d' % idx))
             setattr(decoded_elt, 'idx', idx)
             decoded_elts.append(decoded_elt)
-        return decoded_elts
+        return tuple(decoded_elts)
 
     @dispatch.register(TEmbedded)
     def decode_embedded(self, t, value, path):

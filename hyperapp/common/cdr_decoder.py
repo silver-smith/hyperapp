@@ -132,7 +132,7 @@ class CdrDecoder(object):
         for idx in range(size):
             elt = self.dispatch(t.element_t, join_path(path, '#%d' % idx))
             elements.append(elt)
-        return elements
+        return tuple(elements)
 
     @dispatch.register(TIndexedList)
     def decode_indexed_list(self, t, path):
@@ -142,7 +142,7 @@ class CdrDecoder(object):
             elt = self.dispatch(t.element_t, join_path(path, '#%d' % idx))
             setattr(elt, 'idx', idx)
             elements.append(elt)
-        return elements
+        return tuple(elements)
 
     @dispatch.register(TEmbedded)
     def decode_embedded(self, t, path):
