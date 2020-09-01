@@ -90,11 +90,11 @@ class LineEditView(View, QtWidgets.QLineEdit):
 class LineEditLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object, layout_watcher):
-        return cls(layout_watcher, path, object, state.command_list, state.editable)
+    async def from_data(cls, state, path, object_type, layout_watcher):
+        return cls(layout_watcher, path, object_type, state.command_list, state.editable)
 
-    def __init__(self, layout_watcher, path, object, command_list_data, editable):
-        super().__init__(path, object, command_list_data)
+    def __init__(self, layout_watcher, path, object_type, command_list_data, editable):
+        super().__init__(path, object_type, command_list_data)
         self._layout_watcher = layout_watcher
         self._editable = editable
 
@@ -102,8 +102,8 @@ class LineEditLayout(ObjectLayout):
     def data(self):
         return htypes.line.line_edit_layout(self._command_list_data, self._editable)
 
-    async def create_view(self, command_hub):
-        return LineEditView(self._object, self._editable)
+    async def create_view(self, command_hub, object):
+        return LineEditView(object, self._editable)
 
     async def visual_item(self):
         if self._editable:
