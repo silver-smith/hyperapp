@@ -62,9 +62,7 @@ class LayoutCommand:
             return
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
-        if self.layout_ref:
-            assert 0, self  # todo
-        layout_handle = self._layout_handle.command_handle(self.id)
+        layout_handle = await self._layout_handle.command_handle(self.id, object.type, self.layout_ref)
         resolved_piece = _ResolvedPiece(object, layout_handle)
         _log.info("LayoutCommand: piece resolved to: %r", resolved_piece)
         if not self._wrapper:
