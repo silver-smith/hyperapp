@@ -123,17 +123,19 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
-        # self._object_layout_producer = services.object_layout_producer
-        # services.default_object_layouts.register('record', RecordObject.type.ids, self._make_record_layout_data)
-        # services.available_object_layouts.register('record', RecordObject.type.ids, self._make_record_layout_data)
-        # services.object_layout_registry.register_type(
-        #     htypes.record_view.record_layout, RecordViewLayout.from_data, services.ref_registry, services.object_layout_resolver)
+        self._async_ref_resolver = services.async_ref_resolver
+        self._layout_handle_from_object_type = services.layout_handle_from_object_type
+        services.available_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
+        services.default_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
+        services.object_layout_registry.register_type(
+            htypes.record_view.record_layout, RecordViewLayout.from_data, services.ref_registry, services.object_layout_resolver)
 
-    async def _make_record_layout_data(self, object):
-        command_list = ObjectLayout.make_default_command_list(object)
+    async def _make_record_layout_data(self, object_type):
+        command_list = ObjectLayout.make_default_command_list(object_type)
         field_layout_list = []
-        for field_id, field_object in object.fields.items():
-            layout = await self._object_layout_producer.produce_layout(field_object, layout_watcher=None)
-            layout_ref = self._ref_registry.register_object(layout.data)
+        for field in object_type.field_type_list:
+            field_object_type = await self._async_ref_resolver.resolve_ref_to_object(field.object_type_ref)
+            layout_handle = await self._layout_handle_from_object_type(field_object_type)
+            layout_ref = self._ref_registry.register_object(layout_handle.layout.data)
             field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
         return htypes.record_view.record_layout(command_list, field_layout_list)

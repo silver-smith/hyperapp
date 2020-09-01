@@ -43,6 +43,7 @@ type_module_list = [
     'object_type',
     'text',
     'list_object',
+    'record_object',
     'form',
     'record_view',
     'ref_list',
