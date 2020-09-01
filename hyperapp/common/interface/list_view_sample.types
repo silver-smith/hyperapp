@@ -1,3 +1,7 @@
+from list_object import list_object_type
+
+
+list_view_sample_object_type = record(list_object_type)
 
 list_view_sample_object = record
 

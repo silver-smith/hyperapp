@@ -42,6 +42,7 @@ type_module_list = [
     # 'code_repository',
     'object_type',
     'text',
+    'list_object',
     'form',
     'record_view',
     'ref_list',

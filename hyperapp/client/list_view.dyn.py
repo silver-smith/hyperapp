@@ -236,8 +236,8 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.default_object_layouts.register('list', ListObject.category_list, self._make_list_layout_data)
-        services.available_object_layouts.register('list', ListObject.category_list, self._make_list_layout_data)
+        services.available_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
+        services.default_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
         services.object_layout_registry.register_type(
             htypes.list_view.list_layout, ListViewLayout.from_data, services.resource_resolver)
 

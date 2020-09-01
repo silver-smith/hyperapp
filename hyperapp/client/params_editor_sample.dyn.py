@@ -14,8 +14,6 @@ Item = namedtuple('Item', 'id name')
 
 class ParamsEditorSample(SimpleListObject):
 
-    category_list = [*SimpleListObject.category_list, 'params-editor-sample']
-
     @classmethod
     def from_state(cls, state):
         return cls()

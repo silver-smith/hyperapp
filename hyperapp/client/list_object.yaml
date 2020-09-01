@@ -1,3 +1,6 @@
 import:
+  types:
+    list_object:
+      - list_object_type
   code:
     - client.column
