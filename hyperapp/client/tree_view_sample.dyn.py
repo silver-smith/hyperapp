@@ -18,25 +18,25 @@ log = logging.getLogger(__name__)
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
-sample_article_type = RecordObjectType(
-    ids=[*RecordObject.type.ids, 'sample-tree-article'],
-    fields={
-        'title': ObjectType('line'),
-        'text': ObjectType('text'),
-        },
-    )
+# sample_article_type = RecordObjectType(
+#     ids=[*RecordObject.type.ids, 'sample-tree-article'],
+#     fields={
+#         'title': ObjectType('line'),
+#         'text': ObjectType('text'),
+#         },
+#     )
 
 
 class SampleTree(TreeObject):
 
-    type = ObjectType(
-        ids=[*TreeObject.type.ids, 'sample-tree'],
-        commands={
-            'open': ObjectType('text'),
-            'edit': sample_article_type,
-            },
-        )
-    category_list = TreeObject.category_list + ['tree-view-sample']
+    # type = ObjectType(
+    #     ids=[*TreeObject.type.ids, 'sample-tree'],
+    #     commands={
+    #         'open': ObjectType('text'),
+    #         'edit': sample_article_type,
+    #         },
+    #     )
+    # category_list = TreeObject.category_list + ['tree-view-sample']
 
     @classmethod
     def from_data(cls, state):
@@ -109,8 +109,6 @@ class SampleTree(TreeObject):
 
 
 class SampleArticle(RecordObject):
-
-    type = sample_article_type
 
     @classmethod
     async def from_data(cls, state, object_registry):

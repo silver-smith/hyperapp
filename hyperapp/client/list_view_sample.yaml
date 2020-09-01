@@ -2,8 +2,11 @@ import:
   types:
     object_type:
       - object_command
+    record_object:
+      - record_type_field
     list_view_sample:
       - list_view_sample_object_type
+      - list_view_sample_article_type
       - list_view_sample_object
       - list_sample_article
     line:
@@ -14,5 +17,6 @@ import:
     - client.object_command
     - client.column
     - client.list_object
+    - client.line_edit
     - client.text_object
     - client.record_object

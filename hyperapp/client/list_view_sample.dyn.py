@@ -10,6 +10,7 @@ from . import htypes
 from .object_command import command
 from .column import Column
 from .list_object import ListObject
+from .line_edit import LineObject
 from .text_object import TextObject
 from .record_object import RecordObjectType, RecordObject
 
@@ -115,18 +116,21 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
 
-        # sample_article_type = RecordObjectType(
-        #     ids=[*RecordObject.type.ids, 'sample-list-article'],
-        #     fields={
-        #         'title': ObjectType('line'),
-        #         'text': ObjectType('text'),
-        #         },
-        #     )
-        sample_list_type = htypes.list_view_sample.list_view_sample_object_type(command_list=(
-            htypes.object_type.object_command('open', services.ref_registry.register_object(TextObject.type)),
-            # htypes.object_type.object_command('edit', services.ref_registry.register_object(...)),
-            ))
+        sample_article_type = htypes.list_view_sample.list_view_sample_article_type(
+            command_list=(),
+            field_type_list=(
+                htypes.record_object.record_type_field('title', services.ref_registry.register_object(LineObject.type)),
+                htypes.record_object.record_type_field('text', services.ref_registry.register_object(TextObject.type)),
+                ),
+            )
+        sample_list_type = htypes.list_view_sample.list_view_sample_object_type(
+            command_list=(
+                htypes.object_type.object_command('open', services.ref_registry.register_object(TextObject.type)),
+                htypes.object_type.object_command('edit', services.ref_registry.register_object(sample_article_type)),
+                ),
+            )
         SampleList.type = sample_list_type
+        SampleArticle.type = sample_article_type
 
         services.object_registry.register_type(htypes.list_view_sample.list_view_sample_object, SampleList.from_data)
         services.object_registry.register_type(htypes.list_view_sample.list_sample_article, SampleArticle.from_data, services.object_registry)
