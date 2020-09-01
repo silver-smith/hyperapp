@@ -4,8 +4,9 @@ from collections import namedtuple
 
 from PySide2 import QtCore, QtWidgets
 
-from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match, is_list_inst
+from hyperapp.common.util import is_list_inst
 from hyperapp.common.htypes import resource_key_t
+from hyperapp.client.util import DEBUG_FOCUS, call_after, key_match
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
 
