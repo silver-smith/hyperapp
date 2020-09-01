@@ -43,7 +43,7 @@ class ObjectLayoutConstructorRegistry:
         try:
             rec = next(rec_it)
         except StopIteration:
-            raise NoSuitableProducer(f"No default layout makers are registered for: {object_type.ids}")
+            raise NoSuitableProducer(f"No default layout makers are registered for: {object_type}")
         _log.info("Use default layout: %r.", rec.name)
         layout_data = await rec.layout_data_maker(object_type)
         layout = await object_layout_registry.resolve_async(layout_data, ['root'], object_type, watcher)
