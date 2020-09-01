@@ -12,7 +12,7 @@ from .record_object import RecordObject
 class RecordView(QtWidgets.QWidget):
 
     @classmethod
-    async def make(cls, object, command_hub, field_layout_dict):
+    async def make(cls, command_hub, object, field_layout_dict):
         view = cls(object)
         await view._async_init(command_hub, field_layout_dict)
         return view
@@ -37,7 +37,8 @@ class RecordView(QtWidgets.QWidget):
 
     async def _construct_field_view(
             self, command_hub, qt_layout, field_id, field_layout):
-        view = await field_layout.create_view(command_hub)
+        field_object = self._object.fields[field_id]
+        view = await field_layout.create_view(command_hub, field_object)
         label = QtWidgets.QLabel(field_id)
         label.setBuddy(view)
         qt_layout.addWidget(label)
@@ -71,21 +72,26 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(ObjectLayout):
 
-    async def from_data(state, path, object, layout_watcher, ref_registry, object_layout_resolver):
-        self = RecordViewLayout(ref_registry, path, object, state.command_list)
-        await self._async_init(layout_watcher, object_layout_resolver, state.field_layout_list)
+    async def from_data(state, path, object_type, layout_watcher, ref_registry, async_ref_resolver, object_layout_resolver):
+        self = RecordViewLayout(ref_registry, path, object_type, state.command_list)
+        await self._async_init(layout_watcher, async_ref_resolver, object_layout_resolver, state.field_layout_list)
         return self
 
-    def __init__(self, ref_registry, path, object, command_list_data):
-        super().__init__(path, object, command_list_data)
+    def __init__(self, ref_registry, path, object_type, command_list_data):
+        super().__init__(path, object_type, command_list_data)
         self._ref_registry = ref_registry
         self._field_layout_dict = {}
 
-    async def _async_init(self, layout_watcher, object_layout_resolver, field_layout_list):
+    async def _async_init(self, layout_watcher, async_ref_resolver, object_layout_resolver, field_layout_list):
+        field_id_to_type_ref = {
+            field.id: field.object_type_ref
+            for field in self._object_type.field_type_list
+            }
         for idx, field in enumerate(field_layout_list):
+            field_object_type_ref = field_id_to_type_ref[field.id]
+            field_object_type = await async_ref_resolver.resolve_ref_to_object(field_object_type_ref)
             path = [*self._path, idx]
-            field_object = self._object.fields[field.id]
-            layout = await object_layout_resolver.resolve(field.layout_ref, path, field_object, layout_watcher)
+            layout = await object_layout_resolver.resolve(field.layout_ref, path, field_object_type, layout_watcher)
             self._field_layout_dict[field.id] = layout
 
     @property
@@ -96,8 +102,8 @@ class RecordViewLayout(ObjectLayout):
             field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
         return htypes.record_view.record_layout(self._command_list_data, field_layout_list)
 
-    async def create_view(self, command_hub):
-        return (await RecordView.make(self._object, command_hub, self._field_layout_dict))
+    async def create_view(self, command_hub, object):
+        return (await RecordView.make(command_hub, object, self._field_layout_dict))
 
     async def visual_item(self):
         children = [
@@ -106,16 +112,15 @@ class RecordViewLayout(ObjectLayout):
             ]
         return self.make_visual_item('RecordView', children=children)
 
-    def get_current_commands(self, view):
-        focused_layout = self._field_layout_dict[view.focused_field_id]
-        focused_view = view.get_field_view(view.focused_field_id)
+    def get_current_commands(self, object, view):
+        focused_field_id = view.focused_field_id
+        focused_object = object.fields[focused_field_id]
+        focused_layout = self._field_layout_dict[focused_field_id]
+        focused_view = view.get_field_view(focused_field_id)
         return [
-            *self._get_object_commands(),
-            *focused_layout.get_current_commands(focused_view),
+            *super().get_current_commands(object, view),
+            *focused_layout.get_current_commands(focused_object, focused_view),
             ]
-
-    def _get_object_commands(self):
-        return self._object.get_all_command_list()
 
 
 class ThisModule(ClientModule):
@@ -128,7 +133,8 @@ class ThisModule(ClientModule):
         services.available_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
         services.default_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
         services.object_layout_registry.register_type(
-            htypes.record_view.record_layout, RecordViewLayout.from_data, services.ref_registry, services.object_layout_resolver)
+            htypes.record_view.record_layout, RecordViewLayout.from_data,
+            services.ref_registry, services.async_ref_resolver, services.object_layout_resolver)
 
     async def _make_record_layout_data(self, object_type):
         command_list = ObjectLayout.make_default_command_list(object_type)
@@ -137,5 +143,5 @@ class ThisModule(ClientModule):
             field_object_type = await self._async_ref_resolver.resolve_ref_to_object(field.object_type_ref)
             layout_handle = await self._layout_handle_from_object_type(field_object_type)
             layout_ref = self._ref_registry.register_object(layout_handle.layout.data)
-            field_layout_list.append(htypes.record_view.record_layout_field(field_id, layout_ref))
+            field_layout_list.append(htypes.record_view.record_layout_field(field.id, layout_ref))
         return htypes.record_view.record_layout(command_list, field_layout_list)
