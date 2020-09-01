@@ -36,6 +36,14 @@ class cached_property(object):
         return result
 
 
+def is_iterable_inst(val, cls):
+    if not isinstance(val, (list, tuple)):
+        return False
+    for elt in val:
+        if not isinstance(elt, cls):
+            return False
+    return True
+
 def is_list_inst(val, cls):
     if not isinstance(val, list):
         return False

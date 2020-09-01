@@ -6,7 +6,7 @@ import weakref
 from datetime import datetime
 from dateutil.tz import tzutc
 from PySide2 import QtCore, QtWidgets
-from ..common.util import is_list_inst
+from ..common.util import is_iterable_inst
 
 log = logging.getLogger(__name__)
 
@@ -114,7 +114,7 @@ def key_match_any(evt, keys):
 
 def make_async_action(widget, text, shortcut_list, fn, *args, **kw):
     assert isinstance(text, str), repr(text)
-    assert shortcut_list is None or is_list_inst(shortcut_list, str), repr(shortcut_list)
+    assert shortcut_list is None or is_iterable_inst(shortcut_list, str), repr(shortcut_list)
     assert callable(fn), repr(fn)
     def run():
         log.info('async action run %r %r(%s, %s)', text, fn, args, kw)
@@ -123,7 +123,7 @@ def make_async_action(widget, text, shortcut_list, fn, *args, **kw):
 
 def make_action(widget, text, shortcut_list, fn, *args, **kw):
     assert isinstance(text, str), repr(text)
-    assert shortcut_list is None or is_list_inst(shortcut_list, str), repr(shortcut_list)
+    assert shortcut_list is None or is_iterable_inst(shortcut_list, str), repr(shortcut_list)
     assert callable(fn), repr(fn)
     ## print '--- make_action', widget, text, shortcut_list, fn, args, kw
     def run():
