@@ -40,6 +40,7 @@ type_module_list = [
     'application_state',
     # 'server_management',
     # 'code_repository',
+    'object_type',
     'text',
     'form',
     'record_view',

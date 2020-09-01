@@ -125,7 +125,7 @@ class DefaultLayoutHandle(LayoutHandle):
         if layout_ref:
             layout = await object_layout_resolver.resolve_async(layout_ref, ['root'], object_type, watcher)
         else:
-            layout = default_object_layouts.construct_default(object_type, watcher, object_layout_registry)
+            layout = await default_object_layouts.construct_default_layout(object_type, watcher, object_layout_registry)
         return cls(ref_registry, object_layout_association, layout, watcher, object_type)
 
     @staticmethod
@@ -135,7 +135,7 @@ class DefaultLayoutHandle(LayoutHandle):
             try:
                 return object_layout_association[object_type_t]
             except KeyError:
-                pass
+                object_type_t = object_type_t.base
         return None
 
     def __init__(self, ref_registry, object_layout_association, layout, watcher, object_type):

@@ -9,7 +9,7 @@ _log = logging.getLogger(__name__)
 
 class TextObject(Object):
 
-    type = htypes.text.text_object_type()
+    type = htypes.text.text_object_type(command_list=())
 
     @classmethod
     def from_state(cls, state):

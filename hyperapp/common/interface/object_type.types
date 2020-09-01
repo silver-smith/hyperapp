@@ -1,0 +1,7 @@
+object_command = record:
+  id: string
+  result_object_type_ref: ref
+
+
+object_type = record:
+  command_list: object_command list
