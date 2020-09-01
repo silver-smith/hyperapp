@@ -1,6 +1,7 @@
 import:
   types:
     line:
+      - line_object_type
       - line
       - line_edit_layout
   code:

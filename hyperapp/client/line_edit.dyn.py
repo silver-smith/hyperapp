@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 class LineObject(Object):
 
-    category_list = ['line']
+    type = htypes.line.line_object_type(command_list=())
 
     @classmethod
     def from_state(cls, state):
@@ -134,10 +134,10 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
-        services.default_object_layouts.register('line', LineObject.category_list, self._make_line_layout_rec)
-        services.available_object_layouts.register('line', LineObject.category_list, self._make_line_layout_rec)
+        services.available_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
+        services.default_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
         services.object_layout_registry.register_type(htypes.line.line_edit_layout, LineEditLayout.from_data)
 
-    async def _make_line_layout_rec(self, object):
-        command_list = ObjectLayout.make_default_command_list(object)
+    async def _make_line_layout_data(self, object_type):
+        command_list = ObjectLayout.make_default_command_list(object_type)
         return htypes.line.line_edit_layout(command_list, editable=False)
