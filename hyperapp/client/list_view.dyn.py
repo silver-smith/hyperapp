@@ -218,8 +218,8 @@ class ListViewLayout(MultiItemObjectLayout):
     async def from_data(cls, state, path, object_type, layout_watcher, resource_resolver):
         return cls(path, object_type, state.command_list, resource_resolver)
 
-    def __init__(self, path, object_type, state_command_list, resource_resolver):
-        super().__init__(path, object_type, state_command_list, resource_resolver)
+    def __init__(self, path, object_type, command_list_data, resource_resolver):
+        super().__init__(path, object_type, command_list_data, resource_resolver)
 
     @property
     def data(self):
