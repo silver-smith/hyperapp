@@ -126,8 +126,8 @@ class ObjectLayout(Layout):
     @staticmethod
     def make_default_command_list(object_type):
         return [
-            htypes.layout.command(id=command_id, code_id=command_id, layout_ref=None)
-            for command_id in object_type.command_list
+            htypes.layout.command(id=command.id, code_id=command.id, layout_ref=None)
+            for command in object_type.command_list
             ]
 
 
