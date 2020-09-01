@@ -164,7 +164,7 @@ class CommandLayoutHandle(LayoutHandle):
 
     @property
     def command_path(self):
-        return [*self._base.command_path, self.command_id]
+        return [*self._base.command_path, self._command_id]
 
 
 class ThisModule(ClientModule):
