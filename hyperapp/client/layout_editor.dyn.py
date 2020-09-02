@@ -150,18 +150,15 @@ class ObjectLayoutEditor(LayoutEditor):
     async def from_state(
             cls, state,
             ref_registry, async_ref_resolver, object_registry, object_layout_registry, layout_handle_resolver):
-        piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
-        object = await object_registry.resolve_async(piece)
-        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref, object)
-        self = cls(ref_registry, object_layout_registry, object, layout_handle)
+        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref)
+        self = cls(ref_registry, object_layout_registry, layout_handle)
         await self._async_init(layout_handle.layout)
         return self
 
-    def __init__(self, ref_registry, object_layout_registry, object, layout_handle):
+    def __init__(self, ref_registry, object_layout_registry, layout_handle):
         super().__init__(layout_handle.watcher)
         self._ref_registry = ref_registry
         self._object_layout_registry = object_layout_registry
-        self._object = object
         self._layout_handle = layout_handle
 
     @property
@@ -170,9 +167,8 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @property
     def data(self):
-        piece_ref = self._ref_registry.register_object(self._object.data)
         layout_handle_ref = self._ref_registry.register_object(self._layout_handle.data)
-        return htypes.layout_editor.object_layout_editor(piece_ref, layout_handle_ref)
+        return htypes.layout_editor.object_layout_editor(layout_handle_ref)
 
     def get_command_list(self):
         return [command for command in super().get_command_list()

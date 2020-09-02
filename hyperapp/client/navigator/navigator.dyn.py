@@ -159,9 +159,8 @@ class NavigatorLayout(GlobalLayout):
 
     @command('open_layout_editor')
     async def _open_layout_editor(self):
-        piece_ref = self._ref_registry.register_object(self._current_object.data)
         layout_handle_ref = self._ref_registry.register_object(self._current_layout_handle.data)
-        piece = htypes.layout_editor.object_layout_editor(piece_ref, layout_handle_ref)
+        piece = htypes.layout_editor.object_layout_editor(layout_handle_ref)
         await self._open_piece(piece)
 
     @command('commands')
