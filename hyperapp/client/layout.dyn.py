@@ -85,6 +85,9 @@ class ObjectLayout(Layout):
             ]
 
     def get_current_commands(self, object, view):
+        return self.get_object_commands(object)
+
+    def get_object_commands(self, object):
         id_to_code_command = self._id_to_code_command(object)
         command_list = []
         for command in self._command_list:
@@ -94,6 +97,9 @@ class ObjectLayout(Layout):
                 code_command = None
             command_list.append(LayoutCommand(command.id, code_command, command.layout_ref))
         return command_list
+
+    def get_item_commands(self, object, item_key):
+        return self.get_object_commands(object)
 
     def available_code_commands(self, object):
         return [
@@ -159,23 +165,25 @@ class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
         pass
 
     def get_current_commands(self, object, view):
-        layout_command_list = super().get_current_commands(object, view)
-        object_command_list = [
-            command for command in layout_command_list
+        return self.get_item_commands(object, view.current_item_key)
+
+    def get_item_commands(self, object, item_key):
+        object_command_list = super().get_object_commands(object)
+        non_item_command_list = [
+            command for command in object_command_list
             if command.kind != 'element'
             ]
 
-        current_item_key = view.current_item_key
-        if current_item_key is None:
-            return object_command_list
+        if item_key is None:
+            return non_item_command_list
 
-        element_command_ids = {
+        item_command_ids = {
             command.id for command in
-            object.get_item_command_list(current_item_key)
+            object.get_item_command_list(item_key)
             }
-        element_command_list = [
-            command.partial(current_item_key)
-            for command in layout_command_list
-            if command.kind == 'element' and command.id in element_command_ids
+        item_command_list = [
+            command.partial(item_key)
+            for command in object_command_list
+            if command.kind == 'element' and command.id in item_command_ids
             ]
-        return [*object_command_list, *element_command_list]
+        return [*non_item_command_list, *item_command_list]
