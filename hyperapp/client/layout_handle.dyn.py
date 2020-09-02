@@ -109,8 +109,8 @@ class LayoutHandle(metaclass=abc.ABCMeta):
 class DefaultLayoutHandle(LayoutHandle):
 
     @classmethod
-    async def from_data(cls, state, object_type_resolver):
-        object_type = object_type_resolver.resolve_ref_to_object(state.object_type_ref)
+    async def from_data(cls, state, async_ref_resolver):
+        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
         handle = await this_module.make_layout_handle(cls, object_type, [], object_type, None, object_type)
         return handle
 
@@ -140,7 +140,7 @@ class CommandLayoutHandle(LayoutHandle):
 
     @classmethod
     async def from_data(cls, state, layout_handle_resolver):
-        base_handle = layout_handle_resolver.resolve(state.base_handle_ref)
+        base_handle = await layout_handle_resolver.resolve(state.base_handle_ref)
         handle = await base_handle.command_handle(state.command_id)
         return handle
 
@@ -155,8 +155,8 @@ class CommandLayoutHandle(LayoutHandle):
 
     @property
     def data(self):
-        object_type_ref = self._ref_registry.register_object(self._object_type)
-        return htypes.layout.default_layout_handle(object_type_ref)
+        base_handle_ref = self._ref_registry.register_object(self._base.data)
+        return htypes.layout.command_layout_handle(base_handle_ref, self._command_id)
 
     @property
     def base_object_type(self):
@@ -175,7 +175,7 @@ class ThisModule(ClientModule):
         services.layout_handle_codereg = AsyncCapsuleRegistry('layout_handle', services.type_resolver)
         services.layout_handle_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.layout_handle_codereg)
         services.layout_handle_codereg.register_type(
-            htypes.layout.default_layout_handle, DefaultLayoutHandle.from_data, services.object_type_resolver)
+            htypes.layout.default_layout_handle, DefaultLayoutHandle.from_data, services.async_ref_resolver)
         services.layout_handle_codereg.register_type(
             htypes.layout.command_layout_handle, CommandLayoutHandle.from_data, services.layout_handle_resolver)
 
@@ -183,7 +183,6 @@ class ThisModule(ClientModule):
         self._default_object_layouts = services.default_object_layouts
         self._object_layout_association = services.object_layout_association
         self._object_layout_registry = services.object_layout_registry
-        self._object_type_resolver = services.object_type_resolver
         self._layout_handle_cache = {}  # object_type, command path -> layout handle
 
         services.layout_handle_from_object_type = self._layout_handle_from_object_type
