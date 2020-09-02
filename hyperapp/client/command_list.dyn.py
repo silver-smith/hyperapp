@@ -33,7 +33,7 @@ class CommandList(SimpleListObject):
         self._layout_handle = layout_handle
         self._id_to_path_and_code_command = {
             command.id: (path, command)
-            for path, command in self._layout_handle.layout.available_code_commands(self._object)
+            for path, command in self._layout.available_code_commands(self._object)
             }
 
     async def _async_init(self, async_ref_resolver):
@@ -45,7 +45,7 @@ class CommandList(SimpleListObject):
         self._item_key = await self._object.first_item_key()
         self._id_to_layout_command = {
             command.id: command
-            for command in self._layout_handle.layout.get_item_commands(self._object, self._item_key)
+            for command in self._layout.get_item_commands(self._object, self._item_key)
             }
 
     @property
