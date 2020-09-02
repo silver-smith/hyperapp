@@ -113,10 +113,10 @@ class RecordViewLayout(ObjectLayout):
         return self.make_visual_item('RecordView', children=children)
 
     def get_current_commands(self, object, view):
-        focused_field_id = view.focused_field_id
-        focused_object = object.fields[focused_field_id]
-        focused_layout = self._field_layout_dict[focused_field_id]
-        focused_view = view.get_field_view(focused_field_id)
+        field_id = view.focused_field_id
+        focused_object = object.fields[field_id]
+        focused_layout = self._field_layout_dict[field_id]
+        focused_view = view.get_field_view(field_id)
         return [
             *super().get_current_commands(object, view),
             *focused_layout.get_current_commands(focused_object, focused_view),
