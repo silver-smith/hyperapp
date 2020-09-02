@@ -1,3 +1,7 @@
+from list_object import list_object_type
+
+
+command_list_object_type = record(list_object_type)
 
 command_list = record:
   piece_ref: ref

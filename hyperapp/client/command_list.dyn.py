@@ -12,7 +12,7 @@ from .layout_handle import LayoutWatcher
 from .simple_list_object import SimpleListObject
 
 
-Item = namedtuple('Item', 'path id code_id kind layout')
+Item = namedtuple('Item', 'id code_id kind path layout')
 
 
 class CommandList(SimpleListObject):
@@ -21,14 +21,32 @@ class CommandList(SimpleListObject):
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_resolver):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref, object)
-        return cls(ref_registry, object, layout_handle)
+        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref)
+        self = cls(ref_registry, object, layout_handle)
+        await self._async_init(async_ref_resolver)
+        return self
 
     def __init__(self, ref_registry, object, layout_handle):
         super().__init__()
         self._ref_registry = ref_registry
         self._object = object
         self._layout_handle = layout_handle
+        self._id_to_path_and_code_command = {
+            command.id: (path, command)
+            for path, command in self._layout_handle.layout.available_code_commands(self._object)
+            }
+
+    async def _async_init(self, async_ref_resolver):
+        self._command_object_types = {
+            command.id: await async_ref_resolver.resolve_ref_to_object(command.result_object_type_ref)
+            for command in self._object.type.command_list
+            }
+        # todo: add/pass current item to command list constructor/data, use it here.
+        self._item_key = await self._object.first_item_key()
+        self._id_to_layout_command = {
+            command.id: command
+            for command in self._layout_handle.layout.get_item_commands(self._object, self._item_key)
+            }
 
     @property
     def title(self):
@@ -43,10 +61,10 @@ class CommandList(SimpleListObject):
     @property
     def columns(self):
         return [
-            Column('path'),
             Column('id', is_key=True),
             Column('code_id'),
             Column('kind'),
+            Column('path'),
             Column('layout'),
             ]
 
@@ -61,45 +79,42 @@ class CommandList(SimpleListObject):
         return self._layout_handle.layout
 
     async def _make_item(self, command):
-        resolved_piece = await self._run_command(command)
-        if resolved_piece is not None:
-            item = await resolved_piece.layout_handle.layout.visual_item()
+        object_type = self._command_object_types[command.id]
+        if object_type is not None:
+            layout_handle = await self._layout_handle.command_handle(command.id, object_type, command.layout_ref)
+            item = await layout_handle.layout.visual_item()
             layout_str = item.text
         else:
             layout_str = ''
+        if command.code_id:
+            path, code_command = self._id_to_path_and_code_command[command.code_id]
+            kind = code_command.kind
+        else:
+            path = []
+            kind = ''
         return Item(
-            path='/' + '/'.join(command.path),
             id=command.id,
-            code_id=command.code_command.id,
-            kind=command.kind,
+            code_id=command.code_id,
+            kind=kind,
+            path='/'.join(path),
             layout=layout_str,
             )
 
-    async def _run_command(self, command):
-        if command.kind == 'element':
-            key = await self._object.first_item_key()
-            args = [key]
-        else:
-            args = []
-        resolved_piece = await command.run(*args)
+    async def _run_command(self, command_id):
+        command = self._id_to_layout_command[command_id]
+        command = command.with_(layout_handle=self._layout_handle)
+        resolved_piece = await command.run()
         return resolved_piece
-
-    def _command_by_id(self, command_id):
-        return single(
-            command for command in self._layout.command_list
-            if command.id == command_id
-            )
 
     @command('run', kind='element')
     async def _run(self, item_key):
-        # todo: pass current item to command list, use it here for element commands.
-        command = self._command_by_id(item_key)
-        return (await self._run_command(command))
+        command_id = item_key
+        return (await self._run_command(command_id))
 
     @object_command('layout', kind='element')
     async def _open_layout(self, item_key):
-        command = self._command_by_id(item_key)
-        resolved_piece = await self._run_command(command)
+        command_id = item_key
+        resolved_piece = await self._run_command(command_id)
         if resolved_piece is None:
             return None
         piece_ref = self._ref_registry.register_object(resolved_piece.object.data)
@@ -146,6 +161,16 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+
+        command_list_type = htypes.command_list.command_list_object_type(
+            command_list=(
+                htypes.object_type.object_command('run', None),
+                htypes.object_type.object_command('layout', None),
+                htypes.object_type.object_command('add', None),
+                ),
+            )
+        CommandList.type = command_list_type
+
         services.object_registry.register_type(
             htypes.command_list.command_list,
             CommandList.from_state,
