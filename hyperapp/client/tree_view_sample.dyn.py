@@ -10,7 +10,9 @@ from . import htypes
 from .object_command import command
 from .column import Column
 from .tree_object import AppendItemDiff, InsertItemDiff, RemoveItemDiff, UpdateItemDiff, TreeObject
-from .record_object import RecordObjectType, RecordObject
+from .line_edit import LineObject
+from .text_object import TextObject
+from .record_object import RecordObject
 
 log = logging.getLogger(__name__)
 
@@ -18,25 +20,7 @@ log = logging.getLogger(__name__)
 Item = namedtuple('Item', 'name column_1 column_2')
 
 
-# sample_article_type = RecordObjectType(
-#     ids=[*RecordObject.type.ids, 'sample-tree-article'],
-#     fields={
-#         'title': ObjectType('line'),
-#         'text': ObjectType('text'),
-#         },
-#     )
-
-
 class SampleTree(TreeObject):
-
-    # type = ObjectType(
-    #     ids=[*TreeObject.type.ids, 'sample-tree'],
-    #     commands={
-    #         'open': ObjectType('text'),
-    #         'edit': sample_article_type,
-    #         },
-    #     )
-    # category_list = TreeObject.category_list + ['tree-view-sample']
 
     @classmethod
     def from_data(cls, state):
@@ -138,6 +122,23 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+
+        sample_article_type = htypes.tree_view_sample.tree_view_sample_article_type(
+            command_list=(),
+            field_type_list=(
+                htypes.record_object.record_type_field('title', services.ref_registry.register_object(LineObject.type)),
+                htypes.record_object.record_type_field('text', services.ref_registry.register_object(TextObject.type)),
+                ),
+            )
+        sample_tree_type = htypes.tree_view_sample.tree_view_sample_object_type(
+            command_list=(
+                htypes.object_type.object_command('open', services.ref_registry.register_object(TextObject.type)),
+                htypes.object_type.object_command('edit', services.ref_registry.register_object(sample_article_type)),
+                ),
+            )
+        SampleTree.type = sample_tree_type
+        SampleArticle.type = sample_article_type
+
         services.object_registry.register_type(htypes.tree_view_sample.tree_view_sample_object, SampleTree.from_data)
         services.object_registry.register_type(htypes.tree_view_sample.tree_sample_article, SampleArticle.from_data, services.object_registry)
 

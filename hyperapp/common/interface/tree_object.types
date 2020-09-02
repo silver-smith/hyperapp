@@ -1,0 +1,4 @@
+from object_type import object_type
+
+
+tree_object_type = record(object_type)

@@ -382,8 +382,8 @@ class ThisModule(ClientModule):
         self._resource_resolver = services.resource_resolver
         self._params_editor = services.params_editor
         services.tree_view_factory = self._tree_view_factory
-        services.default_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_data)
-        services.available_object_layouts.register('tree', TreeObject.category_list, self._make_tree_layout_data)
+        services.available_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
+        services.default_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
         services.object_layout_registry.register_type(
             htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.resource_resolver)
 

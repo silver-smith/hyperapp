@@ -1,3 +1,6 @@
 import:
+  types:
+    tree_object:
+      - tree_object_type
   code:
     - client.column
