@@ -117,10 +117,9 @@ class CommandList(SimpleListObject):
         resolved_piece = await self._run_command(command_id)
         if resolved_piece is None:
             return None
-        piece_ref = self._ref_registry.register_object(resolved_piece.object.data)
-        command_handle = self._layout_handle.with_command(command.id)
+        command_handle = await self._layout_handle.command_handle(command_id, resolved_piece.object.type)
         layout_handle_ref = self._ref_registry.register_object(command_handle.data)
-        return htypes.layout_editor.object_layout_editor(piece_ref, layout_handle_ref)
+        return htypes.layout_editor.object_layout_editor(layout_handle_ref)
 
     @object_command('add', kind='element')
     async def _add_command(self, path):
