@@ -114,10 +114,15 @@ class CommandList(SimpleListObject):
     @object_command('layout', kind='element')
     async def _open_layout(self, item_key):
         command_id = item_key
-        resolved_piece = await self._run_command(command_id)
-        if resolved_piece is None:
+        object_type = self._command_object_types[command_id]
+        if object_type is None:
+            # todo: do we need to support unknown command layout in object type case?
+            # resolved_piece = await self._run_command(command_id)
+            # if resolved_piece is None:
+            #     return None
+            # object_type = resolved_piece.object.type
             return None
-        command_handle = await self._layout_handle.command_handle(command_id, resolved_piece.object.type)
+        command_handle = await self._layout_handle.command_handle(command_id, object_type)
         layout_handle_ref = self._ref_registry.register_object(command_handle.data)
         return htypes.layout_editor.object_layout_editor(layout_handle_ref)
 
