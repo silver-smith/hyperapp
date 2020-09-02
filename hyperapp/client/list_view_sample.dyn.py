@@ -12,7 +12,7 @@ from .column import Column
 from .list_object import ListObject
 from .line_edit import LineObject
 from .text_object import TextObject
-from .record_object import RecordObjectType, RecordObject
+from .record_object import RecordObject
 
 log = logging.getLogger(__name__)
 
