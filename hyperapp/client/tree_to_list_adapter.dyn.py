@@ -21,12 +21,12 @@ class _Observer(TreeObserver):
 class TreeToListAdapter(ListObject):
 
     @classmethod
-    async def from_state(cls, state, object_resolver):
+    async def from_state(cls, state, ref_registry, object_resolver):
         tree_object = await object_resolver.resolve(state.base_ref)
-        return cls(state.base_ref, tree_object, state.path)
+        return cls(ref_registry, tree_object, state.path)
 
-    def __init__(self, base_ref, tree_object, path):
-        self._base_ref = base_ref
+    def __init__(self, ref_registry, tree_object, path):
+        self._ref_registry = ref_registry
         self._tree_object = tree_object
         self._path = list(path)  # accept tuples as well
         super().__init__()
@@ -39,7 +39,7 @@ class TreeToListAdapter(ListObject):
 
     @property
     def data(self):
-        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path)
+        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path)
 
     @property
     def columns(self):
@@ -53,6 +53,14 @@ class TreeToListAdapter(ListObject):
         assert from_key is None  # We always return full list
         await self._tree_object.fetch_items(self._path)
 
+    @property
+    def base_object(self):
+        return self._tree_object
+
+    @property
+    def _tree_object_ref(self):
+        return self._ref_registry.register_object(self._tree_object.data)
+
     def _process_tree_fetch_results(self, path, item_list):
         if list(path) != self._path:  # path may also be tuple
             return  # Not our path, not our request
@@ -62,49 +70,52 @@ class TreeToListAdapter(ListObject):
     # todo: distinguish leaf items, do not open them
     @command('open', kind='element')
     async def command_open(self, item_key):
-        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path + [item_key])
+        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path + [item_key])
 
     @command('open_parent')
     async def command_open_parent(self):
         if not self._path:
             return
-        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._base_ref, self._path[:-1])
+        return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path[:-1])
 
 
 class TreeToListLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object, layout_watcher, ref_registry, object_layout_producer):
-        base_object_ref = ref_registry.register_object(object.data)
-        adapter = TreeToListAdapter(base_object_ref, object, path=[])
-        base_list_layout = await object_layout_producer.produce_layout(adapter, layout_watcher, path=[*path, 'base'])
-        return cls(adapter, base_list_layout, path, object, state.command_list)
+    async def from_data(cls, state, path, layout_watcher, ref_registry, object_layout_registry, default_object_layouts):
+        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        base_list_layout = await default_object_layouts.construct_default_layout(
+            object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])
+        return cls(ref_registry, base_list_layout, path, object_type, state.command_list)
 
-    def __init__(self, adapter, base_list_layout, path, object, command_list_data):
-        # These attributes are used in collect_view_commands, which is used by super __init__
-        self._adapter = adapter
+    def __init__(self, ref_registry, base_list_layout, path, object_type, command_list_data):
+        super().__init__(path, object_type, command_list_data)
+        self._ref_registry = ref_registry
         self._base_list_layout = base_list_layout
-        super().__init__(path, object, command_list_data)
 
     @property
     def data(self):
-        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(self._command_list_data)
+        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(self._object_type_ref, self._command_list_data)
 
-    async def create_view(self, command_hub):
-        return (await self._base_list_layout.create_view(command_hub))
+    async def create_view(self, command_hub, object):
+        adapter = TreeToListAdapter(self._ref_registry, object, path=[])
+        return (await self._base_list_layout.create_view(command_hub, adapter))
 
     async def visual_item(self):
         base_item = await self._base_list_layout.visual_item()
         return self.make_visual_item('TreeToListAdapter', children=[base_item])
 
-    def get_current_commands(self, view):
-        return self._base_list_layout.get_current_commands(view)
+    def get_current_commands(self, object, view):
+        return self._base_list_layout.get_current_commands(object.base_object, view)
 
-    def collect_view_commands(self):
+    def get_item_commands(self, object, item_key):
+        return self._base_list_layout.get_item_commands(object.base_object, item_key)
+
+    def available_code_commands(self, object):
         return [
             *super().collect_view_commands(),
-            *self._base_list_layout.collect_view_commands(),
-            *[(tuple(self._path), command) for command in self._adapter.get_all_command_list()],
+            *self._base_list_layout.available_code_commands(object.base_object),
+            *[(tuple(self._path), command) for command in object.get_all_command_list()],
             ]
 
 
@@ -112,13 +123,15 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
         services.object_registry.register_type(
-            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.object_resolver)
-        # services.available_object_layouts.register('as_list', TreeObject.category_list, self._make_layout_rec)
-        # services.object_layout_registry.register_type(
-        #     htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
-        #     services.ref_registry, services.object_layout_producer)
+            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.ref_registry, services.object_resolver)
+        services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
+        services.object_layout_registry.register_type(
+            htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
+            services.ref_registry, services.object_layout_registry, services.default_object_layouts)
 
-    async def _make_layout_rec(self, object):
+    async def _make_layout_data(self, object_type):
+        object_type_ref = self._ref_registry.register_object(object_type)
         command_list = ObjectLayout.make_default_command_list(object)
-        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(command_list)
+        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(object_type_ref, command_list)

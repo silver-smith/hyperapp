@@ -38,7 +38,7 @@ class ObjectLayoutConstructorRegistry:
             if t_set & rec.object_type_t_set:
                 yield rec
 
-    async def construct_default_layout(self, object_type, watcher, object_layout_registry):
+    async def construct_default_layout(self, object_type, watcher, object_layout_registry, path=('root',)):
         rec_it = self.resolve(object_type)
         try:
             rec = next(rec_it)
@@ -46,7 +46,7 @@ class ObjectLayoutConstructorRegistry:
             raise NoSuitableProducer(f"No default layout makers are registered for: {object_type}")
         _log.info("Use default layout: %r.", rec.name)
         layout_data = await rec.layout_data_maker(object_type)
-        layout = await object_layout_registry.resolve_async(layout_data, ['root'], watcher)
+        layout = await object_layout_registry.resolve_async(layout_data, path, watcher)
         return layout
 
 
