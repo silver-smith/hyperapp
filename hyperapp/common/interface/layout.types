@@ -6,6 +6,7 @@ command = record:
 
 
 layout = record:
+  object_type_ref: ref
   command_list: command list
 
 

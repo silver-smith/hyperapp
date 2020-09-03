@@ -215,15 +215,16 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 class ListViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object_type, layout_watcher, resource_resolver):
-        return cls(path, object_type, state.command_list, resource_resolver)
+    async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver, resource_resolver):
+        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        return cls(ref_registry, path, object_type, state.command_list, resource_resolver)
 
-    def __init__(self, path, object_type, command_list_data, resource_resolver):
-        super().__init__(path, object_type, command_list_data, resource_resolver)
+    def __init__(self, ref_registry, path, object_type, command_list_data, resource_resolver):
+        super().__init__(ref_registry, path, object_type, command_list_data, resource_resolver)
 
     @property
     def data(self):
-        return htypes.list_view.list_layout(self._command_list_data)
+        return htypes.list_view.list_layout(self._object_type_ref, self._command_list_data)
 
     async def visual_item(self):
         return self.make_visual_item('ListView')
@@ -236,11 +237,13 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
         services.available_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
         services.default_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
         services.object_layout_registry.register_type(
-            htypes.list_view.list_layout, ListViewLayout.from_data, services.resource_resolver)
+            htypes.list_view.list_layout, ListViewLayout.from_data, services.ref_registry, services.async_ref_resolver, services.resource_resolver)
 
     async def _make_list_layout_data(self, object_type):
+        object_type_ref = self._ref_registry.register_object(object_type)
         command_list = MultiItemObjectLayout.make_default_command_list(object_type)
-        return htypes.list_view.list_layout(command_list)
+        return htypes.list_view.list_layout(object_type_ref, command_list)

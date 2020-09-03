@@ -196,7 +196,7 @@ class ObjectLayoutEditor(LayoutEditor):
     async def _replace_impl(self, layout_rec_maker):
         resource_key = self._object.hashable_resource_key
         layout_data = await layout_rec_maker(self._object)
-        layout = await self._object_layout_registry.resolve_async(layout_data, ['root'], self._object, self._layout_handle.watcher)
+        layout = await self._object_layout_registry.resolve_async(layout_data, ['root'], self._layout_handle.watcher)
         await self._layout_handle.set_layout(layout)
         return self.data
 

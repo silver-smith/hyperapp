@@ -90,17 +90,18 @@ class LineEditView(View, QtWidgets.QLineEdit):
 class LineEditLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, object_type, layout_watcher):
-        return cls(layout_watcher, path, object_type, state.command_list, state.editable)
+    async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver):
+        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        return cls(ref_registry, layout_watcher, path, object_type, state.command_list, state.editable)
 
-    def __init__(self, layout_watcher, path, object_type, command_list_data, editable):
-        super().__init__(path, object_type, command_list_data)
+    def __init__(self, ref_registry, layout_watcher, path, object_type, command_list_data, editable):
+        super().__init__(ref_registry, path, object_type, command_list_data)
         self._layout_watcher = layout_watcher
         self._editable = editable
 
     @property
     def data(self):
-        return htypes.line.line_edit_layout(self._command_list_data, self._editable)
+        return htypes.line.line_edit_layout(self._object_type_ref, self._command_list_data, self._editable)
 
     async def create_view(self, command_hub, object):
         return LineEditView(object, self._editable)
@@ -133,11 +134,14 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
+        self._ref_registry = services.ref_registry
         services.object_registry.register_type(htypes.line.line, LineObject.from_state)
         services.available_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
         services.default_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
-        services.object_layout_registry.register_type(htypes.line.line_edit_layout, LineEditLayout.from_data)
+        services.object_layout_registry.register_type(
+            htypes.line.line_edit_layout, LineEditLayout.from_data, services.ref_registry, services.async_ref_resolver)
 
     async def _make_line_layout_data(self, object_type):
+        object_type_ref = self._ref_registry.register_object(object_type)
         command_list = ObjectLayout.make_default_command_list(object_type)
-        return htypes.line.line_edit_layout(command_list, editable=False)
+        return htypes.line.line_edit_layout(object_type_ref, command_list, editable=False)

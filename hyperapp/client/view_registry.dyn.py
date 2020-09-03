@@ -46,7 +46,7 @@ class ObjectLayoutConstructorRegistry:
             raise NoSuitableProducer(f"No default layout makers are registered for: {object_type}")
         _log.info("Use default layout: %r.", rec.name)
         layout_data = await rec.layout_data_maker(object_type)
-        layout = await object_layout_registry.resolve_async(layout_data, ['root'], object_type, watcher)
+        layout = await object_layout_registry.resolve_async(layout_data, ['root'], watcher)
         return layout
 
 

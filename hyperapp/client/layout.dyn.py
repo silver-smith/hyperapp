@@ -76,8 +76,9 @@ class ObjectLayout(Layout):
 
     _Command = namedtuple('ObjectLayout_Command', 'id code_id layout_ref')
 
-    def __init__(self, path, object_type, command_list_data):
+    def __init__(self, ref_registry, path, object_type, command_list_data):
         super().__init__(path)
+        self._ref_registry = ref_registry
         self._object_type = object_type
         self._command_list = [
             self._Command(command.id, command.code_id, command.layout_ref)
@@ -123,6 +124,10 @@ class ObjectLayout(Layout):
             }
 
     @property
+    def _object_type_ref(self):
+        return self._ref_registry.register_object(self._object_type)
+
+    @property
     def _command_list_data(self):
         return [
             htypes.layout.command(command.id, command.code_command.id, command.layout_ref)
@@ -148,8 +153,8 @@ class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
         def current_changed(self, current_item_key):
             self._command_hub.update(only_kind='element')
 
-    def __init__(self, path, object_type, command_list_data, resource_resolver):
-        super().__init__(path, object_type, command_list_data)
+    def __init__(self, ref_registry, path, object_type, command_list_data, resource_resolver):
+        super().__init__(ref_registry, path, object_type, command_list_data)
         self._resource_resolver = resource_resolver
         self._current_item_observer = None
 

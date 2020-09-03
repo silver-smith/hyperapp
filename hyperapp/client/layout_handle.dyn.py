@@ -201,7 +201,7 @@ class ThisModule(ClientModule):
         if not layout_ref:
             layout_ref = self._resolve_association(object_type)
         if layout_ref:
-            layout = await self._object_layout_resolver.resolve_async(layout_ref, ['root'], object_type, watcher)
+            layout = await self._object_layout_resolver.resolve_async(layout_ref, ['root'], watcher)
         else:
             layout = await self._default_object_layouts.construct_default_layout(object_type, watcher, self._object_layout_registry)
         handle = handle_cls(self._ref_registry, self._object_layout_association, layout, watcher, *args, **kw)
