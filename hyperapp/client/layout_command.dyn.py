@@ -62,7 +62,10 @@ class LayoutCommand:
             return
         piece = result
         object = await this_module.object_registry.resolve_async(piece)
-        layout_handle = await self._layout_handle.command_handle(self.id, object.type, self.layout_ref)
+        if self.layout_ref:
+            layout_handle = await self._layout_handle.command_handle(self.id, self.layout_ref)
+        else:
+            layout_handle = await this_module.layout_handle_from_object_type(object.type)
         resolved_piece = _ResolvedPiece(object, layout_handle)
         _log.info("LayoutCommand: piece resolved to: %r", resolved_piece)
         if not self._wrapper:
@@ -76,3 +79,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self.object_registry = services.object_registry
+        self.layout_handle_from_object_type = services.layout_handle_from_object_type

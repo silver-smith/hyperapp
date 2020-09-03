@@ -64,9 +64,11 @@ class LayoutWatcher:
 
 class LayoutHandle(metaclass=abc.ABCMeta):
 
-    def __init__(self, ref_registry, object_layout_association, layout, watcher):
+    def __init__(self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout, watcher):
         self._ref_registry = ref_registry
+        self._object_layout_resolver = object_layout_resolver
         self._object_layout_association = object_layout_association
+        self._layout_handle_cache = layout_handle_cache
         self._layout = layout
         self._watcher = watcher
         self._watcher.subscribe(self)
@@ -79,16 +81,29 @@ class LayoutHandle(metaclass=abc.ABCMeta):
     def watcher(self) -> LayoutWatcher:
         return self._watcher
 
-    async def command_handle(self, command_id, object_type, layout_ref=None):
+    async def command_handle(self, command_id, layout_ref):
+        watcher = LayoutWatcher()
+        layout = await self._object_layout_resolver.resolve(layout_ref, ['root'], watcher)
+        def handle_constructor():
+            return CommandLayoutHandle(self._ref_registry, self._object_layout_association, layout, watcher, command_id)
         command_path = [*self.command_path, command_id]
-        handle = await this_module.make_layout_handle(
-            CommandLayoutHandle, self.base_object_type, command_path, object_type, layout_ref, base=self, command_id=command_id)
-        return handle
+        return await self.with_layout_cache(self._layout_handle_cache, self.base_object_type, command_path, handle_constructor)
 
     async def set_layout(self, layout):
         self._layout = layout
         item = await layout.visual_item()
         self._watcher.distribute_diffs([UpdateVisualItemDiff(['root'], item)])
+
+    @staticmethod
+    def with_layout_cache(layout_handle_cache, object_type, command_path, handle_constructor):
+        command_path = tuple(command_path)
+        try:
+            return layout_handle_cache[object_type, command_path]
+        except KeyError:
+            pass
+        handle = handle_constructor()
+        layout_handle_cache[object_type, command_path] = handle
+        return handle
 
     @property
     @abc.abstractmethod
@@ -109,13 +124,46 @@ class LayoutHandle(metaclass=abc.ABCMeta):
 class DefaultLayoutHandle(LayoutHandle):
 
     @classmethod
-    async def from_data(cls, state, async_ref_resolver):
+    async def from_data(
+            cls,
+            state,
+            ref_registry,
+            async_ref_resolver,
+            object_layout_resolver,
+            object_layout_association,
+            layout_handle_cache,
+            layout_from_object_type,
+            ):
         object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
-        handle = await this_module.make_layout_handle(cls, object_type, [], object_type, None, object_type)
-        return handle
+        return (await cls.from_object_type(
+            object_type,
+            ref_registry,
+            async_ref_resolver,
+            object_layout_resolver,
+            object_layout_association,
+            layout_handle_cache,
+            layout_from_object_type,
+            ))
 
-    def __init__(self, ref_registry, object_layout_association, layout, watcher, object_type):
-        super().__init__(ref_registry, object_layout_association, layout, watcher)
+    @classmethod
+    async def from_object_type(
+            cls,
+            object_type, 
+            ref_registry,
+            async_ref_resolver,
+            object_layout_resolver,
+            object_layout_association,
+            layout_handle_cache,
+            layout_from_object_type,
+            ):
+        layout = await layout_from_object_type(object_type)
+        def handle_constructor():
+            watcher = LayoutWatcher()
+            return cls(ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout, watcher, object_type)
+        return cls.with_layout_cache(layout_handle_cache, object_type, [], handle_constructor)
+
+    def __init__(self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout, watcher, object_type):
+        super().__init__(ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout, watcher)
         self._object_type = object_type
 
     @property
@@ -140,13 +188,12 @@ class CommandLayoutHandle(LayoutHandle):
 
     @classmethod
     async def from_data(cls, state, layout_handle_resolver):
-        base_handle = await layout_handle_resolver.resolve(state.base_handle_ref)
-        handle = await base_handle.command_handle(state.command_id)
-        return handle
+        base_layout_handle = await layout_handle_resolver.resolve(state.base_layout_handle_ref)
+        return base.command_handle(state.command_id, state.layout_ref)
 
-    def __init__(self, ref_registry, object_layout_association, layout, watcher, base, command_id):
-        super().__init__(ref_registry, object_layout_association, layout, watcher)
-        self._base = base
+    def __init__(self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout, watcher, base_layout_handle, command_id):
+        super().__init__(ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout, watcher)
+        self._base_layout_handle = base_layout_handle
         self._command_id = command_id
 
     @property
@@ -155,16 +202,17 @@ class CommandLayoutHandle(LayoutHandle):
 
     @property
     def data(self):
-        base_handle_ref = self._ref_registry.register_object(self._base.data)
-        return htypes.layout.command_layout_handle(base_handle_ref, self._command_id)
+        base_layout_handle_ref = self._ref_registry.register_object(self._base_layout_handle.data)
+        layout_ref = self._ref_registry.register_object(self._layout.data)
+        return htypes.layout.command_layout_handle(base_layout_handle_ref, self._command_id, layout_ref)
 
     @property
     def base_object_type(self):
-        return self._base.base_object_type
+        return self._base_layout_handle.base_object_type
 
     @property
     def command_path(self):
-        return [*self._base.command_path, self._command_id]
+        return [*self._base_layout_handle.command_path, self._command_id]
 
 
 class ThisModule(ClientModule):
@@ -172,41 +220,51 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
 
+        self._layout_handle_cache = {}  # object_type, command path -> layout handle
+
         services.layout_handle_codereg = AsyncCapsuleRegistry('layout_handle', services.type_resolver)
         services.layout_handle_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.layout_handle_codereg)
         services.layout_handle_codereg.register_type(
-            htypes.layout.default_layout_handle, DefaultLayoutHandle.from_data, services.async_ref_resolver)
+            htypes.layout.default_layout_handle,
+            DefaultLayoutHandle.from_data,
+            services.ref_registry,
+            services.async_ref_resolver,
+            services.object_layout_resolver,
+            services.object_layout_association,
+            self._layout_handle_cache,
+            self._layout_from_object_type,
+            )
         services.layout_handle_codereg.register_type(
             htypes.layout.command_layout_handle, CommandLayoutHandle.from_data, services.layout_handle_resolver)
 
         self._ref_registry = services.ref_registry
+        self._async_ref_resolver = services.async_ref_resolver
+        self._object_layout_registry = services.object_layout_registry
+        self._object_layout_resolver = services.object_layout_resolver
         self._default_object_layouts = services.default_object_layouts
         self._object_layout_association = services.object_layout_association
-        self._object_layout_registry = services.object_layout_registry
-        self._layout_handle_cache = {}  # object_type, command path -> layout handle
 
-        services.layout_handle_from_object_type = self._layout_handle_from_object_type
+        services.layout_handle_from_object_type = self.layout_handle_from_object_type
 
-    async def _layout_handle_from_object_type(self, object_type):
-        handle = await self.make_layout_handle(DefaultLayoutHandle, object_type, [], object_type, None, object_type)
-        return handle
+    async def layout_handle_from_object_type(self, object_type):
+        return (await DefaultLayoutHandle.from_object_type(
+            object_type,
+            self._ref_registry,
+            self._async_ref_resolver,
+            self._object_layout_resolver,
+            self._object_layout_association,
+            self._layout_handle_cache,
+            self._layout_from_object_type,
+            ))
 
-    async def make_layout_handle(self, handle_cls, base_object_type, command_path, object_type, layout_ref=None, *args, **kw):
-        command_path = tuple(command_path)
-        try:
-            return self._layout_handle_cache[object_type, command_path]
-        except KeyError:
-            pass
+    async def _layout_from_object_type(self, object_type):
         watcher = LayoutWatcher()
-        if not layout_ref:
-            layout_ref = self._resolve_association(object_type)
+        layout_ref = self._resolve_association(object_type)
         if layout_ref:
-            layout = await self._object_layout_resolver.resolve_async(layout_ref, ['root'], watcher)
+            layout = await self._object_layout_resolver.resolve(layout_ref, ['root'], watcher)
         else:
             layout = await self._default_object_layouts.construct_default_layout(object_type, watcher, self._object_layout_registry)
-        handle = handle_cls(self._ref_registry, self._object_layout_association, layout, watcher, *args, **kw)
-        self._layout_handle_cache[object_type, command_path] = handle
-        return handle
+        return layout
 
     def _resolve_association(self, object_type):
         object_type_t = object_type._t
