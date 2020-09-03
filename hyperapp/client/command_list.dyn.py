@@ -18,19 +18,24 @@ Item = namedtuple('Item', 'id code_id kind path layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_resolver):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_resolver, layout_handle_from_object_type):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
         layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref)
-        self = cls(ref_registry, object, layout_handle)
+        self = cls(ref_registry, layout_handle_from_object_type, object, layout_handle)
         await self._async_init(async_ref_resolver)
         return self
 
-    def __init__(self, ref_registry, object, layout_handle):
+    def __init__(self, ref_registry, layout_handle_from_object_type, object, layout_handle):
         super().__init__()
         self._ref_registry = ref_registry
+        self._layout_handle_from_object_type = layout_handle_from_object_type
         self._object = object
         self._layout_handle = layout_handle
+        self._command_dict = {
+            command.id: command
+            for command in self._layout.command_list
+            }
         self._id_to_path_and_code_command = {
             command.id: (path, command)
             for path, command in self._layout.available_code_commands(self._object)
@@ -71,7 +76,7 @@ class CommandList(SimpleListObject):
     async def get_all_items(self):
         return [
             await self._make_item(command)
-            for command in self._layout.command_list
+            for command in self._command_dict.values()
             ]
 
     @property
@@ -81,7 +86,7 @@ class CommandList(SimpleListObject):
     async def _make_item(self, command):
         object_type = self._command_object_types[command.id]
         if object_type is not None:
-            layout_handle = await self._layout_handle.command_handle(command.id, object_type, command.layout_ref)
+            layout_handle = await self._command_handle(command, object_type)
             item = await layout_handle.layout.visual_item()
             layout_str = item.text
         else:
@@ -99,6 +104,12 @@ class CommandList(SimpleListObject):
             path='/'.join(path),
             layout=layout_str,
             )
+
+    async def _command_handle(self, command, object_type):
+        if command.layout_ref:
+            return (await self._layout_handle.command_handle(command.id, command.layout_ref))
+        else:
+            return (await self._layout_handle_from_object_type(object_type))
 
     async def _run_command(self, command_id):
         command = self._id_to_layout_command[command_id]
@@ -122,7 +133,7 @@ class CommandList(SimpleListObject):
             #     return None
             # object_type = resolved_piece.object.type
             return None
-        command_handle = await self._layout_handle.command_handle(command_id, object_type)
+        command_handle = await self._command_handle(self._command_dict[command_id], object_type)
         layout_handle_ref = self._ref_registry.register_object(command_handle.data)
         return htypes.layout_editor.object_layout_editor(layout_handle_ref)
 
@@ -144,21 +155,16 @@ class CommandList(SimpleListObject):
     async def _add_command_impl(self, code_command_id):
         new_code_command_id = self._make_command_id_unique(code_command_id)
         command = self._layout.add_command(new_code_command_id, code_command_id)
+        self._command_dict[command.id] = command
         return self.data
 
     def _make_command_id_unique(self, command_id):
-        if not self._command_id_exists(command_id):
+        if command_id not in self._command_dict:
             return command_id
         for idx in itertools.count():
             unique_id = f'{command_id}_{idx}'
-            if not self._command_id_exists(unique_id):
+            if unique_id not in self._command_dict:
                 return unique_id
-
-    def _command_id_exists(self, command_id):
-        for command in self._layout.command_list:
-            if command.id == command_id:
-                return True
-        return False
 
 
 class ThisModule(ClientModule):
@@ -182,4 +188,5 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.object_registry,
             services.layout_handle_resolver,
+            services.layout_handle_from_object_type,
             )
