@@ -85,6 +85,10 @@ class ObjectLayout(Layout):
             for command in command_list_data
             ]
 
+    @property
+    def object_type(self):
+        return self._object_type
+
     @abc.abstractmethod
     async def create_view(self, command_hub, object):
         pass
