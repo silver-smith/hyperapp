@@ -30,6 +30,15 @@ class LayoutEditor(TreeObject):
         self._append_item([], root)
 
     @property
+    def type(self):
+        return htypes.layout_editor.layout_editor_object_type(
+            command_list=tuple(
+                htypes.object_type.object_command(command.command.id, result_object_type_ref=None)
+                for command in self._item_commands.values()
+                ),
+            )
+
+    @property
     def columns(self):
         return [
             Column('name', is_key=True),

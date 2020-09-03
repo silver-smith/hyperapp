@@ -1,3 +1,7 @@
+from tree_object import tree_object_type
+
+
+layout_editor_object_type = record(tree_object_type)
 
 view_layout_editor = record
 
