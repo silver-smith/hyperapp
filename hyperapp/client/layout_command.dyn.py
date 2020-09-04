@@ -11,10 +11,11 @@ _ResolvedPiece = namedtuple('_ResolvedPiece', 'object layout_handle')
 
 class LayoutCommand:
 
-    def __init__(self, id, code_command, layout_ref=None, args=None, kw=None, layout_handle=None, wrapper=None):
+    def __init__(self, id, code_command, layout_ref=None, enabled=True, args=None, kw=None, layout_handle=None, wrapper=None):
         self.id = id
         self.code_command = code_command
         self.layout_ref = layout_ref
+        self._enabled = enabled
         self._args = args or ()
         self._kw = kw or {}
         self._layout_handle = layout_handle
@@ -36,6 +37,7 @@ class LayoutCommand:
 
     def with_(self, **kw):
         old_kw = dict(
+            enabled=self._enabled,
             args=self._args,
             kw=self._kw,
             layout_handle=self._layout_handle,
@@ -48,7 +50,7 @@ class LayoutCommand:
         return self.with_(args=args, kw=kw)
 
     def is_enabled(self):
-        return True  # todo
+        return self._enabled
 
     async def run(self, *args, **kw):
         full_args = (*self._args, *args)

@@ -102,9 +102,11 @@ class ObjectLayout(Layout):
         for command in self._command_list:
             if command.code_id:
                 code_command = id_to_code_command[command.code_id]
+                enabled = code_command.is_enabled()
             else:
                 code_command = None
-            command_list.append(LayoutCommand(command.id, code_command, command.layout_ref))
+                enabled = True
+            command_list.append(LayoutCommand(command.id, code_command, command.layout_ref, enabled=enabled))
         return command_list
 
     def get_item_commands(self, object, item_key):
