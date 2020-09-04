@@ -59,7 +59,7 @@ class ViewChooser(SimpleListObject, Chooser):
         return self._items
 
     def get_value(self):
-        assert False, "ViewChooser.choose command should be used, not ParamsEditor.submit"
+        return None
 
     @command('choose', kind='element')
     async def _choose(self, item_key):
