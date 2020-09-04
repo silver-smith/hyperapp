@@ -124,6 +124,7 @@ class ObjectLayout(Layout):
 
     def add_command(self, id, code_id):
         path, code_command = self._id_to_code_command[code_id]
+        assert 0  # todo: update
         command = LayoutCommand(id, code_command, path, layout_ref=None)
         self._command_list.append(command)
 
@@ -140,8 +141,8 @@ class ObjectLayout(Layout):
     @property
     def _command_list_data(self):
         return [
-            htypes.layout.command(command.id, command.code_command.id, command.layout_ref)
-            for command in self.command_list
+            htypes.layout.command(command.id, command.code_id, command.layout_ref)
+            for command in self._command_list
             ]
 
     @staticmethod
