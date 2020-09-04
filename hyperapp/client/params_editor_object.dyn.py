@@ -41,7 +41,8 @@ class ParamsEditor(RecordObject):
         self._target_object = target_object
         self._target_command_id = target_command_id
         self._bound_arguments = bound_arguments
-        self._chooser_callback_list = []
+        self._chooser = None
+        self._chooser_callback = None
 
     async def async_init(self, object_registry, fields_pieces):
         await super().async_init(object_registry, fields_pieces)
@@ -49,16 +50,21 @@ class ParamsEditor(RecordObject):
             if isinstance(field_object, Chooser):
                 callback = _ParamChooserCallback(self, field_id)
                 field_object.chooser_set_callback(callback)
-                self._chooser_callback_list.append(callback)
-        if self._chooser_callback_list:
+                self._chooser = field_object
+                self._chooser_callback = callback
+        if self._chooser:
             self._submit.disable()
 
     @property
     def type(self):
-        return htypes.params_editor.params_editor_type(
+        if self._chooser:
+            command_list = ()
+        else:
             command_list=(
                 htypes.object_type.object_command('submit', None),
-                ),
+                )
+        return htypes.params_editor.params_editor_type(
+            command_list=command_list,
             field_type_list=tuple(
                 htypes.record_object.record_type_field(
                     id=field_id,

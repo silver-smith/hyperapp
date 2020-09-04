@@ -1,7 +1,10 @@
 import:
   types:
+    object_type:
+      - object_command
     view_chooser:
-    - view_chooser
+      - view_chooser_type
+      - view_chooser
   code:
     - client.object_command
     - client.chooser

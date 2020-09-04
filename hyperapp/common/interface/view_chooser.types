@@ -1,3 +1,7 @@
+from list_object import list_object_type
+
+
+view_chooser_type = record(list_object_type)
 
 view_chooser = record:
   object_type_ref: ref

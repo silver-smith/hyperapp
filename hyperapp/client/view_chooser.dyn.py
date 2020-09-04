@@ -18,6 +18,12 @@ class LayoutRecMakerField:
 
 class ViewChooser(SimpleListObject, Chooser):
 
+    type = htypes.view_chooser.view_chooser_type(
+        command_list=(
+            htypes.object_type.object_command('choose', None),
+            ),
+        )
+
     @classmethod
     async def from_state(cls, state, ref_registry, async_ref_resolver, available_object_layouts):
         object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
