@@ -115,11 +115,6 @@ class LayoutHandle(metaclass=abc.ABCMeta):
     def command_path(self):
         pass
 
-    def process_layout_diffs(self, diff_list):
-        _log.info("Save layout association for category %s/%s to %s", self._category, '/'.join(self._path), self._layout.data)
-        layout_ref = self._ref_registry.register_object(self._layout.data)
-        self._object_layout_association[self._category] = layout_ref
-
 
 class DefaultLayoutHandle(LayoutHandle):
 
@@ -183,6 +178,11 @@ class DefaultLayoutHandle(LayoutHandle):
     def command_path(self):
         return []
 
+    def process_layout_diffs(self, diff_list):
+        _log.info("Save layout association for %r to %s", self._layout.object_type, self._layout.data)
+        layout_ref = self._ref_registry.register_object(self._layout.data)
+        self._object_layout_association[self._layout.object_type] = layout_ref
+
 
 class CommandLayoutHandle(LayoutHandle):
 
@@ -213,6 +213,9 @@ class CommandLayoutHandle(LayoutHandle):
     @property
     def command_path(self):
         return [*self._base_layout_handle.command_path, self._command_id]
+
+    def process_layout_diffs(self, diff_list):
+        assert 0  # todo
 
 
 class ThisModule(ClientModule):
@@ -267,10 +270,7 @@ class ThisModule(ClientModule):
         return layout
 
     def _resolve_association(self, object_type):
-        object_type_t = object_type._t
-        while object_type_t:
-            try:
-                return self._object_layout_association[object_type_t]
-            except KeyError:
-                object_type_t = object_type_t.base
-        return None
+        try:
+            return self._object_layout_association[object_type]
+        except KeyError:
+            return None
