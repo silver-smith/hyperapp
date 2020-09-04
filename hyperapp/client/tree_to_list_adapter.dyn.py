@@ -50,7 +50,7 @@ class TreeToListAdapter(ListObject):
         return self._tree_object.key_attribute
 
     async def fetch_items(self, from_key):
-        assert from_key is None  # We always return full list
+        assert from_key is None, repr(from_key)  # We always return full list
         await self._tree_object.fetch_items(self._path)
 
     @property
@@ -82,20 +82,22 @@ class TreeToListAdapter(ListObject):
 class TreeToListLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, layout_watcher, ref_registry, object_layout_registry, default_object_layouts):
-        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+    async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_registry, default_object_layouts):
+        base_object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        adapter_object_type = htypes.list_object.list_object_type(base_object_type.command_list)
         base_list_layout = await default_object_layouts.construct_default_layout(
-            object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])
-        return cls(ref_registry, base_list_layout, path, object_type, state.command_list)
+            adapter_object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])
+        return cls(ref_registry, path, adapter_object_type, state.command_list, base_list_layout, base_object_type)
 
-    def __init__(self, ref_registry, base_list_layout, path, object_type, command_list_data):
-        super().__init__(path, object_type, command_list_data)
-        self._ref_registry = ref_registry
+    def __init__(self, ref_registry, path, adapter_object_type, command_list_data, base_list_layout, base_object_type):
+        super().__init__(ref_registry, path, adapter_object_type, command_list_data)
+        self._base_object_type = base_object_type
         self._base_list_layout = base_list_layout
 
     @property
     def data(self):
-        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(self._object_type_ref, self._command_list_data)
+        base_object_type_ref = self._ref_registry.register_object(self._base_object_type)
+        return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(base_object_type_ref, self._command_list_data)
 
     async def create_view(self, command_hub, object):
         adapter = TreeToListAdapter(self._ref_registry, object, path=[])
@@ -106,15 +108,16 @@ class TreeToListLayout(ObjectLayout):
         return self.make_visual_item('TreeToListAdapter', children=[base_item])
 
     def get_current_commands(self, object, view):
-        return self._base_list_layout.get_current_commands(object.base_object, view)
+        return self._base_list_layout.get_current_commands(object, view)
 
     def get_item_commands(self, object, item_key):
-        return self._base_list_layout.get_item_commands(object.base_object, item_key)
+        return self._base_list_layout.get_item_commands(object, item_key)
 
     def available_code_commands(self, object):
+        assert 0, repr(object)
         return [
             *super().collect_view_commands(),
-            *self._base_list_layout.available_code_commands(object.base_object),
+            *self._base_list_layout.available_code_commands(object),
             *[(tuple(self._path), command) for command in object.get_all_command_list()],
             ]
 
@@ -129,9 +132,9 @@ class ThisModule(ClientModule):
         services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
         services.object_layout_registry.register_type(
             htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
-            services.ref_registry, services.object_layout_registry, services.default_object_layouts)
+            services.ref_registry, services.async_ref_resolver, services.object_layout_registry, services.default_object_layouts)
 
     async def _make_layout_data(self, object_type):
         object_type_ref = self._ref_registry.register_object(object_type)
-        command_list = ObjectLayout.make_default_command_list(object)
+        command_list = ObjectLayout.make_default_command_list(object_type)
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(object_type_ref, command_list)
