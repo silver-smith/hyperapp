@@ -1,5 +1,6 @@
 from object_type import object_type
 
+
 record_type_field = record:
   id: string
   object_type_ref: ref

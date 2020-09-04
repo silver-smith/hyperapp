@@ -1,9 +1,14 @@
 import:
   types:
+    object_type:
+      - object_command
+    record_object:
+      - record_type_field
     params_editor:
-    - bound_argument
-    - field
-    - params_editor
+      - params_editor_type
+      - bound_argument
+      - field
+      - params_editor
   code:
     - client.record_object
     - client.chooser

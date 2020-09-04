@@ -1,3 +1,8 @@
+from record_object import record_object_type
+
+
+params_editor_type = record(record_object_type)
+
 
 bound_argument = record:
     name: string

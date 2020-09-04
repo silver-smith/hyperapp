@@ -54,6 +54,21 @@ class ParamsEditor(RecordObject):
             self._submit.disable()
 
     @property
+    def type(self):
+        return htypes.params_editor.params_editor_type(
+            command_list=(
+                htypes.object_type.object_command('submit', None),
+                ),
+            field_type_list=tuple(
+                htypes.record_object.record_type_field(
+                    id=field_id,
+                    object_type_ref=self._ref_registry.register_object(field_object.type),
+                    )
+                for field_id, field_object in self.fields.items()
+                ),
+            )
+
+    @property
     def title(self):
         return f"Parameters for {self._target_command_id}"
 
