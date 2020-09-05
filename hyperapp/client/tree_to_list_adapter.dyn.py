@@ -1,5 +1,7 @@
 # Provide list view interface to tree view object
 
+import weakref
+
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -105,7 +107,7 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
         super().__init__(ref_registry, path, adapter_object_type, command_list_data)
         self._base_object_type = base_object_type
         self._base_list_layout = base_list_layout
-        self._object_to_adapter = {}
+        self._object_to_adapter = weakref.WeakKeyDictionary()
 
     @property
     def data(self):
