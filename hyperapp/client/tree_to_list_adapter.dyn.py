@@ -4,7 +4,7 @@ from hyperapp.client.module import ClientModule
 
 from . import htypes
 from .object_command import command
-from .layout import ObjectLayout
+from .layout import AbstractMultiItemObjectLayout
 from .list_object import ListObject
 from .tree_object import TreeObserver, TreeObject
 
@@ -58,6 +58,10 @@ class TreeToListAdapter(ListObject):
         return self._tree_object
 
     @property
+    def current_path(self):
+        return self._path
+
+    @property
     def _tree_object_ref(self):
         return self._ref_registry.register_object(self._tree_object.data)
 
@@ -68,23 +72,31 @@ class TreeToListAdapter(ListObject):
         self._distribute_eof()
 
     # todo: distinguish leaf items, do not open them
-    @command('open', kind='element')
-    async def command_open(self, item_key):
+    @command('enter', kind='element')
+    async def _enter(self, item_key):
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path + [item_key])
 
     @command('open_parent')
-    async def command_open_parent(self):
+    async def _open_parent(self):
         if not self._path:
             return
         return htypes.tree_to_list_adapter.tree_to_list_adapter(self._tree_object_ref, self._path[:-1])
 
 
-class TreeToListLayout(ObjectLayout):
+class TreeToListLayout(AbstractMultiItemObjectLayout):
+
+    @staticmethod
+    def adapter_object_type(base_object_type):
+        adapter_command_list = [
+            htypes.object_type.object_command('enter', None),
+            htypes.object_type.object_command('open_parent', None),
+            ]
+        return htypes.list_object.list_object_type(tuple((*base_object_type.command_list, *adapter_command_list)))
 
     @classmethod
     async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_registry, default_object_layouts):
         base_object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
-        adapter_object_type = htypes.list_object.list_object_type(base_object_type.command_list)
+        adapter_object_type = cls.adapter_object_type(base_object_type)
         base_list_layout = await default_object_layouts.construct_default_layout(
             adapter_object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])
         return cls(ref_registry, path, adapter_object_type, state.command_list, base_list_layout, base_object_type)
@@ -93,6 +105,7 @@ class TreeToListLayout(ObjectLayout):
         super().__init__(ref_registry, path, adapter_object_type, command_list_data)
         self._base_object_type = base_object_type
         self._base_list_layout = base_list_layout
+        self._object_to_adapter = {}
 
     @property
     def data(self):
@@ -101,25 +114,55 @@ class TreeToListLayout(ObjectLayout):
 
     async def create_view(self, command_hub, object):
         adapter = TreeToListAdapter(self._ref_registry, object, path=[])
+        self._object_to_adapter[object] = adapter
         return (await self._base_list_layout.create_view(command_hub, adapter))
 
     async def visual_item(self):
         base_item = await self._base_list_layout.visual_item()
         return self.make_visual_item('TreeToListAdapter', children=[base_item])
 
-    def get_current_commands(self, object, view):
-        return self._base_list_layout.get_current_commands(object, view)
-
-    def get_item_commands(self, object, item_key):
-        return self._base_list_layout.get_item_commands(object, item_key)
-
     def available_code_commands(self, object):
-        assert 0, repr(object)
-        return [
-            *super().collect_view_commands(),
-            *self._base_list_layout.available_code_commands(object),
-            *[(tuple(self._path), command) for command in object.get_all_command_list()],
+        adapter = self._object_to_adapter[object]
+        return [*super().available_code_commands(object),
+                *self._base_list_layout.available_code_commands(adapter),
+                ]
+
+    def get_bound_item_commands(self, object, unbound_item_command_list, item_key):
+        adapter = self._object_to_adapter[object]
+        original_item_key = [*adapter.current_path, item_key]
+        adapter_command_ids = {
+            command.id for command in
+            adapter.get_item_command_list(item_key)
+            }
+        original_command_ids = {
+            command.id for command in
+            object.get_item_command_list(original_item_key)
+            }
+        adapter_commands = [
+            command.partial(item_key)
+            for command in unbound_item_command_list
+            if command.id in adapter_command_ids
             ]
+        original_commands = [
+            command.partial(original_item_key)
+            for command in unbound_item_command_list
+            if command.id in adapter_command_ids
+            ]
+        return [*adapter_commands, *original_commands]
+
+    # def get_current_commands(self, object, view):
+    #     return self._base_list_layout.get_current_commands(object, view)
+
+    # def get_item_commands(self, object, item_key):
+    #     return self._base_list_layout.get_item_commands(object, item_key)
+
+    # def available_code_commands(self, object):
+    #     assert 0, repr(object)
+    #     return [
+    #         *super().collect_view_commands(),
+    #         *self._base_list_layout.available_code_commands(object),
+    #         *[(tuple(self._path), command) for command in object.get_all_command_list()],
+    #         ]
 
 
 class ThisModule(ClientModule):
@@ -136,5 +179,6 @@ class ThisModule(ClientModule):
 
     async def _make_layout_data(self, object_type):
         object_type_ref = self._ref_registry.register_object(object_type)
-        command_list = ObjectLayout.make_default_command_list(object_type)
+        adapter_object_type = TreeToListLayout.adapter_object_type(object_type)
+        command_list = TreeToListLayout.make_default_command_list(adapter_object_type)
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(object_type_ref, command_list)

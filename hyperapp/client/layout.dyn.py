@@ -153,7 +153,7 @@ class ObjectLayout(Layout):
             ]
 
 
-class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
+class AbstractMultiItemObjectLayout(ObjectLayout):
 
     class _CurrentItemObserver:
 
@@ -164,10 +164,47 @@ class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
         def current_changed(self, current_item_key):
             self._command_hub.update(only_kind='element')
 
+    def __init__(self, ref_registry, path, object_type, command_list_data):
+        super().__init__(ref_registry, path, object_type, command_list_data)
+        self._current_item_observer = None
+
+    def get_current_commands(self, object, view):
+        return self.get_item_commands(object, view.current_item_key)
+
+    def get_item_commands(self, object, item_key):
+        all_command_list = super().get_object_commands(object)
+        non_item_command_list = [
+            command for command in all_command_list
+            if command.kind != 'element'
+            ]
+
+        if item_key is None:
+            return non_item_command_list
+
+        unbound_item_command_list = [
+            command for command in all_command_list
+            if command.kind == 'element'
+            ]
+        bound_item_command_list = self.get_bound_item_commands(object, unbound_item_command_list, item_key)
+        return [*non_item_command_list, *bound_item_command_list]
+
+    def get_bound_item_commands(self, object, unbound_item_command_list, item_key):
+        item_command_ids = {
+            command.id for command in
+            object.get_item_command_list(item_key)
+            }
+        return [
+            command.partial(item_key)  # bind to item key
+            for command in unbound_item_command_list
+            if command.id in item_command_ids
+            ]
+
+
+class MultiItemObjectLayout(AbstractMultiItemObjectLayout, metaclass=abc.ABCMeta):
+
     def __init__(self, ref_registry, path, object_type, command_list_data, resource_resolver):
         super().__init__(ref_registry, path, object_type, command_list_data)
         self._resource_resolver = resource_resolver
-        self._current_item_observer = None
 
     async def create_view(self, command_hub, object):
         columns = list(map_columns_to_view(self._resource_resolver, object))
@@ -179,27 +216,3 @@ class MultiItemObjectLayout(ObjectLayout, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _create_view_impl(self, columns):
         pass
-
-    def get_current_commands(self, object, view):
-        return self.get_item_commands(object, view.current_item_key)
-
-    def get_item_commands(self, object, item_key):
-        object_command_list = super().get_object_commands(object)
-        non_item_command_list = [
-            command for command in object_command_list
-            if command.kind != 'element'
-            ]
-
-        if item_key is None:
-            return non_item_command_list
-
-        item_command_ids = {
-            command.id for command in
-            object.get_item_command_list(item_key)
-            }
-        item_command_list = [
-            command.partial(item_key)
-            for command in object_command_list
-            if command.kind == 'element' and command.id in item_command_ids
-            ]
-        return [*non_item_command_list, *item_command_list]
