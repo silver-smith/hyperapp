@@ -127,11 +127,7 @@ class CommandList(SimpleListObject):
         command_id = item_key
         object_type = self._command_object_types[command_id]
         if object_type is None:
-            # todo: do we need to support unknown command layout in object type case?
-            # resolved_piece = await self._run_command(command_id)
-            # if resolved_piece is None:
-            #     return None
-            # object_type = resolved_piece.object.type
+            # Associating layout to dynamic-object-type command is forbidden. Even if we can run command to get it.
             return None
         command_handle = await self._command_handle(self._command_dict[command_id], object_type)
         layout_handle_ref = self._ref_registry.register_object(command_handle.data)
