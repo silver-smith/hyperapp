@@ -148,7 +148,7 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
         original_commands = [
             command.partial(original_item_key)
             for command in unbound_item_command_list
-            if command.id in adapter_command_ids
+            if command.id in original_command_ids
             ]
         return [*adapter_commands, *original_commands]
 
