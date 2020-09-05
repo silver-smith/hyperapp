@@ -152,20 +152,6 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
             ]
         return [*adapter_commands, *original_commands]
 
-    # def get_current_commands(self, object, view):
-    #     return self._base_list_layout.get_current_commands(object, view)
-
-    # def get_item_commands(self, object, item_key):
-    #     return self._base_list_layout.get_item_commands(object, item_key)
-
-    # def available_code_commands(self, object):
-    #     assert 0, repr(object)
-    #     return [
-    #         *super().collect_view_commands(),
-    #         *self._base_list_layout.available_code_commands(object),
-    #         *[(tuple(self._path), command) for command in object.get_all_command_list()],
-    #         ]
-
 
 class ThisModule(ClientModule):
 
