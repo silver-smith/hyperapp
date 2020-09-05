@@ -19,11 +19,14 @@ class VisualItem:
     name: str
     text: str
     children: List['VisualItem'] = None
-    commands: List[BoundCommand] = None
+    current_commands: List[BoundCommand] = None
+    all_commands: List[BoundCommand] = None
 
     def with_added_commands(self, commands_it):
-        all_commands = [*self.commands, *commands_it]
-        return VisualItem(self.name, self.text, self.children, all_commands)
+        added_commands = list(commands_it)
+        current_commands = [*self.current_commands, *added_commands]
+        all_commands = [*self.all_commands, *added_commands]
+        return VisualItem(self.name, self.text, self.children, current_commands, all_commands)
 
 
 class VisualItemDiff:

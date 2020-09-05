@@ -22,7 +22,8 @@ class LayoutEditor(TreeObject):
     def __init__(self, layout_watcher):
         super().__init__()
         self._path2item_list = {}
-        self._item_commands = {}  # id -> _CommandRec
+        self._current_item_commands = {}  # id -> _CommandRec
+        self._all_item_commands = {}  # id -> _CommandRec
         layout_watcher.subscribe(self)
 
     async def _async_init(self, layout):
@@ -34,7 +35,7 @@ class LayoutEditor(TreeObject):
         return htypes.layout_editor.layout_editor_object_type(
             command_list=tuple(
                 htypes.object_type.object_command(command.command.id, result_object_type_ref=None)
-                for command in self._item_commands.values()
+                for command in self._all_item_commands.values()
                 ),
             )
 
@@ -46,20 +47,20 @@ class LayoutEditor(TreeObject):
             ]
 
     def get_command(self, command_id):
-        rec = self._item_commands.get(command_id)
+        rec = self._all_item_commands.get(command_id)
         if rec:
             return rec.command.partial(rec.item_path)
         return super().get_command(command_id)
 
     def get_all_command_list(self):
-        return [rec.command for rec in self._item_commands.values()]
+        return [rec.command for rec in self._all_item_commands.values()]
 
     def get_item_command_list(self, item_path):
         try:
             item = self._find_item(item_path)
         except KeyError:
             return []
-        return item.commands or []
+        return item.current_commands or []
 
     def _find_item(self, item_path):
         if not item_path:
@@ -121,8 +122,8 @@ class LayoutEditor(TreeObject):
 
     def _add_item_commands_and_children(self, path, item):
         item_path = (*path, item.name)
-        for command in item.commands:
-            self._item_commands[command.id] = self._CommandRec(command, item_path)
+        for command in item.all_commands:
+            self._all_item_commands[command.id] = self._CommandRec(command, item_path)
         for kid in item.children:
             self._append_item(item_path, kid)
 

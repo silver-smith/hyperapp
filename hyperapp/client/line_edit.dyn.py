@@ -109,11 +109,15 @@ class LineEditLayout(ObjectLayout):
     async def visual_item(self):
         if self._editable:
             tag = 'editable'
-            command = self._set_read_only
+            current_command = self._set_read_only
         else:
             tag = 'read-only'
-            command = self._set_editable
-        return self.make_visual_item(f'LineEdit/{tag}', commands=[command])
+            current_command = self._set_editable
+        return self.make_visual_item(
+            f'LineEdit/{tag}',
+            current_commands=[current_command],
+            all_commands=[self._set_read_only, self._set_editable],
+            )
 
     @command('set_editable', kind='element')
     async def _set_editable(self, item_key):

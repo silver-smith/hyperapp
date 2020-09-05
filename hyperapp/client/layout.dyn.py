@@ -36,10 +36,14 @@ class Layout(Commander, metaclass=abc.ABCMeta):
                 for command in self.get_command_list({'view'})
                 ]
 
-    def make_visual_item(self, text, name=None, children=None, commands=None):
+    def make_visual_item(self, text, name=None, children=None, commands=None, current_commands=None, all_commands=None):
         if not name:
             name = self._path[-1]
-        return VisualItem(name, text, children or [], commands or [])
+        if current_commands is None:
+            current_commands = commands or []
+        if all_commands is None:
+            all_commands = commands or []
+        return VisualItem(name, text, children or [], current_commands, all_commands)
 
     def _merge_commands(self, primary_commands, secondary_commands):
         primary_command_ids = set(command.id for command in primary_commands)
