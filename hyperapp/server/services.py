@@ -22,6 +22,8 @@ type_module_list = [
 #    'code_repository',
 #    'splitter',
 #    'admin',
+    'object_type',
+    'layout',
     'text',
     'form',
     'blog',
