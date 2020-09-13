@@ -22,6 +22,8 @@ TEST_BLOG_ID = 'test_blog_service.blog'
 
 
 type_module_list = [
+    'object_type',
+    'layout',
     'text',
     'form',
     'blog',
@@ -33,6 +35,9 @@ server_type_module_list = [
 
 client_type_module_list = [
     'line',
+    'list_object',
+    'record_object',
+    'params_editor',
     ]
 
 server_code_module_list = [
@@ -52,6 +57,8 @@ client_code_module_list = [
     'client.text_object',
     'client.column',
     'client.list_object',
+    'client.params_editor',
+    'client.object_command',
     'client.blog',
     ]
 
