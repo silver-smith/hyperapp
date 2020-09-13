@@ -60,6 +60,5 @@ class ThisModule(ClientModule):
         services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)
         services.available_object_layouts = ObjectLayoutConstructorRegistry()
         services.default_object_layouts = ObjectLayoutConstructorRegistry()
-        services.object_layout_association = {}  # object_type -> layout ref
         services.object_layout_registry = view_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
         services.object_layout_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)

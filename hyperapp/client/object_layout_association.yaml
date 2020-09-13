@@ -1,0 +1,4 @@
+import:
+  types:
+    object_layout_association:
+      - repository_record

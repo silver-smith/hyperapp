@@ -184,8 +184,7 @@ class DefaultLayoutHandle(LayoutHandle):
 
     def process_layout_diffs(self, diff_list):
         _log.info("Save layout association for %r to %s", self._layout.object_type, self._layout.data)
-        layout_ref = self._ref_registry.register_object(self._layout.data)
-        self._object_layout_association[self._layout.object_type] = layout_ref
+        self._object_layout_association.associate(self._layout.object_type, self._layout)
 
 
 class CommandLayoutHandle(LayoutHandle):
@@ -265,15 +264,9 @@ class ThisModule(ClientModule):
             ))
 
     async def _layout_from_object_type(self, object_type, layout_watcher):
-        layout_ref = self._resolve_association(object_type)
+        layout_ref = await self._object_layout_association.resolve(object_type, layout_watcher)
         if layout_ref:
             layout = await self._object_layout_resolver.resolve(layout_ref, ['root'], layout_watcher)
         else:
             layout = await self._default_object_layouts.construct_default_layout(object_type, layout_watcher, self._object_layout_registry)
         return layout
-
-    def _resolve_association(self, object_type):
-        try:
-            return self._object_layout_association[object_type]
-        except KeyError:
-            return None
