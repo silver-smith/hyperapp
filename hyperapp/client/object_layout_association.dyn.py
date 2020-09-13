@@ -26,14 +26,13 @@ class ObjectLayoutAssociationRepository:
         layout_ref = self._ref_registry.register_object(layout.data)
         record = htypes.object_layout_association.repository_record(object_type_ref, layout_ref)
         data = packet_coders.encode('yaml', record)
-        path = self._file_path(object_type_ref)
+        path = self._file_path(object_type)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
 
     async def resolve(self, object_type, layout_watcher):
         _log.info("Resolve association of object type %s:", object_type)
-        object_type_ref = self._ref_registry.register_object(object_type)
-        path = self._file_path(object_type_ref)
+        path = self._file_path(object_type)
         if not path.exists():
             _log.info("Resolve association of object type %s: None found", object_type)
             return None
@@ -43,9 +42,10 @@ class ObjectLayoutAssociationRepository:
         _log.info("Resolve association of object type %s: found %s", object_type, layout.data)
         return layout
 
-    def _file_path(self, object_type_ref):
+    def _file_path(self, object_type):
+        object_type_ref = self._ref_registry.register_object(object_type)
         hash_hex = codecs.encode(object_type_ref.hash[:4], 'hex').decode()
-        return self._dir / f'{object_type_ref.hash_algorithm}:{hash_hex}.yaml'
+        return self._dir / f'{object_type._t.name}-{object_type_ref.hash_algorithm}:{hash_hex}.yaml'
 
 
 class ThisModule(ClientModule):
