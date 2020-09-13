@@ -32,9 +32,9 @@ def type_resolver(ref_resolver):
 @pytest.fixture
 def ref_registry(ref_resolver, type_resolver):
     registry = RefRegistry(type_resolver)
+    ref_resolver.add_source(registry)
     register_builtin_types(registry, type_resolver)
     register_code_module_types(registry, type_resolver)
-    ref_resolver.add_source(registry)
     return registry
 
 
