@@ -44,7 +44,7 @@ def test_tcp_packet(client_services, encoding):
     test_packet = test_packet_t(message='hello')
     capsule = client_services.type_resolver.make_capsule(test_packet)
     ref = make_ref(capsule)
-    bundle = bundle_t([ref], [capsule], [])
+    bundle = bundle_t((ref,), (capsule,), ())
 
     packet = tcp_packet_module.encode_tcp_packet(bundle, encoding)
     assert tcp_packet_module.has_full_tcp_packet(packet)
