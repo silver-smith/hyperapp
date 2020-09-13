@@ -47,7 +47,7 @@ class TypeResolver(object):
     def __init__(self, ref_resolver):
         self._ref_resolver = ref_resolver
         self._type_capsule_registry = capsule_registry = CapsuleRegistry('type', self)
-        self._type_capsule_resolver = type_capsule_resolver = CapsuleResolver(ref_resolver, capsule_registry)
+        self._type_capsule_resolver = CapsuleResolver(ref_resolver, capsule_registry)
         self._type_ref_resolver = _TypeRefResolver(self)
         self._meta_type_registry = make_meta_type_registry()
         self._ref2type_cache = {}  # we should resolve same ref to same instance, not a duplicate
