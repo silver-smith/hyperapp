@@ -11,7 +11,37 @@ from hyperapp.common.htypes import (
     DecodableEmbedded,
     )
 from hyperapp.common.htypes.packet_coders import packet_coders
-from hyperapp.common import dict_coders, cdr_coders
+from hyperapp.common import cdr_coders
+from hyperapp.common.services import ServicesBase
+
+
+code_module_list = [
+    'common.dict_coders',
+    ]
+
+
+class Services(ServicesBase):
+
+    def __init__(self):
+        super().__init__()
+        try:
+            self.init_services()
+            self._load_code_module_list(code_module_list)
+            self.module_registry.init_phases(self)
+        except:
+            self.stop()
+            raise
+
+    def schedule_stopping(self):
+        self.stop()
+
+
+@pytest.fixture(autouse=True)
+def services():
+    services = Services()
+    services.start()
+    yield
+    services.stop()
 
 
 @pytest.fixture(params=['json', 'yaml', 'cdr'])
