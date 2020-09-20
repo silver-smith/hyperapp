@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 
 ROUTE_RESOLVER_SERVICE_ID = 'route_resolver'
 
+
 class RouteResolverService(object):
 
     def __init__(self, route_resolver):
