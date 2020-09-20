@@ -67,6 +67,7 @@ type_module_list = [
     ]
 
 code_module_list = [
+    'common.dict_coders',
     'common.local_server_paths',
     'common.route_resolver',
     'common.visitor',

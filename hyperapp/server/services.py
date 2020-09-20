@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import concurrent.futures
 
-from ..common import cdr_coders, dict_coders  # self-registering
+from ..common import cdr_coders  # self-registering
 from ..common.services import ServicesBase
 
 log = logging.getLogger(__name__)
@@ -34,6 +34,7 @@ type_module_list = [
     ]
 
 code_module_list = [
+    'common.dict_coders',
     'common.local_server_paths',
     'common.route_resolver',
     'common.tcp_packet',
