@@ -18,11 +18,15 @@ from .htypes import (
     THierarchy,
     TClass,
     Interface,
+    ref_t,
     )
 from .htypes.deduce_value_type import deduce_value_type
 
 
-class DictEncoder(object, metaclass=abc.ABCMeta):
+class DictEncoder(metaclass=abc.ABCMeta):
+
+    def __init__(self, type_resolver=None):
+        self._type_resolver = type_resolver
 
     def encode(self, value, t=None):
         t = t or deduce_value_type(value)
@@ -57,6 +61,8 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
 
     @dispatch.register(TRecord)
     def encode_record(self, t, value):
+        if t is ref_t and self._type_resolver:
+            return self._encode_ref(value)
         fields = {}
         for field_name, field_type in t.fields.items():
             attr = getattr(value, field_name)
@@ -83,10 +89,15 @@ class DictEncoder(object, metaclass=abc.ABCMeta):
         assert isinstance(value, t), repr((t, value))
         return self.encode_hierarchy_obj(t.hierarchy, value)
 
+    def _encode_ref(self, ref):
+        decoded_capsule = self._type_resolver.resolve_ref(ref)
+        return self.dispatch(decoded_capsule.t, decoded_capsule.value)
+
 
 class JsonEncoder(DictEncoder):
 
     def __init__(self, pretty=True):
+        super().__init__()
         self._pretty = pretty
 
     def _encode_dict(self, value):

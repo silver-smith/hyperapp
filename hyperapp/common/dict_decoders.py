@@ -19,6 +19,7 @@ from .htypes import (
     TEmbedded,
     THierarchy,
     TClass,
+    ref_t,
     )
 from .htypes.packet_coders import DecodeError
 
@@ -86,6 +87,8 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
 
     @dispatch.register(TRecord)
     def decode_record(self, t, value, path):
+        # if t is ref_t:
+        #     assert 0  # todo
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         fields = self.decode_record_fields(t.fields, value, path)
         return t(**fields)
