@@ -181,7 +181,7 @@ class Services(ClientServicesBase):
         self.init_services()
         self.client_module_dir = self._hyperapp_client_dir
         self.module_registry = ModuleRegistry()
-        self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
+        # self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self._load_type_module_list(type_module_list)
         #self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
