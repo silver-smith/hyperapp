@@ -38,7 +38,7 @@ class _TypeRefResolver(TypeRefResolver):
         return self._type_resolver.resolve(type_ref.ref)
 
 
-_DecodedCapsule = namedtuple('_DecodedCapsule', 't value')
+_DecodedCapsule = namedtuple('_DecodedCapsule', 'type_ref t value')
 _RegisteredType = namedtuple('_RegisteredType', 't ref')
 
 
@@ -101,7 +101,7 @@ class TypeResolver(object):
         if expected_type and t is not expected_type:
             raise UnexpectedTypeError(expected_type, t)
         value = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-        return _DecodedCapsule(t, value)
+        return _DecodedCapsule(capsule.type_ref, t, value)
 
     def decode_object(self, t, capsule):
         type_ref = self.reverse_resolve(t)

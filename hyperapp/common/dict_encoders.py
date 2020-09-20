@@ -1,5 +1,6 @@
 import abc
 import base64
+import codecs
 import json
 import yaml
 from .method_dispatch import method_dispatch
@@ -91,7 +92,15 @@ class DictEncoder(metaclass=abc.ABCMeta):
 
     def _encode_ref(self, ref):
         decoded_capsule = self._type_resolver.resolve_ref(ref)
-        return self.dispatch(decoded_capsule.t, decoded_capsule.value)
+        value = self.dispatch(decoded_capsule.t, decoded_capsule.value)
+        type_ref = decoded_capsule.type_ref
+        hash_str = codecs.encode(type_ref.hash, "hex").decode('ascii')
+        type_ref_str = f'{type_ref.hash_algorithm}:{hash_str}'
+        return dict(
+            type_ref=type_ref_str,
+            type_name=decoded_capsule.t.name,
+            value=value,
+            )
 
 
 class JsonEncoder(DictEncoder):
