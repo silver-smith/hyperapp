@@ -25,6 +25,7 @@ common_type_module_list = [
     ]
 
 common_server_code_module_list = [
+    'common.dict_coders',
     'common.visitor',
     'common.route_resolver',
     'common.ref_collector',
@@ -37,6 +38,7 @@ common_server_code_module_list = [
     ]
 
 common_client_code_module_list = [
+    'common.dict_coders',
     'common.visitor',
     'common.route_resolver',
     'common.ref_collector',
