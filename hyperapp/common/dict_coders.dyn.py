@@ -9,4 +9,8 @@ class ThisModule(Module):
     def __init__(self, module_name, services):
         super().__init__(module_name)
         packet_coders.register('json', JsonEncoder(), JsonDecoder())
-        packet_coders.register('yaml', YamlEncoder(services.type_resolver), YamlDecoder())
+        packet_coders.register(
+            'yaml',
+            YamlEncoder(services.type_resolver),
+            YamlDecoder(services.ref_registry, services.type_resolver),
+            )

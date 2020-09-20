@@ -98,7 +98,7 @@ class DictEncoder(metaclass=abc.ABCMeta):
         type_ref_str = f'{type_ref.hash_algorithm}:{hash_str}'
         return dict(
             type_ref=type_ref_str,
-            type_name=decoded_capsule.t.name,
+            type_name=decoded_capsule.t.name,  # Ignored by decoder - just for readability.
             value=value,
             )
 

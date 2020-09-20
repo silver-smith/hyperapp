@@ -1,5 +1,6 @@
 import abc
 import base64
+import codecs
 import json
 import yaml
 import dateutil.parser
@@ -34,7 +35,11 @@ class DictDecodableEmbedded(DecodableEmbedded):
         return DictDecoder().decode_dict(t, self.data, path='embedded')
 
 
-class DictDecoder(object, metaclass=abc.ABCMeta):
+class DictDecoder(metaclass=abc.ABCMeta):
+
+    def __init__(self, ref_registry=None, type_resolver=None):
+        self._ref_registry = ref_registry
+        self._type_resolver = type_resolver
 
     def decode_dict(self, t, value, path='root'):
         return self.dispatch(t, value, path)
@@ -87,8 +92,11 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
 
     @dispatch.register(TRecord)
     def decode_record(self, t, value, path):
-        # if t is ref_t:
-        #     assert 0  # todo
+        if t is ref_t and self._ref_registry:
+            return self._decode_ref(value, path)
+        return self._decode_record_impl(t, value, path)
+
+    def _decode_record_impl(self, t, value, path):
         self.expect_type(path, isinstance(value, dict), value, 'record (dict)')
         fields = self.decode_record_fields(t.fields, value, path)
         return t(**fields)
@@ -136,6 +144,14 @@ class DictDecoder(object, metaclass=abc.ABCMeta):
                 self.failure(path, 'field %r is missing' % field_name)
         return decoded_fields
 
+    def _decode_ref(self, value, path):
+        hash_algorithm, hash_str = value['type_ref'].split(':', 1)
+        hash = codecs.decode(hash_str, 'hex')
+        type_ref = ref_t(hash_algorithm, hash)
+        t = self._type_resolver.resolve(type_ref)
+        value = self.dispatch(t, value['value'], join_path(path, 'value'))
+        ref = self._ref_registry.register_object(value, t)
+        return ref
 
 
 class DictDecoderBase(DictDecoder, metaclass=abc.ABCMeta):
