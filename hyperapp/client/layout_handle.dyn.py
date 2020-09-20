@@ -264,9 +264,7 @@ class ThisModule(ClientModule):
             ))
 
     async def _layout_from_object_type(self, object_type, layout_watcher):
-        layout_ref = await self._object_layout_association.resolve(object_type, layout_watcher)
-        if layout_ref:
-            layout = await self._object_layout_resolver.resolve(layout_ref, ['root'], layout_watcher)
-        else:
+        layout = await self._object_layout_association.resolve(object_type, layout_watcher)
+        if layout is None:
             layout = await self._default_object_layouts.construct_default_layout(object_type, layout_watcher, self._object_layout_registry)
         return layout
