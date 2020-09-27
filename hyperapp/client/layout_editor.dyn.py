@@ -159,8 +159,8 @@ class ObjectLayoutEditor(LayoutEditor):
     @classmethod
     async def from_state(
             cls, state,
-            ref_registry, async_ref_resolver, object_registry, object_layout_registry, layout_handle_resolver):
-        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref)
+            ref_registry, async_ref_resolver, object_registry, object_layout_registry, layout_handle_from_ref):
+        layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
         self = cls(ref_registry, object_layout_registry, layout_handle)
         await self._async_init(layout_handle.layout)
         return self
@@ -224,7 +224,7 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_registry,
-            services.layout_handle_from_data,
+            services.layout_handle_from_ref,
             )
 
     @object_command('open_view_layout')
