@@ -65,12 +65,16 @@ class LayoutWatcher:
 
 class LayoutHandle:
 
-    def __init__(self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, object_type, watcher, layout):
+    def __init__(
+            self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache,
+            watcher, object_type, origin_object_type, origin_command_id, layout):
         self._ref_registry = ref_registry
         self._object_layout_resolver = object_layout_resolver
         self._object_layout_association = object_layout_association
         self._layout_handle_cache = layout_handle_cache
         self._object_type = object_type
+        self._origin_object_type = origin_object_type
+        self._origin_command_id = origin_command_id
         self._watcher = watcher
         self._layout = layout
         self._watcher.subscribe(self)
@@ -82,13 +86,11 @@ class LayoutHandle:
     @property
     def data(self):
         object_type_ref = self._ref_registry.register_object(self._object_type)
-        return htypes.layout.default_layout_handle(object_type_ref)
-
-    @property
-    def data(self):
-        base_layout_handle_ref = self._ref_registry.register_object(self._base_layout_handle.data)
-        layout_ref = self._ref_registry.register_object(self._layout.data)
-        return htypes.layout.command_layout_handle(base_layout_handle_ref, self._command_id, layout_ref)
+        if self._origin_object_type:
+            origin_object_type_ref = self._ref_registry.register_object(self._object_type)
+        else:
+            origin_object_type_ref = None
+        return htypes.layout.layout_handle(object_type_ref, origin_object_type_ref, self._origin_command_id)
 
     @property
     def layout(self):
@@ -124,6 +126,7 @@ class ThisModule(ClientModule):
         self._layout_handle_cache = {}  # object_type path -> layout handle
 
         services.layout_handle_from_data = self.layout_handle_from_data
+        services.layout_handle_from_ref = self.layout_handle_from_ref
 
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver
@@ -137,10 +140,14 @@ class ThisModule(ClientModule):
     async def layout_handle_from_object_type(self, object_type):
         return (await self._create_layout_handle(object_type))
 
+    async def layout_handle_from_ref(self, state_ref):
+        state = await self._async_ref_resolver.resolve_ref_to_object(state_ref)
+        return (await self.layout_handle_from_data(state))
+
     async def layout_handle_from_data(self, state):
-        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        object_type = await self._async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
         if state.origin_object_type_ref:
-            origin_object_type = await async_ref_resolver.resolve_ref_to_object(state.origin_object_type_ref)
+            origin_object_type = await self._async_ref_resolver.resolve_ref_to_object(state.origin_object_type_ref)
         else:
             origin_object_type = None
         return (await self._create_layout_handle(object_type, origin_object_type, state.origin_command_id))
@@ -154,7 +161,7 @@ class ThisModule(ClientModule):
         layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
             self._ref_registry, self._object_layout_resolver, self._object_layout_association, self._layout_handle_cache,
-            object_type, watcher, layout)
+            watcher, object_type, origin_object_type, origin_command_id, layout)
         self._layout_handle_cache[object_type] = handle
         return handle
 
