@@ -224,7 +224,7 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_registry,
-            services.layout_handle_resolver,
+            services.layout_handle_from_data,
             )
 
     @object_command('open_view_layout')

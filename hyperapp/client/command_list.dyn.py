@@ -183,6 +183,6 @@ class ThisModule(ClientModule):
             services.ref_registry,
             services.async_ref_resolver,
             services.object_registry,
-            services.layout_handle_resolver,
+            services.layout_handle_from_data,
             services.layout_handle_from_object_type,
             )

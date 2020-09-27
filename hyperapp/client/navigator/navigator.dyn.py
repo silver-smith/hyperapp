@@ -16,7 +16,7 @@ from .layout_command import LayoutCommand
 _log = logging.getLogger(__name__)
 
 
-_HistoryItem = namedtuple('_HistoryItem', 'object')
+_HistoryItem = namedtuple('_HistoryItem', 'object layout_handle')
 
 
 class _History:
@@ -81,7 +81,7 @@ class NavigatorLayout(GlobalLayout):
         piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
         self._current_object = object = await self._object_registry.resolve_async(piece)
         self._current_layout_handle = await self._layout_handle_from_object_type(object.type)
-        self._history.append(_HistoryItem(object))
+        self._history.append(_HistoryItem(object, None))
 
     @property
     def data(self):
@@ -119,19 +119,21 @@ class NavigatorLayout(GlobalLayout):
 
     async def _open_layout(self, resolved_piece):
         await self._open_layout_impl(resolved_piece.object, resolved_piece.layout_handle)
-        self._history.append(_HistoryItem(resolved_piece.object))
+        self._history.append(_HistoryItem(resolved_piece.object, resolved_piece.layout_handle))
 
     async def _open_piece(self, piece):
-        await self._open_piece_impl(piece)
-        self._history.append(_HistoryItem(self._current_object))
+        layout_handle = await self._open_piece_impl(piece)
+        self._history.append(_HistoryItem(self._current_object, layout_handle))
 
     async def _open_piece_impl(self, piece):
         object = await self._object_registry.resolve_async(piece)
-        await self._open_object(object)
+        layout_handle = await self._open_object(object)
+        return layout_handle
 
     async def _open_object(self, object):
         layout_handle = await self._layout_handle_from_object_type(object.type)
         await self._open_layout_impl(object, layout_handle)
+        return layout_handle
 
     async def _open_layout_impl(self, object, layout_handle):
         view = await layout_handle.layout.create_view(self._command_hub, object)
