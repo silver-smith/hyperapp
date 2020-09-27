@@ -18,10 +18,10 @@ Item = namedtuple('Item', 'id code_id kind path layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_resolver, layout_handle_from_object_type):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_from_ref, layout_handle_from_object_type):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
         object = await object_registry.resolve_async(piece)
-        layout_handle = await layout_handle_resolver.resolve(state.layout_handle_ref)
+        layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
         self = cls(ref_registry, layout_handle_from_object_type, object, layout_handle)
         await self._async_init(async_ref_resolver)
         return self
@@ -183,6 +183,6 @@ class ThisModule(ClientModule):
             services.ref_registry,
             services.async_ref_resolver,
             services.object_registry,
-            services.layout_handle_from_data,
+            services.layout_handle_from_ref,
             services.layout_handle_from_object_type,
             )
