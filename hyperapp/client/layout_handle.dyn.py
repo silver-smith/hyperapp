@@ -66,12 +66,13 @@ class LayoutWatcher:
 class LayoutHandle:
 
     def __init__(
-            self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache,
+            self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout):
         self._ref_registry = ref_registry
         self._object_layout_resolver = object_layout_resolver
         self._object_layout_association = object_layout_association
         self._layout_handle_cache = layout_handle_cache
+        self._layout_from_object_type = layout_from_object_type
         self._object_type = object_type
         self._origin_object_type = origin_object_type
         self._origin_command_id = origin_command_id
@@ -81,7 +82,10 @@ class LayoutHandle:
 
     @property
     def title(self):
-        return f"Layout for: {self._object_type._t.name}"
+        if self._origin_object_type:
+            return f"For: {self._origin_object_type._t.name}/{self._origin_command_id}"
+        else:
+            return f"For type: {self._object_type._t.name}"
 
     @property
     def data(self):
@@ -100,13 +104,21 @@ class LayoutHandle:
     def watcher(self) -> LayoutWatcher:
         return self._watcher
 
-    async def command_handle(self, command_id, layout_ref):
-        async def handle_constructor():
-            watcher = LayoutWatcher()
+    async def command_handle(self, command_id, object_type, layout_ref):
+        try:
+            return self._layout_handle_cache[object_type]
+        except KeyError:
+            pass
+        watcher = LayoutWatcher()
+        if layout_ref:
             layout = await self._object_layout_resolver.resolve(layout_ref, ['root'], watcher)
-            return CommandLayoutHandle(self._ref_registry, self._object_layout_association, layout, watcher, command_id)
-        command_path = [*self.command_path, command_id]
-        return await self.with_layout_cache(self._layout_handle_cache, self.base_object_type, command_path, handle_constructor)
+        else:
+            layout = await self._layout_from_object_type(object_type, watcher)
+        handle = LayoutHandle(
+            self._ref_registry, self._object_layout_resolver, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
+            watcher, object_type, self._object_type, command_id, layout)
+        self._layout_handle_cache[object_type] = handle
+        return handle
 
     async def set_layout(self, layout):
         self._layout = layout
@@ -160,7 +172,7 @@ class ThisModule(ClientModule):
         watcher = LayoutWatcher()
         layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_resolver, self._object_layout_association, self._layout_handle_cache,
+            self._ref_registry, self._object_layout_resolver, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout)
         self._layout_handle_cache[object_type] = handle
         return handle

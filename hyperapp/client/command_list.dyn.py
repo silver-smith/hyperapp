@@ -106,10 +106,7 @@ class CommandList(SimpleListObject):
             )
 
     async def _command_handle(self, command, object_type):
-        if command.layout_ref:
-            return (await self._layout_handle.command_handle(command.id, command.layout_ref))
-        else:
-            return (await self._layout_handle_from_object_type(object_type))
+        return (await self._layout_handle.command_handle(command.id, object_type, command.layout_ref))
 
     async def _run_command(self, command_id):
         command = self._id_to_layout_command[command_id]

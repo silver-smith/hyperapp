@@ -173,7 +173,7 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @property
     def title(self):
-        return f"Layout for category: {self._layout_handle.title}"
+        return f"Edit layout: {self._layout_handle.title}"
 
     @property
     def data(self):
