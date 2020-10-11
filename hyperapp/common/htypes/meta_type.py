@@ -56,8 +56,8 @@ ref_type_t = tMetaType.register('ref', base=tRootMetaType, fields=OrderedDict([
 def t_ref(ref):
     return ref_type_t(ref_type_t.id, ref)
 
-def ref_from_data(meta_type_registry, ref_resolver, rec, name):
-    return ref_resolver.resolve(rec, name)
+def ref_from_data(meta_type_registry, type_ref_resolver, rec, name):
+    return type_ref_resolver.resolve(rec, name)
 
 
 tOptionalMeta = tMetaType.register(
