@@ -1,9 +1,8 @@
 import inspect
 import logging
 
-from .htypes import Type, ref_t, capsule_t
+from .htypes import ref_t, capsule_t
 from .htypes.deduce_value_type import deduce_value_type
-from .htypes.packet_coders import packet_coders
 from .ref import ref_repr
 from .visual_rep import pprint
 from .registry import UnknownRegistryIdError, RegistryBase
@@ -35,9 +34,8 @@ class CapsuleRegistry(RegistryBase):
         
     def resolve_capsule(self, capsule, *args, **kw):
         assert isinstance(capsule, capsule_t), repr(capsule)
-        t = self._type_resolver.resolve(capsule.type_ref)
-        object = packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
-        return self._resolve_object(capsule.type_ref, t, object, args, kw)
+        decoded_capsule = self._type_resolver.decode_capsule(capsule)
+        return self._resolve_object(decoded_capsule.type_ref, decoded_capsule.t, decoded_capsule.value, args, kw)
 
     def resolve(self, object, *args, **kw):
         t = deduce_value_type(object)
