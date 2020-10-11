@@ -23,9 +23,9 @@ DUP_OFFSET = QtCore.QPoint(150, 50)
 class WindowLayout(GlobalLayout):
 
     @classmethod
-    async def from_data(cls, state, path, on_close, command_hub, ref_registry, view_resolver):
+    async def from_data(cls, state, path, on_close, command_hub, ref_registry, view_registry):
         self = cls(ref_registry, path, on_close, command_hub, state.pos, state.size)
-        await self._async_init(view_resolver, state)
+        await self._async_init(view_registry, state)
         return self
 
     def __init__(self, ref_registry, path, on_close, command_hub, pos, size):
@@ -38,10 +38,10 @@ class WindowLayout(GlobalLayout):
         self._size = size
         self._widget = None
 
-    async def _async_init(self, view_resolver, state):
-        self._menu_bar_layout = await view_resolver.resolve(state.menu_bar_ref, [*self._path, 'menu_bar'], self._command_hub, self._view_opener)
-        self._command_pane_layout = await view_resolver.resolve(state.command_pane_ref, [*self._path, 'command_pane'], self._command_hub, self._view_opener)
-        self._central_view_layout = await view_resolver.resolve(state.central_view_ref, [*self._path, 'central_view'], self._command_hub, self._view_opener)
+    async def _async_init(self, view_registry, state):
+        self._menu_bar_layout = await view_registry.summon(state.menu_bar_ref, [*self._path, 'menu_bar'], self._command_hub, self._view_opener)
+        self._command_pane_layout = await view_registry.summon(state.command_pane_ref, [*self._path, 'command_pane'], self._command_hub, self._view_opener)
+        self._central_view_layout = await view_registry.summon(state.central_view_ref, [*self._path, 'central_view'], self._command_hub, self._view_opener)
 
     @property
     def data(self):
@@ -161,4 +161,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(htypes.window.window, WindowLayout.from_data, services.ref_registry, services.view_resolver)
+        services.view_registry.register_actor(htypes.window.window, WindowLayout.from_data, services.ref_registry, services.view_registry)

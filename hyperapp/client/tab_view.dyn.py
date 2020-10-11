@@ -34,15 +34,15 @@ class TabLayout(GlobalLayout):
     _Tab = namedtuple('_Tab', 'name layout')
 
     @classmethod
-    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_resolver, layout_watcher):
-        self = cls(ref_registry, view_resolver, layout_watcher, state.current_tab, path, command_hub, view_opener)
+    async def from_data(cls, state, path, command_hub, view_opener, ref_registry, view_registry, layout_watcher):
+        self = cls(ref_registry, view_registry, layout_watcher, state.current_tab, path, command_hub, view_opener)
         await self._async_init(state.tabs)
         return self
 
-    def __init__(self, ref_registry, view_resolver, layout_watcher, current_tab_idx, path, command_hub, view_opener):
+    def __init__(self, ref_registry, view_registry, layout_watcher, current_tab_idx, path, command_hub, view_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
-        self._view_resolver = view_resolver
+        self._view_registry = view_registry
         self._initial_tab_idx = current_tab_idx  # valid only during construction
         self._layout_watcher = layout_watcher
         self._command_hub = command_hub
@@ -121,7 +121,7 @@ class TabLayout(GlobalLayout):
         tab_id = next(self._tab_id_counter)
         tab_name = f'tab#{tab_id}'
         opener = _ViewOpener(self, tab_name)
-        layout = await self._view_resolver.resolve(tab_ref, [*self._path, tab_name], self._command_hub, opener)
+        layout = await self._view_registry.summon(tab_ref, [*self._path, tab_name], self._command_hub, opener)
         return self._Tab(tab_name, layout)
 
     def _on_current_tab_changed(self, tab_idx):
@@ -249,8 +249,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
-        services.view_registry.register_type(
-            htypes.tab_view.tab_view, TabLayout.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
+        services.view_registry.register_actor(
+            htypes.tab_view.tab_view, TabLayout.from_data, services.ref_registry, services.view_registry, services.layout_watcher)
         services.available_view_registry['tab_view'] = self._make_new_tab_ref()
 
     def _make_new_tab_ref(self):

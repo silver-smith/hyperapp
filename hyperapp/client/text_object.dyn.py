@@ -80,5 +80,5 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(htypes.text.text, TextObject.from_state)
-        services.object_registry.register_type(htypes.text.wiki_text, WikiTextObject.from_state, services.async_ref_resolver)
+        services.object_registry.register_actor(htypes.text.text, TextObject.from_state)
+        services.object_registry.register_actor(htypes.text.wiki_text, WikiTextObject.from_state, services.async_ref_resolver)

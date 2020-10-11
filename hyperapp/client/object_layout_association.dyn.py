@@ -15,9 +15,9 @@ ASSOCIATION_DIR = Path('~/.local/share/hyperapp/client/object-layout-association
 
 class ObjectLayoutAssociationRepository:
 
-    def __init__(self, ref_registry, object_layout_resolver, dir):
+    def __init__(self, ref_registry, object_layout_registry, dir):
         self._ref_registry = ref_registry
-        self._object_layout_resolver = object_layout_resolver
+        self._object_layout_registry = object_layout_registry
         self._dir = dir
 
     def associate(self, object_type, layout):
@@ -38,7 +38,7 @@ class ObjectLayoutAssociationRepository:
             return None
         data = path.read_bytes()
         record = packet_coders.decode('yaml', data, htypes.object_layout_association.repository_record)
-        layout = await self._object_layout_resolver.resolve(record.layout_ref, ['root'], layout_watcher)
+        layout = await self._object_layout_registry.summon(record.layout_ref, ['root'], layout_watcher)
         _log.info("Resolve association of object type %s: found %s", object_type, layout.data)
         return layout
 
@@ -53,4 +53,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_layout_association = ObjectLayoutAssociationRepository(
-            services.ref_registry, services.object_layout_resolver, ASSOCIATION_DIR)
+            services.ref_registry, services.object_layout_registry, ASSOCIATION_DIR)

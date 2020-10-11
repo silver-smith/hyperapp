@@ -51,22 +51,22 @@ class NavigatorLayout(GlobalLayout):
     async def from_data(cls,
                         state, path, command_hub, view_opener,
                         ref_registry, async_ref_resolver, type_resolver,
-                        object_registry, object_layout_resolver, layout_handle_from_object_type, module_command_registry, params_editor):
+                        object_registry, object_layout_registry, layout_handle_from_object_type, module_command_registry, params_editor):
         self = cls(ref_registry, async_ref_resolver, type_resolver,
-                   object_registry, object_layout_resolver, layout_handle_from_object_type, module_command_registry, params_editor,
+                   object_registry, object_layout_registry, layout_handle_from_object_type, module_command_registry, params_editor,
                    path, command_hub, view_opener)
         await self._async_init(state.current_piece_ref)
         return self
 
     def __init__(self, ref_registry, async_ref_resolver, type_resolver,
-                 object_registry, object_layout_resolver, layout_handle_from_object_type, module_command_registry, params_editor,
+                 object_registry, object_layout_registry, layout_handle_from_object_type, module_command_registry, params_editor,
                  path, command_hub, view_opener):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._async_ref_resolver = async_ref_resolver
         self._type_resolver = type_resolver
         self._object_registry = object_registry
-        self._object_layout_resolver = object_layout_resolver
+        self._object_layout_registry = object_layout_registry
         self._layout_handle_from_object_type = layout_handle_from_object_type
         self._module_command_registry = module_command_registry
         self._params_editor = params_editor
@@ -79,7 +79,7 @@ class NavigatorLayout(GlobalLayout):
 
     async def _async_init(self, initial_piece_ref):
         piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
-        self._current_object = object = await self._object_registry.resolve_async(piece)
+        self._current_object = object = await self._object_registry.animate(piece)
         self._current_layout_handle = await self._layout_handle_from_object_type(object.type)
         self._history.append(_HistoryItem(object, None))
 
@@ -126,7 +126,7 @@ class NavigatorLayout(GlobalLayout):
         self._history.append(_HistoryItem(self._current_object, layout_handle))
 
     async def _open_piece_impl(self, piece):
-        object = await self._object_registry.resolve_async(piece)
+        object = await self._object_registry.animate(piece)
         layout_handle = await self._open_object(object)
         return layout_handle
 
@@ -177,14 +177,14 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.view_registry.register_type(
+        services.view_registry.register_actor(
             htypes.navigator.navigator,
             NavigatorLayout.from_data,
             services.ref_registry,
             services.async_ref_resolver,
             services.type_resolver,
             services.object_registry,
-            services.object_layout_resolver,
+            services.object_layout_registry,
             services.layout_handle_from_object_type,
             services.module_command_registry,
             services.params_editor,

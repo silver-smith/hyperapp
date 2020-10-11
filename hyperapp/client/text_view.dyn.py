@@ -120,7 +120,7 @@ class ThisModule(ClientModule):
         self._ref_registry = services.ref_registry
         services.available_object_layouts.register('text', [TextObject.type._t], self._make_text_layout_data)
         services.default_object_layouts.register('text', [TextObject.type._t], self._make_text_layout_data)
-        services.object_layout_registry.register_type(
+        services.object_layout_registry.register_actor(
             htypes.text.text_edit_layout, TextViewLayout.from_data, services.ref_registry, services.async_ref_resolver)
 
     async def _make_text_layout_data(self, object_type):

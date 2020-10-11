@@ -210,7 +210,7 @@ class ObjectLayoutEditor(LayoutEditor):
     @command('_replace_impl')
     async def _replace_impl(self, layout_data_maker):
         layout_data = await layout_data_maker(self._layout_handle.layout.object_type)
-        layout = await self._object_layout_registry.resolve_async(layout_data, ['root'], self._layout_handle.watcher)
+        layout = await self._object_layout_registry.animate(layout_data, ['root'], self._layout_handle.watcher)
         await self._layout_handle.set_layout(layout)
         return self.data
 
@@ -219,9 +219,9 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.layout_editor.view_layout_editor, GlobalLayoutEditor.from_state, services.layout_manager, services.layout_watcher)
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.layout_editor.object_layout_editor,
             ObjectLayoutEditor.from_state,
             services.ref_registry,

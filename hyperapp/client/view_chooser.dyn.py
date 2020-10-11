@@ -77,6 +77,6 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.view_chooser.view_chooser, ViewChooser.from_state,
             services.ref_registry, services.async_ref_resolver, services.available_object_layouts)

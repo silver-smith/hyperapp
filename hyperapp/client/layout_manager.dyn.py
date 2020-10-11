@@ -31,8 +31,8 @@ class RootLayout(GlobalLayout):
             self._window_commands = window_commands
             self._command_hub = CommandHub(get_commands=self.get_current_commands)
 
-        async def _async_init(self, view_resolver, path, ref):
-            self.layout = await view_resolver.resolve(ref, [*path, self.id], self._window_closed, self._command_hub)
+        async def _async_init(self, view_registry, path, ref):
+            self.layout = await view_registry.summon(ref, [*path, self.id], self._window_closed, self._command_hub)
 
         def get_current_commands(self):
             root_commands = [command.partial(self.id) for command in self._window_commands]
@@ -42,15 +42,15 @@ class RootLayout(GlobalLayout):
             self._on_close(self.id)
 
     @classmethod
-    async def from_data(cls, state, path, ref_registry, view_resolver, layout_watcher):
-        self = cls(ref_registry, view_resolver, layout_watcher, path)
+    async def from_data(cls, state, path, ref_registry, view_registry, layout_watcher):
+        self = cls(ref_registry, view_registry, layout_watcher, path)
         await self._async_init(state.window_ref_list)
         return self
 
-    def __init__(self, ref_registry, view_resolver, layout_watcher, path):
+    def __init__(self, ref_registry, view_registry, layout_watcher, path):
         super().__init__(path)
         self._ref_registry = ref_registry
-        self._view_resolver = view_resolver
+        self._view_registry = view_registry
         self._layout_watcher = layout_watcher
         self._window_list = None
         self._rec_id_counter = itertools.count()
@@ -95,7 +95,7 @@ class RootLayout(GlobalLayout):
     async def _create_window_rec(self, ref):
         window_commands = self.get_command_list()
         rec = self._WindowRec(f'window#{next(self._rec_id_counter)}', self._on_window_closed, window_commands)
-        await rec._async_init(self._view_resolver, self._path, ref)
+        await rec._async_init(self._view_registry, self._path, ref)
         return rec
 
     def _window_visual_commands(self, idx):
@@ -168,7 +168,7 @@ class LayoutManager:
 
     async def create_layout_views(self, root_layout_state):
         # root path is expected by layout editor to be ['root']
-        self._root_layout = layout = await self._view_registry.resolve_async(root_layout_state, ['root'])
+        self._root_layout = layout = await self._view_registry.animate(root_layout_state, ['root'])
         self._window_list = await layout.create_view()
 
     @property
@@ -184,5 +184,5 @@ class ThisModule(ClientModule):
         services.layout_manager = layout_manager = LayoutManager(
             services.view_registry,
             )
-        services.view_registry.register_type(
-            htypes.root_layout.root_layout, RootLayout.from_data, services.ref_registry, services.view_resolver, services.layout_watcher)
+        services.view_registry.register_actor(
+            htypes.root_layout.root_layout, RootLayout.from_data, services.ref_registry, services.view_registry, services.layout_watcher)

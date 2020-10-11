@@ -80,7 +80,7 @@ code_module_list = [
     'common.fs_service_impl',
     'client.module_command_registry',
     'client.async_ref_resolver',
-    'client.async_capsule_registry',
+    'client.code_registry',
     'client.async_route_resolver',
     'client.endpoint_registry',
     'client.service_registry',

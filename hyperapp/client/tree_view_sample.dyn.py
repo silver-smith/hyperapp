@@ -139,8 +139,8 @@ class ThisModule(ClientModule):
         SampleTree.type = sample_tree_type
         SampleArticle.type = sample_article_type
 
-        services.object_registry.register_type(htypes.tree_view_sample.tree_view_sample_object, SampleTree.from_data)
-        services.object_registry.register_type(htypes.tree_view_sample.tree_sample_article, SampleArticle.from_data, services.object_registry)
+        services.object_registry.register_actor(htypes.tree_view_sample.tree_view_sample_object, SampleTree.from_data)
+        services.object_registry.register_actor(htypes.tree_view_sample.tree_sample_article, SampleArticle.from_data, services.object_registry)
 
     @command('open_tree_view_sample')
     async def open_tree_view_sample(self):

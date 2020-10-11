@@ -72,17 +72,17 @@ class RecordView(QtWidgets.QWidget):
 
 class RecordViewLayout(ObjectLayout):
 
-    async def from_data(state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_resolver):
+    async def from_data(state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_registry):
         object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
         self = RecordViewLayout(ref_registry, path, object_type, state.command_list)
-        await self._async_init(layout_watcher, async_ref_resolver, object_layout_resolver, state.field_layout_list)
+        await self._async_init(layout_watcher, async_ref_resolver, object_layout_registry, state.field_layout_list)
         return self
 
     def __init__(self, ref_registry, path, object_type, command_list_data):
         super().__init__(ref_registry, path, object_type, command_list_data)
         self._field_layout_dict = {}
 
-    async def _async_init(self, layout_watcher, async_ref_resolver, object_layout_resolver, field_layout_list):
+    async def _async_init(self, layout_watcher, async_ref_resolver, object_layout_registry, field_layout_list):
         field_id_to_type_ref = {
             field.id: field.object_type_ref
             for field in self._object_type.field_type_list
@@ -91,7 +91,7 @@ class RecordViewLayout(ObjectLayout):
             field_object_type_ref = field_id_to_type_ref[field.id]
             field_object_type = await async_ref_resolver.resolve_ref_to_object(field_object_type_ref)
             path = [*self._path, idx]
-            layout = await object_layout_resolver.resolve(field.layout_ref, path, layout_watcher)
+            layout = await object_layout_registry.summon(field.layout_ref, path, layout_watcher)
             self._field_layout_dict[field.id] = layout
 
     @property
@@ -132,9 +132,9 @@ class ThisModule(ClientModule):
         self._layout_handle_from_object_type = services.layout_handle_from_object_type
         services.available_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
         services.default_object_layouts.register('record', [RecordObject.type._t], self._make_record_layout_data)
-        services.object_layout_registry.register_type(
+        services.object_layout_registry.register_actor(
             htypes.record_view.record_layout, RecordViewLayout.from_data,
-            services.ref_registry, services.async_ref_resolver, services.object_layout_resolver)
+            services.ref_registry, services.async_ref_resolver, services.object_layout_registry)
 
     async def _make_record_layout_data(self, object_type):
         object_type_ref = self._ref_registry.register_object(object_type)

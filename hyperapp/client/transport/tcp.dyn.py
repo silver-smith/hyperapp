@@ -89,7 +89,7 @@ class ThisModule(ClientModule):
         self._event_loop = services.event_loop
         self._address_to_protocol = {}  # htypes.tcp_transport.address -> TcpProtocol
         self._connect_lock = asyncio.Lock()
-        services.transport_registry.register_type(
+        services.transport_registry.register_actor(
             htypes.tcp_transport.address,
             self._resolve_address,
             services.ref_resolver,

@@ -37,7 +37,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         ref_registry = services.ref_registry
-        services.fs_service_registry.register_type(
+        services.fs_service_registry.register_actor(
             htypes.fs.local_fs_service, LocalFsService.from_data, services.ref_registry)
         fs_service = htypes.fs.local_fs_service()
         fs_service_ref = ref_registry.register_object(fs_service)

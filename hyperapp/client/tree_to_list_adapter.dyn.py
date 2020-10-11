@@ -23,8 +23,8 @@ class _Observer(TreeObserver):
 class TreeToListAdapter(ListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, object_resolver):
-        tree_object = await object_resolver.resolve(state.base_ref)
+    async def from_state(cls, state, ref_registry, object_registry):
+        tree_object = await object_registry.summon(state.base_ref)
         return cls(ref_registry, tree_object, state.path)
 
     def __init__(self, ref_registry, tree_object, path):
@@ -158,10 +158,10 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
-        services.object_registry.register_type(
-            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.ref_registry, services.object_resolver)
+        services.object_registry.register_actor(
+            htypes.tree_to_list_adapter.tree_to_list_adapter, TreeToListAdapter.from_state, services.ref_registry, services.object_registry)
         services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
-        services.object_layout_registry.register_type(
+        services.object_layout_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
             services.ref_registry, services.async_ref_resolver, services.object_layout_registry, services.default_object_layouts)
 

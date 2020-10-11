@@ -7,7 +7,6 @@ from hyperapp.client.commander import BoundCommand
 from hyperapp.client.module import ClientModule
 
 from . import htypes
-from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
 
 _log = logging.getLogger(__name__)
 
@@ -66,10 +65,10 @@ class LayoutWatcher:
 class LayoutHandle:
 
     def __init__(
-            self, ref_registry, object_layout_resolver, object_layout_association, layout_handle_cache, layout_from_object_type,
+            self, ref_registry, object_layout_registry, object_layout_association, layout_handle_cache, layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout):
         self._ref_registry = ref_registry
-        self._object_layout_resolver = object_layout_resolver
+        self._object_layout_registry = object_layout_registry
         self._layout_handle_cache = layout_handle_cache
         self._layout_from_object_type = layout_from_object_type
         self._object_type = object_type
@@ -110,11 +109,11 @@ class LayoutHandle:
             pass
         watcher = LayoutWatcher()
         if layout_ref:
-            layout = await self._object_layout_resolver.resolve(layout_ref, ['root'], watcher)
+            layout = await self._object_layout_registry.summon(layout_ref, ['root'], watcher)
         else:
             layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_resolver, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
+            self._ref_registry, self._object_layout_registry, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
             watcher, object_type, self._object_type, command_id, layout)
         self._layout_handle_cache[object_type] = handle
         return handle
@@ -142,7 +141,7 @@ class ThisModule(ClientModule):
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver
         self._object_layout_registry = services.object_layout_registry
-        self._object_layout_resolver = services.object_layout_resolver
+        self._object_layout_registry = services.object_layout_registry
         self._default_object_layouts = services.default_object_layouts
         self._object_layout_association = services.object_layout_association
 
@@ -171,7 +170,7 @@ class ThisModule(ClientModule):
         watcher = LayoutWatcher()
         layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_resolver, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
+            self._ref_registry, self._object_layout_registry, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout)
         self._layout_handle_cache[object_type] = handle
         return handle

@@ -72,4 +72,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(htypes.data_viewer.data_viewer, DataViewer.from_state, services.type_resolver)
+        services.object_registry.register_actor(htypes.data_viewer.data_viewer, DataViewer.from_state, services.type_resolver)

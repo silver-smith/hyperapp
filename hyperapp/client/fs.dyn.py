@@ -4,7 +4,7 @@ import logging
 from hyperapp.common.htypes import tInt, tString, resource_key_t
 from hyperapp.client.command import command
 from hyperapp.client.module import ClientModule
-from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
+from .code_registry import CodeRegistry
 from . import htypes
 from .column import Column
 from .tree_object import TreeObject
@@ -18,8 +18,8 @@ FetchResult = namedtuple('FetchResult', 'item_list eof')
 class FsTree(TreeObject):
 
     @classmethod
-    async def from_state(cls, state, fs_service_resolver):
-        fs_service = await fs_service_resolver.resolve(state.fs_service_ref)
+    async def from_state(cls, state, fs_service_registry):
+        fs_service = await fs_service_registry.summon(state.fs_service_ref)
         return cls(fs_service, state.host)
 
     def __init__(self, fs_service, host):
@@ -80,7 +80,6 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.fs_service_registry = fs_service_registry = AsyncCapsuleRegistry('fs_service', services.type_resolver)
-        services.fs_service_resolver = fs_service_resolver = AsyncCapsuleResolver(services.async_ref_resolver, fs_service_registry)
-        services.object_registry.register_type(
-            htypes.fs.fs, FsTree.from_state, services.fs_service_resolver)
+        services.fs_service_registry = CodeRegistry('fs_service', services.async_ref_resolver, services.type_resolver)
+        services.object_registry.register_actor(
+            htypes.fs.fs, FsTree.from_state, services.fs_service_registry)

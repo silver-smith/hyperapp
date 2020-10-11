@@ -139,10 +139,10 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
-        services.object_registry.register_type(htypes.line.line, LineObject.from_state)
+        services.object_registry.register_actor(htypes.line.line, LineObject.from_state)
         services.available_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
         services.default_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
-        services.object_layout_registry.register_type(
+        services.object_layout_registry.register_actor(
             htypes.line.line_edit_layout, LineEditLayout.from_data, services.ref_registry, services.async_ref_resolver)
 
     async def _make_line_layout_data(self, object_type):

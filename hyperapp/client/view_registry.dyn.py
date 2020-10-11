@@ -5,7 +5,7 @@ from collections import defaultdict, namedtuple
 from hyperapp.client.async_registry import run_awaitable_factory
 from hyperapp.client.module import ClientModule
 
-from .async_capsule_registry import AsyncCapsuleRegistry, AsyncCapsuleResolver
+from .code_registry import CodeRegistry
 
 _log = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class ObjectLayoutConstructorRegistry:
             raise NoSuitableProducer(f"No default layout makers are registered for: {object_type}")
         _log.info("Use default layout: %r.", rec.name)
         layout_data = await rec.layout_data_maker(object_type)
-        layout = await object_layout_registry.resolve_async(layout_data, path, watcher)
+        layout = await object_layout_registry.animate(layout_data, path, watcher)
         return layout
 
 
@@ -56,9 +56,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         # todo: rename view to layout
         services.available_view_registry = {}  # id -> view ref, views available to add to layout
-        services.view_registry = view_registry = AsyncCapsuleRegistry('view', services.type_resolver)
-        services.view_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, view_registry)
+        services.view_registry = CodeRegistry('view', services.async_ref_resolver, services.type_resolver)
         services.available_object_layouts = ObjectLayoutConstructorRegistry()
         services.default_object_layouts = ObjectLayoutConstructorRegistry()
-        services.object_layout_registry = view_registry = AsyncCapsuleRegistry('object_layout', services.type_resolver)
-        services.object_layout_resolver = view_resolver = AsyncCapsuleResolver(services.async_ref_resolver, services.object_layout_registry)
+        services.object_layout_registry = CodeRegistry('object_layout', services.async_ref_resolver, services.type_resolver)

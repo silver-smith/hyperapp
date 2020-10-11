@@ -21,7 +21,7 @@ class ParamsEditor(RecordObject):
     @classmethod
     async def from_data(cls, state, ref_registry, async_ref_resolver, object_registry):
         target_piece = await async_ref_resolver.resolve_ref_to_object(state.target_piece_ref)
-        target_object = await object_registry.resolve_async(target_piece)
+        target_object = await object_registry.animate(target_piece)
         bound_arguments = {
             name: await async_ref_resolver.resolve_ref_to_object(value_ref)
             for name, value_ref in state.bound_arguments
@@ -123,6 +123,6 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.params_editor.params_editor, ParamsEditor.from_data,
             services.ref_registry, services.async_ref_resolver, services.object_registry)

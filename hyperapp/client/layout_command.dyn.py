@@ -63,7 +63,7 @@ class LayoutCommand:
         if result is None:
             return
         piece = result
-        object = await this_module.object_registry.resolve_async(piece)
+        object = await this_module.object_registry.animate(piece)
         if self.layout_ref:
             layout_handle = await self._layout_handle.command_handle(self.id, self.layout_ref)
         else:

@@ -17,7 +17,7 @@ class CategoryList(SimpleListObject):
     @classmethod
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
-        object = await object_registry.resolve_async(piece)
+        object = await object_registry.animate(piece)
         return cls(ref_registry, async_ref_resolver, object_layout_association, object_layout_producer, object)
 
     def __init__(self, ref_registry, async_ref_resolver, object_layout_association, object_layout_producer, object):
@@ -72,7 +72,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        # services.object_registry.register_type(
+        # services.object_registry.register_actor(
         #     htypes.category_list.category_list,
         #     CategoryList.from_state,
         #     services.ref_registry,

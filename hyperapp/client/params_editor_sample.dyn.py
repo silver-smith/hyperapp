@@ -65,7 +65,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(htypes.params_editor_sample.params_editor_sample, ParamsEditorSample.from_state)
+        services.object_registry.register_actor(htypes.params_editor_sample.params_editor_sample, ParamsEditorSample.from_state)
 
     @command('open_params_editor_sample')
     async def open_params_editor_sample(self):

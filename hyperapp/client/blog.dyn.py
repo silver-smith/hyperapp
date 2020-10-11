@@ -283,7 +283,7 @@ class RefSelector(RecordObject):
     async def from_piece(cls, piece, blog_service_factory, ref_registry, async_ref_resolver, object_registry):
         blog_service = await blog_service_factory(piece.blog_service_ref)
         current_piece = await async_ref_resolver.resolve_ref_to_object(piece.current_piece_ref)
-        current_object = await object_registry.resolve_async(current_piece)
+        current_object = await object_registry.animate(current_piece)
         return cls(ref_registry, blog_service, piece.blog_id, piece.article_id, piece.ref_id, piece.current_piece_ref, current_piece, current_object)
 
     def __init__(self, ref_registry, blog_service, blog_id, article_id, ref_id, current_piece_ref, current_piece, current_object):
@@ -469,18 +469,18 @@ class ThisModule(ClientModule):
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.blog.blog, BlogObject.from_piece, services.ref_registry, self._blog_service_factory)
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.blog.blog_article, BlogArticle.from_piece, services.object_registry, self._blog_service_factory)
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.blog.blog_article_ref_list,
             ArticleRefListObject.from_piece,
             self._blog_service_factory,
             services.ref_registry,
             services.async_ref_resolver,
             )
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.blog.blog_article_ref_selector,
             RefSelector.from_piece,
             self._blog_service_factory,

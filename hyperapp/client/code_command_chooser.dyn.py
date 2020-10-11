@@ -20,11 +20,11 @@ Item = namedtuple('Item', 'path id kind')
 class CodeCommandChooser(SimpleListObject, Chooser):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_resolver):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_registry):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
-        object = await object_registry.resolve_async(piece)
+        object = await object_registry.animate(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        layout = await object_layout_resolver.resolve(state.layout_ref, ['root'], object, layout_watcher)
+        layout = await object_layout_registry.summon(state.layout_ref, ['root'], object, layout_watcher)
         return cls(ref_registry, object, layout)
 
     def __init__(self, ref_registry, object, layout):
@@ -75,11 +75,11 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.code_command_chooser.code_command_chooser,
             CodeCommandChooser.from_state,
             services.ref_registry,
             services.async_ref_resolver,
             services.object_registry,
-            services.object_layout_resolver,
+            services.object_layout_registry,
             )

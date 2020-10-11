@@ -199,8 +199,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         self._session_cache = SessionCache(services.type_resolver, services.ref_registry)
-        services.object_registry.register_type(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.ref_registry, self._session_cache)
-        services.object_registry.register_type(htypes.log_viewer.log_record, LogRecord.from_state, services.ref_resolver, services.type_resolver, self._session_cache)
+        services.object_registry.register_actor(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.ref_registry, self._session_cache)
+        services.object_registry.register_actor(htypes.log_viewer.log_record, LogRecord.from_state, services.ref_resolver, services.type_resolver, self._session_cache)
 
     @command('open_last_session')
     async def open_last_session(self):

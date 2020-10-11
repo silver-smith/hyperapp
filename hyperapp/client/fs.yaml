@@ -5,6 +5,6 @@ import:
     fs:
     - fs
   code:
-  - client.async_capsule_registry
+  - client.code_registry
   - client.column
   - client.tree_object

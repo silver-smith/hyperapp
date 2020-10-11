@@ -41,8 +41,8 @@ class SplitterView(QtWidgets.QSplitter, View):
 
     @classmethod
     async def from_state(cls, locale, state, parent, view_registry):
-        x = await view_registry.resolve_async(locale, state.x)
-        y = await view_registry.resolve_async(locale, state.y)
+        x = await view_registry.animate(locale, state.x)
+        y = await view_registry.animate(locale, state.y)
         return cls(parent, x, y, state.orientation, state.focused, state.sizes)
 
     def __init__(self, parent, x, y, orient, focused, sizes):

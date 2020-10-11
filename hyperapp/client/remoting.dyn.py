@@ -21,12 +21,12 @@ PendingRequest = namedtuple('PendingRequest', 'iface command future')
 
 class Remoting(object):
 
-    def __init__(self, type_resolver, ref_registry, async_route_resolver, endpoint_registry, service_registry, transport_resolver):
+    def __init__(self, type_resolver, ref_registry, async_route_resolver, endpoint_registry, service_registry, transport_registry):
         self._type_resolver = type_resolver
         self._ref_registry = ref_registry
         self._async_route_resolver = async_route_resolver
         self._service_registry = service_registry
-        self._transport_resolver = transport_resolver
+        self._transport_registry = transport_registry
         self._pending_requests = {}  # request id -> PendingRequest
         self._my_endpoint_ref = endpoint_registry.register_endpoint(htypes.hyper_ref.endpoint(
             service_id=str(uuid.uuid4())))
@@ -36,7 +36,7 @@ class Remoting(object):
         route_rec_set = await self._async_route_resolver.resolve(service_ref)
         assert route_rec_set, 'No routes for service %s' % ref_repr(service_ref)
         route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
-        transport = await self._transport_resolver.resolve(route_rec.transport_ref)
+        transport = await self._transport_registry.summon(route_rec.transport_ref)
         if command.is_request:
             request_id = str(uuid.uuid4())
         else:
@@ -145,5 +145,5 @@ class ThisModule(ClientModule):
             services.async_route_resolver,
             services.endpoint_registry,
             services.service_registry,
-            services.transport_resolver,
+            services.transport_registry,
             )

@@ -240,7 +240,7 @@ class ThisModule(ClientModule):
         self._ref_registry = services.ref_registry
         services.available_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
         services.default_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
-        services.object_layout_registry.register_type(
+        services.object_layout_registry.register_actor(
             htypes.list_view.list_layout, ListViewLayout.from_data, services.ref_registry, services.async_ref_resolver, services.resource_resolver)
 
     async def _make_list_layout_data(self, object_type):

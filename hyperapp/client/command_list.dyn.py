@@ -20,7 +20,7 @@ class CommandList(SimpleListObject):
     @classmethod
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_from_ref, layout_handle_from_object_type):
         piece = await async_ref_resolver.resolve_ref_to_object(state.piece_ref)
-        object = await object_registry.resolve_async(piece)
+        object = await object_registry.animate(piece)
         layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
         self = cls(ref_registry, layout_handle_from_object_type, object, layout_handle)
         await self._async_init(async_ref_resolver)
@@ -174,7 +174,7 @@ class ThisModule(ClientModule):
             )
         CommandList.type = command_list_type
 
-        services.object_registry.register_type(
+        services.object_registry.register_actor(
             htypes.command_list.command_list,
             CommandList.from_state,
             services.ref_registry,

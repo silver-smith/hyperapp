@@ -11,6 +11,6 @@ class RecordObject(Object, metaclass=abc.ABCMeta):
 
     async def async_init(self, object_registry, fields_pieces):
         self.fields = {
-            name: await object_registry.resolve_async(piece)
+            name: await object_registry.animate(piece)
             for name, piece in fields_pieces.items()
             }
