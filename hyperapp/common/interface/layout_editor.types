@@ -3,7 +3,9 @@ from tree_object import tree_object_type
 
 layout_editor_object_type = record(tree_object_type)
 
+
 view_layout_editor = record
 
 object_layout_editor = record:
-  layout_handle_ref: ref
+  object_type_ref: ref
+  command_id: string opt

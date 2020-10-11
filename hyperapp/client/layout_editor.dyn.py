@@ -159,16 +159,20 @@ class ObjectLayoutEditor(LayoutEditor):
     @classmethod
     async def from_state(
             cls, state,
-            ref_registry, async_ref_resolver, object_registry, object_layout_registry, layout_handle_from_ref):
-        layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
-        self = cls(ref_registry, object_layout_registry, layout_handle)
-        await self._async_init(layout_handle.layout)
+            ref_registry, async_ref_resolver, object_registry, object_layout_registry, object_layout_association, layout_handle_from_object_type):
+        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        handle = await layout_handle_from_object_type(object_type)
+        self = cls(ref_registry, object_layout_registry, object_layout_association, object_type, state.command_id, handle)
+        await self._async_init(handle.layout)
         return self
 
-    def __init__(self, ref_registry, object_layout_registry, layout_handle):
+    def __init__(self, ref_registry, object_layout_registry, object_layout_association, object_type, command_id, layout_handle):
         super().__init__(layout_handle.watcher)
         self._ref_registry = ref_registry
         self._object_layout_registry = object_layout_registry
+        self._object_layout_association = object_layout_association
+        self._object_type = object_type
+        self._command_id = command_id
         self._layout_handle = layout_handle
 
     @property
@@ -224,7 +228,8 @@ class ThisModule(ClientModule):
             services.async_ref_resolver,
             services.object_registry,
             services.object_layout_registry,
-            services.layout_handle_from_ref,
+            services.object_layout_association,
+            services.layout_handle_from_object_type,
             )
 
     @object_command('open_view_layout')

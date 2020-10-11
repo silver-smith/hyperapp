@@ -70,7 +70,6 @@ class LayoutHandle:
             watcher, object_type, origin_object_type, origin_command_id, layout):
         self._ref_registry = ref_registry
         self._object_layout_resolver = object_layout_resolver
-        self._object_layout_association = object_layout_association
         self._layout_handle_cache = layout_handle_cache
         self._layout_from_object_type = layout_from_object_type
         self._object_type = object_type
