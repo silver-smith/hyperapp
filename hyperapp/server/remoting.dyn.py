@@ -44,12 +44,12 @@ class LocalRouteSource(RouteSource):
 
 class Remoting(object):
 
-    def __init__(self, ref_resolver, type_resolver, ref_registry, route_resolver, transport_resolver, service_registry):
+    def __init__(self, ref_resolver, type_resolver, ref_registry, route_resolver, transport_registry, service_registry):
         self._ref_resolver = ref_resolver
         self._type_resolver = type_resolver
         self._ref_registry = ref_registry
         self._route_resolver = route_resolver
-        self._transport_resolver = transport_resolver
+        self._transport_registry = transport_registry
         self._service_registry = service_registry
         my_endpoint = htypes.hyper_ref.endpoint(service_id=str(uuid.uuid4()))
         self._my_endpoint_ref = self._ref_registry.register_object(my_endpoint)
@@ -59,7 +59,7 @@ class Remoting(object):
         route_rec_set = self._route_resolver.resolve(service_ref)
         assert route_rec_set, 'No routes for service %s' % ref_repr(service_ref)
         route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
-        transport = self._transport_resolver.resolve(route_rec.transport_ref)
+        transport = self._transport_registry.summon(route_rec.transport_ref)
         if command.is_request:
             request_id = str(uuid.uuid4())
         else:
@@ -91,7 +91,7 @@ class Remoting(object):
         route_rec_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
         assert route_rec_set, 'No routes for service %s' % ref_repr(rpc_response.target_endpoint_ref)
         route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
-        transport = self._transport_resolver.resolve(route_rec.transport_ref)
+        transport = self._transport_registry.summon(route_rec.transport_ref)
         transport.send(rpc_response_ref)
 
     def _process_request(self, rpc_request_ref, rpc_request):
@@ -150,7 +150,7 @@ class ThisModule(Module):
             services.type_resolver,
             services.ref_registry,
             services.route_resolver,
-            services.transport_resolver,
+            services.transport_registry,
             services.service_registry,
             )
         local_route_source = LocalRouteSource(service_registry, services.local_transport_ref_set)

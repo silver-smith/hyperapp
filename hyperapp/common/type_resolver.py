@@ -15,7 +15,7 @@ from .htypes.packet_coders import packet_coders
 from .logger import log
 from .ref import phony_ref, ref_repr
 from .visual_rep import pprint
-from .capsule_registry import CapsuleRegistry, CapsuleResolver
+from .code_registry import CodeRegistry
 
 _log = logging.getLogger(__name__)
 
@@ -46,16 +46,15 @@ class TypeResolver(object):
 
     def __init__(self, ref_resolver):
         self._ref_resolver = ref_resolver
-        self._type_capsule_registry = capsule_registry = CapsuleRegistry('type', self)
-        self._type_capsule_resolver = CapsuleResolver(ref_resolver, capsule_registry)
+        self._type_code_registry = CodeRegistry('type', ref_resolver, self)
         self._type_ref_resolver = _TypeRefResolver(self)
         self._meta_type_registry = make_meta_type_registry()
         self._ref2type_cache = {}  # we should resolve same ref to same instance, not a duplicate
         self._type2ref = {}  # reverse registry
         self._builtin_name_to_type = {}
         self._add_phony_refs()
-        capsule_registry.register_type(builtin_ref_t, self._resolve_builtin_ref)
-        capsule_registry.register_type(meta_ref_t, self._resolve_meta_ref)
+        self._type_code_registry.register_actor(builtin_ref_t, self._resolve_builtin_ref)
+        self._type_code_registry.register_actor(meta_ref_t, self._resolve_meta_ref)
 
     def _add_phony_refs(self):
         for t, ref_id in [
@@ -71,7 +70,7 @@ class TypeResolver(object):
         if t:
             _log.info('Resolve type %s -> (cached) %s', ref_repr(type_ref), t)
             return t
-        t = self._type_capsule_resolver.resolve(type_ref)
+        t = self._type_code_registry.summon(type_ref)
         self._ref2type_cache[type_ref] = t
         self._type2ref[t] = type_ref
         _log.info('Resolve type %s -> %s', ref_repr(type_ref), t)

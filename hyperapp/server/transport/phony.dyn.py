@@ -109,7 +109,7 @@ class ThisModule(Module):
             services.request_queue,
             phony_client_address_ref,
             )
-        services.transport_registry.register_type(
+        services.transport_registry.register_actor(
             htypes.phony_transport.client_address,
             PhonyTransport,
             services.ref_collector_factory,

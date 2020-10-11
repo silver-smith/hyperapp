@@ -314,7 +314,7 @@ class ThisModule(Module):
             bind_address=bind_address,
             on_failure=services.failed,
             )
-        services.transport_registry.register_type(
+        services.transport_registry.register_actor(
             htypes.tcp_transport.incoming_connection_address, IncomingConnectionTransport, server)
         services.on_start.append(self.server.start)
         services.on_stop.append(self.server.stop)
