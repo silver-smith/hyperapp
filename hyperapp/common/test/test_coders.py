@@ -15,33 +15,14 @@ from hyperapp.common import cdr_coders
 from hyperapp.common.services import ServicesBase
 
 
-code_module_list = [
-    'common.dict_coders',
-    ]
+pytest_plugins = ['hyperapp.common.test.services']
 
 
-class Services(ServicesBase):
-
-    def __init__(self):
-        super().__init__()
-        try:
-            self.init_services()
-            self._load_code_module_list(code_module_list)
-            self.module_registry.init_phases(self)
-        except:
-            self.stop()
-            raise
-
-    def schedule_stopping(self):
-        self.stop()
-
-
-@pytest.fixture(autouse=True)
-def services():
-    services = Services()
-    services.start()
-    yield
-    services.stop()
+@pytest.fixture
+def code_module_list():
+    return [
+        'common.dict_coders',
+        ]
 
 
 @pytest.fixture(params=['json', 'yaml', 'cdr'])
@@ -49,7 +30,7 @@ def encoding(request):
     return request.param
 
 
-def test_embedded(encoding):
+def test_embedded(services, encoding):
     t = TRecord('test_record', OrderedDict([
         ('something', tString),
         ('embedded', tEmbedded),
