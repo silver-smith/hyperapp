@@ -86,12 +86,12 @@ class RsaPeer:
 
     def make_parcel(self, bundle, sender_identity, ref_registry):
         plain_data = packet_coders.encode(BUNDLE_ENCODING, bundle)
-        hash_alg = hashes.SHA1()
+        hash_algorithm = hashes.SHA1()
         cipher_data = self._public_key.encrypt(
             plain_data,
             padding.OAEP(
-                mgf=padding.MGF1(algorithm=hash_alg),
-                algorithm=hash_alg,
+                mgf=padding.MGF1(algorithm=hash_algorithm),
+                algorithm=hash_algorithm,
                 label=None,
                 ))
         signature = sender_identity.sign(cipher_data)
