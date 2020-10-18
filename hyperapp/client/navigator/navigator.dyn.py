@@ -48,23 +48,51 @@ class _History:
 class NavigatorLayout(GlobalLayout):
 
     @classmethod
-    async def from_data(cls,
-                        state, path, command_hub, view_opener,
-                        ref_registry, async_ref_resolver, types,
-                        object_registry, object_layout_registry, layout_handle_from_object_type, module_command_registry, params_editor):
-        self = cls(ref_registry, async_ref_resolver, types,
-                   object_registry, object_layout_registry, layout_handle_from_object_type, module_command_registry, params_editor,
-                   path, command_hub, view_opener)
+    async def from_data(
+            cls,
+            state,
+            path,
+            command_hub,
+            view_opener,
+            ref_registry,
+            async_ref_resolver,
+            object_registry,
+            object_layout_registry,
+            layout_handle_from_object_type,
+            module_command_registry,
+            params_editor,
+            ):
+        self = cls(
+            ref_registry,
+            async_ref_resolver,
+            object_registry,
+            object_layout_registry,
+            layout_handle_from_object_type,
+            module_command_registry,
+            params_editor,
+            path,
+            command_hub,
+            view_opener,
+            )
         await self._async_init(state.current_piece_ref)
         return self
 
-    def __init__(self, ref_registry, async_ref_resolver, types,
-                 object_registry, object_layout_registry, layout_handle_from_object_type, module_command_registry, params_editor,
-                 path, command_hub, view_opener):
+    def __init__(
+            self,
+            ref_registry,
+            async_ref_resolver,
+            object_registry,
+            object_layout_registry,
+            layout_handle_from_object_type,
+            module_command_registry,
+            params_editor,
+            path,
+            command_hub,
+            view_opener,
+            ):
         super().__init__(path)
         self._ref_registry = ref_registry
         self._async_ref_resolver = async_ref_resolver
-        self._types = types
         self._object_registry = object_registry
         self._object_layout_registry = object_layout_registry
         self._layout_handle_from_object_type = layout_handle_from_object_type
@@ -182,7 +210,6 @@ class ThisModule(ClientModule):
             NavigatorLayout.from_data,
             services.ref_registry,
             services.async_ref_resolver,
-            services.types,
             services.object_registry,
             services.object_layout_registry,
             services.layout_handle_from_object_type,
