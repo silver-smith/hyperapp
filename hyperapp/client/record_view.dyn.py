@@ -73,7 +73,7 @@ class RecordView(QtWidgets.QWidget):
 class RecordViewLayout(ObjectLayout):
 
     async def from_data(state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_registry):
-        object_type = await async_ref_resolver.resolve_ref_to_piece(state.object_type_ref)
+        object_type = await async_ref_resolver.summon(state.object_type_ref)
         self = RecordViewLayout(ref_registry, path, object_type, state.command_list)
         await self._async_init(layout_watcher, async_ref_resolver, object_layout_registry, state.field_layout_list)
         return self
@@ -89,7 +89,7 @@ class RecordViewLayout(ObjectLayout):
             }
         for idx, field in enumerate(field_layout_list):
             field_object_type_ref = field_id_to_type_ref[field.id]
-            field_object_type = await async_ref_resolver.resolve_ref_to_piece(field_object_type_ref)
+            field_object_type = await async_ref_resolver.summon(field_object_type_ref)
             path = [*self._path, idx]
             layout = await object_layout_registry.invite(field.layout_ref, path, layout_watcher)
             self._field_layout_dict[field.id] = layout
@@ -141,7 +141,7 @@ class ThisModule(ClientModule):
         command_list = ObjectLayout.make_default_command_list(object_type)
         field_layout_list = []
         for field in object_type.field_type_list:
-            field_object_type = await self._async_ref_resolver.resolve_ref_to_piece(field.object_type_ref)
+            field_object_type = await self._async_ref_resolver.summon(field.object_type_ref)
             layout_handle = await self._layout_handle_from_object_type(field_object_type)
             layout_ref = self._ref_registry.distil(layout_handle.layout.data)
             field_layout_list.append(htypes.record_view.record_layout_field(field.id, layout_ref))

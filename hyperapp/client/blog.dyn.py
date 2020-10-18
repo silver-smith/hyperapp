@@ -247,7 +247,7 @@ class ArticleRefListObject(ListObject):
     @command('open', kind='element')
     async def command_open(self, item_id):
         current_piece_ref = self._id2ref[item_id]
-        return (await self._async_ref_resolver.resolve_ref_to_piece(current_piece_ref))
+        return (await self._async_ref_resolver.summon(current_piece_ref))
 
     @command('add')
     async def command_add(self):
@@ -282,7 +282,7 @@ class RefSelector(RecordObject):
     @classmethod
     async def from_piece(cls, piece, blog_service_factory, ref_registry, async_ref_resolver, object_registry):
         blog_service = await blog_service_factory(piece.blog_service_ref)
-        current_piece = await async_ref_resolver.resolve_ref_to_piece(piece.current_piece_ref)
+        current_piece = await async_ref_resolver.summon(piece.current_piece_ref)
         current_object = await object_registry.animate(current_piece)
         return cls(ref_registry, blog_service, piece.blog_id, piece.article_id, piece.ref_id, piece.current_piece_ref, current_piece, current_object)
 

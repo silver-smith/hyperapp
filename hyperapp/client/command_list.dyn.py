@@ -19,7 +19,7 @@ class CommandList(SimpleListObject):
 
     @classmethod
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_from_ref, layout_handle_from_object_type):
-        piece = await async_ref_resolver.resolve_ref_to_piece(state.piece_ref)
+        piece = await async_ref_resolver.summon(state.piece_ref)
         object = await object_registry.animate(piece)
         layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
         self = cls(ref_registry, layout_handle_from_object_type, object, layout_handle)
@@ -43,7 +43,7 @@ class CommandList(SimpleListObject):
 
     async def _async_init(self, async_ref_resolver):
         self._command_object_types = {
-            command.id: await async_ref_resolver.resolve_ref_to_piece(command.result_object_type_ref)
+            command.id: await async_ref_resolver.summon(command.result_object_type_ref)
             for command in self._object.type.command_list
             }
         # todo: add/pass current item to command list constructor/data, use it here.

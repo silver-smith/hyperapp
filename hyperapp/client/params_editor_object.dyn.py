@@ -20,14 +20,14 @@ class ParamsEditor(RecordObject):
 
     @classmethod
     async def from_data(cls, state, ref_registry, async_ref_resolver, object_registry):
-        target_piece = await async_ref_resolver.resolve_ref_to_piece(state.target_piece_ref)
+        target_piece = await async_ref_resolver.summon(state.target_piece_ref)
         target_object = await object_registry.animate(target_piece)
         bound_arguments = {
-            name: await async_ref_resolver.resolve_ref_to_piece(value_ref)
+            name: await async_ref_resolver.summon(value_ref)
             for name, value_ref in state.bound_arguments
             }
         fields_pieces = {
-            name: await async_ref_resolver.resolve_ref_to_piece(piece_ref)
+            name: await async_ref_resolver.summon(piece_ref)
             for name, piece_ref in state.fields
             }
         self = cls(ref_registry, target_piece, target_object, state.target_command_id, bound_arguments)

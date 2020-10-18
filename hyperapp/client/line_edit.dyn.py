@@ -91,7 +91,7 @@ class LineEditLayout(ObjectLayout):
 
     @classmethod
     async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver):
-        object_type = await async_ref_resolver.resolve_ref_to_piece(state.object_type_ref)
+        object_type = await async_ref_resolver.summon(state.object_type_ref)
         return cls(ref_registry, layout_watcher, path, object_type, state.command_list, state.editable)
 
     def __init__(self, ref_registry, layout_watcher, path, object_type, command_list_data, editable):

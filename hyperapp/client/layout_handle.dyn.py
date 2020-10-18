@@ -151,13 +151,13 @@ class ThisModule(ClientModule):
         return (await self._create_layout_handle(object_type))
 
     async def layout_handle_from_ref(self, state_ref):
-        state = await self._async_ref_resolver.resolve_ref_to_piece(state_ref)
+        state = await self._async_ref_resolver.summon(state_ref)
         return (await self.layout_handle_from_data(state))
 
     async def layout_handle_from_data(self, state):
-        object_type = await self._async_ref_resolver.resolve_ref_to_piece(state.object_type_ref)
+        object_type = await self._async_ref_resolver.summon(state.object_type_ref)
         if state.origin_object_type_ref:
-            origin_object_type = await self._async_ref_resolver.resolve_ref_to_piece(state.origin_object_type_ref)
+            origin_object_type = await self._async_ref_resolver.summon(state.origin_object_type_ref)
         else:
             origin_object_type = None
         return (await self._create_layout_handle(object_type, origin_object_type, state.origin_command_id))

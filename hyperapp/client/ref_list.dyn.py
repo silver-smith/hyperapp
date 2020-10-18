@@ -64,7 +64,7 @@ class RefListObject(ListObject):
         assert self._id2ref is not None  # fetch_element was not called yet
         ref = self._id2ref[item_id]
         log.info('Opening ref %r: %s', item_id, ref_repr(ref))
-        return (await self._async_ref_resolver.resolve_ref_to_piece(ref))
+        return (await self._async_ref_resolver.summon(ref))
 
 
 class RefListService(object):
