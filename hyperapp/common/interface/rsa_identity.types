@@ -1,0 +1,3 @@
+
+rsa_identity = record:
+  private_key_pem: binary

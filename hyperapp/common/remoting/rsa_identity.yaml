@@ -1,0 +1,4 @@
+import:
+  types:
+    rsa_identity:
+      - rsa_identity
