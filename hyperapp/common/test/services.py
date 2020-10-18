@@ -33,5 +33,5 @@ def services(type_module_list, code_module_list):
     services.load_modules(type_module_list, code_module_list)
     services.module_registry.init_phases(services)
     services.start()
-    yield
+    yield services
     services.stop()
