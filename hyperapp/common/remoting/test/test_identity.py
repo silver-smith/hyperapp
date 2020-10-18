@@ -44,4 +44,4 @@ def test_rsa_parcel(services):
     my_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
     peer_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
     bundle = bundle_t(roots=[], capsule_list=[], route_list=[])
-    peer_identity.peer.make_parcel(bundle, peer_identity, services.ref_registry)
+    peer_identity.peer.make_parcel(bundle, my_identity, services.ref_registry)
