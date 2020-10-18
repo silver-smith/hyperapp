@@ -21,7 +21,7 @@ class RsaIdentity:
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=RSA_KEY_SIZE_FAST if fast else RSA_KEY_SIZE_SAFE,
-            backend=default_backend()
+            backend=default_backend(),
         )
         return cls(private_key)
 
@@ -38,7 +38,7 @@ class RsaIdentity:
         private_key_pem = self._private_key.private_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.NoEncryption(),
             )
         return htypes.rsa_identity.rsa_identity(private_key_pem)
 
@@ -52,7 +52,7 @@ class RsaIdentity:
             data,
             padding.PSS(
                 mgf=padding.MGF1(hash_algorithm),
-                salt_length=padding.PSS.MAX_LENGTH
+                salt_length=padding.PSS.MAX_LENGTH,
             ),
             hash_algorithm,
             )
@@ -81,7 +81,7 @@ class RsaPeer:
     def _public_key_pem(self):
         return self._public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
             )
 
     def make_parcel(self, bundle, sender_identity, ref_registry):
@@ -92,7 +92,8 @@ class RsaPeer:
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hash_alg),
                 algorithm=hash_alg,
-                label=None))
+                label=None,
+                ))
         signature = sender_identity.sign(cipher_data)
         signature_ref = ref_registry.register_object(signature)
         return htypes.rsa_identity.rsa_parcel(
