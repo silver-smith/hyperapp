@@ -10,7 +10,7 @@ from .visual_rep import pprint
 log = logging.getLogger(__name__)
 
 
-class RefRegistry(object):
+class RefRegistry:
 
     def __init__(self, types):
         self._types = types
@@ -28,12 +28,12 @@ class RefRegistry(object):
         pprint(self._types.decode_capsule(capsule).value, indent=1, logger=log.debug)
         return ref
 
-    def distil(self, object, t=None):
-        t = t or deduce_value_type(object)
-        log.debug('Registering ref for object %s', t.name)
-        capsule = self._types.make_capsule(object, t)
+    def distil(self, piece, t=None):
+        t = t or deduce_value_type(piece)
+        log.debug('Registering ref for piece %s', t.name)
+        capsule = self._types.make_capsule(piece, t)
         ref = self.register_capsule(capsule)
-        log.debug('  -> registered ref %s for object %s', ref_repr(ref), t.name)
+        log.debug('  -> registered ref %s for piece %s', ref_repr(ref), t.name)
         return ref
 
     def resolve_ref(self, ref):
