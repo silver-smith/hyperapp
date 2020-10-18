@@ -50,7 +50,7 @@ class Remoting(object):
             request_id=request_id,
             params=EncodableEmbedded(command.request, params),
             )
-        request_ref = self._ref_registry.register_object(rpc_request)
+        request_ref = self._ref_registry.distil(rpc_request)
         pprint(rpc_request, title='Outcoming RPC %s %s:' % (command.request_type, ref_repr(request_ref)))
         pprint(params, title='params:')
         transport.send(request_ref)

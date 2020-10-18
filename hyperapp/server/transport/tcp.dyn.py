@@ -111,7 +111,7 @@ class TcpClient(object):
 
     def start(self):
         address = htypes.tcp_transport.incoming_connection_address(connection_id=self._connection_id)
-        self._my_address_ref = self._ref_registry.register_object(address)
+        self._my_address_ref = self._ref_registry.distil(address)
         self._log('Incoming connection address: %s', address)
         self._route_resolver.add_source(self._my_route_registry)
         self._thread.start()
@@ -206,7 +206,7 @@ class TcpServer(object):
         self._socket.bind(self._bind_address)
         self._sock_address = self._socket.getsockname()
         address = htypes.tcp_transport.address(self._sock_address[0], self._sock_address[1])
-        tcp_transport_ref = self._ref_registry.register_object(address)
+        tcp_transport_ref = self._ref_registry.distil(address)
         local_transport_ref_set.add(tcp_transport_ref)
 
     def start(self):

@@ -95,7 +95,7 @@ class RsaPeer:
                 label=None,
                 ))
         signature = sender_identity.sign(cipher_data)
-        signature_ref = ref_registry.register_object(signature)
+        signature_ref = ref_registry.distil(signature)
         return htypes.rsa_identity.rsa_parcel(
             peer_public_key_pem=self._public_key_pem,
             encrypted_bundle=cipher_data,

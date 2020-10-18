@@ -65,7 +65,7 @@ class TreeToListAdapter(ListObject):
 
     @property
     def _tree_object_ref(self):
-        return self._ref_registry.register_object(self._tree_object.data)
+        return self._ref_registry.distil(self._tree_object.data)
 
     def _process_tree_fetch_results(self, path, item_list):
         if list(path) != self._path:  # path may also be tuple
@@ -111,7 +111,7 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
 
     @property
     def data(self):
-        base_object_type_ref = self._ref_registry.register_object(self._base_object_type)
+        base_object_type_ref = self._ref_registry.distil(self._base_object_type)
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(base_object_type_ref, self._command_list_data)
 
     async def create_view(self, command_hub, object):
@@ -166,7 +166,7 @@ class ThisModule(ClientModule):
             services.ref_registry, services.async_ref_resolver, services.object_layout_registry, services.default_object_layouts)
 
     async def _make_layout_data(self, object_type):
-        object_type_ref = self._ref_registry.register_object(object_type)
+        object_type_ref = self._ref_registry.distil(object_type)
         adapter_object_type = TreeToListLayout.adapter_object_type(object_type)
         command_list = TreeToListLayout.make_default_command_list(adapter_object_type)
         return htypes.tree_to_list_adapter.tree_to_list_adapter_layout(object_type_ref, command_list)

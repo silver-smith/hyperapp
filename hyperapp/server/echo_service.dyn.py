@@ -45,6 +45,6 @@ class ThisModule(Module):
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
         echo_iface_ref = services.types.reverse_resolve(htypes.test.echo)
         service = htypes.hyper_ref.service(ECHO_SERVICE_ID, echo_iface_ref)
-        services.echo_service_ref = service_ref = services.ref_registry.register_object(service)
+        services.echo_service_ref = service_ref = services.ref_registry.distil(service)
         self._echo_service = EchoService(services.proxy_factory)
         services.service_registry.register(service_ref, lambda: self._echo_service)

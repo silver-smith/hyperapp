@@ -19,6 +19,6 @@ class ModuleRefResolver:
             return self._builtin_module_name_to_ref[module_name]
         except KeyError:
             pass
-        module_ref = self._ref_registry.register_object(builtin_module_t(module_name))
+        module_ref = self._ref_registry.distil(builtin_module_t(module_name))
         self._builtin_module_name_to_ref[module_name] = module_ref
         return module_ref

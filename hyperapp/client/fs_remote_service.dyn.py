@@ -11,7 +11,7 @@ class RemoteFsService(object):
 
     @classmethod
     async def from_data(cls, service, ref_registry, proxy_factory):
-        service_ref = ref_registry.register_object(service)  # making duplicate/overwrite
+        service_ref = ref_registry.distil(service)  # making duplicate/overwrite
         proxy = await proxy_factory.from_ref(service_ref)
         return cls(proxy)
 

@@ -76,7 +76,7 @@ class ResourceLoader(object):
                 item_type = 'column'
             else:
                 assert False, 'Unknown resource section type: %r' % section_type
-            resource_ref = self._ref_registry.register_object(resource)
+            resource_ref = self._ref_registry.distil(resource)
             resource_key = resource_key_t(base_ref, [*path, item_type, item_id])
             self._resource_registry.register(resource_key, locale, resource_ref)
 
@@ -99,7 +99,7 @@ class ResourceLoader(object):
         view_ref = self._value2layout_view(section_contents.get('view'))
         layout_commands = list(self._value2layout_commands(section_contents.get('commands', [])))
         layout = htypes.resource.layout(view_ref, layout_commands)
-        layout_ref = self._ref_registry.register_object(layout)
+        layout_ref = self._ref_registry.distil(layout)
         _log.debug("Loaded layout %s: %s", ref_repr(layout_ref), layout)
         return layout_ref
 
@@ -114,7 +114,7 @@ class ResourceLoader(object):
             view = self._value2record_view(value['value'], t)
         else:
             view = self._dict_decoder.decode_dict(t, value.get('value', {}))
-        view_ref = self._ref_registry.register_object(view, t)
+        view_ref = self._ref_registry.distil(view, t)
         _log.debug("Loaded layout view %s: %s", ref_repr(view_ref), view)
         return view_ref
 

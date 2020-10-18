@@ -24,7 +24,7 @@ class LocalFsService(object):
 
     def to_ref(self):
         local_fs_service = htypes.fs.local_fs_service()
-        return self._ref_registry.register_object(local_fs_service)
+        return self._ref_registry.distil(local_fs_service)
 
     async def fetch_dir_contents(self, host, path, sort_column_id, from_key, desc_count, asc_count):
         assert host == LOCAL_HOST_NAME, repr(host)
@@ -40,12 +40,12 @@ class ThisModule(ClientModule):
         services.fs_service_registry.register_actor(
             htypes.fs.local_fs_service, LocalFsService.from_data, services.ref_registry)
         fs_service = htypes.fs.local_fs_service()
-        fs_service_ref = ref_registry.register_object(fs_service)
+        fs_service_ref = ref_registry.distil(fs_service)
         services.local_fs_service_ref = fs_service_ref
         # home_path = os.path.expanduser('~').split('/')[1:]
         home_path = ['usr', 'share']
         self._local_fs = local_fs = htypes.fs.fs(fs_service_ref, LOCAL_HOST_NAME, home_path, current_file_name=None)
-        self._local_fs_ref = ref_registry.register_object(local_fs)
+        self._local_fs_ref = ref_registry.distil(local_fs)
 
     @command('open_local_fs')
     async def open_local_fs(self):

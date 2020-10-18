@@ -68,7 +68,7 @@ class ParamsEditor(RecordObject):
             field_type_list=tuple(
                 htypes.record_object.record_type_field(
                     id=field_id,
-                    object_type_ref=self._ref_registry.register_object(field_object.type),
+                    object_type_ref=self._ref_registry.distil(field_object.type),
                     )
                 for field_id, field_object in self.fields.items()
                 ),
@@ -81,16 +81,16 @@ class ParamsEditor(RecordObject):
     @property
     def data(self):
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.register_object(self._target_piece),
+            target_piece_ref=self._ref_registry.distil(self._target_piece),
             target_command_id=self._target_command_id,
             bound_arguments=[
                 htypes.params_editor.bound_argument(
-                    name, self._ref_registry.register_object(value))
+                    name, self._ref_registry.distil(value))
                 for name, value in self._bound_arguments.items()
                 ],
             fields=[
                 htypes.params_editor.field(
-                    name, self._ref_registry.register_object(field_object.data))
+                    name, self._ref_registry.distil(field_object.data))
                 for name, field_object in self.fields.items()
                 ],
             )

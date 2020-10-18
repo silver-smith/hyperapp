@@ -39,8 +39,8 @@ class CodeCommandChooser(SimpleListObject, Chooser):
 
     @property
     def data(self):
-        piece_ref = self._ref_registry.register_object(self._object.data)
-        layout_ref = self._ref_registry.register_object(self._layout.data)
+        piece_ref = self._ref_registry.distil(self._object.data)
+        layout_ref = self._ref_registry.distil(self._layout.data)
         return htypes.code_command_chooser.code_command_chooser(piece_ref, layout_ref)
 
     @property

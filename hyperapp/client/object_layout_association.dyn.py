@@ -22,8 +22,8 @@ class ObjectLayoutAssociationRepository:
 
     def associate(self, object_type, layout):
         _log.info("Associate object type %s with layout %s", object_type, layout.data)
-        object_type_ref = self._ref_registry.register_object(object_type)
-        layout_ref = self._ref_registry.register_object(layout.data)
+        object_type_ref = self._ref_registry.distil(object_type)
+        layout_ref = self._ref_registry.distil(layout.data)
         record = htypes.object_layout_association.repository_record(object_type_ref, layout_ref)
         data = packet_coders.encode('yaml', record)
         path = self._file_path(object_type)
@@ -43,7 +43,7 @@ class ObjectLayoutAssociationRepository:
         return layout
 
     def _file_path(self, object_type):
-        object_type_ref = self._ref_registry.register_object(object_type)
+        object_type_ref = self._ref_registry.distil(object_type)
         hash_hex = codecs.encode(object_type_ref.hash[:4], 'hex').decode()
         return self._dir / f'{object_type._t.name}-{object_type_ref.hash_algorithm}:{hash_hex}.yaml'
 

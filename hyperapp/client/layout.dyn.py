@@ -140,7 +140,7 @@ class ObjectLayout(Layout):
 
     @property
     def _object_type_ref(self):
-        return self._ref_registry.register_object(self._object_type)
+        return self._ref_registry.distil(self._object_type)
 
     @property
     def _command_list_data(self):

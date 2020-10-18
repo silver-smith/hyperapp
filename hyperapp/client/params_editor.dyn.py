@@ -16,7 +16,7 @@ class ThisModule(ClientModule):
 
     async def _open_params_editor(self, piece, command, bound_arguments_sig, args, kw):
         bound_arguments = [
-            htypes.params_editor.bound_argument(name, self._ref_registry.register_object(value))
+            htypes.params_editor.bound_argument(name, self._ref_registry.distil(value))
             for name, value in bound_arguments_sig.arguments.items()
             if name != 'self'
             ]
@@ -28,12 +28,12 @@ class ThisModule(ClientModule):
         fields = [
             htypes.params_editor.field(
                 name,
-                self._ref_registry.register_object(
+                self._ref_registry.distil(
                     self._annotation_to_field(name, annotation)),
                 )
             for name, annotation in wanted_arguments]
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.register_object(piece),
+            target_piece_ref=self._ref_registry.distil(piece),
             target_command_id=command.id,
             bound_arguments=bound_arguments,
             fields=fields,

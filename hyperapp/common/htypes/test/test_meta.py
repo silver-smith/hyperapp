@@ -66,7 +66,7 @@ def ref_registry(ref_resolver, types):
 def builtin_ref(ref_registry):
 
     def make(name):
-        ref = ref_registry.register_object(builtin_ref_t(name))
+        ref = ref_registry.distil(builtin_ref_t(name))
         return t_ref(ref)
 
     return make
@@ -80,7 +80,7 @@ def type_ref(ref_registry):
             name=name,
             type=meta_type,
             )
-        return ref_registry.register_object(rec)
+        return ref_registry.distil(rec)
 
     return make
 

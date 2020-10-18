@@ -34,7 +34,7 @@ class ThisModule(Module):
     def init_phase_3(self, services):
         iface_type_ref = services.types.reverse_resolve(htypes.hyper_ref.ref_resolver)
         service = htypes.hyper_ref.service(REF_RESOLVER_SERVICE_ID, iface_type_ref)
-        service_ref = self._ref_registry.register_object(service)
+        service_ref = self._ref_registry.distil(service)
         self._service_registry.register(service_ref, RefResolverService, self._ref_resolver)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([service_ref])

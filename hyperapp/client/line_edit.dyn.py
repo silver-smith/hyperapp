@@ -146,6 +146,6 @@ class ThisModule(ClientModule):
             htypes.line.line_edit_layout, LineEditLayout.from_data, services.ref_registry, services.async_ref_resolver)
 
     async def _make_line_layout_data(self, object_type):
-        object_type_ref = self._ref_registry.register_object(object_type)
+        object_type_ref = self._ref_registry.distil(object_type)
         command_list = ObjectLayout.make_default_command_list(object_type)
         return htypes.line.line_edit_layout(object_type_ref, command_list, editable=False)

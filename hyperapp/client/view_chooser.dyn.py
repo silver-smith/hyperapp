@@ -51,7 +51,7 @@ class ViewChooser(SimpleListObject, Chooser):
 
     @property
     def data(self):
-        object_type_ref = self._ref_registry.register_object(self._object_type)
+        object_type_ref = self._ref_registry.distil(self._object_type)
         return htypes.view_chooser.view_chooser(object_type_ref)
 
     @property

@@ -44,6 +44,6 @@ class CodeModuleLoader(object):
                     module_name, import_module_name))
             code_import_list.append(code_import_t(import_module_name, import_module_ref))
         code_module = code_module_t(module_name, type_import_list, code_import_list, source, str(source_path))
-        code_module_ref = self._ref_registry.register_object(code_module)
+        code_module_ref = self._ref_registry.distil(code_module)
         self._local_code_module_registry.register(module_name, code_module_ref)
         return code_module

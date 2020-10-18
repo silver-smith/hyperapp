@@ -244,6 +244,6 @@ class ThisModule(ClientModule):
             htypes.list_view.list_layout, ListViewLayout.from_data, services.ref_registry, services.async_ref_resolver, services.resource_resolver)
 
     async def _make_list_layout_data(self, object_type):
-        object_type_ref = self._ref_registry.register_object(object_type)
+        object_type_ref = self._ref_registry.distil(object_type)
         command_list = MultiItemObjectLayout.make_default_command_list(object_type)
         return htypes.list_view.list_layout(object_type_ref, command_list)

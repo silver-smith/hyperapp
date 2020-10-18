@@ -119,14 +119,14 @@ class ThisModule(ClientModule):
         sample_article_type = htypes.list_view_sample.list_view_sample_article_type(
             command_list=(),
             field_type_list=(
-                htypes.record_object.record_type_field('title', services.ref_registry.register_object(LineObject.type)),
-                htypes.record_object.record_type_field('text', services.ref_registry.register_object(TextObject.type)),
+                htypes.record_object.record_type_field('title', services.ref_registry.distil(LineObject.type)),
+                htypes.record_object.record_type_field('text', services.ref_registry.distil(TextObject.type)),
                 ),
             )
         sample_list_type = htypes.list_view_sample.list_view_sample_object_type(
             command_list=(
-                htypes.object_type.object_command('open', services.ref_registry.register_object(TextObject.type)),
-                htypes.object_type.object_command('edit', services.ref_registry.register_object(sample_article_type)),
+                htypes.object_type.object_command('open', services.ref_registry.distil(TextObject.type)),
+                htypes.object_type.object_command('edit', services.ref_registry.distil(sample_article_type)),
                 ),
             )
         SampleList.type = sample_list_type

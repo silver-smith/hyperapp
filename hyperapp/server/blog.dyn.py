@@ -161,7 +161,7 @@ class ThisModule(PonyOrmModule):
         self._blog_service = BlogService(services.ref_storage, services.proxy_factory)
         iface_type_ref = services.types.reverse_resolve(htypes.blog.blog_service_iface)
         service = htypes.hyper_ref.service(BLOG_SERVICE_ID, iface_type_ref)
-        self._blog_service_ref = service_ref = services.ref_registry.register_object(service)
+        self._blog_service_ref = service_ref = services.ref_registry.distil(service)
         services.blog_service_ref = service_ref
         services.service_registry.register(service_ref, self._blog_service.get_self)
 
@@ -191,5 +191,5 @@ class ThisModule(PonyOrmModule):
             blog_id='test-blog',
             current_article_id=None,
             )
-        blog_ref = services.ref_registry.register_object(blog)
+        blog_ref = services.ref_registry.distil(blog)
         services.management_ref_list.add_ref('blog', blog_ref)

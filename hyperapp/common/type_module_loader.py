@@ -71,7 +71,7 @@ class TypeModuleLoader(object):
                 name=typedef.name,
                 type=t,
                 )
-            ref = self._ref_registry.register_object(rec)
+            ref = self._ref_registry.distil(rec)
             local_type_module.register(typedef.name, ref)
             local_name_dict[typedef.name] = ref
             _log.debug('Type module loader %r: %r is mapped to %s:', module_name, typedef.name, ref_repr(ref))

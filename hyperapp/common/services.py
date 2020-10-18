@@ -102,7 +102,7 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
             parts = module_name.split('.')
             file_path = self.hyperapp_dir.joinpath(*parts)
             code_module = self.code_module_loader.load_code_module(file_path, module_name)
-            code_module_ref = self.ref_registry.register_object(code_module)
+            code_module_ref = self.ref_registry.distil(code_module)
             module = self.code_module_importer.import_code_module(code_module_ref)
             self.name2module[module_name] = module
             self._init_module(code_module.module_name, module)

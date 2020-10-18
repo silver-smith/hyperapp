@@ -27,7 +27,7 @@ class ApplicationStateStorage(object):
         return htypes.application_state.application_state
         
     def save_state(self, state):
-        state_ref = self._ref_registry.register_object(state, htypes.application_state.application_state)
+        state_ref = self._ref_registry.distil(state, htypes.application_state.application_state)
         ref_collector = self._ref_collector_factory()
         bundle = ref_collector.make_bundle([state_ref])
         save_bundle_to_file(bundle, STATE_FILE_PATH)

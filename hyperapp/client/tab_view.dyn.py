@@ -59,7 +59,7 @@ class TabLayout(GlobalLayout):
     @property
     def data(self):
         tab_ref_list = [
-            self._ref_registry.register_object(tab.layout.data)
+            self._ref_registry.distil(tab.layout.data)
             for tab in self._tab_list
             ]
         if self._widget:
@@ -154,7 +154,7 @@ class TabLayout(GlobalLayout):
     @command('duplicate_tab')
     async def _duplicate_tab(self, tab_idx):
         tab = self._tab_list[tab_idx]
-        tab_ref = self._ref_registry.register_object(tab.layout.data)
+        tab_ref = self._ref_registry.distil(tab.layout.data)
         await self._create_and_insert_tab(tab_idx, tab_ref)
 
     async def _create_and_insert_tab(self, tab_idx, tab_ref):
@@ -193,7 +193,7 @@ class TabLayout(GlobalLayout):
             RemoveVisualItemDiff([*self._path, tab.name])
             for tab in self._tab_list]
         old_count = len(self._tab_list)
-        new_tab = await self._create_tab(self._ref_registry.register_object(self.data))
+        new_tab = await self._create_tab(self._ref_registry.distil(self.data))
         self._tab_list = [new_tab]
         if self._widget:
             while self._widget.count() > 1:
@@ -255,8 +255,8 @@ class ThisModule(ClientModule):
 
     def _make_new_tab_ref(self):
         piece = htypes.text.text("New tab")
-        piece_ref = self._ref_registry.register_object(piece)
+        piece_ref = self._ref_registry.distil(piece)
         navigator = htypes.navigator.navigator(piece_ref)
-        navigator_ref = self._ref_registry.register_object(navigator)
+        navigator_ref = self._ref_registry.distil(navigator)
         tab_view = htypes.tab_view.tab_view([navigator_ref], 0)
-        return self._ref_registry.register_object(tab_view)
+        return self._ref_registry.distil(tab_view)

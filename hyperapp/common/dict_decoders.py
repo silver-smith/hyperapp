@@ -150,7 +150,7 @@ class DictDecoder(metaclass=abc.ABCMeta):
         type_ref = ref_t(hash_algorithm, hash)
         t = self._types.resolve(type_ref)
         value = self.dispatch(t, value['value'], join_path(path, 'value'))
-        ref = self._ref_registry.register_object(value, t)
+        ref = self._ref_registry.distil(value, t)
         return ref
 
 

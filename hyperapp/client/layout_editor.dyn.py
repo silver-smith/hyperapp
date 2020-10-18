@@ -181,7 +181,7 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @property
     def data(self):
-        layout_handle_ref = self._ref_registry.register_object(self._layout_handle.data)
+        layout_handle_ref = self._ref_registry.distil(self._layout_handle.data)
         return htypes.layout_editor.object_layout_editor(layout_handle_ref)
 
     def get_command_list(self):
@@ -196,12 +196,12 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @object_command('replace', kind='element')
     async def _replace_view(self, path):
-        object_type_ref = self._ref_registry.register_object(self._layout_handle.layout.object_type)
+        object_type_ref = self._ref_registry.distil(self._layout_handle.layout.object_type)
         chooser = htypes.view_chooser.view_chooser(object_type_ref)
-        chooser_ref = self._ref_registry.register_object(chooser)
+        chooser_ref = self._ref_registry.distil(chooser)
         layout_data_maker_field = htypes.params_editor.field('layout_data_maker', chooser_ref)
         return htypes.params_editor.params_editor(
-            target_piece_ref=self._ref_registry.register_object(self.data),
+            target_piece_ref=self._ref_registry.distil(self.data),
             target_command_id=self._replace_impl.id,
             bound_arguments=[],
             fields=[layout_data_maker_field],
