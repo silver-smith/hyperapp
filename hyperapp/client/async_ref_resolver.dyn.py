@@ -16,9 +16,9 @@ class AsyncRefSource(object, metaclass=abc.ABCMeta):
 
 class AsyncRefResolver(object):
 
-    def __init__(self, ref_resolver, type_resolver):
+    def __init__(self, ref_resolver, types):
         self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._async_sources = []
 
     def add_async_source(self, source):
@@ -39,7 +39,7 @@ class AsyncRefResolver(object):
 
     async def resolve_ref_to_object(self, ref, expected_type=None):
         capsule = await self.resolve_ref(ref)
-        t = self._type_resolver.resolve(capsule.type_ref)
+        t = self._types.resolve(capsule.type_ref)
         if expected_type:
             assert t is expected_type, (t, expected_type)
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
@@ -49,4 +49,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.async_ref_resolver = AsyncRefResolver(services.ref_resolver, services.type_resolver)
+        services.async_ref_resolver = AsyncRefResolver(services.ref_resolver, services.types)

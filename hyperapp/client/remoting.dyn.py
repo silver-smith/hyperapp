@@ -21,8 +21,8 @@ PendingRequest = namedtuple('PendingRequest', 'iface command future')
 
 class Remoting(object):
 
-    def __init__(self, type_resolver, ref_registry, async_route_resolver, endpoint_registry, service_registry, transport_registry):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry, async_route_resolver, endpoint_registry, service_registry, transport_registry):
+        self._types = types
         self._ref_registry = ref_registry
         self._async_route_resolver = async_route_resolver
         self._service_registry = service_registry
@@ -41,7 +41,7 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
-        iface_type_ref = self._type_resolver.reverse_resolve(iface)
+        iface_type_ref = self._types.reverse_resolve(iface)
         rpc_request = htypes.hyper_ref.rpc_request(
             iface_type_ref=iface_type_ref,
             source_endpoint_ref=self._my_endpoint_ref,
@@ -76,7 +76,7 @@ class Remoting(object):
         _log.info('Remoting: processing incoming RPC message %s: done', ref_repr(rpc_message_ref))
 
     def _process_rpc_request(self, rpc_request):
-        iface = self._type_resolver.resolve(rpc_request.iface_type_ref)
+        iface = self._types.resolve(rpc_request.iface_type_ref)
         command = iface.get(rpc_request.command_id)
         if not command:
             _log.warning('Got request for unknown command %r for interface %s',
@@ -140,7 +140,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.remoting = remoting = Remoting(
-            services.type_resolver,
+            services.types,
             services.ref_registry,
             services.async_route_resolver,
             services.endpoint_registry,

@@ -34,8 +34,8 @@ def _value_repr(value):
 class Session:
 
     @classmethod
-    def from_session_id(cls, type_resolver, ref_registry, session_id):
-        reader = JsonFileLogStorageReader(type_resolver, ref_registry, session_id)
+    def from_session_id(cls, types, ref_registry, session_id):
+        reader = JsonFileLogStorageReader(types, ref_registry, session_id)
         return cls(session_id, reader)
 
     def __init__(self, session_id, reader):
@@ -68,8 +68,8 @@ class Session:
 
 class SessionCache:
 
-    def __init__(self, type_resolver, ref_registry):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry):
+        self._types = types
         self._ref_registry = ref_registry
         self._session_id_list = json_storage_session_list()
         self._session_id_to_session = {}
@@ -82,7 +82,7 @@ class SessionCache:
         try:
             return self._session_id_to_session[session_id]
         except KeyError:
-            session = Session.from_session_id(self._type_resolver, self._ref_registry, session_id)
+            session = Session.from_session_id(self._types, self._ref_registry, session_id)
             self._session_id_to_session[session_id] = session
             return session
 
@@ -141,15 +141,15 @@ class SessionLogs(TreeObject):
 class LogRecord(ListObject):
 
     @classmethod
-    def from_state(cls, state, ref_resolver, type_resolver, session_cache):
+    def from_state(cls, state, ref_resolver, types, session_cache):
         session = session_cache.get_session(state.session_id)
         record = session.path2record.get(tuple(state.item_path))
-        return cls(ref_resolver, type_resolver, state.session_id, state.item_path, record)
+        return cls(ref_resolver, types, state.session_id, state.item_path, record)
 
-    def __init__(self, ref_resolver, type_resolver, session_id, item_path, record):
+    def __init__(self, ref_resolver, types, session_id, item_path, record):
         super().__init__()
         self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._session_id = session_id
         self._item_path = item_path
         self._record = record
@@ -182,7 +182,7 @@ class LogRecord(ListObject):
         if isinstance(value, ref_t):
             capsule = self._ref_resolver.resolve_ref(value)
             if capsule:
-                t = self._type_resolver.resolve(capsule.type_ref)
+                t = self._types.resolve(capsule.type_ref)
                 details = "{} ({}), encoding {}".format(t.name, _value_repr(capsule.type_ref), capsule.encoding)
         return LogRecordItem(name, _value_repr(value), details)
 
@@ -198,9 +198,9 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self._session_cache = SessionCache(services.type_resolver, services.ref_registry)
+        self._session_cache = SessionCache(services.types, services.ref_registry)
         services.object_registry.register_actor(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.ref_registry, self._session_cache)
-        services.object_registry.register_actor(htypes.log_viewer.log_record, LogRecord.from_state, services.ref_resolver, services.type_resolver, self._session_cache)
+        services.object_registry.register_actor(htypes.log_viewer.log_record, LogRecord.from_state, services.ref_resolver, services.types, self._session_cache)
 
     @command('open_last_session')
     async def open_last_session(self):

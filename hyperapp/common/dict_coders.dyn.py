@@ -11,6 +11,6 @@ class ThisModule(Module):
         packet_coders.register('json', JsonEncoder(), JsonDecoder())
         packet_coders.register(
             'yaml',
-            YamlEncoder(services.type_resolver),
-            YamlDecoder(services.ref_registry, services.type_resolver),
+            YamlEncoder(services.types),
+            YamlDecoder(services.ref_registry, services.types),
             )

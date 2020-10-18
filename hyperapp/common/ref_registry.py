@@ -12,8 +12,8 @@ log = logging.getLogger(__name__)
 
 class RefRegistry(object):
 
-    def __init__(self, type_resolver):
-        self._type_resolver = type_resolver
+    def __init__(self, types):
+        self._types = types
         self._registry = {}  # ref -> capsule
 
     def register_capsule(self, capsule):
@@ -25,7 +25,7 @@ class RefRegistry(object):
             log.debug('  (already exists)')
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
         self._registry[ref] = capsule
-        pprint(self._type_resolver.decode_capsule(capsule).value, indent=1, logger=log.debug)
+        pprint(self._types.decode_capsule(capsule).value, indent=1, logger=log.debug)
         return ref
 
     def register_object(self, object, t=None):
@@ -35,7 +35,7 @@ class RefRegistry(object):
     def register_object_to_capsule_and_ref(self, object, t=None):
         t = t or deduce_value_type(object)
         log.debug('Registering ref for object %s', t.name)
-        capsule = self._type_resolver.make_capsule(object, t)
+        capsule = self._types.make_capsule(object, t)
         ref = self.register_capsule(capsule)
         log.debug('  -> registered ref %s for object %s', ref_repr(ref), t.name)
         return (capsule, ref)

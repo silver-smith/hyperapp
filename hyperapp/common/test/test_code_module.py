@@ -7,7 +7,7 @@ from hyperapp.common.code_module import code_module_t
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader
-from hyperapp.common.type_resolver import TypeResolver
+from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.code_module import LocalCodeModuleRegistry, register_code_module_types
 from hyperapp.common.code_module_loader import CodeModuleLoader
 from hyperapp.common.code_module_importer import CodeModuleImporter
@@ -25,16 +25,16 @@ def ref_resolver():
 
 
 @pytest.fixture
-def type_resolver(ref_resolver):
-    return TypeResolver(ref_resolver)
+def types(ref_resolver):
+    return TypeSystem(ref_resolver)
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, type_resolver):
-    registry = RefRegistry(type_resolver)
+def ref_registry(ref_resolver, types):
+    registry = RefRegistry(types)
     ref_resolver.add_source(registry)
-    register_builtin_types(registry, type_resolver)
-    register_code_module_types(registry, type_resolver)
+    register_builtin_types(registry, types)
+    register_code_module_types(registry, types)
     return registry
 
 
@@ -49,8 +49,8 @@ def local_code_module_registry():
 
 
 @pytest.fixture
-def type_module_loader(type_resolver, ref_registry, local_type_module_registry):
-    return TypeModuleLoader(type_resolver, ref_registry, local_type_module_registry)
+def type_module_loader(types, ref_registry, local_type_module_registry):
+    return TypeModuleLoader(types, ref_registry, local_type_module_registry)
 
 
 @pytest.fixture
@@ -68,8 +68,8 @@ def test_code_module_load(type_module_loader, code_module_loader):
 
 
 @pytest.fixture
-def code_module_importer(ref_resolver, type_resolver):
-    importer = CodeModuleImporter(type_resolver)
+def code_module_importer(ref_resolver, types):
+    importer = CodeModuleImporter(types)
     importer.register_meta_hook()
     return importer
 

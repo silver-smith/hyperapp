@@ -159,7 +159,7 @@ class ThisModule(PonyOrmModule):
     def __init__(self, module_name, services):
         super().__init__(module_name)
         self._blog_service = BlogService(services.ref_storage, services.proxy_factory)
-        iface_type_ref = services.type_resolver.reverse_resolve(htypes.blog.blog_service_iface)
+        iface_type_ref = services.types.reverse_resolve(htypes.blog.blog_service_iface)
         service = htypes.hyper_ref.service(BLOG_SERVICE_ID, iface_type_ref)
         self._blog_service_ref = service_ref = services.ref_registry.register_object(service)
         services.blog_service_ref = service_ref

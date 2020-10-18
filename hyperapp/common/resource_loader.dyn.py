@@ -13,9 +13,9 @@ _log = logging.getLogger(__name__)
 
 class ResourceLoader(object):
 
-    def __init__(self, ref_registry, type_resolver, local_type_module_registry, local_code_module_registry, resource_registry):
+    def __init__(self, ref_registry, types, local_type_module_registry, local_code_module_registry, resource_registry):
         self._ref_registry = ref_registry
-        self._type_resolver = type_resolver
+        self._types = types
         self._local_type_module_registry = local_type_module_registry
         self._local_code_module_registry = local_code_module_registry
         self._resource_registry = resource_registry
@@ -108,7 +108,7 @@ class ResourceLoader(object):
             return None
         module_name, type_name = value['type'].split('.')
         type_ref = self._local_type_module_registry[module_name][type_name]
-        t = self._type_resolver.resolve(type_ref)
+        t = self._types.resolve(type_ref)
         if value['type'] == 'record_view.record_view_layout':
             # special case for record view layout; todo: general solution, such as htype mapper or move out of resource yaml at all
             view = self._value2record_view(value['value'], t)
@@ -120,7 +120,7 @@ class ResourceLoader(object):
 
     def _value2record_view(self, value, t):
         field_layout_ref = self._local_type_module_registry['record_view']['field_layout']
-        field_layout_t = self._type_resolver.resolve(field_layout_ref)
+        field_layout_t = self._types.resolve(field_layout_ref)
         field_list = []
         for field in value['fields']:
             view_ref = self._value2layout_view(field['layout'])
@@ -142,7 +142,7 @@ class ThisModule(Module):
         super().__init__(module_name)
         self._resource_loader = ResourceLoader(
             services.ref_registry,
-            services.type_resolver,
+            services.types,
             services.local_type_module_registry,
             services.local_code_module_registry,
             services.resource_registry,

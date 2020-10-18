@@ -16,10 +16,10 @@ log = logging.getLogger(__name__)
 
 class PhonyServer(object):
 
-    def __init__(self, on_failure, ref_resolver, type_resolver, route_registry, unbundler, remoting, request_queue, phony_client_address_ref):
+    def __init__(self, on_failure, ref_resolver, types, route_registry, unbundler, remoting, request_queue, phony_client_address_ref):
         self._on_failure = on_failure
         self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._route_registry = route_registry
         self._unbundler = unbundler
         self._remoting = remoting
@@ -63,7 +63,7 @@ class PhonyServer(object):
         self._register_incoming_routes(bundle.route_list)
         for root_ref in bundle.roots:
             capsule = self._ref_resolver.resolve_ref(root_ref)
-            rpc_request = self._type_resolver.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
+            rpc_request = self._types.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
             assert isinstance(rpc_request, htypes.hyper_ref.rpc_request)
             self._route_registry.register(
                 route_t(rpc_request.source_endpoint_ref, self._phony_client_address_ref, datetime.now(tzlocal())))
@@ -102,7 +102,7 @@ class ThisModule(Module):
         self._server = PhonyServer(
             services.failed,
             services.ref_resolver,
-            services.type_resolver,
+            services.types,
             services.route_registry,
             services.unbundler,
             services.remoting,

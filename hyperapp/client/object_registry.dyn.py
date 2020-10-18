@@ -7,4 +7,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.object_registry = CodeRegistry('object', services.async_ref_resolver, services.type_resolver)
+        services.object_registry = CodeRegistry('object', services.async_ref_resolver, services.types)

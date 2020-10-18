@@ -16,8 +16,8 @@ STATE_FILE_PATH = Path('~/.local/share/hyperapp/client/state.json').expanduser()
 
 class ApplicationStateStorage(object):
 
-    def __init__(self, type_resolver, ref_registry, ref_collector_factory, unbundler):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry, ref_collector_factory, unbundler):
+        self._types = types
         self._ref_registry = ref_registry
         self._ref_collector_factory = ref_collector_factory
         self._unbundler = unbundler
@@ -38,7 +38,7 @@ class ApplicationStateStorage(object):
             self._unbundler.register_bundle(bundle)
             assert len(bundle.roots) == 1
             state_ref = bundle.roots[0]
-            return self._type_resolver.resolve_ref(state_ref).value
+            return self._types.resolve_ref(state_ref).value
         except (FileNotFoundError, DecodeError) as x:
             log.info('Error loading %s: %r', STATE_FILE_PATH, x)
             return None
@@ -49,4 +49,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.application_state_storage = ApplicationStateStorage(
-            services.type_resolver, services.ref_registry, services.ref_collector_factory, services.unbundler)
+            services.types, services.ref_registry, services.ref_collector_factory, services.unbundler)

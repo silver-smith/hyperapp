@@ -19,13 +19,13 @@ class RefListObject(ListObject):
     _Item = namedtuple('RefListObject_Item', 'id ref')
 
     @classmethod
-    async def from_state(cls, state, type_resolver, async_ref_resolver, proxy_factory):
+    async def from_state(cls, state, types, async_ref_resolver, proxy_factory):
         ref_list_service = await RefListService.from_ref(state.ref_list_service, proxy_factory)
-        return cls(type_resolver, async_ref_resolver, ref_list_service, state.ref_list_id)
+        return cls(types, async_ref_resolver, ref_list_service, state.ref_list_id)
 
-    def __init__(self, type_resolver, async_ref_resolver, ref_list_service, ref_list_id):
+    def __init__(self, types, async_ref_resolver, ref_list_service, ref_list_id):
         ListObject.__init__(self)
-        self._type_resolver = type_resolver
+        self._types = types
         self._async_ref_resolver = async_ref_resolver
         self._ref_list_service = ref_list_service
         self._ref_list_id = ref_list_id
@@ -90,4 +90,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         services.object_registry.register_actor(
-            htypes.ref_list.dynamic_ref_list, RefListObject.from_state, services.type_resolver, services.async_ref_resolver, services.proxy_factory)
+            htypes.ref_list.dynamic_ref_list, RefListObject.from_state, services.types, services.async_ref_resolver, services.proxy_factory)

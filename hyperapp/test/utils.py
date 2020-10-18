@@ -37,4 +37,4 @@ def decode_bundle(encoded_bundle):
 
 def resolve_type(services, module, name):
     type_ref = services.local_type_module_registry[module][name]
-    return services.type_resolver.resolve(type_ref)
+    return services.types.resolve(type_ref)

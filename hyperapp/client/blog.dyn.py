@@ -362,12 +362,12 @@ class BlogNotification(object):
 class BlogService(object):
 
     @classmethod
-    async def from_data(cls, type_resolver, ref_registry, service_registry, proxy_factory, service_ref):
+    async def from_data(cls, types, ref_registry, service_registry, proxy_factory, service_ref):
         proxy = await proxy_factory.from_ref(service_ref)
-        return cls(type_resolver, ref_registry, service_registry, proxy)
+        return cls(types, ref_registry, service_registry, proxy)
 
-    def __init__(self, type_resolver, ref_registry, service_registry, proxy):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry, service_registry, proxy):
+        self._types = types
         self._ref_registry = ref_registry
         self._service_registry = service_registry
         self._proxy = proxy
@@ -395,7 +395,7 @@ class BlogService(object):
         if blog_id in self._subscribed_to_blog_id_set:
             return
         service_id = str(uuid.uuid4())
-        iface_type_ref = self._type_resolver.reverse_resolve(htypes.blog.blog_notification_iface)
+        iface_type_ref = self._types.reverse_resolve(htypes.blog.blog_notification_iface)
         service = htypes.hyper_ref.service(service_id, iface_type_ref)
         service_ref = self._ref_registry.register_object(service)
         self._service_registry.register(service_ref, self._notification.get_self)
@@ -463,7 +463,7 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        self._type_resolver = services.type_resolver
+        self._types = services.types
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver
         self._service_registry = services.service_registry
@@ -490,4 +490,4 @@ class ThisModule(ClientModule):
             )
 
     async def _blog_service_factory(self, blog_service_ref):
-        return (await BlogService.from_data(self._type_resolver, self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))
+        return (await BlogService.from_data(self._types, self._ref_registry, self._service_registry, self._proxy_factory, blog_service_ref))

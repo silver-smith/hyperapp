@@ -44,9 +44,9 @@ class LocalRouteSource(RouteSource):
 
 class Remoting(object):
 
-    def __init__(self, ref_resolver, type_resolver, ref_registry, route_resolver, transport_registry, service_registry):
+    def __init__(self, ref_resolver, types, ref_registry, route_resolver, transport_registry, service_registry):
         self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._ref_registry = ref_registry
         self._route_resolver = route_resolver
         self._transport_registry = transport_registry
@@ -64,7 +64,7 @@ class Remoting(object):
             request_id = str(uuid.uuid4())
         else:
             request_id = None
-        iface_type_ref = self._type_resolver.reverse_resolve(iface)
+        iface_type_ref = self._types.reverse_resolve(iface)
         rpc_request = htypes.hyper_ref.rpc_request(
             iface_type_ref=iface_type_ref,
             source_endpoint_ref=self._my_endpoint_ref,
@@ -81,7 +81,7 @@ class Remoting(object):
 
     def process_rpc_request(self, rpc_request_ref, rpc_request):
         capsule = self._ref_resolver.resolve_ref(rpc_request_ref)
-        rpc_request = self._type_resolver.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
+        rpc_request = self._types.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
         assert isinstance(rpc_request, htypes.hyper_ref.rpc_request), repr(rpc_request)
         rpc_response_ref, rpc_response = self._process_request(rpc_request_ref, rpc_request)
         if rpc_response is not None:
@@ -95,7 +95,7 @@ class Remoting(object):
         transport.send(rpc_response_ref)
 
     def _process_request(self, rpc_request_ref, rpc_request):
-        iface = self._type_resolver.resolve(rpc_request.iface_type_ref)
+        iface = self._types.resolve(rpc_request.iface_type_ref)
         command = iface[rpc_request.command_id]
         pprint(rpc_request, title='Incoming RPC %s %s:' % (command.request_type, ref_repr(rpc_request_ref)))
         params = rpc_request.params.decode(command.request)
@@ -147,7 +147,7 @@ class ThisModule(Module):
         services.service_registry = service_registry = ServiceRegistry()
         services.remoting = Remoting(
             services.ref_resolver,
-            services.type_resolver,
+            services.types,
             services.ref_registry,
             services.route_resolver,
             services.transport_registry,

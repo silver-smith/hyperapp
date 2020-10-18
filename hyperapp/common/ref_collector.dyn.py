@@ -17,9 +17,9 @@ RECURSION_LIMIT = 100
 
 class RefCollector(Visitor):
 
-    def __init__(self, ref_resolver, type_resolver, route_resolver):
+    def __init__(self, ref_resolver, types, route_resolver):
         self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._route_resolver = route_resolver
         self._collected_ref_set = None
         self._collected_type_ref_set = None
@@ -64,8 +64,8 @@ class RefCollector(Visitor):
         return list(type_capsule_set) + list(capsule_set)
 
     def _collect_refs_from_capsule(self, ref, capsule):
-        t = self._type_resolver.resolve(capsule.type_ref)
-        object = self._type_resolver.decode_object(t, capsule)
+        t = self._types.resolve(capsule.type_ref)
+        object = self._types.decode_object(t, capsule)
         log.debug('Collecting refs from %r:', object)
         self._collected_ref_set = set()
         self._collect_refs_from_object(t, object)
@@ -102,7 +102,7 @@ class RefCollector(Visitor):
             self._handle_rpc_request(rpc_message)
 
     def _handle_rpc_request(self, rpc_request):
-        iface = self._type_resolver.resolve(rpc_request.iface_type_ref)
+        iface = self._types.resolve(rpc_request.iface_type_ref)
         command = iface[rpc_request.command_id]
         params = rpc_request.params.decode(command.request)
         self._collect_refs_from_object(command.request, params)
@@ -113,9 +113,9 @@ class ThisModule(Module):
     def __init__(self, module_name, services):
         super().__init__(module_name)
         self._ref_resolver = services.ref_resolver
-        self._type_resolver = services.type_resolver
+        self._types = services.types
         self._route_resolver = services.route_resolver
         services.ref_collector_factory = self._ref_collector_factory
 
     def _ref_collector_factory(self):
-        return RefCollector(self._ref_resolver, self._type_resolver, self._route_resolver)
+        return RefCollector(self._ref_resolver, self._types, self._route_resolver)

@@ -11,4 +11,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.transport_registry = CodeRegistry('transport', services.async_ref_resolver, services.type_resolver)
+        services.transport_registry = CodeRegistry('transport', services.async_ref_resolver, services.types)

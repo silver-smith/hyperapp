@@ -19,8 +19,8 @@ _log = logging.getLogger(__name__)
 
 class _NameToRefMapper(Mapper):
 
-    def __init__(self, type_resolver, ref_registry, local_name_dict):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry, local_name_dict):
+        self._types = types
         self._ref_registry = ref_registry
         self._local_name_dict = local_name_dict
 
@@ -32,14 +32,14 @@ class _NameToRefMapper(Mapper):
     def _map_named_t(self, rec):
         ref = self._local_name_dict.get(rec.name)
         if not ref:
-            ref = self._type_resolver.get_builtin_type_ref(rec.name)
+            ref = self._types.get_builtin_type_ref(rec.name)
         return t_ref(ref)
 
 
 class TypeModuleLoader(object):
 
-    def __init__(self, type_resolver, ref_registry, local_type_module_registry):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry, local_type_module_registry):
+        self._types = types
         self._ref_registry = ref_registry
         self._local_type_module_registry = local_type_module_registry
 
@@ -64,7 +64,7 @@ class TypeModuleLoader(object):
                 raise RuntimeError('Type module {0!r} wants name {1!r} from module {2!r}, but module {2!r} does not have it'.format(
                     module_name, import_.module_name, import_.name))
         local_type_module = LocalTypeModule()
-        mapper = _NameToRefMapper(self._type_resolver, self._ref_registry, local_name_dict)
+        mapper = _NameToRefMapper(self._types, self._ref_registry, local_name_dict)
         for typedef in module_source.typedefs:
             t = mapper.map(typedef.type)
             rec = meta_ref_t(

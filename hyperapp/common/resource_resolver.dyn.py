@@ -10,19 +10,19 @@ log = logging.getLogger(__name__)
 
 class ResourceResolver:
 
-    def __init__(self, type_resolver, resource_registry):
-        self._type_resolver = type_resolver
+    def __init__(self, types, resource_registry):
+        self._types = types
         self._resource_registry = resource_registry
 
     def resolve(self, key, locale, expected_type=None):
         resource_ref = self._resource_registry.resolve(key, locale)
         if not resource_ref:
             return None
-        return self._type_resolver.resolve_ref(resource_ref, expected_type).value
+        return self._types.resolve_ref(resource_ref, expected_type).value
 
 
 class ThisModule(Module):
 
     def __init__(self, module_name, services):
         super().__init__(module_name)
-        services.resource_resolver = ResourceResolver(services.type_resolver, services.resource_registry)
+        services.resource_resolver = ResourceResolver(services.types, services.resource_registry)

@@ -70,7 +70,7 @@ class TcpClient(object):
 
     def __init__(
             self,
-            type_resolver,
+            types,
             ref_registry,
             route_resolver,
             ref_collector_factory,
@@ -82,7 +82,7 @@ class TcpClient(object):
             socket,
             on_failure,
             ):
-        self._type_resolver = type_resolver
+        self._types = types
         self._ref_registry = ref_registry
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
@@ -149,7 +149,7 @@ class TcpClient(object):
         self._unbundler.register_bundle(bundle)
         self._register_incoming_routes(bundle.route_list)
         for rpc_request_ref in bundle.roots:
-            rpc_request = self._type_resolver.resolve_ref(rpc_request_ref, expected_type=htypes.hyper_ref.rpc_message).value
+            rpc_request = self._types.resolve_ref(rpc_request_ref, expected_type=htypes.hyper_ref.rpc_message).value
             self._remoting.process_rpc_request(rpc_request_ref, rpc_request)
 
     def _register_incoming_routes(self, route_list):
@@ -177,7 +177,7 @@ class TcpServer(object):
 
     def __init__(
             self,
-            type_resolver,
+            types,
             ref_registry,
             route_resolver,
             ref_collector_factory,
@@ -187,7 +187,7 @@ class TcpServer(object):
             bind_address,
             on_failure,
             ):
-        self._type_resolver = type_resolver
+        self._types = types
         self._ref_registry = ref_registry
         self._route_resolver = route_resolver
         self._ref_collector_factory = ref_collector_factory
@@ -257,7 +257,7 @@ class TcpServer(object):
                 log.info('tcp: accepted connection from %s:%d' % peer_address)
                 outcoming_queue = Queue()
                 client = TcpClient(
-                    self._type_resolver,
+                    self._types,
                     self._ref_registry,
                     self._route_resolver,
                     self._ref_collector_factory,
@@ -304,7 +304,7 @@ class ThisModule(Module):
         if not bind_address:
             bind_address = DEFAULT_BIND_ADDRESS
         self.server = server = TcpServer(
-            services.type_resolver,
+            services.types,
             services.ref_registry,
             services.route_resolver,
             services.ref_collector_factory,

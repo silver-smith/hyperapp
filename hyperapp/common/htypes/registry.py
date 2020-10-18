@@ -81,13 +81,13 @@ _builtin_type_list = [
 builtin_type_names = set(t.name for t in _builtin_type_list)
 
 
-def register_builtin_types(ref_registry, type_resolver):
+def register_builtin_types(ref_registry, types):
     for t in _builtin_type_list:
-        type_resolver.register_builtin_type(ref_registry, t)
+        types.register_builtin_type(ref_registry, t)
     # Register list of builtin types
     for t in _builtin_type_list:
-        type_ref = type_resolver.reverse_resolve(t)
+        type_ref = types.reverse_resolve(t)
         list_type_name = f'{t.name}_list'
         list_type_rec = meta_ref_t(list_type_name, t_list_meta(t_ref(type_ref)))
-        list_t = type_resolver.register_type(ref_registry, list_type_rec).t
+        list_t = types.register_type(ref_registry, list_type_rec).t
         primitive_list_types[t] = list_t

@@ -54,7 +54,7 @@ class ThisModule(Module):
         self._init_dynamic_ref_list_service(services)
 
     def _init_dynamic_ref_list_service(self, services):
-        iface_type_ref = services.type_resolver.reverse_resolve(htypes.ref_list.ref_list_service)
+        iface_type_ref = services.types.reverse_resolve(htypes.ref_list.ref_list_service)
         service = htypes.hyper_ref.service(DYNAMIC_REF_LIST_SERVICE_ID, iface_type_ref)
         service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, self._resolve_dynamic_ref_list_service)

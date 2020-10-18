@@ -141,8 +141,8 @@ class _Logger:
         else:
             return cls.instance
 
-    def __init__(self, type_resolver, ref_registry, module_ref_resolver, storage):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry, module_ref_resolver, storage):
+        self._types = types
         self._ref_registry = ref_registry
         self._module_ref_resolver = module_ref_resolver
         self._storage = storage
@@ -165,11 +165,11 @@ class _Logger:
                 t = deduce_value_type(value)
             except DeduceTypeError:
                 raise RuntimeError("Undeducable parameter {}.{}".format(entry_name, name))
-            type_ref = self._type_resolver.reverse_resolve(t)
+            type_ref = self._types.reverse_resolve(t)
             fields.append(t_field_meta(name, t_ref(type_ref)))
         type_name = entry_name.replace('.', '_')
         type_rec = meta_ref_t(type_name, t_record_meta(fields))
-        params_t = self._type_resolver.register_type(self._ref_registry, type_rec).t
+        params_t = self._types.register_type(self._ref_registry, type_rec).t
         self._params_t_cache[key] = params_t
         return params_t
 
@@ -251,8 +251,8 @@ class _Logger:
         _log.log(level, '  logger (context=%r pending=%r) ' + format, self._context, self._pending_record.get(), *args)
 
 
-def init_logger(type_resolver, ref_registry, module_ref_resolver, storage):
-    _Logger.instance = logger = _Logger(type_resolver, ref_registry, module_ref_resolver, storage)
+def init_logger(types, ref_registry, module_ref_resolver, storage):
+    _Logger.instance = logger = _Logger(types, ref_registry, module_ref_resolver, storage)
     return logger
 
 

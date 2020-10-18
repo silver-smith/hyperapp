@@ -23,7 +23,7 @@ class ThisModule(Module):
         self._init_fs_service(services)
 
     def _init_fs_service(self, services):
-        iface_type_ref = services.type_resolver.reverse_resolve(htypes.fs.fs_service_iface)
+        iface_type_ref = services.types.reverse_resolve(htypes.fs.fs_service_iface)
         service = htypes.hyper_ref.service(FS_SERVICE_ID, iface_type_ref)
         service_ref = services.ref_registry.register_object(service)
         services.service_registry.register(service_ref, FsService)

@@ -21,7 +21,7 @@ from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
 from hyperapp.common.type_module_loader import TypeModuleLoader
-from hyperapp.common.type_resolver import TypeResolver
+from hyperapp.common.type_system import TypeSystem
 
 
 TEST_MODULES_DIR = Path(__file__).parent.resolve()
@@ -34,36 +34,36 @@ def ref_resolver():
 
 
 @pytest.fixture
-def type_resolver(ref_resolver):
-    return TypeResolver(ref_resolver)
+def types(ref_resolver):
+    return TypeSystem(ref_resolver)
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, type_resolver):
-    registry = RefRegistry(type_resolver)
+def ref_registry(ref_resolver, types):
+    registry = RefRegistry(types)
     ref_resolver.add_source(registry)
-    register_builtin_types(registry, type_resolver)
+    register_builtin_types(registry, types)
     return registry
 
 
-def test_type_module_loader(type_resolver, ref_registry):
+def test_type_module_loader(types, ref_registry):
     local_type_module_registry = LocalTypeModuleRegistry()
-    loader = TypeModuleLoader(type_resolver, ref_registry, local_type_module_registry)
+    loader = TypeModuleLoader(types, ref_registry, local_type_module_registry)
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
 
-def test_type_resolver(ref_resolver, type_resolver, ref_registry):
+def test_types(ref_resolver, types, ref_registry):
     local_type_module_registry = LocalTypeModuleRegistry()
-    loader = TypeModuleLoader(type_resolver, ref_registry, local_type_module_registry)
+    loader = TypeModuleLoader(types, ref_registry, local_type_module_registry)
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
     def resolve_1(name):
-        return type_resolver.resolve(local_type_module_registry['type_module_1'][name])
+        return types.resolve(local_type_module_registry['type_module_1'][name])
 
     def resolve_2(name):
-        return type_resolver.resolve(local_type_module_registry['type_module_2'][name])
+        return types.resolve(local_type_module_registry['type_module_2'][name])
 
     assert resolve_1('some_int') is tInt
     assert (resolve_1('record_1').match(TRecord('record_1', OrderedDict([('int_field', tInt)]))))

@@ -37,9 +37,9 @@ class DictDecodableEmbedded(DecodableEmbedded):
 
 class DictDecoder(metaclass=abc.ABCMeta):
 
-    def __init__(self, ref_registry=None, type_resolver=None):
+    def __init__(self, ref_registry=None, types=None):
         self._ref_registry = ref_registry
-        self._type_resolver = type_resolver
+        self._types = types
 
     def decode_dict(self, t, value, path='root'):
         return self.dispatch(t, value, path)
@@ -148,7 +148,7 @@ class DictDecoder(metaclass=abc.ABCMeta):
         hash_algorithm, hash_str = value['type_ref'].split(':', 1)
         hash = codecs.decode(hash_str, 'hex')
         type_ref = ref_t(hash_algorithm, hash)
-        t = self._type_resolver.resolve(type_ref)
+        t = self._types.resolve(type_ref)
         value = self.dispatch(t, value['value'], join_path(path, 'value'))
         ref = self._ref_registry.register_object(value, t)
         return ref

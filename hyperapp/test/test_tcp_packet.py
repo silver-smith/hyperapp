@@ -42,7 +42,7 @@ def test_tcp_packet(client_services, encoding):
     test_packet_t = resolve_type(client_services, 'test', 'packet')
 
     test_packet = test_packet_t(message='hello')
-    capsule = client_services.type_resolver.make_capsule(test_packet)
+    capsule = client_services.types.make_capsule(test_packet)
     ref = make_ref(capsule)
     bundle = bundle_t((ref,), (capsule,), ())
 

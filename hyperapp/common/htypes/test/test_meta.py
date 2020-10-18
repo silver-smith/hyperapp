@@ -39,7 +39,7 @@ from hyperapp.common.htypes import (
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
-from hyperapp.common.type_resolver import TypeResolver
+from hyperapp.common.type_system import TypeSystem
 
 log = logging.getLogger(__name__)
 
@@ -50,15 +50,15 @@ def ref_resolver():
 
 
 @pytest.fixture
-def type_resolver(ref_resolver):
-    return TypeResolver(ref_resolver)
+def types(ref_resolver):
+    return TypeSystem(ref_resolver)
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, type_resolver):
-    registry = RefRegistry(type_resolver)
+def ref_registry(ref_resolver, types):
+    registry = RefRegistry(types)
     ref_resolver.add_source(registry)
-    register_builtin_types(registry, type_resolver)
+    register_builtin_types(registry, types)
     return registry
 
 
@@ -86,11 +86,11 @@ def type_ref(ref_registry):
 
 
 @pytest.fixture
-def resolve(type_resolver, type_ref):
+def resolve(types, type_ref):
 
     def resolve(name, meta_data):
         ref = type_ref(name, meta_data)
-        return type_resolver.resolve(ref)
+        return types.resolve(ref)
 
     return resolve
 

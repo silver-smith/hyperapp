@@ -31,18 +31,18 @@ class UnexpectedTypeError(RuntimeError):
 
 class _TypeRefResolver(TypeRefResolver):
 
-    def __init__(self, type_resolver):
-        self._type_resolver = type_resolver
+    def __init__(self, types):
+        self._types = types
 
     def resolve(self, type_ref, name=None):
-        return self._type_resolver.resolve(type_ref.ref)
+        return self._types.resolve(type_ref.ref)
 
 
 _DecodedCapsule = namedtuple('_DecodedCapsule', 'type_ref t value')
 _RegisteredType = namedtuple('_RegisteredType', 't ref')
 
 
-class TypeResolver(object):
+class TypeSystem(object):
 
     def __init__(self, ref_resolver):
         self._ref_resolver = ref_resolver

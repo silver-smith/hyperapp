@@ -55,7 +55,7 @@ _code_module_type_list = [
     ]
 
 
-def register_code_module_types(ref_registry, type_resolver):
+def register_code_module_types(ref_registry, types):
     for t in _code_module_type_list:
-        type_resolver.register_builtin_type(ref_registry, t)
+        types.register_builtin_type(ref_registry, t)
     builtin_type_names.update(t.name for t in _code_module_type_list)

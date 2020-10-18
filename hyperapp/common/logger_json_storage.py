@@ -20,8 +20,8 @@ class LineType(Enum):
     LOG_RECORD = 2
 
 
-def json_file_log_storage_session(ref_resolver, type_resolver):
-    encoder = _RecordsJsonEncoder(ref_resolver, type_resolver)
+def json_file_log_storage_session(ref_resolver, types):
+    encoder = _RecordsJsonEncoder(ref_resolver, types)
     start_time = datetime.now(tzlocal())
     path = JSON_LOGS_DIR.joinpath(start_time.strftime('%Y-%m-%d-%H-%M-%S')).with_suffix('.json')
     return _JsonFileLogStorage(encoder, path)
@@ -30,9 +30,9 @@ def json_file_log_storage_session(ref_resolver, type_resolver):
 
 class _RecordsJsonEncoder:
 
-    def __init__(self, ref_resolver, type_resolver):
+    def __init__(self, ref_resolver, types):
         self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._dict_encoder = DictEncoder()
         self._stored_type_refs = set()
 
@@ -41,7 +41,7 @@ class _RecordsJsonEncoder:
         params = record.params
         if params:
             params_t = params._t
-            params_type_ref = self._type_resolver.reverse_resolve(params_t)
+            params_type_ref = self._types.reverse_resolve(params_t)
             if params_type_ref not in self._stored_type_refs:
                 capsule = self._ref_resolver.resolve_ref(params_type_ref)
                 yield json.dumps(dict(
@@ -62,8 +62,8 @@ class _RecordsJsonEncoder:
 
 class _RecordsJsonDecoder:
 
-    def __init__(self, type_resolver, ref_registry):
-        self._type_resolver = type_resolver
+    def __init__(self, types, ref_registry):
+        self._types = types
         self._ref_registry = ref_registry
         self._dict_decoder = DictDecoder()
 
@@ -86,7 +86,7 @@ class _RecordsJsonDecoder:
         params_type_ref_encoded = d['params_type_ref']
         if params_type_ref_encoded is not None:
             params_type_ref = decoder.decode_dict(ref_t, params_type_ref_encoded)
-            params_t = self._type_resolver.resolve(params_type_ref)
+            params_t = self._types.resolve(params_type_ref)
             params = decoder.decode_dict(params_t, d['params'])
         else:
             params = None
@@ -116,9 +116,9 @@ class _JsonFileLogStorage:
 
 class JsonFileLogStorageReader:
 
-    def __init__(self, type_resolver, ref_registry, session):
+    def __init__(self, types, ref_registry, session):
         self.session = session
-        self._decoder = _RecordsJsonDecoder(type_resolver, ref_registry)
+        self._decoder = _RecordsJsonDecoder(types, ref_registry)
 
     def enumerate_entries(self):
         with JSON_LOGS_DIR.joinpath(self.session).with_suffix('.json').open() as f:

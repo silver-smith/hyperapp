@@ -13,11 +13,11 @@ class CodeRegistry:
 
     _Rec = namedtuple('_Rec', 'factory args kw')
 
-    def __init__(self, produce_name, async_ref_resolver, type_resolver):
+    def __init__(self, produce_name, async_ref_resolver, types):
         super().__init__()
         self._produce_name = produce_name
         self._async_ref_resolver = async_ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._registry = {}  # t -> _Rec
 
     def register_actor(self, t, factory, *args, **kw):
@@ -28,7 +28,7 @@ class CodeRegistry:
     async def summon(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = await self._async_ref_resolver.resolve_ref(ref)
-        decoded_capsule = self._type_resolver.decode_capsule(capsule)
+        decoded_capsule = self._types.decode_capsule(capsule)
         return (await self._animate(decoded_capsule.t, decoded_capsule.value, args, kw))
 
     async def animate(self, piece, *args, **kw):

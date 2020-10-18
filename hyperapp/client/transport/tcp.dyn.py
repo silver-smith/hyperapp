@@ -19,7 +19,7 @@ class TcpProtocol(asyncio.Protocol):
             self,
             event_loop,
             ref_resolver,
-            type_resolver,
+            types,
             ref_registry,
             endpoint_registry,
             ref_collector_factory,
@@ -28,7 +28,7 @@ class TcpProtocol(asyncio.Protocol):
             address,
             ):
         self._ref_resolver = ref_resolver
-        self._type_resolver = type_resolver
+        self._types = types
         self._ref_registry = ref_registry
         self._endpoint_registry = endpoint_registry
         self._ref_collector_factory = ref_collector_factory
@@ -59,7 +59,7 @@ class TcpProtocol(asyncio.Protocol):
         pprint(bundle, indent=1)
         self._unbundler.register_bundle(bundle)
         for rpc_message_ref in bundle.roots:
-            rpc_message = self._type_resolver.resolve_ref(rpc_message_ref, expected_type=htypes.hyper_ref.rpc_message).value
+            rpc_message = self._types.resolve_ref(rpc_message_ref, expected_type=htypes.hyper_ref.rpc_message).value
             self._remoting.process_rpc_message(rpc_message_ref, rpc_message)
 
     def send(self, message_ref):
@@ -93,7 +93,7 @@ class ThisModule(ClientModule):
             htypes.tcp_transport.address,
             self._resolve_address,
             services.ref_resolver,
-            services.type_resolver,
+            services.types,
             services.ref_registry,
             services.endpoint_registry,
             services.ref_collector_factory,
@@ -105,7 +105,7 @@ class ThisModule(ClientModule):
             self,
             address,
             ref_resolver,
-            type_resolver,
+            types,
             ref_registry,
             endpoint_registry,
             ref_collector_factory,
@@ -123,7 +123,7 @@ class ThisModule(ClientModule):
             constructor = lambda: TcpProtocol(
                 self._event_loop,
                 ref_resolver,
-                type_resolver,
+                types,
                 ref_registry,
                 endpoint_registry,
                 ref_collector_factory,

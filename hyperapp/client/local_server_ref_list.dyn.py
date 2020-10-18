@@ -11,7 +11,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
         ref = self._load_local_server_ref(services.unbundler)
-        self._local_server_ref_list = services.type_resolver.resolve_ref(ref).value
+        self._local_server_ref_list = services.types.resolve_ref(ref).value
 
     @command('open_local_server')
     async def open_local_server(self):

@@ -8,7 +8,7 @@ from hyperapp.common.htypes import register_builtin_types
 from hyperapp.common.code_module import register_code_module_types
 from hyperapp.common.ref_registry import RefRegistry
 from hyperapp.common.ref_resolver import RefResolver
-from hyperapp.common.type_resolver import TypeResolver
+from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.module_ref_resolver import ModuleRefResolver
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.logger import RecordKind, LogRecord, log, init_logger, close_logger
@@ -37,16 +37,16 @@ def ref_resolver():
 
 
 @pytest.fixture
-def type_resolver(ref_resolver):
-    return TypeResolver(ref_resolver)
+def types(ref_resolver):
+    return TypeSystem(ref_resolver)
 
 
 @pytest.fixture
-def ref_registry(ref_resolver, type_resolver):
-    registry = RefRegistry(type_resolver)
+def ref_registry(ref_resolver, types):
+    registry = RefRegistry(types)
     ref_resolver.add_source(registry)
-    register_builtin_types(registry, type_resolver)
-    register_code_module_types(registry, type_resolver)
+    register_builtin_types(registry, types)
+    register_code_module_types(registry, types)
     return registry
 
 
@@ -61,12 +61,12 @@ def this_module_ref(module_ref_resolver):
 
 
 @pytest.fixture
-def init(type_resolver, ref_registry, module_ref_resolver):
+def init(types, ref_registry, module_ref_resolver):
 
     @contextmanager
     def inited():
         storage = StubStorage()
-        logger = init_logger(type_resolver, ref_registry, module_ref_resolver, storage)
+        logger = init_logger(types, ref_registry, module_ref_resolver, storage)
         logger.init_asyncio_task_factory()
         yield storage
         close_logger()

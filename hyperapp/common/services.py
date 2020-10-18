@@ -13,7 +13,7 @@ from .ref_registry import RefRegistry
 from .ref_resolver import RefResolver
 from .module_ref_resolver import ModuleRefResolver
 from .type_module_loader import TypeModuleLoader
-from .type_resolver import TypeResolver
+from .type_system import TypeSystem
 from .code_module import LocalCodeModuleRegistry, register_code_module_types
 from .code_module_loader import CodeModuleLoader
 from .code_module_importer import CodeModuleImporter
@@ -41,21 +41,21 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
     def init_services(self, config=None):
         self.config.update(config or {})
         self.ref_resolver = RefResolver()
-        self.type_resolver = TypeResolver(self.ref_resolver)
-        self.ref_registry = RefRegistry(self.type_resolver)
+        self.types = TypeSystem(self.ref_resolver)
+        self.ref_registry = RefRegistry(self.types)
         self.module_ref_resolver = ModuleRefResolver(self.ref_registry)
         self.ref_resolver.add_source(self.ref_registry)
-        register_builtin_types(self.ref_registry, self.type_resolver)
-        register_code_module_types(self.ref_registry, self.type_resolver)
-        self._logger_storage = json_file_log_storage_session(self.ref_resolver, self.type_resolver)
-        self.logger = init_logger(self.type_resolver, self.ref_registry, self.module_ref_resolver, self._logger_storage)
+        register_builtin_types(self.ref_registry, self.types)
+        register_code_module_types(self.ref_registry, self.types)
+        self._logger_storage = json_file_log_storage_session(self.ref_resolver, self.types)
+        self.logger = init_logger(self.types, self.ref_registry, self.module_ref_resolver, self._logger_storage)
         log.session_started()
         self.local_type_module_registry = LocalTypeModuleRegistry()
         self.local_code_module_registry = LocalCodeModuleRegistry()
-        self.type_module_loader = TypeModuleLoader(self.type_resolver, self.ref_registry, self.local_type_module_registry)
+        self.type_module_loader = TypeModuleLoader(self.types, self.ref_registry, self.local_type_module_registry)
         self.code_module_loader = CodeModuleLoader(self.ref_registry, self.local_type_module_registry, self.local_code_module_registry)
         self.module_registry = ModuleRegistry()
-        self.code_module_importer = CodeModuleImporter(self.type_resolver)
+        self.code_module_importer = CodeModuleImporter(self.types)
         self.code_module_importer.register_meta_hook()
 
     def start(self):

@@ -67,13 +67,13 @@ class _HTypeRootLoader(_Finder):
 
 class _TypeModuleLoader(_Finder):
 
-    def __init__(self, type_resolver, type_import_list):
-        self._type_resolver = type_resolver
+    def __init__(self, types, type_import_list):
+        self._types = types
         self._type_import_list = type_import_list
 
     def exec_module(self, module):
         for type_import in self._type_import_list:
-            t = self._type_resolver.resolve(type_import.type_ref)
+            t = self._types.resolve(type_import.type_ref)
             module.__dict__[type_import.type_name] = t
 
 
@@ -90,8 +90,8 @@ class CodeModuleImporter(object):
 
     ROOT_PACKAGE = 'hyperapp.dynamic'
 
-    def __init__(self, type_resolver):
-        self._type_resolver = type_resolver
+    def __init__(self, types):
+        self._types = types
         self._fullname_to_loader = {self.ROOT_PACKAGE: _EmptyLoader()}
 
     def register_meta_hook(self):
@@ -106,7 +106,7 @@ class CodeModuleImporter(object):
 
     @log
     def import_code_module(self, code_module_ref):
-        code_module = self._type_resolver.resolve_ref(code_module_ref, code_module_t).value
+        code_module = self._types.resolve_ref(code_module_ref, code_module_t).value
         _log.info('Import code module %s: %s', ref_repr(code_module_ref), code_module.module_name)
         module_name = self._code_module_ref_to_fullname(code_module_ref)
         fullname_to_loader = {}
@@ -120,7 +120,7 @@ class CodeModuleImporter(object):
             import_module_to_type_import_list.setdefault(type_import.type_module_name, []).append(type_import)
         for import_module_name, type_import_list in import_module_to_type_import_list.items():
             name = '{}.htypes.{}'.format(module_name, import_module_name)
-            fullname_to_loader[name] = _TypeModuleLoader(self._type_resolver, type_import_list)
+            fullname_to_loader[name] = _TypeModuleLoader(self._types, type_import_list)
         # .* code module imports
         for code_import in code_module.code_import_list:
             source_module_name = self._code_module_ref_to_fullname(code_import.code_module_ref)

@@ -35,14 +35,14 @@ class RemotingProxy(object):
 
 class ProxyFactory(object):
 
-    def __init__(self, type_resolver, remoting, async_ref_resolver):
-        self._type_resolver = type_resolver
+    def __init__(self, types, remoting, async_ref_resolver):
+        self._types = types
         self._remoting = remoting
         self._async_ref_resolver = async_ref_resolver
 
     async def from_ref(self, ref):
         service = await self._async_ref_resolver.resolve_ref_to_object(ref, expected_type=htypes.hyper_ref.service)
-        iface = self._type_resolver.resolve(service.iface_type_ref)
+        iface = self._types.resolve(service.iface_type_ref)
         return RemotingProxy(self._remoting, ref, iface)
 
 
@@ -50,4 +50,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
-        services.proxy_factory = ProxyFactory(services.type_resolver, services.remoting, services.async_ref_resolver)
+        services.proxy_factory = ProxyFactory(services.types, services.remoting, services.async_ref_resolver)
