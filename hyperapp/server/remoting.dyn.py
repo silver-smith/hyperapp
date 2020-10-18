@@ -59,7 +59,7 @@ class Remoting(object):
         route_rec_set = self._route_resolver.resolve(service_ref)
         assert route_rec_set, 'No routes for service %s' % ref_repr(service_ref)
         route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
-        transport = self._transport_registry.summon(route_rec.transport_ref)
+        transport = self._transport_registry.invite(route_rec.transport_ref)
         if command.is_request:
             request_id = str(uuid.uuid4())
         else:
@@ -91,7 +91,7 @@ class Remoting(object):
         route_rec_set = self._route_resolver.resolve(rpc_response.target_endpoint_ref)
         assert route_rec_set, 'No routes for service %s' % ref_repr(rpc_response.target_endpoint_ref)
         route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
-        transport = self._transport_registry.summon(route_rec.transport_ref)
+        transport = self._transport_registry.invite(route_rec.transport_ref)
         transport.send(rpc_response_ref)
 
     def _process_request(self, rpc_request_ref, rpc_request):

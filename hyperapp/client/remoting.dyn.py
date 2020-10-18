@@ -36,7 +36,7 @@ class Remoting(object):
         route_rec_set = await self._async_route_resolver.resolve(service_ref)
         assert route_rec_set, 'No routes for service %s' % ref_repr(service_ref)
         route_rec = sorted(route_rec_set, key=attrgetter('available_at'))[-1]  # pick freshest route
-        transport = await self._transport_registry.summon(route_rec.transport_ref)
+        transport = await self._transport_registry.invite(route_rec.transport_ref)
         if command.is_request:
             request_id = str(uuid.uuid4())
         else:

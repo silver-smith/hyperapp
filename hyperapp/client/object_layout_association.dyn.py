@@ -38,7 +38,7 @@ class ObjectLayoutAssociationRepository:
             return None
         data = path.read_bytes()
         record = packet_coders.decode('yaml', data, htypes.object_layout_association.repository_record)
-        layout = await self._object_layout_registry.summon(record.layout_ref, ['root'], layout_watcher)
+        layout = await self._object_layout_registry.invite(record.layout_ref, ['root'], layout_watcher)
         _log.info("Resolve association of object type %s: found %s", object_type, layout.data)
         return layout
 

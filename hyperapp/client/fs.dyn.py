@@ -19,7 +19,7 @@ class FsTree(TreeObject):
 
     @classmethod
     async def from_state(cls, state, fs_service_registry):
-        fs_service = await fs_service_registry.summon(state.fs_service_ref)
+        fs_service = await fs_service_registry.invite(state.fs_service_ref)
         return cls(fs_service, state.host)
 
     def __init__(self, fs_service, host):

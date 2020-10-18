@@ -91,7 +91,7 @@ class RecordViewLayout(ObjectLayout):
             field_object_type_ref = field_id_to_type_ref[field.id]
             field_object_type = await async_ref_resolver.resolve_ref_to_piece(field_object_type_ref)
             path = [*self._path, idx]
-            layout = await object_layout_registry.summon(field.layout_ref, path, layout_watcher)
+            layout = await object_layout_registry.invite(field.layout_ref, path, layout_watcher)
             self._field_layout_dict[field.id] = layout
 
     @property

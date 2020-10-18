@@ -109,7 +109,7 @@ class LayoutHandle:
             pass
         watcher = LayoutWatcher()
         if layout_ref:
-            layout = await self._object_layout_registry.summon(layout_ref, ['root'], watcher)
+            layout = await self._object_layout_registry.invite(layout_ref, ['root'], watcher)
         else:
             layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(

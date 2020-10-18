@@ -26,7 +26,7 @@ class CodeRegistry:
         assert t not in self._registry, repr(t)  # duplicate
         self._registry[t] = self._Rec(factory, args, kw)
 
-    def summon(self, ref, *args, **kw):
+    def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
         capsule = self._ref_resolver.resolve_ref(ref)
         decoded_capsule = self._types.decode_capsule(capsule)

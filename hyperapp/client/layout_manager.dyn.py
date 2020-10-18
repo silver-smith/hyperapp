@@ -32,7 +32,7 @@ class RootLayout(GlobalLayout):
             self._command_hub = CommandHub(get_commands=self.get_current_commands)
 
         async def _async_init(self, view_registry, path, ref):
-            self.layout = await view_registry.summon(ref, [*path, self.id], self._window_closed, self._command_hub)
+            self.layout = await view_registry.invite(ref, [*path, self.id], self._window_closed, self._command_hub)
 
         def get_current_commands(self):
             root_commands = [command.partial(self.id) for command in self._window_commands]

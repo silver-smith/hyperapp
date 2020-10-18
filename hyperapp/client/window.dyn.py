@@ -39,9 +39,9 @@ class WindowLayout(GlobalLayout):
         self._widget = None
 
     async def _async_init(self, view_registry, state):
-        self._menu_bar_layout = await view_registry.summon(state.menu_bar_ref, [*self._path, 'menu_bar'], self._command_hub, self._view_opener)
-        self._command_pane_layout = await view_registry.summon(state.command_pane_ref, [*self._path, 'command_pane'], self._command_hub, self._view_opener)
-        self._central_view_layout = await view_registry.summon(state.central_view_ref, [*self._path, 'central_view'], self._command_hub, self._view_opener)
+        self._menu_bar_layout = await view_registry.invite(state.menu_bar_ref, [*self._path, 'menu_bar'], self._command_hub, self._view_opener)
+        self._command_pane_layout = await view_registry.invite(state.command_pane_ref, [*self._path, 'command_pane'], self._command_hub, self._view_opener)
+        self._central_view_layout = await view_registry.invite(state.central_view_ref, [*self._path, 'central_view'], self._command_hub, self._view_opener)
 
     @property
     def data(self):

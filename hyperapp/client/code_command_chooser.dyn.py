@@ -24,7 +24,7 @@ class CodeCommandChooser(SimpleListObject, Chooser):
         piece = await async_ref_resolver.resolve_ref_to_piece(state.piece_ref)
         object = await object_registry.animate(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        layout = await object_layout_registry.summon(state.layout_ref, ['root'], object, layout_watcher)
+        layout = await object_layout_registry.invite(state.layout_ref, ['root'], object, layout_watcher)
         return cls(ref_registry, object, layout)
 
     def __init__(self, ref_registry, object, layout):

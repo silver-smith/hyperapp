@@ -121,7 +121,7 @@ class TabLayout(GlobalLayout):
         tab_id = next(self._tab_id_counter)
         tab_name = f'tab#{tab_id}'
         opener = _ViewOpener(self, tab_name)
-        layout = await self._view_registry.summon(tab_ref, [*self._path, tab_name], self._command_hub, opener)
+        layout = await self._view_registry.invite(tab_ref, [*self._path, tab_name], self._command_hub, opener)
         return self._Tab(tab_name, layout)
 
     def _on_current_tab_changed(self, tab_idx):

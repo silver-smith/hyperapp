@@ -110,7 +110,7 @@ class MasterDetailsLayout(ObjectLayout):
 
     async def _create_master_layout(self):
         path = [*self._path, 'master']
-        return (await self._object_layout_registry.summon(self._master_layout_ref, path, self._object, self._layout_watcher))
+        return (await self._object_layout_registry.invite(self._master_layout_ref, path, self._object, self._layout_watcher))
 
     @command('replace')
     async def _replace_view(self, path, view: LayoutRecMakerField):

@@ -24,7 +24,7 @@ class TreeToListAdapter(ListObject):
 
     @classmethod
     async def from_state(cls, state, ref_registry, object_registry):
-        tree_object = await object_registry.summon(state.base_ref)
+        tree_object = await object_registry.invite(state.base_ref)
         return cls(ref_registry, tree_object, state.path)
 
     def __init__(self, ref_registry, tree_object, path):

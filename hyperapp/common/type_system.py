@@ -70,7 +70,7 @@ class TypeSystem(object):
         if t:
             _log.info('Resolve type %s -> (cached) %s', ref_repr(type_ref), t)
             return t
-        t = self._type_code_registry.summon(type_ref)
+        t = self._type_code_registry.invite(type_ref)
         self._ref2type_cache[type_ref] = t
         self._type2ref[t] = type_ref
         _log.info('Resolve type %s -> %s', ref_repr(type_ref), t)
