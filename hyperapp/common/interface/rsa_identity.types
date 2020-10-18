@@ -4,3 +4,13 @@ rsa_identity = record:
 
 rsa_peer = record:
   public_key_pem: binary
+
+rsa_signature = record:
+  hash_algorithm: string
+  padding: string
+  signature: binary
+
+rsa_parcel = record:
+  peer_public_key_pem: binary
+  encrypted_bundle: binary
+  sender_signature_ref: ref

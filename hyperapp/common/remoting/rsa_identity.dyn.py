@@ -1,7 +1,9 @@
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
+from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
 from . import htypes
@@ -9,6 +11,7 @@ from . import htypes
 
 RSA_KEY_SIZE_SAFE = 4096  # Key size used when generating new identities. Slow.
 RSA_KEY_SIZE_FAST = 1024  # Used for testing only.
+BUNDLE_ENCODING = 'cdr'
 
 
 class RsaIdentity:
@@ -43,6 +46,22 @@ class RsaIdentity:
     def peer(self):
         return RsaPeer(self._private_key.public_key())
 
+    def sign(self, data):
+        hash_algorithm = hashes.SHA256()
+        signature = self._private_key.sign(
+            data,
+            padding.PSS(
+                mgf=padding.MGF1(hash_algorithm),
+                salt_length=padding.PSS.MAX_LENGTH
+            ),
+            hash_algorithm,
+            )
+        return htypes.rsa_identity.rsa_signature(
+            hash_algorithm='sha256',
+            padding='pss',
+            signature=signature,
+            )
+
 
 class RsaPeer:
 
@@ -56,11 +75,31 @@ class RsaPeer:
 
     @property
     def piece(self):
-        public_key_pem = self._public_key.public_bytes(
+        return htypes.rsa_identity.rsa_peer(self._public_key_pem)
+
+    @property
+    def _public_key_pem(self):
+        return self._public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
-        return htypes.rsa_identity.rsa_peer(public_key_pem)
+
+    def make_parcel(self, bundle, sender_identity, ref_registry):
+        plain_data = packet_coders.encode(BUNDLE_ENCODING, bundle)
+        hash_alg = hashes.SHA1()
+        cipher_data = self._public_key.encrypt(
+            plain_data,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hash_alg),
+                algorithm=hash_alg,
+                label=None))
+        signature = sender_identity.sign(cipher_data)
+        signature_ref = ref_registry.register_object(signature)
+        return htypes.rsa_identity.rsa_parcel(
+            peer_public_key_pem=self._public_key_pem,
+            encrypted_bundle=cipher_data,
+            sender_signature_ref=signature_ref,
+            )
 
     
 class ThisModule(Module):
