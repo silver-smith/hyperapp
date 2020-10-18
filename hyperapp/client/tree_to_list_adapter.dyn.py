@@ -97,7 +97,7 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
 
     @classmethod
     async def from_data(cls, state, path, layout_watcher, ref_registry, async_ref_resolver, object_layout_registry, default_object_layouts):
-        base_object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        base_object_type = await async_ref_resolver.resolve_ref_to_piece(state.object_type_ref)
         adapter_object_type = cls.adapter_object_type(base_object_type)
         base_list_layout = await default_object_layouts.construct_default_layout(
             adapter_object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])

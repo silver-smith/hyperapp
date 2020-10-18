@@ -160,7 +160,7 @@ class ObjectLayoutEditor(LayoutEditor):
     async def from_state(
             cls, state,
             ref_registry, async_ref_resolver, object_registry, object_layout_registry, object_layout_association, layout_handle_from_object_type):
-        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        object_type = await async_ref_resolver.resolve_ref_to_piece(state.object_type_ref)
         handle = await layout_handle_from_object_type(object_type)
         self = cls(ref_registry, object_layout_registry, object_layout_association, object_type, state.command_id, handle)
         await self._async_init(handle.layout)

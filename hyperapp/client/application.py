@@ -31,7 +31,7 @@ class Application(AsyncApplication, Commander):
         await self.services.async_init()
         app_state = self._state_storage.load_state()
         if app_state:
-            root_layout_state = await self._async_ref_resolver.resolve_ref_to_object(app_state.root_layout_ref)
+            root_layout_state = await self._async_ref_resolver.resolve_ref_to_piece(app_state.root_layout_ref)
         else:
             root_layout_state = self._default_state_builder()
         await self._layout_manager.create_layout_views(root_layout_state)

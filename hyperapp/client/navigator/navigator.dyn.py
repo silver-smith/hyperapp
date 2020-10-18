@@ -106,7 +106,7 @@ class NavigatorLayout(GlobalLayout):
         self._current_view = None
 
     async def _async_init(self, initial_piece_ref):
-        piece = await self._async_ref_resolver.resolve_ref_to_object(initial_piece_ref)
+        piece = await self._async_ref_resolver.resolve_ref_to_piece(initial_piece_ref)
         self._current_object = object = await self._object_registry.animate(piece)
         self._current_layout_handle = await self._layout_handle_from_object_type(object.type)
         self._history.append(_HistoryItem(object, None))

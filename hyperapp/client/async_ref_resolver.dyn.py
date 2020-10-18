@@ -37,7 +37,7 @@ class AsyncRefResolver(object):
         assert capsule, repr(capsule)
         return capsule
 
-    async def resolve_ref_to_object(self, ref, expected_type=None):
+    async def resolve_ref_to_piece(self, ref, expected_type=None):
         capsule = await self.resolve_ref(ref)
         t = self._types.resolve(capsule.type_ref)
         if expected_type:

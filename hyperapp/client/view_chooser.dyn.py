@@ -26,7 +26,7 @@ class ViewChooser(SimpleListObject, Chooser):
 
     @classmethod
     async def from_state(cls, state, ref_registry, async_ref_resolver, available_object_layouts):
-        object_type = await async_ref_resolver.resolve_ref_to_object(state.object_type_ref)
+        object_type = await async_ref_resolver.resolve_ref_to_piece(state.object_type_ref)
         return cls(ref_registry, available_object_layouts, object_type)
 
     def __init__(self, ref_registry, available_object_layouts, object_type):

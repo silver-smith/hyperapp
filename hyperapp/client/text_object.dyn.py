@@ -73,7 +73,7 @@ class WikiTextObject(TextObject):
         if not ref:
             _log.warning('ref is missing: %r', id)
             return
-        return (await self._async_ref_resolver.resolve_ref_to_object(ref))
+        return (await self._async_ref_resolver.resolve_ref_to_piece(ref))
 
 
 class ThisModule(ClientModule):
