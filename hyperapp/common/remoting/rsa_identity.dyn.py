@@ -39,9 +39,33 @@ class RsaIdentity:
             )
         return htypes.rsa_identity.rsa_identity(private_key_pem)
 
+    @property
+    def peer(self):
+        return RsaPeer(self._private_key.public_key())
 
+
+class RsaPeer:
+
+    @classmethod
+    def from_piece(cls, piece):
+        public_key = serialization.load_pem_public_key(piece.public_key_pem, backend=default_backend())
+        return cls(public_key)
+
+    def __init__(self, public_key: rsa.RSAPublicKey):
+        self._public_key = public_key
+
+    @property
+    def piece(self):
+        public_key_pem = self._public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+        return htypes.rsa_identity.rsa_peer(public_key_pem)
+
+    
 class ThisModule(Module):
 
     def __init__(self, module_name, services):
         super().__init__(module_name)
         services.identity_registry.register_actor(htypes.rsa_identity.rsa_identity, RsaIdentity.from_piece)
+        services.peer_registry.register_actor(htypes.rsa_identity.rsa_peer, RsaPeer.from_piece)
