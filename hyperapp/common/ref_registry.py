@@ -36,5 +36,10 @@ class RefRegistry:
         log.debug('  -> registered ref %s for piece %s', ref_repr(ref), t.name)
         return ref
 
+    def distil_opt(self, piece, t=None):
+        if piece is None:
+            return None
+        return self.distil(piece, t)
+
     def resolve_ref(self, ref):
         return self._registry.get(ref)

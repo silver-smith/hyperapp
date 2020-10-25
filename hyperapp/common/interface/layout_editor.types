@@ -8,4 +8,5 @@ view_layout_editor = record
 
 object_layout_editor = record:
   object_type_ref: ref
-  command_id: string opt
+  origin_object_type_ref: ref
+  origin_command_id: string opt
