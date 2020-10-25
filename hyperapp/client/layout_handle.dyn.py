@@ -105,6 +105,10 @@ class LayoutHandle:
     def watcher(self) -> LayoutWatcher:
         return self._watcher
 
+    @property
+    def object_type(self):
+        return self._object_type
+
     async def command_handle(self, command_id, object_type, layout_ref):
         try:
             return self._handle_by_type[object_type]

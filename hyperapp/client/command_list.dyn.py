@@ -126,9 +126,9 @@ class CommandList(SimpleListObject):
         if object_type is None:
             # Associating layout to dynamic-object-type command is forbidden. Even if we can run command to get it.
             return None
-        command_handle = await self._command_handle(self._command_dict[command_id], object_type)
-        layout_handle_ref = self._ref_registry.distil(command_handle.data)
-        return htypes.layout_editor.object_layout_editor(layout_handle_ref)
+        object_type_ref = self._ref_registry.distil(object_type)
+        origin_object_type_ref = self._ref_registry.distil(self._layout_handle.object_type)
+        return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, command_id)
 
     @object_command('add', kind='element')
     async def _add_command(self, path):
