@@ -116,7 +116,8 @@ class LayoutHandle:
         else:
             layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_registry, self._object_layout_association, self._handle_by_type, self._layout_from_object_type,
+            self._ref_registry, self._object_layout_registry, self._object_layout_association,
+            self._handle_by_type, self._handle_by_command, self._layout_from_object_type,
             watcher, object_type, self._object_type, command_id, layout)
         self._handle_by_type[object_type] = handle
         self._handle_by_command[self._object_type, command_id] = handle
