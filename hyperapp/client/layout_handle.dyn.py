@@ -127,8 +127,7 @@ class LayoutHandle:
         self._watcher.distribute_diffs([UpdateVisualItemDiff(['root'], item)])
 
     def process_layout_diffs(self, diff_list):
-        _log.info("Save layout association for %r to %s", self._layout.object_type, self._layout.data)
-        self._object_layout_association.associate(self._object_type, self._layout)
+        pass  # todo?
 
 
 class ThisModule(ClientModule):
