@@ -181,8 +181,8 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @property
     def data(self):
-        layout_handle_ref = self._ref_registry.distil(self._layout_handle.data)
-        return htypes.layout_editor.object_layout_editor(layout_handle_ref)
+        object_type_ref = self._ref_registry.distil(self._object_type)
+        return htypes.layout_editor.object_layout_editor(object_type_ref, self._command_id)
 
     def get_command_list(self):
         return [command for command in super().get_command_list()
