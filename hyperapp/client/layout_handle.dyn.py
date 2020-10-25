@@ -151,9 +151,10 @@ class ThisModule(ClientModule):
         self._object_layout_association = services.object_layout_association
 
         services.layout_handle_from_object_type = self.layout_handle_from_object_type
+        services.create_layout_handle = self.create_layout_handle
 
     async def layout_handle_from_object_type(self, object_type):
-        return (await self._create_layout_handle(object_type))
+        return (await self.create_layout_handle(object_type))
 
     async def layout_handle_from_ref(self, state_ref):
         state = await self._async_ref_resolver.summon(state_ref)
@@ -165,9 +166,9 @@ class ThisModule(ClientModule):
             origin_object_type = await self._async_ref_resolver.summon(state.origin_object_type_ref)
         else:
             origin_object_type = None
-        return (await self._create_layout_handle(object_type, origin_object_type, state.origin_command_id))
+        return (await self.create_layout_handle(object_type, origin_object_type, state.origin_command_id))
 
-    async def _create_layout_handle(self, object_type, origin_object_type=None, origin_command_id=None):
+    async def create_layout_handle(self, object_type, origin_object_type=None, origin_command_id=None):
         try:
             return self._handle_by_type[object_type]
         except KeyError:

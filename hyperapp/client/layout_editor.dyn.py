@@ -159,20 +159,24 @@ class ObjectLayoutEditor(LayoutEditor):
     @classmethod
     async def from_state(
             cls, state,
-            ref_registry, async_ref_resolver, object_registry, object_layout_registry, object_layout_association, layout_handle_from_object_type):
+            ref_registry, async_ref_resolver, object_registry, object_layout_registry, object_layout_association, create_layout_handle):
         object_type = await async_ref_resolver.summon(state.object_type_ref)
-        handle = await layout_handle_from_object_type(object_type)
-        self = cls(ref_registry, object_layout_registry, object_layout_association, object_type, state.command_id, handle)
+        origin_object_type = await async_ref_resolver.summon_opt(state.origin_object_type_ref)
+        handle = await create_layout_handle(object_type, origin_object_type, state.origin_command_id)
+        self = cls(ref_registry, object_layout_registry, object_layout_association, object_type, origin_object_type, state.origin_command_id, handle)
         await self._async_init(handle.layout)
         return self
 
-    def __init__(self, ref_registry, object_layout_registry, object_layout_association, object_type, command_id, layout_handle):
+    def __init__(self,
+                 ref_registry, object_layout_registry, object_layout_association,
+                 object_type, origin_object_type, origin_command_id, layout_handle):
         super().__init__(layout_handle.watcher)
         self._ref_registry = ref_registry
         self._object_layout_registry = object_layout_registry
         self._object_layout_association = object_layout_association
         self._object_type = object_type
-        self._command_id = command_id
+        self._origin_object_type = origin_object_type
+        self._origin_command_id = origin_command_id
         self._layout_handle = layout_handle
 
     @property
@@ -182,7 +186,8 @@ class ObjectLayoutEditor(LayoutEditor):
     @property
     def data(self):
         object_type_ref = self._ref_registry.distil(self._object_type)
-        return htypes.layout_editor.object_layout_editor(object_type_ref, self._command_id)
+        origin_object_type_ref = self._ref_registry.distil_opt(self._origin_object_type)
+        return htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref, self._origin_command_id)
 
     def get_command_list(self):
         return [command for command in super().get_command_list()
@@ -235,7 +240,7 @@ class ThisModule(ClientModule):
             services.object_registry,
             services.object_layout_registry,
             services.object_layout_association,
-            services.layout_handle_from_object_type,
+            services.create_layout_handle,
             )
 
     @object_command('open_view_layout')

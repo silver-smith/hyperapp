@@ -190,7 +190,7 @@ class NavigatorLayout(GlobalLayout):
     @command('open_layout_editor')
     async def _open_layout_editor(self):
         object_type_ref = self._ref_registry.distil(self._current_object.type)
-        piece = htypes.layout_editor.object_layout_editor(object_type_ref, command_id=None)
+        piece = htypes.layout_editor.object_layout_editor(object_type_ref, origin_object_type_ref=None, origin_command_id=None)
         await self._open_piece(piece)
 
     @command('commands')
