@@ -207,7 +207,7 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @object_command('replace', kind='element')
     async def _replace_view(self, path):
-        object_type_ref = self._ref_registry.distil(self._layout_handle.layout.object_type)
+        object_type_ref = self._ref_registry.distil(self._object_type)
         chooser = htypes.view_chooser.view_chooser(object_type_ref)
         chooser_ref = self._ref_registry.distil(chooser)
         layout_data_maker_field = htypes.params_editor.field('layout_data_maker', chooser_ref)
