@@ -65,11 +65,13 @@ class LayoutWatcher:
 class LayoutHandle:
 
     def __init__(
-            self, ref_registry, object_layout_registry, object_layout_association, layout_handle_cache, layout_from_object_type,
+            self, ref_registry, object_layout_registry, object_layout_association,
+            handle_by_type, handle_by_command, layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout):
         self._ref_registry = ref_registry
         self._object_layout_registry = object_layout_registry
-        self._layout_handle_cache = layout_handle_cache
+        self._handle_by_type = handle_by_type
+        self._handle_by_command = handle_by_command
         self._layout_from_object_type = layout_from_object_type
         self._object_type = object_type
         self._origin_object_type = origin_object_type
@@ -104,7 +106,7 @@ class LayoutHandle:
 
     async def command_handle(self, command_id, object_type, layout_ref):
         try:
-            return self._layout_handle_cache[object_type]
+            return self._handle_by_type[object_type]
         except KeyError:
             pass
         watcher = LayoutWatcher()
@@ -113,9 +115,10 @@ class LayoutHandle:
         else:
             layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_registry, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
+            self._ref_registry, self._object_layout_registry, self._object_layout_association, self._handle_by_type, self._layout_from_object_type,
             watcher, object_type, self._object_type, command_id, layout)
-        self._layout_handle_cache[object_type] = handle
+        self._handle_by_type[object_type] = handle
+        self._handle_by_command[self._object_type, command_id] = handle
         return handle
 
     async def set_layout(self, layout):
@@ -133,7 +136,8 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services):
         super().__init__(module_name, services)
 
-        self._layout_handle_cache = {}  # object_type path -> layout handle
+        self._handle_by_type = {}  # object_type -> layout handle
+        self._handle_by_command = {}  # object_type, command id -> layout handle
 
         services.layout_handle_from_data = self.layout_handle_from_data
         services.layout_handle_from_ref = self.layout_handle_from_ref
@@ -164,15 +168,18 @@ class ThisModule(ClientModule):
 
     async def _create_layout_handle(self, object_type, origin_object_type=None, origin_command_id=None):
         try:
-            return self._layout_handle_cache[object_type]
+            return self._handle_by_type[object_type]
         except KeyError:
             pass
         watcher = LayoutWatcher()
         layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
-            self._ref_registry, self._object_layout_registry, self._object_layout_association, self._layout_handle_cache, self._layout_from_object_type,
+            self._ref_registry, self._object_layout_registry, self._object_layout_association,
+            self._handle_by_type, self._handle_by_command, self._layout_from_object_type,
             watcher, object_type, origin_object_type, origin_command_id, layout)
-        self._layout_handle_cache[object_type] = handle
+        self._handle_by_type[object_type] = handle
+        if origin_object_type and origin_command_id:
+            self._handle_by_command[origin_object_type, origin_command_id] = handle
         return handle
 
     async def _layout_from_object_type(self, object_type, layout_watcher):
