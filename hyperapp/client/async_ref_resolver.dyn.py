@@ -44,6 +44,11 @@ class AsyncRefResolver(object):
             assert t is expected_type, (t, expected_type)
         return packet_coders.decode(capsule.encoding, capsule.encoded_object, t)
 
+    async def summon_opt(self, ref, expected_type=None):
+        if ref is None:
+            return None
+        return await self.summon(ref, expected_type)
+
 
 class ThisModule(ClientModule):
 
