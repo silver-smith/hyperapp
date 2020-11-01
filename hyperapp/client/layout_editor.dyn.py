@@ -181,7 +181,10 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @property
     def title(self):
-        return f"Edit layout: {self._layout_handle.title}"
+        if self._origin_object_type:
+            return f"Edit layout for: {self._origin_object_type._t.name}/{self._origin_command_id}"
+        else:
+            return f"Edit layout for type: {self._object_type._t.name}"
 
     @property
     def data(self):

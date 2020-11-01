@@ -82,13 +82,6 @@ class LayoutHandle:
         self._watcher.subscribe(self)
 
     @property
-    def title(self):
-        if self._origin_object_type:
-            return f"For: {self._origin_object_type._t.name}/{self._origin_command_id}"
-        else:
-            return f"For type: {self._object_type._t.name}"
-
-    @property
     def data(self):
         object_type_ref = self._ref_registry.distil(self._object_type)
         if self._origin_object_type:
