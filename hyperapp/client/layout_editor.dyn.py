@@ -220,7 +220,7 @@ class ObjectLayoutEditor(LayoutEditor):
 
     @command('_replace_impl')
     async def _replace_impl(self, layout_data_maker):
-        layout_data = await layout_data_maker(self._layout_handle.layout.object_type)
+        layout_data = await layout_data_maker(self._object_type)
         layout = await self._object_layout_registry.animate(layout_data, ['root'], self._layout_handle.watcher)
         await self._layout_handle.set_layout(layout)
         return self.data
