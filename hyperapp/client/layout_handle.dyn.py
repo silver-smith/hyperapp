@@ -103,10 +103,6 @@ class LayoutHandle:
         return self._object_type
 
     async def command_handle(self, command_id, object_type, layout_ref):
-        try:
-            return self._handle_by_type[object_type]
-        except KeyError:
-            pass
         watcher = LayoutWatcher()
         if layout_ref:
             layout = await self._object_layout_registry.invite(layout_ref, ['root'], watcher)
@@ -166,10 +162,6 @@ class ThisModule(ClientModule):
         return (await self.create_layout_handle(object_type, origin_object_type, state.origin_command_id))
 
     async def create_layout_handle(self, object_type, origin_object_type=None, origin_command_id=None):
-        try:
-            return self._handle_by_type[object_type]
-        except KeyError:
-            pass
         watcher = LayoutWatcher()
         layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
