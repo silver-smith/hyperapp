@@ -41,7 +41,7 @@ class ObjectLayoutAssociationRepository:
         path.write_bytes(data)
 
     async def resolve_type(self, object_type, layout_watcher):
-        _log.info("Resolve association of object type %s:", object_type)
+        _log.debug("Resolve association of object type %s:", object_type)
         path = self._type_file_path(object_type)
         if not path.exists():
             _log.info("Resolve association of object type %s: None found", object_type)
@@ -50,6 +50,18 @@ class ObjectLayoutAssociationRepository:
         record = packet_coders.decode('yaml', data, htypes.object_layout_association.type_repository_record)
         layout = await self._object_layout_registry.invite(record.layout_ref, ['root'], layout_watcher)
         _log.info("Resolve association of object type %s: found %s", object_type, layout.data)
+        return layout
+
+    async def resolve_command(self, origin_object_type, command_id, layout_watcher):
+        _log.debug("Resolve association of command %s/%s:", origin_object_type, command_id)
+        path = self._command_file_path(origin_object_type, command_id)
+        if not path.exists():
+            _log.info("Resolve association of command %s/%s: None found", origin_object_type, command_id)
+            return None
+        data = path.read_bytes()
+        record = packet_coders.decode('yaml', data, htypes.object_layout_association.command_repository_record)
+        layout = await self._object_layout_registry.invite(record.layout_ref, ['root'], layout_watcher)
+        _log.info("Resolve association of command %s/%s: found %s", origin_object_type, command_id, layout.data)
         return layout
 
     def _type_file_path(self, object_type):

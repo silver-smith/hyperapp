@@ -163,7 +163,11 @@ class ThisModule(ClientModule):
 
     async def create_layout_handle(self, object_type, origin_object_type=None, origin_command_id=None):
         watcher = LayoutWatcher()
-        layout = await self._layout_from_object_type(object_type, watcher)
+        layout = None
+        if origin_object_type and origin_command_id:
+            layout = await self._object_layout_association.resolve_command(origin_object_type, origin_command_id, watcher)
+        if not layout:
+            layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
             self._ref_registry, self._object_layout_registry, self._object_layout_association,
             self._handle_by_type, self._handle_by_command, self._layout_from_object_type,
