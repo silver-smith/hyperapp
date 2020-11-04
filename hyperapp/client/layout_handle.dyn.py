@@ -102,11 +102,10 @@ class LayoutHandle:
     def object_type(self):
         return self._object_type
 
-    async def command_handle(self, command_id, object_type, layout_ref):
+    async def command_handle(self, command_id, object_type):
         watcher = LayoutWatcher()
-        if layout_ref:
-            layout = await self._object_layout_registry.invite(layout_ref, ['root'], watcher)
-        else:
+        layout = await self._object_layout_association.resolve_command(self._object_type, command_id, watcher)
+        if not layout:
             layout = await self._layout_from_object_type(object_type, watcher)
         handle = LayoutHandle(
             self._ref_registry, self._object_layout_registry, self._object_layout_association,
