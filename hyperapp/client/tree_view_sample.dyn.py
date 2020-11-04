@@ -145,3 +145,10 @@ class ThisModule(ClientModule):
     @command('open_tree_view_sample')
     async def open_tree_view_sample(self):
         return htypes.tree_view_sample.tree_view_sample_object()
+
+    @command('open_tree_view_sample_article')
+    async def open_tree_view_sample_article(self):
+        return htypes.tree_view_sample.tree_sample_article(
+            title=f"Sample tree view article",
+            text=f"Sample contents for:\nSample tree view article",
+            )

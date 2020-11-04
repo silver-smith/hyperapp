@@ -1,10 +1,15 @@
 module:client.tree_view_sample:ThisModule:
   commands:
     open_tree_view_sample:
-      text: Open tree view sample
+      text: Tree view sample
       description: Open sample tree view
       shortcuts:
       - Alt+Ctrl+T
+    open_tree_view_sample_article:
+      text: Tree view sample article
+      description: Open sample tree view article
+      shortcuts:
+      - Alt+Ctrl+Shift+T
 
 module:client.tree_view_sample:SampleTree:
   columns:
