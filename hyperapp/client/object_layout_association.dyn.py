@@ -20,32 +20,47 @@ class ObjectLayoutAssociationRepository:
         self._object_layout_registry = object_layout_registry
         self._dir = dir
 
-    def associate(self, object_type, layout):
+    def associate_type(self, object_type, layout):
         _log.info("Associate object type %s with layout %s", object_type, layout.data)
         object_type_ref = self._ref_registry.distil(object_type)
         layout_ref = self._ref_registry.distil(layout.data)
-        record = htypes.object_layout_association.repository_record(object_type_ref, layout_ref)
+        record = htypes.object_layout_association.type_repository_record(object_type_ref, layout_ref)
         data = packet_coders.encode('yaml', record)
-        path = self._file_path(object_type)
+        path = self._type_file_path(object_type)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(data)
 
-    async def resolve(self, object_type, layout_watcher):
+    def associate_command(self, origin_object_type, command_id, layout):
+        _log.info("Associate object command %s/%s with layout %s", origin_object_type, command_id, layout.data)
+        origin_object_type_ref = self._ref_registry.distil(origin_object_type)
+        layout_ref = self._ref_registry.distil(layout.data)
+        record = htypes.object_layout_association.command_repository_record(origin_object_type_ref, command_id, layout_ref)
+        data = packet_coders.encode('yaml', record)
+        path = self._command_file_path(origin_object_type, command_id)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+
+    async def resolve_type(self, object_type, layout_watcher):
         _log.info("Resolve association of object type %s:", object_type)
-        path = self._file_path(object_type)
+        path = self._type_file_path(object_type)
         if not path.exists():
             _log.info("Resolve association of object type %s: None found", object_type)
             return None
         data = path.read_bytes()
-        record = packet_coders.decode('yaml', data, htypes.object_layout_association.repository_record)
+        record = packet_coders.decode('yaml', data, htypes.object_layout_association.type_repository_record)
         layout = await self._object_layout_registry.invite(record.layout_ref, ['root'], layout_watcher)
         _log.info("Resolve association of object type %s: found %s", object_type, layout.data)
         return layout
 
-    def _file_path(self, object_type):
+    def _type_file_path(self, object_type):
         object_type_ref = self._ref_registry.distil(object_type)
         hash_hex = codecs.encode(object_type_ref.hash[:4], 'hex').decode()
         return self._dir / f'{object_type._t.name}-{object_type_ref.hash_algorithm}:{hash_hex}.yaml'
+
+    def _command_file_path(self, origin_object_type, command_id):
+        origin_object_type_ref = self._ref_registry.distil(origin_object_type)
+        hash_hex = codecs.encode(origin_object_type_ref.hash[:4], 'hex').decode()
+        return self._dir / f'{origin_object_type._t.name}-{command_id}-{origin_object_type_ref.hash_algorithm}:{hash_hex}.yaml'
 
 
 class ThisModule(ClientModule):

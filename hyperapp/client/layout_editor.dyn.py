@@ -205,8 +205,10 @@ class ObjectLayoutEditor(LayoutEditor):
     def process_layout_diffs(self, vdiff_list):
         super().process_layout_diffs(vdiff_list)
         layout = self._layout_handle.layout
-        _log.info("Save layout association for %r: %s", self._object_type, layout.data)
-        self._object_layout_association.associate(self._object_type, layout)
+        if self._origin_object_type:
+            self._object_layout_association.associate_command(self._origin_object_type, self._origin_command_id, layout)
+        else:
+            self._object_layout_association.associate_type(self._object_type, layout)
 
     @object_command('replace', kind='element')
     async def _replace_view(self, path):

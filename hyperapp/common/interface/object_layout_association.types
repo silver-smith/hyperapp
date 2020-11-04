@@ -1,4 +1,9 @@
 
-repository_record = record:
+type_repository_record = record:
   object_type_ref: ref
+  layout_ref: ref
+
+command_repository_record = record:
+  origin_object_type_ref: ref
+  command_id: string
   layout_ref: ref

@@ -1,4 +1,5 @@
 import:
   types:
     object_layout_association:
-      - repository_record
+      - type_repository_record
+      - command_repository_record
