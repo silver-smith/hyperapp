@@ -1,6 +1,9 @@
 import:
   types:
+    object_type:
+      - object_command
     code_command_chooser:
+      - code_command_chooser_type
       - code_command_chooser
   code:
     - client.object_command

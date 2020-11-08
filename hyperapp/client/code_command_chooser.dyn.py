@@ -19,12 +19,18 @@ Item = namedtuple('Item', 'path id kind')
 
 class CodeCommandChooser(SimpleListObject, Chooser):
 
+    type = htypes.code_command_chooser.code_command_chooser_type(
+        command_list=(
+            htypes.object_type.object_command('choose', None),
+            ),
+        )
+
     @classmethod
     async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_registry):
         piece = await async_ref_resolver.summon(state.piece_ref)
         object = await object_registry.animate(piece)
         layout_watcher = LayoutWatcher()  # todo: use global category/command -> watcher+layout handle registry
-        layout = await object_layout_registry.invite(state.layout_ref, ['root'], object, layout_watcher)
+        layout = await object_layout_registry.invite(state.layout_ref, ['root'], layout_watcher)
         return cls(ref_registry, object, layout)
 
     def __init__(self, ref_registry, object, layout):
@@ -56,7 +62,7 @@ class CodeCommandChooser(SimpleListObject, Chooser):
             Item('', 'self', ''),
             ] +[
             await self._make_item(path, command)
-            for path, command in self._layout.collect_view_commands()
+            for path, command in self._layout.available_code_commands(self._object)
             ]
 
     async def _make_item(self, path, command):
