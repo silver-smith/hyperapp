@@ -18,17 +18,18 @@ Item = namedtuple('Item', 'id code_id kind path layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, layout_handle_from_ref, layout_handle_from_object_type):
+    async def from_state(cls, state, ref_registry, async_ref_resolver, object_registry, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
         piece = await async_ref_resolver.summon(state.piece_ref)
         object = await object_registry.animate(piece)
         layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
-        self = cls(ref_registry, layout_handle_from_object_type, object, layout_handle)
+        self = cls(ref_registry, object_layout_association, layout_handle_from_object_type, object, layout_handle)
         await self._async_init(async_ref_resolver)
         return self
 
-    def __init__(self, ref_registry, layout_handle_from_object_type, object, layout_handle):
+    def __init__(self, ref_registry, object_layout_association, layout_handle_from_object_type, object, layout_handle):
         super().__init__()
         self._ref_registry = ref_registry
+        self._object_layout_association = object_layout_association
         self._layout_handle_from_object_type = layout_handle_from_object_type
         self._object = object
         self._layout_handle = layout_handle
@@ -84,7 +85,7 @@ class CommandList(SimpleListObject):
         return self._layout_handle.layout
 
     async def _make_item(self, command):
-        object_type = self._command_object_types[command.id]
+        object_type = self._command_object_types[command.code_id]
         if object_type is not None:
             layout_handle = await self._command_handle(command, object_type)
             item = await layout_handle.layout.visual_item()
@@ -149,6 +150,7 @@ class CommandList(SimpleListObject):
         new_command_id = self._make_command_id_unique(code_command_id)
         command = self._layout.add_command(self._object, new_command_id, code_command_id)
         self._command_dict[command.id] = command
+        self._object_layout_association.associate_type(self._layout_handle.object_type, self._layout)
         return self.data
 
     def _make_command_id_unique(self, command_id):
@@ -180,6 +182,7 @@ class ThisModule(ClientModule):
             services.ref_registry,
             services.async_ref_resolver,
             services.object_registry,
+            services.object_layout_association,
             services.layout_handle_from_ref,
             services.layout_handle_from_object_type,
             )
