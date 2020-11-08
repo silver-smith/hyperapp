@@ -129,9 +129,10 @@ class ObjectLayout(Layout):
     def add_command(self, object, id, code_id):
         id_to_code_command = self._id_to_code_command(object)
         code_command = id_to_code_command[code_id]
-        command = LayoutCommand(id, code_command, enabled=code_command.is_enabled())
+        command = self._Command(id, code_id, layout_ref=None)
+        layout_command = LayoutCommand(id, code_command, enabled=code_command.is_enabled())
         self._command_list.append(command)
-        return command
+        return layout_command
 
     def _id_to_code_command(self, object):
         return {
