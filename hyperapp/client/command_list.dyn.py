@@ -123,7 +123,8 @@ class CommandList(SimpleListObject):
     @object_command('layout', kind='element')
     async def _open_layout(self, item_key):
         command_id = item_key
-        object_type = self._command_object_types[command_id]
+        command = self._command_dict[command_id]
+        object_type = self._command_object_types[command.code_id]
         if object_type is None:
             # Associating layout to dynamic-object-type command is forbidden. Even if we can run command to get it.
             return None
