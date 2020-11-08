@@ -147,7 +147,7 @@ class CommandList(SimpleListObject):
     @command('_add_command_impl')
     async def _add_command_impl(self, code_command_id):
         new_code_command_id = self._make_command_id_unique(code_command_id)
-        command = self._layout.add_command(new_code_command_id, code_command_id)
+        command = self._layout.add_command(self._object, new_code_command_id, code_command_id)
         self._command_dict[command.id] = command
         return self.data
 
