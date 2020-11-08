@@ -56,8 +56,9 @@ class TypeModuleLoader(object):
             try:
                 imported_module = self._local_type_module_registry[import_.module_name]
             except KeyError:
-                raise RuntimeError('Type module {0!r} wants name {1!r} from module {2!r}, but module {2!r} does not exist'.format(
-                    module_name, import_.module_name, import_.name))
+                raise RuntimeError(
+                    f'Type module {module_name!r} wants name {import_.name!r} from module {import_.module_name!r},'
+                    f' but module {import_.module_name!r} does not exist')
             try:
                 local_name_dict[import_.name] = imported_module[import_.name]
             except KeyError:
