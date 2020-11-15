@@ -62,13 +62,19 @@ class MenuBar(QtWidgets.QMenuBar):
             menu.addAction(self._make_action(menu, command))
 
     def _make_action(self, menu, command, used_shortcut_set=None):
-        resource = self._resource_resolver.resolve(command.resource_key, self._locale)
-        if resource:
-            text = resource.text
-            shortcut_list = resource.shortcut_list
+        if command.resource_key:
+            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
         else:
-            text = '.'.join(command.resource_key.path)
+            resource = None
+        if resource:
+            shortcut_list = resource.shortcut_list
+            text = resource.text
+        else:
             shortcut_list = None
+            if command.resource_key:
+                text = '.'.join(command.resource_key.path)
+            else:
+                text = command.id
         if not command.is_enabled():
             shortcut_list = None
         if used_shortcut_set is not None:

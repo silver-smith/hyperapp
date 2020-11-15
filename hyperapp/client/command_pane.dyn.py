@@ -79,7 +79,10 @@ class CommandPane(QtWidgets.QDockWidget):
             self._element_buttons.append(button)
 
     def _make_button(self, command, set_shortcuts=False):
-        resource = self._resource_resolver.resolve(command.resource_key, self._locale)
+        if command.resource_key:
+            resource = self._resource_resolver.resolve(command.resource_key, self._locale)
+        else:
+            resource = None
         if resource:
             if resource.shortcut_list:
                 text = '%s (%s)' % (resource.text, resource.shortcut_list[0])
@@ -88,7 +91,10 @@ class CommandPane(QtWidgets.QDockWidget):
             description = resource.description
         else:
             text = command.id
-            description = '.'.join(command.resource_key.path)
+            if command.resource_key:
+                description = '.'.join(command.resource_key.path)
+            else:
+                description = None
         button = QtWidgets.QPushButton(text, focusPolicy=QtCore.Qt.NoFocus)
         button.setToolTip(description)
         button.setEnabled(command.is_enabled())
