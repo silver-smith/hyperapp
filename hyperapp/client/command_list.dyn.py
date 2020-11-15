@@ -85,19 +85,20 @@ class CommandList(SimpleListObject):
         return self._layout_handle.layout
 
     async def _make_item(self, command):
-        object_type = self._command_object_types[command.code_id]
+        if command.code_id == 'self':
+            object_type = self._layout_handle.object_type
+            path = []
+            kind = ''
+        else:
+            object_type = self._command_object_types[command.code_id]
+            path, code_command = self._id_to_path_and_code_command[command.code_id]
+            kind = code_command.kind
         if object_type is not None:
             layout_handle = await self._command_handle(command, object_type)
             item = await layout_handle.layout.visual_item()
             layout_str = item.text
         else:
             layout_str = ''
-        if command.code_id:
-            path, code_command = self._id_to_path_and_code_command[command.code_id]
-            kind = code_command.kind
-        else:
-            path = []
-            kind = ''
         return Item(
             id=command.id,
             code_id=command.code_id,

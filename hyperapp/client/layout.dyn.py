@@ -104,12 +104,12 @@ class ObjectLayout(Layout):
         id_to_code_command = self._id_to_code_command(object)
         command_list = []
         for command in self._command_list:
-            if command.code_id:
-                code_command = id_to_code_command[command.code_id]
-                enabled = code_command.is_enabled()
-            else:
+            if command.code_id == 'self':
                 code_command = None
                 enabled = True
+            else:
+                code_command = id_to_code_command[command.code_id]
+                enabled = code_command.is_enabled()
             command_list.append(LayoutCommand(command.id, code_command, command.layout_ref, enabled=enabled))
         return command_list
 
@@ -128,9 +128,14 @@ class ObjectLayout(Layout):
 
     def add_command(self, object, id, code_id):
         id_to_code_command = self._id_to_code_command(object)
-        code_command = id_to_code_command[code_id]
+        if code_id == 'self':
+            code_command = None
+            is_enabled = True
+        else:
+            code_command = id_to_code_command[code_id]
+            is_enabled = code_command.is_enabled()
         command = self._Command(id, code_id, layout_ref=None)
-        layout_command = LayoutCommand(id, code_command, enabled=code_command.is_enabled())
+        layout_command = LayoutCommand(id, code_command, enabled=is_enabled)
         self._command_list.append(command)
         return layout_command
 

@@ -20,8 +20,12 @@ class LayoutCommand:
         self._kw = kw or {}
         self._layout_handle = layout_handle
         self._wrapper = wrapper
-        self.kind = code_command.kind
-        self.resource_key = code_command.resource_key  # todo: use id
+        if code_command:
+            self.kind = code_command.kind
+            self.resource_key = code_command.resource_key  # todo: use id
+        else:
+            self.kind = 'object'
+            self.resource_key = None  # todo
 
     def __repr__(self):
         return (
