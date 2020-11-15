@@ -131,7 +131,7 @@ class ObjectLayout(Layout):
 
     def _make_layout_command(self, id_to_code_command, object, command):
         if command.code_id == 'self':
-            code_command = SelfCommand(object)
+            code_command = SelfCommand(command.code_id, object)
         else:
             code_command = id_to_code_command[command.code_id]
         return LayoutCommand(command.id, code_command, command.layout_ref, enabled=code_command.is_enabled())
@@ -197,14 +197,14 @@ class AbstractMultiItemObjectLayout(ObjectLayout):
         return [*non_item_command_list, *bound_item_command_list]
 
     def get_bound_item_commands(self, object, unbound_item_command_list, item_key):
-        item_command_ids = {
+        item_command_code_ids = {
             command.id for command in
             object.get_item_command_list(item_key)
             }
         return [
             command.partial(item_key)  # bind to item key
             for command in unbound_item_command_list
-            if command.id in item_command_ids
+            if command.code_command.id in item_command_code_ids
             ]
 
 

@@ -3,10 +3,11 @@ import weakref
 
 class SelfCommand:
 
-    def __init__(self, object):
-        self._piece = object.data
+    def __init__(self, id, object):
+        self.id = id
         self.kind = 'object'
         self.resource_key = None  # todo
+        self._piece = object.data
 
     def is_enabled(self):
         return True
