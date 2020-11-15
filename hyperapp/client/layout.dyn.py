@@ -104,13 +104,8 @@ class ObjectLayout(Layout):
         id_to_code_command = self._id_to_code_command(object)
         command_list = []
         for command in self._command_list:
-            if command.code_id == 'self':
-                code_command = None
-                enabled = True
-            else:
-                code_command = id_to_code_command[command.code_id]
-                enabled = code_command.is_enabled()
-            command_list.append(LayoutCommand(command.id, code_command, command.layout_ref, enabled=enabled))
+            layout_command = self._make_layout_command(id_to_code_command, object, command)
+            command_list.append(layout_command)
         return command_list
 
     def get_item_commands(self, object, item_key):
@@ -128,16 +123,18 @@ class ObjectLayout(Layout):
 
     def add_command(self, object, id, code_id):
         id_to_code_command = self._id_to_code_command(object)
-        if code_id == 'self':
-            code_command = None
-            is_enabled = True
-        else:
-            code_command = id_to_code_command[code_id]
-            is_enabled = code_command.is_enabled()
         command = self._Command(id, code_id, layout_ref=None)
-        layout_command = LayoutCommand(id, code_command, enabled=is_enabled)
         self._command_list.append(command)
-        return layout_command
+        return self._make_layout_command(id_to_code_command, object, command)
+
+    def _make_layout_command(self, id_to_code_command, object, command):
+        if command.code_id == 'self':
+            code_command = None
+            enabled = True
+        else:
+            code_command = id_to_code_command[command.code_id]
+            enabled = code_command.is_enabled()
+        return LayoutCommand(command.id, code_command, command.layout_ref, enabled=enabled)
 
     def _id_to_code_command(self, object):
         return {
