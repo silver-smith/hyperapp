@@ -106,6 +106,7 @@ code_module_list = [
     'client.items_view',
     'client.layout_handle',
     'client.layout_command',
+    'client.self_command',
     'client.layout',
     'client.record_object',
     'client.chooser',

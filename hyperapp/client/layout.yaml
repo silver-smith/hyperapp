@@ -6,3 +6,4 @@ import:
     - client.layout_command
     - client.layout_handle
     - client.items_view
+    - client.self_command

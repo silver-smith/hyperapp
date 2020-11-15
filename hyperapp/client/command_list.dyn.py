@@ -88,7 +88,7 @@ class CommandList(SimpleListObject):
         if command.code_id == 'self':
             object_type = self._layout_handle.object_type
             path = []
-            kind = ''
+            kind = 'object'
         else:
             object_type = self._command_object_types[command.code_id]
             path, code_command = self._id_to_path_and_code_command[command.code_id]

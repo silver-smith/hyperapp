@@ -8,6 +8,8 @@ from . import htypes
 from .items_view import map_columns_to_view
 from .layout_command import LayoutCommand
 from .layout_handle import VisualItem
+from .self_command import SelfCommand
+
 
 _log = logging.getLogger(__name__)
 
@@ -129,12 +131,10 @@ class ObjectLayout(Layout):
 
     def _make_layout_command(self, id_to_code_command, object, command):
         if command.code_id == 'self':
-            code_command = None
-            enabled = True
+            code_command = SelfCommand(object)
         else:
             code_command = id_to_code_command[command.code_id]
-            enabled = code_command.is_enabled()
-        return LayoutCommand(command.id, code_command, command.layout_ref, enabled=enabled)
+        return LayoutCommand(command.id, code_command, command.layout_ref, enabled=code_command.is_enabled())
 
     def _id_to_code_command(self, object):
         return {
