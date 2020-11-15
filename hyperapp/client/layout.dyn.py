@@ -100,9 +100,9 @@ class ObjectLayout(Layout):
         pass
 
     def get_current_commands(self, object, view):
-        return self.get_object_commands(object)
+        return self._get_object_commands(object)
 
-    def get_object_commands(self, object):
+    def _get_object_commands(self, object):
         id_to_code_command = self._id_to_code_command(object)
         command_list = []
         for command in self._command_list:
@@ -111,7 +111,7 @@ class ObjectLayout(Layout):
         return command_list
 
     def get_item_commands(self, object, item_key):
-        return self.get_object_commands(object)
+        return self._get_object_commands(object)
 
     def available_code_commands(self, object):
         return [
@@ -180,7 +180,7 @@ class AbstractMultiItemObjectLayout(ObjectLayout):
         return self.get_item_commands(object, view.current_item_key)
 
     def get_item_commands(self, object, item_key):
-        all_command_list = super().get_object_commands(object)
+        all_command_list = self._get_object_commands(object)
         non_item_command_list = [
             command for command in all_command_list
             if command.kind != 'element'
