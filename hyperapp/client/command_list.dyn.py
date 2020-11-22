@@ -48,6 +48,7 @@ class CommandList(SimpleListObject):
             for command in self._object.type.command_list
             }
         # todo: add/pass current item to command list constructor/data, use it here.
+        # todo: add state to views; pass it to command list; use it here instead of item key.
         self._item_key = await self._object.first_item_key()
         self._id_to_layout_command = {
             command.id: command
