@@ -3,46 +3,49 @@ import pytest
 
 from hyperapp.common.htypes import tString, TRecord, bundle_t
 from hyperapp.common.ref import make_ref
-from hyperapp.test.utils import resolve_type
+from hyperapp.common.test.util import resolve_type
 from hyperapp.test.test_services import TestClientServices
 
 log = logging.getLogger(__name__)
 
 
-type_module_list = [
-    'error',
-    'resource',
-    'core',
-    'hyper_ref',
-    'module',
-    'packet',
-    'phony_transport',
-    'tcp_transport',
-    'test',
-    ]
-
-client_code_module_list = [
-    'common.route_resolver',
-    'common.visitor',
-    'common.ref_collector',
-    'common.unbundler',
-    'common.tcp_packet',
-    ]
+pytest_plugins = ['hyperapp.common.test.services']
 
 
 @pytest.fixture
-def client_services(event_loop):
-    return TestClientServices(event_loop, type_module_list, client_code_module_list)
+def type_module_list():
+    return [
+        'error',
+        'resource',
+        'core',
+        'hyper_ref',
+        'module',
+        'packet',
+        'phony_transport',
+        'tcp_transport',
+        'test',
+        ]
+
+
+@pytest.fixture
+def code_module_list():
+    return [
+        'common.route_resolver',
+        'common.visitor',
+        'common.ref_collector',
+        'common.unbundler',
+        'common.tcp_packet',
+        ]
 
 
 @pytest.mark.parametrize('encoding', ['json', 'cdr'])
-def test_tcp_packet(client_services, encoding):
+def test_tcp_packet(services, encoding):
 
-    tcp_packet_module = client_services.name2module['common.tcp_packet']
-    test_packet_t = resolve_type(client_services, 'test', 'packet')
+    tcp_packet_module = services.name2module['common.tcp_packet']
+    test_packet_t = resolve_type(services, 'test', 'packet')
 
     test_packet = test_packet_t(message='hello')
-    capsule = client_services.types.make_capsule(test_packet)
+    capsule = services.types.make_capsule(test_packet)
     ref = make_ref(capsule)
     bundle = bundle_t((ref,), (capsule,), ())
 

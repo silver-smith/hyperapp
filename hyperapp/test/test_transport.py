@@ -4,7 +4,7 @@ import uuid
 
 import pytest
 
-from hyperapp.test.utils import resolve_type
+from hyperapp.common.test.util import resolve_type
 from hyperapp.test.client_server_fixtures import (
     test_manager,
     queues,
