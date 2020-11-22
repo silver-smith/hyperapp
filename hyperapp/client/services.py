@@ -8,7 +8,6 @@ from ..common.services import ServicesBase
 from ..common.module import ModuleRegistry
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
-from .proxy_registry import ProxyRegistry
 
 
 CACHE_DIR = os.path.expanduser('~/.cache/hyperapp/client')
@@ -182,7 +181,6 @@ class Services(ClientServicesBase):
         self.client_resources_dir = self._hyperapp_client_dir
         self.init_services()
         self.client_module_dir = self._hyperapp_client_dir
-        self.proxy_registry = ProxyRegistry()
         self.init_modules(type_module_list, code_module_list)
         # enable application resources to work; todo: move application commands to dynamic module
         self.local_code_module_registry.register('client.application', phony_ref('application'))
