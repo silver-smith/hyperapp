@@ -9,8 +9,9 @@ import pytest
 
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.init_logging import init_logging, init_subprocess_logger
+from hyperapp.server.services import ServerServicesBase
+from hyperapp.client.services import ClientServicesBase
 from hyperapp.test.utils import log_exceptions, encode_bundle, decode_bundle
-from hyperapp.test.test_services import TestServerServices, TestClientServices
 
 log = logging.getLogger(__name__)
 
@@ -66,13 +67,15 @@ def queues():
         yield Queues(manager.Queue(), manager.Queue())
 
 
-class ServerServices(TestServerServices):
+class ServerServices(ServerServicesBase):
 
     def __init__(self, queues, type_module_list, code_module_list):
         # queues are used by phony transport module
         self.request_queue = queues.request
         self.response_queue = queues.response
-        super().__init__(type_module_list, code_module_list)
+        super().__init__()
+        self.init_services()
+        self.init_modules(type_module_list, code_module_list)
 
 
 class Server(object, metaclass=log_exceptions):
@@ -119,13 +122,15 @@ def server_running(test_manager, queues, transport, type_module_list, code_modul
     server.stop()
 
 
-class ClientServices(TestClientServices):
+class ClientServices(ClientServicesBase):
 
     def __init__(self, event_loop, queues, type_module_list, code_module_list):
         # queues are used by phony transport module
         self.request_queue = queues.request
         self.response_queue = queues.response
-        super().__init__(event_loop, type_module_list, code_module_list)
+        super().__init__(event_loop)
+        self.init_services()
+        self.init_modules(type_module_list, code_module_list)
 
     def implant_bundle(self, encoded_bundle):
         bundle = decode_bundle(encoded_bundle)
