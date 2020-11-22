@@ -14,9 +14,7 @@ from hyperapp.common.code_module_importer import CodeModuleImporter
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.visual_rep import pprint
 
-
 TEST_MODULES_DIR = Path(__file__).parent.resolve()
-
 
 
 @pytest.fixture
