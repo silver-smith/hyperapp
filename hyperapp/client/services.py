@@ -182,16 +182,12 @@ class Services(ClientServicesBase):
         self.client_resources_dir = self._hyperapp_client_dir
         self.init_services()
         self.client_module_dir = self._hyperapp_client_dir
-        # self.route_storage = RouteStorage(FileRouteRepository(os.path.expanduser('~/.local/share/hyperapp/client/routes')))
         self.proxy_registry = ProxyRegistry()
         self._load_type_module_list(type_module_list)
-        # self.remoting = Remoting(self.types.resource, self.types.packet, self.iface_registry, self.route_storage, self.proxy_registry)
-        # self.cache_repository = CacheRepository(CACHE_DIR, CACHE_CONTENTS_ENCODING, CACHE_FILE_EXT)
         self._load_code_module_list(code_module_list)
         # enable application resources to work; todo: move application commands to dynamic module
         self.local_code_module_registry.register('client.application', phony_ref('application'))
         self.module_registry.init_phases(self)
-        # self._register_transports()
 
     async def async_init(self):
         for method in self.module_registry.enum_modules_method('async_init'):
