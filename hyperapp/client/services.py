@@ -164,6 +164,10 @@ code_module_list = [
 
 class ClientServicesBase(ServicesBase):
 
+    def __init__(self, event_loop):
+        super().__init__()
+        self.event_loop = event_loop
+
     def init_services(self):
         super().init_services()
         self.logger.init_asyncio_task_factory()
@@ -175,8 +179,7 @@ class ClientServicesBase(ServicesBase):
 class Services(ClientServicesBase):
 
     def __init__(self, event_loop):
-        super().__init__()
-        self.event_loop = event_loop
+        super().__init__(event_loop)
         self._hyperapp_client_dir = self.hyperapp_dir / 'client'
         self.client_resources_dir = self._hyperapp_client_dir
         self.init_services()

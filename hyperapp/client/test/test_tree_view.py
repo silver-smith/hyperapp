@@ -57,8 +57,8 @@ code_module_list = [
 
 class Services(ClientServicesBase):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, event_loop):
+        super().__init__(event_loop)
         self.init_services()
         self.init_modules(type_module_list, code_module_list)
 
@@ -72,8 +72,8 @@ def event_loop(application):
 
 
 @pytest.fixture
-def services():
-    services = Services()
+def services(event_loop):
+    services = Services(event_loop)
     services.start()
     yield services
     services.stop()

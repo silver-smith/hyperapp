@@ -17,7 +17,6 @@ class TestClientServices(ClientServicesBase):
     __test__ = False
 
     def __init__(self, event_loop, type_module_list, code_module_list):
-        super().__init__()
-        self.event_loop = event_loop
+        super().__init__(event_loop)
         self.init_services()
         self.init_modules(type_module_list, code_module_list)
