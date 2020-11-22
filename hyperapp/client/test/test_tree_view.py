@@ -7,7 +7,6 @@ import pytest
 from hyperapp.common.htypes import tInt, resource_key_t
 from hyperapp.common.ref import phony_ref
 from hyperapp.client.services import ClientServicesBase
-from hyperapp.test.test_services import TestServicesMixin
 from hyperapp.client.test.utils import wait_for_all_tasks_to_complete
 
 log = logging.getLogger(__name__)
@@ -56,12 +55,12 @@ code_module_list = [
     ]
 
 
-class Services(ClientServicesBase, TestServicesMixin):
+class Services(ClientServicesBase):
 
     def __init__(self):
         super().__init__()
         self.init_services()
-        self.load_modules(type_module_list, code_module_list)
+        self.init_modules(type_module_list, code_module_list)
 
 
 Item = namedtuple('Item', 'name column_1 column_2')

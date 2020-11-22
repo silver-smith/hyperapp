@@ -93,10 +93,8 @@ class Services(ServerServicesBase):
         self.start_args = start_args
         self.server_dir = self.hyperapp_dir / 'server'
         self.init_services()
-        self._load_type_module_list(type_module_list)
         try:
-            self._load_code_module_list(code_module_list)
-            self.module_registry.init_phases(self)
+            self.init_modules(type_module_list, code_module_list)
         except:
             self.stop()
             raise

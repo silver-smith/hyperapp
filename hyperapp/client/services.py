@@ -183,11 +183,9 @@ class Services(ClientServicesBase):
         self.init_services()
         self.client_module_dir = self._hyperapp_client_dir
         self.proxy_registry = ProxyRegistry()
-        self._load_type_module_list(type_module_list)
-        self._load_code_module_list(code_module_list)
+        self.init_modules(type_module_list, code_module_list)
         # enable application resources to work; todo: move application commands to dynamic module
         self.local_code_module_registry.register('client.application', phony_ref('application'))
-        self.module_registry.init_phases(self)
 
     async def async_init(self):
         for method in self.module_registry.enum_modules_method('async_init'):

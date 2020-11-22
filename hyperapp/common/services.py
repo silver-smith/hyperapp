@@ -91,6 +91,14 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
 
     def on_stopped(self):
         pass
+
+    def init_modules(self, type_module_list, code_module_list):
+        try:
+            self._load_type_module_list(type_module_list)
+            self._load_code_module_list(code_module_list)
+            self.module_registry.init_phases(self)
+        finally:
+            self.code_module_importer.unregister_meta_hook()
         
     def _load_type_module_list(self, module_name_list):
         for module_name in module_name_list:
