@@ -80,8 +80,6 @@ class Services(ServerServicesBase):
 
     def __init__(self, start_args):
         super().__init__()
-        self.start_args = start_args
-        self.server_dir = self.hyperapp_dir / 'server'
         self.init_services()
         try:
             self.init_modules(type_module_list, code_module_list)
