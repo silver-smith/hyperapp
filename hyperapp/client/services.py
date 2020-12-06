@@ -191,7 +191,3 @@ class Services(ClientServicesBase):
     async def async_init(self):
         for method in self.module_registry.enum_modules_method('async_init'):
             await method(self)
-
-    def _register_transports(self):
-        tcp_transport.register_transports(self.remoting.transport_registry, self)
-        encrypted_transport.register_transports(self.remoting.transport_registry, self)
