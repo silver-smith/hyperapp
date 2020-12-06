@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-import concurrent.futures
 
 from ..common import cdr_coders  # self-registering
 from ..common.services import ServicesBase
@@ -42,6 +41,7 @@ code_module_list = [
     'common.ref_collector',
     'common.unbundler',
     'common.fs_service_impl',
+    'server.async_stop',
     'server.ponyorm_module',
     'server.ref_storage',
 #    'server.route_storage',
@@ -74,16 +74,6 @@ class ServerServicesBase(ServicesBase):
 
     def __init__(self):
         super().__init__()
-        self.thread_pool = concurrent.futures.ThreadPoolExecutor(max_workers=3)
-
-    def schedule_stopping(self):
-        log.debug('Scheduling server stop...')
-        self.thread_pool.submit(self.stop)
-
-    def stop(self):
-        log.debug('Stopping thread pool...')
-        self.thread_pool.shutdown(wait=False)
-        super().stop()
 
 
 class Services(ServerServicesBase):

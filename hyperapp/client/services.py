@@ -172,9 +172,6 @@ class ClientServicesBase(ServicesBase):
         super().init_services()
         self.logger.init_asyncio_task_factory()
 
-    def schedule_stopping(self):
-        assert 0  # todo
-
 
 class Services(ClientServicesBase):
 

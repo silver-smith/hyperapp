@@ -32,6 +32,7 @@ common_server_code_module_list = [
     'common.ref_collector',
     'common.unbundler',
     'common.tcp_packet',
+    'server.async_stop',
     'server.transport.registry',
     'server.request',
     'server.remoting',
@@ -87,7 +88,7 @@ class Server(object, metaclass=log_exceptions):
 
     def stop(self):
         self.services.stop()
-        assert not self.services.is_failed
+        assert not self.services.is_failed()
 
     def extract_bundle(self, object_attr):
         ref_collector = self.services.ref_collector_factory()

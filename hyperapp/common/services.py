@@ -34,7 +34,6 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         self.on_start = []
         self.on_stop = []
         self.config = {}
-        self.failure_reason_list = []
         self._is_stopped = False
         self.name2module = {}  # module name (x.y.z) -> imported module
 
@@ -75,19 +74,6 @@ class ServicesBase(object, metaclass=abc.ABCMeta):
         close_logger()
         self._logger_storage.close()
         self._is_stopped = True
-
-    def failed(self, reason):
-        _log.error('Failed: %r', reason)
-        self.failure_reason_list.append(reason)
-        self.schedule_stopping()
-
-    @abc.abstractmethod
-    def schedule_stopping(self):
-        pass
-
-    @property
-    def is_failed(self):
-        return self.failure_reason_list != []
 
     def on_stopped(self):
         pass

@@ -4,9 +4,7 @@ from hyperapp.common.services import ServicesBase
 
 
 class Services(ServicesBase):
-
-    def schedule_stopping(self):
-        self.stop()
+    pass
 
 
 @pytest.fixture
