@@ -22,6 +22,7 @@ def code_module_list():
 
 def test_subprocess(services):
     subprocess = services.subprocess(
+        'test_subprocess',
         type_module_list=[],
         code_module_list=[],
         )
