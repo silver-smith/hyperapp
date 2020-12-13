@@ -4,6 +4,7 @@ import importlib.machinery
 import importlib.util
 import logging
 import sys
+from pathlib import Path
 
 from .logger import log
 from .ref import ref_repr
@@ -49,6 +50,7 @@ class _CodeModuleLoader(_Finder):
         _log.debug('Executing code module %r %s', ref_repr(self._code_module_ref), module)
         # using compile allows associate file path with loaded module
         ast = compile(self._code_module.source, self._code_module.file_path, 'exec')
+        module.__dict__['__module_source__'] = self._code_module.source
         module.__dict__['__module_ref__'] = self._code_module_ref
         exec(ast, module.__dict__)
 
