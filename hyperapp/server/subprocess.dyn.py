@@ -38,7 +38,6 @@ def init_logging(process_name, logger_queue):
 
 
 def subprocess_main_safe(connection, type_module_list, code_module_list):
-    # raise RuntimeError('test error')
     services = Services()
     services.init_services()
     services.init_modules(type_module_list, code_module_list)
