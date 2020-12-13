@@ -8,7 +8,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from hyperapp.common.init_logging import init_logging
 from hyperapp.common.identity import Identity
-from hyperapp.server.services import Services
+from hyperapp.server.services import ServerServices
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ def main():
 
     identity = Identity.load_from_file(args.identity_fpath)
     start_args = SimpleNamespace(identity=identity, addr=args.addr, test_delay=args.test_delay)
-    services = Services(start_args)
+    services = ServerServices(start_args)
     services.start()
     try:
         while services.is_running:

@@ -1,10 +1,6 @@
 import pytest
 
-from hyperapp.common.services import ServicesBase
-
-
-class Services(ServicesBase):
-    pass
+from hyperapp.common.services import Services
 
 
 @pytest.fixture

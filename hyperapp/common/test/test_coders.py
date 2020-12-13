@@ -12,7 +12,6 @@ from hyperapp.common.htypes import (
     )
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import cdr_coders
-from hyperapp.common.services import ServicesBase
 
 
 pytest_plugins = ['hyperapp.common.test.services']

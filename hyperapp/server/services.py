@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 from ..common import cdr_coders  # self-registering
-from ..common.services import ServicesBase
+from ..common.services import Services
 
 log = logging.getLogger(__name__)
 
@@ -70,13 +70,7 @@ code_module_list = [
     ]
 
 
-class ServerServicesBase(ServicesBase):
-
-    def __init__(self):
-        super().__init__()
-
-
-class Services(ServerServicesBase):
+class ServerServices(Services):
 
     def __init__(self, start_args):
         super().__init__()

@@ -2,7 +2,6 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 import logging
-import abc
 
 from .htypes import register_builtin_types
 from .logger import log, init_logger, close_logger
@@ -26,7 +25,7 @@ TYPE_MODULE_EXT = '.types'
 HYPERAPP_DIR = Path(__file__).parent.joinpath('../..').resolve()
 
 
-class ServicesBase(object, metaclass=abc.ABCMeta):
+class Services(object):
 
     def __init__(self):
         self.hyperapp_dir = HYPERAPP_DIR / 'hyperapp'

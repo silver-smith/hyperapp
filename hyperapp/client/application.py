@@ -5,7 +5,7 @@ from ..common.url import UrlWithRoutes
 from ..common import cdr_coders
 from .commander import Commander
 from .command import command
-from .services import Services
+from .services import ClientServices
 from .async_application import AsyncApplication
 
 log = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ class Application(AsyncApplication, Commander):
     def __init__(self, sys_argv):
         AsyncApplication.__init__(self, sys_argv)
         Commander.__init__(self, commands_kind='view')
-        self.services = Services(self.event_loop)
+        self.services = ClientServices(self.event_loop)
         self._ref_registry = self.services.ref_registry
         self._async_ref_resolver = self.services.async_ref_resolver
         self._layout_manager = self.services.layout_manager

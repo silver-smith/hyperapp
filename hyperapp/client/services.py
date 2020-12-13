@@ -4,7 +4,7 @@ from pathlib import Path
 from ..common.htypes.packet_coders import packet_coders
 from ..common.ref import phony_ref
 from ..common.route_storage import RouteStorage
-from ..common.services import ServicesBase
+from ..common.services import Services
 from ..common.module import ModuleRegistry
 from .file_route_repository import FileRouteRepository
 from .cache_repository import CacheRepository
@@ -162,7 +162,7 @@ code_module_list = [
     ]
 
 
-class ClientServicesBase(ServicesBase):
+class ClientServicesBase(Services):
 
     def __init__(self, event_loop):
         super().__init__()
@@ -173,7 +173,7 @@ class ClientServicesBase(ServicesBase):
         self.logger.init_asyncio_task_factory()
 
 
-class Services(ClientServicesBase):
+class ClientServices(ClientServicesBase):
 
     def __init__(self, event_loop):
         super().__init__(event_loop)

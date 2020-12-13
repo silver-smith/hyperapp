@@ -55,7 +55,7 @@ code_module_list = [
     ]
 
 
-class Services(ClientServicesBase):
+class TreeViewTestServices(ClientServicesBase):
 
     def __init__(self, event_loop):
         super().__init__(event_loop)
@@ -73,7 +73,7 @@ def event_loop(application):
 
 @pytest.fixture
 def services(event_loop):
-    services = Services(event_loop)
+    services = TreeViewTestServices(event_loop)
     services.start()
     yield services
     services.stop()

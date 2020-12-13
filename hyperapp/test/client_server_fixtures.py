@@ -9,7 +9,7 @@ import pytest
 
 from hyperapp.common.visual_rep import pprint
 from hyperapp.common.init_logging import init_logging, init_subprocess_logger
-from hyperapp.server.services import ServerServicesBase
+from hyperapp.common.services import Services
 from hyperapp.client.services import ClientServicesBase
 from hyperapp.test.utils import log_exceptions, encode_bundle, decode_bundle
 
@@ -68,7 +68,7 @@ def queues():
         yield Queues(manager.Queue(), manager.Queue())
 
 
-class ServerServices(ServerServicesBase):
+class ServerServices(Services):
 
     def __init__(self, queues, type_module_list, code_module_list):
         # queues are used by phony transport module
