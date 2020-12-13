@@ -15,6 +15,7 @@ def subprocess_main(connection, type_module_list, code_module_list):
         connection.send(None)
     except Exception as x:
         log.error("Exception in subprocess: %s, %r", x, x.__traceback__)
+        # Traceback is not pickleable, convert it to string list.
         connection.send((x, traceback.format_tb(x.__traceback__)))
 
 
