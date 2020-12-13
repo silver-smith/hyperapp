@@ -1,8 +1,12 @@
+import logging
 import multiprocessing
 import sys
+import traceback
 from pathlib import Path
 
 from hyperapp.common.module import Module
+
+log = logging.getLogger(__name__)
 
 
 def subprocess_main(connection, type_module_list, code_module_list):
@@ -10,11 +14,13 @@ def subprocess_main(connection, type_module_list, code_module_list):
         subprocess_main_safe(connection, type_module_list, code_module_list)
         connection.send(None)
     except Exception as x:
-        connection.send(x)
+        log.error("Exception in subprocess: %s, %r", x, x.__traceback__)
+        connection.send((x, traceback.format_tb(x.__traceback__)))
 
 
 def subprocess_main_safe(connection, type_module_list, code_module_list):
     unused = connection.recv()
+    # raise RuntimeError('test error')
 
 
 class Process:
@@ -31,7 +37,9 @@ class Process:
         result = self._connection.recv()
         self._mp_process.join()
         if result:
-            raise result
+            exception, traceback = result
+            log.error("Exception in subprocess: %s\n%s", exception, ''.join(traceback))
+            raise exception
 
 
 class ThisModule(Module):
