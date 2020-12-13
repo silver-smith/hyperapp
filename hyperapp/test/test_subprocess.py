@@ -15,6 +15,7 @@ def type_module_list():
 @pytest.fixture
 def code_module_list():
     return [
+        'server.work_dir',
         'server.subprocess',
         ]
 

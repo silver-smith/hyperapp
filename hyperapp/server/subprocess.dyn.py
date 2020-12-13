@@ -1,4 +1,6 @@
 import multiprocessing
+import sys
+from pathlib import Path
 
 from hyperapp.common.module import Module
 
@@ -36,10 +38,18 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services):
         super().__init__(module_name)
-        self._mp_context = multiprocessing.get_context('forkserver')
+        self._work_dir = services.work_dir / 'subprocess'
+        self._mp_context = multiprocessing.get_context('spawn')
         services.subprocess = self.subprocess
 
     def subprocess(self, type_module_list, code_module_list):
+        self._work_dir.mkdir(parents=True, exist_ok=True)
+        subprocess_mp_main = self._work_dir / 'subprocess_mp_main.py'
+        subprocess_mp_main.write_text(__module_source__)
+        sys.path.append(str(self._work_dir))
+        module = __import__('subprocess_mp_main', level=0)
+        main_fn = module.subprocess_main
+
         parent_connection, child_connection = self._mp_context.Pipe()
-        mp_process = self._mp_context.Process(target=subprocess_main, args=[child_connection, type_module_list, code_module_list])
+        mp_process = self._mp_context.Process(target=main_fn, args=[child_connection, type_module_list, code_module_list])
         return Process(mp_process, parent_connection)
