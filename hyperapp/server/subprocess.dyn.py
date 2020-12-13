@@ -16,7 +16,7 @@ def subprocess_main(process_name, logger_queue, connection, type_module_list, co
     try:
         init_logging(process_name, logger_queue)
         subprocess_main_safe(connection, type_module_list, code_module_list)
-        connection.send(None)
+        connection.send(None)  # Send 'process finished' signal.
     except Exception as x:
         log.error("Exception in subprocess: %s, %r", x, x.__traceback__)
         # Traceback is not pickleable, convert it to string list.
@@ -65,7 +65,7 @@ class Process:
 
     def __exit__(self, exc, value, tb):
         self._connection.send(None)  # Send stop signal.
-        result = self._connection.recv()
+        result = self._connection.recv()  # Wait for 'process finished' signal.
         self._mp_process.join()
         self._log_queue_listener.enqueue_sentinel()
         self._log_queue_listener.stop()
