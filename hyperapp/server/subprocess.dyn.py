@@ -79,7 +79,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services):
         super().__init__(module_name)
         self._work_dir = services.work_dir / 'subprocess'
-        self._mp_context = multiprocessing.get_context('spawn')
+        self._mp_context = multiprocessing.get_context('forkserver')
         services.subprocess = self.subprocess
 
     def subprocess(self, process_name, type_module_list, code_module_list):
