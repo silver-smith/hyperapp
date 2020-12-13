@@ -4,6 +4,8 @@ import sys
 import traceback
 from pathlib import Path
 
+from hyperapp.common.services import Services
+from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
@@ -20,8 +22,13 @@ def subprocess_main(connection, type_module_list, code_module_list):
 
 
 def subprocess_main_safe(connection, type_module_list, code_module_list):
-    unused = connection.recv()
     # raise RuntimeError('test error')
+    services = Services()
+    services.init_services()
+    services.init_modules(type_module_list, code_module_list)
+    services.start()
+    unused = connection.recv()  # Wait for stop signal.
+    services.stop()
 
 
 class Process:
@@ -34,7 +41,7 @@ class Process:
         self._mp_process.start()
 
     def __exit__(self, exc, value, tb):
-        self._connection.send(None)
+        self._connection.send(None)  # Send stop signal.
         result = self._connection.recv()
         self._mp_process.join()
         if result:
@@ -48,7 +55,7 @@ class ThisModule(Module):
     def __init__(self, module_name, services):
         super().__init__(module_name)
         self._work_dir = services.work_dir / 'subprocess'
-        self._mp_context = multiprocessing.get_context('spawn')
+        self._mp_context = multiprocessing.get_context('forkserver')
         services.subprocess = self.subprocess
 
     def subprocess(self, type_module_list, code_module_list):
