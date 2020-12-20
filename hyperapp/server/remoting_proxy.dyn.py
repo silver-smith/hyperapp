@@ -47,6 +47,6 @@ class ProxyFactory(object):
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         services.proxy_factory = ProxyFactory(services.types, services.remoting)

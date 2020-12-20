@@ -54,7 +54,7 @@ class UserList(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self.User = self.make_entity('User',
                                      user_name=Required(str),

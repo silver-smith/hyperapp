@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self._services_stop = services.stop
         self._failure_reason_list = []

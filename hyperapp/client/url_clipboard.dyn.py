@@ -7,7 +7,7 @@ from hyperapp.client.module import ClientModule
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         #self._packet_types = services.types.packet
         #self._iface_registry = services.iface_registry

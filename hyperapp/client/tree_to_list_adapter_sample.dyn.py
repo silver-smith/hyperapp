@@ -6,7 +6,7 @@ from .object_command import command
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         base = htypes.tree_view_sample.tree_view_sample_object()
         self._base_ref = services.ref_registry.distil(base)

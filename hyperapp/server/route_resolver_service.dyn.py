@@ -22,7 +22,7 @@ class RouteResolverService(object):
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         iface_type_ref = services.types.reverse_resolve(htypes.hyper_ref.route_resolver)
         service = htypes.hyper_ref.service(ROUTE_RESOLVER_SERVICE_ID, iface_type_ref)

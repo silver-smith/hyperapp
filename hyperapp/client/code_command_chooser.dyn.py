@@ -79,7 +79,7 @@ class CodeCommandChooser(SimpleListObject, Chooser):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.object_registry.register_actor(
             htypes.code_command_chooser.code_command_chooser,

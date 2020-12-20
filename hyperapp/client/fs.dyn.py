@@ -78,7 +78,7 @@ class FsTree(TreeObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.fs_service_registry = CodeRegistry('fs_service', services.async_ref_resolver, services.types)
         services.object_registry.register_actor(

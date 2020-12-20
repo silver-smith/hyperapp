@@ -23,6 +23,6 @@ class ResourceResolver:
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         services.resource_resolver = ResourceResolver(services.types, services.resource_registry)

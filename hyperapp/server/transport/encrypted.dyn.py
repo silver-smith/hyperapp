@@ -12,7 +12,7 @@ IDENTITY_PATH = '~/.local/share/hyperapp/server/transport/encrypted/identity.pem
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self._identity = self._produce_identity()
         address = encrypted_transport_types.address(

@@ -19,6 +19,6 @@ class ModuleCommandRegistry:
         
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.module_command_registry = ModuleCommandRegistry(services.module_registry)

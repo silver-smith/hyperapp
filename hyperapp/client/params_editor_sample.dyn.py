@@ -63,7 +63,7 @@ class ParamsEditorSample(SimpleListObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.object_registry.register_actor(htypes.params_editor_sample.params_editor_sample, ParamsEditorSample.from_state)
 

@@ -26,7 +26,7 @@ class RemoteRefResolver(AsyncRefSource):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
 
     async def async_init(self, services):

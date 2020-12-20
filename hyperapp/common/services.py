@@ -77,10 +77,10 @@ class Services(object):
     def on_stopped(self):
         pass
 
-    def init_modules(self, type_module_list, code_module_list):
+    def init_modules(self, type_module_list, code_module_list, config=None):
         try:
             self._load_type_module_list(type_module_list)
-            self._load_code_module_list(code_module_list)
+            self._load_code_module_list(code_module_list, config)
             self.module_registry.init_phases(self)
         finally:
             self.code_module_importer.unregister_meta_hook()
@@ -90,19 +90,23 @@ class Services(object):
             file_path = self.interface_dir.joinpath(module_name).with_suffix(TYPE_MODULE_EXT)
             self.type_module_loader.load_type_module(file_path, module_name)
 
-    def _load_code_module_list(self, module_name_list):
+    def _load_code_module_list(self, module_name_list, config):
         for module_name in module_name_list:
+            if config:
+                module_config = config.get(module_name)
+            else:
+                module_config = None
             parts = module_name.split('.')
             file_path = self.hyperapp_dir.joinpath(*parts)
             code_module = self.code_module_loader.load_code_module(file_path, module_name)
             code_module_ref = self.ref_registry.distil(code_module)
             module = self.code_module_importer.import_code_module(code_module_ref)
             self.name2module[module_name] = module
-            self._init_module(code_module.module_name, module)
+            self._init_module(code_module.module_name, module, module_config)
 
-    def _init_module(self, module_name, module):
+    def _init_module(self, module_name, module, config):
         this_module_class = module.__dict__.get('ThisModule')
         if this_module_class:
-            this_module = this_module_class(module_name, self)
+            this_module = this_module_class(module_name, self, config)
             module.__dict__['this_module'] = this_module
             self.module_registry.register(this_module)

@@ -5,7 +5,7 @@ from . import htypes
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         self._async_ref_resolver = services.async_ref_resolver

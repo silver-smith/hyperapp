@@ -6,7 +6,7 @@ from .object_command import command
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         ref_list = [
             htypes.text.wiki_ref(1, "Sample ref#1", services.ref_registry.distil(htypes.text.text("Referred text 1"))),

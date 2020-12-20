@@ -29,7 +29,7 @@ class RemoteFsService(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.fs_service_registry.register_actor(
             htypes.hyper_ref.service, RemoteFsService.from_data, services.ref_registry, services.proxy_factory)

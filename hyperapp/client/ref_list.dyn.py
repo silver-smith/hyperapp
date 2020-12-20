@@ -87,7 +87,7 @@ class RefListService(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.object_registry.register_actor(
             htypes.ref_list.dynamic_ref_list, RefListObject.from_state, services.types, services.async_ref_resolver, services.proxy_factory)

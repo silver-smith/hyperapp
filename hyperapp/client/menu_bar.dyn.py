@@ -91,7 +91,7 @@ class MenuBar(QtWidgets.QMenuBar):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.view_registry.register_actor(
             htypes.menu_bar.menu_bar, MenuBarLayout, services.resource_resolver)

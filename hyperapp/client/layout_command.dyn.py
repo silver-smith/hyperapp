@@ -75,7 +75,7 @@ class LayoutCommand:
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self.object_registry = services.object_registry
         self.layout_handle_from_object_type = services.layout_handle_from_object_type

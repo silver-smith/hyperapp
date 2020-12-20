@@ -18,7 +18,7 @@ and more recently with desktop publishing software like Aldus PageMaker includin
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
 
     def get_commands(self):

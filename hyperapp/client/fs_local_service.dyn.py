@@ -34,7 +34,7 @@ class LocalFsService(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         ref_registry = services.ref_registry
         services.fs_service_registry.register_actor(

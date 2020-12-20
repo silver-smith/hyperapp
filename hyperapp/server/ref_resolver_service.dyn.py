@@ -23,7 +23,7 @@ class RefResolverService(object):
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self._ref_registry = services.ref_registry
         self._ref_resolver = services.ref_resolver

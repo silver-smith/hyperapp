@@ -92,7 +92,7 @@ class PhonyTransport(object):
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         # queues are expected to be created by test
         phony_client_address_ref = services.ref_registry.distil(

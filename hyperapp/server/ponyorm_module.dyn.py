@@ -30,7 +30,7 @@ class PonyOrmModule(Module):
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         sql_debug('SQL_DEBUG' in os.environ)
         SQLITE_DB_PATH.parent.mkdir(exist_ok=True)

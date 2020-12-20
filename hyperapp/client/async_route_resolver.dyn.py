@@ -36,6 +36,6 @@ class AsyncRouteResolver(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.async_route_resolver = AsyncRouteResolver(services.route_resolver)

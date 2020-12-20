@@ -40,7 +40,7 @@ class EchoService(object):
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         services.ECHO_SERVICE_ID = ECHO_SERVICE_ID
         echo_iface_ref = services.types.reverse_resolve(htypes.test.echo)

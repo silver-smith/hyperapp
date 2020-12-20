@@ -45,7 +45,7 @@ class ManagementRefList(object):
 
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self._module_registry = services.module_registry
         self._dynamic_ref_list_service = DynamicRefListService()

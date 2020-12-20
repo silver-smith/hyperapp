@@ -162,7 +162,7 @@ class ClientCodeRepositoryBrowser(SmallListObject):
 
 class ThisModule(module_mod.Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         self._module_repository = ClientModuleRepository(services.dynamic_module_dir)
         self._client_code_repository = ClientCodeRepository(services.type_module_repository, self._module_repository, services.resources_loader)

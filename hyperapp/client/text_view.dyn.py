@@ -115,7 +115,7 @@ class TextViewLayout(ObjectLayout):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._ref_registry = services.ref_registry
         services.available_object_layouts.register('text', [TextObject.type._t], self._make_text_layout_data)

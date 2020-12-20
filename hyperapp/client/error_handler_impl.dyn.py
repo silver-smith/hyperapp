@@ -11,7 +11,7 @@ ERROR_HANDLER_CLASS_ID = 'error_handler'
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._resource_resolver = services.resource_resolver
         self._error_handle_t = htypes.core.handle.register(

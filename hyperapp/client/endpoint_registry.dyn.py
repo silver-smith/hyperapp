@@ -40,7 +40,7 @@ class LocalRouteSource(RouteSource):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.endpoint_registry = endpoint_registry = EndpointRegistry(services.ref_registry)
         services.route_resolver.add_source(LocalRouteSource(endpoint_registry))

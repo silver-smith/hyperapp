@@ -159,6 +159,6 @@ class Window(View, QtWidgets.QMainWindow):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.view_registry.register_actor(htypes.window.window, WindowLayout.from_data, services.ref_registry, services.view_registry)

@@ -105,7 +105,7 @@ class RsaPeer:
     
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         services.identity_registry.register_actor(htypes.rsa_identity.rsa_identity, RsaIdentity.from_piece)
         services.peer_registry.register_actor(htypes.rsa_identity.rsa_peer, RsaPeer.from_piece)

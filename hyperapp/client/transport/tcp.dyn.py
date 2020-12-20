@@ -84,7 +84,7 @@ class TcpTransport(object):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._event_loop = services.event_loop
         self._address_to_protocol = {}  # htypes.tcp_transport.address -> TcpProtocol

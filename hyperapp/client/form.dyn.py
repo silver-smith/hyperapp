@@ -103,7 +103,7 @@ class FormView(Composite, QtWidgets.QWidget):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.form_impl_registry = form_impl_registry = ObjImplRegistry('form')
         form_impl_registry.register(FormObject.impl_id, FormObject.from_state)

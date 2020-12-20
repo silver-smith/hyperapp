@@ -295,7 +295,7 @@ class IncomingConnectionTransport(object):
         
 class ThisModule(Module):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
         config = services.config.get(module_name)
         bind_address = None

@@ -211,7 +211,7 @@ class AvailableDepList(SmallListObject):
 
 class ThisModule(PonyOrmModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name)
 
     def init_phase_2(self, services):

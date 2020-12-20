@@ -196,7 +196,7 @@ class LogRecord(ListObject):
 
 class ThisModule(ClientModule):
 
-    def __init__(self, module_name, services):
+    def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._session_cache = SessionCache(services.types, services.ref_registry)
         services.object_registry.register_actor(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.ref_registry, self._session_cache)
