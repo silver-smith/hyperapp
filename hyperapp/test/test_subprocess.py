@@ -28,3 +28,15 @@ def test_subprocess(services):
         )
     with subprocess:
         pass
+
+
+def test_import_failure(services):
+    subprocess = services.subprocess(
+        'import_failure',
+        type_module_list=[],
+        code_module_list=['test.import_failure'],
+        )
+    with pytest.raises(AssertionError) as excinfo:
+        with subprocess:
+            pass
+    assert str(excinfo.value) == 'Test import failure'
