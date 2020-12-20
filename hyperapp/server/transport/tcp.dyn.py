@@ -297,7 +297,6 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        config = services.config.get(module_name)
         bind_address = None
         if config:
             bind_address = config.get('bind_address')

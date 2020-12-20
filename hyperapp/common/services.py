@@ -32,12 +32,10 @@ class Services(object):
         self.interface_dir = self.hyperapp_dir / 'common' / 'interface'
         self.on_start = []
         self.on_stop = []
-        self.config = {}
         self._is_stopped = False
         self.name2module = {}  # module name (x.y.z) -> imported module
 
-    def init_services(self, config=None):
-        self.config.update(config or {})
+    def init_services(self):
         self.ref_resolver = RefResolver()
         self.types = TypeSystem(self.ref_resolver)
         self.ref_registry = RefRegistry(self.types)
