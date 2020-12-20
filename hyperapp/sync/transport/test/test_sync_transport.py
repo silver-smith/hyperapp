@@ -10,6 +10,11 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def type_module_list():
     return [
+        'error',
+        'hyper_ref',
+        'resource',
+        'module',
+        'packet',
         'rsa_identity',
         ]
 
@@ -17,6 +22,8 @@ def type_module_list():
 @pytest.fixture
 def code_module_list():
     return [
+        'common.visitor',
+        'common.ref_collector',
         'common.remoting.identity',
         'common.remoting.rsa_identity',
         'server.work_dir',
@@ -28,7 +35,9 @@ def test_send_subprocess_parcel(services):
     rsa_identity_module = services.name2module['common.remoting.rsa_identity']
     my_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
     my_peer_ref = services.ref_registry.distil(my_identity.peer.piece)
-    my_peer_ref_cdr = packet_coders.encode('cdr', my_peer_ref)
+    ref_collector = services.ref_collector_factory()
+    my_peer_bundle = ref_collector.make_bundle([my_peer_ref])
+    my_peer_bundle_cdr = packet_coders.encode('cdr', my_peer_bundle)
 
     subprocess = services.subprocess(
         'test_subprocess',
@@ -36,13 +45,14 @@ def test_send_subprocess_parcel(services):
             'rsa_identity',
             ],
         code_module_list=[
+            'common.unbundler',
             'common.remoting.identity',
             'common.remoting.rsa_identity',
             'sync.transport.transport',
             'sync.transport.test.send_subprocess_parcel',
             ],
         config = {
-            'sync.transport.test.send_subprocess_parcel': {'master_peer_ref_cdr': my_peer_ref_cdr},
+            'sync.transport.test.send_subprocess_parcel': {'master_peer_bundle_cdr': my_peer_bundle_cdr},
             },
         master_peer_ref_list=[my_peer_ref],
         )
