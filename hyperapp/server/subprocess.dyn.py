@@ -5,6 +5,8 @@ import sys
 import traceback
 from pathlib import Path
 
+from hyperapp.common.htypes import ref_t
+from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.services import Services
 from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.common.module import Module
@@ -18,10 +20,10 @@ def log_traceback(traceback_entries):
             log.error("%s", line.rstrip())
 
 
-def subprocess_main(process_name, logger_queue, connection, type_module_list, code_module_list):
+def subprocess_main(process_name, logger_queue, connection, type_module_list, code_module_list, master_peer_ref_cdr_list):
     try:
         init_logging(process_name, logger_queue)
-        subprocess_main_safe(connection, type_module_list, code_module_list)
+        subprocess_main_safe(connection, type_module_list, code_module_list, master_peer_ref_cdr_list)
         connection.send(None)  # Send 'process finished' signal.
     except Exception as x:
         log.error("Exception in subprocess: %s", x)
@@ -45,7 +47,12 @@ def init_logging(process_name, logger_queue):
     root_logger.addHandler(handler)
 
 
-def subprocess_main_safe(connection, type_module_list, code_module_list):
+def subprocess_main_safe(connection, type_module_list, code_module_list, master_peer_ref_cdr_list):
+    master_peer_ref_list = [
+        packet_coders.decode('cdr', ref_cdr, ref_t)
+        for ref_cdr in master_peer_ref_cdr_list
+        ]
+
     services = Services()
     services.init_services()
     services.init_modules(type_module_list, code_module_list)
@@ -91,7 +98,7 @@ class ThisModule(Module):
         self._mp_context = multiprocessing.get_context('forkserver')
         services.subprocess = self.subprocess
 
-    def subprocess(self, process_name, type_module_list, code_module_list):
+    def subprocess(self, process_name, type_module_list, code_module_list, master_peer_ref_list=None):
         self._work_dir.mkdir(parents=True, exist_ok=True)
         subprocess_mp_main = self._work_dir / 'subprocess_mp_main.py'
         subprocess_mp_main.write_text(__module_source__)
@@ -101,6 +108,7 @@ class ThisModule(Module):
 
         logger_queue = self._mp_context.Queue()
         parent_connection, child_connection = self._mp_context.Pipe()
-        args = [process_name, logger_queue, child_connection, type_module_list, code_module_list]
+        master_peer_ref_cdr_list = [packet_coders.encode('cdr', ref) for ref in master_peer_ref_list or []]
+        args = [process_name, logger_queue, child_connection, type_module_list, code_module_list, master_peer_ref_cdr_list]
         mp_process = self._mp_context.Process(target=main_fn, args=args)
         return Process(process_name, mp_process, logger_queue, parent_connection)
