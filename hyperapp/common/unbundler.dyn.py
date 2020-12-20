@@ -18,14 +18,16 @@ class Unbundler(object):
     def register_bundle(self, bundle):
         for capsule in bundle.capsule_list:
             self._ref_registry.register_capsule(capsule)
-        for route in bundle.route_list:
-            if route.transport_ref == LOCAL_TRANSPORT_REF:
-                continue  # must be handled by transport
-            self._route_registry.register(route)
+        # for route in bundle.route_list:
+        #     if route.transport_ref == LOCAL_TRANSPORT_REF:
+        #         continue  # must be handled by transport
+        #     self._route_registry.register(route)
 
 
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.unbundler = Unbundler(services.ref_registry, services.route_registry)
+        # route_registry = services.route_registry
+        route_registry = None
+        services.unbundler = Unbundler(services.ref_registry, route_registry)
