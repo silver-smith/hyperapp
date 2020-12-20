@@ -5,6 +5,12 @@ from .ref import ref_repr
 _log = logging.getLogger(__name__)
 
 
+class RefResolveFailure(Exception):
+
+    def __init__(self, ref):
+        super().__init__(f"Failed to resolve ref {ref_repr(ref)}")
+
+
 class RefResolver(object):
 
     def __init__(self):
@@ -20,5 +26,4 @@ class RefResolver(object):
             if capsule:
                 _log.info('Ref %s is resolved to capsule, type %s', ref_repr(ref), ref_repr(capsule.type_ref))
                 return capsule
-        _log.warning('Ref %s is failed to be resolved', ref_repr(ref))
-        return None
+        raise RefResolveFailure(ref)

@@ -6,6 +6,7 @@ from dateutil.tz import tzlocal
 from hyperapp.common.htypes import ref_t, route_t, bundle_t
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import ref_repr
+from hyperapp.common.ref_resolver import RefResolveFailure
 from hyperapp.common.module import Module
 from .visitor import Visitor
 from . import htypes
@@ -44,8 +45,10 @@ class RefCollector(Visitor):
         for i in range(RECURSION_LIMIT):
             new_ref_set = set()
             for ref in ref_set:
-                capsule = self._ref_resolver.resolve_ref(ref)
-                if not capsule:
+                try:
+                    capsule = self._ref_resolver.resolve_ref(ref)
+                except RefResolveFailure:
+                    log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1
                     continue
                 if ref in self._collected_type_ref_set:
