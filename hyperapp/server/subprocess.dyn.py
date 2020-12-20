@@ -12,15 +12,23 @@ from hyperapp.common.module import Module
 log = logging.getLogger(__name__)
 
 
+def log_traceback(traceback_entries):
+    for entry in traceback_entries:
+        for line in entry.splitlines():
+            log.error("%s", line.rstrip())
+
+
 def subprocess_main(process_name, logger_queue, connection, type_module_list, code_module_list):
     try:
         init_logging(process_name, logger_queue)
         subprocess_main_safe(connection, type_module_list, code_module_list)
         connection.send(None)  # Send 'process finished' signal.
     except Exception as x:
-        log.error("Exception in subprocess: %s, %r", x, x.__traceback__)
+        log.error("Exception in subprocess: %s", x)
+        traceback_entries = traceback.format_tb(x.__traceback__)
+        log_traceback(traceback_entries)
         # Traceback is not pickleable, convert it to string list.
-        connection.send((x, traceback.format_tb(x.__traceback__)))
+        connection.send((x, traceback_entries))
 
 
 def init_logging(process_name, logger_queue):
@@ -69,8 +77,9 @@ class Process:
         self._log_queue_listener.enqueue_sentinel()
         self._log_queue_listener.stop()
         if result:
-            exception, traceback = result
-            log.error("Exception in subprocess %s: %s\n%s", self._name, exception, ''.join(traceback))
+            exception, traceback_entries = result
+            log.error("Exception in subprocess %s: %s", self._name, exception)
+            log_traceback(traceback_entries)
             raise exception
 
 
