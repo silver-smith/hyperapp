@@ -20,10 +20,10 @@ def log_traceback(traceback_entries):
             log.error("%s", line.rstrip())
 
 
-def subprocess_main(process_name, logger_queue, connection, type_module_list, code_module_list, master_peer_ref_cdr_list):
+def subprocess_main(process_name, logger_queue, connection, type_module_list, code_module_list, config, master_peer_ref_cdr_list):
     try:
         init_logging(process_name, logger_queue)
-        subprocess_main_safe(connection, type_module_list, code_module_list, master_peer_ref_cdr_list)
+        subprocess_main_safe(connection, type_module_list, code_module_list, config, master_peer_ref_cdr_list)
         connection.send(None)  # Send 'process finished' signal.
     except Exception as x:
         log.error("Exception in subprocess: %s", x)
@@ -47,7 +47,7 @@ def init_logging(process_name, logger_queue):
     root_logger.addHandler(handler)
 
 
-def subprocess_main_safe(connection, type_module_list, code_module_list, master_peer_ref_cdr_list):
+def subprocess_main_safe(connection, type_module_list, code_module_list, config, master_peer_ref_cdr_list):
     master_peer_ref_list = [
         packet_coders.decode('cdr', ref_cdr, ref_t)
         for ref_cdr in master_peer_ref_cdr_list
@@ -55,7 +55,7 @@ def subprocess_main_safe(connection, type_module_list, code_module_list, master_
 
     services = Services()
     services.init_services()
-    services.init_modules(type_module_list, code_module_list)
+    services.init_modules(type_module_list, code_module_list, config)
     services.start()
     log.info("Running, waiting for stop signal.")
     unused = connection.recv()  # Wait for stop signal.
@@ -98,7 +98,7 @@ class ThisModule(Module):
         self._mp_context = multiprocessing.get_context('forkserver')
         services.subprocess = self.subprocess
 
-    def subprocess(self, process_name, type_module_list, code_module_list, master_peer_ref_list=None):
+    def subprocess(self, process_name, type_module_list, code_module_list, config=None, master_peer_ref_list=None):
         self._work_dir.mkdir(parents=True, exist_ok=True)
         subprocess_mp_main = self._work_dir / 'subprocess_mp_main.py'
         subprocess_mp_main.write_text(__module_source__)
@@ -109,6 +109,6 @@ class ThisModule(Module):
         logger_queue = self._mp_context.Queue()
         parent_connection, child_connection = self._mp_context.Pipe()
         master_peer_ref_cdr_list = [packet_coders.encode('cdr', ref) for ref in master_peer_ref_list or []]
-        args = [process_name, logger_queue, child_connection, type_module_list, code_module_list, master_peer_ref_cdr_list]
+        args = [process_name, logger_queue, child_connection, type_module_list, code_module_list, config, master_peer_ref_cdr_list]
         mp_process = self._mp_context.Process(target=main_fn, args=args)
         return Process(process_name, mp_process, logger_queue, parent_connection)
