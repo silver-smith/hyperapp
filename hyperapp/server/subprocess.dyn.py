@@ -4,7 +4,6 @@ import multiprocessing
 import sys
 import traceback
 from collections import namedtuple
-from enum import Enum
 from pathlib import Path
 
 from hyperapp.common.htypes import ref_t
@@ -14,12 +13,6 @@ from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
-
-
-class ConnectionEvent(Enum):
-    STOP = 1
-    EXCEPTION = 2
-    PARCEL = 3
 
 
 def log_traceback(traceback_entries):
@@ -63,22 +56,16 @@ def subprocess_main_safe(connection, type_module_list, code_module_list, config,
 
     services = Services()
     services.init_services()
-    services.master_process_route = SubprocessRoute(connection)
     services.init_modules(type_module_list, code_module_list, config)
+    init_subprocess_modules(connection, services)
     services.start()
     log.info("Running, waiting for stop signal.")
     unused = connection.recv()  # Wait for stop signal.
     services.stop()
 
 
-class SubprocessRoute:
-
-    def __init__(self, connection):
-        self._connection = connection
-
-    def send(self, parcel):
-        parcel_cdr = packet_coders.encode('cdr', parcel.piece)
-        self._connection.send((ConnectionEvent.PARCEL.value, parcel_cdr))
+def init_subprocess_modules(connection, services):
+    services.master_process_route = SubprocessRoute(services.ref_registry, services.ref_collector_factory, connection)
 
 
 class Process:
@@ -89,6 +76,7 @@ class Process:
         self._logger_queue = logger_queue
         self._connection = connection
         self._log_queue_listener = None
+        self._is_stopped = False
 
     def __enter__(self):
         root_logger = logging.getLogger()
@@ -107,6 +95,17 @@ class Process:
             log.error("Exception in subprocess %s: %s", self._name, exception)
             log_traceback(traceback_entries)
             raise exception
+
+    def recv_parcel(self):
+        event, payload = self._connection.recv()
+        if event != ConnectionEvent.PARCEL.value:
+            self._process_stop_event()
+        parcel_piece = packet_coders.decode('cdr', payload, ref_t)
+
+
+
+    def _process_stop_event(self):
+        assert 0, 'todo'
 
 
 class ThisModule(Module):

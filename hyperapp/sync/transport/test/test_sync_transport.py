@@ -42,9 +42,16 @@ def test_send_subprocess_parcel(services):
     subprocess = services.subprocess(
         'test_subprocess',
         type_module_list=[
+            'error',
+            'hyper_ref',
+            'resource',
+            'module',
+            'packet',
             'rsa_identity',
             ],
         code_module_list=[
+            'common.visitor',
+            'common.ref_collector',
             'common.unbundler',
             'common.remoting.identity',
             'common.remoting.rsa_identity',

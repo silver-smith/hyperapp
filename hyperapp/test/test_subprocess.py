@@ -23,8 +23,17 @@ def code_module_list():
 def test_subprocess(services):
     subprocess = services.subprocess(
         'test_subprocess',
-        type_module_list=[],
-        code_module_list=[],
+        type_module_list=[
+            'error',
+            'hyper_ref',
+            'resource',
+            'module',
+            'packet',
+            ],
+        code_module_list=[
+            'common.visitor',
+            'common.ref_collector',
+            ],
         )
     with subprocess:
         pass
@@ -33,8 +42,18 @@ def test_subprocess(services):
 def test_import_failure(services):
     subprocess = services.subprocess(
         'import_failure',
-        type_module_list=[],
-        code_module_list=['test.import_failure'],
+        type_module_list=[
+            'error',
+            'hyper_ref',
+            'resource',
+            'module',
+            'packet',
+            ],
+        code_module_list=[
+            'common.visitor',
+            'common.ref_collector',
+            'test.import_failure',
+            ],
         )
     with pytest.raises(AssertionError) as excinfo:
         with subprocess:
