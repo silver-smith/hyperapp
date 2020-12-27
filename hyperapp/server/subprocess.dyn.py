@@ -3,6 +3,8 @@ import logging.handlers
 import multiprocessing
 import sys
 import traceback
+from collections import namedtuple
+from enum import Enum
 from pathlib import Path
 
 from hyperapp.common.htypes import ref_t
@@ -12,6 +14,12 @@ from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.common.module import Module
 
 log = logging.getLogger(__name__)
+
+
+class ConnectionEvent(Enum):
+    STOP = 1
+    EXCEPTION = 2
+    PARCEL = 3
 
 
 def log_traceback(traceback_entries):
@@ -24,13 +32,13 @@ def subprocess_main(process_name, logger_queue, connection, type_module_list, co
     try:
         init_logging(process_name, logger_queue)
         subprocess_main_safe(connection, type_module_list, code_module_list, config, master_peer_ref_cdr_list)
-        connection.send(None)  # Send 'process finished' signal.
+        connection.send((ConnectionEvent.STOP.value, ()))
     except Exception as x:
         log.error("Exception in subprocess: %s", x)
         traceback_entries = traceback.format_tb(x.__traceback__)
         log_traceback(traceback_entries)
         # Traceback is not pickleable, convert it to string list.
-        connection.send((x, traceback_entries))
+        connection.send((ConnectionEvent.EXCEPTION.value, (x, traceback_entries)))
 
 
 def init_logging(process_name, logger_queue):
@@ -66,10 +74,11 @@ def subprocess_main_safe(connection, type_module_list, code_module_list, config,
 class SubprocessRoute:
 
     def __init__(self, connection):
-        self.connection = connection
+        self._connection = connection
 
     def send(self, parcel):
-        raise NotImplementedError('todo')
+        parcel_cdr = packet_coders.encode('cdr', parcel.piece)
+        self._connection.send((ConnectionEvent.PARCEL.value, parcel_cdr))
 
 
 class Process:
@@ -88,13 +97,13 @@ class Process:
         self._mp_process.start()
 
     def __exit__(self, exc, value, tb):
-        self._connection.send(None)  # Send stop signal.
-        result = self._connection.recv()  # Wait for 'process finished' signal.
+        self._connection.send((ConnectionEvent.STOP.value, ()))
+        event, payload = self._connection.recv()  # Wait for stop or exception signal.
         self._mp_process.join()
         self._log_queue_listener.enqueue_sentinel()
         self._log_queue_listener.stop()
-        if result:
-            exception, traceback_entries = result
+        if event == ConnectionEvent.EXCEPTION.value:
+            exception, traceback_entries = payload
             log.error("Exception in subprocess %s: %s", self._name, exception)
             log_traceback(traceback_entries)
             raise exception
