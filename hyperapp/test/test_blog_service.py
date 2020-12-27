@@ -220,9 +220,9 @@ def test_fn(request):
     return request.param
 
 
-@pytest.mark.asyncio
-async def test_call_blog(event_loop, queues, server, client_services, test_fn):
-    encoded_blog_service_bundle = server.extract_bundle('blog_service_ref')
-    blog_service_ref = client_services.implant_bundle(encoded_blog_service_bundle)
-    blog_service = await client_services.blog_service_factory(blog_service_ref)
-    await test_fn(client_services, blog_service)
+# @pytest.mark.asyncio
+# async def test_call_blog(event_loop, queues, server, client_services, test_fn):
+#     encoded_blog_service_bundle = server.extract_bundle('blog_service_ref')
+#     blog_service_ref = client_services.implant_bundle(encoded_blog_service_bundle)
+#     blog_service = await client_services.blog_service_factory(blog_service_ref)
+#     await test_fn(client_services, blog_service)

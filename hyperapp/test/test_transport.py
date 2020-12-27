@@ -105,9 +105,9 @@ def call_echo_fn(request):
     return request.param
 
 
-@pytest.mark.asyncio
-async def test_call_echo(event_loop, queues, server, client_services, call_echo_fn):
-    encoded_echo_service_bundle = server.extract_bundle('echo_service_ref')
-    echo_service_ref = client_services.implant_bundle(encoded_echo_service_bundle)
-    echo_proxy = await client_services.proxy_factory.from_ref(echo_service_ref)
-    await call_echo_fn(client_services, echo_proxy)
+# @pytest.mark.asyncio
+# async def test_call_echo(event_loop, queues, server, client_services, call_echo_fn):
+#     encoded_echo_service_bundle = server.extract_bundle('echo_service_ref')
+#     echo_service_ref = client_services.implant_bundle(encoded_echo_service_bundle)
+#     echo_proxy = await client_services.proxy_factory.from_ref(echo_service_ref)
+#     await call_echo_fn(client_services, echo_proxy)
