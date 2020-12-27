@@ -5,6 +5,7 @@ import uuid
 import pytest
 
 from hyperapp.common.test.util import resolve_type
+from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.test.client_server_fixtures import (
     test_manager,
     queues,
