@@ -41,7 +41,15 @@ def test_rsa_peer(services, rsa_identity):
 
 def test_rsa_parcel(services):
     rsa_identity_module = services.name2module['common.remoting.rsa_identity']
-    my_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
-    peer_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
+
+    sender_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
+    receiver_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
+
     bundle = bundle_t(roots=[], capsule_list=[], route_list=[])
-    peer_identity.peer.make_parcel(bundle, my_identity, services.ref_registry)
+    parcel_1 = receiver_identity.peer.make_parcel(bundle, sender_identity, services.ref_registry)
+
+    parcel_2 = services.parcel_registry.animate(parcel_1.piece)
+    assert parcel_2.piece == parcel_1.piece
+
+    assert receiver_identity.peer.piece == parcel_2.receiver_peer.piece
+    

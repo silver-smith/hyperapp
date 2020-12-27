@@ -67,7 +67,11 @@ class RsaPeer:
 
     @classmethod
     def from_piece(cls, piece):
-        public_key = serialization.load_pem_public_key(piece.public_key_pem, backend=default_backend())
+        return cls.from_public_key_pem(piece.public_key_pem)
+
+    @classmethod
+    def from_public_key_pem(cls, public_key_pem):
+        public_key = serialization.load_pem_public_key(public_key_pem, backend=default_backend())
         return cls(public_key)
 
     def __init__(self, public_key: rsa.RSAPublicKey):
@@ -96,16 +100,41 @@ class RsaPeer:
                 ))
         signature = sender_identity.sign(cipher_data)
         signature_ref = ref_registry.distil(signature)
-        return htypes.rsa_identity.rsa_parcel(
+        return RsaParcel(
             peer_public_key_pem=self._public_key_pem,
             encrypted_bundle=cipher_data,
             sender_signature_ref=signature_ref,
             )
 
-    
+
+class RsaParcel:
+
+    @classmethod
+    def from_piece(cls, piece):
+        return cls(piece.peer_public_key_pem, piece.encrypted_bundle, piece.sender_signature_ref)
+
+    def __init__(self, peer_public_key_pem, encrypted_bundle, sender_signature_ref):
+        self._peer_public_key_pem = peer_public_key_pem
+        self._encrypted_bundle = encrypted_bundle
+        self._sender_signature_ref = sender_signature_ref
+
+    @property
+    def piece(self):
+        return htypes.rsa_identity.rsa_parcel(
+            peer_public_key_pem=self._peer_public_key_pem,
+            encrypted_bundle=self._encrypted_bundle,
+            sender_signature_ref=self._sender_signature_ref,
+            )
+
+    @property
+    def receiver_peer(self):
+        return RsaPeer.from_public_key_pem(self._peer_public_key_pem)
+
+
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
         services.identity_registry.register_actor(htypes.rsa_identity.rsa_identity, RsaIdentity.from_piece)
         services.peer_registry.register_actor(htypes.rsa_identity.rsa_peer, RsaPeer.from_piece)
+        services.parcel_registry.register_actor(htypes.rsa_identity.rsa_parcel, RsaParcel.from_piece)
