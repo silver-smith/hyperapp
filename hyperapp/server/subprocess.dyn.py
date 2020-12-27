@@ -55,11 +55,21 @@ def subprocess_main_safe(connection, type_module_list, code_module_list, config,
 
     services = Services()
     services.init_services()
+    services.master_process_route = SubprocessRoute(connection)
     services.init_modules(type_module_list, code_module_list, config)
     services.start()
     log.info("Running, waiting for stop signal.")
     unused = connection.recv()  # Wait for stop signal.
     services.stop()
+
+
+class SubprocessRoute:
+
+    def __init__(self, connection):
+        self.connection = connection
+
+    def send(self, parcel):
+        raise NotImplementedError('todo2')
 
 
 class Process:

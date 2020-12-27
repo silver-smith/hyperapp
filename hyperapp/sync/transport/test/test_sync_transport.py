@@ -56,7 +56,7 @@ def test_send_subprocess_parcel(services):
             },
         master_peer_ref_list=[my_peer_ref],
         )
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(NotImplementedError) as excinfo:
         with subprocess:
             pass
     assert str(excinfo.value) == 'todo'
