@@ -69,7 +69,7 @@ class SubprocessRoute:
         self.connection = connection
 
     def send(self, parcel):
-        raise NotImplementedError('todo2')
+        raise NotImplementedError('todo')
 
 
 class Process:
