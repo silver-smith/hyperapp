@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from hyperapp.common.ref import ref_repr
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.module import Module
 
@@ -26,6 +27,8 @@ class Transport:
     def send(self, parcel):
         receiver_peer_ref = self._ref_registry.distil(parcel.receiver_peer.piece)
         route_list = self._route_a9n_registry.get(receiver_peer_ref)
+        if not route_list:
+            raise RuntimeError(f"No route for peer {ref_repr(receiver_peer_ref)}")
         route, *_ = route_list
         route.send(parcel)
 
