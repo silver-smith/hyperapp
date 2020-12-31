@@ -22,6 +22,8 @@ def code_module_list():
     return [
         'common.visitor',
         'common.ref_collector',
+        'common.unbundler',
+        'common.remoting.identity',
         'server.work_dir',
         'server.subprocess_connection',
         'server.subprocess',

@@ -24,6 +24,7 @@ def code_module_list():
     return [
         'common.visitor',
         'common.ref_collector',
+        'common.unbundler',
         'common.remoting.identity',
         'common.remoting.rsa_identity',
         'server.work_dir',
@@ -69,4 +70,5 @@ def test_send_subprocess_parcel(services):
             },
         )
     with subprocess:
-        pass
+        parcel = subprocess.recv_parcel()
+        assert parcel.receiver_peer.piece == master_identity.peer.piece

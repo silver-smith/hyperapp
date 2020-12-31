@@ -5,7 +5,7 @@ import sys
 from collections import namedtuple
 from pathlib import Path
 
-from hyperapp.common.htypes import ref_t
+from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
@@ -22,11 +22,13 @@ def log_traceback(traceback_entries):
 
 class Process:
 
-    def __init__(self, name, mp_process, logger_queue, connection):
+    def __init__(self, name, mp_process, logger_queue, connection, unbundler, parcel_registry):
         self._name = name
         self._mp_process = mp_process
         self._logger_queue = logger_queue
         self._connection = connection
+        self._unbundler = unbundler
+        self._parcel_registry = parcel_registry
         self._log_queue_listener = None
         self._is_stopped = False
 
@@ -52,7 +54,10 @@ class Process:
         event, payload = self._connection.recv()
         if event != ConnectionEvent.PARCEL.value:
             self._process_stop_event()
-        parcel_piece = packet_coders.decode('cdr', payload, ref_t)
+        parcel_bundle = packet_coders.decode('cdr', payload, bundle_t)
+        self._unbundler.register_bundle(parcel_bundle)
+        parcel_piece_ref = parcel_bundle.roots[0]
+        return self._parcel_registry.invite(parcel_piece_ref)
 
     def _process_stop_event(self):
         assert 0, 'todo'
@@ -62,6 +67,8 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
+        self._unbundler = services.unbundler
+        self._parcel_registry = services.parcel_registry
         self._work_dir = services.work_dir / 'subprocess'
         self._mp_context = multiprocessing.get_context('forkserver')
         services.subprocess = self.subprocess
@@ -78,4 +85,4 @@ class ThisModule(Module):
         parent_connection, child_connection = self._mp_context.Pipe()
         args = [process_name, logger_queue, child_connection, type_module_list, code_module_list, config]
         mp_process = self._mp_context.Process(target=main_fn, args=args)
-        return Process(process_name, mp_process, logger_queue, parent_connection)
+        return Process(process_name, mp_process, logger_queue, parent_connection, self._unbundler, self._parcel_registry)
