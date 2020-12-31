@@ -102,8 +102,6 @@ class Process:
             self._process_stop_event()
         parcel_piece = packet_coders.decode('cdr', payload, ref_t)
 
-
-
     def _process_stop_event(self):
         assert 0, 'todo'
 

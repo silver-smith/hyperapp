@@ -33,11 +33,11 @@ def code_module_list():
 
 def test_send_subprocess_parcel(services):
     rsa_identity_module = services.name2module['common.remoting.rsa_identity']
-    my_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
-    my_peer_ref = services.ref_registry.distil(my_identity.peer.piece)
+    master_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
+    master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
     ref_collector = services.ref_collector_factory()
-    my_peer_bundle = ref_collector.make_bundle([my_peer_ref])
-    my_peer_bundle_cdr = packet_coders.encode('cdr', my_peer_bundle)
+    master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
+    master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
 
     subprocess = services.subprocess(
         'test_subprocess',
@@ -59,9 +59,9 @@ def test_send_subprocess_parcel(services):
             'sync.transport.test.send_subprocess_parcel',
             ],
         config = {
-            'sync.transport.test.send_subprocess_parcel': {'master_peer_bundle_cdr': my_peer_bundle_cdr},
+            'sync.transport.test.send_subprocess_parcel': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
             },
-        master_peer_ref_list=[my_peer_ref],
+        master_peer_ref_list=[master_peer_ref],
         )
     with subprocess:
         pass
