@@ -8,12 +8,12 @@ from hyperapp.common.module import Module
 class RouteAssociationRegistry:
 
     def __init__(self):
-        self._peer2route = defaultdict(list)  # ref -> ref list
+        self._peer2route = defaultdict(list)  # ref -> route list
 
-    def associate(self, peer_ref, route_ref):
-        self._peer2route[peer_ref].append(route_ref)
+    def associate(self, peer_ref, route):
+        self._peer2route[peer_ref].append(route)
 
-    def get(self, peer_ref):
+    def peer_route_list(self, peer_ref):
         return self._peer2route[peer_ref]
 
 
@@ -26,7 +26,7 @@ class Transport:
 
     def send(self, parcel):
         receiver_peer_ref = self._ref_registry.distil(parcel.receiver_peer.piece)
-        route_list = self._route_a9n_registry.get(receiver_peer_ref)
+        route_list = self._route_a9n_registry.peer_route_list(receiver_peer_ref)
         if not route_list:
             raise RuntimeError(f"No route for peer {ref_repr(receiver_peer_ref)}")
         route, *_ = route_list
