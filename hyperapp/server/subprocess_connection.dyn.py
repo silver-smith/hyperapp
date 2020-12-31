@@ -1,6 +1,9 @@
 from enum import Enum
 
+from hyperapp.common.htypes.packet_coders import packet_coders
 
+
+# Note: copy shared with subprocess_mp_main.py
 class ConnectionEvent(Enum):
     STOP = 1
     EXCEPTION = 2

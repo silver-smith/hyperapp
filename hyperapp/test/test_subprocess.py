@@ -9,13 +9,21 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def type_module_list():
     return [
+        'error',
+        'hyper_ref',
+        'resource',
+        'module',
+        'packet',
         ]
 
 
 @pytest.fixture
 def code_module_list():
     return [
+        'common.visitor',
+        'common.ref_collector',
         'server.work_dir',
+        'server.subprocess_connection',
         'server.subprocess',
         ]
 

@@ -93,7 +93,7 @@ class Services(object):
             if config:
                 module_config = config.get(module_name)
             else:
-                module_config = None
+                module_config = {}
             parts = module_name.split('.')
             file_path = self.hyperapp_dir.joinpath(*parts)
             code_module = self.code_module_loader.load_code_module(file_path, module_name)

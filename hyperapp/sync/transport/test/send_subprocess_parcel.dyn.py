@@ -14,7 +14,6 @@ class ThisModule(Module):
         services.unbundler.register_bundle(master_peer_bundle)
         master_peer_ref = master_peer_bundle.roots[0]
         master_peer = services.peer_registry.invite(master_peer_ref)
-        services.route_a9n_registry.associate(master_peer_ref, services.master_process_route)
         my_identity = RsaIdentity.generate(fast=True)
         bundle = bundle_t(roots=[], capsule_list=[], route_list=[])
         parcel = master_peer.make_parcel(bundle, my_identity, services.ref_registry)
