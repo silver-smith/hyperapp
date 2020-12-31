@@ -37,6 +37,6 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.route_registry = CodeRegistry('route', services.ref_resolver, services.types)
+        services.route_registry = CodeRegistry('route', services.ref_resolver, services.types)  # Unused for now.
         services.route_a9n_registry = RouteAssociationRegistry()
         services.transport = Transport(services.ref_registry, services.route_registry, services.route_a9n_registry)
