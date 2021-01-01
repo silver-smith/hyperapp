@@ -36,7 +36,7 @@ class CodeRegistry:
         return (await self._animate(t, piece, args, kw))
 
     async def _animate(self, t, piece, args, kw):
-        pprint(piece, t=t, logger=_log.info, title=f"Producing {self._produce_name} for {piece} of type {t}")
+        # pprint(piece, t=t, logger=_log.info, title=f"Producing {self._produce_name} for {piece} of type {t}")
         rec = self._registry.get(t)
         if not rec:
             raise RuntimeError(f"No code is registered for {self._produce_name}: {t} {piece}")

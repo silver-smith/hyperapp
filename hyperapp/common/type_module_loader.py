@@ -76,5 +76,5 @@ class TypeModuleLoader(object):
             local_type_module.register(typedef.name, ref)
             local_name_dict[typedef.name] = ref
             _log.debug('Type module loader %r: %r is mapped to %s:', module_name, typedef.name, ref_repr(ref))
-            pprint(rec)
+            # pprint(rec)
         return local_type_module

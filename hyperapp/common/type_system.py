@@ -92,7 +92,7 @@ class TypeSystem(object):
         encoding = DEFAULT_CAPSULE_ENCODING
         encoded_object = packet_coders.encode(encoding, object, t)
         type_ref = self.reverse_resolve(t)
-        pprint(object, t=t, title='Making capsule of type %s/%s' % (ref_repr(type_ref), t))
+        # pprint(object, t=t, title='Making capsule of type %s/%s' % (ref_repr(type_ref), t))
         return capsule_t(type_ref, encoding, encoded_object)
 
     def decode_capsule(self, capsule, expected_type=None):
