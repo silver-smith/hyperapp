@@ -26,7 +26,7 @@ def subprocess_main(process_name, logger_queue, connection, type_module_list, co
     try:
         init_logging(process_name, logger_queue)
         subprocess_main_safe(connection, type_module_list, code_module_list, config)
-        connection.send((ConnectionEvent.STOP.value, ()))
+        connection.send((ConnectionEvent.STOP.value, None))
     except Exception as x:
         log.error("Exception in subprocess: %s", x)
         traceback_entries = traceback.format_tb(x.__traceback__)

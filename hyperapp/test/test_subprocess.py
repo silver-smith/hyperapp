@@ -25,6 +25,8 @@ def code_module_list():
         'common.unbundler',
         'common.remoting.identity',
         'server.work_dir',
+        'server.async_stop',
+        'sync.transport.transport',
         'server.subprocess_connection',
         'server.subprocess',
         ]
