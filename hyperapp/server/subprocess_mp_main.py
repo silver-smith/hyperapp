@@ -24,7 +24,7 @@ def log_traceback(traceback_entries):
 
 def subprocess_main(process_name, logger_queue, connection, type_module_list, code_module_list, config):
     try:
-        init_logging(process_name, logger_queue)
+        memory_handler = init_logging(process_name, logger_queue)
         subprocess_main_safe(connection, type_module_list, code_module_list, config)
         connection.send((ConnectionEvent.STOP.value, None))
     except Exception as x:
@@ -33,6 +33,7 @@ def subprocess_main(process_name, logger_queue, connection, type_module_list, co
         log_traceback(traceback_entries)
         # Traceback is not pickleable, convert it to string list.
         connection.send((ConnectionEvent.EXCEPTION.value, (x, traceback_entries)))
+    memory_handler.flush()
 
 
 def init_logging(process_name, logger_queue):
@@ -48,6 +49,7 @@ def init_logging(process_name, logger_queue):
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(memory_handler)
+    return memory_handler
 
 
 def subprocess_main_safe(connection, type_module_list, code_module_list, config):
