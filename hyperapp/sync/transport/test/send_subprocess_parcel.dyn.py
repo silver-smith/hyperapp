@@ -15,6 +15,7 @@ class ThisModule(Module):
         master_peer_ref = master_peer_bundle.roots[0]
         master_peer = services.peer_registry.invite(master_peer_ref)
         my_identity = RsaIdentity.generate(fast=True)
-        bundle = bundle_t(roots=[], capsule_list=[], route_list=[])
+        ref_collector = services.ref_collector_factory()
+        bundle = ref_collector.make_bundle([])
         parcel = master_peer.make_parcel(bundle, my_identity, services.ref_registry)
         services.transport.send(parcel)
