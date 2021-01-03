@@ -12,7 +12,6 @@ from .htypes import (
     )
 from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
-from .logger import log
 from .ref import phony_ref, ref_repr
 from .visual_rep import pprint
 from .code_registry import CodeRegistry
