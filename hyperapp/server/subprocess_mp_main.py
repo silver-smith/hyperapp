@@ -60,4 +60,6 @@ def subprocess_main_safe(connection, type_module_list, code_module_list, config)
     services.start()
     log.info("Running, waiting for stop signal.")
     _unused = connection.recv()  # Wait for stop signal.
+    log.info("Received stop signal; stopping.")
     services.stop()
+    log.info("Stopped.")

@@ -87,14 +87,14 @@ class ThisModule(Module):
         self._thread.join()
 
     def _recv_thread_main(self):
-        log.info('Subprocess recv thread is started.')
+        log.info("Subprocess recv thread is started.")
         try:
-            while not self._stop_flag:
+            while not self._stop_flag or len(self._connection_to_process) > 1:
                 self._receive_and_process_bundle()
         except Exception as x:
-            log.exception('Subprocess recv thread is failed:')
-            self._on_failure('Subprocess recv thread is failed: %r' % x)
-        log.info('Subprocess recv thread finished.')
+            log.exception("Subprocess recv thread is failed:")
+            self._on_failure("Subprocess recv thread is failed: %r" % x)
+        log.info("Subprocess recv thread is finished.")
 
     def _receive_and_process_bundle(self):
         ready_connections = multiprocessing.connection.wait(self._connection_to_process.keys())
@@ -109,11 +109,15 @@ class ThisModule(Module):
         if event != ConnectionEvent.PARCEL.value:
             self._process_stop_event(process, connection, event, payload)
             return
-        parcel_bundle = packet_coders.decode('cdr', payload, bundle_t)
-        self._unbundler.register_bundle(parcel_bundle)
-        parcel_piece_ref = parcel_bundle.roots[0]
-        parcel = self._parcel_registry.invite(parcel_piece_ref)
-        self._process_parcel(parcel)
+        try:
+            parcel_bundle = packet_coders.decode('cdr', payload, bundle_t)
+            self._unbundler.register_bundle(parcel_bundle)
+            parcel_piece_ref = parcel_bundle.roots[0]
+            parcel = self._parcel_registry.invite(parcel_piece_ref)
+            self._process_parcel(parcel)
+        except Exception as x:
+            log.exception("Error processing parcel from subprocess %s", process.name)
+            self._on_failure(f"Error processing parcel from subprocess {process.name}: {x}")
 
     def _process_parcel(self, parcel):
         self._transport.send(parcel)

@@ -1,7 +1,11 @@
+import logging
+
 import pytest
 
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common import cdr_coders  # self-registering
+
+log = logging.getLogger(__name__)
 
 
 pytest_plugins = ['hyperapp.common.test.services']
@@ -83,4 +87,7 @@ def test_send_subprocess_parcel(services):
     with subprocess:
         # parcel = subprocess.recv_parcel()
         # assert parcel.receiver_peer.piece == master_identity.peer.piece
+        log.info("Subprocess is started.")
         import time; time.sleep(1)
+        log.info("Subprocess is about to finish.")
+    log.info("Subprocess is finished.")
