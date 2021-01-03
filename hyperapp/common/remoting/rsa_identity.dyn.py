@@ -56,7 +56,12 @@ class RsaIdentity:
             ),
             hash_algorithm,
             )
+        public_key_pem = self._private_key.public_key().public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+            )
         return htypes.rsa_identity.rsa_signature(
+            signer_public_key_pem=public_key_pem,
             hash_algorithm='sha256',
             padding='pss',
             signature=signature,

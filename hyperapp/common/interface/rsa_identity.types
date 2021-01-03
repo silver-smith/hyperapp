@@ -6,6 +6,7 @@ rsa_peer = record:
   public_key_pem: binary
 
 rsa_signature = record:
+  signer_public_key_pem: binary
   hash_algorithm: string
   padding: string
   signature: binary
