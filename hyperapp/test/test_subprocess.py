@@ -71,3 +71,25 @@ def test_import_failure(services):
         with subprocess:
             pass
     assert str(excinfo.value) == 'Test import failure'
+
+
+def test_module_init_failure(services):
+    subprocess = services.subprocess(
+        'import_failure',
+        type_module_list=[
+            'error',
+            'hyper_ref',
+            'resource',
+            'module',
+            'packet',
+            ],
+        code_module_list=[
+            'common.visitor',
+            'common.ref_collector',
+            'test.module_init_failure',
+            ],
+        )
+    with pytest.raises(AssertionError) as excinfo:
+        with subprocess:
+            pass
+    assert str(excinfo.value) == 'Test module init failure'
