@@ -1,4 +1,5 @@
 import logging
+import threading
 
 import pytest
 
@@ -41,7 +42,12 @@ def code_module_list():
 
 
 class Endpoint:
-    pass
+
+    def __init__(self, event):
+        self._event = event
+
+    def process(self, parcel):
+        self._event.set()
 
 
 def test_send_subprocess_parcel(services):
@@ -50,7 +56,8 @@ def test_send_subprocess_parcel(services):
 
     master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
 
-    services.endpoint_registry.register(master_peer_ref, Endpoint())
+    event = threading.Event()
+    services.endpoint_registry.register(master_peer_ref, Endpoint(event))
 
     ref_collector = services.ref_collector_factory()
     master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
@@ -87,7 +94,7 @@ def test_send_subprocess_parcel(services):
     with subprocess:
         # parcel = subprocess.recv_parcel()
         # assert parcel.receiver_peer.piece == master_identity.peer.piece
-        log.info("Subprocess is started.")
-        import time; time.sleep(1)
-        log.info("Subprocess is about to finish.")
+        log.info("Waiting for event.")
+        event.wait()
+        log.info("Got event.")
     log.info("Subprocess is finished.")

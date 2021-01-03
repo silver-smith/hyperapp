@@ -3,8 +3,11 @@ from hyperapp.common.module import Module
 
 class LocalRoute:
 
+    def __init__(self, endpoint):
+        self._endpoint = endpoint
+
     def send(self, parcel):
-        assert 0  # todo
+        self._endpoint.process(parcel)
 
 
 class EndpointRegistry:
@@ -13,7 +16,7 @@ class EndpointRegistry:
         self._route_a9n_registry = route_a9n_registry
 
     def register(self, peer_ref, endpoint):
-        self._route_a9n_registry.associate(peer_ref, LocalRoute())
+        self._route_a9n_registry.associate(peer_ref, LocalRoute(endpoint))
 
 
 class ThisModule(Module):
