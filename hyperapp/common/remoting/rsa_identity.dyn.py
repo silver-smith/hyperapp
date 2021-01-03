@@ -101,7 +101,7 @@ class RsaPeer:
         signature = sender_identity.sign(cipher_data)
         signature_ref = ref_registry.distil(signature)
         return RsaParcel(
-            peer_public_key_pem=self._public_key_pem,
+            receiver_public_key_pem=self._public_key_pem,
             encrypted_bundle=cipher_data,
             sender_signature_ref=signature_ref,
             )
@@ -111,24 +111,24 @@ class RsaParcel:
 
     @classmethod
     def from_piece(cls, piece):
-        return cls(piece.peer_public_key_pem, piece.encrypted_bundle, piece.sender_signature_ref)
+        return cls(piece.receiver_public_key_pem, piece.encrypted_bundle, piece.sender_signature_ref)
 
-    def __init__(self, peer_public_key_pem, encrypted_bundle, sender_signature_ref):
-        self._peer_public_key_pem = peer_public_key_pem
+    def __init__(self, receiver_public_key_pem, encrypted_bundle, sender_signature_ref):
+        self._receiver_public_key_pem = receiver_public_key_pem
         self._encrypted_bundle = encrypted_bundle
         self._sender_signature_ref = sender_signature_ref
 
     @property
     def piece(self):
         return htypes.rsa_identity.rsa_parcel(
-            peer_public_key_pem=self._peer_public_key_pem,
+            receiver_public_key_pem=self._receiver_public_key_pem,
             encrypted_bundle=self._encrypted_bundle,
             sender_signature_ref=self._sender_signature_ref,
             )
 
     @property
     def receiver_peer(self):
-        return RsaPeer.from_public_key_pem(self._peer_public_key_pem)
+        return RsaPeer.from_public_key_pem(self._receiver_public_key_pem)
 
 
 class ThisModule(Module):
