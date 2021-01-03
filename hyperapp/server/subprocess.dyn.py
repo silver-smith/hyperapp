@@ -47,7 +47,6 @@ class Process:
         self._connection.send((ConnectionEvent.STOP.value, ()))
         self._stopped_event.wait()  # Process should send 'stopped' signal.
         self._mp_process.join()
-        self._log_queue_listener.enqueue_sentinel()
         self._log_queue_listener.stop()
         if self._exception is not None:
             log.error("Exception in subprocess %s: %s", self.name, self._exception)
