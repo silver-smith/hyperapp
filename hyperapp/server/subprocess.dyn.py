@@ -33,6 +33,8 @@ class Process:
         self._stopped_event = threading.Event()
         self._log_queue_listener = None
         self._is_stopped = False
+        self._exception = None
+        self._traceback_entries = None
 
     def __enter__(self):
         root_logger = logging.getLogger()
@@ -47,8 +49,14 @@ class Process:
         self._mp_process.join()
         self._log_queue_listener.enqueue_sentinel()
         self._log_queue_listener.stop()
+        if self._exception is not None:
+            log.error("Exception in subprocess %s: %s", self.name, self._exception)
+            log_traceback(self._traceback_entries)
+            raise self._exception
 
-    def signal_is_stopped_now(self):
+    def signal_is_stopped_now(self, exception=None, traceback_entries=None):
+        self._exception = exception
+        self._traceback_entries = traceback_entries
         self._stopped_event.set()
 
 
@@ -112,12 +120,11 @@ class ThisModule(Module):
 
     def _process_stop_event(self, process, connection, event, payload):
         del self._connection_to_process[connection]
-        process.signal_is_stopped_now()
         if event == ConnectionEvent.EXCEPTION.value:
             exception, traceback_entries = payload
-            log.error("Exception in subprocess %s: %s", process.name, exception)
-            log_traceback(traceback_entries)
-            raise exception
+        else:
+            exception = traceback_entries = None
+        process.signal_is_stopped_now(exception, traceback_entries)
 
     def subprocess(self, process_name, type_module_list, code_module_list, config=None):
         # todo: add subprocess_mp_main.py to module data.
