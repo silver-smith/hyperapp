@@ -45,7 +45,7 @@ def init_logging(process_name, logger_queue):
 
     queue_handler = logging.handlers.QueueHandler(logger_queue)
     queue_handler.addFilter(filter)
-    memory_handler = logging.handlers.MemoryHandler(1000, target=queue_handler)
+    memory_handler = logging.handlers.MemoryHandler(10, target=queue_handler)
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(memory_handler)
