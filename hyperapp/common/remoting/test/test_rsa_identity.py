@@ -17,6 +17,7 @@ def type_module_list():
 @pytest.fixture
 def code_module_list():
     return [
+        'server.async_stop',
         'common.remoting.identity',
         'common.remoting.rsa_identity',
         ]

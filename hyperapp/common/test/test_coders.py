@@ -20,6 +20,7 @@ pytest_plugins = ['hyperapp.common.test.services']
 @pytest.fixture
 def code_module_list():
     return [
+        'server.async_stop',
         'common.dict_coders',
         ]
 

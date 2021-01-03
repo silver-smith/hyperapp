@@ -3,6 +3,7 @@ import pytest
 
 from hyperapp.common.htypes import tString, TRecord, bundle_t
 from hyperapp.common.ref import make_ref
+from hyperapp.common import cdr_coders  # self-registering
 from hyperapp.common.test.util import resolve_type
 
 log = logging.getLogger(__name__)
@@ -29,6 +30,8 @@ def type_module_list():
 @pytest.fixture
 def code_module_list():
     return [
+        'server.async_stop',
+        'common.dict_coders',
         'common.route_resolver',
         'common.visitor',
         'common.ref_collector',
