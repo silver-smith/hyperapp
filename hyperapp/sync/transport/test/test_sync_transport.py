@@ -1,4 +1,5 @@
 import logging
+import queue
 import threading
 
 import pytest
@@ -43,21 +44,20 @@ def code_module_list():
 
 class Endpoint:
 
-    def __init__(self, event):
-        self._event = event
+    def __init__(self, parcel_queue):
+        self._parcel_queue = parcel_queue
 
     def process(self, parcel):
-        self._event.set()
+        self._parcel_queue.put(parcel)
 
 
 def test_send_subprocess_parcel(services):
-    rsa_identity_module = services.name2module['common.remoting.rsa_identity']
-    master_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
+    master_identity = services.generate_rsa_identity(fast=True)
 
     master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
 
-    event = threading.Event()
-    services.endpoint_registry.register(master_peer_ref, Endpoint(event))
+    parcel_queue = queue.Queue()
+    services.endpoint_registry.register(master_peer_ref, Endpoint(parcel_queue))
 
     ref_collector = services.ref_collector_factory()
     master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
@@ -92,9 +92,8 @@ def test_send_subprocess_parcel(services):
             },
         )
     with subprocess:
-        # parcel = subprocess.recv_parcel()
-        # assert parcel.receiver_peer.piece == master_identity.peer.piece
-        log.info("Waiting for event.")
-        event.wait()
-        log.info("Got event.")
+        log.info("Waiting for parcel.")
+        parcel = parcel_queue.get()
+        log.info("Got parcel.")
+        assert parcel.receiver.piece == master_identity.peer.piece
     log.info("Subprocess is finished.")

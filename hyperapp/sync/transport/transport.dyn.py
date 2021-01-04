@@ -25,7 +25,7 @@ class Transport:
         self._route_a9n_registry = route_a9n_registry
 
     def send(self, parcel):
-        receiver_peer_ref = self._ref_registry.distil(parcel.receiver_peer.piece)
+        receiver_peer_ref = self._ref_registry.distil(parcel.receiver.piece)
         route_list = self._route_a9n_registry.peer_route_list(receiver_peer_ref)
         if not route_list:
             raise RuntimeError(f"No route for peer {ref_repr(receiver_peer_ref)}")
