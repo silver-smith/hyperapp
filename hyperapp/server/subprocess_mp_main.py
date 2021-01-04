@@ -1,6 +1,7 @@
 import logging
 import logging.handlers
 import traceback
+import threading
 from enum import Enum
 
 from hyperapp.common import cdr_coders  # self-registering
@@ -55,11 +56,10 @@ def init_logging(process_name, logger_queue):
 def subprocess_main_safe(connection, type_module_list, code_module_list, config):
     services = Services()
     services.master_process_connection = connection
+    services.subprocess_stop_event = threading.Event()
     services.init_services()
     services.init_modules(type_module_list, code_module_list, config)
     services.start()
     log.info("Running, waiting for stop signal.")
-    _unused = connection.recv()  # Wait for stop signal.
-    log.info("Received stop signal; stopping.")
+    services.subprocess_stop_event.wait()
     services.stop()
-    log.info("Stopped.")

@@ -45,6 +45,10 @@ def test_subprocess(services):
         code_module_list=[
             'common.visitor',
             'common.ref_collector',
+            'common.remoting.identity',
+            'common.unbundler',
+            'server.subprocess_connection',
+            'server.subprocess_child',
             ],
         )
     with subprocess:

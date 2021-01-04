@@ -37,6 +37,7 @@ class Process:
         self._traceback_entries = None
 
     def __enter__(self):
+        log.info("Start subprocess %r", self.name)
         root_logger = logging.getLogger()
         self._log_queue_listener = logging.handlers.QueueListener(self._logger_queue, root_logger)
         self._log_queue_listener.start()
@@ -44,12 +45,13 @@ class Process:
         self._mp_process.start()
 
     def __exit__(self, exc, value, tb):
-        self._connection.send((ConnectionEvent.STOP.value, ()))
+        log.info("Exit subprocess %r", self.name)
+        self._connection.send((ConnectionEvent.STOP.value, None))
         self._stopped_event.wait()  # Process should send 'stopped' signal.
         self._mp_process.join()
         self._log_queue_listener.stop()
         if self._exception is not None:
-            log.error("Exception in subprocess %s: %s", self.name, self._exception)
+            log.error("Exception in subprocess %r: %s", self.name, self._exception)
             log_traceback(self._traceback_entries)
             raise self._exception
 
@@ -118,8 +120,8 @@ class ThisModule(Module):
             parcel = self._parcel_registry.invite(parcel_piece_ref)
             self._process_parcel(connection, parcel)
         except Exception as x:
-            log.exception("Error processing parcel from subprocess %s", process.name)
-            self._on_failure(f"Error processing parcel from subprocess {process.name}: {x}")
+            log.exception("Error processing parcel from subprocess %r", process.name)
+            self._on_failure(f"Error processing parcel from subprocess {process.name!r}: {x}")
 
     def _process_parcel(self, connection, parcel):
         sender_ref = self._ref_registry.distil(parcel.sender.piece)
