@@ -4,6 +4,7 @@ from types import SimpleNamespace
 import logging
 
 from .htypes import register_builtin_types
+from .ref import ref_repr
 from .logger import log, init_logger, close_logger
 from .logger_json_storage import json_file_log_storage_session
 from .local_type_module import LocalTypeModuleRegistry
@@ -98,6 +99,7 @@ class Services(object):
             file_path = self.hyperapp_dir.joinpath(*parts)
             code_module = self.code_module_loader.load_code_module(file_path, module_name)
             code_module_ref = self.ref_registry.distil(code_module)
+            _log.info("Import module %s (%s) with file path %s", module_name, ref_repr(code_module_ref), file_path)
             module = self.code_module_importer.import_code_module(code_module_ref)
             self.name2module[module_name] = module
             self._init_module(code_module.module_name, module, module_config)
@@ -105,6 +107,7 @@ class Services(object):
     def _init_module(self, module_name, module, config):
         this_module_class = module.__dict__.get('ThisModule')
         if this_module_class:
+            _log.info("Init module %s (%s) with config: %s", module_name, this_module_class, config)
             this_module = this_module_class(module_name, self, config)
             module.__dict__['this_module'] = this_module
             self.module_registry.register(this_module)
