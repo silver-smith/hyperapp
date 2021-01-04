@@ -141,12 +141,17 @@ def test_subprocess_transport_echo(services):
         )
     with subprocess:
         log.info("Waiting for parcel.")
-        parcel = parcel_queue.get()
+        parcel_1 = parcel_queue.get()
         log.info("Got parcel.")
-        assert parcel.receiver.piece == master_identity.peer.piece
+        assert parcel_1.receiver.piece == master_identity.peer.piece
 
-        bundle = master_identity.decrypt_parcel(parcel)
-        services.unbundler.register_bundle(bundle)
-        child_peer = services.peer_registry.invite(bundle.roots[0])
+        bundle_1 = master_identity.decrypt_parcel(parcel_1)
+        services.unbundler.register_bundle(bundle_1)
+        child_peer = services.peer_registry.invite(bundle_1.roots[0])
+
+        ref_collector = services.ref_collector_factory()
+        bundle_2 = ref_collector.make_bundle([master_peer_ref])
+        parcel_2 = child_peer.make_parcel(bundle_2, master_identity)
+        services.transport.send(parcel_2)
 
     log.info("Subprocess is finished.")

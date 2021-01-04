@@ -11,7 +11,7 @@ from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
-from .subprocess_connection import ConnectionEvent
+from .subprocess_connection import ConnectionEvent, SubprocessRoute
 
 log = logging.getLogger(__name__)
 
@@ -63,7 +63,10 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
+        self._ref_registry = services.ref_registry
+        self._ref_collector_factory = services.ref_collector_factory
         self._unbundler = services.unbundler
+        self._route_a9n_registry = services.route_a9n_registry
         self._parcel_registry = services.parcel_registry
         self._on_failure = services.failed
         self._transport = services.transport
@@ -113,12 +116,15 @@ class ThisModule(Module):
             self._unbundler.register_bundle(parcel_bundle)
             parcel_piece_ref = parcel_bundle.roots[0]
             parcel = self._parcel_registry.invite(parcel_piece_ref)
-            self._process_parcel(parcel)
+            self._process_parcel(connection, parcel)
         except Exception as x:
             log.exception("Error processing parcel from subprocess %s", process.name)
             self._on_failure(f"Error processing parcel from subprocess {process.name}: {x}")
 
-    def _process_parcel(self, parcel):
+    def _process_parcel(self, connection, parcel):
+        sender_ref = self._ref_registry.distil(parcel.sender.piece)
+        child_route = SubprocessRoute(self._ref_registry, self._ref_collector_factory, connection)
+        self._route_a9n_registry.associate(sender_ref, child_route)
         self._transport.send(parcel)
 
     def _process_stop_event(self, process, connection, event, payload):
