@@ -37,6 +37,7 @@ class Services(object):
         self.name2module = {}  # module name (x.y.z) -> imported module
 
     def init_services(self):
+        _log.info("Init services.")
         self.ref_resolver = RefResolver()
         self.types = TypeSystem(self.ref_resolver)
         self.ref_registry = RefRegistry(self.types)
@@ -56,10 +57,12 @@ class Services(object):
         self.code_module_importer.register_meta_hook()
 
     def start(self):
+        _log.info("Start services.")
         for start in self.on_start:
             start()
 
     def stop(self):
+        _log.info("Stop services.")
         if self._is_stopped:
             _log.info('Already stopped.')
             return
@@ -72,11 +75,13 @@ class Services(object):
         close_logger()
         self._logger_storage.close()
         self._is_stopped = True
+        _log.info("Services are stopped.")
 
     def on_stopped(self):
         pass
 
     def init_modules(self, type_module_list, code_module_list, config=None):
+        _log.info("Init modules.")
         try:
             self._load_type_module_list(type_module_list)
             self._load_code_module_list(code_module_list, config)
