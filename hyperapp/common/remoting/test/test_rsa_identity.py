@@ -43,8 +43,10 @@ def test_rsa_parcel(services):
     sender_identity = services.generate_rsa_identity(fast=True)
     receiver_identity = services.generate_rsa_identity(fast=True)
 
-    bundle = bundle_t(roots=[], capsule_list=[], route_list=[])
-    parcel_1 = receiver_identity.peer.make_parcel(bundle, sender_identity)
+    test_ref = services.ref_registry.distil(receiver_identity.peer.piece)
+
+    bundle_1 = bundle_t(roots=(test_ref,), capsule_list=(), route_list=())
+    parcel_1 = receiver_identity.peer.make_parcel(bundle_1, sender_identity)
 
     parcel_2 = services.parcel_registry.animate(parcel_1.piece)
     assert parcel_2.piece == parcel_1.piece
@@ -52,3 +54,5 @@ def test_rsa_parcel(services):
     assert receiver_identity.peer.piece == parcel_2.receiver.piece
     assert sender_identity.peer.piece == parcel_2.sender.piece
     
+    bundle_2 = receiver_identity.decrypt_parcel(parcel_2)
+    assert bundle_2 == bundle_1

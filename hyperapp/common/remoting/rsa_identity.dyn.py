@@ -1,8 +1,10 @@
+from cryptography.fernet import Fernet
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
 
+from hyperapp.common.htypes import bundle_t
 from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
@@ -64,6 +66,19 @@ class RsaIdentity:
             signature=signature,
             )
 
+    def decrypt_parcel(self, parcel):
+        hash_algorithm = hashes.SHA256()
+        fernet_key = self._private_key.decrypt(
+            parcel.encrypted_fernet_key,
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hash_algorithm),
+                algorithm=hash_algorithm,
+                label=None,
+                ))
+        fernet = Fernet(fernet_key)
+        bundle_cdr = fernet.decrypt(parcel.encrypted_bundle)
+        return packet_coders.decode(BUNDLE_ENCODING, bundle_cdr, bundle_t)
+
 
 class RsaPeer:
 
@@ -92,20 +107,24 @@ class RsaPeer:
             )
 
     def make_parcel(self, bundle, sender_identity):
-        plain_data = packet_coders.encode(BUNDLE_ENCODING, bundle)
-        hash_algorithm = hashes.SHA1()
-        cipher_data = self._public_key.encrypt(
-            plain_data,
+        key = Fernet.generate_key()
+        fernet = Fernet(key)
+        bundle_cdr = packet_coders.encode(BUNDLE_ENCODING, bundle)
+        encrypted_bundle = fernet.encrypt(bundle_cdr)
+        hash_algorithm = hashes.SHA256()
+        encrypted_key = self._public_key.encrypt(
+            key,
             padding.OAEP(
                 mgf=padding.MGF1(algorithm=hash_algorithm),
                 algorithm=hash_algorithm,
                 label=None,
                 ))
-        signature = sender_identity.sign(cipher_data)
+        signature = sender_identity.sign(encrypted_bundle)
         return RsaParcel(
             self._ref_registry,
             receiver=self,
-            encrypted_bundle=cipher_data,
+            encrypted_fernet_key=encrypted_key,
+            encrypted_bundle=encrypted_bundle,
             signature=signature,
             )
 
@@ -143,11 +162,12 @@ class RsaParcel:
     def from_piece(cls, piece, ref_registry, signature_registry):
         signature = signature_registry.invite(piece.sender_signature_ref)
         receiver = RsaPeer.from_public_key_pem(ref_registry, piece.receiver_public_key_pem)
-        return cls(ref_registry, receiver, piece.encrypted_bundle, signature)
+        return cls(ref_registry, receiver, piece.encrypted_fernet_key, piece.encrypted_bundle, signature)
 
-    def __init__(self, ref_registry, receiver, encrypted_bundle, signature):
+    def __init__(self, ref_registry, receiver, encrypted_fernet_key, encrypted_bundle, signature):
         self._ref_registry = ref_registry
         self._receiver = receiver
+        self._encrypted_fernet_key = encrypted_fernet_key
         self._encrypted_bundle = encrypted_bundle
         self._signature = signature
 
@@ -156,6 +176,7 @@ class RsaParcel:
         signature_ref = self._ref_registry.distil(self._signature.piece)
         return htypes.rsa_identity.rsa_parcel(
             receiver_public_key_pem=self._receiver.public_key_pem,
+            encrypted_fernet_key=self._encrypted_fernet_key,
             encrypted_bundle=self._encrypted_bundle,
             sender_signature_ref=signature_ref,
             )
@@ -167,6 +188,14 @@ class RsaParcel:
     @property
     def sender(self):
         return self._signature.signer
+
+    @property
+    def encrypted_fernet_key(self):
+        return self._encrypted_fernet_key
+
+    @property
+    def encrypted_bundle(self):
+        return self._encrypted_bundle
 
 
 class ThisModule(Module):

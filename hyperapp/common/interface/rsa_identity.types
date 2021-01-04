@@ -13,5 +13,6 @@ rsa_signature = record:
 
 rsa_parcel = record:
   receiver_public_key_pem: binary
+  encrypted_fernet_key: binary
   encrypted_bundle: binary
   sender_signature_ref: ref
