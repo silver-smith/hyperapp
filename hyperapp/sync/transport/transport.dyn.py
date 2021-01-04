@@ -1,8 +1,11 @@
+import logging
 from collections import defaultdict
 
 from hyperapp.common.ref import ref_repr
 from hyperapp.common.code_registry import CodeRegistry
 from hyperapp.common.module import Module
+
+log = logging.getLogger(__name__)
 
 
 class RouteAssociationRegistry:
@@ -30,6 +33,7 @@ class Transport:
         if not route_list:
             raise RuntimeError(f"No route for peer {ref_repr(receiver_peer_ref)}")
         route, *_ = route_list
+        log.info("Sending parcel %s by route %s", parcel, route)
         route.send(parcel)
 
 
