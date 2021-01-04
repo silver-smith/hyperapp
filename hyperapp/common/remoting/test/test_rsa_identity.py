@@ -25,8 +25,7 @@ def code_module_list():
 
 @pytest.fixture
 def rsa_identity(services):
-    rsa_identity_module = services.name2module['common.remoting.rsa_identity']
-    return rsa_identity_module.RsaIdentity.generate(fast=True)
+    return services.generate_rsa_identity(fast=True)
 
 
 def test_rsa_identity(services, rsa_identity):
@@ -41,16 +40,15 @@ def test_rsa_peer(services, rsa_identity):
 
 
 def test_rsa_parcel(services):
-    rsa_identity_module = services.name2module['common.remoting.rsa_identity']
-
-    sender_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
-    receiver_identity = rsa_identity_module.RsaIdentity.generate(fast=True)
+    sender_identity = services.generate_rsa_identity(fast=True)
+    receiver_identity = services.generate_rsa_identity(fast=True)
 
     bundle = bundle_t(roots=[], capsule_list=[], route_list=[])
-    parcel_1 = receiver_identity.peer.make_parcel(bundle, sender_identity, services.ref_registry)
+    parcel_1 = receiver_identity.peer.make_parcel(bundle, sender_identity)
 
     parcel_2 = services.parcel_registry.animate(parcel_1.piece)
     assert parcel_2.piece == parcel_1.piece
 
-    assert receiver_identity.peer.piece == parcel_2.receiver_peer.piece
+    assert receiver_identity.peer.piece == parcel_2.receiver.piece
+    assert sender_identity.peer.piece == parcel_2.sender.piece
     

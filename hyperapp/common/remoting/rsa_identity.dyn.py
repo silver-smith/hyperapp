@@ -17,20 +17,21 @@ BUNDLE_ENCODING = 'cdr'
 class RsaIdentity:
 
     @classmethod
-    def generate(cls, fast=False):
+    def generate(cls, ref_registry, fast=False):
         private_key = rsa.generate_private_key(
             public_exponent=65537,
             key_size=RSA_KEY_SIZE_FAST if fast else RSA_KEY_SIZE_SAFE,
             backend=default_backend(),
         )
-        return cls(private_key)
+        return cls(ref_registry, private_key)
 
     @classmethod
-    def from_piece(cls, piece):
+    def from_piece(cls, piece, ref_registry):
         private_key = serialization.load_pem_private_key(piece.private_key_pem, password=None, backend=default_backend())
-        return cls(private_key)
+        return cls(ref_registry, private_key)
 
-    def __init__(self, private_key: rsa.RSAPrivateKeyWithSerialization):
+    def __init__(self, ref_registry, private_key: rsa.RSAPrivateKeyWithSerialization):
+        self._ref_registry = ref_registry
         self._private_key = private_key
 
     @property
@@ -44,7 +45,7 @@ class RsaIdentity:
 
     @property
     def peer(self):
-        return RsaPeer(self._private_key.public_key())
+        return RsaPeer(self._ref_registry, self._private_key.public_key())
 
     def sign(self, data):
         hash_algorithm = hashes.SHA256()
@@ -56,12 +57,8 @@ class RsaIdentity:
             ),
             hash_algorithm,
             )
-        public_key_pem = self._private_key.public_key().public_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
-            )
-        return htypes.rsa_identity.rsa_signature(
-            signer_public_key_pem=public_key_pem,
+        return RsaSignature(
+            signer=self.peer,
             hash_algorithm='sha256',
             padding='pss',
             signature=signature,
@@ -71,29 +68,30 @@ class RsaIdentity:
 class RsaPeer:
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls.from_public_key_pem(piece.public_key_pem)
+    def from_piece(cls, piece, ref_registry):
+        return cls.from_public_key_pem(ref_registry, piece.public_key_pem)
 
     @classmethod
-    def from_public_key_pem(cls, public_key_pem):
+    def from_public_key_pem(cls, ref_registry, public_key_pem):
         public_key = serialization.load_pem_public_key(public_key_pem, backend=default_backend())
-        return cls(public_key)
+        return cls(ref_registry, public_key)
 
-    def __init__(self, public_key: rsa.RSAPublicKey):
+    def __init__(self, ref_registry, public_key: rsa.RSAPublicKey):
+        self._ref_registry = ref_registry
         self._public_key = public_key
 
     @property
     def piece(self):
-        return htypes.rsa_identity.rsa_peer(self._public_key_pem)
+        return htypes.rsa_identity.rsa_peer(self.public_key_pem)
 
     @property
-    def _public_key_pem(self):
+    def public_key_pem(self):
         return self._public_key.public_bytes(
             encoding=serialization.Encoding.PEM,
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
             )
 
-    def make_parcel(self, bundle, sender_identity, ref_registry):
+    def make_parcel(self, bundle, sender_identity):
         plain_data = packet_coders.encode(BUNDLE_ENCODING, bundle)
         hash_algorithm = hashes.SHA1()
         cipher_data = self._public_key.encrypt(
@@ -104,42 +102,87 @@ class RsaPeer:
                 label=None,
                 ))
         signature = sender_identity.sign(cipher_data)
-        signature_ref = ref_registry.distil(signature)
         return RsaParcel(
-            receiver_public_key_pem=self._public_key_pem,
+            self._ref_registry,
+            receiver=self,
             encrypted_bundle=cipher_data,
-            sender_signature_ref=signature_ref,
+            signature=signature,
             )
+
+
+class RsaSignature:
+
+    @classmethod
+    def from_piece(cls, piece, ref_registry):
+        signer = RsaPeer.from_public_key_pem(ref_registry, piece.signer_public_key_pem)
+        return cls(signer, piece.hash_algorithm, piece.padding, piece.signature)
+
+    def __init__(self, signer, hash_algorithm, padding, signature):
+        self._signer = signer
+        self._hash_algorithm = hash_algorithm
+        self._padding = padding
+        self._signature = signature
+
+    @property
+    def piece(self):
+        return htypes.rsa_identity.rsa_signature(
+            signer_public_key_pem=self._signer.public_key_pem,
+            hash_algorithm=self._hash_algorithm,
+            padding=self._padding,
+            signature=self._signature,
+            )
+
+    @property
+    def signer(self):
+        return self._signer
 
 
 class RsaParcel:
 
     @classmethod
-    def from_piece(cls, piece):
-        return cls(piece.receiver_public_key_pem, piece.encrypted_bundle, piece.sender_signature_ref)
+    def from_piece(cls, piece, ref_registry, signature_registry):
+        signature = signature_registry.invite(piece.sender_signature_ref)
+        receiver = RsaPeer.from_public_key_pem(ref_registry, piece.receiver_public_key_pem)
+        return cls(ref_registry, receiver, piece.encrypted_bundle, signature)
 
-    def __init__(self, receiver_public_key_pem, encrypted_bundle, sender_signature_ref):
-        self._receiver_public_key_pem = receiver_public_key_pem
+    def __init__(self, ref_registry, receiver, encrypted_bundle, signature):
+        self._ref_registry = ref_registry
+        self._receiver = receiver
         self._encrypted_bundle = encrypted_bundle
-        self._sender_signature_ref = sender_signature_ref
+        self._signature = signature
 
     @property
     def piece(self):
+        signature_ref = self._ref_registry.distil(self._signature.piece)
         return htypes.rsa_identity.rsa_parcel(
-            receiver_public_key_pem=self._receiver_public_key_pem,
+            receiver_public_key_pem=self._receiver.public_key_pem,
             encrypted_bundle=self._encrypted_bundle,
-            sender_signature_ref=self._sender_signature_ref,
+            sender_signature_ref=signature_ref,
             )
 
     @property
-    def receiver_peer(self):
-        return RsaPeer.from_public_key_pem(self._receiver_public_key_pem)
+    def receiver(self):
+        return self._receiver
+
+    @property
+    def sender(self):
+        return self._signature.signer
 
 
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.identity_registry.register_actor(htypes.rsa_identity.rsa_identity, RsaIdentity.from_piece)
-        services.peer_registry.register_actor(htypes.rsa_identity.rsa_peer, RsaPeer.from_piece)
-        services.parcel_registry.register_actor(htypes.rsa_identity.rsa_parcel, RsaParcel.from_piece)
+        self._ref_registry = services.ref_registry
+        services.identity_registry.register_actor(
+            htypes.rsa_identity.rsa_identity, RsaIdentity.from_piece, services.ref_registry)
+        services.peer_registry.register_actor(
+            htypes.rsa_identity.rsa_peer, RsaPeer.from_piece, services.ref_registry)
+        services.signature_registry.register_actor(
+            htypes.rsa_identity.rsa_signature, RsaSignature.from_piece, services.ref_registry)
+        services.parcel_registry.register_actor(
+            htypes.rsa_identity.rsa_parcel, RsaParcel.from_piece, services.ref_registry, services.signature_registry)
+        services.generate_rsa_identity = self.generate_identity
+
+    def generate_identity(self, fast=False):
+        return RsaIdentity.generate(self._ref_registry, fast)
