@@ -23,7 +23,6 @@ class Endpoint:
         self._transport.send(resp_parcel)
 
 
-
 class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
