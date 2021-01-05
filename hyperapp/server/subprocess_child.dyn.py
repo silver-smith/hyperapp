@@ -17,6 +17,7 @@ class ThisModule(Module):
         super().__init__(module_name)
         self._master_process_connection = services.master_process_connection
         self._subprocess_stop_event = services.subprocess_stop_event
+        self._on_failure = services.failed
         self._unbundler = services.unbundler
         self._transport = services.transport
         self._parcel_registry = services.parcel_registry
