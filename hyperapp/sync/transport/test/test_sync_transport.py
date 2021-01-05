@@ -132,6 +132,7 @@ def test_subprocess_transport_echo(services):
             'common.remoting.rsa_identity',
             'server.async_stop',
             'sync.transport.transport',
+            'sync.transport.endpoint',
             'server.subprocess_connection',
             'server.subprocess_child',
             'sync.transport.test.subprocess_echo',
@@ -142,9 +143,9 @@ def test_subprocess_transport_echo(services):
             },
         )
     with subprocess:
-        log.info("Waiting for parcel.")
+        log.info("Waiting for first parcel.")
         parcel_1 = parcel_queue.get()
-        log.info("Got parcel.")
+        log.info("Got first parcel.")
         assert parcel_1.receiver.piece == master_identity.peer.piece
 
         bundle_1 = master_identity.decrypt_parcel(parcel_1)
@@ -155,5 +156,17 @@ def test_subprocess_transport_echo(services):
         bundle_2 = ref_collector.make_bundle([master_peer_ref])
         parcel_2 = child_peer.make_parcel(bundle_2, master_identity)
         services.transport.send(parcel_2)
+
+        log.info("Waiting for second parcel.")
+        parcel_3 = parcel_queue.get()
+        log.info("Got second parcel.")
+        assert parcel_3.receiver.piece == master_identity.peer.piece
+        assert parcel_3.sender.piece == child_peer.piece
+
+        bundle_3 = master_identity.decrypt_parcel(parcel_3)
+        services.unbundler.register_bundle(bundle_3)
+        assert bundle_3.roots[0] == master_peer_ref
+        child_peer_2 = services.peer_registry.invite(bundle_3.roots[1])
+        assert child_peer_2.piece == child_peer.piece
 
     log.info("Subprocess is finished.")
