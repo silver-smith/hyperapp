@@ -3,7 +3,6 @@ from hyperapp.common.htypes.packet_coders import packet_coders
 from hyperapp.common.module import Module
 
 
-
 class Endpoint:
 
     def __init__(self, ref_registry, unbundler, ref_collector_factory, transport, my_identity):
