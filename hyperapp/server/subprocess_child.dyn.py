@@ -79,7 +79,6 @@ class ThisModule(Module):
             self._process_parcel(parcel)
         except Exception as x:
             log.exception("Error processing parcel from master process")
-            self._on_failure(f"Error processing parcel from master process: {x}")
 
     def _process_parcel(self, parcel):
         self._transport.send(parcel)
