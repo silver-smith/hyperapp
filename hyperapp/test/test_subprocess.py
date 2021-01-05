@@ -34,7 +34,7 @@ def code_module_list():
 
 def test_subprocess(services):
     subprocess = services.subprocess(
-        'test_subprocess',
+        'subprocess',
         type_module_list=[
             'error',
             'hyper_ref',
@@ -47,6 +47,8 @@ def test_subprocess(services):
             'common.ref_collector',
             'common.remoting.identity',
             'common.unbundler',
+            'server.async_stop',
+            'sync.transport.transport',
             'server.subprocess_connection',
             'server.subprocess_child',
             ],
@@ -57,7 +59,7 @@ def test_subprocess(services):
 
 def test_import_failure(services):
     subprocess = services.subprocess(
-        'import_failure',
+        'subprocess',
         type_module_list=[
             'error',
             'hyper_ref',
@@ -79,7 +81,7 @@ def test_import_failure(services):
 
 def test_module_init_failure(services):
     subprocess = services.subprocess(
-        'import_failure',
+        'subprocess',
         type_module_list=[
             'error',
             'hyper_ref',
