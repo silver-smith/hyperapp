@@ -44,11 +44,11 @@ def code_module_list():
 
 class Endpoint:
 
-    def __init__(self, parcel_queue):
-        self._parcel_queue = parcel_queue
+    def __init__(self, request_queue):
+        self._request_queue = request_queue
 
-    def process(self, parcel):
-        self._parcel_queue.put(parcel)
+    def process(self, request):
+        self._request_queue.put(request)
 
 
 def test_send_subprocess_parcel(services):
@@ -56,8 +56,8 @@ def test_send_subprocess_parcel(services):
 
     master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
 
-    parcel_queue = queue.Queue()
-    services.endpoint_registry.register(master_peer_ref, Endpoint(parcel_queue))
+    request_queue = queue.Queue()
+    services.endpoint_registry.register(master_identity, Endpoint(request_queue))
 
     ref_collector = services.ref_collector_factory()
     master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
@@ -93,10 +93,10 @@ def test_send_subprocess_parcel(services):
             },
         )
     with subprocess:
-        log.info("Waiting for parcel.")
-        parcel = parcel_queue.get()
-        log.info("Got parcel.")
-        assert parcel.receiver.piece == master_identity.peer.piece
+        log.info("Waiting for request.")
+        request = request_queue.get()
+        log.info("Got request.")
+        assert request.receiver_identity.piece == master_identity.piece
     log.info("Subprocess is finished.")
 
 
@@ -105,8 +105,8 @@ def test_subprocess_transport_echo(services):
 
     master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
 
-    parcel_queue = queue.Queue()
-    services.endpoint_registry.register(master_peer_ref, Endpoint(parcel_queue))
+    request_queue = queue.Queue()
+    services.endpoint_registry.register(master_identity, Endpoint(request_queue))
 
     ref_collector = services.ref_collector_factory()
     master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
@@ -143,30 +143,26 @@ def test_subprocess_transport_echo(services):
             },
         )
     with subprocess:
-        log.info("Waiting for first parcel.")
-        parcel_1 = parcel_queue.get()
-        log.info("Got first parcel.")
-        assert parcel_1.receiver.piece == master_identity.peer.piece
+        log.info("Waiting for first request.")
+        request_1 = request_queue.get()
+        log.info("Got first request.")
+        assert request_1.receiver_identity.piece == master_identity.piece
 
-        bundle_1 = master_identity.decrypt_parcel(parcel_1)
-        services.unbundler.register_bundle(bundle_1)
-        child_peer = services.peer_registry.invite(bundle_1.roots[0])
+        child_peer = services.peer_registry.invite(request_1.ref_list[0])
 
         ref_collector = services.ref_collector_factory()
-        bundle_2 = ref_collector.make_bundle([master_peer_ref])
-        parcel_2 = child_peer.make_parcel(bundle_2, master_identity)
-        services.transport.send(parcel_2)
+        bundle_1 = ref_collector.make_bundle([master_peer_ref])
+        parcel_1 = child_peer.make_parcel(bundle_1, master_identity)
+        services.transport.send(parcel_1)
 
-        log.info("Waiting for second parcel.")
-        parcel_3 = parcel_queue.get()
-        log.info("Got second parcel.")
-        assert parcel_3.receiver.piece == master_identity.peer.piece
-        assert parcel_3.sender.piece == child_peer.piece
+        log.info("Waiting for second request.")
+        request_2 = request_queue.get()
+        log.info("Got second request.")
+        assert request_2.receiver_identity.piece == master_identity.piece
+        assert request_2.sender.piece == child_peer.piece
 
-        bundle_3 = master_identity.decrypt_parcel(parcel_3)
-        services.unbundler.register_bundle(bundle_3)
-        assert bundle_3.roots[0] == master_peer_ref
-        child_peer_2 = services.peer_registry.invite(bundle_3.roots[1])
+        assert request_2.ref_list[0] == master_peer_ref
+        child_peer_2 = services.peer_registry.invite(request_2.ref_list[1])
         assert child_peer_2.piece == child_peer.piece
 
     log.info("Subprocess is finished.")

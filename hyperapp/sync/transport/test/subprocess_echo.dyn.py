@@ -12,14 +12,11 @@ class Endpoint:
         self._transport = transport
         self._my_identity = my_identity
 
-    def process(self, parcel):
-        bundle = self._my_identity.decrypt_parcel(parcel)
-        self._unbundler.register_bundle(bundle)
-
-        my_peer_ref = self._ref_registry.distil(self._my_identity.peer.piece)
+    def process(self, request):
+        my_peer_ref = self._ref_registry.distil(request.receiver_identity.peer.piece)
         ref_collector = self._ref_collector_factory()
-        resp_bundle = ref_collector.make_bundle([*bundle.roots, my_peer_ref])
-        resp_parcel = parcel.sender.make_parcel(resp_bundle, self._my_identity)
+        resp_bundle = ref_collector.make_bundle([*request.ref_list, my_peer_ref])
+        resp_parcel = request.sender.make_parcel(resp_bundle, self._my_identity)
         self._transport.send(resp_parcel)
 
 
@@ -38,7 +35,7 @@ class ThisModule(Module):
 
         endpoint = Endpoint(
             services.ref_registry, services.unbundler, services.ref_collector_factory, services.transport, my_identity)
-        services.endpoint_registry.register(my_peer_ref, endpoint)
+        services.endpoint_registry.register(my_identity, endpoint)
 
         ref_collector = services.ref_collector_factory()
         bundle = ref_collector.make_bundle([my_peer_ref])
