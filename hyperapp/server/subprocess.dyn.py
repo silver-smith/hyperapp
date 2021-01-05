@@ -24,23 +24,18 @@ def log_traceback(traceback_entries):
 
 class Process:
 
-    def __init__(self, name, this_module, mp_process, logger_queue, connection):
+    def __init__(self, name, this_module, mp_process, connection):
         self.name = name
         self._this_module = this_module
         self._mp_process = mp_process
-        self._logger_queue = logger_queue
         self._connection = connection
         self._stopped_event = threading.Event()
-        self._log_queue_listener = None
         self._is_stopped = False
         self._exception = None
         self._traceback_entries = None
 
     def __enter__(self):
         log.info("Start subprocess %r", self.name)
-        root_logger = logging.getLogger()
-        self._log_queue_listener = logging.handlers.QueueListener(self._logger_queue, root_logger)
-        self._log_queue_listener.start()
         self._this_module.subprocess_started(self, self._connection)
         self._mp_process.start()
 
@@ -49,7 +44,6 @@ class Process:
         self._connection.send((ConnectionEvent.STOP.value, None))
         self._stopped_event.wait()  # Process should send 'stopped' signal.
         self._mp_process.join()
-        self._log_queue_listener.stop()
         if self._exception is not None:
             log.error("Exception in subprocess %r: %s", self.name, self._exception)
             log_traceback(self._traceback_entries)
@@ -145,11 +139,10 @@ class ThisModule(Module):
         module = __import__('subprocess_mp_main', level=0)
         main_fn = module.subprocess_main
 
-        logger_queue = self._mp_context.Queue()
         parent_connection, child_connection = self._mp_context.Pipe()
-        args = [process_name, logger_queue, child_connection, type_module_list, code_module_list, config]
+        args = [process_name, child_connection, type_module_list, code_module_list, config]
         mp_process = self._mp_context.Process(target=main_fn, args=args)
-        return Process(process_name, self, mp_process, logger_queue, parent_connection)
+        return Process(process_name, self, mp_process, parent_connection)
 
     def subprocess_started(self, process, connection):
         self._connection_to_process[connection] = process

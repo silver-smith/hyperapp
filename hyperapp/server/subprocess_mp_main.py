@@ -2,6 +2,7 @@ import logging
 import logging.handlers
 import traceback
 import threading
+from contextlib import contextmanager
 from enum import Enum
 
 from hyperapp.common import cdr_coders  # self-registering
@@ -23,34 +24,34 @@ def log_traceback(traceback_entries):
             log.error("%s", line.rstrip())
 
 
-def subprocess_main(process_name, logger_queue, connection, type_module_list, code_module_list, config):
-    try:
-        memory_handler = init_logging(process_name, logger_queue)
-        subprocess_main_safe(connection, type_module_list, code_module_list, config)
-        connection.send((ConnectionEvent.STOP.value, None))
-    except Exception as x:
-        log.error("Exception in subprocess: %s", x)
-        traceback_entries = traceback.format_tb(x.__traceback__)
-        log_traceback(traceback_entries)
-        # Traceback is not pickleable, convert it to string list.
-        connection.send((ConnectionEvent.EXCEPTION.value, (x, traceback_entries)))
-    memory_handler.flush()
+def subprocess_main(process_name, connection, type_module_list, code_module_list, config):
+    with logging_inited(process_name):
+        try:
+            subprocess_main_safe(connection, type_module_list, code_module_list, config)
+            connection.send((ConnectionEvent.STOP.value, None))
+        except Exception as x:
+            log.error("Exception in subprocess: %s", x)
+            traceback_entries = traceback.format_tb(x.__traceback__)
+            log_traceback(traceback_entries)
+            # Traceback is not pickleable, convert it to string list.
+            connection.send((ConnectionEvent.EXCEPTION.value, (x, traceback_entries)))
 
 
-def init_logging(process_name, logger_queue):
+@contextmanager
+def logging_inited(process_name):
+    format = '%(asctime)s.%(msecs)03d %(name)-46s %(lineno)4d %(levelname)-8s %(message)s'
+    datefmt = '%M:%S'
+    handler = logging.FileHandler(f'/tmp/{process_name}.log', mode='w')
+    handler.setFormatter(logging.Formatter(format, datefmt))
 
-    def filter(record):
-        if not hasattr(record, 'context'):
-            record.context = process_name
-        return True
-
-    queue_handler = logging.handlers.QueueHandler(logger_queue)
-    queue_handler.addFilter(filter)
-    memory_handler = logging.handlers.MemoryHandler(10, target=queue_handler)
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
-    root_logger.addHandler(memory_handler)
-    return memory_handler
+    root_logger.addHandler(handler)
+
+    try:
+        yield
+    finally:
+        handler.close()
 
 
 def subprocess_main_safe(connection, type_module_list, code_module_list, config):
