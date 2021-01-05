@@ -81,7 +81,7 @@ class ThisModule(Module):
             log.exception("Error processing parcel from master process")
 
     def _process_parcel(self, parcel):
-        self._transport.send(parcel)
+        self._transport.send_parcel(parcel)
 
     def _process_stop_event(self):
         self._subprocess_stop_event.set()

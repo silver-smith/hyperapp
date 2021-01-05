@@ -121,7 +121,7 @@ class ThisModule(Module):
         sender_ref = self._ref_registry.distil(parcel.sender.piece)
         child_route = SubprocessRoute(self._ref_registry, self._ref_collector_factory, connection)
         self._route_a9n_registry.associate(sender_ref, child_route)
-        self._transport.send(parcel)
+        self._transport.send_parcel(parcel)
 
     def _process_stop_event(self, process, connection, event, payload):
         del self._connection_to_process[connection]

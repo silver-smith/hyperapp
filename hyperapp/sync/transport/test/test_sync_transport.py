@@ -149,11 +149,7 @@ def test_subprocess_transport_echo(services):
         assert request_1.receiver_identity.piece == master_identity.piece
 
         child_peer = services.peer_registry.invite(request_1.ref_list[0])
-
-        ref_collector = services.ref_collector_factory()
-        bundle_1 = ref_collector.make_bundle([master_peer_ref])
-        parcel_1 = child_peer.make_parcel(bundle_1, master_identity)
-        services.transport.send(parcel_1)
+        services.transport.send(child_peer, master_identity, [master_peer_ref])
 
         log.info("Waiting for second request.")
         request_2 = request_queue.get()

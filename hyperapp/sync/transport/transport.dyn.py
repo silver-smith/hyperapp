@@ -22,12 +22,13 @@ class RouteAssociationRegistry:
 
 class Transport:
 
-    def __init__(self, ref_registry, route_registry, route_a9n_registry):
+    def __init__(self, ref_registry, ref_collector_factory, route_registry, route_a9n_registry):
         self._ref_registry = ref_registry
+        self._ref_collector_factory = ref_collector_factory
         self._route_registry = route_registry
         self._route_a9n_registry = route_a9n_registry
 
-    def send(self, parcel):
+    def send_parcel(self, parcel):
         receiver_peer_ref = self._ref_registry.distil(parcel.receiver.piece)
         route_list = self._route_a9n_registry.peer_route_list(receiver_peer_ref)
         if not route_list:
@@ -36,6 +37,12 @@ class Transport:
         log.info("Sending parcel %s by route %s", parcel, route)
         route.send(parcel)
 
+    def send(self, receiver, sender_identity, ref_list):
+        ref_collector = self._ref_collector_factory()
+        bundle = ref_collector.make_bundle(ref_list)
+        parcel = receiver.make_parcel(bundle, sender_identity)
+        self.send_parcel(parcel)
+
 
 class ThisModule(Module):
 
@@ -43,4 +50,5 @@ class ThisModule(Module):
         super().__init__(module_name)
         services.route_registry = CodeRegistry('route', services.ref_resolver, services.types)  # Unused for now.
         services.route_a9n_registry = RouteAssociationRegistry()
-        services.transport = Transport(services.ref_registry, services.route_registry, services.route_a9n_registry)
+        services.transport = Transport(
+            services.ref_registry, services.ref_collector_factory, services.route_registry, services.route_a9n_registry)
