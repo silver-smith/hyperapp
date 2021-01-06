@@ -8,10 +8,10 @@ class ThisModule(Module):
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
 
-        master_peer_bundle = packet_coders.decode('cdr', config['master_peer_bundle_cdr'], bundle_t)
-        services.unbundler.register_bundle(master_peer_bundle)
-        master_peer_ref = master_peer_bundle.roots[0]
-        master_peer = services.peer_registry.invite(master_peer_ref)
+        master_service_bundle = packet_coders.decode('cdr', config['master_service_bundle_cdr'], bundle_t)
+        services.unbundler.register_bundle(master_service_bundle)
+        master_service_ref = master_service_bundle.roots[0]
+        master_service = services.types.resolve_ref(master_service_ref)
 
         my_identity = services.generate_rsa_identity(fast=True)
         my_peer_ref = services.ref_registry.distil(my_identity.peer.piece)

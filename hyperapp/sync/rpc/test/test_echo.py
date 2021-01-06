@@ -52,10 +52,11 @@ def test_echo(services, htypes):
         iface_ref=test_echo_iface_ref,
         object_id='run_test',
         )
+    master_service_ref = services.ref_registry.distil(master_service)
 
     ref_collector = services.ref_collector_factory()
-    master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
-    master_peer_bundle_cdr = packet_coders.encode('cdr', master_peer_bundle)
+    master_service_bundle = ref_collector.make_bundle([master_service_ref])
+    master_service_bundle_cdr = packet_coders.encode('cdr', master_service_bundle)
 
     master_peer_ref_cdr_list = [packet_coders.encode('cdr', master_peer_ref)]
 
@@ -84,7 +85,7 @@ def test_echo(services, htypes):
             'sync.rpc.test.echo_service',
             ],
         config = {
-            'sync.rpc.test.echo_service': {'master_peer_bundle_cdr': master_peer_bundle_cdr},
+            'sync.rpc.test.echo_service': {'master_service_bundle_cdr': master_service_bundle_cdr},
             'server.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
