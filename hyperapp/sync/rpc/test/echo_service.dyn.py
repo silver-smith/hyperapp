@@ -26,5 +26,5 @@ class ThisModule(Module):
             )
         echo_service_ref = services.ref_registry.distil(echo_service)
 
-        proxy = services.rpc_proxy(master_service)
+        proxy = services.rpc_proxy(my_identity, master_service)
         proxy.run(echo_service_ref)

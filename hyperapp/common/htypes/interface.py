@@ -36,9 +36,9 @@ class IfaceCommand(TypeNamespace):
         self.command_id = command_id
         self.params_fields = params_fields or OrderedDict()
         self.result_fields = result_fields or OrderedDict()
-        self['request'] = TRecord('_'.join(self._full_name + ['request']), self.params_fields)
+        self['params_t'] = TRecord('_'.join(self._full_name + ['params']), self.params_fields)
         if self.is_request:
-            self['response'] = TRecord('_'.join(self._full_name + ['response']), self.result_fields)
+            self['response_t'] = TRecord('_'.join(self._full_name + ['response']), self.result_fields)
 
     def match(self, other):
         assert isinstance(other, IfaceCommand), repr(other)
