@@ -14,7 +14,7 @@ from .htypes import (
     )
 from .record import odict_all_match, TRecord
 from .builtins import tIfaceId, tPath, tUrl
-from .meta_type import TypeNamespace
+from .namespace import TypeNamespace
 
 log = logging.getLogger(__name__)
 
