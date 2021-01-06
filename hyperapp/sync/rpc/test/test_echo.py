@@ -20,6 +20,8 @@ def type_module_list():
         'module',
         'packet',
         'rsa_identity',
+        'rpc',
+        'test_rpc',
         ]
 
 
@@ -40,9 +42,16 @@ def code_module_list():
         ]
 
 
-def test_echo(services):
+def test_echo(services, htypes):
     master_identity = services.generate_rsa_identity(fast=True)
     master_peer_ref = services.ref_registry.distil(master_identity.peer.piece)
+
+    test_echo_iface_ref = services.types.reverse_resolve(htypes.test_rpc.test_echo_iface)
+    master_service = htypes.rpc.endpoint(
+        peer_ref=master_peer_ref,
+        iface_ref=test_echo_iface_ref,
+        object_id='run_test',
+        )
 
     ref_collector = services.ref_collector_factory()
     master_peer_bundle = ref_collector.make_bundle([master_peer_ref])
@@ -60,6 +69,7 @@ def test_echo(services):
             'packet',
             'rsa_identity',
             'rpc',
+            'test_rpc',
             ],
         code_module_list=[
             'common.visitor',

@@ -41,6 +41,9 @@ class LocalTypeModule(object):
     def __getitem__(self, name):
         return self._name2ref[name]
 
+    def items(self):
+        return self._name2ref.items()
+
 
 class LocalTypeModuleRegistry(object):
 

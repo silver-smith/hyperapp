@@ -1,0 +1,4 @@
+
+test_echo_iface = interface test_echo:
+  commands:
+    run(echo_service_ref: ref) -> ()
