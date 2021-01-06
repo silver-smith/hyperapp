@@ -1,8 +1,10 @@
 import sys
 import token, tokenize
 from io import BytesIO
+
 import ply.lex as lex
 import ply.yacc as yacc
+
 from .htypes import (
     t_named,
     t_field_meta,
