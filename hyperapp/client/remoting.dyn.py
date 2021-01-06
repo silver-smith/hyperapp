@@ -7,7 +7,6 @@ import uuid
 from hyperapp.common.htypes import EncodableEmbedded
 from hyperapp.common.ref import ref_repr, ref_list_repr
 from hyperapp.common.visual_rep import pprint
-from hyperapp.common.logger import log
 from hyperapp.client.module import ClientModule
 from . import htypes
 from .request import Request

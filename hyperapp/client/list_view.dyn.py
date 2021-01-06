@@ -1,4 +1,5 @@
 import abc
+import asyncio
 import sys
 import logging
 import bisect
@@ -10,7 +11,6 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from hyperapp.common.htypes.deduce_value_type import deduce_value_type
 from hyperapp.client.util import uni2str, key_match, key_match_any, make_async_action
-from hyperapp.common.logger import log, create_context_task
 from hyperapp.client.module import ClientModule
 
 from . import htypes
@@ -18,7 +18,7 @@ from .list_object import ListObserver, ListObject
 from .layout import MultiItemObjectLayout
 from .view import View
 
-_log = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 ROW_HEIGHT_PADDING = 3  # same as default QTreeView padding
@@ -62,17 +62,17 @@ class _Model(QtCore.QAbstractTableModel):
             return str(value)
 
     def canFetchMore(self, parent):
-        _log.debug('_Model.canFetchMore row=%d column=%r eof=%s', parent.row(), parent.column(), self._eof)
+        log.debug('_Model.canFetchMore row=%d column=%r eof=%s', parent.row(), parent.column(), self._eof)
         return not self._eof
 
     def fetchMore(self, parent):
-        _log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
+        log.debug('_Model.fetchMore row=%d column=%r fetch pending=%s', parent.row(), parent.column(), self._fetch_pending)
         self._fetch_more()
 
     # ListObserver methods ----------------------------------------------------------------------------------------------
 
     def process_fetch_results(self, item_list, fetch_finished):
-        _log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
+        log.debug('fetched %d items (finished=%s): %s', len(item_list), fetch_finished, item_list)
         prev_items_len = len(self._item_list)
         self.beginInsertRows(QtCore.QModelIndex(), len(self._item_list), prev_items_len + len(item_list) - 1)
         self._item_list += item_list
@@ -90,7 +90,7 @@ class _Model(QtCore.QAbstractTableModel):
             self._fetch_more()
 
     def process_eof(self):
-        _log.debug('reached eof')
+        log.debug('reached eof')
         self._eof = True
 
     # own methods  ------------------------------------------------------------------------------------------------------
@@ -106,8 +106,8 @@ class _Model(QtCore.QAbstractTableModel):
             from_key = getattr(self._item_list[-1], self._key_attr)
         else:
             from_key = None
-        _log.info('  requesting fetch from %r', from_key)
-        create_context_task(self._object.fetch_items(from_key), log.fetch_more)
+        log.info('  requesting fetch from %r', from_key)
+        asyncio.ensure_future(self._object.fetch_items(from_key))
         self._fetch_pending = True
 
     def index2id(self, index):
@@ -120,7 +120,7 @@ class _Model(QtCore.QAbstractTableModel):
         return self._id2index.get(item_id)
 
     def __del__(self):
-        _log.info('~list_view.Model self=%s', id(self))
+        log.info('~list_view.Model self=%s', id(self))
 
 
 class ListViewObserver(metaclass=abc.ABCMeta):
@@ -168,7 +168,6 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
         QtWidgets.QTableView.keyPressEvent(self, evt)
 
     def currentChanged(self, idx, prev_idx):
-        log.current_changed(row=idx.row())
         QtWidgets.QTableView.currentChanged(self, idx, prev_idx)
         current_key = self.current_item_key
         for observer in self._observers:
@@ -206,10 +205,10 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 
     def _on_activated(self, index):
         if self._default_command:
-            create_context_task(self._default_command.run(), log.activated)
+            asyncio.ensure_future(self._default_command.run())
 
     # def __del__(self):
-    #     _log.debug('~list_view.ListView self=%r', id(self))
+    #     log.debug('~list_view.ListView self=%r', id(self))
 
 
 class ListViewLayout(MultiItemObjectLayout):

@@ -168,10 +168,6 @@ class ClientServicesBase(Services):
         super().__init__()
         self.event_loop = event_loop
 
-    def init_services(self):
-        super().init_services()
-        self.logger.init_asyncio_task_factory()
-
 
 class ClientServices(ClientServicesBase):
 
