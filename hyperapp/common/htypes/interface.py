@@ -84,6 +84,9 @@ class Interface(TypeNamespace):
         for command in all_commands:
             self[command.command_id] = command
 
+    def __str__(self):
+        return f'Interface({self.full_name})'
+
     def match(self, other):
         return (isinstance(other, Interface)
                 and (self._base is other._base is None or other._base.match(self._base))
