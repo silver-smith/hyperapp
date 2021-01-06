@@ -33,8 +33,8 @@ class _TypeRefResolver(TypeRefResolver):
     def __init__(self, types):
         self._types = types
 
-    def resolve(self, type_ref, name=None):
-        return self._types.resolve(type_ref.ref)
+    def resolve(self, type_rec, name=None):
+        return self._types.resolve(type_rec.ref)
 
 
 _DecodedCapsule = namedtuple('_DecodedCapsule', 'type_ref t value')

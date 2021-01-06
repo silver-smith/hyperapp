@@ -195,7 +195,7 @@ def interface_from_data(meta_type_registry, type_ref_resolver, rec, name):
 class TypeRefResolver(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def resolve(self, type_ref, name=None):
+    def resolve(self, type_rec, name=None):
         pass
 
 
