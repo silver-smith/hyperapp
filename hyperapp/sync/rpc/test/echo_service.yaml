@@ -1,1 +1,6 @@
-# empty
+import:
+  types:
+    rpc:
+      - endpoint
+    echo:
+      - echo_iface

@@ -1,0 +1,4 @@
+
+echo_iface = interface echo:
+  commands:
+    echo(message: string) -> (response: string)

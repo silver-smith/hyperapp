@@ -22,6 +22,7 @@ def type_module_list():
         'rsa_identity',
         'rpc',
         'test_rpc',
+        'echo',
         ]
 
 
@@ -71,6 +72,7 @@ def test_echo(services, htypes):
             'rsa_identity',
             'rpc',
             'test_rpc',
+            'echo',
             ],
         code_module_list=[
             'common.visitor',
@@ -82,6 +84,7 @@ def test_echo(services, htypes):
             'sync.transport.transport',
             'server.subprocess_connection',
             'server.subprocess_child',
+            'sync.rpc.rpc_proxy',
             'sync.rpc.test.echo_service',
             ],
         config = {
@@ -89,6 +92,8 @@ def test_echo(services, htypes):
             'server.subprocess_child': {'master_peer_ref_cdr_list': master_peer_ref_cdr_list},
             },
         )
-    with subprocess:
-        pass
-    log.info("Subprocess is finished.")
+    with pytest.raises(NotImplementedError) as excinfo:
+        with subprocess:
+            pass
+        log.info("Subprocess is finished.")
+    assert str(excinfo.value) == 'todo'
