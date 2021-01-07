@@ -1,10 +1,5 @@
 # meta type is type for storing types themselves as data
 
-import abc
-from collections import OrderedDict
-
-from types import SimpleNamespace
-from ..util import is_list_inst
 from .htypes import (
     Type,
     tNone,
