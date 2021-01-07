@@ -46,7 +46,7 @@ class RefCollector(Visitor):
             new_ref_set = set()
             for ref in ref_set:
                 try:
-                    capsule = self._web.resolve_ref(ref)
+                    capsule = self._web.pull(ref)
                 except RefResolveFailure:
                     log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1

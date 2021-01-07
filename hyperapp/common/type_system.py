@@ -134,6 +134,6 @@ class TypeSystem(object):
         return self.reverse_resolve(t)
 
     def resolve_ref(self, ref, expected_type=None) -> _DecodedCapsule:
-        capsule = self._web.resolve_ref(ref)
+        capsule = self._web.pull(ref)
         assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
         return self.decode_capsule(capsule, expected_type)

@@ -35,7 +35,7 @@ unknown_ref_error = error class unknown_ref(client_error):
 
 web = interface web:
     commands:
-        resolve_ref (ref: ref) -> (capsule: capsule)
+        pull (ref: ref) -> (capsule: capsule)
 
 route_resolver = interface route_resolver:
     commands:

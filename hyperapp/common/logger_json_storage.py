@@ -43,7 +43,7 @@ class _RecordsJsonEncoder:
             params_t = params._t
             params_type_ref = self._types.reverse_resolve(params_t)
             if params_type_ref not in self._stored_type_refs:
-                capsule = self._web.resolve_ref(params_type_ref)
+                capsule = self._web.pull(params_type_ref)
                 yield json.dumps(dict(
                     line_type=LineType.TYPE.name,
                     type_capsule=encoder.encode(capsule),

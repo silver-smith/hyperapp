@@ -180,7 +180,7 @@ class LogRecord(ListObject):
     def _make_item(self, name, value):
         details = None
         if isinstance(value, ref_t):
-            capsule = self._web.resolve_ref(value)
+            capsule = self._web.pull(value)
             if capsule:
                 t = self._types.resolve(capsule.type_ref)
                 details = "{} ({}), encoding {}".format(t.name, _value_repr(capsule.type_ref), capsule.encoding)

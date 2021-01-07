@@ -41,5 +41,9 @@ class Mosaic:
             return None
         return self.put(piece, t)
 
-    def resolve_ref(self, ref):
+    def get(self, ref):
         return self._registry.get(ref)
+
+    # Alias for web source.
+    def pull(self, ref):
+        return self.get(ref)

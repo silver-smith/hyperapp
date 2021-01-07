@@ -18,8 +18,8 @@ class RemoteWeb(AsyncRefSource):
         self._mosaic = mosaic
         self._proxy = proxy
 
-    async def resolve_ref(self, ref):
-        result = await self._proxy.resolve_ref(ref)
+    async def pull(self, ref):
+        result = await self._proxy.pull(ref)
         self._mosaic.register_capsule(result.capsule)  # cache it locally
         return result.capsule
 

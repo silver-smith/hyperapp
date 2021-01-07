@@ -62,7 +62,7 @@ class PhonyServer(object):
         self._unbundler.register_bundle(bundle)
         self._register_incoming_routes(bundle.route_list)
         for root_ref in bundle.roots:
-            capsule = self._web.resolve_ref(root_ref)
+            capsule = self._web.pull(root_ref)
             rpc_request = self._types.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
             assert isinstance(rpc_request, htypes.hyper_ref.rpc_request)
             self._route_registry.register(

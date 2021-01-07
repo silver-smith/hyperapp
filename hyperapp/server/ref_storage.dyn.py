@@ -18,7 +18,7 @@ class RefStorage(object):
         self._recursion_flag = False
 
     @db_session
-    def resolve_ref(self, ref):
+    def pull(self, ref):
         if self._recursion_flag:
             return None  # Called from our store_ref
         rec = this_module.Ref.get(ref_hash_algorithm=ref.hash_algorithm, ref_hash=ref.hash)
@@ -34,7 +34,7 @@ class RefStorage(object):
     def store_ref(self, ref):
         self._recursion_flag = True
         try:
-            capsule = self._web.resolve_ref(ref)
+            capsule = self._web.pull(ref)
         finally:
             self._recursion_flag = False
         assert capsule, 'Can not store unknown ref: %s' % ref_repr(ref)

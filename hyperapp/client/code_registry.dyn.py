@@ -27,7 +27,7 @@ class CodeRegistry:
 
     async def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
-        capsule = await self._async_web.resolve_ref(ref)
+        capsule = await self._async_web.pull(ref)
         decoded_capsule = self._types.decode_capsule(capsule)
         return (await self._animate(decoded_capsule.t, decoded_capsule.value, args, kw))
 

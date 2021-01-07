@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 class AsyncRefSource(object, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    async def resolve_ref(self, ref):
+    async def pull(self, ref):
         pass
 
 
@@ -25,12 +25,12 @@ class AsyncWeb(object):
         assert isinstance(source, AsyncRefSource), repr(source)
         self._async_sources.append(source)
 
-    async def resolve_ref(self, ref):
-        capsule = self._web.resolve_ref(ref)
+    async def pull(self, ref):
+        capsule = self._web.pull(ref)
         if capsule:
             return capsule
         for source in self._async_sources:
-            capsule = await source.resolve_ref(ref)
+            capsule = await source.pull(ref)
             if capsule:
                 return capsule
         log.debug('ref resolver: ref resolved to %r', capsule)
@@ -38,7 +38,7 @@ class AsyncWeb(object):
         return capsule
 
     async def summon(self, ref, expected_type=None):
-        capsule = await self.resolve_ref(ref)
+        capsule = await self.pull(ref)
         t = self._types.resolve(capsule.type_ref)
         if expected_type:
             assert t is expected_type, (t, expected_type)

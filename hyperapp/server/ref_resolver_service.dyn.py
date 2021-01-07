@@ -15,7 +15,7 @@ class WebService(object):
         self._web = web
 
     def rpc_resolve_ref(self, request, ref):
-        capsule = self._web.resolve_ref(ref)
+        capsule = self._web.pull(ref)
         if not capsule:
             raise htypes.hyper_ref.unknown_ref_error(ref)
         return request.make_response_result(capsule=capsule)

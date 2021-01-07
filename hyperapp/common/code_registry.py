@@ -28,7 +28,7 @@ class CodeRegistry:
 
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
-        capsule = self._web.resolve_ref(ref)
+        capsule = self._web.pull(ref)
         decoded_capsule = self._types.decode_capsule(capsule)
         return self._animate(decoded_capsule.t, decoded_capsule.value, args, kw)
 

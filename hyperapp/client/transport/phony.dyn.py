@@ -69,7 +69,7 @@ class ThisModule(ClientModule):
             rpc_message_bundle = decode_bundle(encoded_message_bundle)
             self._unbundler.register_bundle(rpc_message_bundle)
             assert len(rpc_message_bundle.roots) == 1
-            rpc_message_capsule = self._web.resolve_ref(rpc_message_bundle.roots[0])
+            rpc_message_capsule = self._web.pull(rpc_message_bundle.roots[0])
             rpc_message = self._types.decode_capsule(rpc_message_capsule, expected_type=htypes.hyper_ref.rpc_message).value
             self._remoting.process_rpc_message(rpc_message_bundle.roots[0], rpc_message)
             log.debug('Phony transport: processing message bundle: done')
