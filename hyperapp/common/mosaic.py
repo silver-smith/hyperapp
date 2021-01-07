@@ -25,7 +25,6 @@ class Mosaic:
             log.debug('  (already exists)')
             assert capsule == existing_capsule, repr((existing_capsule, capsule))  # new capsule does not match existing one
         self._registry[ref] = capsule
-        # pprint(self._types.decode_capsule(capsule).value, indent=1, logger=log.debug)
         return ref
 
     def put(self, piece, t=None):
