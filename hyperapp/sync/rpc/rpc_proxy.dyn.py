@@ -19,17 +19,17 @@ class Method:
         self._command = command
 
     def __call__(self, *args, **kw):
-        params = self._command.params_t(*args, **kw)
-        params_ref = self._ref_registry.distil(params)
-        request_id = str(uuid.uuid4())
-        request = htypes.rpc.request(
-            sender_peer_ref=self._my_peer_ref,
-            iface_ref=self._iface_ref,
-            object_id=self._object_id,
-            request_id=request_id,
-            method_name=self._method_name,
-            params_ref=params_ref,
-            )
+        # params = self._command.params_t(*args, **kw)
+        # params_ref = self._ref_registry.distil(params)
+        # request_id = str(uuid.uuid4())
+        # request = htypes.rpc.request(
+        #     sender_peer_ref=self._my_peer_ref,
+        #     iface_ref=self._iface_ref,
+        #     object_id=self._object_id,
+        #     request_id=request_id,
+        #     method_name=self._method_name,
+        #     params_ref=params_ref,
+        #     )
         raise NotImplementedError('todo')
 
 
