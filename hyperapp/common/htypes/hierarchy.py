@@ -1,6 +1,6 @@
 import logging
 
-from ..util import is_ordered_dict_inst
+from ..util import is_dict_inst
 from .htypes import join_path, Type, tString, TList
 from .record import odict_all_match, TRecord
 
@@ -47,7 +47,7 @@ class THierarchy(Type):
     def register(self, id, fields=None, base=None, verbose=False):
         assert isinstance(id, str), repr(id)
         assert id not in self.registry, 'Class id is already registered: %r' % id
-        assert fields is None or is_ordered_dict_inst(fields, str, Type), repr(fields)
+        assert fields is None or is_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TClass), repr(base)
         tclass = self.make_tclass(id, fields, base, verbose)
         self.registry[id] = tclass

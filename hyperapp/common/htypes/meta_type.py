@@ -21,19 +21,19 @@ from .hyper_ref import ref_t
 from .interface import IfaceCommand, Interface
 
 
-builtin_t = TRecord('builtin_t', OrderedDict([
-    ('name', tString),
-    ]))
+builtin_t = TRecord('builtin_t', {
+    'name': tString,
+    })
 
 
-named_t = TRecord('named_t', OrderedDict([
-    ('name', tString),
-    ]))
+named_t = TRecord('named_t', {
+    'name': tString,
+    })
 
 
-optional_t = TRecord('optional_t', OrderedDict([
-    ('base', ref_t),
-    ]))
+optional_t = TRecord('optional_t', {
+    'base': ref_t,
+    })
 
 
 def optional_from_piece(rec, type_code_registry):

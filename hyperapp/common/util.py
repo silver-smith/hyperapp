@@ -69,8 +69,8 @@ def is_tuple_inst(val, cls):
     return True
 
 
-def is_ordered_dict_inst(value, key_cls, val_cls):
-    if not isinstance(value, OrderedDict):
+def is_dict_inst(value, key_cls, val_cls):
+    if not isinstance(value, dict):
         return False
     for key, val in value.items():
         if not isinstance(key, key_cls):

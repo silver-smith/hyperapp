@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import logging
 
-from ..util import is_list_inst, is_ordered_dict_inst
+from ..util import is_list_inst, is_dict_inst
 from .htypes import (
     join_path,
     list_all_match,
@@ -28,8 +28,8 @@ class IfaceCommand(TypeNamespace):
     def __init__(self, full_name, request_type, command_id, params_fields=None, result_fields=None):
         assert request_type in [self.rt_request, self.rt_notification], repr(request_type)
         assert isinstance(command_id, str), repr(command_id)
-        assert params_fields is None or is_ordered_dict_inst(params_fields, str, Type), repr(params_fields)
-        assert result_fields is None or is_ordered_dict_inst(result_fields, str, Type), repr(result_fields)
+        assert params_fields is None or is_dict_inst(params_fields, str, Type), repr(params_fields)
+        assert result_fields is None or is_dict_inst(result_fields, str, Type), repr(result_fields)
         super().__init__()
         self._full_name = full_name
         self.request_type = request_type

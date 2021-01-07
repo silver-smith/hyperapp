@@ -2,7 +2,7 @@ from collections import OrderedDict
 from keyword import iskeyword
 import sys
 
-from ..util import is_ordered_dict_inst
+from ..util import is_dict_inst
 from .htypes import Type
 
 
@@ -57,7 +57,7 @@ class {typename}(tuple):
 
     def _asdict(self):
         'Return a new OrderedDict which maps field names to their values.'
-        return OrderedDict(zip(self._fields, self[:-1]))
+        return dict(zip(self._fields, self[:-1]))
 
     def __getnewargs__(self):
         'Return self as a plain tuple.  Used by copy and pickle.'
@@ -147,12 +147,12 @@ class TRecord(Type):
 
     def __init__(self, name, fields=None, base=None, verbose=False):
         assert name
-        assert fields is None or is_ordered_dict_inst(fields, str, Type), repr(fields)
+        assert fields is None or is_dict_inst(fields, str, Type), repr(fields)
         assert base is None or isinstance(base, TRecord), repr(base)
         super().__init__(name)
-        self.fields = fields or OrderedDict()
+        self.fields = fields or {}
         if base:
-            self.fields = OrderedDict(list(base.fields.items()) + list(self.fields.items()))
+            self.fields = {**base.fields, **self.fields}
         self.base = base
         self._named_tuple = _namedtuple(name, [name for name in self.fields], verbose)
 
