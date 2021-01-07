@@ -20,20 +20,8 @@ from hyperapp.common.htypes import (
     RequestCmd,
     NotificationCmd,
     Interface,
-    tMetaType,
-    t_named,
-    t_optional_meta,
-    t_list_meta,
-    t_field_meta,
-    t_record_meta,
-    t_hierarchy_meta,
-    t_hierarchy_class_meta,
-    t_command_meta,
-    t_interface_meta,
-    make_meta_type_registry,
-    t_ref,
-    builtin_ref_t,
-    meta_ref_t,
+    builtin_t,
+    optional_t,
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -63,42 +51,10 @@ def mosaic(web, types):
     return mosaic
 
 
-@pytest.fixture
-def builtin_ref(mosaic):
-
-    def make(name):
-        ref = mosaic.put(builtin_ref_t(name))
-        return t_ref(ref)
-
-    return make
-
-
-@pytest.fixture
-def type_ref(mosaic):
-
-    def make(name, meta_type):
-        rec = meta_ref_t(
-            name=name,
-            type=meta_type,
-            )
-        return mosaic.put(rec)
-
-    return make
-
-
-@pytest.fixture
-def resolve(types, type_ref):
-
-    def resolve(name, meta_data):
-        ref = type_ref(name, meta_data)
-        return types.resolve(ref)
-
-    return resolve
-
-
-def test_optional(builtin_ref, resolve):
-    data = t_optional_meta(builtin_ref('string'))
-    t = resolve('some_optional', data)
+def test_optional(types, mosaic):
+    base_ref = mosaic.put(builtin_t('string'))
+    piece = optional_t(base_ref)
+    t = types.resolve(mosaic.put(piece))
     assert t.match(TOptional(tString))
     assert t.base_t is tString
 
@@ -159,6 +115,7 @@ def test_hierarchy(builtin_ref, type_ref, resolve):
         ('field_a_1', tString),
         ('field_b_1', TList(tInt)),
         ])))
+
 
 def test_interface(builtin_ref, resolve):
     iface_data = t_interface_meta([
