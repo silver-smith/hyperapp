@@ -21,6 +21,7 @@ from hyperapp.common.htypes import (
     NotificationCmd,
     Interface,
     builtin_t,
+    name_wrapped_t,
     optional_t,
     list_t,
     field_t,
@@ -85,8 +86,10 @@ def test_record(types, mosaic):
         field_t('string_list_field', mosaic.put(string_list_t)),
         field_t('bool_optional_field', mosaic.put(bool_opt_t)),
         ])
-    t = types.resolve(mosaic.put(piece))
-    assert t.match(TRecord('unnamed', {
+    name = 'some_test_record'
+    named_piece = name_wrapped_t(name, mosaic.put(piece))
+    t = types.resolve(mosaic.put(named_piece))
+    assert t.match(TRecord(name, {
         'int_field': tInt,
         'string_list_field': TList(tString),
         'bool_optional_field': TOptional(tBool),
@@ -97,12 +100,15 @@ def test_based_record(types, mosaic):
     base_piece = record_t(None, [
         field_t('int_field', mosaic.put(builtin_t('int'))),
         ])
-    base_ref = mosaic.put(base_piece)
-    piece = record_t(base_ref, [
+    named_base_piece = name_wrapped_t('some_base_record', mosaic.put(base_piece))
+    named_base_ref = mosaic.put(named_base_piece)
+    piece = record_t(named_base_ref, [
         field_t('string_field', mosaic.put(builtin_t('string'))),
         ])
-    t = types.resolve(mosaic.put(piece))
-    assert t.match(TRecord('unnamed', {
+    name = 'some_test_record'
+    named_piece = name_wrapped_t(name, mosaic.put(piece))
+    t = types.resolve(mosaic.put(named_piece))
+    assert t.match(TRecord(name, {
         'int_field': tInt,
         'string_field': tString,
         }))

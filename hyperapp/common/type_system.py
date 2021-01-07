@@ -52,7 +52,7 @@ class TypeSystem(object):
         register_builtin_meta_types(self)
         register_meta_types(self._type_code_registry)
 
-    def _builtin_from_piece(self, piece, name=None):
+    def _builtin_from_piece(self, piece, type_code_registry, name):
         return self._builtin_name_to_type[piece.name]  # must be registered using register_builtin_type
 
     def resolve(self, type_ref):
@@ -60,7 +60,7 @@ class TypeSystem(object):
         if t:
             _log.info('Resolve type %s -> (cached) %s', ref_repr(type_ref), t)
             return t
-        t = self._type_code_registry.invite(type_ref, self._type_code_registry)
+        t = self._type_code_registry.invite(type_ref, self._type_code_registry, None)
         self._ref2type_cache[type_ref] = t
         self._type2ref[t] = type_ref
         _log.info('Resolve type %s -> %s', ref_repr(type_ref), t)

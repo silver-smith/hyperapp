@@ -26,9 +26,14 @@ builtin_t = TRecord('builtin_t', {
     })
 
 
-named_t = TRecord('named_t', {
+name_wrapped_t = TRecord('name_wrapped_t', {
     'name': tString,
+    'type': ref_t,
     })
+
+
+def name_wrapped_from_piece(rec, type_code_registry, name):
+    return type_code_registry.invite(rec.type, type_code_registry, rec.name)
 
 
 optional_t = TRecord('optional_t', {
@@ -36,8 +41,8 @@ optional_t = TRecord('optional_t', {
     })
 
 
-def optional_from_piece(rec, type_code_registry):
-    base_t = type_code_registry.invite(rec.base, type_code_registry)
+def optional_from_piece(rec, type_code_registry, name):
+    base_t = type_code_registry.invite(rec.base, type_code_registry, None)
     return TOptional(base_t)
 
 
@@ -46,8 +51,8 @@ list_t = TRecord('list_t', {
     })
 
 
-def list_from_piece(rec, type_code_registry):
-    element_t = type_code_registry.invite(rec.element, type_code_registry)
+def list_from_piece(rec, type_code_registry, name):
+    element_t = type_code_registry.invite(rec.element, type_code_registry, None)
     return TList(element_t)
 
 
@@ -72,7 +77,7 @@ def t_record_meta(base, fields):
 
 
 def field_from_piece(rec, type_code_registry):
-    t = type_code_registry.invite(rec.type, type_code_registry)
+    t = type_code_registry.invite(rec.type, type_code_registry, None)
     return (rec.name, t)
 
 
@@ -80,14 +85,14 @@ def field_dict_from_piece_list(field_list, type_code_registry):
     return dict(field_from_piece(field, type_code_registry) for field in field_list)
 
 
-def record_from_piece(rec, type_code_registry):
+def record_from_piece(rec, type_code_registry, name):
     if rec.base is not None:
-        base_t = type_code_registry.invite(rec.base, type_code_registry)
+        base_t = type_code_registry.invite(rec.base, type_code_registry, None)
         assert isinstance(base_t, TRecord), f"Record base is not a record: {base_t}"
     else:
         base_t = None
     field_dict = field_dict_from_piece_list(rec.fields, type_code_registry)
-    return TRecord('unnamed', field_dict, base=base_t)  # todo: name
+    return TRecord(name, field_dict, base=base_t)
 
 
 # tHierarchyMeta = tMetaType.register(
@@ -162,6 +167,7 @@ def record_from_piece(rec, type_code_registry):
 
 
 def register_builtin_meta_types(types):
+    types.register_builtin_type(name_wrapped_t)
     types.register_builtin_type(optional_t)
     types.register_builtin_type(list_t)
     types.register_builtin_type(field_t)
@@ -169,6 +175,7 @@ def register_builtin_meta_types(types):
 
 
 def register_meta_types(type_code_registry):
+    type_code_registry.register_actor(name_wrapped_t, name_wrapped_from_piece)
     type_code_registry.register_actor(optional_t, optional_from_piece)
     type_code_registry.register_actor(list_t, list_from_piece)
     type_code_registry.register_actor(record_t, record_from_piece)
