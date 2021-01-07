@@ -37,21 +37,18 @@ optional_t = TRecord('optional_t', {
 
 
 def optional_from_piece(rec, type_code_registry):
-    base_t = type_code_registry.invite(rec.base)
+    base_t = type_code_registry.invite(rec.base, type_code_registry)
     return TOptional(base_t)
 
 
-# tListMeta = tMetaType.register(
-#     'list', base=tRootMetaType, fields=OrderedDict([
-#         ('element', tMetaType),
-#         ]))
+list_t = TRecord('list_t', {
+    'element': ref_t,
+    })
 
-# def t_list_meta(element_t):
-#     return tListMeta(tListMeta.id, element_t)
 
-# def list_from_data(meta_type_registry, type_web, rec, name):
-#     element_t = meta_type_registry.resolve(type_web, rec.element, name)
-#     return TList(element_t)
+def list_from_piece(rec, type_code_registry):
+    element_t = type_code_registry.invite(rec.element, type_code_registry)
+    return TList(element_t)
 
 
 # tFieldMeta = TRecord('field', OrderedDict([
@@ -162,7 +159,9 @@ def optional_from_piece(rec, type_code_registry):
 
 def register_builtin_meta_types(types):
     types.register_builtin_type(optional_t)
+    types.register_builtin_type(list_t)
 
 
 def register_meta_types(type_code_registry):
     type_code_registry.register_actor(optional_t, optional_from_piece)
+    type_code_registry.register_actor(list_t, list_from_piece)

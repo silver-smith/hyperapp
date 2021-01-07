@@ -22,6 +22,7 @@ from hyperapp.common.htypes import (
     Interface,
     builtin_t,
     optional_t,
+    list_t,
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -59,9 +60,18 @@ def test_optional(types, mosaic):
     assert t.base_t is tString
 
 
-def test_list(builtin_ref, resolve):
-    data = t_list_meta(t_optional_meta(builtin_ref('datetime')))
-    t = resolve('some_list', data)
+def test_list(types, mosaic):
+    element_ref = mosaic.put(builtin_t('int'))
+    piece = list_t(element_ref)
+    t = types.resolve(mosaic.put(piece))
+    assert t.match(TList(tInt))
+
+
+def test_list_opt(types, mosaic):
+    base_ref = mosaic.put(builtin_t('datetime'))
+    element_ref = mosaic.put(optional_t(base_ref))
+    piece = list_t(element_ref)
+    t = types.resolve(mosaic.put(piece))
     assert t.match(TList(TOptional(tDateTime)))
 
 
