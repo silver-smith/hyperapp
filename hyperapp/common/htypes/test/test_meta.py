@@ -23,6 +23,8 @@ from hyperapp.common.htypes import (
     builtin_t,
     optional_t,
     list_t,
+    field_t,
+    record_t,
     register_builtin_types,
     )
 from hyperapp.common import cdr_coders  # register codec
@@ -75,34 +77,35 @@ def test_list_opt(types, mosaic):
     assert t.match(TList(TOptional(tDateTime)))
 
 
-def test_record(builtin_ref, resolve):
-    data = t_record_meta([
-        t_field_meta('int_field', builtin_ref('int')),
-        t_field_meta('string_list_field', t_list_meta(builtin_ref('string'))),
-        t_field_meta('bool_optional_field', t_optional_meta(builtin_ref('bool'))),
+def test_record(types, mosaic):
+    string_list_t = list_t(mosaic.put(builtin_t('string')))
+    bool_opt_t = optional_t(mosaic.put(builtin_t('bool')))
+    piece = record_t(None, [
+        field_t('int_field', mosaic.put(builtin_t('int'))),
+        field_t('string_list_field', mosaic.put(string_list_t)),
+        field_t('bool_optional_field', mosaic.put(bool_opt_t)),
         ])
-    t = resolve('some_record', data)
-    assert t.match(TRecord('some_record', OrderedDict([
-        ('int_field', tInt),
-        ('string_list_field', TList(tString)),
-        ('bool_optional_field', TOptional(tBool)),
-        ])))
+    t = types.resolve(mosaic.put(piece))
+    assert t.match(TRecord('unnamed', {
+        'int_field': tInt,
+        'string_list_field': TList(tString),
+        'bool_optional_field': TOptional(tBool),
+        }))
 
 
-def test_based_record(builtin_ref, type_ref, resolve):
-    base_record_data = t_record_meta([
-        t_field_meta('int_field', builtin_ref('int')),
+def test_based_record(types, mosaic):
+    base_piece = record_t(None, [
+        field_t('int_field', mosaic.put(builtin_t('int'))),
         ])
-    base_record_ref = t_ref(type_ref('some_base_record', base_record_data))
-
-    record_data = t_record_meta([
-        t_field_meta('string_field', builtin_ref('string')),
-        ], base=base_record_ref)
-    t = resolve('some_record', record_data)
-    assert t.match(TRecord('some_record', OrderedDict([
-        ('int_field', tInt),
-        ('string_field', tString),
-        ])))
+    base_ref = mosaic.put(base_piece)
+    piece = record_t(base_ref, [
+        field_t('string_field', mosaic.put(builtin_t('string'))),
+        ])
+    t = types.resolve(mosaic.put(piece))
+    assert t.match(TRecord('unnamed', {
+        'int_field': tInt,
+        'string_field': tString,
+        }))
 
 
 def test_hierarchy(builtin_ref, type_ref, resolve):

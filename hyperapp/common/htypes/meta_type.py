@@ -51,39 +51,43 @@ def list_from_piece(rec, type_code_registry):
     return TList(element_t)
 
 
-# tFieldMeta = TRecord('field', OrderedDict([
-#     ('name', tString),
-#     ('type', tMetaType),
-#     ]))
+field_t = TRecord('field_t', {
+    'name': tString,
+    'type': ref_t,
+    })
 
-# tRecordMeta = tMetaType.register(
-#     'record', base=tRootMetaType, fields=OrderedDict([
-#         ('base', TOptional(tMetaType)),
-#         ('fields', TList(tFieldMeta)),
-#         ]))
+record_t = TRecord('record_t', {
+    'base': TOptional(ref_t),
+    'fields': TList(field_t),
+    })
 
-# def t_field_meta(name, type):
-#     return tFieldMeta(name, type)
 
-# def t_record_meta(fields, base=None):
-#     assert base is None or isinstance(base, tMetaType), repr(base)
-#     return tRecordMeta(tRecordMeta.id, base, fields)
+def t_field_meta(name, type):
+    return tFieldMeta(name, type)
 
-# def field_from_data(meta_type_registry, type_web, rec):
-#     t = meta_type_registry.resolve(type_web, rec.type)
-#     return (rec.name, t)
 
-# def field_odict_from_data(meta_type_registry, type_web, fields):
-#     return OrderedDict([field_from_data(meta_type_registry, type_web, field) for field in fields])
+def t_record_meta(base, fields):
+    assert base is None or isinstance(base, tMetaType), repr(base)
+    return tRecordMeta(tRecordMeta.id, base, fields)
 
-# def record_from_data(meta_type_registry, type_web, rec, name):
-#     if rec.base:
-#         base = meta_type_registry.resolve(type_web, rec.base)
-#         assert isinstance(base, TRecord), (
-#             'Base for record %s, %s is not a record' % (name, base.name))
-#     else:
-#         base = None
-#     return TRecord(name, field_odict_from_data(meta_type_registry, type_web, rec.fields), base=base)
+
+def field_from_piece(rec, type_code_registry):
+    t = type_code_registry.invite(rec.type, type_code_registry)
+    return (rec.name, t)
+
+
+def field_dict_from_piece_list(field_list, type_code_registry):
+    return dict(field_from_piece(field, type_code_registry) for field in field_list)
+
+
+def record_from_piece(rec, type_code_registry):
+    if rec.base is not None:
+        base_t = type_code_registry.invite(rec.base, type_code_registry)
+        assert isinstance(base_t, TRecord), f"Record base is not a record: {base_t}"
+    else:
+        base_t = None
+    field_dict = field_dict_from_piece_list(rec.fields, type_code_registry)
+    return TRecord('unnamed', field_dict, base=base_t)  # todo: name
 
 
 # tHierarchyMeta = tMetaType.register(
@@ -160,8 +164,11 @@ def list_from_piece(rec, type_code_registry):
 def register_builtin_meta_types(types):
     types.register_builtin_type(optional_t)
     types.register_builtin_type(list_t)
+    types.register_builtin_type(field_t)
+    types.register_builtin_type(record_t)
 
 
 def register_meta_types(type_code_registry):
     type_code_registry.register_actor(optional_t, optional_from_piece)
     type_code_registry.register_actor(list_t, list_from_piece)
+    type_code_registry.register_actor(record_t, record_from_piece)
