@@ -25,8 +25,8 @@ class ViewChooser(SimpleListObject, Chooser):
         )
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_ref_resolver, available_object_layouts):
-        object_type = await async_ref_resolver.summon(state.object_type_ref)
+    async def from_state(cls, state, mosaic, async_web, available_object_layouts):
+        object_type = await async_web.summon(state.object_type_ref)
         return cls(mosaic, available_object_layouts, object_type)
 
     def __init__(self, mosaic, available_object_layouts, object_type):
@@ -79,4 +79,4 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.object_registry.register_actor(
             htypes.view_chooser.view_chooser, ViewChooser.from_state,
-            services.mosaic, services.async_ref_resolver, services.available_object_layouts)
+            services.mosaic, services.async_web, services.available_object_layouts)

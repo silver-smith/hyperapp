@@ -19,15 +19,15 @@ class _ParamChooserCallback(ChooserCallback):
 class ParamsEditor(RecordObject):
 
     @classmethod
-    async def from_data(cls, state, mosaic, async_ref_resolver, object_registry):
-        target_piece = await async_ref_resolver.summon(state.target_piece_ref)
+    async def from_data(cls, state, mosaic, async_web, object_registry):
+        target_piece = await async_web.summon(state.target_piece_ref)
         target_object = await object_registry.animate(target_piece)
         bound_arguments = {
-            name: await async_ref_resolver.summon(value_ref)
+            name: await async_web.summon(value_ref)
             for name, value_ref in state.bound_arguments
             }
         fields_pieces = {
-            name: await async_ref_resolver.summon(piece_ref)
+            name: await async_web.summon(piece_ref)
             for name, piece_ref in state.fields
             }
         self = cls(mosaic, target_piece, target_object, state.target_command_id, bound_arguments)
@@ -125,4 +125,4 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         services.object_registry.register_actor(
             htypes.params_editor.params_editor, ParamsEditor.from_data,
-            services.mosaic, services.async_ref_resolver, services.object_registry)
+            services.mosaic, services.async_web, services.object_registry)

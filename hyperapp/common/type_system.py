@@ -8,7 +8,7 @@ from .htypes import (
     meta_ref_t,
     capsule_t,
     make_meta_type_registry,
-    TypeRefResolver,
+    TypeWeb,
     )
 from .htypes.deduce_value_type import deduce_value_type
 from .htypes.packet_coders import packet_coders
@@ -28,7 +28,7 @@ class UnexpectedTypeError(RuntimeError):
         super().__init__("Capsule has unexpected type: expected is %r, actual is %r", expected_type, actual_type)
 
 
-class _TypeRefResolver(TypeRefResolver):
+class _TypeWeb(TypeWeb):
 
     def __init__(self, types):
         self._types = types
@@ -43,10 +43,10 @@ _RegisteredType = namedtuple('_RegisteredType', 't ref')
 
 class TypeSystem(object):
 
-    def __init__(self, ref_resolver):
-        self._ref_resolver = ref_resolver
-        self._type_code_registry = CodeRegistry('type', ref_resolver, self)
-        self._type_ref_resolver = _TypeRefResolver(self)
+    def __init__(self, web):
+        self._web = web
+        self._type_code_registry = CodeRegistry('type', web, self)
+        self._type_web = _TypeWeb(self)
         self._meta_type_registry = make_meta_type_registry()
         self._ref2type_cache = {}  # we should resolve same ref to same instance, not a duplicate
         self._type2ref = {}  # reverse registry
@@ -79,7 +79,7 @@ class TypeSystem(object):
         return self._type2ref[t]
 
     def _resolve_meta_ref(self, meta_ref, name=None):
-        return self._meta_type_registry.resolve(self._type_ref_resolver, meta_ref.type, meta_ref.name)
+        return self._meta_type_registry.resolve(self._type_web, meta_ref.type, meta_ref.name)
 
     def _resolve_builtin_ref(self, builtin_ref, name=None):
         return self._builtin_name_to_type[builtin_ref.name]  # must be registered using register_builtin_type
@@ -134,6 +134,6 @@ class TypeSystem(object):
         return self.reverse_resolve(t)
 
     def resolve_ref(self, ref, expected_type=None) -> _DecodedCapsule:
-        capsule = self._ref_resolver.resolve_ref(ref)
+        capsule = self._web.resolve_ref(ref)
         assert capsule is not None, 'Unknown ref: %s' % ref_repr(ref)
         return self.decode_capsule(capsule, expected_type)

@@ -28,7 +28,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._event_loop = services.event_loop
         self._response_queue = services.response_queue
-        self._ref_resolver = services.ref_resolver
+        self._web = services.web
         self._types = services.types
         self._unbundler = services.unbundler
         self._remoting = services.remoting
@@ -69,7 +69,7 @@ class ThisModule(ClientModule):
             rpc_message_bundle = decode_bundle(encoded_message_bundle)
             self._unbundler.register_bundle(rpc_message_bundle)
             assert len(rpc_message_bundle.roots) == 1
-            rpc_message_capsule = self._ref_resolver.resolve_ref(rpc_message_bundle.roots[0])
+            rpc_message_capsule = self._web.resolve_ref(rpc_message_bundle.roots[0])
             rpc_message = self._types.decode_capsule(rpc_message_capsule, expected_type=htypes.hyper_ref.rpc_message).value
             self._remoting.process_rpc_message(rpc_message_bundle.roots[0], rpc_message)
             log.debug('Phony transport: processing message bundle: done')

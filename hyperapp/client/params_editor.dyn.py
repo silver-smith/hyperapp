@@ -8,7 +8,7 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         self._mosaic = services.mosaic
-        self._async_ref_resolver = services.async_ref_resolver
+        self._async_web = services.async_web
         self._field_types = services.field_types = {
             str: htypes.line.line(''),
             }

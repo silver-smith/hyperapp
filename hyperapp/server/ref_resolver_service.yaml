@@ -3,6 +3,6 @@ import:
     hyper_ref:
       - service
       - unknown_ref_error
-      - ref_resolver
+      - web
   code:
     - common.local_server_paths

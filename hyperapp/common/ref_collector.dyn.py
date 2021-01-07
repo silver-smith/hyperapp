@@ -6,7 +6,7 @@ from dateutil.tz import tzlocal
 from hyperapp.common.htypes import ref_t, route_t, bundle_t
 from hyperapp.common.util import is_list_inst
 from hyperapp.common.ref import ref_repr
-from hyperapp.common.ref_resolver import RefResolveFailure
+from hyperapp.common.web import RefResolveFailure
 from hyperapp.common.module import Module
 from .visitor import Visitor
 from . import htypes
@@ -18,8 +18,8 @@ RECURSION_LIMIT = 100
 
 class RefCollector(Visitor):
 
-    def __init__(self, ref_resolver, types, route_resolver):
-        self._ref_resolver = ref_resolver
+    def __init__(self, web, types, route_resolver):
+        self._web = web
         self._types = types
         self._route_resolver = route_resolver
         self._collected_ref_set = None
@@ -46,7 +46,7 @@ class RefCollector(Visitor):
             new_ref_set = set()
             for ref in ref_set:
                 try:
-                    capsule = self._ref_resolver.resolve_ref(ref)
+                    capsule = self._web.resolve_ref(ref)
                 except RefResolveFailure:
                     log.warning('Ref %s is failed to be resolved', ref_repr(ref))
                     missing_ref_count += 1
@@ -116,11 +116,11 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        self._ref_resolver = services.ref_resolver
+        self._web = services.web
         self._types = services.types
         # self._route_resolver = services.route_resolver
         self._route_resolver = None
         services.ref_collector_factory = self._ref_collector_factory
 
     def _ref_collector_factory(self):
-        return RefCollector(self._ref_resolver, self._types, self._route_resolver)
+        return RefCollector(self._web, self._types, self._route_resolver)

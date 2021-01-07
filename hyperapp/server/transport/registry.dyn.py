@@ -10,5 +10,5 @@ class ThisModule(Module):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.transport_registry = CodeRegistry('transport', services.ref_resolver, services.types)
+        services.transport_registry = CodeRegistry('transport', services.web, services.types)
         services.local_transport_ref_set = set()

@@ -56,7 +56,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         # todo: rename view to layout
         services.available_view_registry = {}  # id -> view ref, views available to add to layout
-        services.view_registry = CodeRegistry('view', services.async_ref_resolver, services.types)
+        services.view_registry = CodeRegistry('view', services.async_web, services.types)
         services.available_object_layouts = ObjectLayoutConstructorRegistry()
         services.default_object_layouts = ObjectLayoutConstructorRegistry()
-        services.object_layout_registry = CodeRegistry('object_layout', services.async_ref_resolver, services.types)
+        services.object_layout_registry = CodeRegistry('object_layout', services.async_web, services.types)

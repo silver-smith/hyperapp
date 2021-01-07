@@ -197,14 +197,14 @@ class BlogArticle(RecordObject):
 class ArticleRefListObject(ListObject):
 
     @classmethod
-    async def from_piece(cls, state, blog_service_factory, mosaic, async_ref_resolver):
+    async def from_piece(cls, state, blog_service_factory, mosaic, async_web):
         blog_service = await blog_service_factory(state.blog_service_ref)
-        return cls(mosaic, async_ref_resolver, blog_service, state.blog_id, state.article_id)
+        return cls(mosaic, async_web, blog_service, state.blog_id, state.article_id)
 
-    def __init__(self, mosaic, async_ref_resolver, blog_service, blog_id, article_id):
+    def __init__(self, mosaic, async_web, blog_service, blog_id, article_id):
         ListObject.__init__(self)
         self._mosaic = mosaic
-        self._async_ref_resolver = async_ref_resolver
+        self._async_web = async_web
         self._blog_service = blog_service
         self._blog_id = blog_id
         self._article_id = article_id
@@ -247,7 +247,7 @@ class ArticleRefListObject(ListObject):
     @command('open', kind='element')
     async def command_open(self, item_id):
         current_piece_ref = self._id2ref[item_id]
-        return (await self._async_ref_resolver.summon(current_piece_ref))
+        return (await self._async_web.summon(current_piece_ref))
 
     @command('add')
     async def command_add(self):
@@ -280,9 +280,9 @@ class ArticleRefListObject(ListObject):
 class RefSelector(RecordObject):
 
     @classmethod
-    async def from_piece(cls, piece, blog_service_factory, mosaic, async_ref_resolver, object_registry):
+    async def from_piece(cls, piece, blog_service_factory, mosaic, async_web, object_registry):
         blog_service = await blog_service_factory(piece.blog_service_ref)
-        current_piece = await async_ref_resolver.summon(piece.current_piece_ref)
+        current_piece = await async_web.summon(piece.current_piece_ref)
         current_object = await object_registry.animate(current_piece)
         return cls(mosaic, blog_service, piece.blog_id, piece.article_id, piece.ref_id, piece.current_piece_ref, current_piece, current_object)
 
@@ -465,7 +465,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._types = services.types
         self._mosaic = services.mosaic
-        self._async_ref_resolver = services.async_ref_resolver
+        self._async_web = services.async_web
         self._service_registry = services.service_registry
         self._proxy_factory = services.proxy_factory
         services.blog_service_factory = self._blog_service_factory
@@ -478,14 +478,14 @@ class ThisModule(ClientModule):
             ArticleRefListObject.from_piece,
             self._blog_service_factory,
             services.mosaic,
-            services.async_ref_resolver,
+            services.async_web,
             )
         services.object_registry.register_actor(
             htypes.blog.blog_article_ref_selector,
             RefSelector.from_piece,
             self._blog_service_factory,
             services.mosaic,
-            services.async_ref_resolver,
+            services.async_web,
             services.object_registry,
             )
 

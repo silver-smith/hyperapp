@@ -35,7 +35,7 @@ handlers:
     backupCount: 20
 
 loggers:
-  hyperapp.common.ref_resolver: {level: WARNING}
+  hyperapp.common.web: {level: WARNING}
   hyperapp.common.logger: {level: INFO}
   hyperapp.common.ref_collector: {level: INFO}
   hyperapp.client.registry: {level: INFO}

@@ -38,26 +38,26 @@ from hyperapp.common.htypes import (
     )
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.mosaic import Mosaic
-from hyperapp.common.ref_resolver import RefResolver
+from hyperapp.common.web import Web
 from hyperapp.common.type_system import TypeSystem
 
 log = logging.getLogger(__name__)
 
 
 @pytest.fixture
-def ref_resolver():
-    return RefResolver()
+def web():
+    return Web()
 
 
 @pytest.fixture
-def types(ref_resolver):
-    return TypeSystem(ref_resolver)
+def types(web):
+    return TypeSystem(web)
 
 
 @pytest.fixture
-def mosaic(ref_resolver, types):
+def mosaic(web, types):
     registry = Mosaic(types)
-    ref_resolver.add_source(registry)
+    web.add_source(registry)
     register_builtin_types(registry, types)
     return registry
 

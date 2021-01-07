@@ -11,7 +11,7 @@ class RefResolveFailure(Exception):
         super().__init__(f"Failed to resolve ref {ref_repr(ref)}")
 
 
-class RefResolver(object):
+class Web(object):
 
     def __init__(self):
         self._sources = []

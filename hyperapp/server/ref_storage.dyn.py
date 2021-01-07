@@ -13,8 +13,8 @@ log = logging.getLogger(__name__)
 
 class RefStorage(object):
 
-    def __init__(self, ref_resolver):
-        self._ref_resolver = ref_resolver
+    def __init__(self, web):
+        self._web = web
         self._recursion_flag = False
 
     @db_session
@@ -34,7 +34,7 @@ class RefStorage(object):
     def store_ref(self, ref):
         self._recursion_flag = True
         try:
-            capsule = self._ref_resolver.resolve_ref(ref)
+            capsule = self._web.resolve_ref(ref)
         finally:
             self._recursion_flag = False
         assert capsule, 'Can not store unknown ref: %s' % ref_repr(ref)
@@ -59,7 +59,7 @@ class ThisModule(PonyOrmModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name)
-        services.ref_storage = self._ref_storage = RefStorage(services.ref_resolver)
+        services.ref_storage = self._ref_storage = RefStorage(services.web)
 
     def init_phase_2(self, services):
         self.Ref = self.make_entity(
@@ -71,4 +71,4 @@ class ThisModule(PonyOrmModule):
             encoded_object=Required(bytes),
             primary_key=('ref_hash_algorithm', 'ref_hash'),
             )
-        services.ref_resolver.add_source(self._ref_storage)
+        services.web.add_source(self._ref_storage)

@@ -90,8 +90,8 @@ class LineEditView(View, QtWidgets.QLineEdit):
 class LineEditLayout(ObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_ref_resolver):
-        object_type = await async_ref_resolver.summon(state.object_type_ref)
+    async def from_data(cls, state, path, layout_watcher, mosaic, async_web):
+        object_type = await async_web.summon(state.object_type_ref)
         return cls(mosaic, layout_watcher, path, object_type, state.command_list, state.editable)
 
     def __init__(self, mosaic, layout_watcher, path, object_type, command_list_data, editable):
@@ -143,7 +143,7 @@ class ThisModule(ClientModule):
         services.available_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
         services.default_object_layouts.register('line', [LineObject.type._t], self._make_line_layout_data)
         services.object_layout_registry.register_actor(
-            htypes.line.line_edit_layout, LineEditLayout.from_data, services.mosaic, services.async_ref_resolver)
+            htypes.line.line_edit_layout, LineEditLayout.from_data, services.mosaic, services.async_web)
 
     async def _make_line_layout_data(self, object_type):
         object_type_ref = self._mosaic.put(object_type)

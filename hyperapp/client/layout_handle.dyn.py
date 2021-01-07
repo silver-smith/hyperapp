@@ -136,7 +136,7 @@ class ThisModule(ClientModule):
         services.layout_handle_from_ref = self.layout_handle_from_ref
 
         self._mosaic = services.mosaic
-        self._async_ref_resolver = services.async_ref_resolver
+        self._async_web = services.async_web
         self._object_layout_registry = services.object_layout_registry
         self._object_layout_registry = services.object_layout_registry
         self._default_object_layouts = services.default_object_layouts
@@ -149,13 +149,13 @@ class ThisModule(ClientModule):
         return (await self.create_layout_handle(object_type))
 
     async def layout_handle_from_ref(self, state_ref):
-        state = await self._async_ref_resolver.summon(state_ref)
+        state = await self._async_web.summon(state_ref)
         return (await self.layout_handle_from_data(state))
 
     async def layout_handle_from_data(self, state):
-        object_type = await self._async_ref_resolver.summon(state.object_type_ref)
+        object_type = await self._async_web.summon(state.object_type_ref)
         if state.origin_object_type_ref:
-            origin_object_type = await self._async_ref_resolver.summon(state.origin_object_type_ref)
+            origin_object_type = await self._async_web.summon(state.origin_object_type_ref)
         else:
             origin_object_type = None
         return (await self.create_layout_handle(object_type, origin_object_type, state.origin_command_id))

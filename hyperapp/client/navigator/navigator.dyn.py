@@ -55,7 +55,7 @@ class NavigatorLayout(GlobalLayout):
             command_hub,
             view_opener,
             mosaic,
-            async_ref_resolver,
+            async_web,
             object_registry,
             object_layout_registry,
             layout_handle_from_object_type,
@@ -64,7 +64,7 @@ class NavigatorLayout(GlobalLayout):
             ):
         self = cls(
             mosaic,
-            async_ref_resolver,
+            async_web,
             object_registry,
             object_layout_registry,
             layout_handle_from_object_type,
@@ -80,7 +80,7 @@ class NavigatorLayout(GlobalLayout):
     def __init__(
             self,
             mosaic,
-            async_ref_resolver,
+            async_web,
             object_registry,
             object_layout_registry,
             layout_handle_from_object_type,
@@ -92,7 +92,7 @@ class NavigatorLayout(GlobalLayout):
             ):
         super().__init__(path)
         self._mosaic = mosaic
-        self._async_ref_resolver = async_ref_resolver
+        self._async_web = async_web
         self._object_registry = object_registry
         self._object_layout_registry = object_layout_registry
         self._layout_handle_from_object_type = layout_handle_from_object_type
@@ -106,7 +106,7 @@ class NavigatorLayout(GlobalLayout):
         self._current_view = None
 
     async def _async_init(self, initial_piece_ref):
-        piece = await self._async_ref_resolver.summon(initial_piece_ref)
+        piece = await self._async_web.summon(initial_piece_ref)
         self._current_object = object = await self._object_registry.animate(piece)
         self._current_layout_handle = await self._layout_handle_from_object_type(object.type)
         self._history.append(_HistoryItem(object, None))
@@ -209,7 +209,7 @@ class ThisModule(ClientModule):
             htypes.navigator.navigator,
             NavigatorLayout.from_data,
             services.mosaic,
-            services.async_ref_resolver,
+            services.async_web,
             services.object_registry,
             services.object_layout_registry,
             services.layout_handle_from_object_type,

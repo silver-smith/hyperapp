@@ -14,10 +14,10 @@ class AsyncRefSource(object, metaclass=abc.ABCMeta):
         pass
 
 
-class AsyncRefResolver(object):
+class AsyncWeb(object):
 
-    def __init__(self, ref_resolver, types):
-        self._ref_resolver = ref_resolver
+    def __init__(self, web, types):
+        self._web = web
         self._types = types
         self._async_sources = []
 
@@ -26,7 +26,7 @@ class AsyncRefResolver(object):
         self._async_sources.append(source)
 
     async def resolve_ref(self, ref):
-        capsule = self._ref_resolver.resolve_ref(ref)
+        capsule = self._web.resolve_ref(ref)
         if capsule:
             return capsule
         for source in self._async_sources:
@@ -54,4 +54,4 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        services.async_ref_resolver = AsyncRefResolver(services.ref_resolver, services.types)
+        services.async_web = AsyncWeb(services.web, services.types)

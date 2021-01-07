@@ -33,7 +33,7 @@ route_rec = record:
 unknown_ref_error = error class unknown_ref(client_error):
     ref: ref
 
-ref_resolver = interface ref_resolver:
+web = interface web:
     commands:
         resolve_ref (ref: ref) -> (capsule: capsule)
 

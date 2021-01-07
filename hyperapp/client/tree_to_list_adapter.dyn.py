@@ -96,8 +96,8 @@ class TreeToListLayout(AbstractMultiItemObjectLayout):
         return htypes.list_object.list_object_type(tuple((*base_object_type.command_list, *adapter_command_list)))
 
     @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_ref_resolver, object_layout_registry, default_object_layouts):
-        base_object_type = await async_ref_resolver.summon(state.object_type_ref)
+    async def from_data(cls, state, path, layout_watcher, mosaic, async_web, object_layout_registry, default_object_layouts):
+        base_object_type = await async_web.summon(state.object_type_ref)
         adapter_object_type = cls.adapter_object_type(base_object_type)
         base_list_layout = await default_object_layouts.construct_default_layout(
             adapter_object_type, layout_watcher, object_layout_registry, path=[*path, 'base'])
@@ -163,7 +163,7 @@ class ThisModule(ClientModule):
         services.available_object_layouts.register('as_list', [TreeObject.type._t], self._make_layout_data)
         services.object_layout_registry.register_actor(
             htypes.tree_to_list_adapter.tree_to_list_adapter_layout, TreeToListLayout.from_data,
-            services.mosaic, services.async_ref_resolver, services.object_layout_registry, services.default_object_layouts)
+            services.mosaic, services.async_web, services.object_layout_registry, services.default_object_layouts)
 
     async def _make_layout_data(self, object_type):
         object_type_ref = self._mosaic.put(object_type)

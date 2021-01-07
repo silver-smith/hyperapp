@@ -18,7 +18,7 @@ class Application(AsyncApplication, Commander):
         Commander.__init__(self, commands_kind='view')
         self.services = ClientServices(self.event_loop)
         self._mosaic = self.services.mosaic
-        self._async_ref_resolver = self.services.async_ref_resolver
+        self._async_web = self.services.async_web
         self._layout_manager = self.services.layout_manager
         self._default_state_builder = self.services.default_state_builder
         self._module_command_registry = self.services.module_command_registry
@@ -31,7 +31,7 @@ class Application(AsyncApplication, Commander):
         await self.services.async_init()
         app_state = self._state_storage.load_state()
         if app_state:
-            root_layout_state = await self._async_ref_resolver.summon(app_state.root_layout_ref)
+            root_layout_state = await self._async_web.summon(app_state.root_layout_ref)
         else:
             root_layout_state = self._default_state_builder()
         await self._layout_manager.create_layout_views(root_layout_state)

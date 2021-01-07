@@ -18,12 +18,12 @@ Item = namedtuple('Item', 'id code_id kind path layout')
 class CommandList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_ref_resolver, object_registry, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
-        piece = await async_ref_resolver.summon(state.piece_ref)
+    async def from_state(cls, state, mosaic, async_web, object_registry, object_layout_association, layout_handle_from_ref, layout_handle_from_object_type):
+        piece = await async_web.summon(state.piece_ref)
         object = await object_registry.animate(piece)
         layout_handle = await layout_handle_from_ref(state.layout_handle_ref)
         self = cls(mosaic, object_layout_association, layout_handle_from_object_type, object, layout_handle)
-        await self._async_init(async_ref_resolver)
+        await self._async_init(async_web)
         return self
 
     def __init__(self, mosaic, object_layout_association, layout_handle_from_object_type, object, layout_handle):
@@ -42,9 +42,9 @@ class CommandList(SimpleListObject):
             for path, command in self._layout.available_code_commands(self._object)
             }
 
-    async def _async_init(self, async_ref_resolver):
+    async def _async_init(self, async_web):
         self._command_object_types = {
-            command.id: await async_ref_resolver.summon(command.result_object_type_ref)
+            command.id: await async_web.summon(command.result_object_type_ref)
             for command in self._object.type.command_list
             }
         # todo: add/pass current item to command list constructor/data, use it here.
@@ -186,7 +186,7 @@ class ThisModule(ClientModule):
             htypes.command_list.command_list,
             CommandList.from_state,
             services.mosaic,
-            services.async_ref_resolver,
+            services.async_web,
             services.object_registry,
             services.object_layout_association,
             services.layout_handle_from_ref,

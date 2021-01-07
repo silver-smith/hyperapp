@@ -357,8 +357,8 @@ class TreeView(View, QtWidgets.QTreeView, TreeObserver):
 class TreeViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_ref_resolver, resource_resolver):
-        object_type = await async_ref_resolver.summon(state.object_type_ref)
+    async def from_data(cls, state, path, layout_watcher, mosaic, async_web, resource_resolver):
+        object_type = await async_web.summon(state.object_type_ref)
         return cls(mosaic, path, object_type, state.command_list, resource_resolver)
 
     def __init__(self, mosaic, path, object_type, command_list_data, resource_resolver):
@@ -387,7 +387,7 @@ class ThisModule(ClientModule):
         services.available_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
         services.default_object_layouts.register('tree', [TreeObject.type._t], self._make_tree_layout_data)
         services.object_layout_registry.register_actor(
-            htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.mosaic, services.async_ref_resolver, services.resource_resolver)
+            htypes.tree_view.tree_layout, TreeViewLayout.from_data, services.mosaic, services.async_web, services.resource_resolver)
 
     def _tree_view_factory(self, columns, object, current_path):
         return TreeView(columns, object, current_path)

@@ -44,8 +44,8 @@ class LocalRouteSource(RouteSource):
 
 class Remoting(object):
 
-    def __init__(self, ref_resolver, types, mosaic, route_resolver, transport_registry, service_registry):
-        self._ref_resolver = ref_resolver
+    def __init__(self, web, types, mosaic, route_resolver, transport_registry, service_registry):
+        self._web = web
         self._types = types
         self._mosaic = mosaic
         self._route_resolver = route_resolver
@@ -80,7 +80,7 @@ class Remoting(object):
         assert not command.is_request, 'Only sending notifications is now supported for server'
 
     def process_rpc_request(self, rpc_request_ref, rpc_request):
-        capsule = self._ref_resolver.resolve_ref(rpc_request_ref)
+        capsule = self._web.resolve_ref(rpc_request_ref)
         rpc_request = self._types.decode_capsule(capsule, expected_type=htypes.hyper_ref.rpc_message).value
         assert isinstance(rpc_request, htypes.hyper_ref.rpc_request), repr(rpc_request)
         rpc_response_ref, rpc_response = self._process_request(rpc_request_ref, rpc_request)
@@ -146,7 +146,7 @@ class ThisModule(Module):
         self._mosaic = services.mosaic
         services.service_registry = service_registry = ServiceRegistry()
         services.remoting = Remoting(
-            services.ref_resolver,
+            services.web,
             services.types,
             services.mosaic,
             services.route_resolver,

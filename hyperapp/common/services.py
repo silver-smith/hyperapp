@@ -8,7 +8,7 @@ from .ref import ref_repr
 from .local_type_module import LocalTypeModuleRegistry
 from .code_module import code_module_t
 from .mosaic import Mosaic
-from .ref_resolver import RefResolver
+from .web import Web
 from .module_ref_resolver import ModuleRefResolver
 from .type_module_loader import TypeModuleLoader
 from .type_system import TypeSystem
@@ -36,11 +36,11 @@ class Services(object):
 
     def init_services(self):
         log.info("Init services.")
-        self.ref_resolver = RefResolver()
-        self.types = TypeSystem(self.ref_resolver)
+        self.web = Web()
+        self.types = TypeSystem(self.web)
         self.mosaic = Mosaic(self.types)
         self.module_ref_resolver = ModuleRefResolver(self.mosaic)
-        self.ref_resolver.add_source(self.mosaic)
+        self.web.add_source(self.mosaic)
         register_builtin_types(self.mosaic, self.types)
         register_code_module_types(self.mosaic, self.types)
         self.local_type_module_registry = LocalTypeModuleRegistry()

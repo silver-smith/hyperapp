@@ -80,6 +80,6 @@ class ThisModule(ClientModule):
 
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
-        services.fs_service_registry = CodeRegistry('fs_service', services.async_ref_resolver, services.types)
+        services.fs_service_registry = CodeRegistry('fs_service', services.async_web, services.types)
         services.object_registry.register_actor(
             htypes.fs.fs, FsTree.from_state, services.fs_service_registry)

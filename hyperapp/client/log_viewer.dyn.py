@@ -141,14 +141,14 @@ class SessionLogs(TreeObject):
 class LogRecord(ListObject):
 
     @classmethod
-    def from_state(cls, state, ref_resolver, types, session_cache):
+    def from_state(cls, state, web, types, session_cache):
         session = session_cache.get_session(state.session_id)
         record = session.path2record.get(tuple(state.item_path))
-        return cls(ref_resolver, types, state.session_id, state.item_path, record)
+        return cls(web, types, state.session_id, state.item_path, record)
 
-    def __init__(self, ref_resolver, types, session_id, item_path, record):
+    def __init__(self, web, types, session_id, item_path, record):
         super().__init__()
-        self._ref_resolver = ref_resolver
+        self._web = web
         self._types = types
         self._session_id = session_id
         self._item_path = item_path
@@ -180,7 +180,7 @@ class LogRecord(ListObject):
     def _make_item(self, name, value):
         details = None
         if isinstance(value, ref_t):
-            capsule = self._ref_resolver.resolve_ref(value)
+            capsule = self._web.resolve_ref(value)
             if capsule:
                 t = self._types.resolve(capsule.type_ref)
                 details = "{} ({}), encoding {}".format(t.name, _value_repr(capsule.type_ref), capsule.encoding)
@@ -200,7 +200,7 @@ class ThisModule(ClientModule):
         super().__init__(module_name, services)
         self._session_cache = SessionCache(services.types, services.mosaic)
         services.object_registry.register_actor(htypes.log_viewer.log_viewer, SessionLogs.from_state, services.mosaic, self._session_cache)
-        services.object_registry.register_actor(htypes.log_viewer.log_record, LogRecord.from_state, services.ref_resolver, services.types, self._session_cache)
+        services.object_registry.register_actor(htypes.log_viewer.log_record, LogRecord.from_state, services.web, services.types, self._session_cache)
 
     @command('open_last_session')
     async def open_last_session(self):

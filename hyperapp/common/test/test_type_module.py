@@ -19,7 +19,7 @@ from hyperapp.common.htypes import (
 from hyperapp.common import cdr_coders  # register codec
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.mosaic import Mosaic
-from hyperapp.common.ref_resolver import RefResolver
+from hyperapp.common.web import Web
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.type_system import TypeSystem
 
@@ -29,19 +29,19 @@ TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
 @pytest.fixture
-def ref_resolver():
-    return RefResolver()
+def web():
+    return Web()
 
 
 @pytest.fixture
-def types(ref_resolver):
-    return TypeSystem(ref_resolver)
+def types(web):
+    return TypeSystem(web)
 
 
 @pytest.fixture
-def mosaic(ref_resolver, types):
+def mosaic(web, types):
     registry = Mosaic(types)
-    ref_resolver.add_source(registry)
+    web.add_source(registry)
     register_builtin_types(registry, types)
     return registry
 
@@ -53,7 +53,7 @@ def test_type_module_loader(types, mosaic):
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_2.types')
 
 
-def test_types(ref_resolver, types, mosaic):
+def test_types(web, types, mosaic):
     local_type_module_registry = LocalTypeModuleRegistry()
     loader = TypeModuleLoader(types, mosaic, local_type_module_registry)
     loader.load_type_module(TEST_MODULES_DIR / 'type_module_1.types')

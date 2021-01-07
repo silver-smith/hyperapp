@@ -15,15 +15,15 @@ Item = namedtuple('Item', 'category layout')
 class CategoryList(SimpleListObject):
 
     @classmethod
-    async def from_state(cls, state, mosaic, async_ref_resolver, object_registry, object_layout_association, object_layout_producer):
-        piece = await async_ref_resolver.summon(state.piece_ref)
+    async def from_state(cls, state, mosaic, async_web, object_registry, object_layout_association, object_layout_producer):
+        piece = await async_web.summon(state.piece_ref)
         object = await object_registry.animate(piece)
-        return cls(mosaic, async_ref_resolver, object_layout_association, object_layout_producer, object)
+        return cls(mosaic, async_web, object_layout_association, object_layout_producer, object)
 
-    def __init__(self, mosaic, async_ref_resolver, object_layout_association, object_layout_producer, object):
+    def __init__(self, mosaic, async_web, object_layout_association, object_layout_producer, object):
         super().__init__()
         self._mosaic = mosaic
-        self._async_ref_resolver = async_ref_resolver
+        self._async_web = async_web
         self._object_layout_association = object_layout_association
         self._object_layout_producer = object_layout_producer
         self._object = object
@@ -58,7 +58,7 @@ class CategoryList(SimpleListObject):
         layout_ref = self._object_layout_association.get(category)
         if not layout_ref:
             return None
-        return await self._async_ref_resolver.summon(layout_ref)
+        return await self._async_web.summon(layout_ref)
 
     async def _get_layout_ref(self, category):
         layout_ref = self._object_layout_association.get(category)
@@ -76,7 +76,7 @@ class ThisModule(ClientModule):
         #     htypes.category_list.category_list,
         #     CategoryList.from_state,
         #     services.mosaic,
-        #     services.async_ref_resolver,
+        #     services.async_web,
         #     services.object_registry,
         #     services.object_layout_association,
         #     services.object_layout_producer,

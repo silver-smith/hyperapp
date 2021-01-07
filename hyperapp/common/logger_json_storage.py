@@ -20,8 +20,8 @@ class LineType(Enum):
     LOG_RECORD = 2
 
 
-def json_file_log_storage_session(ref_resolver, types):
-    encoder = _RecordsJsonEncoder(ref_resolver, types)
+def json_file_log_storage_session(web, types):
+    encoder = _RecordsJsonEncoder(web, types)
     start_time = datetime.now(tzlocal())
     path = JSON_LOGS_DIR.joinpath(start_time.strftime('%Y-%m-%d-%H-%M-%S')).with_suffix('.json')
     return _JsonFileLogStorage(encoder, path)
@@ -30,8 +30,8 @@ def json_file_log_storage_session(ref_resolver, types):
 
 class _RecordsJsonEncoder:
 
-    def __init__(self, ref_resolver, types):
-        self._ref_resolver = ref_resolver
+    def __init__(self, web, types):
+        self._web = web
         self._types = types
         self._dict_encoder = DictEncoder()
         self._stored_type_refs = set()
@@ -43,7 +43,7 @@ class _RecordsJsonEncoder:
             params_t = params._t
             params_type_ref = self._types.reverse_resolve(params_t)
             if params_type_ref not in self._stored_type_refs:
-                capsule = self._ref_resolver.resolve_ref(params_type_ref)
+                capsule = self._web.resolve_ref(params_type_ref)
                 yield json.dumps(dict(
                     line_type=LineType.TYPE.name,
                     type_capsule=encoder.encode(capsule),

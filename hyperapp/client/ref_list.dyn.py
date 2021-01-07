@@ -19,14 +19,14 @@ class RefListObject(ListObject):
     _Item = namedtuple('RefListObject_Item', 'id ref')
 
     @classmethod
-    async def from_state(cls, state, types, async_ref_resolver, proxy_factory):
+    async def from_state(cls, state, types, async_web, proxy_factory):
         ref_list_service = await RefListService.from_ref(state.ref_list_service, proxy_factory)
-        return cls(types, async_ref_resolver, ref_list_service, state.ref_list_id)
+        return cls(types, async_web, ref_list_service, state.ref_list_id)
 
-    def __init__(self, types, async_ref_resolver, ref_list_service, ref_list_id):
+    def __init__(self, types, async_web, ref_list_service, ref_list_id):
         ListObject.__init__(self)
         self._types = types
-        self._async_ref_resolver = async_ref_resolver
+        self._async_web = async_web
         self._ref_list_service = ref_list_service
         self._ref_list_id = ref_list_id
         self._id2ref = None
@@ -64,7 +64,7 @@ class RefListObject(ListObject):
         assert self._id2ref is not None  # fetch_element was not called yet
         ref = self._id2ref[item_id]
         log.info('Opening ref %r: %s', item_id, ref_repr(ref))
-        return (await self._async_ref_resolver.summon(ref))
+        return (await self._async_web.summon(ref))
 
 
 class RefListService(object):
@@ -90,4 +90,4 @@ class ThisModule(ClientModule):
     def __init__(self, module_name, services, config):
         super().__init__(module_name, services)
         services.object_registry.register_actor(
-            htypes.ref_list.dynamic_ref_list, RefListObject.from_state, services.types, services.async_ref_resolver, services.proxy_factory)
+            htypes.ref_list.dynamic_ref_list, RefListObject.from_state, services.types, services.async_web, services.proxy_factory)

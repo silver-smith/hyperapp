@@ -5,7 +5,7 @@ from hyperapp.common.htypes import register_builtin_types
 from hyperapp.common.local_type_module import LocalTypeModuleRegistry
 from hyperapp.common.code_module import code_module_t
 from hyperapp.common.mosaic import Mosaic
-from hyperapp.common.ref_resolver import RefResolver
+from hyperapp.common.web import Web
 from hyperapp.common.type_module_loader import TypeModuleLoader
 from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.code_module import LocalCodeModuleRegistry, register_code_module_types
@@ -18,19 +18,19 @@ TEST_MODULES_DIR = Path(__file__).parent.resolve()
 
 
 @pytest.fixture
-def ref_resolver():
-    return RefResolver()
+def web():
+    return Web()
 
 
 @pytest.fixture
-def types(ref_resolver):
-    return TypeSystem(ref_resolver)
+def types(web):
+    return TypeSystem(web)
 
 
 @pytest.fixture
-def mosaic(ref_resolver, types):
+def mosaic(web, types):
     registry = Mosaic(types)
-    ref_resolver.add_source(registry)
+    web.add_source(registry)
     register_builtin_types(registry, types)
     register_code_module_types(registry, types)
     return registry
@@ -66,7 +66,7 @@ def test_code_module_load(type_module_loader, code_module_loader):
 
 
 @pytest.fixture
-def code_module_importer(ref_resolver, types):
+def code_module_importer(web, types):
     importer = CodeModuleImporter(types)
     importer.register_meta_hook()
     return importer

@@ -18,7 +18,7 @@ class TcpProtocol(asyncio.Protocol):
     def __init__(
             self,
             event_loop,
-            ref_resolver,
+            web,
             types,
             mosaic,
             endpoint_registry,
@@ -27,7 +27,7 @@ class TcpProtocol(asyncio.Protocol):
             remoting,
             address,
             ):
-        self._ref_resolver = ref_resolver
+        self._web = web
         self._types = types
         self._mosaic = mosaic
         self._endpoint_registry = endpoint_registry
@@ -92,7 +92,7 @@ class ThisModule(ClientModule):
         services.transport_registry.register_actor(
             htypes.tcp_transport.address,
             self._resolve_address,
-            services.ref_resolver,
+            services.web,
             services.types,
             services.mosaic,
             services.endpoint_registry,
@@ -104,7 +104,7 @@ class ThisModule(ClientModule):
     async def _resolve_address(
             self,
             address,
-            ref_resolver,
+            web,
             types,
             mosaic,
             endpoint_registry,
@@ -122,7 +122,7 @@ class ThisModule(ClientModule):
             log.info('Tcp transport: establishing connection for %s', address)
             constructor = lambda: TcpProtocol(
                 self._event_loop,
-                ref_resolver,
+                web,
                 types,
                 mosaic,
                 endpoint_registry,

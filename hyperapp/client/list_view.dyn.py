@@ -214,8 +214,8 @@ class ListView(View, ListObserver, QtWidgets.QTableView):
 class ListViewLayout(MultiItemObjectLayout):
 
     @classmethod
-    async def from_data(cls, state, path, layout_watcher, mosaic, async_ref_resolver, resource_resolver):
-        object_type = await async_ref_resolver.summon(state.object_type_ref)
+    async def from_data(cls, state, path, layout_watcher, mosaic, async_web, resource_resolver):
+        object_type = await async_web.summon(state.object_type_ref)
         return cls(mosaic, path, object_type, state.command_list, resource_resolver)
 
     def __init__(self, mosaic, path, object_type, command_list_data, resource_resolver):
@@ -240,7 +240,7 @@ class ThisModule(ClientModule):
         services.available_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
         services.default_object_layouts.register('list', [ListObject.type._t], self._make_list_layout_data)
         services.object_layout_registry.register_actor(
-            htypes.list_view.list_layout, ListViewLayout.from_data, services.mosaic, services.async_ref_resolver, services.resource_resolver)
+            htypes.list_view.list_layout, ListViewLayout.from_data, services.mosaic, services.async_web, services.resource_resolver)
 
     async def _make_list_layout_data(self, object_type):
         object_type_ref = self._mosaic.put(object_type)

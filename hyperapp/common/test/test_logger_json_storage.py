@@ -5,7 +5,7 @@ import pytest
 
 from hyperapp.common.util import flatten
 from hyperapp.common.htypes import tInt, tString, meta_ref_t, t_ref, t_field_meta, t_record_meta, ref_t, register_builtin_types
-from hyperapp.common.ref_resolver import RefResolver
+from hyperapp.common.web import Web
 from hyperapp.common.type_system import TypeSystem
 from hyperapp.common.mosaic import Mosaic
 from hyperapp.common.logger import RecordKind, LogRecord
@@ -16,26 +16,26 @@ _log = logging.getLogger(__name__)
 
 
 @pytest.fixture
-def ref_resolver():
-    return RefResolver()
+def web():
+    return Web()
 
 
 @pytest.fixture
-def type_system(ref_resolver):
-    return TypeSystem(ref_resolver)
+def type_system(web):
+    return TypeSystem(web)
 
 
 @pytest.fixture
-def mosaic(ref_resolver, type_system):
+def mosaic(web, type_system):
     registry = Mosaic(type_system)
-    ref_resolver.add_source(registry)
+    web.add_source(registry)
     register_builtin_types(registry, type_system)
     return registry
 
 
 @pytest.fixture
-def encoder(ref_resolver, type_system):
-    return _RecordsJsonEncoder(ref_resolver, type_system)
+def encoder(web, type_system):
+    return _RecordsJsonEncoder(web, type_system)
 
 
 @pytest.fixture

@@ -159,9 +159,9 @@ class ObjectLayoutEditor(LayoutEditor):
     @classmethod
     async def from_state(
             cls, state,
-            mosaic, async_ref_resolver, object_registry, object_layout_registry, object_layout_association, create_layout_handle):
-        object_type = await async_ref_resolver.summon(state.object_type_ref)
-        origin_object_type = await async_ref_resolver.summon_opt(state.origin_object_type_ref)
+            mosaic, async_web, object_registry, object_layout_registry, object_layout_association, create_layout_handle):
+        object_type = await async_web.summon(state.object_type_ref)
+        origin_object_type = await async_web.summon_opt(state.origin_object_type_ref)
         handle = await create_layout_handle(object_type, origin_object_type, state.origin_command_id)
         self = cls(mosaic, object_layout_registry, object_layout_association, object_type, origin_object_type, state.origin_command_id, handle)
         await self._async_init(handle.layout)
@@ -241,7 +241,7 @@ class ThisModule(ClientModule):
             htypes.layout_editor.object_layout_editor,
             ObjectLayoutEditor.from_state,
             services.mosaic,
-            services.async_ref_resolver,
+            services.async_web,
             services.object_registry,
             services.object_layout_registry,
             services.object_layout_association,

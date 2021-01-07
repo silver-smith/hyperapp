@@ -13,10 +13,10 @@ class CodeRegistry:
 
     _Rec = namedtuple('_Rec', 'factory args kw')
 
-    def __init__(self, produce_name, ref_resolver, types):
+    def __init__(self, produce_name, web, types):
         super().__init__()
         self._produce_name = produce_name
-        self._ref_resolver = ref_resolver
+        self._web = web
         self._types = types
         self._registry = {}  # t -> _Rec
 
@@ -28,7 +28,7 @@ class CodeRegistry:
 
     def invite(self, ref, *args, **kw):
         assert isinstance(ref, ref_t), repr(ref)
-        capsule = self._ref_resolver.resolve_ref(ref)
+        capsule = self._web.resolve_ref(ref)
         decoded_capsule = self._types.decode_capsule(capsule)
         return self._animate(decoded_capsule.t, decoded_capsule.value, args, kw)
 
